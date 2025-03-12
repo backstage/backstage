@@ -51,9 +51,8 @@ export {
   type AnyRoutes,
   type AnyExternalRoutes,
   type ExtensionDataContainer,
-  type ExtensionOverrides,
   type FeatureFlagConfig,
-  type FrontendFeature,
+  type ExtensionFactoryMiddleware,
 } from './types';
 export {
   type CreateExtensionBlueprintOptions,

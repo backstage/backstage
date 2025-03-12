@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.4.1-next.2
+
+### Patch Changes
+
+- ce15e30: Fixed repository url in `README.md`
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/plugin-auth-backend@0.24.4-next.2
+  - @backstage/plugin-auth-node@0.6.1-next.1
+
 ## 0.4.1-next.1
 
 ### Patch Changes

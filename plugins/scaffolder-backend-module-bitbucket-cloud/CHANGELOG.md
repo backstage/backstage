@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-cloud
 
+## 0.2.7-next.2
+
+### Patch Changes
+
+- c56a279: Added `bitbucketCloud:branchRestriction:create` to allow users to create bitbucket cloud branch restrictions in templates
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- e279c30: Fixing spelling mistake in `jsonschema`
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.0-next.2
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-bitbucket-cloud-common@0.2.28-next.0
+
 ## 0.2.7-next.1
 
 ### Patch Changes

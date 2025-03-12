@@ -16,7 +16,6 @@
 
 import { CatalogApi } from '@backstage/catalog-client';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { z } from 'zod';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { examples } from './fetch.examples';
 import { AuthService } from '@backstage/backend-plugin-api';
@@ -41,48 +40,54 @@ export function createFetchCatalogEntityAction(options: {
     examples,
     supportsDryRun: true,
     schema: {
-      input: z.object({
-        entityRef: z
-          .string({
-            description: 'Entity reference of the entity to get',
-          })
-          .optional(),
-        entityRefs: z
-          .array(z.string(), {
-            description: 'Entity references of the entities to get',
-          })
-          .optional(),
-        optional: z
-          .boolean({
-            description:
-              'Allow the entity or entities to optionally exist. Default: false',
-          })
-          .optional(),
-        defaultKind: z.string({ description: 'The default kind' }).optional(),
-        defaultNamespace: z
-          .string({ description: 'The default namespace' })
-          .optional(),
-      }),
-      output: z.object({
-        entity: z
-          .any({
-            description:
-              'Object containing same values used in the Entity schema. Only when used with `entityRef` parameter.',
-          })
-          .optional(),
-        entities: z
-          .array(
-            z.any({
+      input: {
+        entityRef: z =>
+          z
+            .string({
+              description: 'Entity reference of the entity to get',
+            })
+            .optional(),
+        entityRefs: z =>
+          z
+            .array(z.string(), {
+              description: 'Entity references of the entities to get',
+            })
+            .optional(),
+        optional: z =>
+          z
+            .boolean({
               description:
-                'Array containing objects with same values used in the Entity schema. Only when used with `entityRefs` parameter.',
-            }),
-          )
-          .optional(),
-      }),
+                'Allow the entity or entities to optionally exist. Default: false',
+            })
+            .optional(),
+        defaultKind: z =>
+          z.string({ description: 'The default kind' }).optional(),
+        defaultNamespace: z =>
+          z.string({ description: 'The default namespace' }).optional(),
+      },
+      output: {
+        entity: z =>
+          z
+            .any({
+              description:
+                'Object containing same values used in the Entity schema. Only when used with `entityRef` parameter.',
+            })
+            .optional(),
+        entities: z =>
+          z
+            .array(
+              z.any({
+                description:
+                  'Array containing objects with same values used in the Entity schema. Only when used with `entityRefs` parameter.',
+              }),
+            )
+            .optional(),
+      },
     },
     async handler(ctx) {
       const { entityRef, entityRefs, optional, defaultKind, defaultNamespace } =
         ctx.input;
+
       if (!entityRef && !entityRefs) {
         if (optional) {
           return;

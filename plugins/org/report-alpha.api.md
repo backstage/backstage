@@ -24,11 +24,11 @@ const _default: FrontendPlugin<
       name: 'group-profile';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -60,8 +60,8 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
-        type?: EntityCardType | undefined;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
       };
     }>;
     'entity-card:org/members-list': ExtensionDefinition<{
@@ -69,11 +69,11 @@ const _default: FrontendPlugin<
       name: 'members-list';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -105,8 +105,8 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
-        type?: EntityCardType | undefined;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
       };
     }>;
     'entity-card:org/ownership': ExtensionDefinition<{
@@ -114,11 +114,11 @@ const _default: FrontendPlugin<
       name: 'ownership';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -150,8 +150,8 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
-        type?: EntityCardType | undefined;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
       };
     }>;
     'entity-card:org/user-profile': ExtensionDefinition<{
@@ -159,11 +159,11 @@ const _default: FrontendPlugin<
       name: 'user-profile';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -195,8 +195,8 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
-        type?: EntityCardType | undefined;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
       };
     }>;
   }

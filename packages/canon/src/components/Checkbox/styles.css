@@ -1,5 +1,5 @@
 .canon-CheckboxRoot {
-  all: unset;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9,6 +9,12 @@
   cursor: pointer;
   border-radius: 2px;
   transition: all 0.2s ease-in-out;
+
+  &:focus-visible {
+    transition: none;
+    outline: 2px solid var(--canon-ring);
+    outline-offset: 2px;
+  }
 
   &[data-checked] {
     background-color: var(--canon-bg-solid);
@@ -20,9 +26,8 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
   gap: var(--canon-space-2);
-  font-size: var(--canon-font-size-xs);
+  font-size: var(--canon-font-size-3);
   font-family: var(--canon-font-regular);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-primary);

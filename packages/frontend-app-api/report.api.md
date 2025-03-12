@@ -6,11 +6,10 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { AppTree } from '@backstage/frontend-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendModule } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
-import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
@@ -33,26 +32,14 @@ export function createSpecializedApp(options?: {
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   apis?: ApiHolder;
-  extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
+  extensionFactoryMiddleware?:
+    | ExtensionFactoryMiddleware
+    | ExtensionFactoryMiddleware[];
 }): {
   apis: ApiHolder;
-  createRoot(): JSX_2.Element;
   tree: AppTree;
 };
 
 // @public (undocumented)
-export type ExtensionFactoryMiddleware = Parameters<
-  ExtensionDefinition['override']
->[0]['factory'];
-
-// @public (undocumented)
-export type FrontendFeature =
-  | FrontendPlugin
-  | FrontendModule
-  | {
-      $$type: '@backstage/ExtensionOverrides';
-    }
-  | {
-      $$type: '@backstage/BackstagePlugin';
-    };
+export type FrontendFeature = FrontendPlugin | FrontendModule;
 ```

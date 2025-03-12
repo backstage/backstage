@@ -45,14 +45,14 @@ const _default: FrontendPlugin<
         height: number | undefined;
       } & {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         height?: number | undefined;
         curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         direction?: Direction | undefined;
-        title?: string | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
+        title?: string | undefined;
         relations?: string[] | undefined;
         maxDepth?: number | undefined;
         kinds?: string[] | undefined;
@@ -61,7 +61,7 @@ const _default: FrontendPlugin<
         relationPairs?: [string, string][] | undefined;
       } & {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -103,8 +103,8 @@ const _default: FrontendPlugin<
       name: 'relations';
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: EntityPredicate | ((entity: Entity) => boolean) | undefined;
-        type?: EntityCardType | undefined;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
       };
     }>;
     'page:catalog-graph': ExtensionDefinition<{
@@ -170,7 +170,7 @@ const _default: FrontendPlugin<
       params: {
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+        routeRef?: RouteRef;
       };
     }>;
   }

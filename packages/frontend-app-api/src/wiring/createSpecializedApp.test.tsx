@@ -26,6 +26,7 @@ import {
   createExtensionInput,
   useRouteRef,
   analyticsApiRef,
+  createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 import { screen, render } from '@testing-library/react';
 import { createSpecializedApp } from './createSpecializedApp';
@@ -56,7 +57,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('Test')).toBeInTheDocument();
   });
@@ -91,7 +92,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('Test 2')).toBeInTheDocument();
   });
@@ -117,7 +118,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('Test foo')).toBeInTheDocument();
   });
@@ -163,7 +164,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('flags:test=a,test=b')).toBeInTheDocument();
 
@@ -307,7 +308,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(mockAnalyticsApi).toHaveBeenCalled();
   });
@@ -339,7 +340,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('providedApis:config')).toBeInTheDocument();
 
@@ -518,7 +519,7 @@ describe('createSpecializedApp', () => {
         bindRoutes({ bind }) {
           bind(pluginA.externalRoutes, { ext: pluginB.routes.root });
         },
-      }).createRoot(),
+      }).tree.root.instance!.getData(coreExtensionData.reactElement),
     );
 
     expect(screen.getByText('link: /test')).toBeInTheDocument();
@@ -602,5 +603,72 @@ describe('createSpecializedApp', () => {
         ]
       </root>"
     `);
+  });
+
+  it('should apply multiple middlewares in order', () => {
+    const textDataRef = createExtensionDataRef<string>().with({ id: 'text' });
+
+    const app = createSpecializedApp({
+      features: [
+        createFrontendPlugin({
+          id: 'test',
+          extensions: [
+            createExtension({
+              attachTo: { id: 'root', input: 'app' },
+              inputs: {
+                text: createExtensionInput([textDataRef], {
+                  singleton: true,
+                }),
+              },
+              output: [coreExtensionData.reactElement],
+              factory: ({ inputs }) => [
+                coreExtensionData.reactElement(
+                  <>{inputs.text.get(textDataRef)}</>,
+                ),
+              ],
+            }),
+            createExtension({
+              name: 'child',
+              attachTo: { id: 'test', input: 'text' },
+              config: {
+                schema: {
+                  text: z => z.string().default('test'),
+                },
+              },
+              output: [textDataRef],
+              factory: ({ config }) => [textDataRef(config.text)],
+            }),
+          ],
+        }),
+      ],
+      extensionFactoryMiddleware: [
+        function* middleware(originalFactory, { config }) {
+          const result = originalFactory({
+            config: config && { text: `1-${config.text}` },
+          });
+          yield* result;
+          const el = result.get(textDataRef);
+          if (el) {
+            yield textDataRef(`${el}-1`);
+          }
+        },
+        function* middleware(originalFactory, { config }) {
+          const result = originalFactory({
+            config: config && { text: `2-${config.text}` },
+          });
+          yield* result;
+          const el = result.get(textDataRef);
+          if (el) {
+            yield textDataRef(`${el}-2`);
+          }
+        },
+      ],
+    });
+
+    const root = app.tree.root.instance!.getData(
+      coreExtensionData.reactElement,
+    );
+
+    expect(render(root).container.textContent).toBe('1-2-test-1-2');
   });
 });
