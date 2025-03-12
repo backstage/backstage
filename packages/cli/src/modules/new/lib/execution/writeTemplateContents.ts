@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { dirname, resolve as resolvePath } from 'path';
 
-import { paths } from '../../paths';
+import { paths } from '../../../../lib/paths';
 import { PortableTemplate, PortableTemplateInput } from '../types';
 import { ForwardedError, InputError } from '@backstage/errors';
 import { isMonoRepo as getIsMonoRepo } from '@backstage/cli-node';
