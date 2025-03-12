@@ -9,6 +9,7 @@ import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Observable } from '@backstage/types';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
@@ -373,6 +374,7 @@ export interface TaskBroker {
       order: 'asc' | 'desc';
       field: string;
     }[];
+    permissionFilters?: PermissionCriteria<TaskFilters>;
   }): Promise<{
     tasks: SerializedTask[];
     totalTasks?: number;
@@ -463,6 +465,25 @@ export interface TaskContext {
 
 // @public
 export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
+
+// @public
+export type TaskFilter = {
+  property: 'createdBy' | 'templateEntityRefs';
+  values: Array<string> | undefined;
+};
+
+// @public
+export type TaskFilters =
+  | {
+      anyOf: TaskFilter[];
+    }
+  | {
+      allOf: TaskFilter[];
+    }
+  | {
+      not: TaskFilter;
+    }
+  | TaskFilter;
 
 // @public
 export type TaskSecrets = Record<string, string> & {

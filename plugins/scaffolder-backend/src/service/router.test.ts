@@ -664,7 +664,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: 'not-user',
@@ -702,7 +701,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
           });
@@ -721,7 +719,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
@@ -811,7 +808,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
@@ -880,7 +876,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
@@ -948,7 +943,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
@@ -998,7 +992,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: 'not-user',
@@ -1038,7 +1031,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
           });
@@ -1687,7 +1679,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: 'not-user',
@@ -1725,7 +1716,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
           });
@@ -1744,7 +1734,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
@@ -1834,7 +1823,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
@@ -1914,7 +1902,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: 'not-user',
@@ -1954,7 +1941,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
           });
@@ -1975,7 +1961,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
@@ -2043,7 +2028,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
@@ -2093,7 +2077,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: 'not-user',
@@ -2133,7 +2116,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
           });
