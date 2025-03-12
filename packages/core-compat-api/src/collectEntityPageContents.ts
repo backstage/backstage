@@ -25,6 +25,7 @@ import {
   EntityCardBlueprint,
   EntityContentBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
+import { normalizeRoutePath } from './normalizeRoutePath';
 
 const ENTITY_SWITCH_KEY = 'core.backstage.entitySwitch';
 const ENTITY_ROUTE_KEY = 'plugin.catalog.entityLayoutRoute';
@@ -114,7 +115,7 @@ export function collectEntityPageContents(
               name,
               factory(originalFactory, { apis }) {
                 return originalFactory({
-                  defaultPath: pageNode.path,
+                  defaultPath: normalizeRoutePath(pageNode.path),
                   defaultTitle: pageNode.title,
                   filter: mergedIf && (entity => mergedIf(entity, { apis })),
                   loader: () => Promise.resolve(pageNode.children),
