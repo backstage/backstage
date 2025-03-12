@@ -264,4 +264,57 @@ describe('CacheManager store options', () => {
       defaults: undefined,
     });
   });
+
+  it('respects client config for non-clustered mode', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  keyPrefixSeparator: '!',
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+      keyPrefixSeparator: '!',
+    });
+  });
+
+  it('accepts client config for clustered mode', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  keyPrefixSeparator: '!',
+                },
+                cluster: {
+                  rootNodes: [{ url: 'redis://localhost:6379' }],
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(expect.anything(), {
+      keyPrefixSeparator: '!',
+    });
+  });
 });

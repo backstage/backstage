@@ -211,15 +211,15 @@ export class CacheManager {
 
     return (pluginId, defaultTtl) => {
       if (!stores[pluginId]) {
+        const redisOptions = this.storeOptions?.client || {
+          keyPrefixSeparator: ':',
+        };
         if (this.storeOptions?.cluster) {
           // Create a Redis cluster
           const cluster = createCluster(this.storeOptions?.cluster);
-          stores[pluginId] = new KeyvRedis(cluster);
+          stores[pluginId] = new KeyvRedis(cluster, redisOptions);
         } else {
           // Create a regular Redis connection
-          const redisOptions = this.storeOptions?.client || {
-            keyPrefixSeparator: ':',
-          };
           stores[pluginId] = new KeyvRedis(this.connection, redisOptions);
         }
 
