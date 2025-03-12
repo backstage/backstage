@@ -59,10 +59,7 @@ import {
   CustomFieldsPage,
 } from '../../alpha/components/TemplateEditorPage';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import {
-  taskReadPermission,
-  templateManagementPermission,
-} from '@backstage/plugin-scaffolder-common/alpha';
+import { templateManagementPermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { useApp } from '@backstage/core-plugin-api';
 import { FormField, OpaqueFormField } from '@internal/scaffolder';
 import { useAsync, useMountEffect } from '@react-hookz/web';
@@ -180,11 +177,9 @@ export const InternalRouter = (
       <Route
         path={scaffolderTaskRouteRef.path}
         element={
-          <RequirePermission permission={taskReadPermission}>
-            <TaskPageComponent
-              TemplateOutputsComponent={TemplateOutputsComponent}
-            />
-          </RequirePermission>
+          <TaskPageComponent
+            TemplateOutputsComponent={TemplateOutputsComponent}
+          />
         }
       />
       <Route
@@ -228,11 +223,7 @@ export const InternalRouter = (
       />
       <Route
         path={scaffolderListTaskRouteRef.path}
-        element={
-          <RequirePermission permission={taskReadPermission}>
-            <ListTasksPage contextMenu={props.contextMenu} />
-          </RequirePermission>
-        }
+        element={<ListTasksPage contextMenu={props.contextMenu} />}
       />
       <Route
         path={editorRouteRef.path}
