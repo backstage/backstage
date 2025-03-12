@@ -97,6 +97,7 @@ Options:
   --successCache            Enable success caching, which skips running tests for unchanged packages that were successful in the previous run
   --successCacheDir <path>  Set the success cache location, (default: node_modules/.cache/backstage-cli)
   --fix                     Attempt to automatically fix violations
+  --quiet                   Report errors only. Rules marked as warnings are not logged out, unless max-warnings threshold is reached.
 ```
 
 ## repo test
