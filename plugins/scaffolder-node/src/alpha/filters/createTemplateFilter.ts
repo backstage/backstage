@@ -24,9 +24,9 @@ import { z } from 'zod';
  */
 export const createTemplateFilter = <
   TSchema extends TemplateFilterSchema<any, any> | undefined,
-  TFunctionSchema extends TSchema extends TemplateFilterSchema<any, any>
+  TFilterSchema extends TSchema extends TemplateFilterSchema<any, any>
     ? z.infer<ReturnType<TSchema>>
     : (arg: JsonValue, ...rest: JsonValue[]) => JsonValue | undefined,
 >(
-  filter: CreatedTemplateFilter<TSchema, TFunctionSchema>,
-): CreatedTemplateFilter<unknown, unknown> => filter;
+  filter: CreatedTemplateFilter<TSchema, TFilterSchema>,
+): CreatedTemplateFilter<TSchema, TFilterSchema> => filter;

@@ -91,12 +91,12 @@ export type CreatedTemplateGlobalValue<T extends JsonValue = JsonValue> = {
 // @alpha
 export const createTemplateFilter: <
   TSchema extends TemplateFilterSchema<any, any> | undefined,
-  TFunctionSchema extends TSchema extends TemplateFilterSchema<any, any>
+  TFilterSchema extends TSchema extends TemplateFilterSchema<any, any>
     ? z.infer<ReturnType<TSchema>>
     : (arg: JsonValue, ...rest: JsonValue[]) => JsonValue | undefined,
 >(
-  filter: CreatedTemplateFilter<TSchema, TFunctionSchema>,
-) => CreatedTemplateFilter<unknown, unknown>;
+  filter: CreatedTemplateFilter<TSchema, TFilterSchema>,
+) => CreatedTemplateFilter<TSchema, TFilterSchema>;
 
 // @alpha
 export const createTemplateGlobalFunction: <
@@ -106,7 +106,7 @@ export const createTemplateGlobalFunction: <
     : (...args: JsonValue[]) => JsonValue | undefined,
 >(
   fn: CreatedTemplateGlobalFunction<TSchema, TFilterSchema>,
-) => CreatedTemplateGlobalFunction<any, any>;
+) => CreatedTemplateGlobalFunction<TSchema, TFilterSchema>;
 
 // @alpha
 export const createTemplateGlobalValue: (
@@ -156,7 +156,9 @@ export const scaffolderTaskBrokerExtensionPoint: ExtensionPoint<ScaffolderTaskBr
 export interface ScaffolderTemplatingExtensionPoint {
   // (undocumented)
   addTemplateFilters(
-    filters: Record<string, TemplateFilter_2> | CreatedTemplateFilter[],
+    filters:
+      | Record<string, TemplateFilter_2>
+      | CreatedTemplateFilter<unknown, unknown>[],
   ): void;
   // (undocumented)
   addTemplateGlobals(

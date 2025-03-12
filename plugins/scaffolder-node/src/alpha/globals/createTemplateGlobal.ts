@@ -45,4 +45,4 @@ export const createTemplateGlobalFunction = <
     : (...args: JsonValue[]) => JsonValue | undefined,
 >(
   fn: CreatedTemplateGlobalFunction<TSchema, TFilterSchema>,
-): CreatedTemplateGlobalFunction<any, any> => fn;
+): CreatedTemplateGlobalFunction<TSchema, TFilterSchema> => fn;
