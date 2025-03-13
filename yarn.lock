@@ -28990,6 +28990,7 @@ __metadata:
   resolution: "example-app-next@workspace:packages/app-next"
   dependencies:
     "@backstage/app-defaults": "workspace:^"
+    "@backstage/canon": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
