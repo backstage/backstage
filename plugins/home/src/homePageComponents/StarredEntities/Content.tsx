@@ -88,6 +88,7 @@ export const Content = ({
           'metadata.title',
           'metadata.name',
           'spec.type',
+          'spec.profile.displayName',
         ],
       })
     ).items.filter((e): e is Entity => !!e);
@@ -138,8 +139,14 @@ export const Content = ({
           <List className={classes.list}>
             {paginatedEntitiesList(entities.value || [])
               ?.sort((a, b) =>
-                (a.metadata.title ?? a.metadata.name).localeCompare(
-                  b.metadata.title ?? b.metadata.name,
+                (
+                  a.metadata.title ??
+                  a.spec?.profile?.displayName ??
+                  a.metadata.name
+                ).localeCompare(
+                  b.metadata.title ??
+                    b.spec?.profile?.displayName ??
+                    b.metadata.name,
                 ),
               )
               .map(entity => (
@@ -183,8 +190,14 @@ export const Content = ({
             <List className={classes.list}>
               {paginatedEntitiesList(entitiesByKind || [])
                 ?.sort((a, b) =>
-                  (a.metadata.title ?? a.metadata.name).localeCompare(
-                    b.metadata.title ?? b.metadata.name,
+                  (
+                    a.metadata.title ??
+                    a.spec?.profile?.displayName ??
+                    a.metadata.name
+                  ).localeCompare(
+                    b.metadata.title ??
+                      b.spec?.profile?.displayName ??
+                      b.metadata.name,
                   ),
                 )
                 .map(entity => (
