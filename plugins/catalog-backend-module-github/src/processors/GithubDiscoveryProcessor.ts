@@ -27,8 +27,8 @@ import {
   LocationSpec,
   processingResult,
 } from '@backstage/plugin-catalog-node';
-import { graphql } from '@octokit/graphql';
 import { getOrganizationRepositories } from '../lib';
+import { createGraphqlClient } from '../lib/github';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
@@ -91,6 +91,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
       return false;
     }
 
+    const logger = this.logger;
     const gitHubConfig = this.integrations.github.byUrl(
       location.target,
     )?.config;
@@ -112,9 +113,10 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
       url: orgUrl,
     });
 
-    const client = graphql.defaults({
-      baseUrl: gitHubConfig.apiBaseUrl,
+    const client = createGraphqlClient({
       headers,
+      baseUrl: gitHubConfig.apiBaseUrl!,
+      logger,
     });
 
     // Read out all of the raw data

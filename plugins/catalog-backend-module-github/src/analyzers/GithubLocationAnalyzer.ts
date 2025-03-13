@@ -21,7 +21,10 @@ import {
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
-import { Octokit } from '@octokit/rest';
+import { Octokit } from '@octokit/core';
+import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods';
+import { retry } from '@octokit/plugin-retry';
+import { throttling } from '@octokit/plugin-throttling';
 import { isEmpty, trimEnd } from 'lodash';
 import parseGitUrl from 'git-url-parse';
 import {
@@ -95,12 +98,25 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
         url,
       });
 
-    const octokitClient = new Octokit({
+    const ThrottledOctokit = Octokit.plugin(
+      restEndpointMethods,
+      retry,
+      throttling,
+    );
+    const octokitClient = new ThrottledOctokit({
       auth: githubToken,
       baseUrl: integration.config.apiBaseUrl,
+      throttle: {
+        onRateLimit: (_retryAfter, _rateLimitData, _, retryCount) => {
+          return retryCount < 2;
+        },
+        onSecondaryRateLimit: (_retryAfter, _rateLimitData, _, retryCount) => {
+          return retryCount < 2;
+        },
+      },
     });
 
-    const searchResult = await octokitClient.search
+    const searchResult = await octokitClient.rest.search
       .code({ q: query })
       .catch(e => {
         throw new Error(`Couldn't search repository for metadata file, ${e}`);
@@ -108,7 +124,7 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
 
     const exists = searchResult.data.total_count > 0;
     if (exists) {
-      const repoInformation = await octokitClient.repos
+      const repoInformation = await octokitClient.rest.repos
         .get({ owner, repo })
         .catch(e => {
           throw new Error(`Couldn't fetch repo data, ${e}`);

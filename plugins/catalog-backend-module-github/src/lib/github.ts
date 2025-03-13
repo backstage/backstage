@@ -29,6 +29,7 @@ import { withLocations } from './withLocations';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Octokit } from '@octokit/core';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { retry } from '@octokit/plugin-retry';
 import { throttling } from '@octokit/plugin-throttling';
 // Graphql types
 
@@ -726,7 +727,7 @@ export const createGraphqlClient = (args: {
   logger: LoggerService;
 }): typeof graphql => {
   const { headers, baseUrl, logger } = args;
-  const ThrottledOctokit = Octokit.plugin(throttling);
+  const ThrottledOctokit = Octokit.plugin(retry, throttling);
   const octokit = new ThrottledOctokit({
     throttle: {
       onRateLimit: (retryAfter, rateLimitData, _, retryCount) => {
