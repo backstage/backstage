@@ -40,7 +40,8 @@ function lazy(
 ): (...args: any[]) => Promise<never> {
   return async (...args: any[]) => {
     try {
-      const actionFunc = await getActionFunc();
+      const actionModule = await getActionFunc();
+      const actionFunc = actionModule.default;
       await actionFunc(...args);
 
       process.exit(0);
