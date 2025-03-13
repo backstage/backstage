@@ -31,7 +31,7 @@ Introducing the rollback to scaffolder actions provides the mean to come back to
 
 ## Motivation
 
-Mitigate the issue of manual clean up from partially created resources during template execution failures. When a template execution fails after creating some of these resources but before completing, the system is left in an inconsistent state. Currently, there is no standardized way to clean up these partially created resources, leading to orphaned resources in external systems requiring manual cleanup.
+Mitigate the issue of manual clean up from partially created resources during template execution failures. When a template execution fails after creating a number of resources but before completing, the system is left in an inconsistent state. Currently, there is no standardized way to clean up these partially created resources, leading to orphaned resources in external systems requiring manual cleanup.
 
 ### Goals
 
@@ -49,16 +49,20 @@ Mitigate the issue of manual clean up from partially created resources during te
 
 Rollback is going to be performed:
 
-- when user manually decide to perform this action.
-- task has to be recovered and TaskRecoverStrategy set to 'rollback'
+- when a user manually decide to perform this action.
+- when a task has to be recovered and TaskRecoverStrategy set to 'rollback'
 
 ## Design Details
 
-The rollback mechanism will be implemented by extending the existing `TemplateActionOptions` [type](https://github.com/kurtaking/backstage/blob/fee3afffb5ba4ce68791136d900401213d08c3ed/plugins/scaffolder-node/src/actions/createTemplateAction.ts#L29-L53) to include an optional rollback function:
+The rollback mechanism will be implemented by extending the existing `TemplateAction` [type](https://github.com/backstage/backstage/blob/946721733c1bc76059a12163503c4e959df4ec34/plugins/scaffolder-node/report.api.md?plain=1#L510-L529) to include an optional rollback function:
 
-```
-export type TemplateActionOptions<
-  ...
+```typescript
+export type TemplateAction<
+  TActionInput extends JsonObject = JsonObject,
+  TActionOutput extends JsonObject = JsonObject,
+  TSchemaType extends 'v1' | 'v2' = 'v1',
+> = {
+  ...,
   handler: (
     ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
   ) => Promise<void>;
@@ -68,11 +72,25 @@ export type TemplateActionOptions<
 };
 ```
 
-We are going to introduce an extra function in action API which will look like:
+The template action options will be updated to include the rollback function:
+
+```typescript
+export type TemplateActionOptions<
+  ...
+  handler: (
+    ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
+  rollback?: (
+    ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
+  ) => Promise<void>;
+};
+```
+
+Implementers provide the rollback function when calling `createTemplateAction`.
 
 ```typescript
 const createPublishGitHubAction = createTemplateAction({
   id: 'publish:github',
+  ...,
   async handler() {},
   async rollback() {},
 });
@@ -85,13 +103,13 @@ When a scaffolder task fails, the system will invoke the rollback function for a
 
 The rollback execution will follow a reverse order (LIFO approach) from the original execution, ensuring dependent resources are cleaned up properly.
 
-**Examples**
+### Example
 
 - closing/deleting a pull request
 - deleting a created repository
 - deleting a _third party X_
 
-```
+```tsx
 createTemplateAction<{
   apiUrl: (z) => z.string(),
   projectKey: (z) => z.string(),
@@ -101,6 +119,11 @@ createTemplateAction<{
 }>(
   {
     ...,
+    handler: async (ctx) => {
+      // Create the project
+      const projectId = await create(ctx.input.apiUrl, ctx.input.projectKey);
+      ctx.output.projectId = projectId;
+    },
     rollback: async (ctx) => {
       // Delete the project if it was created
       if (ctx.output.projectId) {
@@ -111,6 +134,24 @@ createTemplateAction<{
 )
 ```
 
+### Rolling back a set of actions
+
+The rollback will be performed in the reverse order of the execution. For example, if the following actions are executed:
+
+1. create a repository
+2. create a pull request
+3. create a branch
+4. create third party resource
+
+The rollback will be performed in the following order:
+
+1. delete the third party resource
+2. delete the branch
+3. delete the pull request
+4. delete the repository
+
+This will be managed by the TaskBroker.
+
 ## Release Plan
 
 <!--
@@ -119,7 +160,7 @@ This section should describe the rollout process for any new features. It must t
 If there is any particular feedback to be gathered during the rollout, this should be described here as well.
 -->
 
-This feature enhancement will be optional, ensuring we maintain backwards compatability
+This feature enhancement will be optional, ensuring we maintain backwards compatibility.
 
 ## Dependencies
 
