@@ -217,6 +217,7 @@ export const SettingsModal: (props: {
 export type StarredEntitiesProps = {
   noStarredEntitiesMessage?: React_2.ReactNode | undefined;
   groupByKind?: boolean;
+  itemsPerPage?: number;
 };
 
 // @public (undocumented)
