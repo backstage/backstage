@@ -194,6 +194,7 @@ export const createBuiltinActions = (
     }),
     createPublishGitlabMergeRequestAction({
       integrations,
+      config,
     }),
     createGitlabRepoPushAction({
       integrations,

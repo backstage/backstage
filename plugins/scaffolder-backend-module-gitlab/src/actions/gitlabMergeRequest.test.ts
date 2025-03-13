@@ -613,6 +613,7 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ]),
+        {},
       );
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
@@ -962,6 +963,7 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ]),
+        {},
       );
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
@@ -1014,6 +1016,7 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ],
+        {},
       );
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
@@ -1064,6 +1067,7 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ],
+        {},
       );
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
@@ -1119,6 +1123,7 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ]),
+        {},
       );
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
@@ -1176,6 +1181,7 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ]),
+        {},
       );
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
@@ -1226,6 +1232,7 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ],
+        {},
       );
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
@@ -1329,6 +1336,7 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ]),
+        {},
       );
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
@@ -1383,6 +1391,7 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ],
+        {},
       );
     });
 
@@ -1426,6 +1435,7 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ],
+        {},
       );
     });
 

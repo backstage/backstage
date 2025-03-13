@@ -293,6 +293,7 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ],
+        {},
       );
     });
 
@@ -321,6 +322,7 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ],
+        {},
       );
     });
 
@@ -349,6 +351,7 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ],
+        {},
       );
     });
   });

@@ -358,6 +358,7 @@ export const createPublishGitlabAction: typeof createPublishGitlabAction_2;
 // @public @deprecated (undocumented)
 export const createPublishGitlabMergeRequestAction: (options: {
   integrations: ScmIntegrationRegistry;
+  config?: Config;
 }) => TemplateAction_2<
   {
     repoUrl: string;
@@ -374,6 +375,9 @@ export const createPublishGitlabMergeRequestAction: (options: {
     assignee?: string;
     reviewers?: string[];
     assignReviewersFromApprovalRules?: boolean;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
+    useCustomGitAuthor?: boolean;
   },
   JsonObject,
   'v1'

@@ -190,6 +190,7 @@ export function createPublishGitlabAction(options: {
 // @public
 export const createPublishGitlabMergeRequestAction: (options: {
   integrations: ScmIntegrationRegistry;
+  config?: Config;
 }) => TemplateAction<
   {
     repoUrl: string;
@@ -206,6 +207,9 @@ export const createPublishGitlabMergeRequestAction: (options: {
     assignee?: string;
     reviewers?: string[];
     assignReviewersFromApprovalRules?: boolean;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
+    useCustomGitAuthor?: boolean;
   },
   JsonObject,
   'v1'
