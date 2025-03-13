@@ -31,6 +31,7 @@ const componentsDir = 'src/components';
 const cssFiles = [
   { path: `${cssDir}/core.css`, newName: 'core.css' },
   { path: `${cssDir}/components.css`, newName: 'components.css' },
+  { path: `${cssDir}/styles.css`, newName: 'styles.css' },
 ];
 
 // Components files
