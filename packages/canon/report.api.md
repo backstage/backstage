@@ -957,6 +957,19 @@ export interface TextProps {
   // (undocumented)
   className?: string;
   // (undocumented)
+  color?:
+    | 'primary'
+    | 'secondary'
+    | 'danger'
+    | 'warning'
+    | 'success'
+    | Partial<
+        Record<
+          Breakpoint,
+          'primary' | 'secondary' | 'danger' | 'warning' | 'success'
+        >
+      >;
+  // (undocumented)
   style?: CSSProperties;
   // (undocumented)
   variant?:
