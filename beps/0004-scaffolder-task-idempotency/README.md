@@ -268,12 +268,6 @@ Task state will be stored in the extra column `state` in the table `tasks` with 
 }
 ```
 
-Whenever you change the return type of the checkpoint, we encourage you to change the ID.
-For example, you can embed the versioning or another indicator for that.
-If you'll preserve the same key, and you'll try to restart the affected task, it will fail on this checkpoint.
-The cached result will not match with the expected updated return type.
-By changing the key, you'll invalidate the cache of the checkpoint.
-
 #### Workspace Persistence
 
 The workspace will be serialized and stored in the database by default. This serialization should occur at the end of a step, and after each checkpoint. It will be possible to provide additional modules to extend the workspace serialization to other providers, such as GCS or S3 instead of the database.
