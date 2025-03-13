@@ -7,6 +7,8 @@ import { AuthService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { ParsedMediaType } from 'content-type';
+import { Request as Request_2 } from 'express';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
@@ -107,6 +109,28 @@ export interface EventSubscriber {
   onEvent(params: EventParams): Promise<void>;
   // @deprecated
   supportsEventTopics(): string[];
+}
+
+// @public (undocumented)
+export type HttpBodyParsed = {
+  bodyParsed: any;
+  bodyBuffer: Buffer;
+  encoding: string;
+};
+
+// @public (undocumented)
+export type HttpBodyParser = (
+  request: Request_2,
+  parsedMediaType: ParsedMediaType,
+  topic: string,
+) => Promise<HttpBodyParsed>;
+
+// @public (undocumented)
+export interface HttpBodyParserOptions {
+  // (undocumented)
+  contentType: string;
+  // (undocumented)
+  parser: HttpBodyParser;
 }
 
 // @public (undocumented)

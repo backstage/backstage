@@ -19,25 +19,27 @@ import {
   ConfigApi,
   coreExtensionData,
   ExtensionFactoryMiddleware,
+  FrontendFeature,
+  FrontendFeatureLoader,
 } from '@backstage/frontend-plugin-api';
-import { stringifyError } from '@backstage/errors';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { overrideBaseUrlConfigs } from '../../core-app-api/src/app/overrideBaseUrlConfigs';
-import { getAvailableFeatures } from './discovery';
 import { ConfigReader } from '@backstage/config';
-import appPlugin from '@backstage/plugin-app';
 import {
   CreateAppRouteBinder,
-  FrontendFeature,
   createSpecializedApp,
 } from '@backstage/frontend-app-api';
+import appPlugin from '@backstage/plugin-app';
+import { discoverAvailableFeatures } from './discovery';
+import { resolveAsyncFeatures } from './resolution';
 
 /**
  * A source of dynamically loaded frontend features.
  *
  * @public
+ * @deprecated Use the {@link @backstage/frontend-plugin-api#createFrontendFeatureLoader} function instead.
  */
 export interface CreateAppFeatureLoader {
   /**
@@ -59,7 +61,11 @@ export interface CreateAppFeatureLoader {
  * @public
  */
 export interface CreateAppOptions {
-  features?: (FrontendFeature | CreateAppFeatureLoader)[];
+  features?: (
+    | FrontendFeature
+    | FrontendFeatureLoader
+    | CreateAppFeatureLoader
+  )[];
   configLoader?: () => Promise<{ config: ConfigApi }>;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   /**
@@ -94,29 +100,16 @@ export function createApp(options?: CreateAppOptions): {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
-    const discoveredFeatures = getAvailableFeatures(config);
-
-    const providedFeatures: FrontendFeature[] = [];
-    for (const entry of options?.features ?? []) {
-      if ('load' in entry) {
-        try {
-          const result = await entry.load({ config });
-          providedFeatures.push(...result.features);
-        } catch (e) {
-          throw new Error(
-            `Failed to read frontend features from loader '${entry.getLoaderName()}', ${stringifyError(
-              e,
-            )}`,
-          );
-        }
-      } else {
-        providedFeatures.push(entry);
-      }
-    }
+    const { features: discoveredFeaturesAndLoaders } =
+      discoverAvailableFeatures(config);
+    const { features: loadedFeatures } = await resolveAsyncFeatures({
+      config,
+      features: [...discoveredFeaturesAndLoaders, ...(options?.features ?? [])],
+    });
 
     const app = createSpecializedApp({
       config,
-      features: [appPlugin, ...discoveredFeatures, ...providedFeatures],
+      features: [appPlugin, ...loadedFeatures],
       bindRoutes: options?.bindRoutes,
       extensionFactoryMiddleware: options?.extensionFactoryMiddleware,
     });

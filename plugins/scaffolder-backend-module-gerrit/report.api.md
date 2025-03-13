@@ -22,8 +22,10 @@ export function createPublishGerritAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     sourcePath?: string;
+    signCommit?: boolean;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -38,8 +40,10 @@ export function createPublishGerritReviewAction(options: {
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    signCommit?: boolean;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public

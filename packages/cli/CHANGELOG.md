@@ -1,5 +1,30 @@
 # @backstage/cli
 
+## 0.31.0-next.1
+
+### Minor Changes
+
+- 5b70679: **BREAKING**: ESLint warnings no longer trigger system exit codes like errors do.
+
+  Set the max number of warnings to `-1` during linting to enable the gradual adoption of new ESLint rules. To restore the previous behavior, include the `--max-warnings 0` flag in the `backstage-cli <repo|package> lint` command.
+
+### Patch Changes
+
+- e0b226b: build(deps): bump `esbuild` from 0.24.2 to 0.25.0
+- 4d45498: Fixed the package prepack command so that it no longer produces unnecessary `index` entries in the `typesVersions` map, which could cause `/index` to be added when automatically adding imports.
+- f8bd342: Fix a bug in the translation of the deprecated `--scope` option for the `new` command that could cause plugins to have `backstage-backstage-plugin` in their name.
+- Updated dependencies
+  - @backstage/config-loader@1.10.0-next.0
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
 ## 0.30.1-next.0
 
 ### Patch Changes

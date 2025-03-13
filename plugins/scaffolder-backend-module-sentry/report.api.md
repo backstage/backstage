@@ -19,7 +19,8 @@ export function createSentryCreateProjectAction(options: {
     slug?: string;
     authToken?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public

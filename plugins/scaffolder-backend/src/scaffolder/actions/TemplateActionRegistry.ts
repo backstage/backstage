@@ -23,7 +23,7 @@ import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 export class TemplateActionRegistry {
   private readonly actions = new Map<string, TemplateAction>();
 
-  register(action: TemplateAction) {
+  register(action: TemplateAction<any, any, any>) {
     if (this.actions.has(action.id)) {
       throw new ConflictError(
         `Template action with ID '${action.id}' has already been registered`,
@@ -33,7 +33,7 @@ export class TemplateActionRegistry {
     this.actions.set(action.id, action);
   }
 
-  get(actionId: string): TemplateAction {
+  get(actionId: string): TemplateAction<any, any, any> {
     const action = this.actions.get(actionId);
     if (!action) {
       throw new NotFoundError(
@@ -43,7 +43,7 @@ export class TemplateActionRegistry {
     return action;
   }
 
-  list(): TemplateAction[] {
+  list(): TemplateAction<any, any, any>[] {
     return [...this.actions.values()];
   }
 }

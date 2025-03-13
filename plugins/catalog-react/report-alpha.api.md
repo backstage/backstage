@@ -137,11 +137,11 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   inputs: {};
   config: {
     filter: EntityPredicate | undefined;
-    type: 'full' | 'info' | 'peek' | undefined;
+    type: 'content' | 'summary' | 'info' | undefined;
   };
   configInput: {
     filter?: EntityPredicate | undefined;
-    type?: 'full' | 'info' | 'peek' | undefined;
+    type?: 'content' | 'summary' | 'info' | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<
@@ -163,7 +163,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
 }>;
 
 // @alpha (undocumented)
-export type EntityCardType = 'peek' | 'info' | 'full';
+export type EntityCardType = 'summary' | 'info' | 'content';
 
 // @alpha
 export const EntityContentBlueprint: ExtensionBlueprint<{

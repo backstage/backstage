@@ -122,7 +122,7 @@ export const restoreWorkspace: (opts: {
 // @alpha
 export interface ScaffolderActionsExtensionPoint {
   // (undocumented)
-  addActions(...actions: TemplateAction<any, any>[]): void;
+  addActions(...actions: TemplateAction<any, any, any>[]): void;
 }
 
 // @alpha

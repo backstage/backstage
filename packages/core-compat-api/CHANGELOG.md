@@ -1,5 +1,20 @@
 # @backstage/core-compat-api
 
+## 0.4.0-next.2
+
+### Minor Changes
+
+- 8250ffe: **BREAKING**: Dropped support for the removed opaque `@backstage/ExtensionOverrides` and `@backstage/BackstagePlugin` types.
+
+### Patch Changes
+
+- e7fab55: Added the `entityPage` option to `convertLegacyApp`, which you can read more about in the [app migration docs](https://backstage.io/docs/frontend-system/building-apps/migrating#entity-pages).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/plugin-catalog-react@1.16.0-next.2
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/version-bridge@1.0.11
+
 ## 0.3.7-next.1
 
 ### Patch Changes

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-import { registerMswTestHooks } from '@backstage/test-utils';
-
 /**
- * @public
- * @deprecated Use `registerMswTestHooks` from `@backstage/frontend-test-utils` instead.
+ * Normalizes the path to make sure it always starts with a single '/' and do not end with '/' or '*' unless empty
  */
-export function setupRequestMockHandlers(worker: {
-  listen: (t: any) => void;
-  close: () => void;
-  resetHandlers: () => void;
-}): void {
-  registerMswTestHooks(worker);
+export function normalizeRoutePath(path: string) {
+  let normalized = path;
+  while (normalized.endsWith('/') || normalized.endsWith('*')) {
+    normalized = normalized.slice(0, -1);
+  }
+  while (normalized.startsWith('/')) {
+    normalized = normalized.slice(1);
+  }
+  if (!normalized) {
+    return '/';
+  }
+  return `/${normalized}`;
 }

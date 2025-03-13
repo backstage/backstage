@@ -1,5 +1,25 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.14.6-next.2
+
+### Patch Changes
+
+- 48aab13: Add i18n support for scaffolder-react plugin
+- 3db64ba: Disable the submit button on creating
+- 34ea3f5: Updated dependency `flatted` to `3.3.3`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/plugin-catalog-react@1.16.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.31
+  - @backstage/plugin-scaffolder-common@1.5.10-next.0
+
 ## 1.14.6-next.1
 
 ### Patch Changes

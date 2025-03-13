@@ -23,8 +23,10 @@ export function createPublishGiteaAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     sourcePath?: string;
+    signCommit?: boolean;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public

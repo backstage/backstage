@@ -22,8 +22,9 @@ import {
   ExtensionDataRef,
   ExtensionDataValue,
 } from './createExtensionDataRef';
-import { FrontendPlugin } from './createFrontendPlugin';
 import { ApiHolder, AppNode } from '../apis';
+import { FrontendModule } from './createFrontendModule';
+import { FrontendPlugin } from './createFrontendPlugin';
 
 /**
  * Feature flag configuration.
@@ -47,17 +48,6 @@ export type ExtensionMap<
 > = {
   get<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
 };
-
-/** @public */
-export interface ExtensionOverrides {
-  readonly $$type: '@backstage/ExtensionOverrides';
-}
-
-/**
- * @public
- * @deprecated import from {@link @backstage/frontend-app-api#FrontendFeature} instead
- */
-export type FrontendFeature = FrontendPlugin | ExtensionOverrides;
 
 /** @public */
 export type ExtensionDataContainer<UExtensionData extends AnyExtensionDataRef> =
@@ -92,3 +82,6 @@ export type ExtensionFactoryMiddleware = (
     config?: JsonObject;
   },
 ) => Iterable<ExtensionDataValue<any, any>>;
+
+/** @public  */
+export type FrontendFeature = FrontendPlugin | FrontendModule;

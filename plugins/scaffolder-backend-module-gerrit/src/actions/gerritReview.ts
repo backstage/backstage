@@ -19,8 +19,8 @@ import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
-  createTemplateAction,
   commitAndPushRepo,
+  createTemplateAction,
   getRepoSourceDirectory,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
@@ -48,6 +48,7 @@ export function createPublishGerritReviewAction(options: {
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    signCommit?: boolean;
   }>({
     id: 'publish:gerrit:review',
     description: 'Creates a new Gerrit review.',
@@ -88,6 +89,11 @@ export function createPublishGerritReviewAction(options: {
             type: 'string',
             description: `Sets the default author email for the commit.`,
           },
+          signCommit: {
+            title: 'Sign commit',
+            type: 'boolean',
+            description: 'Sign commit with configured PGP private key',
+          },
         },
       },
       output: {
@@ -112,6 +118,7 @@ export function createPublishGerritReviewAction(options: {
         gitAuthorName,
         gitAuthorEmail,
         gitCommitMessage,
+        signCommit,
       } = ctx.input;
       const { host, repo } = parseRepoUrl(repoUrl, integrations);
 
@@ -139,6 +146,14 @@ export function createPublishGerritReviewAction(options: {
           ? gitAuthorEmail
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
+      const signingKey =
+        integrationConfig.config.commitSigningKey ??
+        config.getOptionalString('scaffolder.defaultCommitSigningKey');
+      if (signCommit && !signingKey) {
+        throw new Error(
+          'Signing commits is enabled but no signing key is provided in the configuration',
+        );
+      }
       const changeId = generateGerritChangeId();
       const commitMessage = `${gitCommitMessage}\n\nChange-Id: ${changeId}`;
 
@@ -150,6 +165,7 @@ export function createPublishGerritReviewAction(options: {
         gitAuthorInfo,
         branch,
         remoteRef: `refs/for/${branch}`,
+        signingKey: signCommit ? signingKey : undefined,
       });
 
       const repoContentsUrl = `${integrationConfig.config.gitilesBaseUrl}/${repo}/+/refs/heads/${branch}`;
