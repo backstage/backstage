@@ -123,6 +123,16 @@ export const Content = ({
 
   const groupByKindEntries = Object.entries(groupedEntities);
 
+  type ProfileSpec = {
+    profile?: {
+      displayName?: string;
+    };
+  };
+
+  const isProfileSpec = (spec: any): spec is ProfileSpec => {
+    return spec && typeof spec === 'object' && 'profile' in spec;
+  };
+
   return entities.error ? (
     <ResponseErrorPanel error={entities.error} />
   ) : (
@@ -134,11 +144,15 @@ export const Content = ({
               ?.sort((a, b) =>
                 (
                   a.metadata.title ??
-                  a.spec?.profile?.displayName ??
+                  (isProfileSpec(a.spec)
+                    ? a.spec.profile?.displayName
+                    : undefined) ??
                   a.metadata.name
                 ).localeCompare(
                   b.metadata.title ??
-                    b.spec?.profile?.displayName ??
+                    (isProfileSpec(b.spec)
+                      ? b.spec.profile?.displayName
+                      : undefined) ??
                     b.metadata.name,
                 ),
               )
@@ -185,11 +199,15 @@ export const Content = ({
                 ?.sort((a, b) =>
                   (
                     a.metadata.title ??
-                    a.spec?.profile?.displayName ??
+                    (isProfileSpec(a.spec)
+                      ? a.spec.profile?.displayName
+                      : undefined) ??
                     a.metadata.name
                   ).localeCompare(
                     b.metadata.title ??
-                      b.spec?.profile?.displayName ??
+                      (isProfileSpec(b.spec)
+                        ? b.spec.profile?.displayName
+                        : undefined) ??
                       b.metadata.name,
                   ),
                 )
