@@ -646,7 +646,7 @@ export async function createRouter(
 
         await checkTaskPermission({
           credentials,
-          permission: taskReadPermission,
+          permissions: [taskReadPermission],
           permissionService: permissions,
           task: task,
           isTaskAuthorized,
@@ -682,9 +682,10 @@ export async function createRouter(
       try {
         const credentials = await httpAuth.credentials(req);
         const task = await taskBroker.get(taskId);
+        // Requires both read and cancel permissions
         await checkTaskPermission({
           credentials,
-          permission: taskCancelPermission,
+          permissions: [taskCancelPermission, taskReadPermission],
           permissionService: permissions,
           task: task,
           isTaskAuthorized,
@@ -726,7 +727,7 @@ export async function createRouter(
 
         await checkTaskPermission({
           credentials,
-          permission: taskReadPermission,
+          permissions: [taskReadPermission],
           permissionService: permissions,
           task: task,
           isTaskAuthorized,
@@ -774,7 +775,7 @@ export async function createRouter(
 
         await checkTaskPermission({
           credentials,
-          permission: taskReadPermission,
+          permissions: [taskReadPermission],
           permissionService: permissions,
           task: task,
           isTaskAuthorized,
@@ -850,7 +851,7 @@ export async function createRouter(
 
         await checkTaskPermission({
           credentials,
-          permission: taskReadPermission,
+          permissions: [taskReadPermission],
           permissionService: permissions,
           task: task,
           isTaskAuthorized,
