@@ -17,11 +17,7 @@ import { test, expect } from '@playwright/test';
 import { spawn } from 'child_process';
 import path from 'path';
 import * as fs from 'node:fs';
-import {
-  ChildProcessWithoutNullStreams,
-  spawnSync,
-  SpawnSyncReturns,
-} from 'node:child_process';
+import { ChildProcessWithoutNullStreams } from 'node:child_process';
 import * as http from 'http';
 import { getOptions, mockDryRunResponse } from './mockData';
 
