@@ -29,7 +29,6 @@ import { PermissionsServiceRequestOptions } from '@backstage/backend-plugin-api'
 import { PolicyDecision } from '@backstage/plugin-permission-common';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
-import { TokenManager } from '@backstage/backend-common';
 import { z } from 'zod';
 
 // @public
@@ -385,8 +384,7 @@ export class ServerPermissionClient implements PermissionsService {
     config: Config,
     options: {
       discovery: DiscoveryService;
-      tokenManager?: TokenManager;
-      auth?: AuthService;
+      auth: AuthService;
     },
   ): ServerPermissionClient;
 }

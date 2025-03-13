@@ -25,6 +25,7 @@
 import Router from 'express-promise-router';
 import {
   CacheManager,
+  createLegacyAuthAdapters,
   createServiceBuilder,
   DatabaseManager,
   getRootLogger,
@@ -37,7 +38,7 @@ import {
 import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
 import { metricsHandler, metricsInit } from './metrics';
-import auth from './plugins/auth';
+import authPlugin from './plugins/auth';
 import catalog from './plugins/catalog';
 import events from './plugins/events';
 import kubernetes from './plugins/kubernetes';
@@ -59,9 +60,14 @@ function makeCreateEnv(config: Config) {
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = HostDiscovery.fromConfig(config);
   const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
-  const permissions = ServerPermissionClient.fromConfig(config, {
+  const { auth } = createLegacyAuthAdapters({
+    auth: undefined,
     discovery,
     tokenManager,
+  });
+  const permissions = ServerPermissionClient.fromConfig(config, {
+    discovery,
+    auth,
   });
   const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
   const cacheManager = CacheManager.fromConfig(config);
@@ -137,7 +143,7 @@ async function main() {
   apiRouter.use('/catalog', await catalog(catalogEnv));
   apiRouter.use('/events', await events(eventsEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
-  apiRouter.use('/auth', await auth(authEnv));
+  apiRouter.use('/auth', await authPlugin(authEnv));
   apiRouter.use('/search', await search(searchEnv));
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
