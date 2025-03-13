@@ -22,7 +22,6 @@ import {
   FrontendFeature,
   FrontendFeatureLoader,
 } from '@backstage/frontend-plugin-api';
-import { stringifyError } from '@backstage/errors';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { defaultConfigLoaderSync } from '../../core-app-api/src/app/defaultConfigLoader';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
