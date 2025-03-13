@@ -175,13 +175,19 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     options: UpdateProcessedEntityOptions,
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
-    const { id, errors, resultHash } = options;
+    const { id, errors, resultHash, retryAt } = options;
+
+    const updateOptions: Partial<DbRefreshStateRow> = {
+      errors,
+      result_hash: resultHash,
+    };
+
+    if (retryAt) {
+      updateOptions.next_update_at = new Date(retryAt);
+    }
 
     await tx<DbRefreshStateRow>('refresh_state')
-      .update({
-        errors,
-        result_hash: resultHash,
-      })
+      .update(updateOptions)
       .where('entity_id', id);
   }
 

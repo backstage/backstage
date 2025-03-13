@@ -28,6 +28,7 @@ import {
   ConflictError,
   InputError,
   NotAllowedError,
+  RetryableError,
 } from '@backstage/errors';
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -178,11 +179,16 @@ export class DefaultCatalogProcessingOrchestrator
         }
       }
 
+      const [retryableError] = collectorResults.errors.filter(
+        (e): e is RetryableError => e.name === 'RetryableError',
+      );
+
       return {
         ...collectorResults,
         completedEntity: entity,
         state: { cache: cache.collect() },
         ok: collectorResults.errors.length === 0,
+        retryAt: retryableError?.retryAt,
       };
     } catch (error) {
       assertError(error);

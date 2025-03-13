@@ -95,6 +95,16 @@ export class NotImplementedError extends CustomErrorBase {
   name = 'NotImplementedError' as const;
 }
 
+export class RetryableError extends CustomErrorBase {
+  name = 'RetryableError' as const;
+  retryAt?: number;
+
+  constructor(message: string, cause: Error | unknown, retryAt?: number) {
+    super(message, cause);
+    this.retryAt = retryAt;
+  }
+}
+
 /**
  * The server is not ready to handle the request.
  *

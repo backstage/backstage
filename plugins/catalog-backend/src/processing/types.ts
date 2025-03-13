@@ -47,6 +47,7 @@ export type EntityProcessingResult =
   | {
       ok: false;
       errors: Error[];
+      retryAt?: number;
     };
 
 /**

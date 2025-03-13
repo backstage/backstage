@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InputError, NotFoundError } from '@backstage/errors';
+import { InputError, NotFoundError, RetryableError } from '@backstage/errors';
 import { Entity } from '@backstage/catalog-model';
 import { CatalogProcessorResult } from './processor';
 import { EntityRelationSpec } from './common';
@@ -51,6 +51,22 @@ export const processingResult = Object.freeze({
       type: 'error',
       location: atLocation,
       error: new InputError(message),
+    };
+  },
+
+  /**
+   * Associates an InputError with the processing state of the current entity.
+   */
+  retryableError(
+    atLocation: LocationSpec,
+    message: string,
+    retryAt?: number,
+  ): CatalogProcessorResult {
+    return {
+      type: 'error',
+      location: atLocation,
+      error: new RetryableError(message, new Error(message), retryAt),
+      retryAt,
     };
   },
 

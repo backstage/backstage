@@ -43,6 +43,7 @@ export type UpdateProcessedEntityOptions = {
   deferredEntities: DeferredEntity[];
   locationKey?: string;
   refreshKeys: RefreshKeyData[];
+  retryAt?: number;
 };
 
 export type UpdateEntityCacheOptions = {
@@ -54,6 +55,7 @@ export type UpdateProcessedEntityErrorsOptions = {
   id: string;
   errors?: string;
   resultHash: string;
+  retryAt?: number;
 };
 
 export type RefreshStateItem = {

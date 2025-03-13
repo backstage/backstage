@@ -41,6 +41,7 @@ import {
   assertError,
   NotFoundError,
   NotModifiedError,
+  RetryableError,
 } from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
@@ -125,6 +126,8 @@ export class GithubUrlReader implements UrlReaderService {
       this.integration.config,
       credentials,
     );
+
+    throw new RetryableError('test', new Error('test'), Date.now() + 1000);
 
     const response = await this.fetchResponse(ghUrl, {
       headers: {

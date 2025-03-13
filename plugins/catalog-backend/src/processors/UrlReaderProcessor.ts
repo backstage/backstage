@@ -30,6 +30,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { LoggerService, UrlReaderService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
+import { ErrorPage } from '@backstage/core-components';
 
 const CACHE_KEY = 'v1';
 
@@ -127,6 +128,15 @@ export class UrlReaderProcessor implements CatalogProcessor {
         0,
         5000,
       );
+      if (error.name === 'RetryableError') {
+        emit(
+          processingResult.retryableError(
+            location,
+            message,
+            Number(error.retryAt),
+          ),
+        );
+      }
       if (error.name === 'NotModifiedError' && cacheItem) {
         for (const parseResult of cacheItem.value) {
           emit(parseResult);

@@ -169,6 +169,7 @@ export type CatalogProcessorErrorResult = {
   type: 'error';
   error: Error;
   location: LocationSpec;
+  retryAt?: number;
 };
 
 /** @public */

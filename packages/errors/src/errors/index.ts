@@ -26,6 +26,7 @@ export {
   NotModifiedError,
   NotImplementedError,
   ServiceUnavailableError,
+  RetryableError,
 } from './common';
 export { CustomErrorBase } from './CustomErrorBase';
 export { ResponseError } from './ResponseError';

@@ -270,6 +270,7 @@ export class DefaultCatalogProcessingEngine {
                   id,
                   errors: errorsString,
                   resultHash,
+                  retryAt: result.retryAt,
                 });
               });
 
