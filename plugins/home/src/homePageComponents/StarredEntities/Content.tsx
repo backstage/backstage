@@ -25,10 +25,11 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import React from 'react';
+import React, { useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { StarredEntityListItem } from '../../components/StarredEntityListItem/StarredEntityListItem';
 import { makeStyles } from '@material-ui/core/styles';
+import Pagination from '@material-ui/lab/Pagination';
 
 const useStyles = makeStyles(theme => ({
   tabs: {
@@ -37,6 +38,11 @@ const useStyles = makeStyles(theme => ({
   list: {
     paddingTop: 0,
     paddingBottom: 0,
+  },
+  pagination: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: theme.spacing(2),
   },
 }));
 
@@ -48,6 +54,7 @@ const useStyles = makeStyles(theme => ({
 export type StarredEntitiesProps = {
   noStarredEntitiesMessage?: React.ReactNode | undefined;
   groupByKind?: boolean;
+  itemsPerPage?: number;
 };
 
 /**
@@ -58,11 +65,13 @@ export type StarredEntitiesProps = {
 export const Content = ({
   noStarredEntitiesMessage,
   groupByKind,
+  itemsPerPage,
 }: StarredEntitiesProps) => {
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const { starredEntities, toggleStarredEntity } = useStarredEntities();
-  const [activeTab, setActiveTab] = React.useState(0);
+  const [activeTab, setActiveTab] = useState(0);
+  const [page, setPage] = useState(1);
 
   // Grab starred entities from catalog to ensure they still exist and also retrieve display titles
   const entities = useAsync(async () => {
@@ -90,6 +99,19 @@ export const Content = ({
     return <Progress />;
   }
 
+  const handlePageChange = (
+    _event: React.ChangeEvent<unknown>,
+    value: number,
+  ) => {
+    setPage(value);
+  };
+
+  const paginatedEntitiesList = (entitiesList: Entity[]) => {
+    if (!itemsPerPage) return entitiesList;
+    const startIndex = (page - 1) * itemsPerPage;
+    return entitiesList.slice(startIndex, startIndex + itemsPerPage);
+  };
+
   const groupedEntities: { [kind: string]: Entity[] } = {};
   entities.value?.forEach(entity => {
     const kind = entity.kind;
@@ -106,22 +128,38 @@ export const Content = ({
   ) : (
     <div>
       {!groupByKind && (
-        <List className={classes.list}>
-          {entities.value
-            ?.sort((a, b) =>
-              (a.metadata.title ?? a.metadata.name).localeCompare(
-                b.metadata.title ?? b.metadata.name,
-              ),
-            )
-            .map(entity => (
-              <StarredEntityListItem
-                key={stringifyEntityRef(entity)}
-                entity={entity}
-                onToggleStarredEntity={toggleStarredEntity}
-                showKind
-              />
-            ))}
-        </List>
+        <>
+          <List className={classes.list}>
+            {paginatedEntitiesList(entities.value || [])
+              ?.sort((a, b) =>
+                (
+                  a.metadata.title ??
+                  a.spec?.profile?.displayName ??
+                  a.metadata.name
+                ).localeCompare(
+                  b.metadata.title ??
+                    b.spec?.profile?.displayName ??
+                    b.metadata.name,
+                ),
+              )
+              .map(entity => (
+                <StarredEntityListItem
+                  key={stringifyEntityRef(entity)}
+                  entity={entity}
+                  onToggleStarredEntity={toggleStarredEntity}
+                  showKind
+                />
+              ))}
+          </List>
+          {itemsPerPage && (
+            <Pagination
+              className={classes.pagination}
+              count={Math.ceil((entities.value?.length || 0) / itemsPerPage)}
+              page={page}
+              onChange={handlePageChange}
+            />
+          )}
+        </>
       )}
 
       {groupByKind && (
@@ -143,10 +181,16 @@ export const Content = ({
         groupByKindEntries.map(([kind, entitiesByKind], index) => (
           <div key={kind} hidden={groupByKind && activeTab !== index}>
             <List className={classes.list}>
-              {entitiesByKind
+              {paginatedEntitiesList(entitiesByKind || [])
                 ?.sort((a, b) =>
-                  (a.metadata.title ?? a.metadata.name).localeCompare(
-                    b.metadata.title ?? b.metadata.name,
+                  (
+                    a.metadata.title ??
+                    a.spec?.profile?.displayName ??
+                    a.metadata.name
+                  ).localeCompare(
+                    b.metadata.title ??
+                      b.spec?.profile?.displayName ??
+                      b.metadata.name,
                   ),
                 )
                 .map(entity => (
@@ -158,6 +202,14 @@ export const Content = ({
                   />
                 ))}
             </List>
+            {itemsPerPage && (
+              <Pagination
+                className={classes.pagination}
+                count={Math.ceil((entitiesByKind?.length || 0) / itemsPerPage)}
+                page={page}
+                onChange={handlePageChange}
+              />
+            )}
           </div>
         ))}
     </div>
