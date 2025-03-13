@@ -10,6 +10,7 @@ import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
+import { EntityFilterQuery } from '@backstage/catalog-client';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -71,6 +72,19 @@ export type TechDocsCollatorDocumentTransformer = (
 >;
 
 // @public (undocumented)
+export interface TechDocsCollatorEntityFilterExtensionPoint {
+  // (undocumented)
+  setCustomCatalogApiFilters(apiFilters: EntityFilterQuery): void;
+  // (undocumented)
+  setEntityFilterFunction(
+    filterFunction: (entities: Entity[]) => Entity[],
+  ): void;
+}
+
+// @public
+export const techDocsCollatorEntityFilterExtensionPoint: ExtensionPoint<TechDocsCollatorEntityFilterExtensionPoint>;
+
+// @public (undocumented)
 export type TechDocsCollatorEntityTransformer = (
   entity: Entity,
 ) => Partial<Omit<TechDocsDocument, 'location' | 'authorization'>>;
@@ -101,5 +115,7 @@ export type TechDocsCollatorFactoryOptions = {
   legacyPathCasing?: boolean;
   entityTransformer?: TechDocsCollatorEntityTransformer;
   documentTransformer?: TechDocsCollatorDocumentTransformer;
+  entityFilterFunction?: (entity: Entity[]) => Entity[];
+  customCatalogApiFilters?: EntityFilterQuery;
 };
 ```
