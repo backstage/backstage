@@ -22,4 +22,4 @@
 
 export * from './actions';
 export { githubModule as default } from './module';
-export { getOctokitOptions } from './util';
+export { getOctokitClient, getOctokitOptions } from './util';

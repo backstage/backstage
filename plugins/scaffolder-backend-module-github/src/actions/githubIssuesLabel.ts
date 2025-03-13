@@ -23,8 +23,7 @@ import {
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { assertError, InputError } from '@backstage/errors';
-import { Octokit } from 'octokit';
-import { getOctokitOptions } from '../util';
+import { getOctokitClient } from '../util';
 import { examples } from './githubIssuesLabel.examples';
 
 /**
@@ -89,16 +88,14 @@ export function createGithubIssuesLabelAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const client = new Octokit(
-        await getOctokitOptions({
-          integrations,
-          credentialsProvider: githubCredentialsProvider,
-          host,
-          owner,
-          repo,
-          token: providedToken,
-        }),
-      );
+      const client = await getOctokitClient({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        host,
+        owner,
+        repo,
+        token: providedToken,
+      });
 
       try {
         await client.rest.issues.addLabels({

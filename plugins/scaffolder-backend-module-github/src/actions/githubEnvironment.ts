@@ -20,8 +20,7 @@ import {
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { getOctokitOptions } from '../util';
-import { Octokit } from 'octokit';
+import { getOctokitClient } from '../util';
 import Sodium from 'libsodium-wrappers';
 import { examples } from './gitHubEnvironment.examples';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -185,15 +184,13 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
         throw new InputError(`No owner provided for repo ${repoUrl}`);
       }
 
-      const octokitOptions = await getOctokitOptions({
+      const client = await getOctokitClient({
         integrations,
         token: providedToken,
         host,
         owner,
         repo,
       });
-
-      const client = new Octokit(octokitOptions);
       const repository = await client.rest.repos.get({
         owner: owner,
         repo: repo,

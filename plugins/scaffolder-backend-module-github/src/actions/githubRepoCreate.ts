@@ -19,13 +19,12 @@ import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { Octokit } from 'octokit';
 import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { createGithubRepoWithCollaboratorsAndTopics } from './helpers';
-import { getOctokitOptions } from '../util';
+import { getOctokitClient } from '../util';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
 import { examples } from './githubRepoCreate.examples';
@@ -186,7 +185,7 @@ export function createGithubRepoCreateAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const octokitOptions = await getOctokitOptions({
+      const client = await getOctokitClient({
         integrations,
         credentialsProvider: githubCredentialsProvider,
         token: providedToken,
@@ -194,7 +193,6 @@ export function createGithubRepoCreateAction(options: {
         owner,
         repo,
       });
-      const client = new Octokit(octokitOptions);
 
       const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
         client,

@@ -23,8 +23,7 @@ import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import { Octokit } from 'octokit';
-import { getOctokitOptions } from '../util';
+import { getOctokitClient } from '../util';
 import { examples } from './githubActionsDispatch.examples';
 
 /**
@@ -104,16 +103,14 @@ export function createGithubActionsDispatchAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const client = new Octokit(
-        await getOctokitOptions({
-          integrations,
-          host,
-          owner,
-          repo,
-          credentialsProvider: githubCredentialsProvider,
-          token: providedToken,
-        }),
-      );
+      const client = await getOctokitClient({
+        integrations,
+        host,
+        owner,
+        repo,
+        credentialsProvider: githubCredentialsProvider,
+        token: providedToken,
+      });
 
       await client.rest.actions.createWorkflowDispatch({
         owner,

@@ -55,6 +55,7 @@ const initRepoAndPushMocked = initRepoAndPush as jest.Mock<
 >;
 
 const mockOctokit = {
+  auth: () => ({ token: 'tokenlols' }),
   rest: {
     users: {
       getByUsername: jest.fn(),
@@ -76,12 +77,8 @@ const mockOctokit = {
     },
   },
 };
-jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+jest.mock('../util', () => ({
+  getOctokitClient: () => mockOctokit,
 }));
 
 describe('publish:github', () => {

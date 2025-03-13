@@ -15,7 +15,7 @@
  */
 
 import { assertError } from '@backstage/errors';
-import { Octokit } from 'octokit';
+import type { Octokit } from 'octokit';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 type BranchProtectionOptions = {

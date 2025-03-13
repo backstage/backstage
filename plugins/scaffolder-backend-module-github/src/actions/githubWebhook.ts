@@ -24,8 +24,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { emitterEventNames } from '@octokit/webhooks';
 import { assertError, InputError } from '@backstage/errors';
-import { Octokit } from 'octokit';
-import { getOctokitOptions } from '../util';
+import { getOctokitClient } from '../util';
 import { examples } from './githubWebhook.examples';
 
 /**
@@ -149,16 +148,14 @@ export function createGithubWebhookAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const client = new Octokit(
-        await getOctokitOptions({
-          integrations,
-          credentialsProvider: githubCredentialsProvider,
-          host,
-          owner,
-          repo,
-          token: providedToken,
-        }),
-      );
+      const client = await getOctokitClient({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        host,
+        owner,
+        repo,
+        token: providedToken,
+      });
 
       // If this is a dry run, log and return
       if (ctx.isDryRun) {

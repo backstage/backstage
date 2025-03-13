@@ -23,9 +23,8 @@ import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import { Octokit } from 'octokit';
 import { examples } from './githubAutolinks.examples';
-import { getOctokitOptions } from '../util';
+import { getOctokitClient } from '../util';
 
 /**
  * Create an autolink reference for a repository
@@ -97,16 +96,14 @@ export function createGithubAutolinksAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const client = new Octokit(
-        await getOctokitOptions({
-          integrations,
-          host,
-          owner,
-          repo,
-          credentialsProvider: githubCredentialsProvider,
-          token,
-        }),
-      );
+      const client = await getOctokitClient({
+        integrations,
+        host,
+        owner,
+        repo,
+        credentialsProvider: githubCredentialsProvider,
+        token,
+      });
 
       await client.rest.repos.createAutolink({
         owner,

@@ -15,8 +15,7 @@
  */
 
 import { InputError } from '@backstage/errors';
-import { getOctokitOptions } from '../util';
-import { Octokit } from 'octokit';
+import { getOctokitClient } from '../util';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
 export function createHandleAutocompleteRequest(options: {
@@ -32,12 +31,11 @@ export function createHandleAutocompleteRequest(options: {
     context: Record<string, string>;
   }): Promise<{ results: { title?: string; id: string }[] }> {
     const { integrations } = options;
-    const octokitOptions = await getOctokitOptions({
+    const client = await getOctokitClient({
       integrations,
       token,
       host: context.host ?? 'github.com',
     });
-    const client = new Octokit(octokitOptions);
 
     switch (resource) {
       case 'repositoriesWithOwner': {

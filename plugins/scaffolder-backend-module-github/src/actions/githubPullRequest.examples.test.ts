@@ -35,12 +35,8 @@ const mockOctokit = {
   },
 };
 
-jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+jest.mock('../util', () => ({
+  getOctokitClient: () => mockOctokit,
 }));
 
 describe('publish:github:pull-request examples', () => {

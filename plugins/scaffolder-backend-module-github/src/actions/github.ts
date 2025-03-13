@@ -20,7 +20,6 @@ import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { Octokit } from 'octokit';
 import {
   createTemplateAction,
   parseRepoUrl,
@@ -29,7 +28,7 @@ import {
   createGithubRepoWithCollaboratorsAndTopics,
   initRepoPushAndProtect,
 } from './helpers';
-import { getOctokitOptions } from '../util';
+import { getOctokitClient } from '../util';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
 import { examples } from './github.examples';
@@ -231,7 +230,7 @@ export function createPublishGithubAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const octokitOptions = await getOctokitOptions({
+      const client = await getOctokitClient({
         integrations,
         credentialsProvider: githubCredentialsProvider,
         token: providedToken,
@@ -239,7 +238,7 @@ export function createPublishGithubAction(options: {
         owner,
         repo,
       });
-      const client = new Octokit(octokitOptions);
+      const octokitAuth = await client.auth();
 
       const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
         client,
@@ -274,7 +273,7 @@ export function createPublishGithubAction(options: {
 
       const commitResult = await initRepoPushAndProtect(
         remoteUrl,
-        octokitOptions.auth,
+        octokitAuth.token,
         ctx.workspacePath,
         ctx.input.sourcePath,
         defaultBranch,

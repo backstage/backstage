@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { assertError, NotFoundError } from '@backstage/errors';
-import { Octokit } from 'octokit';
+import type { Octokit } from 'octokit';
 
 import {
   getRepoSourceDirectory,

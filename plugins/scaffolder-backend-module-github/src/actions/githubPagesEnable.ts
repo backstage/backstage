@@ -19,13 +19,12 @@ import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { Octokit } from 'octokit';
 import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { examples } from './githubPagesEnable.examples';
-import { getOctokitOptions } from '../util';
+import { getOctokitClient } from '../util';
 
 /**
  * Creates a new action that enables GitHub Pages for a repository.
@@ -104,7 +103,7 @@ export function createGithubPagesEnableAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const octokitOptions = await getOctokitOptions({
+      const client = await getOctokitClient({
         integrations,
         credentialsProvider: githubCredentialsProvider,
         token: providedToken,
@@ -112,7 +111,6 @@ export function createGithubPagesEnableAction(options: {
         owner,
         repo,
       });
-      const client = new Octokit(octokitOptions);
 
       ctx.logger.info(
         `Attempting to enable GitHub Pages for ${owner}/${repo} with "${buildType}" build type, on source branch "${sourceBranch}" and source path "${sourcePath}"`,

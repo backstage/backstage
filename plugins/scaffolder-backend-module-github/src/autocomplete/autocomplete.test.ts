@@ -18,12 +18,6 @@ import { InputError } from '@backstage/errors';
 import { createHandleAutocompleteRequest } from './autocomplete';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
-jest.mock('../util', () => {
-  return {
-    getOctokitOptions: jest.fn(),
-  };
-});
-
 const mockOctokit = {
   paginate: async (fn: any) => (await fn()).data,
   rest: {
@@ -33,12 +27,9 @@ const mockOctokit = {
     },
   },
 };
-jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+
+jest.mock('../util', () => ({
+  getOctokitClient: () => mockOctokit,
 }));
 
 describe('handleAutocompleteRequest', () => {

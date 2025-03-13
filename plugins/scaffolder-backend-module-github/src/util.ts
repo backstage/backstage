@@ -22,8 +22,46 @@ import {
 } from '@backstage/integration';
 import { parseRepoUrl } from '@backstage/plugin-scaffolder-node';
 import { OctokitOptions } from '@octokit/core/dist-types/types';
+import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import { Octokit } from 'octokit';
 
 const DEFAULT_TIMEOUT_MS = 60_000;
+type GetOctokitClientOptions =
+  | {
+      credentialsProvider?: GithubCredentialsProvider;
+      host?: string;
+      integrations: ScmIntegrationRegistry;
+    }
+  | {
+      owner: string;
+      repo: string;
+    };
+type GetOctokitClientPlugins = {
+  pullRequest?: boolean;
+};
+
+/**
+ * Helper for generating octokit clients. It relies on getOctokitOptions
+ * for the configuration options.
+ * @public
+ */
+export async function getOctokitClient(
+  options: GetOctokitClientOptions,
+  plugins: GetOctokitClientPlugins = {},
+): Promise<Octokit> {
+  const octokitOptions = getOctokitOptions(options);
+
+  if (plugins.pullRequest) {
+    const OctokitPR = Octokit.plugin(createPullRequest);
+
+    return OctokitPR({
+      ...octokitOptions,
+      ...{ throttle: { enable: false } },
+    });
+  }
+
+  return new Octokit(octokitOptions);
+}
 
 /**
  * Helper for generating octokit configuration options.

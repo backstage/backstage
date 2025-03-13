@@ -20,8 +20,7 @@ import {
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { getOctokitOptions } from '../util';
-import { Octokit } from 'octokit';
+import { getOctokitClient } from '../util';
 import Sodium from 'libsodium-wrappers';
 import { examples } from './githubDeployKey.examples';
 
@@ -116,15 +115,13 @@ export function createGithubDeployKeyAction(options: {
         throw new InputError(`No owner provided for repo ${repoUrl}`);
       }
 
-      const octokitOptions = await getOctokitOptions({
+      const client = await getOctokitClient({
         integrations,
         token: providedToken,
         host,
         owner,
         repo,
       });
-
-      const client = new Octokit(octokitOptions);
 
       await client.rest.repos.createDeployKey({
         owner: owner,

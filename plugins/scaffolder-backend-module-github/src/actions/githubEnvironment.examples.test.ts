@@ -45,12 +45,8 @@ const mockOctokit = {
 const mockCatalogClient: Partial<CatalogApi> = {
   getEntitiesByRefs: jest.fn(),
 };
-jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+jest.mock('../util', () => ({
+  getOctokitClient: () => mockOctokit,
 }));
 jest.mock('@backstage/catalog-client', () => ({
   CatalogClient: mockCatalogClient,

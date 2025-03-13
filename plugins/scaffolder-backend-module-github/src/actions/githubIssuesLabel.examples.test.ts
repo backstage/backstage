@@ -25,13 +25,7 @@ import {
 import { createGithubIssuesLabelAction } from './githubIssuesLabel';
 import yaml from 'yaml';
 import { examples } from './githubIssuesLabel.examples';
-import { getOctokitOptions } from '../util';
-
-jest.mock('../util', () => {
-  return {
-    getOctokitOptions: jest.fn(),
-  };
-});
+import { getOctokitClient } from '../util';
 
 const mockOctokit = {
   rest: {
@@ -40,12 +34,9 @@ const mockOctokit = {
     },
   },
 };
-jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+
+jest.mock('../util', () => ({
+  getOctokitClient: jest.fn(),
 }));
 
 describe('github:issues:label examples', () => {
@@ -58,7 +49,6 @@ describe('github:issues:label examples', () => {
     },
   });
 
-  const getOctokitOptionsMock = getOctokitOptions as jest.Mock;
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any>;
@@ -66,13 +56,13 @@ describe('github:issues:label examples', () => {
   const mockContext = createMockActionContext();
 
   beforeEach(() => {
-    jest.resetAllMocks();
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubIssuesLabelAction({
       integrations,
       githubCredentialsProvider,
     });
+    getOctokitClient.mockReturnValue(mockOctokit);
   });
 
   afterEach(jest.resetAllMocks);
@@ -90,7 +80,7 @@ describe('github:issues:label examples', () => {
       labels: ['bug'],
     });
 
-    expect(getOctokitOptionsMock.mock.calls[0][0].token).toBeUndefined();
+    expect(getOctokitClient.mock.calls[0][0].token).toBeUndefined();
   });
 
   it('should call the githubApi for adding labels with token', async () => {
@@ -106,7 +96,7 @@ describe('github:issues:label examples', () => {
       labels: ['bug', 'documentation'],
     });
 
-    expect(getOctokitOptionsMock.mock.calls[0][0].token).toEqual(
+    expect(getOctokitClient.mock.calls[0][0].token).toEqual(
       'gph_YourGitHubToken',
     );
   });

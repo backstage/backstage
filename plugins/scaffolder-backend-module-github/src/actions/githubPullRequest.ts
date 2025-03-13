@@ -25,10 +25,10 @@ import {
   SerializedFile,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
-import { Octokit } from 'octokit';
+import type { Octokit } from 'octokit';
 import { CustomErrorBase, InputError } from '@backstage/errors';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
-import { getOctokitOptions } from '../util';
+import { getOctokitClient } from '../util';
 import { examples } from './githubPullRequest.examples';
 import {
   LoggerService,
@@ -48,22 +48,18 @@ export const defaultClientFactory: CreateGithubPullRequestActionOptions['clientF
     repo,
     host = 'github.com',
     token: providedToken,
-  }) => {
-    const octokitOptions = await getOctokitOptions({
-      integrations,
-      credentialsProvider: githubCredentialsProvider,
-      host,
-      owner,
-      repo,
-      token: providedToken,
-    });
-
-    const OctokitPR = Octokit.plugin(createPullRequest);
-    return new OctokitPR({
-      ...octokitOptions,
-      ...{ throttle: { enabled: false } },
-    });
-  };
+  }) =>
+    getOctokitClient(
+      {
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        host,
+        owner,
+        repo,
+        token: providedToken,
+      },
+      { pullRequest: true },
+    );
 
 /**
  * The options passed to {@link createPublishGithubPullRequestAction} method
