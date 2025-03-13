@@ -37,7 +37,7 @@ export type checkPermissionOptions = {
 
 export type checkTaskPermissionOptions = {
   credentials: BackstageCredentials;
-  permission: ResourcePermission;
+  permissions: ResourcePermission[];
   permissionService?: PermissionsService;
   task: SerializedTask;
   isTaskAuthorized: (
@@ -82,18 +82,28 @@ export async function checkPermission(options: checkPermissionOptions) {
  * @public
  */
 export async function checkTaskPermission(options: checkTaskPermissionOptions) {
-  const { permission, permissionService, credentials, task, isTaskAuthorized } =
-    options;
+  const {
+    permissions,
+    permissionService,
+    credentials,
+    task,
+    isTaskAuthorized,
+  } = options;
   if (permissionService) {
-    const [taskDecision] = await permissionService.authorizeConditional(
-      [{ permission: permission }],
+    const permissionRequest = permissions.map(permission => ({
+      permission,
+    }));
+    const authorizationResponses = await permissionService.authorizeConditional(
+      permissionRequest,
       { credentials },
     );
-    if (
-      taskDecision.result === AuthorizeResult.DENY ||
-      !isTaskAuthorized(taskDecision, task)
-    ) {
-      throw new NotAllowedError();
+    for (const response of authorizationResponses) {
+      if (
+        response.result === AuthorizeResult.DENY ||
+        !isTaskAuthorized(response, task)
+      ) {
+        throw new NotAllowedError();
+      }
     }
   }
 }
