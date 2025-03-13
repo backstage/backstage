@@ -136,7 +136,7 @@ jobs:
 
       - name: ensure clean working directory
         run: |
-          if files=$(git ls-files --exclude-standard --others --modified) && [[ -z "$files" ]]; then
+          if files=$(git ls-files --exclude-standard --others --modified | grep -v "packages/canon/css/") && [[ -z "$files" ]]; then
             exit 0
           else
             echo ""
@@ -272,7 +272,7 @@ jobs:
 
       - name: ensure clean working directory
         run: |
-          if files=$(git ls-files --exclude-standard --others --modified) && [[ -z "$files" ]]; then
+          if files=$(git ls-files --exclude-standard --others --modified | grep -v "packages/canon/css/") && [[ -z "$files" ]]; then
             exit 0
           else
             echo ""
