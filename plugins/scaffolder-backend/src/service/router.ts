@@ -612,7 +612,51 @@ export async function createRouter(
         );
 
         for (const parameters of [template.spec.parameters ?? []].flat()) {
-          const result = validate(values, parameters);
+          const validateWithSecrets = (
+            formValues: any,
+            parameterSchema: TemplateParametersV1beta3,
+            secrets: any,
+          ) => {
+            const valuesCopy = structuredClone(formValues);
+            console.log('parameters', parameterSchema);
+
+            const replaceMaskedSecrets = (
+              obj: any,
+              schema: any,
+              secretObj: any,
+            ) => {
+              if (!obj || typeof obj !== 'object') return;
+              console.log('secretObj', secretObj);
+
+              Object.entries(obj).forEach(([key, value]) => {
+                if (typeof value === 'object') {
+                  replaceMaskedSecrets(
+                    value,
+                    schema?.properties?.[key],
+                    secretObj,
+                  );
+                } else {
+                  const fieldSchema = schema?.properties?.[key];
+                  if (secretObj?.[key] !== undefined && fieldSchema) {
+                    const isSecretField =
+                      fieldSchema['ui:widget'] === 'password' ||
+                      fieldSchema['ui:field'] === 'Secret';
+                    if (isSecretField) obj[key] = secretObj[key];
+                  }
+                }
+              });
+            };
+
+            replaceMaskedSecrets(valuesCopy, parameters, secrets);
+
+            return validate(valuesCopy, parameters);
+          };
+
+          const result = validateWithSecrets(
+            values,
+            parameters,
+            req.body.secrets,
+          );
 
           if (!result.valid) {
             await auditorEvent?.fail({

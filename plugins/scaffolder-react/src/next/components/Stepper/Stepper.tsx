@@ -200,10 +200,20 @@ export const Stepper = (stepperProps: StepperProps) => {
         return;
       }
 
-      const cleanedFormData = { ...formData };
-      Object.keys(secrets).forEach(secretKey => {
-        delete cleanedFormData[secretKey];
-      });
+      const secretKeys = Object.keys(secrets);
+      const cleanedFormData = JSON.parse(JSON.stringify(formData));
+
+      const removeSecrets = (obj: Record<string, any>) => {
+        for (const key in obj) {
+          if (typeof obj[key] === 'object' && obj[key] !== null) {
+            removeSecrets(obj[key]);
+          } else if (secretKeys.includes(key)) {
+            obj[key] = '*'.repeat(obj[key].length);
+          }
+        }
+      };
+
+      removeSecrets(cleanedFormData);
 
       setStepsState(current => ({ ...current, ...cleanedFormData }));
       setIsValidating(false);
