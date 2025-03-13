@@ -14,57 +14,52 @@
  * limitations under the License.
  */
 
-.canon-Text {
+.canon-Link {
   font-family: var(--canon-font-regular);
-  color: var(--canon-fg-primary);
+  color: var(--canon-fg-link);
   padding: 0;
   margin: 0;
+  cursor: pointer;
+  text-decoration-line: none;
+
+  &:hover {
+    color: var(--canon-fg-link-hover);
+    text-decoration-line: underline;
+    text-decoration-style: solid;
+    text-decoration-thickness: min(2px, max(1px, 0.05em));
+    text-underline-offset: calc(0.025em + 2px);
+    text-decoration-color: color-mix(
+      in srgb,
+      var(--canon-fg-link-hover) 30%,
+      transparent
+    );
+  }
 }
 
-.canon-Text--variant-body {
+.canon-Link--variant-body {
   font-size: var(--canon-font-size-3);
   line-height: 140%;
 }
 
-.canon-Text--variant-subtitle {
+.canon-Link--variant-subtitle {
   font-size: var(--canon-font-size-4);
   line-height: 140%;
 }
 
-.canon-Text--variant-caption {
+.canon-Link--variant-caption {
   font-size: var(--canon-font-size-2);
   line-height: 140%;
 }
 
-.canon-Text--variant-label {
+.canon-Link--variant-label {
   font-size: var(--canon-font-size-1);
   line-height: 140%;
 }
 
-.canon-Text--weight-regular {
+.canon-Link--weight-regular {
   font-weight: var(--canon-font-weight-regular);
 }
 
-.canon-Text--weight-bold {
+.canon-Link--weight-bold {
   font-weight: var(--canon-font-weight-bold);
-}
-
-.canon-Text--color-primary {
-  color: var(--canon-fg-primary);
-}
-
-.canon-Text--color-secondary {
-  color: var(--canon-fg-secondary);
-}
-
-.canon-Text--color-danger {
-  color: var(--canon-fg-danger);
-}
-
-.canon-Text--color-warning {
-  color: var(--canon-fg-warning);
-}
-
-.canon-Text--color-success {
-  color: var(--canon-fg-success);
 }

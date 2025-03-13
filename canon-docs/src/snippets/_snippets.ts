@@ -5,7 +5,7 @@ export const customTheme = `:root {
   --canon-font-weight-regular: 400;
   --canon-font-weight-bold: 600;
   --canon-bg: #f8f8f8;
-  --canon-bg-elevated: #fff;
+  --canon-bg-surface-1: #fff;
   /* ... other CSS variables */
 
   /* Add your custom components styles here */
@@ -20,7 +20,7 @@ export const customTheme = `:root {
   --canon-font-weight-regular: 400;
   --canon-font-weight-bold: 600;
   --canon-bg: #f8f8f8;
-  --canon-bg-elevated: #fff;
+  --canon-bg-surface-1: #fff;
   /* ... other CSS variables */
 
   /* Add your custom components styles here */

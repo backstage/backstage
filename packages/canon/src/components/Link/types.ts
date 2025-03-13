@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RouteRef } from '@backstage/frontend-plugin-api';
-import { FrontendFeature as PluginApiFrontendFeature } from '@backstage/frontend-plugin-api';
-import { BackstageRouteObject } from '../routing/types';
 
-/** @public
- * @deprecated Use {@link @backstage/frontend-plugin-api#FrontendFeature} instead.
- */
-export type FrontendFeature = PluginApiFrontendFeature;
+import type { CSSProperties, ReactNode } from 'react';
+import type { Breakpoint } from '../../types';
 
-/** @internal */
-export type RouteInfo = {
-  routePaths: Map<RouteRef, string>;
-  routeParents: Map<RouteRef, RouteRef | undefined>;
-  routeObjects: BackstageRouteObject[];
-};
+/** @public */
+export interface LinkProps
+  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+  children: ReactNode;
+  variant?:
+    | 'subtitle'
+    | 'body'
+    | 'caption'
+    | 'label'
+    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
+  weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
+  className?: string;
+  style?: CSSProperties;
+}
