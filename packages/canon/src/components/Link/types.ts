@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-@import '../components/Box/styles.css';
-@import '../components/Button/styles.css';
-@import '../components/Flex/styles.css';
-@import '../components/Grid/styles.css';
-@import '../components/Container/styles.css';
-@import '../components/Icon/styles.css';
-@import '../components/Checkbox/styles.css';
-@import '../components/Table/styles.css';
-@import '../components/Text/styles.css';
-@import '../components/Heading/styles.css';
-@import '../components/Input/Input.styles.css';
-@import '../components/Field/Field.styles.css';
-@import '../components/Link/styles.css';
+import type { CSSProperties, ReactNode } from 'react';
+import type { Breakpoint } from '../../types';
+
+/** @public */
+export interface LinkProps
+  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+  children: ReactNode;
+  variant?:
+    | 'subtitle'
+    | 'body'
+    | 'caption'
+    | 'label'
+    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
+  weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
+  className?: string;
+  style?: CSSProperties;
+}
