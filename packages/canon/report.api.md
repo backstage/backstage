@@ -142,22 +142,12 @@ export const buttonPropDefs: {
 };
 
 // @public
-export interface ButtonProps {
-  // (undocumented)
+export interface ButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   children: React.ReactNode;
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  disabled?: boolean;
-  // (undocumented)
   iconEnd?: IconNames;
-  // (undocumented)
   iconStart?: IconNames;
-  // (undocumented)
   size?: ButtonOwnProps['size'];
-  // (undocumented)
-  style?: React.CSSProperties;
-  // (undocumented)
   variant?: ButtonOwnProps['variant'];
 }
 
