@@ -18,7 +18,8 @@ import type { CSSProperties, ReactNode } from 'react';
 import type { Breakpoint } from '../../types';
 
 /** @public */
-export interface TextProps {
+export interface LinkProps
+  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   children: ReactNode;
   variant?:
     | 'subtitle'
@@ -27,18 +28,6 @@ export interface TextProps {
     | 'label'
     | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
   weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
-  color?:
-    | 'primary'
-    | 'secondary'
-    | 'danger'
-    | 'warning'
-    | 'success'
-    | Partial<
-        Record<
-          Breakpoint,
-          'primary' | 'secondary' | 'danger' | 'warning' | 'success'
-        >
-      >;
   className?: string;
   style?: CSSProperties;
 }
