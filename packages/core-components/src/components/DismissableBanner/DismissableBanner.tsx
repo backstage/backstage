@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useState, useEffect } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
 import useObservable from 'react-use/esm/useObservable';
 import classNames from 'classnames';
@@ -107,29 +107,12 @@ export const DismissableBanner = (props: Props) => {
     notificationsStore.snapshot<string[]>('dismissedBanners'),
   );
 
-  const [dismissedBanners, setDismissedBanners] = useState(
-    new Set(observedItems.value ?? []),
-  );
-  const [loadingSettings, setLoadingSettings] = useState(
-    observedItems.presence === 'unknown',
+  const dismissedBanners = useMemo(
+    () => new Set(observedItems.value ?? []),
+    [observedItems.value],
   );
 
-  useEffect(() => {
-    if (observedItems?.presence === 'unknown' || observedItems === undefined) {
-      setLoadingSettings(true);
-    }
-
-    if (observedItems?.value) {
-      const currentValue = observedItems?.value ?? [];
-      setDismissedBanners(new Set(currentValue));
-    }
-    if (
-      observedItems?.presence === 'absent' ||
-      observedItems?.presence === 'present'
-    ) {
-      setLoadingSettings(false);
-    }
-  }, [observedItems]);
+  const loadingSettings = observedItems.presence === 'unknown';
 
   const handleClick = () => {
     notificationsStore.set('dismissedBanners', [...dismissedBanners, id]);
