@@ -15,8 +15,6 @@
  */
 import { HumanDuration } from '@backstage/types';
 
-import { HumanDuration } from '@backstage/types';
-
 export interface Config {
   auth?: {
     providers?: {
@@ -38,9 +36,9 @@ export interface Config {
           signIn?: {
             resolvers: Array<
               | {
-                  resolver: 'emailLocalPartMatchingUserEntityName';
-                  allowedDomains?: string[];
-                }
+                resolver: 'emailLocalPartMatchingUserEntityName';
+                allowedDomains?: string[];
+              }
               | { resolver: 'emailMatchingUserEntityProfileEmail' }
             >;
           };
