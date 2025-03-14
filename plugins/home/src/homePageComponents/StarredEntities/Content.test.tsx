@@ -24,6 +24,7 @@ import {
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import React from 'react';
 import { Content } from './Content';
+import { fireEvent } from '@testing-library/react';
 
 const entities = [
   {
@@ -39,6 +40,37 @@ const entities = [
     metadata: {
       name: 'mock-starred-entity-2',
       title: 'Mock Starred Entity 2!',
+    },
+  },
+];
+
+const paginatedEntities = [
+  {
+    apiVersion: '1',
+    kind: 'Component',
+    metadata: {
+      name: 'mock-starred-entity-1',
+    },
+  },
+  {
+    apiVersion: '1',
+    kind: 'Component',
+    metadata: {
+      name: 'mock-starred-entity-2',
+    },
+  },
+  {
+    apiVersion: '1',
+    kind: 'Component',
+    metadata: {
+      name: 'mock-starred-entity-3',
+    },
+  },
+  {
+    apiVersion: '1',
+    kind: 'Component',
+    metadata: {
+      name: 'mock-starred-entity-4',
     },
   },
 ];
@@ -154,5 +186,90 @@ describe('StarredEntitiesContent', () => {
     );
 
     expect(getByText('foo')).toBeInTheDocument();
+  });
+
+  it('should paginate starred entities', async () => {
+    const mockedApi = new MockStarredEntitiesApi();
+    paginatedEntities.forEach(entity => {
+      mockedApi.toggleStarred(`component:default/${entity.metadata.name}`);
+    });
+
+    const mockCatalogApi = catalogApiMock.mock({
+      getEntitiesByRefs: jest.fn().mockImplementation(async () => ({
+        items: paginatedEntities,
+      })),
+    });
+
+    const { getAllByText, queryByText, getAllByRole } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [starredEntitiesApiRef, mockedApi],
+        ]}
+      >
+        <Content itemsPerPage={2} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    // Check first page
+    expect(
+      getAllByText(
+        (_, element) =>
+          element?.textContent?.includes('mock-starred-entity-1') ?? false,
+      )[0],
+    ).toBeInTheDocument();
+    expect(
+      getAllByText(
+        (_, element) =>
+          element?.textContent?.includes('mock-starred-entity-2') ?? false,
+      )[0],
+    ).toBeInTheDocument();
+    expect(
+      queryByText(
+        (_, element) =>
+          element?.textContent?.includes('mock-starred-entity-3') ?? false,
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      queryByText(
+        (_, element) =>
+          element?.textContent?.includes('mock-starred-entity-4') ?? false,
+      ),
+    ).not.toBeInTheDocument();
+
+    // Navigate to second page
+    const nextPageButton = getAllByRole('button', { name: /next/i })[0];
+    fireEvent.click(nextPageButton);
+
+    // Check second page
+    expect(
+      getAllByText(
+        (_, element) =>
+          element?.textContent?.includes('mock-starred-entity-3') ?? false,
+      )[0],
+    ).toBeInTheDocument();
+    expect(
+      getAllByText(
+        (_, element) =>
+          element?.textContent?.includes('mock-starred-entity-4') ?? false,
+      )[0],
+    ).toBeInTheDocument();
+    expect(
+      queryByText(
+        (_, element) =>
+          element?.textContent?.includes('mock-starred-entity-1') ?? false,
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      queryByText(
+        (_, element) =>
+          element?.textContent?.includes('mock-starred-entity-2') ?? false,
+      ),
+    ).not.toBeInTheDocument();
   });
 });
