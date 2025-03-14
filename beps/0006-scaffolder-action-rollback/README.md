@@ -44,6 +44,9 @@ Mitigate the issue of manual clean up from partially created resources during te
 - Provide a standardized, optional rollback mechanism for scaffolder actions
 - Enable proper cleanup of resources created in third-party systems when template execution fails
 - Improve the developer experience by reducing manual intervention for cleanup after failures
+- Provide a clear indicator of which actions have rollbacks in the UI (/create/actions)
+- Provide override options when possible
+- Ensure auditing is a first class concern
 
 ### Non-Goals
 
