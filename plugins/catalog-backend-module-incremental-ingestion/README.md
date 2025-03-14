@@ -211,9 +211,11 @@ The last step is to implement the actual `next` method that will accept the curs
 export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cursor, Context> {
 
   token: string;
+  mySource: string;
 
-  constructor(token: string) {
+  constructor(token: string, mySource: string) {
     this.token = token;
+    this.mySource = mySource;
   }
 
   getProviderName() {
@@ -230,6 +232,7 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
 
   async next(context: Context, cursor?: Cursor = { page: 1 }): Promise<EntityIteratorResult<Cursor>> {
     const { apiClient } = context;
+    const location = `${this.getProviderName()}:${mySource}`;
 
     // call your API with the current cursor
     const data = await apiClient.getServices(cursor);
@@ -249,8 +252,8 @@ export class MyIncrementalEntityProvider implements IncrementalEntityProvider<Cu
           name: item.name,
           annotations: {
             // You need to define these, otherwise they'll fail validation
-            [ANNOTATION_LOCATION]: this.getProviderName(),
-            [ANNOTATION_ORIGIN_LOCATION]: this.getProviderName(),
+            [ANNOTATION_LOCATION]: location,
+            [ANNOTATION_ORIGIN_LOCATION]: location,
           }
         }
         spec: {
