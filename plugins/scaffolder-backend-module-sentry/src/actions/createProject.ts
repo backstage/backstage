@@ -88,32 +88,41 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
         throw new InputError(`No valid sentry token given`);
       }
 
-      const response = await fetch(
-        `https://sentry.io/api/0/teams/${organizationSlug}/${teamSlug}/projects/`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
+      const { contentType, result } = await ctx.checkpoint({
+        key: `create.project.${organizationSlug}.${teamSlug}`,
+        // eslint-disable-next-line no-loop-func
+        fn: async () => {
+          const response = await fetch(
+            `https://sentry.io/api/0/teams/${organizationSlug}/${teamSlug}/projects/`,
+            {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(body),
+            },
+          );
+
+          if (contentType !== 'application/json') {
+            throw new InputError(
+              `Unexpected Sentry Response Type: ${await response.text()}`,
+            );
+          }
+
+          const res = await response.json();
+
+          if (response.status !== 201) {
+            throw new InputError(`Sentry Response was: ${await res.detail}`);
+          }
+
+          return {
+            contentType: response.headers.get('content-type'),
+            code: response.status,
+            result: res as { id: string },
+          };
         },
-      );
-
-      const contentType = response.headers.get('content-type');
-
-      if (contentType !== 'application/json') {
-        throw new InputError(
-          `Unexpected Sentry Response Type: ${await response.text()}`,
-        );
-      }
-
-      const code = response.status;
-      const result = await response.json();
-
-      if (code !== 201) {
-        throw new InputError(`Sentry Response was: ${await result.detail}`);
-      }
+      });
 
       ctx.output('id', result.id);
       ctx.output('result', result);
