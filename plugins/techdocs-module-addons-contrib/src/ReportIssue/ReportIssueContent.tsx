@@ -78,7 +78,7 @@ export const ReportIssueAddonContent = ({
     if (
       !selection ||
       !selection.containsNode(mainContent, true) ||
-      selection?.containsNode(feedbackContainer, true)
+      selection.containsNode(feedbackContainer, true)
     ) {
       return;
     }
