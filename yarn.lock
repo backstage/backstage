@@ -8450,7 +8450,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-techdocs-backend@workspace:plugins/techdocs-backend"
   dependencies:
-    "@backstage/backend-common": ^0.25.0
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"

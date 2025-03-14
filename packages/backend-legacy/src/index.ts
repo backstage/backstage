@@ -43,7 +43,6 @@ import catalog from './plugins/catalog';
 import events from './plugins/events';
 import kubernetes from './plugins/kubernetes';
 import scaffolder from './plugins/scaffolder';
-import techdocs from './plugins/techdocs';
 import permission from './plugins/permission';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
@@ -132,7 +131,6 @@ async function main() {
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
-  const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
   const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
   const eventsEnv = useHotMemoize(module, () => createEnv('events'));
@@ -142,7 +140,6 @@ async function main() {
   apiRouter.use('/events', await events(eventsEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
   apiRouter.use('/auth', await authPlugin(authEnv));
-  apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
   apiRouter.use('/permission', await permission(permissionEnv));
   apiRouter.use(notFoundHandler());
