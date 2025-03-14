@@ -54,6 +54,8 @@ Rollback is going to be performed:
 
 ## Design Details
 
+### Rollback mechanism
+
 The rollback mechanism will be implemented by extending the existing `TemplateAction` [type](https://github.com/backstage/backstage/blob/946721733c1bc76059a12163503c4e959df4ec34/plugins/scaffolder-node/report.api.md?plain=1#L510-L529) to include an optional rollback function:
 
 ```typescript
@@ -96,18 +98,7 @@ const createPublishGitHubAction = createTemplateAction({
 });
 ```
 
-When a scaffolder task fails, the system will invoke the rollback function for any actions that:
-
-1. Were successfully executed
-1. Provide a rollback implementation
-
-The rollback execution will follow a reverse order (LIFO approach) from the original execution, ensuring dependent resources are cleaned up properly.
-
-### Example
-
-- closing/deleting a pull request
-- deleting a created repository
-- deleting a _third party X_
+#### Example
 
 ```tsx
 createTemplateAction<{
@@ -134,23 +125,84 @@ createTemplateAction<{
 )
 ```
 
-### Rolling back a set of actions
+#### Example scenario
 
-The rollback will be performed in the reverse order of the execution. For example, if the following actions are executed:
+The rollback will be performed in the reverse order of the execution. For example, if the following actions are executed, where the rollback is provided for the last 3 actions:
 
-1. create a repository
-2. create a pull request
-3. create a branch
-4. create third party resource
+1. create a repository (no rollback provided)
+1. create a pull request (rollback provided)
+1. create a branch (rollback provided)
+1. create third party resource (rollback provided)
 
 The rollback will be performed in the following order:
 
 1. delete the third party resource
-2. delete the branch
-3. delete the pull request
-4. delete the repository
+1. delete the branch
+1. delete the pull request
 
-This will be managed by the TaskBroker.
+The repository will not be deleted because the rollback is not provided for it.
+
+### WorkflowRunner changes
+
+When a scaffolder task fails, the system will invoke the rollback function for any actions that:
+
+1. Were successfully executed
+1. Provide a rollback implementation
+
+The rollback execution will follow a reverse order (LIFO approach) from the original execution, ensuring dependent resources are cleaned up properly.
+
+The NunjucksWorkflowRunner will be modified to track successfully completed actions with their rollback function.
+
+```typescript
+const completedActionsWithRollback: Array<{
+  action: TemplateAction;
+  ctx: ActionContext<any, any, any>;
+  step: TaskStep;
+}> = [];
+```
+
+```typescript
+const completedActionsWithRollback = [];
+
+async executeStep(
+  task: TaskContext,
+  step: TaskStep,
+  context: TemplateContext,
+  ...
+) {
+  // ...
+  await action.handler(ctx);
+
+  if (action.rollback && !task.isDryRun) {
+    completedActionsWithRollback.push({ action, ctx, step });
+  }
+
+  // ...
+}
+```
+
+In case of a failure, the workflow runner will invoke the rollback function for each of the completed actions.
+
+```ts
+for (const { action, ctx, step } of [
+  ...this.completedActionsWithRollback,
+].reverse()) {
+  if (action.rollback) {
+    // ...
+    taskLogger.info(`Rolling back step ${step.id} (${step.name})`);
+    await action.rollback(ctx);
+    taskLogger.info(`Successfully rolled back step ${step.id} (${step.name})`);
+
+    // ...
+  }
+}
+```
+
+### Template authors
+
+Sometimes, the template author is leveraging community created actions. In this case, the template author does not have control over the rollback function.
+
+To address this, we will allow the template author to disable the rollback for a given step by setting a rollback property to `false`.
 
 ## Release Plan
 
@@ -161,6 +213,19 @@ If there is any particular feedback to be gathered during the rollout, this shou
 -->
 
 This feature enhancement will be optional, ensuring we maintain backwards compatibility.
+
+1. Update Type Definitions
+   - Add rollback to TemplateActionOptions and TemplateAction interfaces
+1. Ensure createTemplateAction Preserves Rollback
+   - Verify that the rollback function is properly passed through
+1. Modify TaskWorker
+   - Track completed actions during execution
+   - Implement rollback logic for failed tasks
+   - Handle rollback errors gracefully
+1. Update Documentation
+   - Describe the rollback feature
+   - Provide usage examples
+   - Explain best practices
 
 ## Dependencies
 
