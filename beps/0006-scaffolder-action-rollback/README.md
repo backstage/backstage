@@ -143,6 +143,106 @@ The rollback will be performed in the following order:
 
 The repository will not be deleted because the rollback is not provided for it.
 
+### Securing Rollbacks
+
+#### Considerations
+
+1. Add a rollback permission definition with permission checks in the NunjucksWorkflowRunner
+1. Add a specific rule for rollback operations to scaffolderActionRules
+1. Implement Scope-Limited Rollback Functions
+1. Implement the AuditorService
+1. Wrap in a secure rollback context
+
+#### Implementation
+
+We will provide a helper function that encapsulates the logic of verifying the resource and executing the rollback. Core security checks can be performed in this function to ensure the resource is valid and can be rolled back.
+
+By default, we can handle the following:
+
+1. Verify we reached the point of setting output
+1. Parse resource details from the output and validate them against the input
+1. Execute the actual rollback with the validated resource
+
+```typescript
+export function createSecureRollback
+  TActionInput extends JsonObject,
+  TActionOutput extends JsonObject,
+  TSchemaType extends 'v1' | 'v2'
+>(
+  rollbackFn: (
+    ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
+    resource: { id: string; type: string; metadata?: JsonObject }
+  ) => Promise<void>,
+  options: {
+    // Required resource identifier from the output
+    outputKey: keyof TActionOutput;
+    // Function to parse resource details from the output
+    parseResource: (value: JsonValue) => { id: string; type: string; metadata?: JsonObject };
+    // Validation to ensure resource matches input
+    validateResource: (
+      resource: { id: string; type: string; metadata?: JsonObject },
+      input: TActionInput
+    ) => boolean;
+  }
+) {
+  return async (ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>) => {
+    // 1. Verify we reached the point of setting output
+    const outputValue = ctx.output?.values?.[options.outputKey];
+    if (outputValue === undefined) {
+      ctx.logger.info(`Skipping rollback: no resource was created (no value for ${String(options.outputKey)} in output)`);
+      return;
+    }
+
+    // 2. Parse resource details from the output
+    const resource = options.parseResource(outputValue);
+
+    // 2. Verify the resource matches what would have been created from the input
+    if (!options.validateResource(resource, ctx.input)) {
+      ctx.logger.error(
+        `Security check failed: output resource ${resource.id} doesn't match expected value from input parameters`
+      );
+      throw new Error(`Resource validation failed during rollback of ${resource.type}`);
+    }
+
+    // 4. Execute the actual rollback with the validated resource
+    ctx.logger.info(`Rolling back ${resource.type} with id ${resource.id}`);
+    await rollbackFn(ctx, resource);
+    ctx.logger.info(`Successfully rolled back ${resource.type} with id ${resource.id}`);
+  };
+}
+```
+
+Implementers must provide a method to parse the resource details from the output and a method to validate the resource details against the input. An example implementation looks like
+
+```typescript
+rollback: createSecureRollback(
+  async (ctx, resource) => {
+    // Execute the actual deletion using the validated resource
+    const { owner, repo } = resource.metadata;
+    await githubClient.repos.delete({ owner, repo });
+  },
+  {
+    outputKey: 'repoUrl',
+    parseResource: repoUrl => {
+      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+
+      // the rollback function only knows about the resource details returned here
+      return {
+        id: repoUrl,
+        type: 'github-repository',
+        metadata: { owner, repo },
+      };
+    },
+    validateResource: (resource, input) => {
+      const { owner, repo } = resource.metadata;
+      return owner === input.owner && repo === input.repoName;
+    },
+  },
+);
+```
+
+The solution aims to only operate on resources that were actually created by the action.
+
 ### WorkflowRunner changes
 
 When a scaffolder task fails, the system will invoke the rollback function for any actions that:
@@ -199,11 +299,12 @@ for (const { action, ctx, step } of [
 }
 ```
 
-### Disable rollback for a step
+### Enabling rollback for a step when writing a template
 
-Sometimes, the template author is leveraging community created actions. In this case, the template author does not have control over the rollback function.
+Rollbacks are disabled by default. Perhaps we can add a `dangerouslyEnableRollback` flag to the `NunjucksWorkflowRunner` to opt-in to this behavior,
+but this is not yet decided.
 
-To address this, we will allow the template author to disable the rollback for a given step by setting a rollback property to `false`.
+We will leave it up to the template author to enable the rollback for a given step by setting a rollback property to `true`.
 
 ```yaml
 steps:
@@ -214,8 +315,10 @@ steps:
   // ...
   input:
     // ...
-  rollback: false
+  rollback: true
 ```
+
+###
 
 ## Release Plan
 
