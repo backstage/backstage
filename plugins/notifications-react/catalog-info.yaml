@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-notifications-react
+  title: '@backstage/plugin-notifications-react'
+  description: Web library for the notifications plugin
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: maintainers
