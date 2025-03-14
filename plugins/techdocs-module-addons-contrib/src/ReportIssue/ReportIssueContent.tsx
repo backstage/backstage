@@ -104,12 +104,18 @@ export const ReportIssueAddonContent = ({
     });
   }, [selection, mainContent, feedbackContainer]);
 
-  if (!selection) return null;
-
   if (!feedbackContainer) {
     feedbackContainer = document.createElement('div');
     feedbackContainer.setAttribute('id', ADDON_FEEDBACK_CONTAINER_ID);
     mainContent!.prepend(feedbackContainer);
+  }
+
+  if (
+    !selection ||
+    !selection.containsNode(mainContent, true) ||
+    selection.containsNode(feedbackContainer, true)
+  ) {
+    return null;
   }
 
   return (
