@@ -117,6 +117,7 @@ import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultRefreshService } from './DefaultRefreshService';
 import { entitiesResponseToObjects } from './response';
 import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
+import { EntitySchema } from '../processors/BuiltinKindsEntityProcessor';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -193,6 +194,7 @@ export class CatalogBuilder {
   private allowedLocationType: string[];
   private legacySingleProcessorValidation = false;
   private eventBroker?: EventBroker | EventsService;
+  private entitySchemas: Record<string, EntitySchema<{}>> = {};
 
   /**
    * Creates a catalog builder.
@@ -468,6 +470,11 @@ export class CatalogBuilder {
     return this;
   }
 
+  setEntitySchemas(schemas: Record<string, EntitySchema<{}>>): CatalogBuilder {
+    this.entitySchemas = schemas;
+    return this;
+  }
+
   /**
    * Wires up and returns all of the component parts of the catalog
    */
@@ -724,6 +731,7 @@ export class CatalogBuilder {
     ];
 
     const builtinKindsEntityProcessor = new BuiltinKindsEntityProcessor();
+    builtinKindsEntityProcessor.setSchemas?.(this.entitySchemas);
     // If the user adds a processor named 'BuiltinKindsEntityProcessor',
     //   skip inclusion of the catalog-backend version.
     if (

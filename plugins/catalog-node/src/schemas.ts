@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-/**
- * The catalog-backend-node module for `@backstage/plugin-catalog-backend`.
- *
- * @packageDocumentation
- */
+import { z, ZodSchema, ZodTypeDef } from 'zod';
 
-export * from './api';
-export * from './conversion';
-export * from './processing';
-export * from './schemas';
-export {
-  catalogServiceRef,
-  type CatalogService,
-  type CatalogServiceRequestOptions,
-} from './catalogService';
+export type EntitySchema<TOutput, TInput> = {
+  safeParse: (input: TInput) => z.SafeParseReturnType<TInput, TOutput>;
+};
+
+export function createEntitySchema<TOutput, TInput>(
+  schemaCreator: (zImpl: typeof z) => ZodSchema<TOutput, ZodTypeDef, TInput>,
+): EntitySchema<TOutput, TInput> {
+  const schema = schemaCreator(z);
+  return {
+    safeParse: (input: TInput) => schema.safeParse(input),
+  };
+}

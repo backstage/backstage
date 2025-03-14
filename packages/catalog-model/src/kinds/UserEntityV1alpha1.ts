@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { z } from 'zod';
 import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/User.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
@@ -43,3 +44,39 @@ export interface UserEntityV1alpha1 extends Entity {
  */
 export const userEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);
+
+export const userKindSchema = z
+  .object({
+    apiVersion: z.enum(['backstage.io/v1alpha1', 'backstage.io/v1beta1']),
+    kind: z.literal('User'),
+    spec: z
+      .object({
+        profile: z
+          .object({
+            displayName: z
+              .string()
+              .optional()
+              .describe('A simple display name to present to users.'),
+            email: z
+              .string()
+              .optional()
+              .describe('An email where this user can be reached.'),
+            picture: z
+              .string()
+              .optional()
+              .describe('The URL of an image that represents this user.'),
+          })
+          .optional()
+          .describe(
+            "Optional profile information about the user, mainly for display purposes. All fields of this structure are also optional. The email would be a primary email of some form, that the user may wish to be used for contacting them. The picture is expected to be a URL pointing to an image that's representative of the user, and that a browser could fetch and render on a profile page or similar.",
+          ),
+        memberOf: z
+          .array(z.string().min(1))
+          .optional()
+          .describe(
+            'The list of groups that the user is a direct member of (i.e., no transitive memberships are listed here). The list must be present, but may be empty if the user is not member of any groups. The items are not guaranteed to be ordered in any particular way. The entries of this array are entity references.',
+          ),
+      })
+      .passthrough(),
+  })
+  .passthrough();

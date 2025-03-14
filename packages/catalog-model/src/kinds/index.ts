@@ -14,44 +14,65 @@
  * limitations under the License.
  */
 
-export { apiEntityV1alpha1Validator } from './ApiEntityV1alpha1';
+export { apiEntityV1alpha1Validator, apiKindSchema } from './ApiEntityV1alpha1';
 export type {
   ApiEntityV1alpha1 as ApiEntity,
   ApiEntityV1alpha1,
 } from './ApiEntityV1alpha1';
-export { componentEntityV1alpha1Validator } from './ComponentEntityV1alpha1';
+export {
+  componentEntityV1alpha1Validator,
+  componentKindSchema,
+} from './ComponentEntityV1alpha1';
 export type {
   ComponentEntityV1alpha1 as ComponentEntity,
   ComponentEntityV1alpha1,
 } from './ComponentEntityV1alpha1';
-export { domainEntityV1alpha1Validator } from './DomainEntityV1alpha1';
+export {
+  domainEntityV1alpha1Validator,
+  domainKindSchema,
+} from './DomainEntityV1alpha1';
 export type {
   DomainEntityV1alpha1 as DomainEntity,
   DomainEntityV1alpha1,
 } from './DomainEntityV1alpha1';
-export { groupEntityV1alpha1Validator } from './GroupEntityV1alpha1';
+export {
+  groupEntityV1alpha1Validator,
+  groupKindSchema,
+} from './GroupEntityV1alpha1';
 export type {
   GroupEntityV1alpha1 as GroupEntity,
   GroupEntityV1alpha1,
 } from './GroupEntityV1alpha1';
-export { locationEntityV1alpha1Validator } from './LocationEntityV1alpha1';
+export {
+  locationEntityV1alpha1Validator,
+  locationKindSchema,
+} from './LocationEntityV1alpha1';
 export type {
   LocationEntityV1alpha1 as LocationEntity,
   LocationEntityV1alpha1,
 } from './LocationEntityV1alpha1';
 export * from './relations';
-export { resourceEntityV1alpha1Validator } from './ResourceEntityV1alpha1';
+export {
+  resourceEntityV1alpha1Validator,
+  resourceKindSchema,
+} from './ResourceEntityV1alpha1';
 export type {
   ResourceEntityV1alpha1 as ResourceEntity,
   ResourceEntityV1alpha1,
 } from './ResourceEntityV1alpha1';
-export { systemEntityV1alpha1Validator } from './SystemEntityV1alpha1';
+export {
+  systemEntityV1alpha1Validator,
+  systemKindSchema,
+} from './SystemEntityV1alpha1';
 export type {
   SystemEntityV1alpha1 as SystemEntity,
   SystemEntityV1alpha1,
 } from './SystemEntityV1alpha1';
 export type { KindValidator } from './types';
-export { userEntityV1alpha1Validator } from './UserEntityV1alpha1';
+export {
+  userEntityV1alpha1Validator,
+  userKindSchema,
+} from './UserEntityV1alpha1';
 export type {
   UserEntityV1alpha1 as UserEntity,
   UserEntityV1alpha1,

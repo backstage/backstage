@@ -17,7 +17,18 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { Entity, Validators } from '@backstage/catalog-model';
+import {
+  domainKindSchema,
+  Entity,
+  groupKindSchema,
+  locationKindSchema,
+  Validators,
+  componentKindSchema,
+  resourceKindSchema,
+  userKindSchema,
+  systemKindSchema,
+  apiKindSchema,
+} from '@backstage/catalog-model';
 import { ForwardedError } from '@backstage/errors';
 import {
   CatalogProcessor,
@@ -42,6 +53,7 @@ import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Permission } from '@backstage/plugin-permission-common';
 import { merge } from 'lodash';
 import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
+import { EntitySchema } from '../processors/BuiltinKindsEntityProcessor';
 
 class CatalogLocationsExtensionPointImpl
   implements CatalogLocationsExtensionPoint
@@ -163,6 +175,25 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
     this.#entityDataParser = parser;
   }
 
+  #entitySchemas: Record<string, EntitySchema<{}>> = {
+    apiKindSchema,
+    componentKindSchema,
+    resourceKindSchema,
+    groupKindSchema,
+    locationKindSchema,
+    userKindSchema,
+    systemKindSchema,
+    domainKindSchema,
+  };
+
+  setEntitySchemas(schemas: Record<string, EntitySchema<{}>>): void {
+    this.#entitySchemas = { ...this.#entitySchemas, ...schemas };
+  }
+
+  get entitySchemas() {
+    return this.#entitySchemas;
+  }
+
   get entityDataParser() {
     return this.#entityDataParser;
   }
@@ -280,6 +311,9 @@ export const catalogPlugin = createBackendPlugin({
 
         if (modelExtensions.entityDataParser) {
           builder.setEntityDataParser(modelExtensions.entityDataParser);
+        }
+        if (modelExtensions.entitySchemas) {
+          builder.setEntitySchemas(modelExtensions.entitySchemas);
         }
 
         Object.entries(processingExtensions.placeholderResolvers).forEach(

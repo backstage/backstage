@@ -3898,6 +3898,7 @@ __metadata:
     ajv: ^8.10.0
     lodash: ^4.17.21
     yaml: ^2.0.0
+    zod: ^3.22.4
   languageName: unknown
   linkType: soft
 
@@ -6347,6 +6348,7 @@ __metadata:
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
     msw: ^1.0.0
+    zod: ^3.22.4
   languageName: unknown
   linkType: soft
 
@@ -29183,6 +29185,7 @@ __metadata:
     "@backstage/plugin-catalog-backend-module-openapi": "workspace:^"
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-devtools-backend": "workspace:^"
     "@backstage/plugin-events-backend": "workspace:^"
     "@backstage/plugin-kubernetes-backend": "workspace:^"

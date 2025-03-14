@@ -24,6 +24,7 @@ import {
   PlaceholderResolver,
   LocationAnalyzer,
   ScmLocationAnalyzer,
+  EntitySchema,
 } from '@backstage/plugin-catalog-node';
 import {
   Permission,
@@ -85,6 +86,12 @@ export interface CatalogModelExtensionPoint {
    * @param parser - Parser which will used to extract entities from raw data
    */
   setEntityDataParser(parser: CatalogProcessorParser): void;
+
+  /**
+   * Sets the entity schemas to use for validation.
+   * @param schemas - The entity schemas to use for validation
+   */
+  setEntitySchemas(schemas: Record<string, EntitySchema<any, any>>): void;
 }
 
 /**

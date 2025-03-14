@@ -51,7 +51,8 @@
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
     "ajv": "^8.10.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

@@ -17,6 +17,7 @@
 import type { Entity } from '../entity/Entity';
 import { ajvCompiledJsonSchemaValidator } from './util';
 import schema from '../schema/kinds/System.v1alpha1.schema.json';
+import { z } from 'zod';
 
 /**
  * Backstage catalog System kind Entity. Systems group Components, Resources and APIs together.
@@ -44,3 +45,32 @@ export interface SystemEntityV1alpha1 extends Entity {
  */
 export const systemEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);
+
+export const systemKindSchema = z
+  .object({
+    apiVersion: z.enum(['backstage.io/v1alpha1', 'backstage.io/v1beta1']),
+    kind: z.literal('System'),
+    spec: z
+      .object({
+        owner: z
+          .string()
+          .min(1)
+          .describe('An entity reference to the owner of the component.'),
+        domain: z
+          .string()
+          .min(1)
+          .optional()
+          .describe(
+            'An entity reference to the domain that the system belongs to.',
+          ),
+        type: z
+          .string()
+          .min(1)
+          .optional()
+          .describe(
+            'The type of system. There is currently no enforced set of values for this field, so it is left up to the adopting organization to choose a nomenclature that matches their catalog hierarchy.',
+          ),
+      })
+      .passthrough(),
+  })
+  .passthrough();

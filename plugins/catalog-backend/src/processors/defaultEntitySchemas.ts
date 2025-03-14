@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-/**
- * The catalog-backend-node module for `@backstage/plugin-catalog-backend`.
- *
- * @packageDocumentation
- */
+import {
+  apiKindSchema,
+  componentKindSchema,
+  resourceKindSchema,
+  groupKindSchema,
+  locationKindSchema,
+  userKindSchema,
+  systemKindSchema,
+  domainKindSchema,
+} from '@backstage/catalog-model';
 
-export * from './api';
-export * from './conversion';
-export * from './processing';
-export * from './schemas';
-export {
-  catalogServiceRef,
-  type CatalogService,
-  type CatalogServiceRequestOptions,
-} from './catalogService';
+export const defaultEntitySchemas = {
+  apiKindSchema,
+  componentKindSchema,
+  resourceKindSchema,
+  groupKindSchema,
+  locationKindSchema,
+  userKindSchema,
+  systemKindSchema,
+  domainKindSchema,
+};

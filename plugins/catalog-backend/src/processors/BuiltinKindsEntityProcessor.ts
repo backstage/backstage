@@ -16,16 +16,11 @@
 
 import {
   ApiEntity,
-  apiEntityV1alpha1Validator,
   ComponentEntity,
-  componentEntityV1alpha1Validator,
   DomainEntity,
-  domainEntityV1alpha1Validator,
   Entity,
   getCompoundEntityRef,
   GroupEntity,
-  groupEntityV1alpha1Validator,
-  locationEntityV1alpha1Validator,
   parseEntityRef,
   RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
@@ -42,11 +37,8 @@ import {
   RELATION_PART_OF,
   RELATION_PROVIDES_API,
   ResourceEntity,
-  resourceEntityV1alpha1Validator,
   SystemEntity,
-  systemEntityV1alpha1Validator,
   UserEntity,
-  userEntityV1alpha1Validator,
 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
@@ -54,33 +46,46 @@ import {
   CatalogProcessorEmit,
   processingResult,
 } from '@backstage/plugin-catalog-node';
+import { defaultEntitySchemas } from './defaultEntitySchemas';
+import { z, ZodSchema, ZodTypeDef } from 'zod';
 
 /** @public */
 export class BuiltinKindsEntityProcessor implements CatalogProcessor {
-  private readonly validators = [
-    apiEntityV1alpha1Validator,
-    componentEntityV1alpha1Validator,
-    resourceEntityV1alpha1Validator,
-    groupEntityV1alpha1Validator,
-    locationEntityV1alpha1Validator,
-    userEntityV1alpha1Validator,
-    systemEntityV1alpha1Validator,
-    domainEntityV1alpha1Validator,
-  ];
+  // private readonly validators = [
+  //   apiEntityV1alpha1Validator,
+  //   componentEntityV1alpha1Validator,
+  //   resourceEntityV1alpha1Validator,
+  //   groupEntityV1alpha1Validator,
+  //   locationEntityV1alpha1Validator,
+  //   userEntityV1alpha1Validator,
+  //   systemEntityV1alpha1Validator,
+  //   domainEntityV1alpha1Validator,
+  // ];
+
+  private defaultKindSchemas = defaultEntitySchemas;
 
   getProcessorName(): string {
     return 'BuiltinKindsEntityProcessor';
   }
 
   async validateEntityKind(entity: Entity): Promise<boolean> {
-    for (const validator of this.validators) {
-      const results = await validator.check(entity);
-      if (results) {
+    for (const schema of Object.values(this.defaultKindSchemas)) {
+      const results = await schema.safeParse(entity);
+      if (results.success) {
         return true;
       }
     }
 
     return false;
+
+    // for (const validator of this.validators) {
+    //   const results = await validator.check(entity);
+    //   if (results) {
+    //     return true;
+    //   }
+    // }
+
+    // return false;
   }
 
   async postProcessEntity(
@@ -314,4 +319,21 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
 
     return entity;
   }
+
+  setSchemas?(schemas: Record<string, EntitySchema<{}>>) {
+    this.defaultKindSchemas = { ...this.defaultKindSchemas, ...schemas };
+  }
+}
+
+export type EntitySchema<TOutput> = {
+  safeParse: (input: any) => z.SafeParseReturnType<any, TOutput>;
+};
+
+export function createEntitySchema<TOutput>(
+  schemaCreator: (zImpl: typeof z) => ZodSchema<TOutput, ZodTypeDef, any>,
+): EntitySchema<TOutput> {
+  const schema = schemaCreator(z);
+  return {
+    safeParse: (input: any) => schema.safeParse(input),
+  };
 }

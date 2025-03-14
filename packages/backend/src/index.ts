@@ -15,7 +15,13 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import {
+  createBackendFeatureLoader,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { createEntitySchema } from '@backstage/plugin-catalog-node';
+import { apiKindSchema } from '@backstage/catalog-model';
 
 const backend = createBackend();
 
@@ -60,5 +66,25 @@ backend.add(import('@backstage/plugin-techdocs-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(import('./instanceMetadata'));
+
+backend.add(
+  createBackendModule({
+    pluginId: 'catalog',
+    moduleId: 'my-custom-kinds',
+
+    register(reg) {
+      reg.registerInit({
+        deps: {
+          catalogModel: catalogModelExtensionPoint,
+        },
+        async init({ catalogModel }) {
+          catalogModel.setEntitySchemas({
+            apiKindSchema: createEntitySchema(() => apiKindSchema.strict()),
+          });
+        },
+      });
+    },
+  }),
+);
 
 backend.start();

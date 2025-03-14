@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { z } from 'zod';
 import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Domain.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
@@ -44,3 +45,32 @@ export interface DomainEntityV1alpha1 extends Entity {
  */
 export const domainEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);
+
+export const domainKindSchema = z
+  .object({
+    apiVersion: z.enum(['backstage.io/v1alpha1', 'backstage.io/v1beta1']),
+    kind: z.literal('Domain'),
+    spec: z
+      .object({
+        owner: z
+          .string()
+          .min(1)
+          .describe('An entity reference to the owner of the component.'),
+        subdomainOf: z
+          .string()
+          .min(1)
+          .optional()
+          .describe(
+            'An entity reference to another domain of which the domain is a part.',
+          ),
+        type: z
+          .string()
+          .min(1)
+          .optional()
+          .describe(
+            'The type of domain. There is currently no enforced set of values for this field, so it is left up to the adopting organization to choose a nomenclature that matches their catalog hierarchy.',
+          ),
+      })
+      .passthrough(),
+  })
+  .passthrough();
