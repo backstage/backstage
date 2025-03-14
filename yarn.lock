@@ -47874,13 +47874,13 @@ __metadata:
   linkType: hard
 
 "xml-crypto@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "xml-crypto@npm:6.0.0"
+  version: 6.0.1
+  resolution: "xml-crypto@npm:6.0.1"
   dependencies:
     "@xmldom/is-dom-node": ^1.0.1
     "@xmldom/xmldom": ^0.8.10
     xpath: ^0.0.33
-  checksum: 1c679ed66e4cea6309602cf8d536973f7832b69bd400310802365af972c9a0261c9a456c64015e0e92b8c93f168f9f13a355bbbd04d1219ca61c2a3f544d1208
+  checksum: c5fa8e47f3baa52744f0bc53a2efd9e72670fa3ccb10860670f5ceaa2db6146b2635b575ab4f5e662cff79a2bccfe18986b1e92d557043df83680876657d716e
   languageName: node
   linkType: hard
 
