@@ -41,7 +41,7 @@ export default async function generate(
     options.url,
     dryRunOptions,
   );
-  const outputDir: string = 'dry-run-output';
+  const outputDir: string = '../dry-run-output';
   fs.rmSync(outputDir, { recursive: true, force: true });
 
   await deserializeDirectoryContents(

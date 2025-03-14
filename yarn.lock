@@ -16546,6 +16546,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@scaffolder/cli@workspace:packages/scaffolder-cli":
+  version: 0.0.0-use.local
+  resolution: "@scaffolder/cli@workspace:packages/scaffolder-cli"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-react": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@playwright/test": ^1.32.3
+    "@types/js-yaml": ^3.12.5
+    "@types/node": ^16.7.13
+    chalk: ^4.0.0
+    commander: ^12.1.0
+    fs-extra: ^11.2.0
+    js-yaml: ^4.1.0
+    nodemon: ^2.0.15
+    typescript: ^4.4.4
+  bin:
+    cli: bin/scaffolder-cli
+  languageName: unknown
+  linkType: soft
+
 "@scarf/scarf@npm:=1.4.0":
   version: 1.4.0
   resolution: "@scarf/scarf@npm:1.4.0"
@@ -20046,6 +20069,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/js-yaml@npm:^3.12.5":
+  version: 3.12.10
+  resolution: "@types/js-yaml@npm:3.12.10"
+  checksum: 5b5bc63d368f9499fe29ac61a51a802d7ce984599772e421a8dd29cc70ff0dd48149391ca1a56305a71b8707fda6fc50ba5b97412d9c1c4470f547f3a1fcf2bc
+  languageName: node
+  linkType: hard
+
 "@types/js-yaml@npm:^4.0.0, @types/js-yaml@npm:^4.0.1":
   version: 4.0.9
   resolution: "@types/js-yaml@npm:4.0.9"
@@ -20343,6 +20373,13 @@ __metadata:
   version: 15.14.9
   resolution: "@types/node@npm:15.14.9"
   checksum: 49f7f0522a3af4b8389aee660e88426490cd54b86356672a1fedb49919a8797c00d090ec2dcc4a5df34edc2099d57fc2203d796c4e7fbd382f2022ccd789eee7
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^16.7.13":
+  version: 16.18.126
+  resolution: "@types/node@npm:16.18.126"
+  checksum: 86112e7499f8a4d1bb60696cab0bf464adf3c141fca4bc5451e8f3aba5736529b76d4b4396edb21e5d7c19592852f7d6cb81ee70074fd13bde2db2d0db720467
   languageName: node
   linkType: hard
 
@@ -37987,6 +38024,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nodemon@npm:^2.0.15":
+  version: 2.0.22
+  resolution: "nodemon@npm:2.0.22"
+  dependencies:
+    chokidar: ^3.5.2
+    debug: ^3.2.7
+    ignore-by-default: ^1.0.1
+    minimatch: ^3.1.2
+    pstree.remy: ^1.1.8
+    semver: ^5.7.1
+    simple-update-notifier: ^1.0.7
+    supports-color: ^5.5.0
+    touch: ^3.1.0
+    undefsafe: ^2.0.5
+  bin:
+    nodemon: bin/nodemon.js
+  checksum: 9c987e139748f5b5c480c6c9080bdc97304ee7d29172b7b3da1a7db590b1323ad57b96346304e9b522b0e445c336dc393ccd3f9f45c73b20d476d2347890dcd0
+  languageName: node
+  linkType: hard
+
 "nodemon@npm:^3.0.1":
   version: 3.1.9
   resolution: "nodemon@npm:3.1.9"
@@ -43277,7 +43334,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^5.5.0, semver@npm:^5.6.0":
+"semver@npm:^5.5.0, semver@npm:^5.6.0, semver@npm:^5.7.1":
   version: 5.7.2
   resolution: "semver@npm:5.7.2"
   bin:
@@ -43292,6 +43349,15 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: ae47d06de28836adb9d3e25f22a92943477371292d9b665fb023fae278d345d508ca1958232af086d85e0155aee22e313e100971898bbb8d5d89b8b1d4054ca2
+  languageName: node
+  linkType: hard
+
+"semver@npm:~7.0.0":
+  version: 7.0.0
+  resolution: "semver@npm:7.0.0"
+  bin:
+    semver: bin/semver.js
+  checksum: 272c11bf8d083274ef79fe40a81c55c184dff84dd58e3c325299d0927ba48cece1f020793d138382b85f89bab5002a35a5ba59a3a68a7eebbb597eb733838778
   languageName: node
   linkType: hard
 
@@ -43674,6 +43740,15 @@ __metadata:
   dependencies:
     is-arrayish: ^0.3.1
   checksum: a7f3f2ab5c76c4472d5c578df892e857323e452d9f392e1b5cf74b74db66e6294a1e1b8b390b519fa1b96b5b613f2a37db6cffef52c3f1f8f3c5ea64eb2d54c0
+  languageName: node
+  linkType: hard
+
+"simple-update-notifier@npm:^1.0.7":
+  version: 1.1.0
+  resolution: "simple-update-notifier@npm:1.1.0"
+  dependencies:
+    semver: ~7.0.0
+  checksum: 1012e9b6c504e559a948078177b3eedbb9d7e4d15878e2bda56314d08db609ca5da485be4ac9f838759faae8057935ee0246fcdf63f1233c86bd9fecb2a5544b
   languageName: node
   linkType: hard
 
@@ -46199,6 +46274,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:^4.4.4":
+  version: 4.9.5
+  resolution: "typescript@npm:4.9.5"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: ee000bc26848147ad423b581bd250075662a354d84f0e06eb76d3b892328d8d4440b7487b5a83e851b12b255f55d71835b008a66cbf8f255a11e4400159237db
+  languageName: node
+  linkType: hard
+
 "typescript@npm:~5.5.0":
   version: 5.5.4
   resolution: "typescript@npm:5.5.4"
@@ -46226,6 +46311,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 797ac213c03a19749181c745647b4cab03d13bf4b6b738b05a3426f46c6b540f908989e839d9b0c89d7a4ee2bdb50493b4d4898d4ef1c897c3e9d0b082e78a67
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@^4.4.4#~builtin<compat/typescript>":
+  version: 4.9.5
+  resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=289587"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 1f8f3b6aaea19f0f67cba79057674ba580438a7db55057eb89cc06950483c5d632115c14077f6663ea76fd09fce3c190e6414bb98582ec80aa5a4eaf345d5b68
   languageName: node
   linkType: hard
 
