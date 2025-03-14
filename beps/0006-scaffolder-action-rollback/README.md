@@ -198,11 +198,23 @@ for (const { action, ctx, step } of [
 }
 ```
 
-### Template authors
+### Disable rollback for a step
 
 Sometimes, the template author is leveraging community created actions. In this case, the template author does not have control over the rollback function.
 
 To address this, we will allow the template author to disable the rollback for a given step by setting a rollback property to `false`.
+
+```yaml
+steps:
+...
+- id: step-id
+  name: Step name
+  action: action:id
+  // ...
+  input:
+    // ...
+  rollback: false
+```
 
 ## Release Plan
 
