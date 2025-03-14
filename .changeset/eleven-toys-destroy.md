@@ -1,5 +1,4 @@
 ---
-'@backstage/backend-dynamic-feature-service': minor
 '@backstage/plugin-events-backend': minor
 ---
 
