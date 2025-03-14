@@ -31,10 +31,7 @@ export const Tab = (props: React.ComponentProps<typeof TabsPrimitive.Tab>) => (
           <Text
             variant="subtitle"
             weight="bold"
-            {...rest}
-            style={{
-              color: state.selected ? 'var(--primary)' : 'var(--secondary)',
-            }}
+            color={state.selected ? 'primary' : 'secondary'}
           >
             {children}
           </Text>

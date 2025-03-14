@@ -1,10 +1,7 @@
 import React from 'react';
 import type { Preview, ReactRenderer } from '@storybook/react';
 import { withThemeByDataAttribute } from '@storybook/addon-themes';
-
-// Canon specific styles
-import '../src/css/core.css';
-import '../src/css/components.css';
+import '../src/css/styles.css';
 
 const preview: Preview = {
   parameters: {
