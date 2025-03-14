@@ -88,7 +88,7 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
         throw new InputError(`No valid sentry token given`);
       }
 
-      const { contentType, result } = await ctx.checkpoint({
+      const { result } = await ctx.checkpoint({
         key: `create.project.${organizationSlug}.${teamSlug}`,
         // eslint-disable-next-line no-loop-func
         fn: async () => {
@@ -104,6 +104,8 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
             },
           );
 
+          const contentType = response.headers.get('content-type');
+
           if (contentType !== 'application/json') {
             throw new InputError(
               `Unexpected Sentry Response Type: ${await response.text()}`,
@@ -117,7 +119,6 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
           }
 
           return {
-            contentType: response.headers.get('content-type'),
             code: response.status,
             result: res as { id: string },
           };
