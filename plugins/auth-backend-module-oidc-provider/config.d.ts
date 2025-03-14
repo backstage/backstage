@@ -36,9 +36,9 @@ export interface Config {
           signIn?: {
             resolvers: Array<
               | {
-                resolver: 'emailLocalPartMatchingUserEntityName';
-                allowedDomains?: string[];
-              }
+                  resolver: 'emailLocalPartMatchingUserEntityName';
+                  allowedDomains?: string[];
+                }
               | { resolver: 'emailMatchingUserEntityProfileEmail' }
             >;
           };
