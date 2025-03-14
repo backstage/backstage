@@ -47,7 +47,7 @@ const defaultCookieConfigurer: CookieConfigurer = ({
     ? pathname.slice(0, -'/handler/frame'.length)
     : `${pathname}/${providerId}`;
 
-  return { domain, path, secure, sameSite };
+  return { path, secure, sameSite };
 };
 
 /** @internal */
@@ -152,6 +152,36 @@ export class OAuthCookieManager {
     };
     const req = res.req;
     let output = res;
+
+    // because of a bug in the redirect flow where a failed refresh causes an infinite loop
+    // we should be sure to clear the old token which contains the domain
+    // as of the new update
+    // TODO link to issue
+    const domain = new URL(this.options.callbackUrl).hostname;
+    const chunkedFormatExists = OAuthCookieManager.chunkedCookieExists(
+      req,
+      name,
+    );
+    if (chunkedFormatExists) {
+      for (let chunkNumber = 0; ; chunkNumber++) {
+        const key = OAuthCookieManager.getCookieChunkName(name, chunkNumber);
+        const exists = !!req.cookies[key];
+        if (!exists) {
+          break;
+        }
+        output = output.cookie(key, '', {
+          ...this.getRemoveCookieOptions(),
+          domain,
+        });
+        output = output.cookie(key, '', this.getRemoveCookieOptions());
+      }
+    } else {
+      output = output.cookie(name, '', {
+        ...this.getRemoveCookieOptions(),
+        domain,
+      });
+    }
+
     if (val.length > MAX_COOKIE_SIZE_CHARACTERS) {
       const nonChunkedFormatExists = !!req.cookies[name];
       if (nonChunkedFormatExists) {
@@ -169,10 +199,6 @@ export class OAuthCookieManager {
       return output;
     }
 
-    const chunkedFormatExists = OAuthCookieManager.chunkedCookieExists(
-      req,
-      name,
-    );
     if (chunkedFormatExists) {
       for (let chunkNumber = 0; ; chunkNumber++) {
         const key = OAuthCookieManager.getCookieChunkName(name, chunkNumber);

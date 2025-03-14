@@ -389,7 +389,7 @@ export type CookieConfigurer = (ctx: {
   /** The origin URL of the app */
   appOrigin: string;
 }) => {
-  domain: string;
+  domain?: string;
   path: string;
   secure: boolean;
   sameSite?: 'none' | 'lax' | 'strict';
