@@ -4,6 +4,7 @@ status: provisional
 authors:
   - 'bnechyporenko@bol.com'
   - 'benjaminl@spotify.com'
+  - 'kurtaking@gmail.com'
 owners:
   - '@backstage/scaffolder-maintainers'
 project-areas:
