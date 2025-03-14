@@ -203,10 +203,17 @@ export function createSecureRollback
       throw new Error(`Resource validation failed during rollback of ${resource.type}`);
     }
 
-    // 4. Execute the actual rollback with the validated resource
-    ctx.logger.info(`Rolling back ${resource.type} with id ${resource.id}`);
-    await rollbackFn(ctx, resource);
-    ctx.logger.info(`Successfully rolled back ${resource.type} with id ${resource.id}`);
+    try {
+      // 4. Execute the actual rollback with the validated resource
+      ctx.logger.info(`Rolling back ${resource.type} with id ${resource.id}`);
+      await action.rollback(ctx);
+      ctx.logger.info(`Successfully rolled back ${resource.type} with id ${resource.id}`);
+    } catch (error) {
+      ctx.logger.error(
+        `Failed to rollback ${resource.type} with id ${resource.id}: ${error}`,
+      );
+      ctx.logger.info('Continuing with next rollback...');
+    }
   };
 }
 ```
@@ -287,22 +294,7 @@ for (const { action, ctx, step } of [
   ...this.completedActionsWithRollback,
 ].reverse()) {
   if (action.rollback) {
-    // ...
-    try {
-      taskLogger.info(`Rolling back step ${step.id} (${step.name})`);
-      await action.rollback(ctx);
-      taskLogger.info(
-        `Successfully rolled back step ${step.id} (${step.name})`,
-      );
-    } catch (error) {
-      taskLogger.error(
-        `Failed to rollback step ${step.id} (${step.name}): ${error}`,
-      );
-      taskLogger.info('Continuing with next rollback...');
-      // possibly add to a summary obj to provide at the end of the entire rollback process.
-    }
-
-    // ...
+    await action.rollback(ctx);
   }
 }
 ```
