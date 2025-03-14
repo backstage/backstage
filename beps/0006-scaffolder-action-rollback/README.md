@@ -22,6 +22,11 @@ creation-date: 2024-03-13
   - [Non-Goals](#non-goals)
 - [Proposal](#proposal)
 - [Design Details](#design-details)
+  - [Auditing and Permissions](#auditing-and-permissions)
+  - [Securing Rollbacks](#securing-rollbacks)
+  - [Rollback mechanism](#rollback-mechanism)
+  - [WorkflowRunner changes](#workflowrunner-changes)
+  - [Enabling rollback for a step when writing a template](#enabling-rollback-for-a-step-when-writing-a-template)
 - [Release Plan](#release-plan)
 - [Dependencies](#dependencies)
 - [Alternatives](#alternatives)
@@ -55,103 +60,13 @@ Rollback is going to be performed:
 
 ## Design Details
 
-### Rollback mechanism
-
-The rollback mechanism will be implemented by extending the existing `TemplateAction` [type](https://github.com/backstage/backstage/blob/946721733c1bc76059a12163503c4e959df4ec34/plugins/scaffolder-node/report.api.md?plain=1#L510-L529) to include an optional rollback function:
-
-```typescript
-export type TemplateAction<
-  TActionInput extends JsonObject = JsonObject,
-  TActionOutput extends JsonObject = JsonObject,
-  TSchemaType extends 'v1' | 'v2' = 'v1',
-> = {
-  ...,
-  handler: (
-    ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
-  ) => Promise<void>;
-  rollback?: (
-    ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
-  ) => Promise<void>;
-};
-```
-
-The template action options will be updated to include the rollback function:
-
-```typescript
-export type TemplateActionOptions<
-  ...
-  handler: (
-    ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
-  rollback?: (
-    ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
-  ) => Promise<void>;
-};
-```
-
-Implementers provide the rollback function when calling `createTemplateAction`.
-
-```typescript
-const createPublishGitHubAction = createTemplateAction({
-  id: 'publish:github',
-  ...,
-  async handler() {},
-  async rollback() {},
-});
-```
-
-#### Example
-
-```tsx
-createTemplateAction<{
-  apiUrl: (z) => z.string(),
-  projectKey: (z) => z.string(),
-  // other inputs...
-}, {
-  projectId: (z) => z.string(),
-}>(
-  {
-    ...,
-    handler: async (ctx) => {
-      // Create the project
-      const projectId = await create(ctx.input.apiUrl, ctx.input.projectKey);
-      ctx.output.projectId = projectId;
-    },
-    rollback: async (ctx) => {
-      // Delete the project if it was created
-      if (ctx.output.projectId) {
-        await delete(ctx.input.apiUrl, ctx.output.projectId);
-      }
-    }
-  }
-)
-```
-
-#### Example scenario
-
-The rollback will be performed in the reverse order of the execution. For example, if the following actions are executed, where the rollback is provided for the last 3 actions:
-
-1. create a repository (no rollback provided)
-1. create a pull request (rollback provided)
-1. create a branch (rollback provided)
-1. create third party resource (rollback provided)
-
-The rollback will be performed in the following order:
-
-1. delete the third party resource
-1. delete the branch
-1. delete the pull request
-
-The repository will not be deleted because the rollback is not provided for it.
-
-### Securing Rollbacks
-
-#### Auditing and Permissions
+### Auditing and Permissions
 
 1. Implement the AuditorService for key operations
 1. Add a rollback permission definition with permission checks in the NunjucksWorkflowRunner
 1. Add a specific rule for rollback operations to `scaffolderActionRules` ([ref](https://github.com/backstage/backstage/blob/85df833fe33c45cf2ad8e0322dafb118b89a5ea8/plugins/scaffolder-backend/src/service/rules.ts#L133-L138))
 
-#### Implementation
+### Securing Rollbacks
 
 We will provide a helper function that encapsulates the logic of verifying the resource and executing the rollback. Core security checks can be performed in this function to ensure the resource is
 valid and can be rolled back. There is a possible opportunity to allow others to extend this function to provide custom security checks.
@@ -249,6 +164,82 @@ rollback: createSecureRollback(
 
 The solution aims to only operate on resources that were actually created by the action.
 
+### Rollback mechanism
+
+The rollback mechanism will be implemented by extending the existing `TemplateAction` [type](https://github.com/backstage/backstage/blob/946721733c1bc76059a12163503c4e959df4ec34/plugins/scaffolder-node/report.api.md?plain=1#L510-L529) to include an optional rollback function:
+
+```typescript
+export type TemplateAction<
+  TActionInput extends JsonObject = JsonObject,
+  TActionOutput extends JsonObject = JsonObject,
+  TSchemaType extends 'v1' | 'v2' = 'v1',
+> = {
+  ...,
+  handler: (
+    ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
+  ) => Promise<void>;
+  rollback?: (
+    ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
+  ) => Promise<void>;
+};
+```
+
+The template action options will be updated to include the rollback function:
+
+```typescript
+export type TemplateActionOptions<
+  ...
+  handler: (
+    ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
+  ) => Promise<void>;
+  rollback?: (
+    ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
+  ) => Promise<void>;
+};
+```
+
+Implementers provide the rollback function when calling `createTemplateAction`.
+
+```typescript
+const createPublishGitHubAction = createTemplateAction({
+  id: 'publish:github',
+  ...,
+  async handler() {},
+  rollback: createSecureRollback(
+    async (ctx, resource) => {
+      await githubClient.repos.delete({ owner, repo });
+    },
+    {
+      outputKey: 'repoUrl',
+      parseResource: repoUrl => {
+        const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+        return { id: repoUrl, type: 'github-repository', metadata: { owner, repo } };
+      },
+      validateResource: (resource, input) => {
+        return owner === input.owner && repo === input.repoName;
+      },
+    },
+  ),
+});
+```
+
+#### Example scenario
+
+The rollback will be performed in the reverse order of the execution. For example, if the following actions are executed, where the rollback is provided for the last 3 actions:
+
+1. create a repository (no rollback provided)
+1. create a pull request (rollback provided)
+1. create a branch (rollback provided)
+1. create third party resource (rollback provided)
+
+The rollback will be performed in the following order:
+
+1. delete the third party resource
+1. delete the branch
+1. delete the pull request
+
+The repository will not be deleted because the rollback is not provided for it.
+
 ### WorkflowRunner changes
 
 The NunjucksWorkflowRunner will be modified to track successfully completed actions with their rollback function. When a scaffolder task fails, the system will invoke the rollback function for any actions that:
@@ -326,20 +317,14 @@ This section should describe the rollout process for any new features. It must t
 If there is any particular feedback to be gathered during the rollout, this should be described here as well.
 -->
 
-This feature enhancement will be optional, ensuring we maintain backwards compatibility. It will be released as an opt in feature for both action maintainers and template authors.
+This feature enhancement will be optional, ensuring we maintain backwards compatibility. It will be released as an opt in feature for both action maintainers and template authors. It can initially be
+released as part of the [experimental features](https://backstage.io/docs/features/software-templates/experimental).
 
-1. Update Type Definitions
-   - Add rollback to TemplateActionOptions and TemplateAction interfaces
-1. Ensure createTemplateAction Preserves Rollback
-   - Verify that the rollback function is properly passed through
-1. Modify TaskWorker
-   - Track completed actions during execution
-   - Implement rollback logic for failed tasks
-   - Handle rollback errors gracefully
-1. Update Documentation
-   - Describe the rollback feature
-   - Provide usage examples
-   - Explain best practices
+We will update the documentation to include:
+
+- Description of the rollback feature
+- Usage examples
+- Best practices
 
 ## Dependencies
 
