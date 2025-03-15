@@ -47,7 +47,8 @@ export default createCliPlugin({
           })
           .help()
           .parse(args);
-        const m = await import('./commands/docs');
+        const m =
+          (await require('./commands/docs')) as typeof import('./commands/docs');
         await m.default(argv);
       },
     });
@@ -66,7 +67,8 @@ export default createCliPlugin({
           })
           .help()
           .parse(args);
-        const m = await import('./commands/print');
+        const m =
+          (await require('./commands/print')) as typeof import('./commands/print');
         await m.default(argv);
       },
     });
@@ -90,7 +92,8 @@ export default createCliPlugin({
           })
           .help()
           .parse(args);
-        const m = await import('./commands/validate');
+        const m =
+          (await require('./commands/validate')) as typeof import('./commands/validate');
         await m.default(argv);
       },
     });

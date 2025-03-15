@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ReactNode } from 'react';
+
 /** @public */
 export type IconNames =
   | 'arrowDown'
@@ -47,3 +49,14 @@ export type IconProps = {
   className?: string;
   style?: React.CSSProperties;
 };
+
+/** @public */
+export interface IconContextProps {
+  icons: IconMap;
+}
+
+/** @public */
+export interface IconProviderProps {
+  children?: ReactNode;
+  overrides?: Partial<Record<IconNames, React.ComponentType>>;
+}

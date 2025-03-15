@@ -25,8 +25,6 @@ import {
   azureEasyAuthAuthenticator,
 } from '@backstage/plugin-auth-backend-module-azure-easyauth-provider';
 
-export type EasyAuthResult = AzureEasyAuthResult;
-
 /**
  * Auth provider integration for Azure EasyAuth
  *
@@ -39,7 +37,7 @@ export const easyAuth = createAuthProviderIntegration({
      * The profile transformation function used to verify and convert the auth response
      * into the profile that will be presented to the user.
      */
-    authHandler?: AuthHandler<EasyAuthResult>;
+    authHandler?: AuthHandler<AzureEasyAuthResult>;
 
     /**
      * Configure sign-in for this provider, without it the provider can not be used to sign users in.
@@ -48,7 +46,7 @@ export const easyAuth = createAuthProviderIntegration({
       /**
        * Maps an auth result to a Backstage identity for the user.
        */
-      resolver: SignInResolver<EasyAuthResult>;
+      resolver: SignInResolver<AzureEasyAuthResult>;
     };
   }) {
     return createProxyAuthProviderFactory({

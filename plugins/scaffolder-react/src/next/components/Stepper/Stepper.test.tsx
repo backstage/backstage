@@ -15,16 +15,15 @@
  */
 import { renderInTestApp } from '@backstage/test-utils';
 import { JsonValue } from '@backstage/types';
+import type { RJSFValidationError } from '@rjsf/utils';
 import { act, fireEvent, waitFor } from '@testing-library/react';
 import React, { useEffect } from 'react';
 
+import { FieldExtensionComponentProps } from '../../../extensions';
 import { LayoutTemplate } from '../../../layouts';
 import { SecretsContextProvider } from '../../../secrets';
 import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
-
-import type { RJSFValidationError } from '@rjsf/utils';
-import { FieldExtensionComponentProps } from '../../../extensions';
 
 describe('Stepper', () => {
   it('should render the step titles for each step of the manifest', async () => {
@@ -762,7 +761,10 @@ describe('Stepper', () => {
         ],
       };
 
-      const onCreate = jest.fn();
+      // `onCreate` must be async to mock the submit button disabled behavior
+      const onCreate = jest.fn(
+        () => new Promise<void>(resolve => setTimeout(resolve, 0)),
+      );
 
       const { getByRole } = await renderInTestApp(
         <SecretsContextProvider>
@@ -783,9 +785,17 @@ describe('Stepper', () => {
         fireEvent.click(getByRole('button', { name: 'Review' }));
       });
 
+      fireEvent.click(getByRole('button', { name: 'Create' }));
+
+      await waitFor(() =>
+        expect(getByRole('button', { name: 'Create' })).toBeDisabled(),
+      );
+
       await act(async () => {
         fireEvent.click(getByRole('button', { name: 'Create' }));
       });
+
+      expect(onCreate).toHaveBeenCalledTimes(1);
 
       expect(onCreate).toHaveBeenCalledWith(
         expect.objectContaining({

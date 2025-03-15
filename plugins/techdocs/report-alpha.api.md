@@ -7,7 +7,9 @@ import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
+import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -32,27 +34,6 @@ const _default: FrontendPlugin<
   },
   {},
   {
-    'nav-item:techdocs': ExtensionDefinition<{
-      kind: 'nav-item';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
-      inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef<undefined>;
-      };
-    }>;
     'api:techdocs': ExtensionDefinition<{
       kind: 'api';
       name: undefined;
@@ -83,60 +64,15 @@ const _default: FrontendPlugin<
         factory: AnyApiFactory;
       };
     }>;
-    'page:techdocs': ExtensionDefinition<{
-      kind: 'page';
-      name: undefined;
-      config: {
-        path: string | undefined;
-      };
-      configInput: {
-        path?: string | undefined;
-      };
-      output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
-            'core.routing.ref',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        defaultPath: string;
-        loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-      };
-    }>;
-    'search-result-list-item:techdocs': ExtensionDefinition<{
-      config: {
-        title: string | undefined;
-        lineClamp: number;
-        asLink: boolean;
-        asListItem: boolean;
-      } & {
-        noTrack: boolean;
-      };
-      configInput: {
-        title?: string | undefined;
-        lineClamp?: number | undefined;
-        asListItem?: boolean | undefined;
-        asLink?: boolean | undefined;
-      } & {
-        noTrack?: boolean | undefined;
-      };
+    'empty-state:techdocs/entity-content': ExtensionDefinition<{
+      config: {};
+      configInput: {};
       output: ConfigurableExtensionDataRef<
+        React_2.JSX.Element,
+        'core.reactElement',
         {
-          predicate?: SearchResultItemExtensionPredicate | undefined;
-          component: SearchResultItemExtensionComponent;
-        },
-        'search.search-result-list-item.item',
-        {}
+          optional: true;
+        }
       >;
       inputs: {
         [x: string]: ExtensionInput<
@@ -147,61 +83,19 @@ const _default: FrontendPlugin<
           }
         >;
       };
-      kind: 'search-result-list-item';
-      name: undefined;
-      params: SearchResultListItemBlueprintParams;
-    }>;
-    'page:techdocs/reader': ExtensionDefinition<{
-      config: {
-        path: string | undefined;
-      };
-      configInput: {
-        path?: string | undefined;
-      };
-      output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
-            'core.routing.ref',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {
-        addons: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            TechDocsAddonOptions,
-            'techdocs.addon',
-            {}
-          >,
-          {
-            singleton: false;
-            optional: false;
-          }
-        >;
-      };
-      kind: 'page';
-      name: 'reader';
-      params: {
-        defaultPath: string;
-        loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-      };
+      params: never;
+      kind: 'empty-state';
+      name: 'entity-content';
     }>;
     'entity-content:techdocs': ExtensionDefinition<{
       config: {
         path: string | undefined;
         title: string | undefined;
-        filter: string | undefined;
+        filter: EntityPredicate | undefined;
         group: string | false | undefined;
       };
       configInput: {
-        filter?: string | undefined;
+        filter?: EntityPredicate | undefined;
         title?: string | undefined;
         path?: string | undefined;
         group?: string | false | undefined;
@@ -278,26 +172,128 @@ const _default: FrontendPlugin<
         loader: () => Promise<JSX.Element>;
         defaultPath: string;
         defaultTitle: string;
-        defaultGroup?:
-          | (string & {})
-          | 'documentation'
-          | 'development'
-          | 'deployment'
-          | 'observability'
-          | undefined;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
+        defaultGroup?: keyof defaultEntityContentGroups | (string & {});
+        routeRef?: RouteRef;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
-    'empty-state:techdocs/entity-content': ExtensionDefinition<{
+    'nav-item:techdocs': ExtensionDefinition<{
+      kind: 'nav-item';
+      name: undefined;
       config: {};
       configInput: {};
       output: ConfigurableExtensionDataRef<
-        React_2.JSX.Element,
-        'core.reactElement',
         {
-          optional: true;
-        }
+          title: string;
+          icon: IconComponent;
+          routeRef: RouteRef<undefined>;
+        },
+        'core.nav-item.target',
+        {}
+      >;
+      inputs: {};
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef<undefined>;
+      };
+    }>;
+    'page:techdocs': ExtensionDefinition<{
+      kind: 'page';
+      name: undefined;
+      config: {
+        path: string | undefined;
+      };
+      configInput: {
+        path?: string | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        defaultPath: string;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef;
+      };
+    }>;
+    'page:techdocs/reader': ExtensionDefinition<{
+      config: {
+        path: string | undefined;
+      };
+      configInput: {
+        path?: string | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {
+        addons: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            TechDocsAddonOptions,
+            'techdocs.addon',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      };
+      kind: 'page';
+      name: 'reader';
+      params: {
+        defaultPath: string;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef;
+      };
+    }>;
+    'search-result-list-item:techdocs': ExtensionDefinition<{
+      config: {
+        title: string | undefined;
+        lineClamp: number;
+        asLink: boolean;
+        asListItem: boolean;
+      } & {
+        noTrack: boolean;
+      };
+      configInput: {
+        title?: string | undefined;
+        lineClamp?: number | undefined;
+        asListItem?: boolean | undefined;
+        asLink?: boolean | undefined;
+      } & {
+        noTrack?: boolean | undefined;
+      };
+      output: ConfigurableExtensionDataRef<
+        {
+          predicate?: SearchResultItemExtensionPredicate;
+          component: SearchResultItemExtensionComponent;
+        },
+        'search.search-result-list-item.item',
+        {}
       >;
       inputs: {
         [x: string]: ExtensionInput<
@@ -308,9 +304,9 @@ const _default: FrontendPlugin<
           }
         >;
       };
-      params: never;
-      kind: 'empty-state';
-      name: 'entity-content';
+      kind: 'search-result-list-item';
+      name: undefined;
+      params: SearchResultListItemBlueprintParams;
     }>;
   }
 >;
@@ -336,7 +332,7 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
   };
   output: ConfigurableExtensionDataRef<
     {
-      predicate?: SearchResultItemExtensionPredicate | undefined;
+      predicate?: SearchResultItemExtensionPredicate;
       component: SearchResultItemExtensionComponent;
     },
     'search.search-result-list-item.item',

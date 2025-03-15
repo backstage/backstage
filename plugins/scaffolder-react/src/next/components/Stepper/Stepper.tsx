@@ -14,45 +14,48 @@
  * limitations under the License.
  */
 import { useAnalytics, useApiHolder } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import {
+  FieldExtensionOptions,
+  FormProps,
+  LayoutOptions,
+  ReviewStepProps,
+  TemplateParameterSchema,
+  useTemplateSecrets,
+} from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
-import MuiStepper from '@material-ui/core/Stepper';
-import MuiStep from '@material-ui/core/Step';
-import MuiStepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import MuiStep from '@material-ui/core/Step';
+import MuiStepLabel from '@material-ui/core/StepLabel';
+import MuiStepper from '@material-ui/core/Stepper';
+import { makeStyles } from '@material-ui/core/styles';
 import { type IChangeEvent } from '@rjsf/core';
 import { ErrorSchema } from '@rjsf/utils';
+import { customizeValidator } from '@rjsf/validator-ajv8';
+import ajvErrors from 'ajv-errors';
+import { merge } from 'lodash';
 import React, {
+  ComponentType,
   useCallback,
   useMemo,
   useState,
   type ReactNode,
-  ComponentType,
 } from 'react';
+
+import { scaffolderReactTranslationRef } from '../../../translation';
+import { useFormDataFromQuery, useTemplateSchema } from '../../hooks';
+import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
+import { Form } from '../Form';
+import { PasswordWidget } from '../PasswordWidget/PasswordWidget';
+import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import {
   createAsyncValidators,
   type FormValidation,
 } from './createAsyncValidators';
-import { ReviewState, type ReviewStateProps } from '../ReviewState';
-import { useTemplateSchema, useFormDataFromQuery } from '../../hooks';
-import { customizeValidator } from '@rjsf/validator-ajv8';
-import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
-import { hasErrors } from './utils';
-import * as FieldOverrides from './FieldOverrides';
-import { Form } from '../Form';
-import {
-  TemplateParameterSchema,
-  LayoutOptions,
-  FieldExtensionOptions,
-  FormProps,
-  useTemplateSecrets,
-} from '@backstage/plugin-scaffolder-react';
-import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { ErrorListTemplate } from './ErrorListTemplate';
-import { makeStyles } from '@material-ui/core/styles';
-import { PasswordWidget } from '../PasswordWidget/PasswordWidget';
-import ajvErrors from 'ajv-errors';
-import { merge } from 'lodash';
+import * as FieldOverrides from './FieldOverrides';
+import { hasErrors } from './utils';
 
 const validator = customizeValidator();
 ajvErrors(validator.ajv);
@@ -112,13 +115,14 @@ export type StepperProps = {
  * @alpha
  */
 export const Stepper = (stepperProps: StepperProps) => {
-  const { layouts = [], components = {}, ...props } = stepperProps;
+  const { t } = useTranslationRef(scaffolderReactTranslationRef);
+  const { layouts = [], components = {}, onCreate, ...props } = stepperProps;
   const {
     ReviewStateComponent = ReviewState,
     ReviewStepComponent,
-    backButtonText = 'Back',
-    createButtonText = 'Create',
-    reviewButtonText = 'Review',
+    backButtonText = t('stepper.backButtonText'),
+    createButtonText = t('stepper.createButtonText'),
+    reviewButtonText = t('stepper.reviewButtonText'),
   } = components;
   const analytics = useAnalytics();
   const { presentation, steps } = useTemplateSchema(props.manifest);
@@ -228,10 +232,17 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
 
-  const handleCreate = useCallback(() => {
-    props.onCreate(stepsState);
+  const [isCreating, setIsCreating] = useState(false);
+
+  const handleCreate = useCallback(async () => {
+    setIsCreating(true);
     analytics.captureEvent('click', `${createLabel}`);
-  }, [props, stepsState, analytics, createLabel]);
+    try {
+      await onCreate(stepsState);
+    } finally {
+      setIsCreating(false);
+    }
+  }, [analytics, createLabel, onCreate, stepsState]);
 
   return (
     <>
@@ -247,7 +258,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           return (
             <MuiStep key={index}>
               <MuiStepLabel
-                aria-label={`Step ${index + 1}`}
+                aria-label={t('stepper.stepIndexLabel', { index: index + 1 })}
                 style={{ cursor: isAllowedLabelClick ? 'pointer' : 'default' }}
                 onClick={() => {
                   if (isAllowedLabelClick) setActiveStep(index);
@@ -298,7 +309,9 @@ export const Stepper = (stepperProps: StepperProps) => {
                 type="submit"
                 disabled={isValidating}
               >
-                {activeStep === steps.length - 1 ? reviewLabel : 'Next'}
+                {activeStep === steps.length - 1
+                  ? reviewLabel
+                  : t('stepper.nextButtonText')}
               </Button>
             </div>
           </Form>
@@ -324,6 +337,7 @@ export const Stepper = (stepperProps: StepperProps) => {
                 {backLabel}
               </Button>
               <Button
+                disabled={isCreating}
                 variant="contained"
                 color="primary"
                 onClick={handleCreate}

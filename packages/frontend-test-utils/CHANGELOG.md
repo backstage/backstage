@@ -1,5 +1,38 @@
 # @backstage/frontend-test-utils
 
+## 0.3.0-next.2
+
+### Minor Changes
+
+- bba525b: **BREAKING**: Removed deprecated `setupRequestMockHandlers` which was replaced by `registerMswTestHooks`.
+
+### Patch Changes
+
+- f861bfc: Added a `initialRouteEntries` option to `renderInTestApp`.
+- f861bfc: The `renderInTestApp` helper now provides a default mock config with mock values for both `app.baseUrl` and `backend.baseUrl`.
+- abcdf44: Internal refactor to match updated `createSpecializedApp`.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.11.0-next.2
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/plugin-app@0.1.7-next.2
+  - @backstage/test-utils@1.7.6-next.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.2.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.1.7-next.1
+  - @backstage/config@1.3.2
+  - @backstage/frontend-app-api@0.10.6-next.1
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/test-utils@1.7.5
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.2.7-next.0
 
 ### Patch Changes

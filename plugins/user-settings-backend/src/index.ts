@@ -15,5 +15,3 @@
  */
 
 export { default } from './plugin';
-export * from './deprecated';
-export * from './database';

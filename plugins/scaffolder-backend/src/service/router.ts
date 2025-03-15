@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  createLegacyAuthAdapters,
-  HostDiscovery,
-} from '@backstage/backend-common';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import {
   AuditorService,
   AuthService,
@@ -112,6 +109,11 @@ import {
   parseStringsParam,
 } from './helpers';
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
+import {
+  convertFiltersToRecord,
+  convertGlobalsToRecord,
+} from '../util/templating';
 
 /**
  *
@@ -163,7 +165,7 @@ export interface RouterOptions {
   database: DatabaseService;
   catalogClient: CatalogApi;
   scheduler?: SchedulerService;
-  actions?: TemplateAction<any, any>[];
+  actions?: TemplateAction<any, any, any>[];
   /**
    * @deprecated taskWorkers is deprecated in favor of concurrentTasksLimit option with a single TaskWorker
    * @defaultValue 1
@@ -370,22 +372,12 @@ export async function createRouter(
 
   const actionRegistry = new TemplateActionRegistry();
   const templateExtensions = {
-    additionalTemplateFilters: Array.isArray(additionalTemplateFilters)
-      ? Object.fromEntries(
-          additionalTemplateFilters.map(f => [
-            f.id,
-            f.filter as TemplateFilter,
-          ]),
-        )
-      : additionalTemplateFilters,
-    additionalTemplateGlobals: Array.isArray(additionalTemplateGlobals)
-      ? Object.fromEntries(
-          additionalTemplateGlobals.map(g => [
-            g.id,
-            ('value' in g ? g.value : g.fn) as TemplateGlobal,
-          ]),
-        )
-      : additionalTemplateGlobals,
+    additionalTemplateFilters: convertFiltersToRecord(
+      additionalTemplateFilters,
+    ),
+    additionalTemplateGlobals: convertGlobalsToRecord(
+      additionalTemplateGlobals,
+    ),
   };
 
   const workers: TaskWorker[] = [];

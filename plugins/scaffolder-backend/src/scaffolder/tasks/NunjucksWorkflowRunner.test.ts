@@ -38,8 +38,8 @@ import {
   mockCredentials,
   mockServices,
 } from '@backstage/backend-test-utils';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 
 describe('NunjucksWorkflowRunner', () => {
   let logger: LoggerService;
@@ -104,33 +104,37 @@ describe('NunjucksWorkflowRunner', () => {
     fakeActionHandler = jest.fn();
     fakeTaskLog = jest.fn();
 
-    actionRegistry.register({
-      id: 'jest-mock-action',
-      description: 'Mock action for testing',
-      handler: fakeActionHandler,
-    });
-
-    actionRegistry.register({
-      id: 'jest-validated-action',
-      description: 'Mock action for testing',
-      supportsDryRun: true,
-      handler: fakeActionHandler,
-      schema: {
-        input: {
-          type: 'object',
-          required: ['foo'],
-          properties: {
-            foo: {
-              type: 'number',
-            },
-          },
-        },
-      },
-    });
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'jest-mock-action',
+        description: 'Mock action for testing',
+        handler: fakeActionHandler,
+      }),
+    );
 
     actionRegistry.register(
       createTemplateAction({
-        id: 'jest-zod-validated-action',
+        id: 'jest-validated-action',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: fakeActionHandler,
+        schema: {
+          input: {
+            type: 'object',
+            required: ['foo'],
+            properties: {
+              foo: {
+                type: 'number',
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'jest-legacy-zod-validated-action',
         description: 'Mock action for testing',
         handler: fakeActionHandler,
         supportsDryRun: true,
@@ -142,52 +146,80 @@ describe('NunjucksWorkflowRunner', () => {
       }) as TemplateAction,
     );
 
-    actionRegistry.register({
-      id: 'output-action',
-      description: 'Mock action for testing',
-      handler: async ctx => {
-        ctx.output('mock', 'backstage');
-        ctx.output('shouldRun', true);
-      },
-    });
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'jest-zod-validated-action',
+        description: 'Mock ac',
+        supportsDryRun: true,
+        schema: {
+          input: {
+            foo: zod => zod.number(),
+          },
+          output: {
+            test: zod => zod.string(),
+          },
+        },
+        handler: fakeActionHandler,
+      }),
+    );
 
-    actionRegistry.register({
-      id: 'checkpoints-action',
-      description: 'Mock action with checkpoints',
-      handler: async ctx => {
-        const key1 = await ctx.checkpoint({
-          key: 'key1',
-          fn: async () => 'updated',
-        });
-        const key2 = await ctx.checkpoint({
-          key: 'key2',
-          fn: async () => 'updated',
-        });
-        const key3 = await ctx.checkpoint({
-          key: 'key3',
-          fn: async () => 'updated',
-        });
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'output-action',
+        description: 'Mock action for testing',
+        handler: async ctx => {
+          ctx.output('mock', 'backstage');
+          ctx.output('shouldRun', true);
+        },
+      }),
+    );
 
-        const key4 = await ctx.checkpoint({
-          key: 'key4',
-          fn: () => {},
-        });
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'checkpoints-action',
+        description: 'Mock action with checkpoints',
+        schema: {
+          output: z.object({
+            key1: z.string(),
+            key2: z.string(),
+            key3: z.string(),
+            key4: z.string(),
+            key5: z.string(),
+          }),
+        },
+        handler: async ctx => {
+          const key1 = await ctx.checkpoint({
+            key: 'key1',
+            fn: async () => 'updated',
+          });
+          const key2 = await ctx.checkpoint({
+            key: 'key2',
+            fn: async () => 'updated',
+          });
+          const key3 = await ctx.checkpoint({
+            key: 'key3',
+            fn: async () => 'updated',
+          });
 
-        const key5 = await ctx.checkpoint({
-          key: 'key5',
-          fn: async () => {},
-        });
+          const key4 = await ctx.checkpoint({
+            key: 'key4',
+            fn: () => {},
+          });
 
-        ctx.output('key1', key1);
-        ctx.output('key2', key2);
-        ctx.output('key3', key3);
+          const key5 = await ctx.checkpoint({
+            key: 'key5',
+            fn: async () => {},
+          });
 
-        // @ts-expect-error - this is void return
-        ctx.output('key4', key4);
-        // @ts-expect-error - this is void return
-        ctx.output('key5', key5);
-      },
-    });
+          ctx.output('key1', key1);
+          ctx.output('key2', key2);
+          ctx.output('key3', key3);
+
+          ctx.output('key4', key4);
+          ctx.output('key5', key5);
+        },
+      }),
+    );
 
     mockedPermissionApi.authorizeConditional.mockResolvedValue([
       { result: AuthorizeResult.ALLOW },
@@ -244,6 +276,25 @@ describe('NunjucksWorkflowRunner', () => {
       );
     });
 
+    it('should throw an error if the action has legacy zod schema and the input does not match', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        parameters: {},
+        output: {},
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-legacy-zod-validated-action',
+          },
+        ],
+      });
+
+      await expect(runner.execute(task)).rejects.toThrow(
+        /Invalid input passed to action jest-legacy-zod-validated-action, instance requires property \"foo\"/,
+      );
+    });
+
     it('should run the action when the zod validation passes', async () => {
       const task = createMockTaskWithSpec({
         apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -254,6 +305,26 @@ describe('NunjucksWorkflowRunner', () => {
             id: 'test',
             name: 'name',
             action: 'jest-zod-validated-action',
+            input: { foo: 1 },
+          },
+        ],
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
+    });
+
+    it('should run the action when the zod validation passes with legacy zod', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        parameters: {},
+        output: {},
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-legacy-zod-validated-action',
             input: { foo: 1 },
           },
         ],

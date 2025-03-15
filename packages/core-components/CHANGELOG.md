@@ -1,5 +1,30 @@
 # @backstage/core-components
 
+## 0.16.5-next.1
+
+### Patch Changes
+
+- 48aab13: Add i18n support for scaffolder-react plugin
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.4
+  - @backstage/version-bridge@1.0.11
+
+## 0.16.5-next.0
+
+### Patch Changes
+
+- fffe3c0: Added `classNames` prop to the `Page` component
+- df3b9f0: Fixed a bug in the SidebarSubmenuItem within the core-components package that caused the dropdown button to be misaligned in the sidebar and the button text to appear in uppercase due to the default <Button> behavior. Also added an example dropdown menu to the app for reference.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.4
+  - @backstage/version-bridge@1.0.11
+
 ## 0.16.4
 
 ### Patch Changes

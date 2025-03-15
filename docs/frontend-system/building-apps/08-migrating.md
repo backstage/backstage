@@ -27,7 +27,7 @@ Let's start by addressing the change to `app.createRoot(...)`, which no longer a
 
 Given that the app element tree is most of what builds up the app, it's likely also going to be the majority of the migration effort. In order to make the migration as smooth as possible we have provided a helper that lets you convert an existing app element tree into plugins that you can install in a new app. This in turn allows for a gradual migration of individual plugins, rather than needing to migrate the entire app structure at once.
 
-The helper is called `convertLegacyApp` and is exported from the `@backstage/core-compat-api` package, which you will need to add as a dependency to your app package:
+The helper is called `convertLegacyApp` and is exported from the `@backstage/core-compat-api` package. We will also be using the `convertLegacyAppOptions` helper that lets us re-use the existing app options, also exported from the same package. You will need to add it as a dependency to your app package:
 
 ```bash
 yarn --cwd packages/app add @backstage/core-compat-api
@@ -54,6 +54,11 @@ export default app.createRoot(
 Migrate it to the following:
 
 ```tsx title="in packages/app/src/App.tsx"
+import {
+  convertLegacyApp,
+  convertLegacyAppOptions,
+} from '@backstage/core-compat-api';
+
 const legacyFeatures = convertLegacyApp(
   <>
     <AlertDisplay transientTimeoutMs={2500} />
@@ -64,9 +69,12 @@ const legacyFeatures = convertLegacyApp(
   </>,
 );
 
-const app = createApp({
+const optionsModule = convertLegacyAppOptions({
   /* other options */
-  features: [...legacyFeatures],
+});
+
+const app = createApp({
+  features: [optionsModule, ...legacyFeatures],
 });
 
 export default app.createRoot();
@@ -492,7 +500,84 @@ Continue this process for each of your legacy routes until you have migrated all
 
 ### Entity Pages
 
-The entity pages are typically defined in `packages/app/src/components/catalog` and rendered as a child of the `/catalog/:namespace/:kind/:name` route. The entity pages are typically quite large and bringing in content from quite a lot of different plugins. At the moment we do not provide a way to gradually migrate entity pages to the new system, although that is planned as a future improvement. This means that the entire entity page and all of its plugins need to be migrated at once, including any other usages of those plugins.
+The entity pages are typically defined in `packages/app/src/components/catalog` and rendered as a child of the `/catalog/:namespace/:kind/:name` route. The entity pages are typically quite large and bringing in content from quite a lot of different plugins. To help gradually migrate entity pages we provide the `entityPage` option in the `convertLegacyApp` helper. This option lets you pass in an entity page app element tree that will be converted to extensions that are added to the features returned from `convertLegacyApp`.
+
+To start the gradual migration of entity pages, add your `entityPages` to the `convertLegacyApp` call:
+
+```tsx title="in packages/app/src/App.tsx"
+/* highlight-remove-next-line */
+const legacyFeatures = convertLegacyApp(routes);
+/* highlight-add-next-line */
+const legacyFeatures = convertLegacyApp(routes, { entityPage });
+```
+
+Next, you will need to fully migrate the catalog plugin itself. This is because only a single version of a plugin can be installed in the app at a time, so in order to start using the new version of the catalog plugin you need to remove all usage of the old one. This includes both the routes and entity pages. You will need to keep the structural helpers for the entity pages, such as `EntityLayout` and `EntitySwitch`, but remove any extensions like the `<CatalogIndexPage/>` and entity cards and content like `<EntityAboutCard/>` and `<EntityOrphanWarning/>`.
+
+Remove the following routes:
+
+```tsx title="in packages/app/src/App.tsx"
+const routes = (
+  <FlatRoutes>
+    ...
+    {/* highlight-remove-start */}
+    <Route path="/catalog" element={<CatalogIndexPage />} />
+    <Route
+      path="/catalog/:namespace/:kind/:name"
+      element={<CatalogEntityPage />}
+    >
+      {entityPage}
+    </Route>
+    {/* highlight-remove-end */}
+    ...
+  </FlatRoutes>
+);
+```
+
+And explicitly install the catalog plugin before the converted legacy features:
+
+```tsx title="in packages/app/src/App.tsx"
+/* highlight-add-next-line */
+import { default as catalogPlugin } from '@backstage/plugin-catalog/alpha';
+
+const app = createApp({
+  /* highlight-remove-next-line */
+  features: [optionsModule, ...legacyFeatures],
+  /* highlight-add-next-line */
+  features: [catalogPlugin, optionsModule, ...legacyFeatures],
+});
+```
+
+If you are not using the default `<CatalogIndexPage />` you can install your custom catalog page as an override for now instead, and fully migrate it to the new system later.
+
+```tsx title="in packages/app/src/App.tsx"
+/* highlight-remove-start */
+const catalogPluginOverride = catalogPlugin.withOverrides({
+  extensions: [
+    catalogPlugin.getExtension('page:catalog').override({
+      params: {
+        loader: async () => (
+          <CatalogIndexPage
+            pagination={{ mode: 'offset', limit: 20 }}
+            filters={<>{/* ... */}</>}
+          />
+        ),
+      },
+    }),
+  ],
+});
+/* highlight-remove-end */
+
+const app = createApp({
+  /* highlight-remove-next-line */
+  features: [catalogPlugin, optionsModule, ...legacyFeatures],
+  /* highlight-add-next-line */
+  features: [catalogPluginOverride, optionsModule, ...legacyFeatures],
+});
+```
+
+At this point you should be able to run the app and see that you're not using the new version of the catalog plugin. If you navigate to the entity pages you will likely see a lot of duplicate content at the bottom of the page. These are the duplicates of the entity cards provided by the catalog plugin itself that we mentioned earlier that you need to remove. Clean up the entity pages by removing cards and content from the catalog plugin such as `<EntityAboutCard/>` and `<EntityOrphanWarning/>`.
+
+Once the cleanup is complete you should be left with clean entity pages that are built using a mix of the old and new frontend system. From this point you can continue to gradually migrate plugins that provide content for the entity pages, until all plugins have been fully moved to the new system and the `entityPage` option can be removed.
 
 ### Sidebar
 

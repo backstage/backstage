@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 jest.mock('@backstage/plugin-scaffolder-node', () => {
   return {
     ...jest.requireActual('@backstage/plugin-scaffolder-node'),
@@ -39,28 +40,6 @@ import {
 import { createGithubRepoPushAction } from './githubRepoPush';
 import { examples } from './githubRepoPush.examples';
 import yaml from 'yaml';
-
-const mockGit = {
-  init: jest.fn(),
-  add: jest.fn(),
-  checkout: jest.fn(),
-  commit: jest
-    .fn()
-    .mockResolvedValue('220f19cc36b551763d157f1b5e4a4b446165dbd6'),
-  fetch: jest.fn(),
-  addRemote: jest.fn(),
-  push: jest.fn(),
-};
-
-jest.mock('@backstage/backend-common', () => ({
-  loggerToWinstonLogger: jest.requireActual('@backstage/backend-common')
-    .loggerToWinstonLogger,
-  Git: {
-    fromAuth() {
-      return mockGit;
-    },
-  },
-}));
 
 jest.mock('./helpers', () => {
   return {

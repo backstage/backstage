@@ -30,12 +30,19 @@ export const createBitbucketPipelinesRunAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
   const { integrations } = options;
-  return createTemplateAction<{
-    workspace: string;
-    repo_slug: string;
-    body?: object;
-    token?: string;
-  }>({
+  return createTemplateAction<
+    {
+      workspace: string;
+      repo_slug: string;
+      body?: object;
+      token?: string;
+    },
+    {
+      buildNumber: number;
+      repoUrl: string;
+      pipelinesUrl: string;
+    }
+  >({
     id,
     description: 'Run a bitbucket cloud pipeline',
     examples,
@@ -58,7 +65,7 @@ export const createBitbucketPipelinesRunAction = (options: {
             type: 'number',
           },
           repoUrl: {
-            title: 'A URL to the pipeline repositry',
+            title: 'A URL to the pipeline repository',
             type: 'string',
           },
           repoContentsUrl: {

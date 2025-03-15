@@ -26,7 +26,8 @@ export const createGitlabGroupEnsureExistsAction: (options: {
   },
   {
     groupId?: number | undefined;
-  }
+  },
+  'v1'
 >;
 
 // @public
@@ -55,7 +56,8 @@ export const createGitlabIssueAction: (options: {
     issueUrl: string;
     issueId: number;
     issueIid: number;
-  }
+  },
+  'v1'
 >;
 
 // @public
@@ -73,7 +75,8 @@ export const createGitlabProjectAccessTokenAction: (options: {
   },
   {
     access_token: string;
-  }
+  },
+  'v1'
 >;
 
 // @public
@@ -91,7 +94,8 @@ export const createGitlabProjectDeployTokenAction: (options: {
   {
     user: string;
     deploy_token: string;
-  }
+  },
+  'v1'
 >;
 
 // @public
@@ -110,7 +114,8 @@ export const createGitlabProjectVariableAction: (options: {
     environmentScope?: string | undefined;
     variableProtected?: boolean | undefined;
   },
-  JsonObject
+  any,
+  'v1'
 >;
 
 // @public
@@ -121,12 +126,13 @@ export const createGitlabRepoPushAction: (options: {
     repoUrl: string;
     branchName: string;
     commitMessage: string;
-    sourcePath?: string | undefined;
-    targetPath?: string | undefined;
-    token?: string | undefined;
-    commitAction?: 'update' | 'delete' | 'create' | undefined;
+    sourcePath?: string;
+    targetPath?: string;
+    token?: string;
+    commitAction?: 'create' | 'delete' | 'update';
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -136,60 +142,49 @@ export function createPublishGitlabAction(options: {
 }): TemplateAction<
   {
     repoUrl: string;
-    defaultBranch?: string | undefined;
-    repoVisibility?: 'internal' | 'private' | 'public' | undefined;
-    sourcePath?: string | boolean | undefined;
-    skipExisting?: boolean | undefined;
-    token?: string | undefined;
-    gitCommitMessage?: string | undefined;
-    gitAuthorName?: string | undefined;
-    gitAuthorEmail?: string | undefined;
-    setUserAsOwner?: boolean | undefined;
-    topics?: string[] | undefined;
-    settings?:
-      | {
-          path?: string | undefined;
-          auto_devops_enabled?: boolean | undefined;
-          ci_config_path?: string | undefined;
-          description?: string | undefined;
-          merge_method?: 'merge' | 'ff' | 'rebase_merge' | undefined;
-          squash_option?:
-            | 'always'
-            | 'never'
-            | 'default_on'
-            | 'default_off'
-            | undefined;
-          topics?: string[] | undefined;
-          visibility?: 'internal' | 'private' | 'public' | undefined;
-          only_allow_merge_if_all_discussions_are_resolved?:
-            | boolean
-            | undefined;
-          only_allow_merge_if_pipeline_succeeds?: boolean | undefined;
-          allow_merge_on_skipped_pipeline?: boolean | undefined;
-        }
-      | undefined;
-    branches?:
-      | {
-          name: string;
-          protect?: boolean | undefined;
-          create?: boolean | undefined;
-          ref?: string | undefined;
-        }[]
-      | undefined;
-    projectVariables?:
-      | {
-          key: string;
-          value: string;
-          description?: string | undefined;
-          variable_type?: string | undefined;
-          protected?: boolean | undefined;
-          masked?: boolean | undefined;
-          raw?: boolean | undefined;
-          environment_scope?: string | undefined;
-        }[]
-      | undefined;
+    defaultBranch?: string;
+    repoVisibility?: 'private' | 'internal' | 'public';
+    sourcePath?: string | boolean;
+    skipExisting?: boolean;
+    token?: string;
+    gitCommitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
+    signCommit?: boolean;
+    setUserAsOwner?: boolean;
+    topics?: string[];
+    settings?: {
+      path?: string;
+      auto_devops_enabled?: boolean;
+      ci_config_path?: string;
+      description?: string;
+      merge_method?: 'merge' | 'rebase_merge' | 'ff';
+      squash_option?: 'default_off' | 'default_on' | 'never' | 'always';
+      topics?: string[];
+      visibility?: 'private' | 'internal' | 'public';
+      only_allow_merge_if_all_discussions_are_resolved?: boolean;
+      only_allow_merge_if_pipeline_succeeds?: boolean;
+      allow_merge_on_skipped_pipeline?: boolean;
+    };
+    branches?: Array<{
+      name: string;
+      protect?: boolean;
+      create?: boolean;
+      ref?: string;
+    }>;
+    projectVariables?: Array<{
+      key: string;
+      value: string;
+      description?: string;
+      variable_type?: string;
+      protected?: boolean;
+      masked?: boolean;
+      raw?: boolean;
+      environment_scope?: string;
+    }>;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -201,18 +196,19 @@ export const createPublishGitlabMergeRequestAction: (options: {
     title: string;
     description: string;
     branchName: string;
-    targetBranchName?: string | undefined;
-    sourcePath?: string | undefined;
-    targetPath?: string | undefined;
-    token?: string | undefined;
-    commitAction?: 'auto' | 'update' | 'delete' | 'create' | 'skip' | undefined;
-    projectid?: string | undefined;
-    removeSourceBranch?: boolean | undefined;
-    assignee?: string | undefined;
-    reviewers?: string[] | undefined;
-    assignReviewersFromApprovalRules?: boolean | undefined;
+    targetBranchName?: string;
+    sourcePath?: string;
+    targetPath?: string;
+    token?: string;
+    commitAction?: 'create' | 'delete' | 'update' | 'skip' | 'auto';
+    projectid?: string;
+    removeSourceBranch?: boolean;
+    assignee?: string;
+    reviewers?: string[];
+    assignReviewersFromApprovalRules?: boolean;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -229,7 +225,8 @@ export const createTriggerGitlabPipelineAction: (options: {
   },
   {
     pipelineUrl: string;
-  }
+  },
+  'v1'
 >;
 
 // @public
@@ -265,7 +262,8 @@ export const editGitlabIssueAction: (options: {
     issueUrl: string;
     issueId: number;
     issueIid: number;
-  }
+  },
+  'v1'
 >;
 
 // @public

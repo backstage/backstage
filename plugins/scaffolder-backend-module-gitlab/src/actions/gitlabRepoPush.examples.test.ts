@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRootLogger } from '@backstage/backend-common';
+
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -22,8 +22,6 @@ import { createGitlabRepoPushAction } from './gitlabRepoPush';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { examples } from './gitlabRepoPush.examples';
 import yaml from 'yaml';
-
-createRootLogger();
 
 const mockGitlabClient = {
   Projects: {

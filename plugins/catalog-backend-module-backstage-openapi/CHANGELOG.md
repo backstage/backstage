@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.5.0-next.1
+
+### Minor Changes
+
+- 62842ee: feat: Improve JSON format of OpenAPI definition, allow YAML format
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.5.1-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-node@1.16.1-next.1
+
 ## 0.4.6-next.0
 
 ### Patch Changes
