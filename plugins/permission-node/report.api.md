@@ -138,7 +138,7 @@ export function createConditionTransformer<
   TRules extends PermissionRule<any, TQuery, string>[],
 >(permissionRules: [...TRules]): ConditionTransformer<TQuery>;
 
-// @public
+// @public @deprecated
 export function createPermissionIntegrationRouter<
   TResourceType1 extends string,
   TResource1,
@@ -177,7 +177,7 @@ export function createPermissionIntegrationRouter<
   ): PermissionRuleset<TResource, TQuery, TResourceType>;
 };
 
-// @public
+// @public @deprecated
 export type CreatePermissionIntegrationRouterResourceOptions<
   TResourceType extends string,
   TResource,
@@ -266,7 +266,7 @@ export type MetadataResponse = MetadataResponse_2;
 // @public @deprecated
 export type MetadataResponseSerializedRule = MetadataResponseSerializedRule_2;
 
-// @public
+// @public @deprecated
 export type PermissionIntegrationRouterOptions<
   TResourceType1 extends string = string,
   TResource1 = any,
