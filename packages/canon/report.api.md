@@ -591,6 +591,40 @@ export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
 export const Icon: (props: IconProps) => React_2.JSX.Element;
 
 // @public (undocumented)
+export const IconButton: React_2.ForwardRefExoticComponent<
+  IconButtonProps & React_2.RefAttributes<HTMLButtonElement>
+>;
+
+// @public (undocumented)
+export type IconButtonOwnProps = GetPropDefTypes<typeof iconButtonPropDefs>;
+
+// @public (undocumented)
+export const iconButtonPropDefs: {
+  variant: {
+    type: 'enum';
+    values: ('primary' | 'secondary')[];
+    className: string;
+    default: 'primary';
+    responsive: true;
+  };
+  size: {
+    type: 'enum';
+    values: ('small' | 'medium')[];
+    className: string;
+    default: 'medium';
+    responsive: true;
+  };
+};
+
+// @public
+export interface IconButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
+  icon: IconNames;
+  size?: IconButtonOwnProps['size'];
+  variant?: IconButtonOwnProps['variant'];
+}
+
+// @public (undocumented)
 export const IconContext: Context<IconContextProps>;
 
 // @public (undocumented)
