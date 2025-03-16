@@ -23,7 +23,8 @@ export function createSendNotificationAction(options: {
     scope?: string;
     optional?: boolean;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public

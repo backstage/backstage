@@ -66,7 +66,7 @@ Si vous voulez contribuer et vous impliquer dans notre communauté, voici les re
 
 ## Licence
 
-Copyright 2020-2024 © Les auteurs de Backstage. Tous droits réservés. La Linux Foundation détient des marques déposées et utilise des marques commerciales. Pour une liste des marques de commerce de la Linux Foundation, veuillez consulter notre page d'utilisation des marques: https://www.linuxfoundation.org/trademark-usage
+Copyright 2020-2025 © Les auteurs de Backstage. Tous droits réservés. La Linux Foundation détient des marques déposées et utilise des marques commerciales. Pour une liste des marques de commerce de la Linux Foundation, veuillez consulter notre page d'utilisation des marques: https://www.linuxfoundation.org/trademark-usage
 
 Sous licence Apache, version 2.0: http://www.apache.org/licenses/LICENSE-2.0
 

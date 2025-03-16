@@ -24,8 +24,8 @@ import {
 } from '@backstage/integration';
 import {
   createTemplateAction,
-  initRepoAndPush,
   getRepoSourceDirectory,
+  initRepoAndPush,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { examples } from './gerrit.examples';
@@ -99,6 +99,7 @@ export function createPublishGerritAction(options: {
     gitAuthorName?: string;
     gitAuthorEmail?: string;
     sourcePath?: string;
+    signCommit?: boolean;
   }>({
     id: 'publish:gerrit',
     supportsDryRun: true,
@@ -143,6 +144,11 @@ export function createPublishGerritAction(options: {
             type: 'string',
             description: `Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.`,
           },
+          signCommit: {
+            title: 'Sign commit',
+            type: 'boolean',
+            description: 'Sign commit with configured PGP private key',
+          },
         },
       },
       output: {
@@ -172,6 +178,7 @@ export function createPublishGerritAction(options: {
         gitAuthorEmail,
         gitCommitMessage = 'initial commit',
         sourcePath,
+        signCommit,
       } = ctx.input;
       const { repo, host, owner, workspace } = parseRepoUrl(
         repoUrl,
@@ -233,6 +240,15 @@ export function createPublishGerritAction(options: {
         email: gitEmail,
       };
 
+      const signingKey =
+        integrationConfig.config.commitSigningKey ??
+        config.getOptionalString('scaffolder.defaultCommitSigningKey');
+      if (signCommit && !signingKey) {
+        throw new Error(
+          'Signing commits is enabled but no signing key is provided in the configuration',
+        );
+      }
+
       const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, sourcePath),
         remoteUrl,
@@ -241,6 +257,7 @@ export function createPublishGerritAction(options: {
         logger: ctx.logger,
         commitMessage: generateCommitMessage(config, gitCommitMessage),
         gitAuthorInfo,
+        signingKey: signCommit ? signingKey : undefined,
       });
 
       ctx.output('remoteUrl', remoteUrl);

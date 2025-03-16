@@ -354,11 +354,11 @@ const _default: FrontendPlugin<
       name: 'about';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -395,11 +395,11 @@ const _default: FrontendPlugin<
       name: 'depends-on-components';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -436,11 +436,11 @@ const _default: FrontendPlugin<
       name: 'depends-on-resources';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -477,11 +477,11 @@ const _default: FrontendPlugin<
       name: 'has-components';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -518,11 +518,11 @@ const _default: FrontendPlugin<
       name: 'has-resources';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -559,11 +559,11 @@ const _default: FrontendPlugin<
       name: 'has-subcomponents';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -600,11 +600,11 @@ const _default: FrontendPlugin<
       name: 'has-subdomains';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -641,11 +641,11 @@ const _default: FrontendPlugin<
       name: 'has-systems';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -682,11 +682,11 @@ const _default: FrontendPlugin<
       name: 'labels';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -723,11 +723,11 @@ const _default: FrontendPlugin<
       name: 'links';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>

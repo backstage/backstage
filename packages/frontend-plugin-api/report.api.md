@@ -610,11 +610,6 @@ export type CreateExtensionBlueprintOptions<
   dataRefs?: TDataRefs;
 } & VerifyExtensionFactoryOutput<UOutput, UFactoryOutput>;
 
-// @public @deprecated (undocumented)
-export function createExtensionDataRef<TData>(
-  id: string,
-): ConfigurableExtensionDataRef<TData, string>;
-
 // @public (undocumented)
 export function createExtensionDataRef<TData>(): {
   with<TId extends string>(options: {
@@ -711,6 +706,40 @@ export function createExternalRouteRef<
         [param in TParamKeys]: string;
       }
 >;
+
+// @public (undocumented)
+export function createFrontendFeatureLoader(
+  options: CreateFrontendFeatureLoaderOptions,
+): FrontendFeatureLoader;
+
+// @public (undocumented)
+export interface CreateFrontendFeatureLoaderOptions {
+  // (undocumented)
+  loader(deps: { config: ConfigApi }):
+    | Iterable<
+        | FrontendFeature
+        | FrontendFeatureLoader
+        | Promise<{
+            default: FrontendFeature | FrontendFeatureLoader;
+          }>
+      >
+    | Promise<
+        Iterable<
+          | FrontendFeature
+          | FrontendFeatureLoader
+          | Promise<{
+              default: FrontendFeature | FrontendFeatureLoader;
+            }>
+        >
+      >
+    | AsyncIterable<
+        | FrontendFeature
+        | FrontendFeatureLoader
+        | {
+            default: FrontendFeature | FrontendFeatureLoader;
+          }
+      >;
+}
 
 // @public (undocumented)
 export function createFrontendModule<
@@ -1212,12 +1241,6 @@ export interface ExtensionInput<
   }>;
 }
 
-// @public (undocumented)
-export interface ExtensionOverrides {
-  // (undocumented)
-  readonly $$type: '@backstage/ExtensionOverrides';
-}
-
 // @public
 export interface ExternalRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
@@ -1247,8 +1270,14 @@ export { FetchApi };
 
 export { fetchApiRef };
 
-// @public @deprecated (undocumented)
-export type FrontendFeature = FrontendPlugin | ExtensionOverrides;
+// @public (undocumented)
+export type FrontendFeature = FrontendPlugin | FrontendModule;
+
+// @public (undocumented)
+export interface FrontendFeatureLoader {
+  // (undocumented)
+  readonly $$type: '@backstage/FrontendFeatureLoader';
+}
 
 // @public (undocumented)
 export interface FrontendModule {

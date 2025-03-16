@@ -1,5 +1,19 @@
 # @backstage/plugin-app
 
+## 0.1.7-next.2
+
+### Patch Changes
+
+- 0aa9d82: Added implementation of the new `DialogApi`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/integration-react@1.2.5-next.0
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-react@0.4.31
+
 ## 0.1.7-next.1
 
 ### Patch Changes

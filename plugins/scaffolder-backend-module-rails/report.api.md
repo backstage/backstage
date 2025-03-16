@@ -49,7 +49,8 @@ export function createFetchRailsAction(options: {
     values: JsonObject;
     imageName?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public

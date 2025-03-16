@@ -1,0 +1,12 @@
+---
+title: Facets.cloud Platform
+author: Facets.cloud
+authorUrl: 'https://facets.cloud'
+category: Deployment
+description: |
+  Show environments, releases and terraform outputs deployed by Facets.cloud Platform.
+  Plugin includes an Environment Overview, Release Details and Terraform Output ComponentCard.
+documentation: https://github.com/Facets-cloud/facets-backstage-plugin
+iconUrl: /img/facets-cloud-logo.png
+npmPackageName: '@facets-cloud/backstage-plugin'
+addedDate: '2025-02-25'

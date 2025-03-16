@@ -14,16 +14,5 @@
  * limitations under the License.
  */
 
-import { registerMswTestHooks } from '@backstage/test-utils';
-
-/**
- * @public
- * @deprecated Use `registerMswTestHooks` from `@backstage/frontend-test-utils` instead.
- */
-export function setupRequestMockHandlers(worker: {
-  listen: (t: any) => void;
-  close: () => void;
-  resetHandlers: () => void;
-}): void {
-  registerMswTestHooks(worker);
-}
+export { Link } from './Link';
+export type { LinkProps } from './types';
