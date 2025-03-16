@@ -34,6 +34,7 @@ export * from './components/Heading';
 // UI components
 export * from './components/Button';
 export * from './components/Icon';
+export * from './components/IconButton';
 export * from './components/Checkbox';
 export * from './components/Table';
 export * from './components/Input';
