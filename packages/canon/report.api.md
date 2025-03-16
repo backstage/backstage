@@ -12,6 +12,7 @@ import { default as React_2 } from 'react';
 import * as React_3 from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
+import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
 
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
@@ -825,6 +826,38 @@ export type Responsive<T> = T | Partial<Record<Breakpoint, T>>;
 // @public (undocumented)
 export type ResponsivePropDef<T = any> = RegularPropDef<T> & {
   responsive: true;
+};
+
+// @public (undocumented)
+export const ScrollArea: {
+  Root: React_2.ForwardRefExoticComponent<
+    Omit<
+      ScrollArea_2.Root.Props & React_2.RefAttributes<HTMLDivElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Viewport: React_2.ForwardRefExoticComponent<
+    Omit<
+      ScrollArea_2.Viewport.Props & React_2.RefAttributes<HTMLDivElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Scrollbar: React_2.ForwardRefExoticComponent<
+    Omit<
+      ScrollArea_2.Scrollbar.Props & React_2.RefAttributes<HTMLDivElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Thumb: React_2.ForwardRefExoticComponent<
+    Omit<
+      ScrollArea_2.Thumb.Props & React_2.RefAttributes<HTMLDivElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
 };
 
 // @public (undocumented)
