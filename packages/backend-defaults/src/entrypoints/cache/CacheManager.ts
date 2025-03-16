@@ -141,7 +141,16 @@ export class CacheManager {
     const redisOptions: RedisCacheStoreOptions = {};
     const redisConfig = config.getConfig(storeConfigPath);
 
-    redisOptions.client = redisConfig.getOptional('client');
+    redisOptions.client = {
+      namespace: redisConfig.getOptionalString('client.namespace'),
+      keyPrefixSeparator:
+        redisConfig.getOptionalString('client.keyPrefixSeparator') || ':',
+      clearBatchSize: redisConfig.getOptionalNumber('client.clearBatchSize'),
+      useUnlink: redisConfig.getOptionalBoolean('client.useUnlink'),
+      noNamespaceAffectsAll: redisConfig.getOptionalBoolean(
+        'client.noNamespaceAffectsAll',
+      ),
+    };
 
     if (redisConfig.has('cluster')) {
       const clusterConfig = redisConfig.getConfig('cluster');
@@ -156,6 +165,13 @@ export class CacheManager {
       redisOptions.cluster = {
         rootNodes: clusterConfig.get('rootNodes'),
         defaults: clusterConfig.getOptional('defaults'),
+        minimizeConnections: clusterConfig.getOptionalBoolean(
+          'minimizeConnections',
+        ),
+        useReplicas: clusterConfig.getOptionalBoolean('useReplicas'),
+        maxCommandRedirections: clusterConfig.getOptionalNumber(
+          'maxCommandRedirections',
+        ),
       };
     }
 
@@ -207,7 +223,7 @@ export class CacheManager {
   private createRedisStoreFactory(): StoreFactory {
     const KeyvRedis = require('@keyv/redis').default;
     const { createCluster } = require('@keyv/redis');
-    const stores: Record<string, any> = {};
+    const stores: Record<string, typeof KeyvRedis> = {};
 
     return (pluginId, defaultTtl) => {
       if (!stores[pluginId]) {

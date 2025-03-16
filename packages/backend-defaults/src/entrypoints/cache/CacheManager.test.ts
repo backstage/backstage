@@ -226,7 +226,9 @@ describe('CacheManager store options', () => {
             cache: {
               store: 'redis',
               connection: 'redis://localhost:6379',
-              cluster: {},
+              redis: {
+                cluster: {},
+              },
             },
           },
         },
