@@ -66,17 +66,17 @@
   }
 }
 
-.canon-TooltipArrowFill {
+.canon-TooltipArrow-fill {
   fill: var(--canon-bg-surface-1);
 }
 
-.canon-TooltipArrowOuterStroke {
+.canon-TooltipArrow-outer-stroke {
   @media (prefers-color-scheme: light) {
     fill: var(--canon-border);
   }
 }
 
-.canon-TooltipArrowInnerStroke {
+.canon-TooltipArrow-inner-stroke {
   @media (prefers-color-scheme: dark) {
     /* fill: var(--canon-border); */
   }
