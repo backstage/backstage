@@ -13,6 +13,7 @@ import { default as React_2 } from 'react';
 import * as React_3 from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
+import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
 
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
@@ -591,6 +592,40 @@ export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
 export const Icon: (props: IconProps) => React_2.JSX.Element;
 
 // @public (undocumented)
+export const IconButton: React_2.ForwardRefExoticComponent<
+  IconButtonProps & React_2.RefAttributes<HTMLButtonElement>
+>;
+
+// @public (undocumented)
+export type IconButtonOwnProps = GetPropDefTypes<typeof iconButtonPropDefs>;
+
+// @public (undocumented)
+export const iconButtonPropDefs: {
+  variant: {
+    type: 'enum';
+    values: ('primary' | 'secondary')[];
+    className: string;
+    default: 'primary';
+    responsive: true;
+  };
+  size: {
+    type: 'enum';
+    values: ('small' | 'medium')[];
+    className: string;
+    default: 'medium';
+    responsive: true;
+  };
+};
+
+// @public
+export interface IconButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
+  icon: IconNames;
+  size?: IconButtonOwnProps['size'];
+  variant?: IconButtonOwnProps['variant'];
+}
+
+// @public (undocumented)
 export const IconContext: Context<IconContextProps>;
 
 // @public (undocumented)
@@ -850,6 +885,38 @@ export type Responsive<T> = T | Partial<Record<Breakpoint, T>>;
 // @public (undocumented)
 export type ResponsivePropDef<T = any> = RegularPropDef<T> & {
   responsive: true;
+};
+
+// @public (undocumented)
+export const ScrollArea: {
+  Root: React_2.ForwardRefExoticComponent<
+    Omit<
+      ScrollArea_2.Root.Props & React_2.RefAttributes<HTMLDivElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Viewport: React_2.ForwardRefExoticComponent<
+    Omit<
+      ScrollArea_2.Viewport.Props & React_2.RefAttributes<HTMLDivElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Scrollbar: React_2.ForwardRefExoticComponent<
+    Omit<
+      ScrollArea_2.Scrollbar.Props & React_2.RefAttributes<HTMLDivElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Thumb: React_2.ForwardRefExoticComponent<
+    Omit<
+      ScrollArea_2.Thumb.Props & React_2.RefAttributes<HTMLDivElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
 };
 
 // @public (undocumented)
