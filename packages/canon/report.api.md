@@ -14,6 +14,7 @@ import * as React_3 from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
+import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
 
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
@@ -1063,6 +1064,32 @@ export interface TextProps {
   // (undocumented)
   weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
 }
+
+// @public (undocumented)
+export const Tooltip: {
+  Provider: React_2.FC<Tooltip_2.Provider.Props>;
+  Root: React_2.FC<Tooltip_2.Root.Props>;
+  Trigger: React_2.ForwardRefExoticComponent<
+    Omit<Tooltip_2.Trigger.Props & React_2.RefAttributes<any>, 'ref'> &
+      React_2.RefAttributes<any>
+  >;
+  Portal: typeof Tooltip_2.Portal;
+  Positioner: React_2.ForwardRefExoticComponent<
+    Omit<
+      Tooltip_2.Positioner.Props & React_2.RefAttributes<HTMLDivElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Popup: React_2.ForwardRefExoticComponent<
+    Omit<Tooltip_2.Popup.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Arrow: React_2.ForwardRefExoticComponent<
+    Omit<Tooltip_2.Arrow.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+};
 
 // @public (undocumented)
 export const useIcons: () => IconContextProps;

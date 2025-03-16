@@ -39,6 +39,7 @@ export * from './components/Checkbox';
 export * from './components/Table';
 export * from './components/Input';
 export * from './components/Field';
+export * from './components/Tooltip';
 export * from './components/Menu';
 export * from './components/ScrollArea';
 
