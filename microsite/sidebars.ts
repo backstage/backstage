@@ -450,6 +450,7 @@ export default {
               'backend-system/core-services/lifecycle',
               'backend-system/core-services/logger',
               'backend-system/core-services/permissions',
+              'backend-system/core-services/permissions-registry',
               'backend-system/core-services/plugin-metadata',
               'backend-system/core-services/root-config',
               'backend-system/core-services/root-health',

@@ -19,10 +19,6 @@ export const PropsTable = <T extends Record<string, PropData>>({
 }) => {
   const completeData = {
     ...data,
-    children: {
-      values: 'ReactNode',
-      responsive: false,
-    },
     className: {
       values: 'string',
       responsive: false,
