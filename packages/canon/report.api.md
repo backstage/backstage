@@ -8,6 +8,7 @@ import type { CSSProperties } from 'react';
 import { Field as Field_2 } from '@base-ui-components/react/field';
 import { ForwardRefExoticComponent } from 'react';
 import { Input as Input_2 } from '@base-ui-components/react/input';
+import { Menu as Menu_2 } from '@base-ui-components/react/menu';
 import { default as React_2 } from 'react';
 import * as React_3 from 'react';
 import { ReactNode } from 'react';
@@ -756,6 +757,30 @@ export const marginPropDefs: (spacingValues: string[]) => {
 
 // @public (undocumented)
 export type MarginProps = GetPropDefTypes<typeof marginPropDefs>;
+
+// @public (undocumented)
+export const Menu: MenuComponent;
+
+// @public (undocumented)
+export type MenuComponent = {
+  Root: typeof Menu_2.Root;
+  Trigger: typeof Menu_2.Trigger;
+  Portal: typeof Menu_2.Portal;
+  Backdrop: typeof Menu_2.Backdrop;
+  Positioner: typeof Menu_2.Positioner;
+  Popup: typeof Menu_2.Popup;
+  Arrow: typeof Menu_2.Arrow;
+  Item: typeof Menu_2.Item;
+  Group: typeof Menu_2.Group;
+  GroupLabel: typeof Menu_2.GroupLabel;
+  RadioGroup: typeof Menu_2.RadioGroup;
+  RadioItem: typeof Menu_2.RadioItem;
+  RadioItemIndicator: typeof Menu_2.RadioItemIndicator;
+  CheckboxItem: typeof Menu_2.CheckboxItem;
+  CheckboxItemIndicator: typeof Menu_2.CheckboxItemIndicator;
+  SubmenuTrigger: typeof Menu_2.SubmenuTrigger;
+  Separator: typeof Menu_2.Separator;
+};
 
 // @public (undocumented)
 export type NonStylingPropDef = {
