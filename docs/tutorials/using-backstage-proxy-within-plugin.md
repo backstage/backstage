@@ -131,7 +131,7 @@ export class MyAwesomeApiClient implements MyAwesomeApi {
     const proxyUri = `${await this.discoveryApi.getBaseUrl('proxy')}/<your-proxy-uri>`;
 
     const resp = await this.fetchApi.fetch(`${proxyUri}${input}`, init);
-    if (!resp.ok) throw new Error(resp);
+    if (!resp.ok) throw new Error(resp.statusText);
     return await resp.json();
   }
 
@@ -151,8 +151,9 @@ export class MyAwesomeApiClient implements MyAwesomeApi {
   }
 ```
 
-> For more information on the DiscoveryApi check out the
-> [docs](../reference/core-plugin-api.discoveryapi.md)
+> Check out the docs for more information on the
+> [DiscoveryApi](../reference/core-plugin-api.discoveryapi.md) or the
+> [FetchApi](../reference/core-plugin-api.fetchapi.md)
 
 ## Bundling your ApiRef with your plugin
 
@@ -171,6 +172,7 @@ import {
   createRoutableExtension,
   createComponentExtension,
   discoveryApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 
 //...
@@ -182,8 +184,12 @@ export const myCustomPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: myAwesomeApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new MyAwesomeApiClient({ discoveryApi }),
+      deps: {
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ discoveryApi, fetchApi }) =>
+        new MyAwesomeApiClient({ discoveryApi, fetchApi }),
     }),
   ],
 });
