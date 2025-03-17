@@ -90,7 +90,6 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
 
       const { result } = await ctx.checkpoint({
         key: `create.project.${organizationSlug}.${teamSlug}`,
-        // eslint-disable-next-line no-loop-func
         fn: async () => {
           const response = await fetch(
             `https://sentry.io/api/0/teams/${organizationSlug}/${teamSlug}/projects/`,
