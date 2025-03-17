@@ -51,7 +51,24 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
   const auth = mockServices.auth();
   const config = mockServices.rootConfig({
-    data: { app: { baseUrl: 'http://localhost' } },
+    data: {
+      app: { baseUrl: 'http://localhost' },
+      notifications: {
+        defaultSettings: {
+          channels: [
+            {
+              id: 'Web',
+              origins: [
+                {
+                  id: 'external:test-service2',
+                  enabled: false,
+                },
+              ],
+            },
+          ],
+        },
+      },
+    },
   });
 
   const catalog = catalogServiceMock({
@@ -502,7 +519,26 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
         channels: [
           {
             id: 'Web',
-            origins: [{ enabled: false, id: 'external:test-service' }],
+            origins: [
+              { enabled: false, id: 'external:test-service' },
+              { enabled: false, id: 'external:test-service2' },
+            ],
+          },
+        ],
+      });
+    });
+
+    it('should return default user settings', async () => {
+      const response = await request(app).get('/settings');
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        channels: [
+          {
+            id: 'Web',
+            origins: [
+              { enabled: true, id: 'external:test-service' },
+              { enabled: false, id: 'external:test-service2' },
+            ],
           },
         ],
       });

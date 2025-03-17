@@ -26,6 +26,7 @@
   "types": "src/index.ts",
   "files": [
     "dist",
+    "config.d.ts",
     "migrations/**/*.{js,d.ts}"
   ],
   "scripts": {
@@ -68,5 +69,6 @@
     "@types/supertest": "^2.0.8",
     "msw": "^1.0.0",
     "supertest": "^7.0.0"
-  }
+  },
+  "configSchema": "config.d.ts"
 }
