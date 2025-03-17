@@ -2,4 +2,4 @@
 '@backstage/plugin-techdocs': patch
 ---
 
-Excludes svg styling from sanitization
+Excludes SVG styling from sanitization

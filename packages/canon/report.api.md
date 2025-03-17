@@ -8,10 +8,13 @@ import type { CSSProperties } from 'react';
 import { Field as Field_2 } from '@base-ui-components/react/field';
 import { ForwardRefExoticComponent } from 'react';
 import { Input as Input_2 } from '@base-ui-components/react/input';
+import { Menu as Menu_2 } from '@base-ui-components/react/menu';
 import { default as React_2 } from 'react';
 import * as React_3 from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
+import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
+import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
 
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
@@ -142,22 +145,12 @@ export const buttonPropDefs: {
 };
 
 // @public
-export interface ButtonProps {
-  // (undocumented)
+export interface ButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   children: React.ReactNode;
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  disabled?: boolean;
-  // (undocumented)
   iconEnd?: IconNames;
-  // (undocumented)
   iconStart?: IconNames;
-  // (undocumented)
   size?: ButtonOwnProps['size'];
-  // (undocumented)
-  style?: React.CSSProperties;
-  // (undocumented)
   variant?: ButtonOwnProps['variant'];
 }
 
@@ -600,6 +593,40 @@ export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
 export const Icon: (props: IconProps) => React_2.JSX.Element;
 
 // @public (undocumented)
+export const IconButton: React_2.ForwardRefExoticComponent<
+  IconButtonProps & React_2.RefAttributes<HTMLButtonElement>
+>;
+
+// @public (undocumented)
+export type IconButtonOwnProps = GetPropDefTypes<typeof iconButtonPropDefs>;
+
+// @public (undocumented)
+export const iconButtonPropDefs: {
+  variant: {
+    type: 'enum';
+    values: ('primary' | 'secondary')[];
+    className: string;
+    default: 'primary';
+    responsive: true;
+  };
+  size: {
+    type: 'enum';
+    values: ('small' | 'medium')[];
+    className: string;
+    default: 'medium';
+    responsive: true;
+  };
+};
+
+// @public
+export interface IconButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
+  icon: IconNames;
+  size?: IconButtonOwnProps['size'];
+  variant?: IconButtonOwnProps['variant'];
+}
+
+// @public (undocumented)
 export const IconContext: Context<IconContextProps>;
 
 // @public (undocumented)
@@ -733,6 +760,30 @@ export const marginPropDefs: (spacingValues: string[]) => {
 export type MarginProps = GetPropDefTypes<typeof marginPropDefs>;
 
 // @public (undocumented)
+export const Menu: MenuComponent;
+
+// @public (undocumented)
+export type MenuComponent = {
+  Root: typeof Menu_2.Root;
+  Trigger: typeof Menu_2.Trigger;
+  Portal: typeof Menu_2.Portal;
+  Backdrop: typeof Menu_2.Backdrop;
+  Positioner: typeof Menu_2.Positioner;
+  Popup: typeof Menu_2.Popup;
+  Arrow: typeof Menu_2.Arrow;
+  Item: typeof Menu_2.Item;
+  Group: typeof Menu_2.Group;
+  GroupLabel: typeof Menu_2.GroupLabel;
+  RadioGroup: typeof Menu_2.RadioGroup;
+  RadioItem: typeof Menu_2.RadioItem;
+  RadioItemIndicator: typeof Menu_2.RadioItemIndicator;
+  CheckboxItem: typeof Menu_2.CheckboxItem;
+  CheckboxItemIndicator: typeof Menu_2.CheckboxItemIndicator;
+  SubmenuTrigger: typeof Menu_2.SubmenuTrigger;
+  Separator: typeof Menu_2.Separator;
+};
+
+// @public (undocumented)
 export type NonStylingPropDef = {
   className?: never;
   customProperties?: never;
@@ -835,6 +886,38 @@ export type Responsive<T> = T | Partial<Record<Breakpoint, T>>;
 // @public (undocumented)
 export type ResponsivePropDef<T = any> = RegularPropDef<T> & {
   responsive: true;
+};
+
+// @public (undocumented)
+export const ScrollArea: {
+  Root: React_2.ForwardRefExoticComponent<
+    Omit<
+      ScrollArea_2.Root.Props & React_2.RefAttributes<HTMLDivElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Viewport: React_2.ForwardRefExoticComponent<
+    Omit<
+      ScrollArea_2.Viewport.Props & React_2.RefAttributes<HTMLDivElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Scrollbar: React_2.ForwardRefExoticComponent<
+    Omit<
+      ScrollArea_2.Scrollbar.Props & React_2.RefAttributes<HTMLDivElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Thumb: React_2.ForwardRefExoticComponent<
+    Omit<
+      ScrollArea_2.Thumb.Props & React_2.RefAttributes<HTMLDivElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
 };
 
 // @public (undocumented)
@@ -957,6 +1040,19 @@ export interface TextProps {
   // (undocumented)
   className?: string;
   // (undocumented)
+  color?:
+    | 'primary'
+    | 'secondary'
+    | 'danger'
+    | 'warning'
+    | 'success'
+    | Partial<
+        Record<
+          Breakpoint,
+          'primary' | 'secondary' | 'danger' | 'warning' | 'success'
+        >
+      >;
+  // (undocumented)
   style?: CSSProperties;
   // (undocumented)
   variant?:
@@ -968,6 +1064,32 @@ export interface TextProps {
   // (undocumented)
   weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
 }
+
+// @public (undocumented)
+export const Tooltip: {
+  Provider: React_2.FC<Tooltip_2.Provider.Props>;
+  Root: React_2.FC<Tooltip_2.Root.Props>;
+  Trigger: React_2.ForwardRefExoticComponent<
+    Omit<Tooltip_2.Trigger.Props & React_2.RefAttributes<any>, 'ref'> &
+      React_2.RefAttributes<any>
+  >;
+  Portal: typeof Tooltip_2.Portal;
+  Positioner: React_2.ForwardRefExoticComponent<
+    Omit<
+      Tooltip_2.Positioner.Props & React_2.RefAttributes<HTMLDivElement>,
+      'ref'
+    > &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Popup: React_2.ForwardRefExoticComponent<
+    Omit<Tooltip_2.Popup.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+  Arrow: React_2.ForwardRefExoticComponent<
+    Omit<Tooltip_2.Arrow.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
+      React_2.RefAttributes<HTMLDivElement>
+  >;
+};
 
 // @public (undocumented)
 export const useIcons: () => IconContextProps;

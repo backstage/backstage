@@ -34,10 +34,14 @@ export * from './components/Heading';
 // UI components
 export * from './components/Button';
 export * from './components/Icon';
+export * from './components/IconButton';
 export * from './components/Checkbox';
 export * from './components/Table';
 export * from './components/Input';
 export * from './components/Field';
+export * from './components/Tooltip';
+export * from './components/Menu';
+export * from './components/ScrollArea';
 
 // Types
 export * from './types';
