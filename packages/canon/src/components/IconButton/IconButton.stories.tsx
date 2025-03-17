@@ -121,13 +121,13 @@ export const Playground: Story = {
               />
               <IconButton
                 {...args}
-                icon="chevronRight"
+                icon="chevron-right"
                 variant={variant as IconButtonProps['variant']}
                 size={size as IconButtonProps['size']}
               />
               <IconButton
                 {...args}
-                icon="chevronRight"
+                icon="chevron-right"
                 variant={variant as IconButtonProps['variant']}
                 size={size as IconButtonProps['size']}
               />
