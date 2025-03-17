@@ -15,7 +15,6 @@
  */
 
 import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
-import '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
 import { GkeClusterLocator } from './GkeClusterLocator';
 import * as container from '@google-cloud/container';

@@ -6846,7 +6846,6 @@ __metadata:
     "@aws-sdk/signature-v4": ^3.347.0
     "@azure/identity": ^4.0.0
     "@backstage/backend-app-api": "workspace:^"
-    "@backstage/backend-common": ^0.25.0
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
@@ -6954,7 +6953,6 @@ __metadata:
   resolution: "@backstage/plugin-kubernetes-node@workspace:plugins/kubernetes-node"
   dependencies:
     "@backstage/backend-app-api": "workspace:^"
-    "@backstage/backend-common": ^0.25.0
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
@@ -29072,7 +29070,6 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-backend": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    "@backstage/plugin-kubernetes-backend": "workspace:^"
     "@backstage/plugin-permission-backend": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
