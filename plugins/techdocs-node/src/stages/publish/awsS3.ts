@@ -496,6 +496,7 @@ export class AwsS3Publish implements PublisherBase {
           })
           .pipe(res);
       } catch (err) {
+        assertError(err);
         this.logger.warn(
           `TechDocs S3 router failed to serve static files from bucket ${this.bucketName} at key ${filePath}: ${err.message}`,
         );
