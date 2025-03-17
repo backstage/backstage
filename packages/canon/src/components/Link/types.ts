@@ -30,4 +30,5 @@ export interface LinkProps
   weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
   className?: string;
   style?: CSSProperties;
+  render?: (props: Omit<LinkProps, 'render'>) => ReactNode;
 }

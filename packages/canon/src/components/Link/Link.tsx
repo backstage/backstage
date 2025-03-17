@@ -28,28 +28,31 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     weight = 'regular',
     style,
     className,
+    render,
     ...restProps
   } = props;
 
-  // Get the responsive values for the variant and weight
   const responsiveVariant = useResponsiveValue(variant);
   const responsiveWeight = useResponsiveValue(weight);
 
-  return (
-    <a
-      ref={ref}
-      className={clsx(
-        'canon-Link',
-        responsiveVariant && `canon-Link--variant-${responsiveVariant}`,
-        responsiveWeight && `canon-Link--weight-${responsiveWeight}`,
-        className,
-      )}
-      style={style}
-      {...restProps}
-    >
-      {children}
-    </a>
-  );
+  const linkProps = {
+    ref,
+    className: clsx(
+      'canon-Link',
+      responsiveVariant && `canon-Link--variant-${responsiveVariant}`,
+      responsiveWeight && `canon-Link--weight-${responsiveWeight}`,
+      className,
+    ),
+    style,
+    children,
+    ...restProps,
+  };
+
+  if (render) {
+    return render(linkProps);
+  }
+
+  return <a {...linkProps} />;
 });
 
 Link.displayName = 'Link';
