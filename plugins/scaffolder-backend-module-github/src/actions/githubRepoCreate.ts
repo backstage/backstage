@@ -196,35 +196,41 @@ export function createGithubRepoCreateAction(options: {
       });
       const client = new Octokit(octokitOptions);
 
-      const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
-        client,
-        repo,
-        owner,
-        repoVisibility,
-        description,
-        homepage,
-        deleteBranchOnMerge,
-        allowMergeCommit,
-        allowSquashMerge,
-        squashMergeCommitTitle,
-        squashMergeCommitMessage,
-        allowRebaseMerge,
-        allowAutoMerge,
-        access,
-        collaborators,
-        hasProjects,
-        hasWiki,
-        hasIssues,
-        topics,
-        repoVariables,
-        secrets,
-        oidcCustomization,
-        customProperties,
-        subscribe,
-        ctx.logger,
-      );
+      const remoteUrl = await ctx.checkpoint({
+        key: `create.repo.and.topics.${owner}.${repo}`,
+        fn: async () => {
+          const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
+            client,
+            repo,
+            owner,
+            repoVisibility,
+            description,
+            homepage,
+            deleteBranchOnMerge,
+            allowMergeCommit,
+            allowSquashMerge,
+            squashMergeCommitTitle,
+            squashMergeCommitMessage,
+            allowRebaseMerge,
+            allowAutoMerge,
+            access,
+            collaborators,
+            hasProjects,
+            hasWiki,
+            hasIssues,
+            topics,
+            repoVariables,
+            secrets,
+            oidcCustomization,
+            customProperties,
+            subscribe,
+            ctx.logger,
+          );
+          return newRepo.clone_url;
+        },
+      });
 
-      ctx.output('remoteUrl', newRepo.clone_url);
+      ctx.output('remoteUrl', remoteUrl);
     },
   });
 }
