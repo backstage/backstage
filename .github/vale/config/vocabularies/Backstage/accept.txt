@@ -223,6 +223,7 @@ learnings
 Leasot
 lerna
 Lerna
+Levenshtein
 lightbox
 Lightsail
 limitranges

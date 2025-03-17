@@ -40,6 +40,7 @@ export type {
 export type {
   ElasticSearchConcreteQuery,
   ElasticSearchClientOptions,
+  ElasticSearchQueryConfig,
   ElasticSearchHighlightConfig,
   ElasticSearchHighlightOptions,
   ElasticSearchQueryTranslator,
