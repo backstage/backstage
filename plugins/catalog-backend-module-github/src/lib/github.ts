@@ -16,6 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { GithubCredentialType } from '@backstage/integration';
+import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods';
 import { graphql } from '@octokit/graphql';
 import {
   defaultOrganizationTeamTransformer,
@@ -29,7 +30,6 @@ import { withLocations } from './withLocations';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Octokit } from '@octokit/core';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { retry } from '@octokit/plugin-retry';
 import { throttling } from '@octokit/plugin-throttling';
 // Graphql types
 
@@ -143,6 +143,7 @@ export async function getOrganizationUsers(
   org: string,
   tokenType: GithubCredentialType,
   userTransformer: UserTransformer = defaultUserTransformer,
+  logger?: LoggerService,
 ): Promise<{ users: Entity[] }> {
   const query = `
     query users($org: String!, $email: Boolean!, $cursor: String) {
@@ -168,12 +169,13 @@ export async function getOrganizationUsers(
     client,
     query,
     org,
-    r => r.organization?.membersWithRole,
+    r => r?.organization?.membersWithRole,
     userTransformer,
     {
       org,
       email: tokenType === 'token',
     },
+    logger,
   );
 
   return { users };
@@ -191,6 +193,7 @@ export async function getOrganizationTeams(
   client: typeof graphql,
   org: string,
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
+  logger?: LoggerService,
 ): Promise<{
   teams: Entity[];
 }> {
@@ -255,9 +258,10 @@ export async function getOrganizationTeams(
     client,
     query,
     org,
-    r => r.organization?.teams,
+    r => r?.organization?.teams,
     materialisedTeams,
     { org },
+    logger,
   );
 
   return { teams };
@@ -339,7 +343,7 @@ export async function getOrganizationTeamsFromUsers(
     client,
     query,
     org,
-    r => r.organization?.teams,
+    r => r?.organization?.teams,
     materialisedTeams,
     { org, userLogins },
   );
@@ -367,7 +371,7 @@ export async function getOrganizationsFromUser(
     client,
     query,
     '',
-    r => r.user?.organizations,
+    r => r?.user?.organizations,
     async o => o.login,
     { user },
   );
@@ -453,6 +457,7 @@ export async function getOrganizationRepositories(
   client: typeof graphql,
   org: string,
   catalogPath: string,
+  logger?: LoggerService,
 ): Promise<{ repositories: RepositoryResponse[] }> {
   let relativeCatalogPathRef: string;
   // We must strip the leading slash or the query for objects does not work
@@ -505,9 +510,10 @@ export async function getOrganizationRepositories(
     client,
     query,
     org,
-    r => r.repositoryOwner?.repositories,
+    r => r?.repositoryOwner?.repositories,
     async x => x,
     { org, catalogPathRef },
+    logger,
   );
 
   return { repositories };
@@ -598,7 +604,7 @@ export async function getTeamMembers(
     client,
     query,
     org,
-    r => r.organization?.team?.members,
+    r => r?.organization?.team?.members,
     async user => user,
     { org, teamSlug },
   );
@@ -633,25 +639,63 @@ export async function queryWithPaging<
   client: typeof graphql,
   query: string,
   org: string,
-  connection: (response: Response) => Connection<GraphqlType> | undefined,
+  connection: (
+    response: Response | undefined,
+  ) => Connection<GraphqlType> | undefined,
   transformer: (
     item: GraphqlType,
     ctx: TransformerContext,
   ) => Promise<OutputType | undefined>,
   variables: Variables,
+  logger?: LoggerService,
 ): Promise<OutputType[]> {
   const result: OutputType[] = [];
   const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
+  if (logger) {
+    logger.debug(`queryWithPaging starts, query=${JSON.stringify(query)}`);
+  }
+
   let cursor: string | undefined = undefined;
   for (let j = 0; j < 1000 /* just for sanity */; ++j) {
-    const response: Response = await client(query, {
-      ...variables,
-      cursor,
-    });
+    let attempts = 0;
+    const maxRetries = 5;
+    let response: Response | undefined = undefined;
+    while (attempts < maxRetries) {
+      attempts += 1;
+      try {
+        response = await client(query, {
+          ...variables,
+          cursor,
+        });
+
+        if (logger) {
+          logger.debug(`j=${j} response=${JSON.stringify(response)}`);
+        }
+        if (response) {
+          break;
+        }
+        await sleep(Math.pow(2, attempts - 1) * 1000);
+      } catch (error) {
+        if (logger) {
+          logger.warn(
+            `caught an error of type ${typeof error} on attempt ${attempts}: ${JSON.stringify(
+              error,
+            )}`,
+          );
+        }
+        if (error?.status !== 502 || attempts === maxRetries) {
+          throw error;
+        }
+        await sleep(Math.pow(2, attempts - 1) * 1000);
+      }
+    }
 
     const conn = connection(response);
     if (!conn) {
+      if (logger) {
+        logger.warn(`connection was not found for j=${j}`);
+      }
       throw new Error(`Found no match for ${JSON.stringify(variables)}`);
     }
 
@@ -672,6 +716,12 @@ export async function queryWithPaging<
     } else {
       await sleep(1000);
       cursor = conn.pageInfo.endCursor;
+    }
+
+    // TODO: remove this when we are done testing
+    const maxLength = 50000;
+    if (result.length > maxLength) {
+      break;
     }
   }
 
@@ -715,44 +765,50 @@ export const createReplaceEntitiesOperation =
   };
 
 /**
- * Creates a GraphQL Client with Throttling
+ * Creates a Octokit Client with Throttling
  */
-export const createGraphqlClient = (args: {
-  headers:
-    | {
-        [name: string]: string;
-      }
-    | undefined;
+export const createOctokitClient = (args: {
+  token: string;
   baseUrl: string;
-  logger: LoggerService;
-}): typeof graphql => {
-  const { headers, baseUrl, logger } = args;
-  const ThrottledOctokit = Octokit.plugin(retry, throttling);
+  logger?: LoggerService;
+}): typeof octokit => {
+  const { token, baseUrl, logger } = args;
+  const ThrottledOctokit = Octokit.plugin(restEndpointMethods, throttling);
   const octokit = new ThrottledOctokit({
+    auth: token,
+    baseUrl,
     throttle: {
       onRateLimit: (retryAfter, rateLimitData, _, retryCount) => {
-        logger.warn(
-          `Request quota exhausted for request ${rateLimitData?.method} ${rateLimitData?.url}`,
-        );
+        if (logger) {
+          logger.warn(
+            `Request quota exhausted for request ${rateLimitData?.method} ${rateLimitData?.url}`,
+          );
+        }
 
         if (retryCount < 2) {
-          logger.warn(
-            `Retrying after ${retryAfter} seconds for the ${retryCount} time due to Rate Limit!`,
-          );
+          if (logger) {
+            logger.warn(
+              `Retrying after ${retryAfter} seconds for the ${retryCount} time due to Rate Limit!`,
+            );
+          }
           return true;
         }
 
         return false;
       },
       onSecondaryRateLimit: (retryAfter, rateLimitData, _, retryCount) => {
-        logger.warn(
-          `Secondary Rate Limit Exhausted for request ${rateLimitData?.method} ${rateLimitData?.url}`,
-        );
+        if (logger) {
+          logger.warn(
+            `Secondary Rate Limit Exhausted for request ${rateLimitData?.method} ${rateLimitData?.url}`,
+          );
+        }
 
         if (retryCount < 2) {
-          logger.warn(
-            `Retrying after ${retryAfter} seconds for the ${retryCount} time due to Secondary Rate Limit!`,
-          );
+          if (logger) {
+            logger.warn(
+              `Retrying after ${retryAfter} seconds for the ${retryCount} time due to Secondary Rate Limit!`,
+            );
+          }
           return true;
         }
 
@@ -761,10 +817,29 @@ export const createGraphqlClient = (args: {
     },
   });
 
-  const client = octokit.graphql.defaults({
-    headers,
-    baseUrl,
-  });
+  return octokit;
+};
 
+/**
+ * Creates a GraphQL Client with Throttling
+ */
+export const createGraphqlClient = (args: {
+  token: string;
+  baseUrl: string;
+  logger: LoggerService;
+}): typeof graphql => {
+  const client = createOctokitClient(args).graphql;
+  return client;
+};
+
+/**
+ * Creates a REST Client with Throttling
+ */
+export const createRestClient = (args: {
+  token: string;
+  baseUrl: string;
+  logger?: LoggerService;
+}): typeof client => {
+  const client = createOctokitClient(args).rest;
   return client;
 };

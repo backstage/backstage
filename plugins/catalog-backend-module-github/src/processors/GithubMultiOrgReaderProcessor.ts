@@ -132,12 +132,12 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
 
     for (const orgConfig of orgsToProcess) {
       try {
-        const { headers, type: tokenType } =
+        const { token, type: tokenType } =
           await this.githubCredentialsProvider.getCredentials({
             url: `${baseUrl}/${orgConfig.name}`,
           });
         const client = createGraphqlClient({
-          headers,
+          token: token!,
           baseUrl: gitHubConfig.apiBaseUrl!,
           logger,
         });
