@@ -117,12 +117,12 @@ describe('oidcAuthenticator', () => {
         return res(
           req.headers.get('Authorization')
             ? ctx.json({
-              access_token: 'accessToken',
-              id_token: idToken,
-              refresh_token: 'refreshToken',
-              scope: 'testScope',
-              expires_in: 3600,
-            })
+                access_token: 'accessToken',
+                id_token: idToken,
+                refresh_token: 'refreshToken',
+                scope: 'testScope',
+                expires_in: 3600,
+              })
             : ctx.status(401),
         );
       }),
