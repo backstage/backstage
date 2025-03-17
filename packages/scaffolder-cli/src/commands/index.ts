@@ -31,12 +31,14 @@ export function registerCommands(program: Command) {
       '-v, --values <values>',
       'Inline JSON or a relative file path to a YAML file containing values to be used in the generation',
     )
-    .action(lazy(() => import('./generate/generate').then(m => m.default)));
+    .action(
+      lazy(() => import('./generate/generate').then(m => m.default as any)),
+    );
 }
 
 // Wraps an action function so that it always exits and handles errors
 function lazy(
-  getActionFunc: () => Promise<(...args: any[]) => Promise<void>>,
+  getActionFunc: () => Promise<{ default: (...args: any[]) => Promise<void> }>,
 ): (...args: any[]) => Promise<never> {
   return async (...args: any[]) => {
     try {
