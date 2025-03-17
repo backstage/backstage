@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, ReactNode, ComponentType } from 'react';
 import type { Breakpoint } from '../../types';
 
 /** @public */
 export interface LinkProps
-  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+  extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'to'> {
   children: ReactNode;
+  to: string;
   variant?:
     | 'subtitle'
     | 'body'
@@ -30,5 +31,10 @@ export interface LinkProps
   weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
   className?: string;
   style?: CSSProperties;
-  render?: (props: Omit<LinkProps, 'render'>) => ReactNode;
+  render?:
+    | ((props: Omit<LinkProps, 'render'>) => ReactNode)
+    | ComponentType<Omit<LinkProps, 'render'>>;
 }
+
+/** @public */
+export type LinkRenderProps = Omit<LinkProps, 'render'>;

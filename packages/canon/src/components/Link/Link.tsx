@@ -14,45 +14,59 @@
  * limitations under the License.
  */
 
-import React, { forwardRef } from 'react';
+import React, { forwardRef, memo, ComponentType } from 'react';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
 
-import type { LinkProps } from './types';
+import type { LinkProps, LinkRenderProps } from './types';
 
 /** @public */
-export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const {
-    children,
-    variant = 'body',
-    weight = 'regular',
-    style,
-    className,
-    render,
-    ...restProps
-  } = props;
-
-  const responsiveVariant = useResponsiveValue(variant);
-  const responsiveWeight = useResponsiveValue(weight);
-
-  const linkProps = {
-    ref,
-    className: clsx(
-      'canon-Link',
-      responsiveVariant && `canon-Link--variant-${responsiveVariant}`,
-      responsiveWeight && `canon-Link--weight-${responsiveWeight}`,
+export const Link = memo(
+  forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
+    const {
+      children,
+      variant = 'body',
+      weight = 'regular',
+      style,
       className,
-    ),
-    style,
-    children,
-    ...restProps,
-  };
+      render,
+      to,
+      ...restProps
+    } = props;
 
-  if (render) {
-    return render(linkProps);
-  }
+    const responsiveVariant = useResponsiveValue(variant);
+    const responsiveWeight = useResponsiveValue(weight);
 
-  return <a {...linkProps} />;
-});
+    const linkProps: LinkRenderProps = {
+      className: clsx(
+        'canon-Link',
+        responsiveVariant && `canon-Link--variant-${responsiveVariant}`,
+        responsiveWeight && `canon-Link--weight-${responsiveWeight}`,
+        className,
+      ),
+      style,
+      children,
+      to,
+      ...restProps,
+    };
+
+    if (render) {
+      // If render is a component type, wrap it in memo to prevent unnecessary re-renders
+      if (typeof render === 'function' && !render.length) {
+        const MemoizedComponent = memo(
+          render as ComponentType<LinkRenderProps>,
+        );
+        return <MemoizedComponent {...linkProps} />;
+      }
+      // If it's a render function, call it directly
+      const RenderComponent = render as (
+        props: LinkRenderProps,
+      ) => React.ReactNode;
+      return <RenderComponent {...linkProps} />;
+    }
+
+    return <a ref={ref} href={to} {...linkProps} />;
+  }),
+);
 
 Link.displayName = 'Link';

@@ -33,7 +33,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    href: 'https://canon.backstage.io',
+    to: 'https://canon.backstage.io',
     children: 'Sign up for Backstage',
   },
 };
@@ -66,6 +66,7 @@ export const AllWeights: Story = {
 
 export const Responsive: Story = {
   args: {
+    ...Default.args,
     variant: {
       xs: 'label',
       md: 'body',
