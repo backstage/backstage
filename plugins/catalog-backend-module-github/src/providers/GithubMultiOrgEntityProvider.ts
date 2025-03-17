@@ -451,7 +451,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       // Fetch group memberships of users in case they already exist and
       // have memberships in groups from other applicable orgs
       for (const userOrg of applicableOrgs) {
-        const { orgToken } =
+        const { token: orgToken } =
           await this.options.githubCredentialsProvider.getCredentials({
             url: `${this.options.githubUrl}/${userOrg}`,
           });
@@ -557,7 +557,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
     if (updateMemberships) {
       for (const userOrg of userApplicableOrgs) {
-        const { orgToken } =
+        const { token: orgToken } =
           await this.options.githubCredentialsProvider.getCredentials({
             url: `${this.options.githubUrl}/${userOrg}`,
           });
@@ -688,7 +688,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     if (usersToRebuild.length) {
       // Update memberships of associated members of this group in case the group entity ref changed
       for (const userOrg of applicableOrgs) {
-        const { orgToken } =
+        const { token: orgToken } =
           await this.options.githubCredentialsProvider.getCredentials({
             url: `${this.options.githubUrl}/${userOrg}`,
           });
@@ -808,7 +808,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       const { orgs } = await getOrganizationsFromUser(client, login);
       const userApplicableOrgs = orgs.filter(o => applicableOrgs.includes(o));
       for (const userOrg of userApplicableOrgs) {
-        const { orgToken } =
+        const { token: orgToken } =
           await this.options.githubCredentialsProvider.getCredentials({
             url: `${this.options.githubUrl}/${userOrg}`,
           });

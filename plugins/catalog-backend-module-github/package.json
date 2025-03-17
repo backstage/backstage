@@ -63,15 +63,13 @@
     "@backstage/plugin-events-node": "workspace:^",
     "@octokit/core": "^5.2.0",
     "@octokit/graphql": "^7.0.2",
-    "@octokit/plugin-paginate-rest": "5.0.1",
-    "@octokit/plugin-rest-endpoint-methods": "6.7.0",
-    "@octokit/plugin-retry": "^6",
+    "@octokit/plugin-paginate-rest": "^11.4.3",
+    "@octokit/plugin-rest-endpoint-methods": "10.4.0",
     "@octokit/plugin-throttling": "^8.1.3",
-    "@octokit/rest": "18.12.0",
+    "@octokit/rest": "^19",
     "git-url-parse": "^15.0.0",
     "lodash": "^4.17.21",
     "minimatch": "^9.0.0",
-    "octokit": "2.0.14",
     "uuid": "^11.0.0"
   },
   "devDependencies": {
