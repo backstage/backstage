@@ -37086,7 +37086,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mkdirp@npm:^0.5.1, mkdirp@npm:^0.5.4, mkdirp@npm:^0.5.5, mkdirp@npm:^0.5.6":
+"mkdirp@npm:^0.5.1, mkdirp@npm:^0.5.4, mkdirp@npm:^0.5.5":
   version: 0.5.6
   resolution: "mkdirp@npm:0.5.6"
   dependencies:
@@ -39805,13 +39805,12 @@ __metadata:
   linkType: hard
 
 "portfinder@npm:^1.0.28, portfinder@npm:^1.0.32":
-  version: 1.0.34
-  resolution: "portfinder@npm:1.0.34"
+  version: 1.0.35
+  resolution: "portfinder@npm:1.0.35"
   dependencies:
     async: ^3.2.6
     debug: ^4.3.6
-    mkdirp: ^0.5.6
-  checksum: 76834bf45c39408d51906f6c12a8a04e9065e6182c3db9b485408ff9f07bb40eca43371088ae32311359d560029879c1ddf495e138956a68833f83cb011686bf
+  checksum: 928fd99f5b41edf231ab2bd76f1062d52eccb53e41d76c11dadd8439a935968884b6e26090b9010c8a161613328322cc41185586a7f85edd8940408cb9ced2ed
   languageName: node
   linkType: hard
 
