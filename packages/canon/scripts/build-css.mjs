@@ -72,7 +72,6 @@ async function buildCSS(logs = true) {
     let { code } = transform({
       filename: `${distDir}/${file.newName}`,
       code: bundleCode,
-      minify: true,
     });
 
     fs.writeFileSync(`${distDir}/${file.newName}`, code);
