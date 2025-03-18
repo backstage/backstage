@@ -194,3 +194,12 @@ export const stylePropDefs: Record<string, PropDef> = {
     responsive: false,
   },
 };
+
+export const childrenPropDefs: Record<string, PropDef> = {
+  children: {
+    type: 'enum',
+    values: ['ReactNode'],
+    required: true,
+    responsive: false,
+  },
+};

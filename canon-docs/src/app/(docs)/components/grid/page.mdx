@@ -6,7 +6,7 @@ import { grid } from '@/snippets/_snippets';
 import { Snippet } from '@/components/Snippet';
 import { GridPreview } from '@/snippets/grid';
 import { spacingPropDefs } from '../../../../utils/propDefs';
-import { gridPropDefs } from './props';
+import { gridPropDefs, gridItemPropDefs } from './props';
 
 # Grid
 
@@ -53,38 +53,7 @@ component. This will give you access to `rowSpan`, `colSpan`, `start` and
 `end`. All values are responsive. This component is optional, you can use any
 elements directly if you prefer.
 
-<PropsTable
-  data={{
-    colSpan: {
-      type: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'full'],
-      responsive: true,
-    },
-    rowSpan: {
-      type: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'full'],
-      responsive: true,
-    },
-    start: {
-      type: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'auto'],
-      responsive: true,
-    },
-    end: {
-      type: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'auto'],
-      responsive: true,
-    },
-    children: {
-      type: 'ReactNode',
-      required: false,
-    },
-    className: {
-      type: 'string',
-      required: false,
-    },
-    style: {
-      type: 'CSSProperties',
-      required: false,
-    },
-  }}
-/>
+<PropsTable data={gridItemPropDefs} />
 
 ## Examples
 
