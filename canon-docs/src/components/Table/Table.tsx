@@ -1,19 +1,3 @@
-/*
- * Copyright 2024 The Backstage Authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import React from 'react';
 import styles from './styles.module.css';
 
@@ -37,9 +21,18 @@ export const HeaderRow = ({ children }: { children: React.ReactNode }) => {
   return <tr>{children}</tr>;
 };
 
-export const HeaderCell = ({ children }: { children: React.ReactNode }) => {
+export const HeaderCell = ({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+}) => {
   return (
-    <th className={`${styles.tableCell} ${styles.tableHeaderCell}`}>
+    <th
+      className={`${styles.tableCell} ${styles.tableHeaderCell}`}
+      style={style}
+    >
       {children}
     </th>
   );
@@ -49,6 +42,16 @@ export const Row = ({ children }: { children: React.ReactNode }) => {
   return <tr className={styles.tableRow}>{children}</tr>;
 };
 
-export const Cell = ({ children }: { children: React.ReactNode }) => {
-  return <td className={styles.tableCell}>{children}</td>;
+export const Cell = ({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+}) => {
+  return (
+    <td className={styles.tableCell} style={style}>
+      {children}
+    </td>
+  );
 };
