@@ -1,5 +1,19 @@
 # @backstage/plugin-search-react
 
+## 1.8.7
+
+### Patch Changes
+
+- c37e480: Capture the number of search results in the search analytics event that correspond to the term entered.
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.17
+
 ## 1.8.7-next.2
 
 ### Patch Changes

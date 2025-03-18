@@ -1,5 +1,32 @@
 # @backstage/backend-defaults
 
+## 0.8.2
+
+### Patch Changes
+
+- e293b66: The default auditor service implementation will now log low severity events with `debug` level instead of `info`.
+- f422984: Remove unused dependencies
+- ecb9bab: Explicitly stringify extra logger fields with `JSON.stringify` to prevent `[object Object]` errors.
+- 12f8e01: The `discovery.endpoints` configuration no longer requires both `internal` and `external` target when using the object form, instead falling back to the default.
+- 89db8b8: `GerritUrlReader` is now able to `search` files matching a given pattern URL (using `minimatch` glob patterns).
+
+  This allows the Gerrit Discovery to find all Backstage manifests inside a repository using the `**/catalog-info.yaml` pattern.
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.0
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/backend-app-api@1.2.1
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.8.2-next.2
 
 ### Patch Changes

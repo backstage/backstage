@@ -1,5 +1,45 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.31.0
+
+### Minor Changes
+
+- 36677bb: Support new `createTemplateAction` type, and convert `catalog:fetch` action to new way of defining actions.
+- 2b1e50d: use CreatedTemplate[Filter|Global*] as canonical template extensions in scaffolder plugin
+
+### Patch Changes
+
+- e0b226b: build(deps): bump `esbuild` from 0.24.2 to 0.25.0
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- 59dcf37: Fixed bug in fs:delete causing no files to be deleted on windows machines
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.8.1
+  - @backstage/integration@1.16.2
+  - @backstage/backend-defaults@0.8.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.7
+  - @backstage/plugin-scaffolder-backend-module-github@0.6.1
+  - @backstage/plugin-scaffolder-node@0.8.0
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-scaffolder-common@1.5.10
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.7
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.8
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.7
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.7
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.7
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.28
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.6
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-permission-common@0.8.4
+
 ## 1.31.0-next.2
 
 ### Minor Changes
