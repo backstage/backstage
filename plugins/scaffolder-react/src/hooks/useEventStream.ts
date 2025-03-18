@@ -206,7 +206,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
         // Mark these logs as processed
         newLogs.forEach(log => processedEventIds.add(log.id));
 
-        if (newLogs.length > 0) {
+        if (newLogs.length) {
           dispatch({ type: 'LOGS', data: newLogs });
         }
 
