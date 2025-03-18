@@ -133,9 +133,14 @@ export function createSendNotificationAction(options: {
       };
 
       try {
-        await notifications.send({
-          recipients: notificationRecipients,
-          payload,
+        await ctx.checkpoint({
+          key: `send.notification.${payload.title}`,
+          fn: async () => {
+            await notifications.send({
+              recipients: notificationRecipients,
+              payload,
+            });
+          },
         });
       } catch (e) {
         ctx.logger.error(`Failed to send notification: ${e}`);
