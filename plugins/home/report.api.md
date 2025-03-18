@@ -50,8 +50,7 @@ export const ComponentAccordion: (props: {
   expanded?: boolean;
   Content: () => JSX.Element;
   Actions?: () => JSX.Element;
-  Settings?: () => JSX./** @public */
-  Element;
+  Settings?: () => JSX.Element;
   ContextProvider?: (props: any) => JSX.Element;
 }) => JSX_2.Element;
 
