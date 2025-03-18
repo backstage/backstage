@@ -45,7 +45,7 @@ There are cases where it's fine to throw hard validation errors in processors. N
 
 ## Can I throw errors when validating entities?
 
-In short: Sometimes. Only if the shape is so wrong that it would not even parse, or violates TypeScript and similar contracts.
+In short: Sometimes, only if the shape is so wrong that it would not even parse or violates TypeScript and similar contracts.
 
 Never throw errors due to "soft" errors, in particular relations not matching an existing target ([see above](#can-i-validate-relations-in-processors)). For soft errors, we recommend instead letting them through into the catalog, and then implementing the checks externally and nudging people gently toward fixing their own metadata. A dynamic info bar at the top of an entity page that informs the owners as they visit the page that a certain relation seems wrong and should be fixed, can go a very long way.
 
