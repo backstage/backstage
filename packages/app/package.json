@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@backstage/app-defaults": "workspace:^",
+    "@backstage/canon": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^",
