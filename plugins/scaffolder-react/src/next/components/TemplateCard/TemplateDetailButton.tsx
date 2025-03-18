@@ -23,7 +23,7 @@ import {
   entityRouteParams,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { useApp, useRouteRef } from '@backstage/core-plugin-api';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { scaffolderReactTranslationRef } from '../../../translation';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
@@ -39,6 +39,9 @@ export const TemplateDetailButton = ({
   const { t } = useTranslationRef(scaffolderReactTranslationRef);
   const entityRef = stringifyEntityRef(template);
 
+  const app = useApp();
+  const TemplateIcon = app.getSystemIcon('kind:template') || DescriptionIcon;
+
   return (
     <Tooltip id={`tooltip-${entityRef}`} title={t('cardHeader.detailBtnTitle')}>
       <IconButton
@@ -52,7 +55,7 @@ export const TemplateDetailButton = ({
             to={catalogEntityRoute(entityRouteParams(template))}
             style={{ display: 'flex', alignItems: 'center' }}
           >
-            <DescriptionIcon />
+            <TemplateIcon />
           </Link>
         </Typography>
       </IconButton>
