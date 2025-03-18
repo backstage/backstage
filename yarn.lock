@@ -7623,6 +7623,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@octokit/webhooks": ^10.9.2
     "@types/libsodium-wrappers": ^0.7.10
     fs-extra: ^11.2.0
