@@ -35,16 +35,16 @@ import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
 
-backend.add(import('@backstage/plugin-app-backend/alpha'));
+backend.add(import('@backstage/plugin-app-backend'));
 
 // catalog plugin
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
 
 // scaffolder plugin
-backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend'));
 /* highlight-add-next-line */
 backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
 
@@ -82,16 +82,16 @@ allow most templates built for `fetch:cookiecutter` to work without any changes.
 ```yaml title="template.yaml"
 steps:
    - id: fetch-base
-   name: Fetch Base
-   # highlight-remove-next-line
-   action: fetch:cookiecutter
-   # highlight-add-next-line
-   action: fetch:template
-   input:
-      url: ./skeleton
-      # highlight-add-next-line
-      cookiecutterCompat: true
-      values:
+     name: Fetch Base
+     # highlight-remove-next-line
+     action: fetch:cookiecutter
+     # highlight-add-next-line
+     action: fetch:template
+     input:
+        url: ./skeleton
+        # highlight-add-next-line
+        cookiecutterCompat: true
+        values:
 ```
 
 ### Manual migration

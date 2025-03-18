@@ -1,6 +1,6 @@
 {
   "name": "@backstage/integration",
-  "version": "1.14.0",
+  "version": "1.16.2",
   "description": "Helpers for managing integrations towards external systems",
   "backstage": {
     "role": "common-library"
@@ -38,12 +38,13 @@
   },
   "dependencies": {
     "@azure/identity": "^4.0.0",
+    "@azure/storage-blob": "^12.5.0",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@octokit/auth-app": "^4.0.0",
     "@octokit/rest": "^19.0.3",
     "cross-fetch": "^4.0.0",
-    "git-url-parse": "^14.0.0",
+    "git-url-parse": "^15.0.0",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0"
   },

@@ -15,6 +15,7 @@
  */
 
 import { parseSyml } from '@yarnpkg/parsers';
+import crypto from 'node:crypto';
 import fs from 'fs-extra';
 
 const ENTRY_PATTERN = /^((?:@[^/]+\/)?[^@/]+)@(.+)$/;
@@ -214,5 +215,64 @@ export class Lockfile {
     }
 
     return diff;
+  }
+
+  /**
+   * Generates a sha1 hex hash of the dependency graph for a package.
+   */
+  getDependencyTreeHash(startName: string): string {
+    if (!this.packages.has(startName)) {
+      throw new Error(`Package '${startName}' not found in lockfile`);
+    }
+
+    const hash = crypto.createHash('sha1');
+
+    const queue = [startName];
+    const seen = new Set<string>();
+
+    while (queue.length > 0) {
+      const name = queue.pop()!;
+
+      if (seen.has(name)) {
+        continue;
+      }
+      seen.add(name);
+
+      const entries = this.packages.get(name);
+      if (!entries) {
+        continue; // In case of missing optional peer dependencies
+      }
+
+      hash.update(`pkg:${name}`);
+      hash.update('\0');
+
+      // TODO(Rugvip): This uses the same simplified lookup as createSimplifiedDependencyGraph()
+      //               we could match version queries to make the resulting tree a bit smaller.
+      const deps = new Array<string>();
+      for (const entry of entries) {
+        // We're not being particular about stable ordering here. If the lockfile ordering changes, so will likely hash.
+        hash.update(entry.version);
+
+        const data = this.data[entry.dataKey];
+        if (!data) {
+          continue;
+        }
+
+        const checksum = data.checksum || data.integrity;
+        if (checksum) {
+          hash.update('#');
+          hash.update(checksum);
+        }
+
+        hash.update(' ');
+
+        deps.push(...Object.keys(data.dependencies ?? {}));
+        deps.push(...Object.keys(data.peerDependencies ?? {}));
+      }
+
+      queue.push(...new Set(deps));
+    }
+
+    return hash.digest('hex');
   }
 }

@@ -46,7 +46,6 @@ describe('AppRootWrapperBlueprint', () => {
         "inputs": {},
         "kind": "app-root-wrapper",
         "name": undefined,
-        "namespace": undefined,
         "output": [
           [Function],
         ],

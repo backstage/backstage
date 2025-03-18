@@ -20,7 +20,7 @@ import userEvent from '@testing-library/user-event';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/core-app-api';
 import {
-  MockAnalyticsApi,
+  mockApis,
   TestApiProvider,
   renderInTestApp,
 } from '@backstage/test-utils';
@@ -273,7 +273,7 @@ describe('SearchBar', () => {
   });
 
   it('Does not capture analytics event if not enabled in app', async () => {
-    const analyticsApiMock = new MockAnalyticsApi();
+    const analyticsApiMock = mockApis.analytics();
 
     await renderInTestApp(
       <TestApiProvider
@@ -296,7 +296,7 @@ describe('SearchBar', () => {
 
     await waitFor(() => expect(textbox).toHaveValue(value));
 
-    expect(analyticsApiMock.getEvents()).toHaveLength(0);
+    expect(analyticsApiMock.captureEvent).not.toHaveBeenCalled();
   });
 
   it('Renders custom search icon', async () => {

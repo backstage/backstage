@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { KeyObject } from 'crypto';
 import * as crypto from 'crypto';
 import { JWTHeaderParameters, decodeJwt } from 'jose';
 import NodeCache from 'node-cache';
-import fetch from 'node-fetch';
 import { PassportProfile, ProfileInfo } from '@backstage/plugin-auth-node';
 import { AuthenticationError } from '@backstage/errors';
 

@@ -125,3 +125,16 @@ export type NotificationProcessorFilters = {
   maxSeverity?: NotificationSeverity;
   excludedTopics?: string[];
 };
+
+/**
+ * @public
+ */
+export type NotificationSettings = {
+  channels: {
+    id: string;
+    origins: {
+      id: string;
+      enabled: boolean;
+    }[];
+  }[];
+};

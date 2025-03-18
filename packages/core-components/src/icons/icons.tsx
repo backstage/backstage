@@ -95,3 +95,11 @@ export function UserIcon(props: IconComponentProps) {
 export function WarningIcon(props: IconComponentProps) {
   return <AppIcon id="warning" {...props} />;
 }
+/** @public */
+export function StarIcon(props: IconComponentProps) {
+  return <AppIcon id="star" {...props} />;
+}
+/** @public */
+export function UnstarredIcon(props: IconComponentProps) {
+  return <AppIcon id="unstarred" {...props} />;
+}

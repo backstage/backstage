@@ -35,13 +35,13 @@ Then add the following to your backend initialization:
 
 ```ts title="packages/backend/src/index.ts
 // optional if you want HTTP endpoints to receive external events
-// backend.add(import('@backstage/plugin-events-backend/alpha'));
+// backend.add(import('@backstage/plugin-events-backend'));
 // optional if you want to use AWS SQS instead of HTTP endpoints to receive external events
-// backend.add(import('@backstage/plugin-events-backend-module-aws-sqs/alpha'));
+// backend.add(import('@backstage/plugin-events-backend-module-aws-sqs'));
 // optional - event router for gitlab. See.: https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-gitlab/README.md
-// backend.add(eventsModuleGitlabEventRouter());
+// backend.add(eventsModuleGitlabEventRouter);
 // optional - token validator for the gitlab topic
-// backend.add(eventsModuleGitlabWebhook());
+// backend.add(eventsModuleGitlabWebhook);
 backend.add(import('@backstage/plugin-catalog-backend-module-gitlab-org'));
 ```
 
@@ -170,8 +170,11 @@ catalog:
       yourProviderId:
         host: gitlab.com
         orgEnabled: true
-        group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
-        allowInherited: true # Allow groups to be ingested even if there are no direct members.
+        group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only this group and groups under the provided path (which will be stripped)
+        relations: # Optional
+          - INHERITED # Optional. Members of any ancestor groups will also be considered members of the current group.
+          - DESCENDANTS # Optional. Members of any descendant groups will also be considered members of the current group.
+          - SHARED_FROM_GROUPS # Optional. Members of any invited groups will also be considered members of the current group.
         groupPattern: '[\s\S]*' # Optional. Filters found groups based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
         schedule: # Same options as in SchedulerServiceTaskScheduleDefinition. Optional for the Legacy Backend System.
           # supports cron, ISO duration, "human duration" as used in code
@@ -193,6 +196,32 @@ entities will only be ingested for the configured group, or its descendant group
 but not any ancestor groups higher than the configured group path. Only groups
 which contain members will be ingested.
 
+### Subgroup Membership
+
+GitLab groups and subgroups provide a hierarchical structure for organizing projects and users. Membership in a parent group extends automatically to its subgroups, ensuring consistent permissions at all levels. Additionally, membership can be managed using invited groups, where one group can be added to another. For Backstage users integrating with GitLab, understanding this [inheritance model](https://docs.gitlab.co.jp/ee/user/group/subgroups/#subgroup-membership) and the concept of invited groups is crucial for accurately mapping and managing group and user entities.
+
+The `GitLabOrgDiscoveryEntityProvider` mirrors GitLab's membership behavior as follows:
+
+- By default, every direct member of a GitLab group is also a member of the corresponding group in Backstage.
+- To include members of subgroups as members of the parent group, configure the `relations` array with the `DESCENDANTS` option.
+- To include members of parent groups as members of their subgroups, configure the `relations` array with the `INHERITED` option. This also has the effect that subgroups with no direct members will not be skipped in the group ingestion process and will be added as a group entity in Backstage;
+- To include members of invited groups as members of the inviting group, configure the `relations` array with the `SHARED_FROM_GROUPS` option.
+
+The previous `allowInherited` will be deprecated in future versions. Use the `relations` array with the `INHERITED` option instead.
+
+```yaml
+catalog:
+  providers:
+    gitlab:
+      development:
+        relations:
+          - INHERITED
+          - DESCENDANTS
+          - SHARED_FROM_GROUPS
+```
+
+Refer to the [GitLab Group Member Relation](https://docs.gitlab.com/ee/api/graphql/reference/#groupmemberrelation) documentation for more information.
+
 ### Users
 
 For self hosted, all `User` entities are ingested from the entire instance by default.
@@ -202,6 +231,8 @@ of the top-level group for the configured group path will be ingested.
 
 In both cases (SaaS & self hosted), you can limit the ingested users to users directly assigned to the group defined in your `app-config.yaml` by setting the configuration key `restrictUsersToGroup: true`. This is especially useful when you have a large user base that you don't want to import by default.
 
+On SaaS, you can choose to include users to be ingested that do not have a paid seat. This can be useful when using a free version of Gitlab, or when you use Guest Users on Gitlab Ultimate. Unfortunately, this will also lead to some technical users that might be imported into your user base. While project & group access tokens are filtered, service accounts will remain. [Learn more about Billable Users](https://docs.gitlab.com/ee/subscriptions/self_managed/index.html#billable-users).
+
 ```yaml
 catalog:
   providers:
@@ -209,8 +240,9 @@ catalog:
       yourProviderId:
         host: gitlab.com ## Could also be self hosted.
         orgEnabled: true
-        group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
-        restrictUsersToGroup: true # Backstage will ingest only users directly assigned to org/teams.
+        group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only this group and groups under the provided path (which will be stripped)
+        restrictUsersToGroup: true # Optional: Backstage will ingest only users directly assigned to org/teams.
+        includeUsersWithoutSeat: false # Optional: Set to true to include users without paid seat, only applicable for SaaS
 ```
 
 ### Limiting `User` and `Group` entity ingestion in the provider

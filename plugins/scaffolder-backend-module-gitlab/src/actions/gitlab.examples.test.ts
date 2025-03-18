@@ -38,17 +38,20 @@ const mockGitlabClient = {
   Namespaces: {
     show: jest.fn(),
   },
+  Groups: {
+    allProjects: jest.fn(),
+  },
   Projects: {
     create: jest.fn(),
   },
   Users: {
-    current: jest.fn(),
+    showCurrentUser: jest.fn(),
   },
   ProjectMembers: {
     add: jest.fn(),
   },
 };
-jest.mock('@gitbeaker/node', () => ({
+jest.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -86,8 +89,9 @@ describe('publish:gitlab', () => {
   });
 
   it('should call initRepoAndPush with the correct values', async () => {
-    mockGitlabClient.Users.current.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
     mockGitlabClient.Projects.create.mockResolvedValue({
       http_url_to_repo: 'http://mockurl.git',
     });

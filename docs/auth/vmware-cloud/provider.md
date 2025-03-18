@@ -47,12 +47,12 @@ auth:
       development:
         clientId: ${APP_ID}
         organizationId: ${ORG_ID}
+        ## uncomment to set lifespan of user session
+        # sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
         signIn:
           resolvers:
-            # typically you would pick one of these
+            # See https://backstage.io/docs/auth/vmware-cloud/provider#resolvers for more resolvers
             - resolver: emailMatchingUserEntityProfileEmail
-            - resolver: emailLocalPartMatchingUserEntityName
-            - resolver: vmwareCloudSignInResolvers
 ```
 
 Where `APP_ID` refers to the ID retrieved when creating the OAuth App, and
@@ -70,13 +70,16 @@ key for signing session cookies set by Backstage.
 
 :::
 
+### Optional
+
+- `sessionDuration`: Lifespan of the user session.
+
 ### Resolvers
 
 This provider includes several resolvers out of the box that you can use:
 
 - `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found it will throw a `NotFoundError`.
 - `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
-- `vmwareCloudSignInResolvers`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found it will sign in the user without associating with a catalog user.
 
 :::note Note
 

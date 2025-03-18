@@ -25,8 +25,8 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
 import {
-  catalogApiRef,
   CATALOG_FILTER_EXISTS,
+  catalogApiRef,
 } from '@backstage/plugin-catalog-react';
 import { SearchType } from '@backstage/plugin-search';
 import {
@@ -38,7 +38,10 @@ import {
   useSearch,
 } from '@backstage/plugin-search-react';
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
-import { Grid, makeStyles, Paper, Theme } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+import { Theme } from '@material-ui/core/styles/createTheme';
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -70,7 +73,7 @@ const SearchPage = () => {
           {!isMobile && (
             <Grid item xs={3}>
               <SearchType.Accordion
-                name="Result Type"
+                name="Result type"
                 defaultValue="software-catalog"
                 showCounts
                 types={[
@@ -114,7 +117,7 @@ const SearchPage = () => {
                   name="kind"
                   values={['Component', 'Template']}
                 />
-                <SearchFilter.Checkbox
+                <SearchFilter.Select
                   className={classes.filter}
                   label="Lifecycle"
                   name="lifecycle"

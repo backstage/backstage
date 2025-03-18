@@ -1,11 +1,20 @@
 .yarn
 dist
 microsite
+canon-docs/.next
+canon-docs/public
+canon-docs/out
+packages/canon/css
 coverage
 *.hbs
 templates
+# old reports
 api-report.md
 api-report-*.md
+# new reports
+report.api.md
+report-*.api.md
+
 knip-report.md
 cli-report.md
 plugins/scaffolder-backend/sample-templates

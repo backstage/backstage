@@ -14,62 +14,74 @@
  * limitations under the License.
  */
 import { useAnalytics, useApiHolder } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import {
+  FieldExtensionOptions,
+  FormProps,
+  LayoutOptions,
+  ReviewStepProps,
+  TemplateParameterSchema,
+} from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
-import MuiStepper from '@material-ui/core/Stepper';
-import MuiStep from '@material-ui/core/Step';
-import MuiStepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import MuiStep from '@material-ui/core/Step';
+import MuiStepLabel from '@material-ui/core/StepLabel';
+import MuiStepper from '@material-ui/core/Stepper';
+import { makeStyles } from '@material-ui/core/styles';
 import { type IChangeEvent } from '@rjsf/core';
 import { ErrorSchema } from '@rjsf/utils';
+import { customizeValidator } from '@rjsf/validator-ajv8';
+import ajvErrors from 'ajv-errors';
+import { merge } from 'lodash';
 import React, {
+  ComponentType,
   useCallback,
   useMemo,
   useState,
   type ReactNode,
-  ComponentType,
 } from 'react';
+
+import { scaffolderReactTranslationRef } from '../../../translation';
+import { useFormDataFromQuery, useTemplateSchema } from '../../hooks';
+import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
+import { Form } from '../Form';
+import { PasswordWidget } from '../PasswordWidget/PasswordWidget';
+import { ReviewState, type ReviewStateProps } from '../ReviewState';
 import {
   createAsyncValidators,
   type FormValidation,
 } from './createAsyncValidators';
-import { ReviewState, type ReviewStateProps } from '../ReviewState';
-import { useTemplateSchema, useFormDataFromQuery } from '../../hooks';
-import { customizeValidator } from '@rjsf/validator-ajv8';
-import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
-import { hasErrors } from './utils';
-import * as FieldOverrides from './FieldOverrides';
-import { Form } from '../Form';
-import {
-  TemplateParameterSchema,
-  LayoutOptions,
-  FieldExtensionOptions,
-  FormProps,
-} from '@backstage/plugin-scaffolder-react';
-import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { ErrorListTemplate } from './ErrorListTemplate';
-import { makeStyles } from '@material-ui/core/styles';
-import { PasswordWidget } from '../PasswordWidget/PasswordWidget';
-import ajvErrors from 'ajv-errors';
-import { merge } from 'lodash';
+import * as FieldOverrides from './FieldOverrides';
+import { hasErrors } from './utils';
 
 const validator = customizeValidator();
 ajvErrors(validator.ajv);
 
-const useStyles = makeStyles(theme => ({
-  backButton: {
-    marginRight: theme.spacing(1),
-  },
-  footer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'right',
-    marginTop: theme.spacing(2),
-  },
-  formWrapper: {
-    padding: theme.spacing(2),
-  },
-}));
+/** @alpha */
+export type BackstageTemplateStepperClassKey =
+  | 'backButton'
+  | 'footer'
+  | 'formWrapper';
+
+const useStyles = makeStyles(
+  theme => ({
+    backButton: {
+      marginRight: theme.spacing(1),
+    },
+    footer: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'right',
+      marginTop: theme.spacing(2),
+    },
+    formWrapper: {
+      padding: theme.spacing(2),
+    },
+  }),
+  { name: 'BackstageTemplateStepper' },
+);
 
 /**
  * The Props for {@link Stepper} component
@@ -102,13 +114,14 @@ export type StepperProps = {
  * @alpha
  */
 export const Stepper = (stepperProps: StepperProps) => {
-  const { layouts = [], components = {}, ...props } = stepperProps;
+  const { t } = useTranslationRef(scaffolderReactTranslationRef);
+  const { layouts = [], components = {}, onCreate, ...props } = stepperProps;
   const {
     ReviewStateComponent = ReviewState,
     ReviewStepComponent,
-    backButtonText = 'Back',
-    createButtonText = 'Create',
-    reviewButtonText = 'Review',
+    backButtonText = t('stepper.backButtonText'),
+    createButtonText = t('stepper.createButtonText'),
+    reviewButtonText = t('stepper.reviewButtonText'),
   } = components;
   const analytics = useAnalytics();
   const { presentation, steps } = useTemplateSchema(props.manifest);
@@ -116,14 +129,11 @@ export const Stepper = (stepperProps: StepperProps) => {
   const [activeStep, setActiveStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
   const [initialState] = useFormDataFromQuery(props.initialState);
-  const [formState, setFormState] = useState<{
-    [step: string]: Record<string, JsonValue>;
-  }>();
+  const [stepsState, setStepsState] =
+    useState<Record<string, JsonValue>>(initialState);
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
-
-  const makeStepKey = (step: string | number) => `step-${step}`;
 
   const backLabel =
     presentation?.buttonLabels?.backButtonText ?? backButtonText;
@@ -155,77 +165,72 @@ export const Stepper = (stepperProps: StepperProps) => {
     });
   }, [steps, activeStep, validators, apiHolder]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
-  };
-
-  const handleChange = useCallback(
-    (e: IChangeEvent) => {
-      setFormState(current => ({
-        ...current,
-        [makeStepKey(activeStep)]: e.formData,
-      }));
-    },
-    [setFormState, activeStep],
-  );
+  }, [setActiveStep]);
 
   const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
-
-  const handleNext = async ({
-    formData = {},
-  }: {
-    formData?: Record<string, JsonValue>;
-  }) => {
-    // The validation should never throw, as the validators are wrapped in a try/catch.
-    // This makes it fine to set and unset state without try/catch.
-    setErrors(undefined);
-    setIsValidating(true);
-
-    const returnedValidation = await validation(formData);
-
-    setIsValidating(false);
-
-    if (hasErrors(returnedValidation)) {
-      setErrors(returnedValidation);
-    } else {
-      setErrors(undefined);
-      setActiveStep(prevActiveStep => {
-        const stepNum = prevActiveStep + 1;
-        analytics.captureEvent('click', `Next Step (${stepNum})`);
-        return stepNum;
-      });
-    }
-    setFormState(current => ({
-      ...current,
-      [makeStepKey(activeStep)]: formData,
-    }));
-  };
 
   const {
     formContext: propFormContext,
     uiSchema: propUiSchema,
+    liveOmit: _shouldLiveOmit,
+    omitExtraData: _shouldOmitExtraData,
     ...restFormProps
   } = props.formProps ?? {};
 
+  const handleChange = useCallback(
+    (e: IChangeEvent) => {
+      setStepsState(current => {
+        return { ...current, ...e.formData };
+      });
+    },
+    [setStepsState],
+  );
+
+  const handleNext = useCallback(
+    async ({ formData = {} }: { formData?: Record<string, JsonValue> }) => {
+      // The validation should never throw, as the validators are wrapped in a try/catch.
+      // This makes it fine to set and unset state without try/catch.
+      setErrors(undefined);
+      setIsValidating(true);
+
+      const returnedValidation = await validation(formData);
+
+      setStepsState(current => ({
+        ...current,
+        ...formData,
+      }));
+
+      setIsValidating(false);
+
+      if (hasErrors(returnedValidation)) {
+        setErrors(returnedValidation);
+      } else {
+        setErrors(undefined);
+        setActiveStep(prevActiveStep => {
+          const stepNum = prevActiveStep + 1;
+          analytics.captureEvent('click', `Next Step (${stepNum})`);
+          return stepNum;
+        });
+      }
+    },
+    [validation, analytics],
+  );
+
   const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
 
-  const mergedState = useMemo(() => {
-    if (!formState) {
-      return initialState;
-    }
-    const { [makeStepKey(activeStep)]: activeState, ...historicalState } =
-      formState;
-    const chronologicalState = {
-      ...historicalState,
-      [makeStepKey(activeStep)]: activeState,
-    };
-    return merge({}, ...Object.values(chronologicalState));
-  }, [formState, activeStep, initialState]);
+  const [isCreating, setIsCreating] = useState(false);
 
-  const handleCreate = useCallback(() => {
-    props.onCreate(mergedState);
+  const handleCreate = useCallback(async () => {
+    setIsCreating(true);
     analytics.captureEvent('click', `${createLabel}`);
-  }, [props, mergedState, analytics, createLabel]);
+    try {
+      await onCreate(stepsState);
+    } finally {
+      setIsCreating(false);
+    }
+  }, [analytics, createLabel, onCreate, stepsState]);
 
   return (
     <>
@@ -241,7 +246,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           return (
             <MuiStep key={index}>
               <MuiStepLabel
-                aria-label={`Step ${index + 1}`}
+                aria-label={t('stepper.stepIndexLabel', { index: index + 1 })}
                 style={{ cursor: isAllowedLabelClick ? 'pointer' : 'default' }}
                 onClick={() => {
                   if (isAllowedLabelClick) setActiveStep(index);
@@ -260,10 +265,11 @@ export const Stepper = (stepperProps: StepperProps) => {
         {/* eslint-disable-next-line no-nested-ternary */}
         {activeStep < steps.length ? (
           <Form
+            key={activeStep}
             validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
-            formData={mergedState}
-            formContext={{ ...propFormContext, formData: mergedState }}
+            formData={stepsState}
+            formContext={{ ...propFormContext, formData: stepsState }}
             schema={currentStep.schema}
             uiSchema={mergedUiSchema}
             onSubmit={handleNext}
@@ -291,7 +297,9 @@ export const Stepper = (stepperProps: StepperProps) => {
                 type="submit"
                 disabled={isValidating}
               >
-                {activeStep === steps.length - 1 ? reviewLabel : 'Next'}
+                {activeStep === steps.length - 1
+                  ? reviewLabel
+                  : t('stepper.nextButtonText')}
               </Button>
             </div>
           </Form>
@@ -299,7 +307,7 @@ export const Stepper = (stepperProps: StepperProps) => {
         ReviewStepComponent ? (
           <ReviewStepComponent
             disableButtons={isValidating}
-            formData={mergedState}
+            formData={stepsState}
             handleBack={handleBack}
             handleReset={() => {}}
             steps={steps}
@@ -307,7 +315,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           />
         ) : (
           <>
-            <ReviewStateComponent formState={mergedState} schemas={steps} />
+            <ReviewStateComponent formState={stepsState} schemas={steps} />
             <div className={styles.footer}>
               <Button
                 onClick={handleBack}
@@ -317,6 +325,7 @@ export const Stepper = (stepperProps: StepperProps) => {
                 {backLabel}
               </Button>
               <Button
+                disabled={isCreating}
                 variant="contained"
                 color="primary"
                 onClick={handleCreate}

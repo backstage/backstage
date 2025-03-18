@@ -14,30 +14,18 @@
  * limitations under the License.
  */
 
-import { CatalogApi, Location } from '@backstage/catalog-client';
+import { Location } from '@backstage/catalog-client';
 import { Entity, ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { catalogApiRef } from '../../api';
 import { renderHook, waitFor } from '@testing-library/react';
 import React from 'react';
 import { useUnregisterEntityDialogState } from './useUnregisterEntityDialogState';
 import { TestApiProvider } from '@backstage/test-utils';
-
-function defer<T>(): { promise: Promise<T>; resolve: (value: T) => void } {
-  let resolve: (value: T) => void = () => {};
-  const promise = new Promise<T>(_resolve => {
-    resolve = _resolve;
-  });
-  return { promise, resolve };
-}
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { createDeferred } from '@backstage/types';
 
 describe('useUnregisterEntityDialogState', () => {
-  const catalogApiMock = {
-    getLocationByRef: jest.fn(),
-    getEntities: jest.fn(),
-    removeLocationById: jest.fn(),
-    removeEntityByUid: jest.fn(),
-  };
-  const catalogApi = catalogApiMock as Partial<CatalogApi> as CatalogApi;
+  const catalogApi = catalogApiMock.mock();
 
   const Wrapper = (props: { children?: React.ReactNode }) => (
     <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -52,15 +40,15 @@ describe('useUnregisterEntityDialogState', () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
-    const deferredLocation = defer<Location | undefined>();
-    const deferredColocatedEntities = defer<Entity[]>();
+    const deferredLocation = createDeferred<Location | undefined>();
+    const deferredColocatedEntities = createDeferred<Entity[]>();
 
     resolveLocation = deferredLocation.resolve;
     resolveColocatedEntities = deferredColocatedEntities.resolve;
 
-    catalogApiMock.getLocationByRef.mockReturnValue(deferredLocation.promise);
-    catalogApiMock.getEntities.mockReturnValue(
-      deferredColocatedEntities.promise.then(items => ({ items })),
+    catalogApi.getLocationByRef.mockReturnValue(deferredLocation);
+    catalogApi.getEntities.mockReturnValue(
+      deferredColocatedEntities.then(items => ({ items })),
     );
 
     entity = {

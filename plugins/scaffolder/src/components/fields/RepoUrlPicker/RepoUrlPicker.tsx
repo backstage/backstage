@@ -15,26 +15,26 @@
  */
 import { useApi } from '@backstage/core-plugin-api';
 import {
-  scmIntegrationsApiRef,
   scmAuthApiRef,
+  scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { GithubRepoPicker } from './GithubRepoPicker';
-import { GiteaRepoPicker } from './GiteaRepoPicker';
-import { GitlabRepoPicker } from './GitlabRepoPicker';
-import { AzureRepoPicker } from './AzureRepoPicker';
-import { BitbucketRepoPicker } from './BitbucketRepoPicker';
-import { GerritRepoPicker } from './GerritRepoPicker';
-import { RepoUrlPickerHost } from './RepoUrlPickerHost';
-import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
-import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
-import { RepoUrlPickerProps } from './schema';
-import { RepoUrlPickerState } from './types';
-import useDebounce from 'react-use/esm/useDebounce';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import useDebounce from 'react-use/esm/useDebounce';
+import { AzureRepoPicker } from './AzureRepoPicker';
+import { BitbucketRepoPicker } from './BitbucketRepoPicker';
+import { GerritRepoPicker } from './GerritRepoPicker';
+import { GiteaRepoPicker } from './GiteaRepoPicker';
+import { GithubRepoPicker } from './GithubRepoPicker';
+import { GitlabRepoPicker } from './GitlabRepoPicker';
+import { RepoUrlPickerHost } from './RepoUrlPickerHost';
+import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
+import { RepoUrlPickerFieldSchema } from './schema';
+import { RepoUrlPickerState } from './types';
+import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
 
 export { RepoUrlPickerSchema } from './schema';
 
@@ -44,7 +44,9 @@ export { RepoUrlPickerSchema } from './schema';
  *
  * @public
  */
-export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
+export const RepoUrlPicker = (
+  props: typeof RepoUrlPickerFieldSchema.TProps,
+) => {
   const { uiSchema, onChange, rawErrors, formData, schema } = props;
   const [state, setState] = useState<RepoUrlPickerState>(
     parseRepoPickerUrl(formData),
@@ -75,7 +77,10 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
     () => uiSchema?.['ui:options']?.allowedRepos ?? [],
     [uiSchema],
   );
-
+  const isDisabled = useMemo(
+    () => uiSchema?.['ui:disabled'] ?? false,
+    [uiSchema],
+  );
   const { owner, organization, project, repoName } = state;
 
   useEffect(() => {
@@ -177,6 +182,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
         hosts={allowedHosts}
         onChange={host => setState(prevState => ({ ...prevState, host }))}
         rawErrors={rawErrors}
+        isDisabled={isDisabled}
       />
       {hostType === 'github' && (
         <GithubRepoPicker
@@ -184,6 +190,11 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           onChange={updateLocalState}
           rawErrors={rawErrors}
           state={state}
+          isDisabled={isDisabled}
+          accessToken={
+            uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
+            secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
+          }
         />
       )}
       {hostType === 'gitea' && (
@@ -192,6 +203,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           allowedRepos={allowedRepos}
           rawErrors={rawErrors}
           state={state}
+          isDisabled={isDisabled}
           onChange={updateLocalState}
         />
       )}
@@ -201,6 +213,11 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
+          isDisabled={isDisabled}
+          accessToken={
+            uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
+            secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
+          }
         />
       )}
       {hostType === 'bitbucket' && (
@@ -210,6 +227,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
+          isDisabled={isDisabled}
           accessToken={
             uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
             secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
@@ -222,6 +240,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           allowedProject={allowedProjects}
           rawErrors={rawErrors}
           state={state}
+          isDisabled={isDisabled}
           onChange={updateLocalState}
         />
       )}
@@ -230,14 +249,19 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
+          isDisabled={isDisabled}
         />
       )}
       <RepoUrlPickerRepoName
         repoName={state.repoName}
         allowedRepos={allowedRepos}
         onChange={repo =>
-          setState(prevState => ({ ...prevState, repoName: repo }))
+          setState(prevState => ({
+            ...prevState,
+            repoName: repo.id || repo.name,
+          }))
         }
+        isDisabled={isDisabled}
         rawErrors={rawErrors}
         availableRepos={state.availableRepos}
       />

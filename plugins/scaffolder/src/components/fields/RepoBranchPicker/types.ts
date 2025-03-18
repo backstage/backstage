@@ -19,11 +19,13 @@ export interface RepoBranchPickerState {
   workspace?: string;
   repository?: string;
   branch?: string;
+  owner?: string;
 }
 
 export type BaseRepoBranchPickerProps<T extends {} = {}> = T & {
   onChange: (state: RepoBranchPickerState) => void;
   state: RepoBranchPickerState;
   rawErrors: string[];
+  isDisabled?: boolean;
   required?: boolean;
 };

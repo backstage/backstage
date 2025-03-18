@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useElementFilter } from '@backstage/core-plugin-api';
+import { useAsync, useMountEffect } from '@react-hookz/web';
+import { useApi, useElementFilter } from '@backstage/core-plugin-api';
+import { formFieldsApiRef } from '../next';
 import { FieldExtensionOptions } from '../extensions';
 import {
   FIELD_EXTENSION_KEY,
@@ -25,11 +27,21 @@ import {
  * @public
  */
 export const useCustomFieldExtensions = <
+  // todo(blam): this shouldn't be here, should remove this, but this is a breaking change to remove the generic.
   TComponentDataType = FieldExtensionOptions,
 >(
   outlet: React.ReactNode,
 ) => {
-  return useElementFilter(outlet, elements =>
+  // Get custom fields created with FormFieldBlueprint
+  const formFieldsApi = useApi(formFieldsApiRef);
+  const [{ result: blueprintFields }, { execute }] = useAsync(
+    () => formFieldsApi.getFormFields(),
+    [],
+  );
+  useMountEffect(execute);
+
+  // Get custom fields created with ScaffolderFieldExtensions
+  const outletFields = useElementFilter(outlet, elements =>
     elements
       .selectByComponentData({
         key: FIELD_EXTENSION_WRAPPER_KEY,
@@ -38,4 +50,18 @@ export const useCustomFieldExtensions = <
         key: FIELD_EXTENSION_KEY,
       }),
   );
+
+  // This should really be a different type moving foward, but we do this to keep type compatibility.
+  // should probably also move the defaults into the API eventually too, but that will come with the move
+  // to the new frontend system.
+  const blueprintsToLegacy: FieldExtensionOptions[] = blueprintFields?.map(
+    field => ({
+      component: field.component,
+      name: field.name,
+      validation: field.validation,
+      schema: field.schema?.schema,
+    }),
+  );
+
+  return [...blueprintsToLegacy, ...outletFields] as TComponentDataType[];
 };

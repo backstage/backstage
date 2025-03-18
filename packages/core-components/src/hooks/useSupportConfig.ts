@@ -72,7 +72,7 @@ export function useSupportConfig(): SupportConfig {
       links: (itemConf.getOptionalConfigArray('links') ?? []).flatMap(
         linkConf => ({
           url: linkConf.getString('url'),
-          title: linkConf.getString('title'),
+          title: linkConf.getOptionalString('title') ?? '',
         }),
       ),
     })),

@@ -15,3 +15,5 @@
  */
 
 export type { ModuleLoader } from './types';
+export type { CommonJSModuleLoaderOptions } from './CommonJSModuleLoader';
+export { CommonJSModuleLoader } from './CommonJSModuleLoader';

@@ -30,6 +30,8 @@ export type VisitsStorageApiOptions = {
 
 type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 
+const DEFAULT_LIST_LIMIT = 8;
+
 /**
  * @public
  * This is an implementation of VisitsApi that relies on a StorageApi.
@@ -83,7 +85,7 @@ export class VisitsStorageApi implements VisitsApi {
       });
     });
 
-    return visits;
+    return visits.slice(0, queryParams?.limit ?? DEFAULT_LIST_LIMIT);
   }
 
   /**

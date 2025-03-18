@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { Git } from '../scm';
 import {
-  commitAndPushRepo,
-  initRepoAndPush,
-  commitAndPushBranch,
   addFiles,
-  createBranch,
   cloneRepo,
+  commitAndPushBranch,
+  commitAndPushRepo,
+  createBranch,
+  initRepoAndPush,
 } from './gitHelpers';
 import { mockServices } from '@backstage/backend-test-utils';
+import { loggerToWinstonLogger } from './loggerToWinstonLogger';
 
 jest.mock('../scm', () => ({
   Git: {
@@ -32,6 +32,7 @@ jest.mock('../scm', () => ({
       init: jest.fn(),
       add: jest.fn(),
       checkout: jest.fn(),
+      branch: jest.fn(),
       commit: jest
         .fn()
         .mockResolvedValue('220f19cc36b551763d157f1b5e4a4b446165dbd6'),
@@ -97,18 +98,11 @@ describe('initRepoAndPush', () => {
       });
     });
 
-    it('adds the appropriate remote', () => {
-      expect(mockedGit.addRemote).toHaveBeenCalledWith({
-        dir: '/test/repo/dir/',
-        url: 'git@github.com:test/repo.git',
-        remote: 'origin',
-      });
-    });
-
     it('pushes to the remote', () => {
       expect(mockedGit.push).toHaveBeenCalledWith({
         dir: '/test/repo/dir/',
         remote: 'origin',
+        url: 'git@github.com:test/repo.git',
       });
     });
   });
@@ -227,6 +221,32 @@ describe('commitAndPushRepo', () => {
           name: 'Scaffolder',
           email: 'scaffolder@backstage.io',
         },
+      });
+    });
+
+    it('creates commit with signing key', async () => {
+      await commitAndPushRepo({
+        dir: '/test/repo/dir/',
+        auth: {
+          username: 'test-user',
+          password: 'test-password',
+        },
+        logger: loggerToWinstonLogger(mockServices.logger.mock()),
+        commitMessage: 'commit message',
+        signingKey: 'test-signing-key',
+      });
+      expect(mockedGit.commit).toHaveBeenCalledWith({
+        dir: '/test/repo/dir/',
+        message: 'commit message',
+        author: {
+          name: 'Scaffolder',
+          email: 'scaffolder@backstage.io',
+        },
+        committer: {
+          name: 'Scaffolder',
+          email: 'scaffolder@backstage.io',
+        },
+        signingKey: 'test-signing-key',
       });
     });
 
@@ -444,7 +464,7 @@ describe('createBranch', () => {
     });
 
     it('create the branch', () => {
-      expect(mockedGit.checkout).toHaveBeenCalledWith({
+      expect(mockedGit.branch).toHaveBeenCalledWith({
         ref: 'trunk',
         dir: '/tmp/repo/dir/',
       });
@@ -460,7 +480,7 @@ describe('createBranch', () => {
       },
     });
 
-    expect(mockedGit.checkout).toHaveBeenCalledWith({
+    expect(mockedGit.branch).toHaveBeenCalledWith({
       ref: 'trunk',
       dir: '/tmp/repo/dir/',
     });

@@ -19,6 +19,8 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
+import { CatalogApi } from '@backstage/catalog-client';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 const mockOctokit = {
   rest: {
@@ -32,14 +34,29 @@ const mockOctokit = {
       createOrUpdateEnvironment: jest.fn(),
       get: jest.fn(),
     },
+    teams: {
+      getByName: jest.fn(),
+    },
+    users: {
+      getByUsername: jest.fn(),
+    },
   },
 };
+
+const mockCatalogClient: Partial<CatalogApi> = {
+  getEntitiesByRefs: jest.fn(),
+};
+
 jest.mock('octokit', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;
     }
   },
+}));
+
+jest.mock('@backstage/catalog-client', () => ({
+  CatalogClient: mockCatalogClient,
 }));
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
@@ -55,6 +72,14 @@ describe('github:environment:create', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
+
+  const credentials = mockCredentials.user();
+
+  const token = mockCredentials.service.token({
+    onBehalfOf: credentials,
+    targetPluginId: 'catalog',
+  });
+
   let action: TemplateAction<any>;
 
   const mockContext = createMockActionContext({
@@ -62,6 +87,7 @@ describe('github:environment:create', () => {
       repoUrl: 'github.com?repo=repository&owner=owner',
       name: 'envname',
     },
+    secrets: { backstageToken: token },
   });
 
   beforeEach(() => {
@@ -76,9 +102,37 @@ describe('github:environment:create', () => {
         id: 'repoid',
       },
     });
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: {
+        id: 1,
+      },
+    });
+    mockOctokit.rest.teams.getByName.mockResolvedValue({
+      data: {
+        id: 2,
+      },
+    });
+    (mockCatalogClient.getEntitiesByRefs as jest.Mock).mockResolvedValue({
+      items: [
+        {
+          kind: 'User',
+          metadata: {
+            name: 'johndoe',
+          },
+        },
+        {
+          kind: 'Group',
+          metadata: {
+            name: 'team-a',
+          },
+        },
+      ],
+    });
 
     action = createGithubEnvironmentAction({
       integrations,
+      catalogClient: mockCatalogClient as CatalogApi,
+      auth: mockServices.auth(),
     });
   });
 
@@ -93,7 +147,10 @@ describe('github:environment:create', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
+      deployment_branch_policy: undefined,
+      reviewers: undefined,
+      wait_timer: undefined,
+      prevent_self_review: undefined,
     });
   });
 
@@ -119,6 +176,9 @@ describe('github:environment:create', () => {
         protected_branches: true,
         custom_branch_policies: false,
       },
+      reviewers: undefined,
+      wait_timer: undefined,
+      prevent_self_review: undefined,
     });
   });
 
@@ -145,6 +205,9 @@ describe('github:environment:create', () => {
         protected_branches: false,
         custom_branch_policies: true,
       },
+      reviewers: undefined,
+      wait_timer: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -190,6 +253,9 @@ describe('github:environment:create', () => {
         protected_branches: false,
         custom_branch_policies: true,
       },
+      reviewers: undefined,
+      wait_timer: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -230,7 +296,10 @@ describe('github:environment:create', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
+      deployment_branch_policy: undefined,
+      reviewers: undefined,
+      wait_timer: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -276,7 +345,10 @@ describe('github:environment:create', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
-      deployment_branch_policy: null,
+      deployment_branch_policy: undefined,
+      reviewers: undefined,
+      wait_timer: undefined,
+      prevent_self_review: undefined,
     });
 
     expect(
@@ -314,6 +386,132 @@ describe('github:environment:create', () => {
       owner: 'owner',
       repo: 'repository',
       environment_name: 'envname',
+    });
+  });
+
+  it('should work with wait_timer', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        waitTimer: 1000,
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: undefined,
+      reviewers: undefined,
+      wait_timer: 1000,
+      prevent_self_review: undefined,
+    });
+  });
+
+  it('should work with wait_timer 0', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        waitTimer: 0,
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: undefined,
+      reviewers: undefined,
+      wait_timer: 0,
+      prevent_self_review: undefined,
+    });
+  });
+
+  it('should work with preventSelfReview set to true', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        preventSelfReview: true,
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: undefined,
+      reviewers: undefined,
+      wait_timer: undefined,
+      prevent_self_review: true,
+    });
+  });
+
+  it('should work with preventSelfReview set to false', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        preventSelfReview: false,
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: undefined,
+      reviewers: undefined,
+      wait_timer: undefined,
+      prevent_self_review: false,
+    });
+  });
+
+  it('should work with reviewers', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        reviewers: ['group:default/team-a', 'user:default/johndoe'],
+      },
+    });
+
+    expect(mockCatalogClient.getEntitiesByRefs).toHaveBeenCalledWith(
+      {
+        entityRefs: ['group:default/team-a', 'user:default/johndoe'],
+      },
+      { token },
+    );
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: undefined,
+      wait_timer: undefined,
+      prevent_self_review: undefined,
+      reviewers: [
+        {
+          id: 1,
+          type: 'User',
+        },
+        {
+          id: 2,
+          type: 'Team',
+        },
+      ],
     });
   });
 });

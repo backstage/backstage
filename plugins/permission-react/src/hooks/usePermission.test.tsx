@@ -21,7 +21,7 @@ import {
   AuthorizeResult,
   createPermission,
 } from '@backstage/plugin-permission-common';
-import { TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import { PermissionApi, permissionApiRef } from '../apis';
 import { SWRConfig } from 'swr';
 
@@ -52,36 +52,38 @@ function renderComponent(mockApi: PermissionApi) {
 }
 
 describe('usePermission', () => {
-  const mockPermissionApi = { authorize: jest.fn() };
-
   it('Returns loading when permissionApi has not yet responded.', () => {
-    mockPermissionApi.authorize.mockReturnValueOnce(new Promise(() => {}));
+    const permissionApi = mockApis.permission.mock({
+      authorize: async () => new Promise(() => {}),
+    });
 
-    const { getByText } = renderComponent(mockPermissionApi);
+    const { getByText } = renderComponent(permissionApi);
 
-    expect(mockPermissionApi.authorize).toHaveBeenCalledWith({ permission });
+    expect(permissionApi.authorize).toHaveBeenCalledWith({ permission });
     expect(getByText('loading')).toBeTruthy();
   });
 
   it('Returns allowed when permissionApi allows authorization.', async () => {
-    mockPermissionApi.authorize.mockResolvedValueOnce({
-      result: AuthorizeResult.ALLOW,
+    const permissionApi = mockApis.permission({
+      authorize: AuthorizeResult.ALLOW,
     });
+    jest.spyOn(permissionApi, 'authorize');
 
-    const { findByText } = renderComponent(mockPermissionApi);
+    const { findByText } = renderComponent(permissionApi);
 
-    expect(mockPermissionApi.authorize).toHaveBeenCalledWith({ permission });
+    expect(permissionApi.authorize).toHaveBeenCalledWith({ permission });
     expect(await findByText('content')).toBeTruthy();
   });
 
   it('Returns not allowed when permissionApi denies authorization.', async () => {
-    mockPermissionApi.authorize.mockResolvedValueOnce({
-      result: AuthorizeResult.DENY,
+    const permissionApi = mockApis.permission({
+      authorize: AuthorizeResult.DENY,
     });
+    jest.spyOn(permissionApi, 'authorize');
 
-    const { findByText } = renderComponent(mockPermissionApi);
+    const { findByText } = renderComponent(permissionApi);
 
-    expect(mockPermissionApi.authorize).toHaveBeenCalledWith({ permission });
+    expect(permissionApi.authorize).toHaveBeenCalledWith({ permission });
     await expect(findByText('content')).rejects.toThrow();
   });
 });

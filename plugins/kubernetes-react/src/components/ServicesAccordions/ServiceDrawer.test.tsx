@@ -39,10 +39,10 @@ describe('ServiceDrawer', () => {
     expect(screen.getByText('Cluster IP')).toBeInTheDocument();
     expect(screen.getByText('Ports')).toBeInTheDocument();
     expect(
-      screen.getByText(textContentMatcher('Target Port: 1997')),
+      screen.getByText(textContentMatcher('targetPort: 1997')),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(textContentMatcher('App: awesome-service')),
+      screen.getByText(textContentMatcher('app: awesome-service')),
     ).toBeInTheDocument();
   });
 });

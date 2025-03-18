@@ -27,9 +27,9 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import {
   createGithubRepoWithCollaboratorsAndTopics,
-  getOctokitOptions,
   initRepoPushAndProtect,
 } from './helpers';
+import { getOctokitOptions } from '../util';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
 import { examples } from './github.examples';
@@ -115,7 +115,9 @@ export function createPublishGithubAction(options: {
       includeClaimKeys?: string[];
     };
     requiredCommitSigning?: boolean;
+    requiredLinearHistory?: boolean;
     customProperties?: { [key: string]: string };
+    subscribe?: boolean;
   }>({
     id: 'publish:github',
     description:
@@ -165,7 +167,9 @@ export function createPublishGithubAction(options: {
           secrets: inputProps.secrets,
           oidcCustomization: inputProps.oidcCustomization,
           requiredCommitSigning: inputProps.requiredCommitSigning,
+          requiredLinearHistory: inputProps.requiredLinearHistory,
           customProperties: inputProps.customProperties,
+          subscribe: inputProps.subscribe,
         },
       },
       output: {
@@ -216,22 +220,26 @@ export function createPublishGithubAction(options: {
         oidcCustomization,
         token: providedToken,
         customProperties,
+        subscribe = false,
         requiredCommitSigning = false,
+        requiredLinearHistory = false,
       } = ctx.input;
+
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
+
+      if (!owner) {
+        throw new InputError('Invalid repository owner provided in repoUrl');
+      }
 
       const octokitOptions = await getOctokitOptions({
         integrations,
         credentialsProvider: githubCredentialsProvider,
         token: providedToken,
-        repoUrl: repoUrl,
+        host,
+        owner,
+        repo,
       });
       const client = new Octokit(octokitOptions);
-
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
-
-      if (!owner) {
-        throw new InputError('Invalid repository owner provided in repoUrl');
-      }
 
       const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
         client,
@@ -257,6 +265,7 @@ export function createPublishGithubAction(options: {
         secrets,
         oidcCustomization,
         customProperties,
+        subscribe,
         ctx.logger,
       );
 
@@ -289,6 +298,7 @@ export function createPublishGithubAction(options: {
         gitAuthorEmail,
         dismissStaleReviews,
         requiredCommitSigning,
+        requiredLinearHistory,
       );
 
       ctx.output('commitHash', commitResult?.commitHash);

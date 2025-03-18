@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 import {
   AuthService,
+  DiscoveryService,
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
@@ -36,7 +34,10 @@ import { Minimatch } from 'minimatch';
 import { CatalogAuthResolverContext } from '../lib/resolvers/CatalogAuthResolverContext';
 import { TokenIssuer } from '../identity/types';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
+ */
 export type ProviderFactories = { [s: string]: AuthProviderFactory };
 
 export function bindProviderRouters(
@@ -47,7 +48,7 @@ export function bindProviderRouters(
     baseUrl: string;
     config: Config;
     logger: LoggerService;
-    discovery: PluginEndpointDiscovery;
+    discovery: DiscoveryService;
     auth: AuthService;
     httpAuth: HttpAuthService;
     tokenManager?: TokenManager;
@@ -147,7 +148,10 @@ export function bindProviderRouters(
   }
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated this export will be removed
+ */
 export function createOriginFilter(
   config: Config,
 ): (origin: string) => boolean {

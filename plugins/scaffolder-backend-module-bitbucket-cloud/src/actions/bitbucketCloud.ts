@@ -18,11 +18,10 @@ import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   createTemplateAction,
-  initRepoAndPush,
   getRepoSourceDirectory,
+  initRepoAndPush,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import fetch, { Response, RequestInit } from 'node-fetch';
 
 import { Config } from '@backstage/config';
 import { getAuthorizationHeader } from './helpers';
@@ -114,6 +113,7 @@ export function createPublishBitbucketCloudAction(options: {
     gitCommitMessage?: string;
     sourcePath?: string;
     token?: string;
+    signCommit?: boolean;
   }>({
     id: 'publish:bitbucketCloud',
     examples,
@@ -159,6 +159,11 @@ export function createPublishBitbucketCloudAction(options: {
             description:
               'The token to use for authorization to BitBucket Cloud',
           },
+          signCommit: {
+            title: 'Sign commit',
+            type: 'boolean',
+            description: 'Sign commit with configured PGP private key',
+          },
         },
       },
       output: {
@@ -186,6 +191,7 @@ export function createPublishBitbucketCloudAction(options: {
         defaultBranch = 'master',
         gitCommitMessage,
         repoVisibility = 'private',
+        signCommit,
       } = ctx.input;
 
       const { workspace, project, repo, host } = parseRepoUrl(
@@ -257,6 +263,15 @@ export function createPublishBitbucketCloudAction(options: {
         };
       }
 
+      const signingKey =
+        integrationConfig.config.commitSigningKey ??
+        config.getOptionalString('scaffolder.defaultCommitSigningKey');
+      if (signCommit && !signingKey) {
+        throw new Error(
+          'Signing commits is enabled but no signing key is provided in the configuration',
+        );
+      }
+
       const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
@@ -267,6 +282,7 @@ export function createPublishBitbucketCloudAction(options: {
           gitCommitMessage ||
           config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
+        signingKey: signCommit ? signingKey : undefined,
       });
 
       ctx.output('commitHash', commitResult?.commitHash);

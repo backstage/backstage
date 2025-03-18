@@ -83,6 +83,7 @@ Options:
   --awsS3sse <AWS SSE>
   --awsS3ForcePathStyle
   --awsBucketRootPath <AWS BUCKET ROOT PATH>
+  --awsMaxAttempts <AWS MAX ATTEMPTS>
   --osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>
   --osSecret <OPENSTACK SWIFT APPLICATION CREDENTIAL SECRET>
   --osAuthUrl <OPENSTACK SWIFT AUTHURL>

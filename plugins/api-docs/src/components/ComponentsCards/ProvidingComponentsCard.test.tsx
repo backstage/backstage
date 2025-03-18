@@ -16,7 +16,6 @@
 
 import { Entity, RELATION_API_PROVIDED_BY } from '@backstage/catalog-model';
 import {
-  CatalogApi,
   catalogApiRef,
   EntityProvider,
   entityRouteRef,
@@ -25,11 +24,10 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { ProvidingComponentsCard } from './ProvidingComponentsCard';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 describe('<ProvidingComponentsCard />', () => {
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getEntitiesByRefs: jest.fn(),
-  } as any;
+  const catalogApi = catalogApiMock.mock();
   let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {

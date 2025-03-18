@@ -1,14 +1,15 @@
 {
   "name": "@internal/bar",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
   "exports": {
     ".": "./src/index.ts",
     "./BarPage": "./src/components/Bar.tsx",
     "./package.json": "./package.json"
   },
-  "backstage": {
-    "role": "frontend-plugin"
-  },
   "dependencies": {
+    "inline-dep": "*",
     "react-router": "*"
   },
   "devDependencies": {

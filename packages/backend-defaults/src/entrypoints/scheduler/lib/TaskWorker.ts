@@ -41,7 +41,7 @@ export class TaskWorker {
     private readonly workCheckFrequency: Duration = DEFAULT_WORK_CHECK_FREQUENCY,
   ) {}
 
-  async start(settings: TaskSettingsV2, options?: { signal?: AbortSignal }) {
+  async start(settings: TaskSettingsV2, options: { signal: AbortSignal }) {
     try {
       await this.persistTask(settings);
     } catch (e) {
@@ -68,18 +68,18 @@ export class TaskWorker {
           if (settings.initialDelayDuration) {
             await sleep(
               Duration.fromISO(settings.initialDelayDuration),
-              options?.signal,
+              options.signal,
             );
           }
 
-          while (!options?.signal?.aborted) {
-            const runResult = await this.runOnce(options?.signal);
+          while (!options.signal.aborted) {
+            const runResult = await this.runOnce(options.signal);
 
             if (runResult.result === 'abort') {
               break;
             }
 
-            await sleep(workCheckFrequency, options?.signal);
+            await sleep(workCheckFrequency, options.signal);
           }
 
           this.logger.info(`Task worker finished: ${this.taskId}`);
@@ -122,7 +122,7 @@ export class TaskWorker {
    * @returns The outcome of the attempt
    */
   private async runOnce(
-    signal?: AbortSignal,
+    signal: AbortSignal,
   ): Promise<
     | { result: 'not-ready-yet' }
     | { result: 'abort' }

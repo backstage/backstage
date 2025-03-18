@@ -21,7 +21,6 @@ import {
   durationToMilliseconds,
 } from '@backstage/types';
 import isEqual from 'lodash/isEqual';
-import fetch from 'node-fetch';
 import { ConfigTransformer, createConfigTransformer } from './transform';
 import {
   AsyncConfigSourceGenerator,
@@ -137,7 +136,7 @@ export class RemoteConfigSource implements ConfigSource {
 
   async #load(signal?: AbortSignal): Promise<JsonObject> {
     const res = await fetch(this.#url, {
-      signal: signal as import('node-fetch').RequestInit['signal'],
+      signal: signal as RequestInit['signal'],
     });
     if (!res.ok) {
       throw await ResponseError.fromResponse(res);

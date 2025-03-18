@@ -4,6 +4,10 @@ title: TechDocs Addons
 description: How to find, use, or create TechDocs Addons.
 ---
 
+:::info
+This documentation is written for [the old frontend system](./getting-started.md#adding-techdocs-frontend-plugin). If you are on the [new frontend system](../../frontend-system/index.md) you may want to read [its own article](./addons--new.md) instead.
+:::
+
 ## Concepts
 
 TechDocs is a centralized platform for publishing, viewing, and discovering
@@ -186,7 +190,7 @@ import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
 // difference is that you'd set `location` to `TechDocsAddonLocations.Content`.
 export const MakeAllImagesCatGifsAddon = () => {
   // This hook can be used to get references to specific elements. If you need
-  // access to the whole shadow DOM, use the the underlying useShadowRoot()
+  // access to the whole shadow DOM, use the underlying useShadowRoot()
   // hook instead.
   const images = useShadowRootElements<HTMLImageElement>(['img']);
 

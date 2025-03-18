@@ -1,9 +1,8 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused devDependencies (1)
 
-| Name            | Location     | Severity |
-| :-------------- | :----------- | :------- |
-| @emotion/styled | package.json | error    |
-| @emotion/react  | package.json | error    |
+| Name             | Location     | Severity |
+| :--------------- | :----------- | :------- |
+| react-router-dom | package.json | error    |
 

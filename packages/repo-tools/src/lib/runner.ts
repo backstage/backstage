@@ -67,3 +67,7 @@ export async function runner(
 
   return resultsList;
 }
+
+export async function block() {
+  return new Promise(() => {});
+}

@@ -25,7 +25,7 @@ import { DbRefreshStateRow } from '../../tables';
  * Updating the entity will also cause it to be scheduled for immediate processing.
  */
 export async function updateUnprocessedEntity(options: {
-  tx: Knex.Transaction;
+  tx: Knex | Knex.Transaction;
   entity: Entity;
   hash: string;
   locationKey?: string;

@@ -46,7 +46,7 @@ describe('DatabaseKeyStore', () => {
       knex,
       logger,
       keyStore: await DatabaseKeyStore.create({
-        database: { getClient: async () => knex },
+        database: mockServices.database({ knex }),
         logger,
       }),
     };

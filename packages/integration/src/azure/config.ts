@@ -57,6 +57,11 @@ export type AzureIntegrationConfig = {
    * If no credentials are specified at all, either a default credential (for Azure DevOps) or anonymous access (for Azure DevOps Server) is used.
    */
   credentials?: AzureDevOpsCredential[];
+
+  /**
+   * Signing key for commits
+   */
+  commitSigningKey?: string;
 };
 
 /**
@@ -349,6 +354,7 @@ export function readAzureIntegrationConfig(
   return {
     host,
     credentials,
+    commitSigningKey: config.getOptionalString('commitSigningKey'),
   };
 }
 

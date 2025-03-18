@@ -15,18 +15,16 @@
  */
 
 import { AppNode } from '../apis';
-import { Expand } from '../types';
+import { Expand } from '@backstage/types';
 import { ResolvedExtensionInput } from './createExtension';
-import {
-  ExtensionDataContainer,
-  createExtensionDataContainer,
-} from './createExtensionDataContainer';
+import { createExtensionDataContainer } from '@internal/frontend';
 import {
   AnyExtensionDataRef,
   ExtensionDataRefToValue,
   ExtensionDataValue,
 } from './createExtensionDataRef';
 import { ExtensionInput } from './createExtensionInput';
+import { ExtensionDataContainer } from './types';
 
 /** @public */
 export type ResolveInputValueOverrides<

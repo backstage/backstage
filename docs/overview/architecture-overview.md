@@ -34,7 +34,7 @@ There are 3 main components in this architecture:
 3. Databases
 
 Running this architecture in a real environment typically involves
-containerising the components. Various commands are provided for accomplishing
+containerizing the components. Various commands are provided for accomplishing
 this.
 
 ![The architecture of a basic Backstage application](../assets/architecture-overview/backstage-typical-architecture.png)
@@ -323,10 +323,7 @@ backend:
   cache:
     store: redis
     connection: redis://user:pass@cache.example.com:6379
-    useRedisSets: true
 ```
-
-The useRedisSets flag is explained [here](https://github.com/jaredwray/keyv/tree/main/packages/redis#useredissets).
 
 Contributions supporting other cache stores are welcome!
 

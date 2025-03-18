@@ -48,12 +48,12 @@ export interface Config {
                 /**
                  * (Optional) Visibility timeout for messages in flight.
                  */
-                visibilityTimeout: HumanDuration;
+                visibilityTimeout: HumanDuration | string;
                 /**
                  * (Optional) Wait time when polling for available messages.
                  * Default: 20 seconds.
                  */
-                waitTime: HumanDuration;
+                waitTime: HumanDuration | string;
               };
               /**
                * (Optional) Timeout for the task execution which includes polling for messages
@@ -62,12 +62,12 @@ export interface Config {
                *
                * Must be greater than `queue.waitTime` + `waitTimeAfterEmptyReceive`.
                */
-              timeout: HumanDuration;
+              timeout: HumanDuration | string;
               /**
                * (Optional) Wait time before polling again if no message was received.
                * Default: 1 minute.
                */
-              waitTimeAfterEmptyReceive: HumanDuration;
+              waitTimeAfterEmptyReceive: HumanDuration | string;
             };
           };
         };

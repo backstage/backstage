@@ -23,6 +23,7 @@ import {
   lowerCaseEntityTriplet,
   lowerCaseEntityTripletInStoragePath,
   normalizeExternalStorageRootPath,
+  isValidContentPath,
 } from './helpers';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
@@ -305,5 +306,27 @@ describe('bulkStorageOperation', () => {
     expect(fn).toHaveBeenCalledTimes(2);
     expect(fn).toHaveBeenNthCalledWith(1, files[0]);
     expect(fn).toHaveBeenNthCalledWith(2, files[1]);
+  });
+
+  describe('isValidContentPath', () => {
+    it('should return true when content path is the same as bucket root', () => {
+      expect(isValidContentPath('/s/t', '/s/t')).toBe(true);
+      expect(isValidContentPath('/s/t', '/s/t/c')).toBe(true);
+      expect(isValidContentPath('/s/t', '/s/t/c w s/f.txt')).toBe(true);
+      expect(isValidContentPath('/s/t w s/', '/s/t w s/f.txt')).toBe(true);
+      expect(isValidContentPath('/s/t w s/', '/s/t w s/c w s/f.txt')).toBe(
+        true,
+      );
+      expect(
+        isValidContentPath('/s/t w s/', '/s/t w s/c w s/../c w s/f.txt'),
+      ).toBe(true);
+    });
+
+    it('should return false when content path is not a child of bucket root', () => {
+      expect(isValidContentPath('/s/t', '/s')).toBe(false);
+      expect(isValidContentPath('/s/t', '/s/t w s')).toBe(false);
+      expect(isValidContentPath('/s/t w s', '/s/c')).toBe(false);
+      expect(isValidContentPath('/s/t', '/s/t/../../c/f.txt')).toBe(false);
+    });
   });
 });

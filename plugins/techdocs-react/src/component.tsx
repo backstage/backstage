@@ -25,8 +25,6 @@ import { create } from 'jss';
 import StylesProvider from '@material-ui/styles/StylesProvider';
 import jssPreset from '@material-ui/styles/jssPreset';
 
-import { Progress } from '@backstage/core-components';
-
 /**
  * Name for the event dispatched when ShadowRoot styles are loaded.
  * @public
@@ -216,7 +214,6 @@ export const TechDocsShadowDom = (props: TechDocsShadowDomProps) => {
   );
 
   useShadowDomStylesEvents(element);
-  const loading = useShadowDomStylesLoading(element);
 
   const ref = useCallback(
     (shadowHost: HTMLDivElement) => {
@@ -246,7 +243,6 @@ export const TechDocsShadowDom = (props: TechDocsShadowDomProps) => {
 
   return (
     <>
-      {loading && <Progress />}
       {/* The sheetsManager={new Map()} is needed in order to deduplicate the injection of CSS in the page. */}
       <StylesProvider jss={jss} sheetsManager={new Map()}>
         <div ref={ref} data-testid="techdocs-native-shadowroot" />

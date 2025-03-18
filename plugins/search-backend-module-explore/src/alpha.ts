@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,67 +14,8 @@
  * limitations under the License.
  */
 
-/**
- * @packageDocumentation
- * A module for the search backend that exports Explore modules.
- */
+import { default as feature } from './module';
 
-import {
-  coreServices,
-  createBackendModule,
-  readSchedulerServiceTaskScheduleDefinitionFromConfig,
-} from '@backstage/backend-plugin-api';
-import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-
-import { ToolDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-explore';
-
-/**
- * Search backend module for the Explore index.
- *
- * @alpha
- */
-export default createBackendModule({
-  pluginId: 'search',
-  moduleId: 'explore-collator',
-  register(env) {
-    env.registerInit({
-      deps: {
-        config: coreServices.rootConfig,
-        logger: coreServices.logger,
-        discovery: coreServices.discovery,
-        scheduler: coreServices.scheduler,
-        auth: coreServices.auth,
-        indexRegistry: searchIndexRegistryExtensionPoint,
-      },
-      async init({
-        config,
-        logger,
-        discovery,
-        scheduler,
-        auth,
-        indexRegistry,
-      }) {
-        const defaultSchedule = {
-          frequency: { minutes: 10 },
-          timeout: { minutes: 15 },
-          initialDelay: { seconds: 3 },
-        };
-
-        const schedule = config.has('search.collators.explore.schedule')
-          ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
-              config.getConfig('search.collators.explore.schedule'),
-            )
-          : defaultSchedule;
-
-        indexRegistry.addCollator({
-          schedule: scheduler.createScheduledTaskRunner(schedule),
-          factory: ToolDocumentCollatorFactory.fromConfig(config, {
-            discovery,
-            logger,
-            auth,
-          }),
-        });
-      },
-    });
-  },
-});
+/** @alpha */
+const _feature = feature;
+export default _feature;

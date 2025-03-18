@@ -104,7 +104,7 @@ export interface AboutCardProps {
  * Exported publicly via the EntityAboutCard
  *
  * NOTE: We generally do not accept pull requests to extend this class with more
- * props and cusomizability. If you need to tweak it, consider making a bespoke
+ * props and customizability. If you need to tweak it, consider making a bespoke
  * card in your own repository instead, that is perfect for your own needs.
  */
 export function AboutCard(props: AboutCardProps) {

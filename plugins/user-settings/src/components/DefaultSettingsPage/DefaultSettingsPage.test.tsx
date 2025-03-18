@@ -15,16 +15,20 @@
  */
 
 import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { DefaultSettingsPage } from './DefaultSettingsPage';
 import { UserSettingsTab } from '../UserSettingsTab';
 import { useOutlet } from 'react-router-dom';
 import { SettingsLayout } from '../SettingsLayout';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useOutlet: jest.fn().mockReturnValue(undefined),
 }));
+
+const catalogApi = catalogApiMock();
 
 describe('<DefaultSettingsPage />', () => {
   beforeEach(() => {
@@ -32,7 +36,11 @@ describe('<DefaultSettingsPage />', () => {
   });
 
   it('should render the settings page with 3 tabs', async () => {
-    const { container } = await renderInTestApp(<DefaultSettingsPage />);
+    const { container } = await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <DefaultSettingsPage />
+      </TestApiProvider>,
+    );
 
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
     expect(tabs).toHaveLength(3);
@@ -45,7 +53,9 @@ describe('<DefaultSettingsPage />', () => {
       </UserSettingsTab>
     );
     const { container } = await renderInTestApp(
-      <DefaultSettingsPage tabs={[advancedTabRoute]} />,
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <DefaultSettingsPage tabs={[advancedTabRoute]} />
+      </TestApiProvider>,
     );
 
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
@@ -60,7 +70,9 @@ describe('<DefaultSettingsPage />', () => {
       </SettingsLayout.Route>
     );
     const { container } = await renderInTestApp(
-      <DefaultSettingsPage tabs={[advancedTabRoute]} />,
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <DefaultSettingsPage tabs={[advancedTabRoute]} />
+      </TestApiProvider>,
     );
 
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');

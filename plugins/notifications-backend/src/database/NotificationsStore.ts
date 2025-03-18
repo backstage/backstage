@@ -16,6 +16,7 @@
 
 import {
   Notification,
+  NotificationSettings,
   NotificationSeverity,
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
@@ -46,6 +47,16 @@ export type NotificationGetOptions = {
 export type NotificationModifyOptions = {
   ids: string[];
 } & NotificationGetOptions;
+
+/** @internal */
+export type TopicGetOptions = {
+  user: string;
+  search?: string;
+  read?: boolean;
+  saved?: boolean;
+  createdAfter?: Date;
+  minimumSeverity?: NotificationSeverity;
+};
 
 /** @internal */
 export interface NotificationsStore {
@@ -83,4 +94,19 @@ export interface NotificationsStore {
   markSaved(options: NotificationModifyOptions): Promise<void>;
 
   markUnsaved(options: NotificationModifyOptions): Promise<void>;
+
+  getUserNotificationOrigins(options: {
+    user: string;
+  }): Promise<{ origins: string[] }>;
+
+  getNotificationSettings(options: {
+    user: string;
+  }): Promise<NotificationSettings>;
+
+  saveNotificationSettings(options: {
+    user: string;
+    settings: NotificationSettings;
+  }): Promise<void>;
+
+  getTopics(options: TopicGetOptions): Promise<{ topics: string[] }>;
 }

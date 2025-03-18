@@ -17,7 +17,6 @@
 import {
   bufferFromFileOrString,
   Cluster,
-  Config,
   CoreV1Api,
   KubeConfig,
   Metrics,
@@ -31,6 +30,7 @@ import {
 } from '../types/types';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+  SERVICEACCOUNT_CA_PATH,
   FetchResponse,
   KubernetesErrorTypes,
   KubernetesFetchError,
@@ -156,8 +156,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       if (podMetrics.ok && podList.ok) {
         return topPods(
           {
-            listPodForAllNamespaces: () =>
-              podList.json().then(b => ({ body: b })),
+            listPodForAllNamespaces: () => podList.json(),
           } as unknown as CoreV1Api,
           {
             getPodMetrics: () => podMetrics.json(),
@@ -249,7 +248,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     return (
       authProvider === 'serviceAccount' &&
       !clusterDetails.authMetadata.serviceAccountToken &&
-      fs.pathExistsSync(Config.SERVICEACCOUNT_CA_PATH)
+      fs.pathExistsSync(SERVICEACCOUNT_CA_PATH)
     );
   }
 

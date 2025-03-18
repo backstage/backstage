@@ -63,6 +63,20 @@ describe('serialization', () => {
     expect(withoutStack2.stack).not.toBeDefined();
   });
 
+  it('serializes stack traces only when allowed with error cause', () => {
+    const before = new CustomError('m');
+    before.cause = new Error('cause');
+    const withStack: any = serializeError(before, { includeStack: true });
+    const withoutStack1: any = serializeError(before, { includeStack: false });
+    const withoutStack2: any = serializeError(before);
+    expect(withStack.stack).toEqual(before.stack);
+    expect(withStack.cause.stack).toEqual(withStack.cause.stack);
+    expect(withoutStack1.stack).not.toBeDefined();
+    expect(withoutStack2.stack).not.toBeDefined();
+    expect(withoutStack1.cause.stack).not.toBeDefined();
+    expect(withoutStack2.cause.stack).not.toBeDefined();
+  });
+
   it('stringifies all supported forms', () => {
     expect(stringifyError({})).toEqual("unknown error '[object Object]'");
     expect(

@@ -19,6 +19,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
+/** @public */
+export type CatalogTableToolbarClassKey = 'root' | 'text';
+
 const useToolbarStyles = makeStyles(
   theme => ({
     root: {
@@ -34,7 +37,7 @@ const useToolbarStyles = makeStyles(
       textOverflow: 'ellipsis',
     },
   }),
-  { name: 'BackstageTableToolbar' },
+  { name: 'PluginCatalogTableToolbar' },
 );
 
 export function CatalogTableToolbar(props: {

@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import type { PluginDatabaseManager } from '@backstage/backend-common';
-import type { Config } from '@backstage/config';
+import {
+  DatabaseService,
+  LoggerService,
+  PermissionsService,
+  RootConfigService,
+  RootLoggerService,
+  SchedulerService,
+  SchedulerServiceTaskFunction,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
 import type {
   DeferredEntity,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 import { EventParams } from '@backstage/plugin-events-node';
-import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import type { DurationObjectUnits } from 'luxon';
-import type { Logger } from 'winston';
+import { HumanDuration } from '@backstage/types';
 import { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
-import {
-  LoggerService,
-  UrlReaderService,
-  SchedulerService,
-  SchedulerServiceTaskFunction,
-} from '@backstage/backend-plugin-api';
 
 /**
  * Ingest entities into the catalog in bite-sized chunks.
@@ -145,27 +145,27 @@ export interface IncrementalEntityProviderOptions {
    * Entities are ingested in bursts. This interval determines how
    * much time to wait in between each burst.
    */
-  burstInterval: DurationObjectUnits;
+  burstInterval: HumanDuration;
 
   /**
    * Entities are ingested in bursts. This value determines how long
    * to keep ingesting within each burst.
    */
-  burstLength: DurationObjectUnits;
+  burstLength: HumanDuration;
 
   /**
    * After a successful ingestion, the incremental entity provider
    * will rest for this period of time before starting to ingest
    * again.
    */
-  restLength: DurationObjectUnits;
+  restLength: HumanDuration;
 
   /**
    * In the event of an error during an ingestion burst, the backoff
    * determines how soon it will be retried. E.g.
    * `[{ minutes: 1}, { minutes: 5}, {minutes: 30 }, { hours: 3 }]`
    */
-  backoff?: DurationObjectUnits[];
+  backoff?: HumanDuration[];
 
   /**
    * If an error occurs at a data source that results in a large
@@ -186,12 +186,12 @@ export interface IncrementalEntityProviderOptions {
 
 /** @public */
 export type PluginEnvironment = {
-  logger: Logger;
-  database: PluginDatabaseManager;
+  logger: RootLoggerService;
+  database: DatabaseService;
   scheduler: SchedulerService;
-  config: Config;
+  config: RootConfigService;
   reader: UrlReaderService;
-  permissions: PermissionEvaluator;
+  permissions: PermissionsService;
 };
 
 export interface IterationEngine {
@@ -203,7 +203,7 @@ export interface IterationEngineOptions {
   connection: EntityProviderConnection;
   manager: IncrementalIngestionDatabaseManager;
   provider: IncrementalEntityProvider<unknown, unknown>;
-  restLength: DurationObjectUnits;
+  restLength: HumanDuration;
   ready: Promise<void>;
   backoff?: IncrementalEntityProviderOptions['backoff'];
   rejectRemovalsAbovePercentage?: number;

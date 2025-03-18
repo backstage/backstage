@@ -20,7 +20,7 @@ import { useMemo, useRef } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../api';
 import { useEntityList } from '../../hooks';
-import { reduceCatalogFilters } from '../../utils';
+import { reduceCatalogFilters } from '../../utils/filters';
 
 export function useAllEntitiesCount() {
   const catalogApi = useApi(catalogApiRef);

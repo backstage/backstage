@@ -28,5 +28,4 @@ export {
 export { createPublishGithubAction } from './github';
 export { createGithubAutolinksAction } from './githubAutolinks';
 export { createGithubPagesEnableAction } from './githubPagesEnable';
-
-export { getOctokitOptions } from './helpers';
+export { createGithubBranchProtectionAction } from './githubBranchProtection';

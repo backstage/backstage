@@ -25,9 +25,10 @@ import {
   IncrementalEntityProviderOptions,
 } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 import { WrapperProviders } from './WrapperProviders';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 
 /**
- * @alpha
+ * @public
  * Interface for {@link incrementalIngestionProvidersExtensionPoint}.
  */
 export interface IncrementalIngestionProviderExtensionPoint {
@@ -39,7 +40,7 @@ export interface IncrementalIngestionProviderExtensionPoint {
 }
 
 /**
- * @alpha
+ * @public
  *
  * Extension point for registering incremental ingestion providers.
  * The `catalogModuleIncrementalIngestionEntityProvider` must be installed for these providers to work.
@@ -80,7 +81,7 @@ export const incrementalIngestionProvidersExtensionPoint =
 /**
  * Registers the incremental entity provider with the catalog processing extension point.
  *
- * @alpha
+ * @public
  */
 export const catalogModuleIncrementalIngestionEntityProvider =
   createBackendModule({
@@ -106,6 +107,7 @@ export const catalogModuleIncrementalIngestionEntityProvider =
           httpRouter: coreServices.httpRouter,
           logger: coreServices.logger,
           scheduler: coreServices.scheduler,
+          events: eventsServiceRef,
         },
         async init({
           catalog,
@@ -114,6 +116,7 @@ export const catalogModuleIncrementalIngestionEntityProvider =
           httpRouter,
           logger,
           scheduler,
+          events,
         }) {
           const client = await database.getClient();
 
@@ -122,6 +125,7 @@ export const catalogModuleIncrementalIngestionEntityProvider =
             logger,
             client,
             scheduler,
+            events,
           });
 
           for (const entry of addedProviders) {
@@ -129,7 +133,7 @@ export const catalogModuleIncrementalIngestionEntityProvider =
             catalog.addEntityProvider(wrapped);
           }
 
-          httpRouter.use(await providers.adminRouter());
+          httpRouter.use(providers.adminRouter());
         },
       });
     },

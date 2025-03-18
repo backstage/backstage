@@ -21,8 +21,8 @@ import * as chokidar from 'chokidar';
 import * as path from 'path';
 import * as url from 'url';
 import debounce from 'lodash/debounce';
-import { PackagePlatform, PackageRoles } from '@backstage/cli-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { ForwardedError } from '@backstage/errors';
 
 export interface DynamicPluginScannerOptions {
   config: Config;
@@ -34,6 +34,8 @@ export interface DynamicPluginScannerOptions {
 export interface ScanRootResponse {
   packages: ScannedPluginPackage[];
 }
+
+export const configKey = 'dynamicPlugins';
 
 export class PluginScanner {
   private _rootDirectory?: string;
@@ -68,27 +70,27 @@ export class PluginScanner {
   }
 
   private applyConfig(): void | never {
-    const dynamicPlugins = this.config.getOptional('dynamicPlugins');
+    const dynamicPlugins = this.config.getOptional(configKey);
     if (!dynamicPlugins) {
-      this.logger.info("'dynamicPlugins' config entry not found.");
+      this.logger.info(`'${configKey}' config entry not found.`);
       this._rootDirectory = undefined;
       return;
     }
     if (typeof dynamicPlugins !== 'object') {
-      this.logger.warn("'dynamicPlugins' config entry should be an object.");
+      this.logger.warn(`'${configKey}' config entry should be an object.`);
       this._rootDirectory = undefined;
       return;
     }
     if (!('rootDirectory' in dynamicPlugins)) {
       this.logger.warn(
-        "'dynamicPlugins' config entry does not contain the 'rootDirectory' field.",
+        `'${configKey}' config entry does not contain the 'rootDirectory' field.`,
       );
       this._rootDirectory = undefined;
       return;
     }
     if (typeof dynamicPlugins.rootDirectory !== 'string') {
       this.logger.warn(
-        "'dynamicPlugins.rootDirectory' config entry should be a string.",
+        `'${configKey}.rootDirectory' config entry should be a string.`,
       );
       this._rootDirectory = undefined;
       return;
@@ -159,52 +161,25 @@ export class PluginScanner {
       }
 
       let scannedPlugin: ScannedPluginPackage;
-      let platform: PackagePlatform;
       try {
         scannedPlugin = await this.scanDir(pluginHome);
         if (!scannedPlugin.manifest.main) {
           throw new Error("field 'main' not found in 'package.json'");
         }
-        if (scannedPlugin.manifest.backstage?.role) {
-          platform = PackageRoles.getRoleInfo(
-            scannedPlugin.manifest.backstage.role,
-          ).platform;
-        } else {
+        if (!scannedPlugin.manifest.backstage?.role) {
           throw new Error("field 'backstage.role' not found in 'package.json'");
         }
       } catch (e) {
-        this.logger.error(
-          `failed to load dynamic plugin manifest from '${pluginHome}'`,
-          e,
-        );
+        if (e instanceof ForwardedError) {
+          this.logger.error(e.message, e.cause);
+        } else {
+          this.logger.error(
+            `failed to load dynamic plugin manifest from '${pluginHome}'`,
+            e,
+          );
+        }
         continue;
       }
-
-      if (platform === 'node') {
-        if (this.preferAlpha) {
-          const pluginHomeAlpha = path.resolve(pluginHome, 'alpha');
-          if (existsSync(pluginHomeAlpha)) {
-            if ((await fs.lstat(pluginHomeAlpha)).isDirectory()) {
-              const backstage = scannedPlugin.manifest.backstage;
-              try {
-                scannedPlugin = await this.scanDir(pluginHomeAlpha);
-              } catch (e) {
-                this.logger.error(
-                  `failed to load dynamic plugin manifest from '${pluginHomeAlpha}'`,
-                  e,
-                );
-                continue;
-              }
-              scannedPlugin.manifest.backstage = backstage;
-            } else {
-              this.logger.warn(
-                `skipping '${pluginHomeAlpha}' since it is not a directory`,
-              );
-            }
-          }
-        }
-      }
-
       scannedPlugins.push(scannedPlugin);
     }
     return { packages: scannedPlugins };
@@ -214,10 +189,37 @@ export class PluginScanner {
     const manifestFile = path.resolve(pluginHome, 'package.json');
     const content = await fs.readFile(manifestFile);
     const manifest: ScannedPluginManifest = JSON.parse(content.toString());
-    return {
+    const scannedPluginPackage: ScannedPluginPackage = {
       location: url.pathToFileURL(pluginHome),
       manifest: manifest,
     };
+
+    if (this.preferAlpha) {
+      const pluginHomeAlpha = path.resolve(pluginHome, 'alpha');
+      if (existsSync(pluginHomeAlpha)) {
+        if ((await fs.lstat(pluginHomeAlpha)).isDirectory()) {
+          try {
+            const alphaContent = await fs.readFile(
+              path.resolve(pluginHomeAlpha, 'package.json'),
+            );
+            scannedPluginPackage.alphaManifest = JSON.parse(
+              alphaContent.toString(),
+            );
+          } catch (e) {
+            throw new ForwardedError(
+              `failed to load dynamic plugin manifest from '${pluginHome}/alpha'`,
+              e,
+            );
+          }
+        } else {
+          this.logger.warn(
+            `skipping '${pluginHomeAlpha}' since it is not a directory`,
+          );
+        }
+      }
+    }
+
+    return scannedPluginPackage;
   }
 
   async trackChanges(): Promise<void> {

@@ -46,3 +46,9 @@ export type EntityFilter = {
 
 /** @public */
 export type UserListFilterKind = 'owned' | 'starred' | 'all';
+
+/** @public */
+export type EntityListPagination =
+  | boolean
+  | { mode?: 'cursor'; limit?: number }
+  | { mode: 'offset'; limit?: number; offset?: number };

@@ -16,11 +16,10 @@
 
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { GroupSchema } from '@gitbeaker/core/dist/types/resources/Groups';
-import { Gitlab } from '@gitbeaker/node';
+import { GroupSchema } from '@gitbeaker/rest';
 import { z } from 'zod';
 import commonGitlabConfig from '../commonGitlabConfig';
-import { getToken } from '../util';
+import { getClient, parseRepoUrl } from '../util';
 import { examples } from './gitlabGroupEnsureExists.examples';
 
 /**
@@ -42,9 +41,18 @@ export const createGitlabGroupEnsureExistsAction = (options: {
       input: commonGitlabConfig.merge(
         z.object({
           path: z
-            .array(z.string(), {
-              description: 'A path of group names that is ensured to exist',
-            })
+            .array(
+              z.string().or(
+                z.object({
+                  name: z.string(),
+                  slug: z.string(),
+                }),
+              ),
+              {
+                description:
+                  'A path of group names or objects (name and slug) that is ensured to exist',
+              },
+            )
             .min(1),
         }),
       ),
@@ -60,20 +68,20 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         return;
       }
 
-      const { path } = ctx.input;
-      const { token, integrationConfig } = getToken(ctx.input, integrations);
+      const { token, repoUrl, path } = ctx.input;
 
-      const api = new Gitlab({
-        host: integrationConfig.config.baseUrl,
-        token: token,
-      });
+      const { host } = parseRepoUrl(repoUrl, integrations);
+
+      const api = getClient({ host, integrations, token });
 
       let currentPath: string | null = null;
-      let parent: GroupSchema | null = null;
+      let parentId: number | null = null;
       for (const pathElement of path) {
-        const fullPath: string = currentPath
-          ? `${currentPath}/${pathElement}`
-          : pathElement;
+        const slug =
+          typeof pathElement === 'string' ? pathElement : pathElement.slug;
+        const name =
+          typeof pathElement === 'string' ? pathElement : pathElement.name;
+        const fullPath: string = currentPath ? `${currentPath}/${slug}` : slug;
         const result = (await api.Groups.search(
           fullPath,
         )) as unknown as Array<GroupSchema>; // recast since the return type for search is wrong in the gitbeaker typings
@@ -82,22 +90,31 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         );
         if (!subGroup) {
           ctx.logger.info(`creating missing group ${fullPath}`);
-          parent = await api.Groups.create(
-            pathElement,
-            pathElement,
-            parent
-              ? {
-                  parent_id: parent.id,
-                }
-              : {},
-          );
+
+          parentId = await ctx.checkpoint({
+            key: `ensure.${name}.${slug}.${parentId}`,
+            // eslint-disable-next-line no-loop-func
+            fn: async () => {
+              return (
+                await api.Groups.create(
+                  name,
+                  slug,
+                  parentId
+                    ? {
+                        parentId: parentId,
+                      }
+                    : {},
+                )
+              )?.id;
+            },
+          });
         } else {
-          parent = subGroup;
+          parentId = subGroup.id;
         }
         currentPath = fullPath;
       }
-      if (parent !== null) {
-        ctx.output('groupId', parent?.id);
+      if (parentId !== null) {
+        ctx.output('groupId', parentId);
       }
     },
   });

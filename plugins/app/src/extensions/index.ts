@@ -24,6 +24,8 @@ export { ComponentsApi } from './ComponentsApi';
 export { IconsApi } from './IconsApi';
 export { FeatureFlagsApi } from './FeatureFlagsApi';
 export { TranslationsApi } from './TranslationsApi';
+export { DefaultSignInPage } from './DefaultSignInPage';
+export { dialogDisplayAppRootElement } from './DialogDisplay';
 export {
   DefaultProgressComponent,
   DefaultErrorBoundaryComponent,

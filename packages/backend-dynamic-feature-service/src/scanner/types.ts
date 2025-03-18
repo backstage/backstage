@@ -22,6 +22,7 @@ import { BackstagePackageJson, PackageRole } from '@backstage/cli-node';
 export interface ScannedPluginPackage {
   location: URL;
   manifest: ScannedPluginManifest;
+  alphaManifest?: BackstagePackageJson;
 }
 
 /**

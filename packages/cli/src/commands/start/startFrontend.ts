@@ -15,8 +15,13 @@
  */
 
 import { readJson } from 'fs-extra';
-import { getModuleFederationOptions, serveBundle } from '../../lib/bundler';
+import { resolve as resolvePath } from 'path';
+import {
+  getModuleFederationOptions,
+  serveBundle,
+} from '../../modules/build/lib/bundler';
 import { paths } from '../../lib/paths';
+import { BackstagePackageJson } from '@backstage/cli-node';
 
 interface StartAppOptions {
   verifyVersions?: boolean;
@@ -26,10 +31,13 @@ interface StartAppOptions {
   configPaths: string[];
   skipOpenBrowser?: boolean;
   isModuleFederationRemote?: boolean;
+  linkedWorkspace?: string;
 }
 
 export async function startFrontend(options: StartAppOptions) {
-  const { name } = await readJson(paths.resolveTarget('package.json'));
+  const packageJson = (await readJson(
+    paths.resolveTarget('package.json'),
+  )) as BackstagePackageJson;
 
   const waitForExit = await serveBundle({
     entry: options.entry,
@@ -37,8 +45,10 @@ export async function startFrontend(options: StartAppOptions) {
     configPaths: options.configPaths,
     verifyVersions: options.verifyVersions,
     skipOpenBrowser: options.skipOpenBrowser,
-    moduleFederation: getModuleFederationOptions(
-      name,
+    linkedWorkspace: options.linkedWorkspace,
+    moduleFederation: await getModuleFederationOptions(
+      packageJson,
+      resolvePath(paths.targetDir),
       options.isModuleFederationRemote,
     ),
   });

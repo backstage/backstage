@@ -631,7 +631,7 @@ output:
 
 ## The templating syntax
 
-You might have noticed variables wrapped in `${{ }}` in the examples. These are
+You might have noticed expressions wrapped in `${{ }}` in the examples. These are
 template strings for linking and gluing the different parts of the template
 together. All the form inputs from the `parameters` section will be available by
 using this template syntax (for example, `${{ parameters.firstName }}` inserts
@@ -704,213 +704,16 @@ You can read more about all the `inputs` and `outputs` defined in the actions in
 code part of the `JSONSchema`, or you can read more about our
 [built in actions](./builtin-actions.md).
 
-## Built in Filters
+### More about expressions
 
-Template filters are functions that help you transform data, extract specific information,
-and perform various operations in Scaffolder Templates.
+The `${{ }}` constructs in your template are evaluated using the
+powerful [Nunjucks templating engine](https://mozilla.github.io/nunjucks/).
+To learn more about basic Nunjucks templating please see
+[templating documentation](https://mozilla.github.io/nunjucks/templating.html).
 
-This section introduces the built-in filters provided by Backstage and offers examples of
-how to use them in the Scaffolder templates. It's important to mention that Backstage also leverages the
-native filters from the Nunjucks library. For a complete list of these native filters and their usage,
-refer to the [Nunjucks documentation](https://mozilla.github.io/nunjucks/templating.html#builtin-filters).
-
-To create your own custom filters, look to the section [Custom Filters](#custom-filters) hereafter.
-
-### parseRepoUrl
-
-The `parseRepoUrl` filter parse a repository URL into
-its components, such as `owner`, repository `name`, and more.
-
-**Usage Example:**
-
-```yaml
-- id: log
-  name: Parse Repo URL
-  action: debug:log
-  input:
-    extra: ${{ parameters.repoUrl | parseRepoUrl }}
-```
-
-- **Input**: `github.com?repo=backstage&org=backstage`
-- **Output**: [RepoSpec](https://github.com/backstage/backstage/blob/v1.17.2/plugins/scaffolder-backend/src/scaffolder/actions/builtin/publish/util.ts#L39)
-
-### parseEntityRef
-
-The `parseEntityRef` filter allows you to extract different parts of
-an entity reference, such as the `kind`, `namespace`, and `name`.
-
-**Usage example**
-
-1. Without context
-
-```yaml
-- id: log
-  name: Parse Entity Reference
-  action: debug:log
-  input:
-    extra: ${{ parameters.owner | parseEntityRef }}
-```
-
-- **Input**: `group:techdocs`
-- **Output**: [CompoundEntityRef](https://github.com/backstage/backstage/blob/v1.17.2/packages/catalog-model/src/types.ts#L23)
-
-2. With context
-
-```yaml
-- id: log
-  name: Parse Entity Reference
-  action: debug:log
-  input:
-    extra: ${{ parameters.owner | parseEntityRef({ defaultKind:"group", defaultNamespace:"another-namespace" }) }}
-```
-
-- **Input**: `techdocs`
-- **Output**: [CompoundEntityRef](https://github.com/backstage/backstage/blob/v1.17.2/packages/catalog-model/src/types.ts#L23)
-
-### pick
-
-This `pick` filter allows you to select specific properties (`kind`, `namespace`, `name`) from an object.
-
-**Usage Example**
-
-```yaml
-- id: log
-  name: Pick
-  action: debug:log
-  input:
-    extra: ${{ parameters.owner | parseEntityRef | pick('name') }}
-```
-
-- **Input**: `{ kind: 'Group', namespace: 'default', name: 'techdocs' }`
-- **Output**: `techdocs`
-
-### projectSlug
-
-The `projectSlug` filter generates a project slug from a repository URL
-
-**Usage Example**
-
-```yaml
-- id: log
-  name: Project Slug
-  action: debug:log
-  input:
-    extra: ${{ parameters.repoUrl | projectSlug }}
-```
-
-- **Input**: `github.com?repo=backstage&org=backstage`
-- **Output**: `backstage/backstage`
-
-## Custom Filters
-
-Whenever it is needed to extend the built-in filters with yours `${{ parameters.name | my-filter1 | my-filter2 | etc }}`, then you can add them
-using the property `additionalTemplateFilters`.
-
-The `additionalTemplateFilters` property accepts as type a `Record`
-
-```ts title="plugins/scaffolder-backend/src/service/Router.ts"
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-```
-
-where the first parameter is the name of the filter and the second receives a list of `JSON value` arguments. The `templateFilter()` function must return a JsonValue which is either a Json array, object or primitive.
-
-```ts title="plugins/scaffolder-node/src/types.ts"
-export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
-```
-
-From a practical coding point of view, you will translate that into the following snippet code handling 2 filters:
-
-```ts"
-...
-additionalTemplateFilters: {
-  base64: (...args: JsonValue[]) => btoa(args.join("")),
-  betterFilter: (...args: JsonValue[]) => { return `This is a much better string than "${args}", don't you think?` }
-}
-```
-
-And within your template, you will be able to use the filters using a parameter and the filter passed using the pipe symbol
-
-```yaml
-apiVersion: scaffolder.backstage.io/v1beta3
-kind: Template
-metadata:
-  name: test
-  title: Test
-spec:
-  owner: user:guest
-  type: service
-
-  parameters:
-    - title: Test custom filters
-      properties:
-        userName:
-          title: Name of the user
-          type: string
-
-  steps:
-    - id: debug
-      name: debug
-      action: debug:log
-      input:
-        message: ${{ parameters.userName | betterFilter | base64 }}
-```
-
-Next, you will have to register the property `addTemplateFilters` using the `scaffolderTemplatingExtensionPoint` of a new `BackendModule` [created](../../backend-system/architecture/06-modules.md).
-
-Here is a very simplified example of how to do that:
-
-```ts title="packages/backend-next/src/index.ts"
-/* highlight-add-start */
-import { scaffolderTemplatingExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
-import { createBackendModule } from '@backstage/backend-plugin-api';
-/* highlight-add-end */
-
-/* highlight-add-start */
-const scaffolderModuleCustomFilters = createBackendModule({
-  pluginId: 'scaffolder', // name of the plugin that the module is targeting
-  moduleId: 'custom-filters',
-  register(env) {
-    env.registerInit({
-      deps: {
-        scaffolder: scaffolderTemplatingExtensionPoint,
-        // ... and other dependencies as needed
-      },
-      async init({ scaffolder /* ..., other dependencies */ }) {
-        scaffolder.addTemplateFilters({
-          base64: (...args: JsonValue[]) => btoa(args.join('')),
-          betterFilter: (...args: JsonValue[]) => {
-            return `This is a much better string than "${args}", don't you think?`;
-          },
-        });
-      },
-    });
-  },
-});
-/* highlight-add-end */
-
-const backend = createBackend();
-backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
-/* highlight-add-next-line */
-backend.add(scaffolderModuleCustomFilters());
-```
-
-If you still use the legacy backend system, then you will use the `createRouter()` function of the `Scaffolder plugin`
-
-```ts title="packages/backend/src/plugins/scaffolder.ts"
-export default async function createPlugin({
-  logger,
-  config,
-}: PluginEnvironment): Promise<Router> {
-  ...
-  return await createRouter({
-    logger,
-    config,
-
-    additionalTemplateFilters: {
-        <YOUR_FILTERS>
-    }
-  });
-```
+Information about Backstage's built-in Nunjucks extensions, as well as how to
+create your own customizations, may be found at
+[Template Extensions](./template-extensions.md).
 
 ## Template Editor
 

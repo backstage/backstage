@@ -41,7 +41,7 @@ import {
 import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
-import { generateStableHash } from './util';
+import { generateStableHash, generateTargetKey } from './util';
 import {
   EventBroker,
   EventParams,
@@ -158,7 +158,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       'refresh_keys',
       refreshKeys.map(k => ({
         entity_id: id,
-        key: k.key,
+        key: generateTargetKey(k.key),
       })),
       BATCH_SIZE,
     );
@@ -198,40 +198,46 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   }
 
   async getProcessableEntities(
-    txOpaque: Transaction,
+    maybeTx: Transaction | Knex,
     request: { processBatchSize: number },
   ): Promise<GetProcessableEntitiesResult> {
-    const tx = txOpaque as Knex.Transaction;
+    const knex = maybeTx as Knex.Transaction | Knex;
 
-    let itemsQuery = tx<DbRefreshStateRow>('refresh_state').select();
+    let itemsQuery = knex<DbRefreshStateRow>('refresh_state').select([
+      'entity_id',
+      'entity_ref',
+      'unprocessed_entity',
+      'result_hash',
+      'cache',
+      'errors',
+      'location_key',
+      'next_update_at',
+    ]);
 
     // This avoids duplication of work because of race conditions and is
     // also fast because locked rows are ignored rather than blocking.
     // It's only available in MySQL and PostgreSQL
-    if (['mysql', 'mysql2', 'pg'].includes(tx.client.config.client)) {
+    if (['mysql', 'mysql2', 'pg'].includes(knex.client.config.client)) {
       itemsQuery = itemsQuery.forUpdate().skipLocked();
     }
 
     const items = await itemsQuery
-      .where('next_update_at', '<=', tx.fn.now())
+      .where('next_update_at', '<=', knex.fn.now())
       .limit(request.processBatchSize)
       .orderBy('next_update_at', 'asc');
 
     const interval = this.options.refreshInterval();
 
     const nextUpdateAt = (refreshInterval: number) => {
-      if (tx.client.config.client.includes('sqlite3')) {
-        return tx.raw(`datetime('now', ?)`, [`${refreshInterval} seconds`]);
+      if (knex.client.config.client.includes('sqlite3')) {
+        return knex.raw(`datetime('now', ?)`, [`${refreshInterval} seconds`]);
+      } else if (knex.client.config.client.includes('mysql')) {
+        return knex.raw(`now() + interval ${refreshInterval} second`);
       }
-
-      if (tx.client.config.client.includes('mysql')) {
-        return tx.raw(`now() + interval ${refreshInterval} second`);
-      }
-
-      return tx.raw(`now() + interval '${refreshInterval} seconds'`);
+      return knex.raw(`now() + interval '${refreshInterval} seconds'`);
     };
 
-    await tx<DbRefreshStateRow>('refresh_state')
+    await knex<DbRefreshStateRow>('refresh_state')
       .whereIn(
         'entity_ref',
         items.map(i => i.entity_ref),
@@ -247,16 +253,12 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
             id: i.entity_id,
             entityRef: i.entity_ref,
             unprocessedEntity: JSON.parse(i.unprocessed_entity) as Entity,
-            processedEntity: i.processed_entity
-              ? (JSON.parse(i.processed_entity) as Entity)
-              : undefined,
             resultHash: i.result_hash || '',
             nextUpdateAt: timestampToDateTime(i.next_update_at),
-            lastDiscoveryAt: timestampToDateTime(i.last_discovery_at),
             state: i.cache ? JSON.parse(i.cache) : undefined,
             errors: i.errors,
             locationKey: i.location_key,
-          } as RefreshStateItem),
+          } satisfies RefreshStateItem),
       ),
     };
   }
@@ -270,7 +272,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const rows = await tx<DbRefreshStateReferencesRow>(
       'refresh_state_references',
     )
-      .where({ target_entity_ref: options.entityRef })
+      .whereIn('target_entity_ref', options.entityRefs)
       .select();
 
     const entityRefs = rows.map(r => r.source_entity_ref!).filter(Boolean);
@@ -381,9 +383,12 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       }
     }
 
-    // Replace all references for the originating entity or source and then create new ones
+    // Lastly, replace refresh state references for the originating entity and any successfully added entities
     await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-      .andWhere({ source_entity_ref: options.sourceEntityRef })
+      // Remove all existing references from the originating entity
+      .where({ source_entity_ref: options.sourceEntityRef })
+      // And remove any existing references to entities that we're inserting new references for
+      .orWhereIn('target_entity_ref', stateReferences)
       .delete();
     await tx.batchInsert(
       'refresh_state_references',

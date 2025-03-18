@@ -232,6 +232,35 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     });
   });
 
+  it('should include archived projects', async () => {
+    const config = new ConfigReader(
+      mock.config_single_integration_include_archived,
+    );
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    await provider.refresh(logger);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_location_entities_including_archived.filter(
+        entity =>
+          !entity.entity.metadata.annotations[
+            'backstage.io/managed-by-location'
+          ].includes('awesome'),
+      ),
+    });
+  });
+
   it('should filter repositories that are excluded', async () => {
     const config = new ConfigReader(
       mock.config_single_integration_exclude_repos,

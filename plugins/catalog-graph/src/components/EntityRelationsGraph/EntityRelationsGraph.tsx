@@ -34,6 +34,9 @@ import { ALL_RELATION_PAIRS, RelationPairs } from './relations';
 import { Direction, EntityEdge, EntityNode } from './types';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
 
+/** @public */
+export type EntityRelationsGraphClassKey = 'progress' | 'container' | 'graph';
+
 const useStyles = makeStyles(
   theme => ({
     progress: {

@@ -13,20 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DateTime, Interval } from 'luxon';
-import humanizeDuration from 'humanize-duration';
+import { DateTime } from 'luxon';
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 
-export const CreatedAtColumn = ({ createdAt }: { createdAt: string }) => {
-  const createdAtTime = DateTime.fromISO(createdAt);
-  const formatted = Interval.fromDateTimes(createdAtTime, DateTime.local())
-    .toDuration()
-    .valueOf();
+interface CreatedAtColumnProps {
+  createdAt: string;
+  locale?: string;
+}
 
-  return (
-    <Typography paragraph>
-      {humanizeDuration(formatted, { round: true })} ago
-    </Typography>
-  );
+export const CreatedAtColumn: React.FC<CreatedAtColumnProps> = ({
+  createdAt,
+  locale,
+}) => {
+  const createdAtTime = DateTime.fromISO(createdAt);
+
+  const userLocale = locale || window.navigator.language || 'en-US';
+
+  const formatted = createdAtTime.setLocale(userLocale).toLocaleString({
+    ...DateTime.DATETIME_SHORT_WITH_SECONDS,
+  });
+
+  return <Typography paragraph>{formatted}</Typography>;
 };

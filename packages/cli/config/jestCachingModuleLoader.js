@@ -19,6 +19,11 @@ const { default: JestRuntime } = require('jest-runtime');
 const scriptTransformCache = new Map();
 
 module.exports = class CachingJestRuntime extends JestRuntime {
+  constructor(config, ...restAgs) {
+    super(config, ...restAgs);
+    this.allowLoadAsEsm = config.extensionsToTreatAsEsm.includes('.mts');
+  }
+
   // This may or may not be a good idea. Theoretically I don't know why this would impact
   // test correctness and flakiness, but it seems like it may introduce flakiness and strange failures.
   // It does seem to speed up test execution by a fair amount though.
@@ -32,5 +37,14 @@ module.exports = class CachingJestRuntime extends JestRuntime {
       scriptTransformCache.set(scriptSource, script);
     }
     return script;
+  }
+
+  // Unfortunately we need to use this unstable API to make sure that .js files
+  // are only loaded as modules where ESM is supported, i.e. Node.js packages.
+  unstable_shouldLoadAsEsm(path, ...restArgs) {
+    if (!this.allowLoadAsEsm) {
+      return false;
+    }
+    return super.unstable_shouldLoadAsEsm(path, ...restArgs);
   }
 };

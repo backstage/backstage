@@ -37,6 +37,7 @@ import {
   GithubUrlReader,
 } from './GithubUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
+import { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
 
 const mockDir = createMockDirectory({ mockOsTmpDir: true });
 
@@ -111,7 +112,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/contents/main',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
               mockHeaders.Authorization,
@@ -152,7 +153,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/contents/main',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
               mockHeaders.Authorization,
@@ -188,7 +189,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/contents/main',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
               mockHeaders.Authorization,
@@ -219,7 +220,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/contents/main',
           (_req, res, ctx) => {
             return res(
               ctx.status(403),
@@ -249,7 +250,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/contents/main',
           (_req, res, ctx) => {
             return res(
               ctx.status(200),
@@ -283,7 +284,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/contents/main',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
               'Bearer overridentoken',
@@ -887,9 +888,6 @@ describe('GithubUrlReader', () => {
       expect(r2.etag).toBe('etag123abc');
       expect(r2.files.length).toBe(2);
 
-      const r3 = await reader.search(`${baseUrl}/backstage/mock/tree/main/o`);
-      expect(r3.files.length).toBe(0);
-
       const r4 = await reader.search(
         `${baseUrl}/backstage/mock/tree/main/*docs*`,
       );
@@ -1015,6 +1013,23 @@ describe('GithubUrlReader', () => {
         ),
       );
       await runTests(gheProcessor, 'https://ghe.github.com');
+    });
+
+    it('uses readUrl when searching for an exact file', async () => {
+      githubProcessor.readUrl = jest.fn().mockResolvedValue({
+        buffer: async () => Buffer.from('content'),
+        etag: 'etag',
+      } as UrlReaderServiceReadUrlResponse);
+      const data = await githubProcessor.search(
+        'https://github.com/backstage/mock/tree/main/o',
+      );
+      expect(githubProcessor.readUrl).toHaveBeenCalledTimes(1);
+      expect(data.etag).toBe('etag');
+      expect(data.files.length).toBe(1);
+      expect(data.files[0].url).toBe(
+        'https://github.com/backstage/mock/tree/main/o',
+      );
+      expect((await data.files[0].content()).toString()).toEqual('content');
     });
 
     it('throws NotModifiedError when same etag', async () => {

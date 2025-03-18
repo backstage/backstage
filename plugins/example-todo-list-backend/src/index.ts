@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * from './service/router';
 export { exampleTodoListPlugin as default } from './plugin';

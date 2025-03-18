@@ -27,11 +27,12 @@ import { PuppetDbPage } from '@backstage-community/plugin-puppetdb';
 import { StackstormPage } from '@backstage-community/plugin-stackstorm';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 import React, { Fragment } from 'react';
+// TODO(rugvip): this should take into account that this is a test file, so these deps don't need to be in the dependencies
+// eslint-disable-next-line @backstage/no-undeclared-imports
+import { OpaqueFrontendPlugin } from '@internal/frontend';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { collectLegacyRoutes } from './collectLegacyRoutes';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalFrontendPlugin } from '../../frontend-plugin-api/src/wiring/createFrontendPlugin';
 import {
   createPlugin,
   createRoutableExtension,
@@ -47,15 +48,17 @@ describe('collectLegacyRoutes', () => {
       <FlatRoutes>
         <Route path="/score-board" element={<ScoreBoardPage />} />
         <Route path="/stackstorm" element={<StackstormPage />} />
+        <Route path="/other" element={<div />} />
         <Route path="/puppetdb" element={<PuppetDbPage />} />
         <Route path="/puppetdb" element={<PuppetDbPage />} />
+        <Route path="/other" element={<div />} />
       </FlatRoutes>,
     );
 
     expect(
       collected.map(p => ({
-        id: p.id,
-        extensions: toInternalFrontendPlugin(p).extensions.map(e => ({
+        id: p.$$type === '@backstage/FrontendPlugin' ? p.id : p.pluginId,
+        extensions: OpaqueFrontendPlugin.toInternal(p).extensions.map(e => ({
           id: e.id,
           attachTo: e.attachTo,
           disabled: e.disabled,
@@ -92,6 +95,23 @@ describe('collectLegacyRoutes', () => {
             id: 'api:stackstorm/plugin.stackstorm.service',
             attachTo: { id: 'root', input: 'apis' },
             disabled: false,
+          },
+        ],
+      },
+      {
+        id: 'converted-orphan-routes',
+        extensions: [
+          {
+            id: 'page:converted-orphan-routes',
+            attachTo: { id: 'app/routes', input: 'routes' },
+            disabled: false,
+            defaultConfig: {},
+          },
+          {
+            id: 'page:converted-orphan-routes/2',
+            attachTo: { id: 'app/routes', input: 'routes' },
+            disabled: false,
+            defaultConfig: {},
           },
         ],
       },
@@ -157,8 +177,8 @@ describe('collectLegacyRoutes', () => {
 
     expect(
       collected.map(p => ({
-        id: p.id,
-        extensions: toInternalFrontendPlugin(p).extensions.map(e => ({
+        id: p.$$type === '@backstage/FrontendPlugin' ? p.id : p.pluginId,
+        extensions: OpaqueFrontendPlugin.toInternal(p).extensions.map(e => ({
           id: e.id,
           attachTo: e.attachTo,
           disabled: e.disabled,
@@ -377,8 +397,6 @@ describe('collectLegacyRoutes', () => {
           <Route element={<Navigate to="/somewhere" />} />
         </FlatRoutes>,
       ),
-    ).toThrow(
-      /Route with path undefined has en element that can not be converted/,
-    );
+    ).toThrow(/Route element inside FlatRoutes had no path prop value given/);
   });
 });

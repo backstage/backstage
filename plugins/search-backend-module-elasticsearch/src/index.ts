@@ -20,6 +20,8 @@
  * @packageDocumentation
  */
 
+export { default } from './module';
+export * from './module';
 export {
   decodeElasticSearchPageCursor,
   ElasticSearchSearchEngine,
@@ -34,6 +36,7 @@ export type {
   ElasticSearchClientOptions,
   ElasticSearchElasticSearchClientOptions,
   ElasticSearchHighlightConfig,
+  ElasticSearchQueryConfig,
   ElasticSearchHighlightOptions,
   ElasticSearchIndexAction,
   ElasticSearchQueryTranslator,

@@ -20,7 +20,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { useAnalytics, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 import {
@@ -47,6 +47,7 @@ import {
   handleMetaRedirects,
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
+import { useParams } from 'react-router-dom';
 
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 
@@ -67,8 +68,10 @@ export const useTechDocsReaderDom = (
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
+  const configApi = useApi(configApiRef);
 
   const { state, path, content: rawPage } = useTechDocsReader();
+  const { '*': currPath = '' } = useParams();
 
   const [dom, setDom] = useState<HTMLElement | null>(null);
   const isStyleLoading = useShadowDomStylesLoading(dom);
@@ -191,7 +194,9 @@ export const useTechDocsReaderDom = (
         scrollIntoNavigation(),
         copyToClipboard(theme),
         addLinkClickListener({
-          baseUrl: window.location.origin,
+          baseUrl:
+            configApi.getOptionalString('app.baseUrl') ||
+            window.location.origin,
           onClick: (event: MouseEvent, url: string) => {
             // detect if CTRL or META keys are pressed so that links can be opened in a new tab with `window.open`
             const modifierActive = event.ctrlKey || event.metaKey;
@@ -208,7 +213,18 @@ export const useTechDocsReaderDom = (
               if (modifierActive) {
                 window.open(url, '_blank');
               } else {
-                navigate(url);
+                // If it's in a different page, we navigate to it
+                if (window.location.pathname !== parsedUrl.pathname) {
+                  navigate(url);
+                } else {
+                  // If it's in the same page we avoid using navigate that causes
+                  // the page to rerender.
+                  window.history.pushState(
+                    null,
+                    document.title,
+                    parsedUrl.hash,
+                  );
+                }
                 // Scroll to hash if it's on the current page
                 transformedElement
                   ?.querySelector(`[id="${parsedUrl.hash.slice(1)}"]`)
@@ -245,7 +261,7 @@ export const useTechDocsReaderDom = (
           onLoaded: () => {},
         }),
       ]),
-    [theme, navigate, analytics, entityRef.name],
+    [theme, navigate, analytics, entityRef.name, configApi],
   );
 
   useEffect(() => {
@@ -265,6 +281,12 @@ export const useTechDocsReaderDom = (
         return;
       }
 
+      // Skip this update if the location's path has changed but the state
+      // contains a page that isn't loaded yet.
+      if (currPath !== path) {
+        return;
+      }
+
       // Scroll to top after render
       window.scroll({ top: 0 });
 
@@ -272,6 +294,7 @@ export const useTechDocsReaderDom = (
       const postTransformedDomElement = await postRender(
         preTransformedDomElement,
       );
+
       setDom(postTransformedDomElement as HTMLElement);
     });
 
@@ -279,7 +302,7 @@ export const useTechDocsReaderDom = (
     return () => {
       shouldReplaceContent = false;
     };
-  }, [rawPage, path, preRender, postRender]);
+  }, [rawPage, currPath, path, preRender, postRender]);
 
   return dom;
 };

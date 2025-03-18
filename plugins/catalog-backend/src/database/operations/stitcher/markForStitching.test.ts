@@ -252,24 +252,28 @@ describe('markForStitching', () => {
         {
           entity_id: '1',
           final_entity: '{}',
+          entity_ref: 'k:ns/one',
           hash: 'old',
           stitch_ticket: 'old',
         },
         {
           entity_id: '2',
           final_entity: '{}',
+          entity_ref: 'k:ns/two',
           hash: 'old',
           stitch_ticket: 'old',
         },
         {
           entity_id: '3',
           final_entity: '{}',
+          entity_ref: 'k:ns/three',
           hash: 'old',
           stitch_ticket: 'old',
         },
         {
           entity_id: '4',
           final_entity: '{}',
+          entity_ref: 'k:ns/four',
           hash: 'old',
           stitch_ticket: 'old',
         },

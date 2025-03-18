@@ -25,7 +25,7 @@ jest.setTimeout(60_000);
 describe('WrapperProviders', () => {
   const applyDatabaseMigrations = jest.fn();
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_16', 'POSTGRES_12', 'SQLITE_3', 'MYSQL_8'],
+    ids: ['POSTGRES_17', 'POSTGRES_13', 'SQLITE_3', 'MYSQL_8'],
   });
   const config = new ConfigReader({});
   const logger = mockServices.logger.mock();
@@ -68,6 +68,7 @@ describe('WrapperProviders', () => {
         client,
         scheduler: scheduler as Partial<SchedulerService> as SchedulerService,
         applyDatabaseMigrations,
+        events: mockServices.events.mock(),
       });
       const wrapped1 = providers.wrap(provider1, {
         burstInterval: { seconds: 1 },

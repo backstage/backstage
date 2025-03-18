@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import yaml from 'yaml';
 import { createGitlabProjectAccessTokenAction } from './gitlabProjectAccessTokenCreate'; // Adjust the import based on your project structure
 import { examples } from './gitlabProjectAccessTokenCreate.examples';
-
 import { DateTime } from 'luxon';
-
-jest.mock('node-fetch');
 
 const mockGitlabClient = {
   ProjectAccessTokens: {
@@ -88,9 +86,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '456',
       'tokenname',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -113,9 +111,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '789',
       'tokenname',
       ['read_registry', 'write_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -138,9 +136,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '101112',
       'my-custom-token',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -163,9 +161,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       42,
       'tokenname',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -188,9 +186,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '123',
       'tokenname',
       ['read_repository'],
+      '2024-06-25',
       {
         accessLevel: 40,
-        expiresAt: '2024-06-25',
       },
     );
 
@@ -213,9 +211,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '456',
       'tokenname',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 30,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -241,9 +239,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '456',
       'full-access-token',
       ['read_repository'],
+      '2024-12-31',
       {
         accessLevel: 40,
-        expiresAt: '2024-12-31',
       },
     );
 
@@ -269,9 +267,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '101112',
       'tokenname',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -297,9 +295,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '101112',
       'tokenname',
       ['read_repository', 'read_api'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -325,9 +323,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '101112',
       'tokenname',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 10,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -353,9 +351,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '101112',
       'tokenname',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -381,9 +379,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '101112',
       'tokenname',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 50,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -409,9 +407,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '101112',
       'no-expiry-token',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
@@ -437,9 +435,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '101112',
       'tokenname',
       ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
       {
         accessLevel: 40,
-        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 

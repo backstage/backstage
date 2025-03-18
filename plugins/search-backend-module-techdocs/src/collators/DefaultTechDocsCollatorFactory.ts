@@ -15,13 +15,10 @@
  */
 
 import {
-  createLegacyAuthAdapters,
-  TokenManager,
-} from '@backstage/backend-common';
-import {
   CATALOG_FILTER_EXISTS,
   CatalogApi,
   CatalogClient,
+  EntityFilterQuery,
 } from '@backstage/catalog-client';
 import {
   Entity,
@@ -34,42 +31,38 @@ import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/al
 import { Permission } from '@backstage/plugin-permission-common';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
-import unescape from 'lodash/unescape';
-import fetch from 'node-fetch';
 import pLimit from 'p-limit';
 import { Readable } from 'stream';
 import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
+import {
+  MkSearchIndexDoc,
+  TechDocsCollatorDocumentTransformer,
+} from './TechDocsCollatorDocumentTransformer';
 import { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
+import { defaultTechDocsCollatorDocumentTransformer } from './defaultTechDocsCollatorDocumentTransformer';
 import {
   AuthService,
   DiscoveryService,
-  HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-
-interface MkSearchIndexDoc {
-  title: string;
-  text: string;
-  location: string;
-}
 
 /**
  * Options to configure the TechDocs collator factory
  *
- * @public
- * @deprecated This type is deprecated along with the {@link DefaultTechDocsCollatorFactory}.
+ * @internal
  */
 export type TechDocsCollatorFactoryOptions = {
   discovery: DiscoveryService;
   logger: LoggerService;
-  tokenManager?: TokenManager;
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
+  auth: AuthService;
   locationTemplate?: string;
   catalogClient?: CatalogApi;
   parallelismLimit?: number;
   legacyPathCasing?: boolean;
   entityTransformer?: TechDocsCollatorEntityTransformer;
+  documentTransformer?: TechDocsCollatorDocumentTransformer;
+  entityFilterFunction?: (entity: Entity[]) => Entity[];
+  customCatalogApiFilters?: EntityFilterQuery;
 };
 
 type EntityInfo = {
@@ -82,8 +75,7 @@ type EntityInfo = {
  * A search collator factory responsible for gathering and transforming
  * TechDocs documents.
  *
- * @public
- * @deprecated Migrate to the {@link https://backstage.io/docs/backend-system/building-backends/migrating | new backend system} and install this collator via module instead (see {@link https://github.com/backstage/backstage/blob/nbs10/search-deprecate-create-router/plugins/search-backend-module-techdocs/README.md#installation | here} for more installation details).
+ * @internal
  */
 export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'techdocs';
@@ -98,6 +90,9 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   private readonly parallelismLimit: number;
   private readonly legacyPathCasing: boolean;
   private entityTransformer: TechDocsCollatorEntityTransformer;
+  private documentTransformer: TechDocsCollatorDocumentTransformer;
+  private entityFilterFunction: Function | undefined;
+  private customCatalogApiFilters: EntityFilterQuery | undefined;
 
   private constructor(options: TechDocsCollatorFactoryOptions) {
     this.discovery = options.discovery;
@@ -109,14 +104,11 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
       new CatalogClient({ discoveryApi: options.discovery });
     this.parallelismLimit = options.parallelismLimit ?? 10;
     this.legacyPathCasing = options.legacyPathCasing ?? false;
-    this.entityTransformer =
-      options.entityTransformer ?? defaultTechDocsCollatorEntityTransformer;
-
-    this.auth = createLegacyAuthAdapters({
-      auth: options.auth,
-      discovery: options.discovery,
-      tokenManager: options.tokenManager,
-    }).auth;
+    this.entityTransformer = options.entityTransformer ?? (() => ({}));
+    this.documentTransformer = options.documentTransformer ?? (() => ({}));
+    this.entityFilterFunction = options.entityFilterFunction;
+    this.customCatalogApiFilters = options.customCatalogApiFilters;
+    this.auth = options.auth;
   }
 
   static fromConfig(config: Config, options: TechDocsCollatorFactoryOptions) {
@@ -166,6 +158,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
             filter: {
               'metadata.annotations.backstage.io/techdocs-ref':
                 CATALOG_FILTER_EXISTS,
+              ...this.customCatalogApiFilters,
             },
             limit: batchSize,
             offset: entitiesRetrieved,
@@ -178,81 +171,71 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
       moreEntitiesToGet = entities.length === batchSize;
       entitiesRetrieved += entities.length;
 
-      const docPromises = entities
-        .filter(it => it.metadata?.annotations?.['backstage.io/techdocs-ref'])
-        .map((entity: Entity) =>
-          limit(async (): Promise<TechDocsDocument[]> => {
-            const entityInfo =
-              DefaultTechDocsCollatorFactory.handleEntityInfoCasing(
-                this.legacyPathCasing,
+      const filteredEntities = this.entityFilterFunction
+        ? this.entityFilterFunction(entities)
+        : this.defaultFilteringFunction(entities);
+
+      const docPromises = filteredEntities.map((entity: Entity) =>
+        limit(async (): Promise<TechDocsDocument[]> => {
+          const entityInfo =
+            DefaultTechDocsCollatorFactory.handleEntityInfoCasing(
+              this.legacyPathCasing,
+              {
+                kind: entity.kind,
+                namespace: entity.metadata.namespace || 'default',
+                name: entity.metadata.name,
+              },
+            );
+
+          try {
+            const { token: techdocsToken } =
+              await this.auth.getPluginRequestToken({
+                onBehalfOf: await this.auth.getOwnServiceCredentials(),
+                targetPluginId: 'techdocs',
+              });
+
+            const searchIndex = await fetch(
+              DefaultTechDocsCollatorFactory.constructDocsIndexUrl(
+                techDocsBaseUrl,
+                entityInfo,
+              ),
+              {
+                headers: {
+                  Authorization: `Bearer ${techdocsToken}`,
+                },
+              },
+            ).then(res => res.json());
+
+            return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
+              ...defaultTechDocsCollatorEntityTransformer(entity),
+              ...defaultTechDocsCollatorDocumentTransformer(doc),
+              ...this.entityTransformer(entity),
+              ...this.documentTransformer(doc),
+              location: this.applyArgsToFormat(
+                this.locationTemplate || '/docs/:namespace/:kind/:name/:path',
                 {
-                  kind: entity.kind,
-                  namespace: entity.metadata.namespace || 'default',
-                  name: entity.metadata.name,
+                  ...entityInfo,
+                  path: doc.location,
                 },
-              );
-
-            try {
-              const { token: techdocsToken } =
-                await this.auth.getPluginRequestToken({
-                  onBehalfOf: await this.auth.getOwnServiceCredentials(),
-                  targetPluginId: 'techdocs',
-                });
-
-              const searchIndexResponse = await fetch(
-                DefaultTechDocsCollatorFactory.constructDocsIndexUrl(
-                  techDocsBaseUrl,
-                  entityInfo,
-                ),
-                {
-                  headers: {
-                    Authorization: `Bearer ${techdocsToken}`,
-                  },
-                },
-              );
-
-              // todo(@backstage/techdocs-core): remove Promise.race() when node-fetch is 3.x+
-              // workaround for fetch().json() hanging in node-fetch@2.x.x, fixed in 3.x.x
-              // https://github.com/node-fetch/node-fetch/issues/665
-              const searchIndex = await Promise.race([
-                searchIndexResponse.json(),
-                new Promise((_resolve, reject) => {
-                  setTimeout(() => {
-                    reject('Could not parse JSON in 5 seconds.');
-                  }, 5000);
-                }),
-              ]);
-
-              return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
-                ...this.entityTransformer(entity),
-                title: unescape(doc.title),
-                text: unescape(doc.text || ''),
-                location: this.applyArgsToFormat(
-                  this.locationTemplate || '/docs/:namespace/:kind/:name/:path',
-                  {
-                    ...entityInfo,
-                    path: doc.location,
-                  },
-                ),
-                path: doc.location,
-                ...entityInfo,
-                entityTitle: entity.metadata.title,
-                componentType: entity.spec?.type?.toString() || 'other',
-                lifecycle: (entity.spec?.lifecycle as string) || '',
-                owner: getSimpleEntityOwnerString(entity),
-                authorization: {
-                  resourceRef: stringifyEntityRef(entity),
-                },
-              }));
-            } catch (e) {
-              this.logger.debug(
-                `Failed to retrieve tech docs search index for entity ${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}`,
-                e,
-              );
-              return [];
-            }
-          }),
-        );
+              ),
+              ...entityInfo,
+              entityTitle: entity.metadata.title,
+              componentType: entity.spec?.type?.toString() || 'other',
+              lifecycle: (entity.spec?.lifecycle as string) || '',
+              owner: getSimpleEntityOwnerString(entity),
+              authorization: {
+                resourceRef: stringifyEntityRef(entity),
+              },
+            }));
+          } catch (e) {
+            this.logger.debug(
+              `Failed to retrieve tech docs search index for entity ${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}`,
+              e,
+            );
+            return [];
+          }
+        }),
+      );
       yield* (await Promise.all(docPromises)).flat();
     }
   }
@@ -266,6 +249,12 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
       formatted = formatted.replace(`:${key}`, value);
     }
     return formatted;
+  }
+
+  private defaultFilteringFunction(entities: Entity[]): Entity[] {
+    return entities.filter(
+      entity => entity.metadata?.annotations?.['backstage.io/techdocs-ref'],
+    );
   }
 
   private static constructDocsIndexUrl(

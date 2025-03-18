@@ -101,7 +101,7 @@ export const examplePlugin = createBackendPlugin({
 The plugin can then be installed in the backend using the returned plugin factory function:
 
 ```ts
-backend.add(examplePlugin());
+backend.add(examplePlugin);
 ```
 
 If we wanted our plugin to accept options as well, we'd accept the options as the second parameter of the register method:
@@ -266,7 +266,7 @@ class GoogleCloudLogger implements LoggerService {
 const backend = createBackend();
 
 // supplies additional or replacement services to the backend
-backend.add(GoogleCloudLogger.factory());
+backend.add(GoogleCloudLogger.factory);
 ```
 
 ## Testing

@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
-export * from './module';
-export { default } from './module';
+import { default as feature } from './module';
+
+/**
+ * @alpha
+ * @deprecated Please import from `@backstage/plugin-catalog-backend-module-incremental-ingestion` instead
+ */
+const _feature = feature;
+export default _feature;

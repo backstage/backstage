@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { screen, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -35,10 +35,12 @@ const SearchContextFilterSpy = ({ name }: { name: string }) => {
 };
 
 describe('SearchFilter.Autocomplete', () => {
-  const configApiMock = new MockConfigApi({
-    search: {
-      query: {
-        pageLimit: 100,
+  const configApiMock = mockApis.config({
+    data: {
+      search: {
+        query: {
+          pageLimit: 100,
+        },
       },
     },
   });

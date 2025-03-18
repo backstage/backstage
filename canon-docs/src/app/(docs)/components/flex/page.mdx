@@ -1,0 +1,101 @@
+import { PropsTable } from '@/components/PropsTable';
+import { spacePropsList } from '@/utils/spaceProps';
+import { Tabs } from '@/components/Tabs';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  flexFAQ1,
+  flexSimple,
+  flexResponsive,
+  flexAlign,
+} from '@/snippets/_snippets';
+import { Snippet } from '@/components/Snippet';
+import { FlexPreview } from '@/snippets/flex';
+
+# Flex
+
+This is the flex container component. It will help to define the number of
+columns that will be used in the grid. You can also define the gap between the
+columns. All values are responsive.
+
+<Snippet
+  py={4}
+  align="center"
+  preview={<FlexPreview />}
+  code={`<Flex>
+    <DecorativeBox />
+    <DecorativeBox />
+    <DecorativeBox />
+</Flex>`}
+/>
+
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock
+      code={`import { Flex } from '@backstage/canon';
+
+<Flex />
+`}
+    />
+  </Tabs.Panel>
+</Tabs.Root>
+
+## API reference
+
+<PropsTable
+  data={{
+    align: {
+      type: ['start', 'center', 'end'],
+      responsive: true,
+    },
+    children: {
+      type: 'ReactNode',
+      required: false,
+    },
+    className: {
+      type: 'string',
+      required: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      required: false,
+    },
+  }}
+/>
+
+The grid component also accepts all the spacing props from the Box component.
+
+<PropsTable data={spacePropsList} />
+
+## Common questions
+
+### Can I stack horizontally?
+
+The Flex component only allows for stacking elements vertically. If you want
+to create a column layout, please use the Grid component.
+
+<CodeBlock code={flexFAQ1} />
+
+## Examples
+
+### Simple
+
+A simple example of how to use the Flex component.
+
+<CodeBlock code={flexSimple} />
+
+### Responsive
+
+The Flex component also supports responsive values, making it easy to create
+responsive designs.
+
+<CodeBlock code={flexResponsive} />
+
+### Align
+
+The Flex component also supports responsive alignment, making it easy to
+create responsive designs.
+
+<CodeBlock code={flexAlign} />

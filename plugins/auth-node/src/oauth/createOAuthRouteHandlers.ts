@@ -40,7 +40,7 @@ import {
   SignInResolver,
 } from '../types';
 import { OAuthAuthenticator, OAuthAuthenticatorResult } from './types';
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { CookieScopeManager } from './CookieScopeManager';
 
 /** @public */
@@ -99,6 +99,9 @@ export function createOAuthRouteHandlers<TProfile>(
   const callbackUrl =
     config.getOptionalString('callbackUrl') ??
     `${baseUrl}/${providerId}/handler/frame`;
+  const sessionDuration = config.has('sessionDuration')
+    ? readDurationFromConfig(config, { key: 'sessionDuration' })
+    : undefined;
 
   const stateTransform = options.stateTransform ?? (state => ({ state }));
   const profileTransform =
@@ -110,6 +113,7 @@ export function createOAuthRouteHandlers<TProfile>(
     defaultAppOrigin,
     providerId,
     cookieConfigurer,
+    sessionDuration,
   });
 
   const scopeManager = CookieScopeManager.create({
@@ -164,9 +168,10 @@ export function createOAuthRouteHandlers<TProfile>(
       res: express.Response,
     ): Promise<void> {
       let origin = defaultAppOrigin;
+      let state;
 
       try {
-        const state = decodeOAuthState(req.query.state?.toString() ?? '');
+        state = decodeOAuthState(req.query.state?.toString() ?? '');
 
         if (state.origin) {
           try {
@@ -248,11 +253,20 @@ export function createOAuthRouteHandlers<TProfile>(
         const { name, message } = isError(error)
           ? error
           : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
-        // post error message back to popup if failure
-        sendWebMessageResponse(res, origin, {
-          type: 'authorization_response',
-          error: { name, message },
-        });
+
+        if (state?.flow === 'redirect' && state?.redirectUrl) {
+          const redirectUrl = new URL(state.redirectUrl);
+          redirectUrl.searchParams.set('error', message);
+
+          // set the error in a cookie and redirect user back to sign in where the error can be rendered
+          res.redirect(redirectUrl.toString());
+        } else {
+          // post error message back to popup if failure
+          sendWebMessageResponse(res, origin, {
+            type: 'authorization_response',
+            error: { name, message },
+          });
+        }
       }
     },
 
@@ -301,7 +315,12 @@ export function createOAuthRouteHandlers<TProfile>(
         const scopeRefresh = await scopeManager.refresh(req);
 
         const result = await authenticator.refresh(
-          { req, scope: scopeRefresh.scope, refreshToken },
+          {
+            req,
+            scope: scopeRefresh.scope,
+            scopeAlreadyGranted: scopeRefresh.scopeAlreadyGranted,
+            refreshToken,
+          },
           authenticatorCtx,
         );
 

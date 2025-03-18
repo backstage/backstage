@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  TestDatabaseId,
-  TestDatabases,
-  mockServices,
-} from '@backstage/backend-test-utils';
+import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { DefaultSchedulerService } from './DefaultSchedulerService';
 import { createTestScopedSignal } from './__testUtils__/createTestScopedSignal';
-import { DatabaseService } from '@backstage/backend-plugin-api';
 
 jest.setTimeout(60_000);
 
@@ -32,19 +27,12 @@ describe('TaskScheduler', () => {
   const databases = TestDatabases.create();
   const testScopedSignal = createTestScopedSignal();
 
-  async function createDatabase(
-    databaseId: TestDatabaseId,
-  ): Promise<DatabaseService> {
-    const knex = await databases.init(databaseId);
-    return {
-      getClient: async () => knex,
-    };
-  }
-
   it.each(databases.eachSupportedId())(
     'can return a working v1 plugin impl, %p',
     async databaseId => {
-      const database = await createDatabase(databaseId);
+      const knex = await databases.init(databaseId);
+      const database = mockServices.database({ knex });
+
       const manager = DefaultSchedulerService.create({ database, logger });
       const fn = jest.fn();
 
@@ -65,7 +53,9 @@ describe('TaskScheduler', () => {
   it.each(databases.eachSupportedId())(
     'can return a working v2 plugin impl, %p',
     async databaseId => {
-      const database = await createDatabase(databaseId);
+      const knex = await databases.init(databaseId);
+      const database = mockServices.database({ knex });
+
       const manager = DefaultSchedulerService.create({ database, logger });
       const fn = jest.fn();
 

@@ -4,7 +4,7 @@ author: Red Hat
 authorUrl: https://redhat.com
 category: Image
 description: View information about the build artifacts in your Nexus Repository Manager in Backstage.
-documentation: https://janus-idp.io/plugins/nexus-repository-manager
-iconUrl: https://janus-idp.io/images/plugins/nexus-repository-manager.svg
-npmPackageName: '@janus-idp/backstage-plugin-nexus-repository-manager'
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/nexus-repository-manager/plugins/nexus-repository-manager/README.md
+iconUrl: /img/nexus-repository-manager.svg
+npmPackageName: '@backstage-community/plugin-nexus-repository-manager'
 addedDate: '2023-10-25'

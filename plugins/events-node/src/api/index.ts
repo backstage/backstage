@@ -16,11 +16,15 @@
 
 export type { EventParams } from './EventParams';
 export { EventRouter } from './EventRouter';
+export { EVENTS_NOTIFY_TIMEOUT_HEADER } from './EventsService';
 export type {
   EventsService,
   EventsServiceSubscribeOptions,
   EventsServiceEventHandler,
 } from './EventsService';
-export { DefaultEventsService } from './DefaultEventsService';
+export {
+  DefaultEventsService,
+  type EventBusMode,
+} from './DefaultEventsService';
 export * from './http';
 export { SubTopicEventRouter } from './SubTopicEventRouter';

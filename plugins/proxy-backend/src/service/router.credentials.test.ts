@@ -25,7 +25,6 @@ import { ResponseError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { HttpResponse, http, passthrough } from 'msw';
 import { setupServer } from 'msw/node';
-import fetch from 'node-fetch';
 
 // this test is stored in its own file to work around the mocked
 // http-proxy-middleware module used in the main test file
@@ -78,7 +77,7 @@ describe('credentials', () => {
 
     const backend = await startTestBackend({
       features: [
-        import('../alpha'),
+        import('..'),
         mockServices.rootConfig.factory({ data: config }),
         authServiceFactory,
         httpAuthServiceFactory,

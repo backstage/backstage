@@ -41,7 +41,7 @@ The `createBackendPlugin` return value is exported as `examplePlugin`, which is 
 ```ts
 import { examplePlugin } from 'backstage-plugin-example-backend';
 
-backend.add(examplePlugin());
+backend.add(examplePlugin);
 ```
 
 By convention every plugin package should export its plugin instance as the default export from the package:

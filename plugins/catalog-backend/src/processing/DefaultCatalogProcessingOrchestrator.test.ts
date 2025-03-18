@@ -33,7 +33,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
-import { defaultEntityDataParser } from '../modules/util/parse';
+import { defaultEntityDataParser } from '../util/parse';
 import { ConfigReader } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { mockServices } from '@backstage/backend-test-utils';

@@ -34,12 +34,14 @@ import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 
 import {
   actionsRouteRef,
+  editorRouteRef,
+  customFieldsRouteRef,
   editRouteRef,
   scaffolderListTaskRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
+  templateFormRouteRef,
 } from '../../routes';
-import { ErrorPage } from '@backstage/core-components';
 
 import { ActionsPage } from '../../components/ActionsPage';
 import { ListTasksPage } from '../../components/ListTasksPage';
@@ -48,9 +50,22 @@ import {
   TemplateListPageProps,
   TemplateWizardPageProps,
 } from '@backstage/plugin-scaffolder/alpha';
-import { TemplateListPage, TemplateWizardPage } from '../../next';
+import { TemplateListPage, TemplateWizardPage } from '../../alpha/components';
 import { OngoingTask } from '../OngoingTask';
-import { TemplateEditorPage } from '../../next/TemplateEditorPage';
+import {
+  TemplateFormPage,
+  TemplateIntroPage,
+  TemplateEditorPage,
+  CustomFieldsPage,
+} from '../../alpha/components/TemplateEditorPage';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import {
+  taskReadPermission,
+  templateManagementPermission,
+} from '@backstage/plugin-scaffolder-common/alpha';
+import { useApp } from '@backstage/core-plugin-api';
+import { FormField, OpaqueFormField } from '@internal/scaffolder';
+import { useAsync, useMountEffect } from '@react-hookz/web';
 
 /**
  * The Props for the Scaffolder Router
@@ -86,15 +101,22 @@ export type RouterProps = {
     actions?: boolean;
     /** Whether to show a link to the tasks page */
     tasks?: boolean;
+    /** Whether to show a link to the create page (on /create subroutes) */
+    create?: boolean;
   };
 };
 
 /**
- * The Scaffolder Router
+ * Internal router with additional props that aren't available in the public API
+ * for the old frontend system.
  *
- * @public
+ * @internal
  */
-export const Router = (props: PropsWithChildren<RouterProps>) => {
+export const InternalRouter = (
+  props: PropsWithChildren<
+    RouterProps & { formFieldLoaders?: Array<() => Promise<FormField>> }
+  >,
+) => {
   const {
     components: {
       TemplateCardComponent,
@@ -108,11 +130,15 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
     } = {},
   } = props;
   const outlet = useOutlet() || props.children;
-  const customFieldExtensions =
-    useCustomFieldExtensions<FieldExtensionOptions>(outlet);
+  const customFieldExtensions = useCustomFieldExtensions(outlet);
+  const loadedFieldExtensions = useFormFieldLoaders(props.formFieldLoaders);
+
+  const app = useApp();
+  const { NotFoundErrorPage } = app.getComponents();
 
   const fieldExtensions = [
     ...customFieldExtensions,
+    ...loadedFieldExtensions,
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
       ({ name }) =>
         !customFieldExtensions.some(
@@ -154,33 +180,98 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
       <Route
         path={scaffolderTaskRouteRef.path}
         element={
-          <TaskPageComponent
-            TemplateOutputsComponent={TemplateOutputsComponent}
-          />
+          <RequirePermission permission={taskReadPermission}>
+            <TaskPageComponent
+              TemplateOutputsComponent={TemplateOutputsComponent}
+            />
+          </RequirePermission>
         }
       />
       <Route
         path={editRouteRef.path}
         element={
-          <SecretsContextProvider>
-            <TemplateEditorPage
-              customFieldExtensions={fieldExtensions}
-              layouts={customLayouts}
-              formProps={props.formProps}
-            />
-          </SecretsContextProvider>
+          <RequirePermission permission={templateManagementPermission}>
+            <SecretsContextProvider>
+              <TemplateIntroPage />
+            </SecretsContextProvider>
+          </RequirePermission>
+        }
+      />
+      <Route
+        path={customFieldsRouteRef.path}
+        element={
+          <RequirePermission permission={templateManagementPermission}>
+            <SecretsContextProvider>
+              <CustomFieldsPage fieldExtensions={fieldExtensions} />
+            </SecretsContextProvider>
+          </RequirePermission>
+        }
+      />
+      <Route
+        path={templateFormRouteRef.path}
+        element={
+          <RequirePermission permission={templateManagementPermission}>
+            <SecretsContextProvider>
+              <TemplateFormPage
+                layouts={customLayouts}
+                formProps={props.formProps}
+                fieldExtensions={fieldExtensions}
+              />
+            </SecretsContextProvider>
+          </RequirePermission>
         }
       />
 
-      <Route path={actionsRouteRef.path} element={<ActionsPage />} />
+      <Route
+        path={actionsRouteRef.path}
+        element={<ActionsPage contextMenu={props.contextMenu} />}
+      />
       <Route
         path={scaffolderListTaskRouteRef.path}
-        element={<ListTasksPage />}
+        element={
+          <RequirePermission permission={taskReadPermission}>
+            <ListTasksPage contextMenu={props.contextMenu} />
+          </RequirePermission>
+        }
       />
       <Route
-        path="*"
-        element={<ErrorPage status="404" statusMessage="Page not found" />}
+        path={editorRouteRef.path}
+        element={
+          <RequirePermission permission={templateManagementPermission}>
+            <SecretsContextProvider>
+              <TemplateEditorPage
+                layouts={customLayouts}
+                formProps={props.formProps}
+                fieldExtensions={fieldExtensions}
+              />
+            </SecretsContextProvider>
+          </RequirePermission>
+        }
       />
+      <Route path="*" element={<NotFoundErrorPage />} />
     </Routes>
   );
 };
+
+/**
+ * The Scaffolder Router
+ *
+ * @public
+ */
+export const Router = (props: PropsWithChildren<RouterProps>) => {
+  return <InternalRouter {...props} />;
+};
+
+function useFormFieldLoaders(
+  formFieldLoaders?: Array<() => Promise<FormField>>,
+) {
+  const [{ result: loadedFieldExtensions }, { execute }] =
+    useAsync(async () => {
+      const loaded = await Promise.all(
+        (formFieldLoaders ?? []).map(loader => loader()),
+      );
+      return loaded.map(f => OpaqueFormField.toInternal(f));
+    }, []);
+  useMountEffect(execute);
+  return loadedFieldExtensions;
+}

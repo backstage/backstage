@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-addons-test-utils",
-  "version": "1.0.38-next.1",
+  "version": "1.0.46",
   "backstage": {
     "role": "web-library",
     "pluginId": "techdocs-addons",
@@ -49,18 +49,27 @@
     "@backstage/plugin-techdocs": "workspace:^",
     "@backstage/plugin-techdocs-react": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "testing-library__dom": "^7.29.4-beta.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@testing-library/dom": "^10.0.0",
-    "@testing-library/jest-dom": "^6.0.0"
+    "@testing-library/jest-dom": "^6.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0"
   },
   "peerDependencies": {
-    "@testing-library/react": "^15.0.0",
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   }
 }

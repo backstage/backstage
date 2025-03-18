@@ -37,9 +37,11 @@ import {
   createFetchPlainAction,
   createFetchPlainFileAction,
   createFetchTemplateAction,
+  createFetchTemplateFileAction,
 } from './fetch';
 import {
   createFilesystemDeleteAction,
+  createFilesystemReadDirAction,
   createFilesystemRenameAction,
 } from './filesystem';
 import {
@@ -62,6 +64,7 @@ import { createPublishBitbucketAction } from '@backstage/plugin-scaffolder-backe
 import {
   createPublishBitbucketCloudAction,
   createBitbucketPipelinesRunAction,
+  createPublishBitbucketCloudPullRequestAction,
 } from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
 
 import {
@@ -157,6 +160,12 @@ export const createBuiltinActions = (
       additionalTemplateFilters,
       additionalTemplateGlobals,
     }),
+    createFetchTemplateFileAction({
+      integrations,
+      reader,
+      additionalTemplateFilters,
+      additionalTemplateGlobals,
+    }),
     createPublishGerritAction({
       integrations,
       config,
@@ -197,6 +206,7 @@ export const createBuiltinActions = (
       integrations,
       config,
     }),
+    createPublishBitbucketCloudPullRequestAction({ integrations, config }),
     createPublishBitbucketServerAction({
       integrations,
       config,
@@ -215,6 +225,7 @@ export const createBuiltinActions = (
     createFetchCatalogEntityAction({ catalogClient, auth }),
     createCatalogWriteAction(),
     createFilesystemDeleteAction(),
+    createFilesystemReadDirAction(),
     createFilesystemRenameAction(),
     createGithubActionsDispatchAction({
       integrations,
@@ -239,6 +250,7 @@ export const createBuiltinActions = (
     }),
     createGithubEnvironmentAction({
       integrations,
+      catalogClient,
     }),
     createGithubDeployKeyAction({
       integrations,

@@ -16,7 +16,6 @@
 
 import {
   catalogApiRef,
-  CatalogApi,
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
@@ -25,6 +24,7 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { SystemDiagramCard } from './SystemDiagramCard';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 describe('<SystemDiagramCard />', () => {
   beforeAll(() => {
@@ -37,12 +37,7 @@ describe('<SystemDiagramCard />', () => {
   afterEach(() => jest.resetAllMocks());
 
   it('shows empty list if no relations', async () => {
-    const catalogApi: Partial<CatalogApi> = {
-      getEntities: () =>
-        Promise.resolve({
-          items: [] as Entity[],
-        }),
-    };
+    const catalogApi = catalogApiMock();
 
     const entity: Entity = {
       apiVersion: 'v1',
@@ -73,26 +68,25 @@ describe('<SystemDiagramCard />', () => {
   });
 
   it('shows related systems', async () => {
-    const catalogApi: Partial<CatalogApi> = {
-      getEntities: () =>
-        Promise.resolve({
-          items: [
-            {
-              apiVersion: 'backstage.io/v1alpha1',
-              kind: 'Component',
-              metadata: {
-                name: 'entity',
-                namespace: 'namespace',
-              },
-              spec: {
-                owner: 'not-tools@example.com',
-                type: 'service',
-                system: 'system',
-              },
+    const catalogApi = catalogApiMock.mock({
+      getEntities: async () => ({
+        items: [
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'entity',
+              namespace: 'namespace',
             },
-          ] as Entity[],
-        }),
-    };
+            spec: {
+              owner: 'not-tools@example.com',
+              type: 'service',
+              system: 'system',
+            },
+          },
+        ],
+      }),
+    });
 
     const entity: Entity = {
       apiVersion: 'v1',
@@ -128,26 +122,25 @@ describe('<SystemDiagramCard />', () => {
   });
 
   it('should truncate long domains, systems or entities', async () => {
-    const catalogApi: Partial<CatalogApi> = {
-      getEntities: () =>
-        Promise.resolve({
-          items: [
-            {
-              apiVersion: 'backstage.io/v1alpha1',
-              kind: 'Component',
-              metadata: {
-                name: 'alongentitythatshouldgettruncated',
-                namespace: 'namespace',
-              },
-              spec: {
-                owner: 'not-tools@example.com',
-                type: 'service',
-                system: 'system',
-              },
+    const catalogApi = catalogApiMock.mock({
+      getEntities: async () => ({
+        items: [
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'alongentitythatshouldgettruncated',
+              namespace: 'namespace',
             },
-          ] as Entity[],
-        }),
-    };
+            spec: {
+              owner: 'not-tools@example.com',
+              type: 'service',
+              system: 'system',
+            },
+          },
+        ] as Entity[],
+      }),
+    });
 
     const entity: Entity = {
       apiVersion: 'v1',

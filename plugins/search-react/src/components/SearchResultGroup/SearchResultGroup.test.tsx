@@ -24,7 +24,7 @@ import DocsIcon from '@material-ui/icons/InsertDriveFile';
 import {
   renderInTestApp,
   TestApiProvider,
-  MockAnalyticsApi,
+  mockApis,
 } from '@backstage/test-utils';
 import { createPlugin, analyticsApiRef } from '@backstage/core-plugin-api';
 
@@ -40,7 +40,7 @@ import {
 
 const query = jest.fn().mockResolvedValue({ results: [] });
 const searchApiMock = { query };
-const analyticsApiMock = new MockAnalyticsApi();
+const analyticsApiMock = mockApis.analytics();
 
 describe('SearchResultGroup', () => {
   const results = [

@@ -17,8 +17,6 @@
 import { LifecycleService, LoggerService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 
-export type { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
-
 export interface Connector {
   getClient(
     pluginId: string,

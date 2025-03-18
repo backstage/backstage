@@ -30,6 +30,7 @@ export type LdapVendor = {
    * The attribute name that holds a universal unique identifier for an entry.
    */
   uuidAttributeName: string;
+
   /**
    * Decode ldap entry values for a given attribute name to their string representation.
    *
@@ -78,6 +79,26 @@ export const AEDirVendor: LdapVendor = {
   uuidAttributeName: 'entryUUID',
   decodeStringAttribute: (entry, name) => {
     return decode(entry, name, value => {
+      return value.toString();
+    });
+  },
+};
+
+export const GoogleLdapVendor: LdapVendor = {
+  dnAttributeName: 'dn',
+  uuidAttributeName: 'uid',
+  decodeStringAttribute: (entry, name) => {
+    return decode(entry, name, value => {
+      return value.toString();
+    });
+  },
+};
+
+export const LLDAPVendor: LdapVendor = {
+  dnAttributeName: 'dn',
+  uuidAttributeName: 'entryuuid',
+  decodeStringAttribute: (entry, name) => {
+    return decode(entry, name.toLocaleLowerCase('en-US'), value => {
       return value.toString();
     });
   },

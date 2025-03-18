@@ -14,32 +14,37 @@
  * limitations under the License.
  */
 
+import { mockServices } from '@backstage/backend-test-utils';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import {
   GithubCredentialsProvider,
   GithubIntegrationConfig,
 } from '@backstage/integration';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { graphql } from '@octokit/graphql';
 import {
   DefaultEventsService,
   EventParams,
 } from '@backstage/plugin-events-node';
-import { GithubOrgEntityProvider } from './GithubOrgEntityProvider';
+import { graphql } from '@octokit/graphql';
+import { createGraphqlClient } from '../lib/github';
 import { withLocations } from '../lib/withLocations';
-import { mockServices } from '@backstage/backend-test-utils';
+import { GithubOrgEntityProvider } from './GithubOrgEntityProvider';
 
 jest.mock('@octokit/graphql');
+jest.mock('../lib/github', () => ({
+  ...jest.requireActual('../lib/github'),
+  createGraphqlClient: jest.fn(),
+}));
 
 describe('GithubOrgEntityProvider', () => {
   describe('read', () => {
-    let mockClient;
+    let mockClient: any;
     let entityProviderConnection: EntityProviderConnection;
     let entityProvider: GithubOrgEntityProvider;
 
     const setupMocks = (response: ((...args: any) => any) | undefined) => {
       mockClient = jest.fn().mockImplementation(response);
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
     };
 
     beforeEach(() => {
@@ -508,6 +513,95 @@ describe('GithubOrgEntityProvider', () => {
             parent: {
               slug: 'father-team',
             },
+          },
+          organization: {
+            login: 'test-org',
+          },
+        },
+      };
+
+      await events.publish(event);
+
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+        type: 'delta',
+        added: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: expectedEntity,
+          },
+        ],
+        removed: [],
+      });
+    });
+
+    it('should apply delta added on receive a created team without parent', async () => {
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+
+      const logger = mockServices.logger.mock();
+      const events = DefaultEventsService.create({ logger });
+      const gitHubConfig: GithubIntegrationConfig = {
+        host: 'github.com',
+      };
+
+      const mockGetCredentials = jest.fn().mockReturnValue({
+        headers: { token: 'blah' },
+        type: 'app',
+      });
+
+      const githubCredentialsProvider: GithubCredentialsProvider = {
+        getCredentials: mockGetCredentials,
+      };
+
+      const entityProvider = new GithubOrgEntityProvider({
+        events,
+        id: 'my-id',
+        githubCredentialsProvider,
+        orgUrl: 'https://github.com/backstage',
+        gitHubConfig,
+        logger,
+      });
+
+      entityProvider.connect(entityProviderConnection);
+
+      const expectedEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: {
+          name: 'new-team',
+          description: 'description from the new team',
+          annotations: {
+            'backstage.io/edit-url':
+              'https://github.com/orgs/test-org/teams/new-team/edit',
+            'backstage.io/managed-by-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/orgs/test-org/teams/new-team',
+            'github.com/team-slug': 'test-org/new-team',
+          },
+        },
+        spec: {
+          type: 'team',
+          children: [],
+          members: [],
+          profile: {
+            displayName: 'New Team',
+          },
+        },
+      };
+
+      const event: EventParams = {
+        topic: 'github.team',
+        eventPayload: {
+          action: 'created',
+          team: {
+            name: 'New Team',
+            slug: 'new-team',
+            description: 'description from the new team',
+            html_url: 'https://github.com/orgs/test-org/teams/new-team',
           },
           organization: {
             login: 'test-org',

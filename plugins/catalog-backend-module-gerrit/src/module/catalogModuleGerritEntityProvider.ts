@@ -22,7 +22,7 @@ import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/
 import { GerritEntityProvider } from '../providers/GerritEntityProvider';
 
 /**
- * @alpha
+ * @public
  */
 export const catalogModuleGerritEntityProvider = createBackendModule({
   pluginId: 'catalog',

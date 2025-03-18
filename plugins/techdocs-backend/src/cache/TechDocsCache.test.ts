@@ -17,7 +17,6 @@
 import { ConfigReader } from '@backstage/config';
 import { CacheInvalidationError, TechDocsCache } from './TechDocsCache';
 import { mockServices } from '@backstage/backend-test-utils';
-import { CacheService } from '@backstage/backend-plugin-api';
 
 const cached = (str: string): string => {
   return Buffer.from(str).toString('base64');
@@ -25,17 +24,12 @@ const cached = (str: string): string => {
 
 describe('TechDocsCache', () => {
   let CacheUnderTest: TechDocsCache;
-  let MockClient: jest.Mocked<CacheService>;
+  const cache = mockServices.cache.mock();
 
   beforeEach(() => {
-    MockClient = {
-      get: jest.fn(),
-      set: jest.fn(),
-      delete: jest.fn(),
-      withOptions: jest.fn(),
-    };
+    jest.clearAllMocks();
     CacheUnderTest = TechDocsCache.fromConfig(new ConfigReader({}), {
-      cache: MockClient,
+      cache: cache,
       logger: mockServices.logger.mock(),
     });
   });
@@ -43,16 +37,16 @@ describe('TechDocsCache', () => {
   describe('get', () => {
     it('returns undefined if no response', async () => {
       const expectedPath = 'some/index.html';
-      MockClient.get.mockResolvedValueOnce(undefined);
+      cache.get.mockResolvedValueOnce(undefined);
 
       const actual = await CacheUnderTest.get(expectedPath);
-      expect(MockClient.get).toHaveBeenCalledWith(expectedPath);
+      expect(cache.get).toHaveBeenCalledWith(expectedPath);
       expect(actual).toBe(undefined);
     });
 
     it('returns undefined if cache get throws', async () => {
       const expectedPath = 'some/index.html';
-      MockClient.get.mockRejectedValueOnce(new Error());
+      cache.get.mockRejectedValueOnce(new Error());
 
       const actual = await CacheUnderTest.get(expectedPath);
       expect(actual).toBe(undefined);
@@ -60,7 +54,7 @@ describe('TechDocsCache', () => {
 
     it('returns undefined if no response after 1s by default', async () => {
       const expectedPath = 'some/index.html';
-      MockClient.get.mockImplementationOnce(() => {
+      cache.get.mockImplementationOnce(() => {
         return new Promise(resolve => {
           setTimeout(() => resolve(cached('value')), 1500);
         });
@@ -71,7 +65,7 @@ describe('TechDocsCache', () => {
 
     it('returns undefined if no response after configured readTimeout', async () => {
       const expectedPath = 'some/index.html';
-      MockClient.get.mockImplementationOnce(() => {
+      cache.get.mockImplementationOnce(() => {
         return new Promise(resolve => {
           setTimeout(() => resolve(cached('value')), 20);
         });
@@ -82,7 +76,7 @@ describe('TechDocsCache', () => {
           techdocs: { cache: { readTimeout: 10 } },
         }),
         {
-          cache: MockClient,
+          cache: cache,
           logger: mockServices.logger.mock(),
         },
       );
@@ -93,7 +87,7 @@ describe('TechDocsCache', () => {
 
     it('returns data if cache get returns it', async () => {
       const expectedPath = 'some/index.html';
-      MockClient.get.mockResolvedValueOnce(cached('expected value'));
+      cache.get.mockResolvedValueOnce(cached('expected value'));
 
       const actual = await CacheUnderTest.get(expectedPath);
       expect(actual?.toString()).toBe('expected value');
@@ -103,17 +97,14 @@ describe('TechDocsCache', () => {
   describe('set', () => {
     it('sets a base64-encoded string', async () => {
       const expectedPath = 'some/index.html';
-      MockClient.set.mockResolvedValueOnce(undefined);
+      cache.set.mockResolvedValueOnce(undefined);
 
       await CacheUnderTest.set(expectedPath, Buffer.from('some data'));
-      expect(MockClient.set).toHaveBeenCalledWith(
-        expectedPath,
-        cached('some data'),
-      );
+      expect(cache.set).toHaveBeenCalledWith(expectedPath, cached('some data'));
     });
 
     it('does not throw if client throws', () => {
-      MockClient.set.mockRejectedValueOnce(new Error());
+      cache.set.mockRejectedValueOnce(new Error());
       expect(() => CacheUnderTest.set('i.html', Buffer.from(''))).not.toThrow();
     });
   });
@@ -121,26 +112,26 @@ describe('TechDocsCache', () => {
   describe('invalidate', () => {
     it('calls delete on client', async () => {
       const expectedPath = 'some/index.html';
-      MockClient.delete.mockResolvedValueOnce(undefined);
+      cache.delete.mockResolvedValueOnce(undefined);
 
       await CacheUnderTest.invalidate(expectedPath);
-      expect(MockClient.delete).toHaveBeenCalledWith(expectedPath);
+      expect(cache.delete).toHaveBeenCalledWith(expectedPath);
     });
   });
 
   describe('invalidateMultiple', () => {
     it('calls delete once per given path', async () => {
       const expectedPaths = ['one/index.html', 'two/index.html'];
-      MockClient.delete.mockResolvedValue(undefined);
+      cache.delete.mockResolvedValue(undefined);
 
       await CacheUnderTest.invalidateMultiple(expectedPaths);
-      expect(MockClient.delete).toHaveBeenNthCalledWith(1, expectedPaths[0]);
-      expect(MockClient.delete).toHaveBeenNthCalledWith(2, expectedPaths[1]);
+      expect(cache.delete).toHaveBeenNthCalledWith(1, expectedPaths[0]);
+      expect(cache.delete).toHaveBeenNthCalledWith(2, expectedPaths[1]);
     });
 
     it('returns an array of as many paths provided', async () => {
       const expectedPaths = ['one/index.html', 'two/index.html'];
-      MockClient.delete.mockResolvedValue(undefined);
+      cache.delete.mockResolvedValue(undefined);
 
       const actual = await CacheUnderTest.invalidateMultiple(expectedPaths);
       expect(actual.length).toBe(2);
@@ -148,19 +139,19 @@ describe('TechDocsCache', () => {
 
     it('calls delete on all paths even if the first rejects', async () => {
       const expectedPaths = ['one/index.html', 'two/index.html'];
-      MockClient.delete.mockRejectedValueOnce(new Error());
-      MockClient.delete.mockResolvedValueOnce(undefined);
+      cache.delete.mockRejectedValueOnce(new Error());
+      cache.delete.mockResolvedValueOnce(undefined);
 
       await expect(
         CacheUnderTest.invalidateMultiple(expectedPaths),
       ).rejects.toThrow(CacheInvalidationError);
-      expect(MockClient.delete).toHaveBeenCalledTimes(2);
+      expect(cache.delete).toHaveBeenCalledTimes(2);
     });
 
     it('rejects with invalidations error response', async () => {
       const expectedPaths = ['one/index.html', 'two/index.html'];
-      MockClient.delete.mockResolvedValueOnce(undefined);
-      MockClient.delete.mockRejectedValueOnce(new Error());
+      cache.delete.mockResolvedValueOnce(undefined);
+      cache.delete.mockRejectedValueOnce(new Error());
 
       await expect(
         CacheUnderTest.invalidateMultiple.bind(CacheUnderTest, expectedPaths),

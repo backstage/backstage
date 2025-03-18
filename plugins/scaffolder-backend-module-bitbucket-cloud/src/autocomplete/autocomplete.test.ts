@@ -14,26 +14,40 @@
  * limitations under the License.
  */
 
+import { InputError } from '@backstage/errors';
 import { BitbucketCloudClient } from '@backstage/plugin-bitbucket-cloud-common';
 import { handleAutocompleteRequest } from './autocomplete';
-import { InputError } from '@backstage/errors';
 
 describe('handleAutocompleteRequest', () => {
   const client: Partial<BitbucketCloudClient> = {
     listWorkspaces: jest.fn().mockReturnValue({
-      iteratePages: jest
-        .fn()
-        .mockReturnValue([{ values: [{ slug: 'workspace1' }] }]),
+      iteratePages: jest.fn().mockReturnValue([
+        {
+          values: [
+            {
+              slug: 'workspace1',
+            },
+          ],
+        },
+      ]),
     }),
     listProjectsByWorkspace: jest.fn().mockReturnValue({
-      iteratePages: jest
-        .fn()
-        .mockReturnValue([{ values: [{ key: 'project1' }] }]),
+      iteratePages: jest.fn().mockReturnValue([
+        {
+          values: [{ key: 'project1' }],
+        },
+      ]),
     }),
     listRepositoriesByWorkspace: jest.fn().mockReturnValue({
-      iteratePages: jest
-        .fn()
-        .mockReturnValue([{ values: [{ slug: 'repository1' }] }]),
+      iteratePages: jest.fn().mockReturnValue([
+        {
+          values: [
+            {
+              slug: 'repository1',
+            },
+          ],
+        },
+      ]),
     }),
     listBranchesByRepository: jest.fn().mockReturnValue({
       iteratePages: jest
@@ -66,7 +80,9 @@ describe('handleAutocompleteRequest', () => {
       resource: 'workspaces',
     });
 
-    expect(result).toEqual({ results: [{ title: 'workspace1' }] });
+    expect(result).toEqual({
+      results: [{ id: 'workspace1' }],
+    });
   });
 
   it('should return projects', async () => {
@@ -78,7 +94,9 @@ describe('handleAutocompleteRequest', () => {
       resource: 'projects',
     });
 
-    expect(result).toEqual({ results: [{ title: 'project1' }] });
+    expect(result).toEqual({
+      results: [{ id: 'project1' }],
+    });
   });
 
   it('should return repositories', async () => {
@@ -91,7 +109,9 @@ describe('handleAutocompleteRequest', () => {
       },
     });
 
-    expect(result).toEqual({ results: [{ title: 'repository1' }] });
+    expect(result).toEqual({
+      results: [{ id: 'repository1' }],
+    });
   });
 
   it('should return branches', async () => {
@@ -104,7 +124,7 @@ describe('handleAutocompleteRequest', () => {
       },
     });
 
-    expect(result).toEqual({ results: [{ title: 'branch1' }] });
+    expect(result).toEqual({ results: [{ id: 'branch1' }] });
   });
 
   it('should throw an error when passing an invalid resource', async () => {

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/theme",
-  "version": "0.5.6",
+  "version": "0.6.4",
   "description": "material-ui theme for use with Backstage.",
   "backstage": {
     "role": "web-library"
@@ -44,13 +44,22 @@
     "@backstage/cli": "workspace:^",
     "@mui/styles": "^5.14.18",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^15.0.0",
-    "@types/react": "^16.13.1 || ^17.0.0"
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0"
   },
   "peerDependencies": {
     "@material-ui/core": "^4.12.2",
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0"
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   }
 }

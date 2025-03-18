@@ -21,7 +21,7 @@ import { MockStarredEntitiesApi, starredEntitiesApiRef } from '../../apis';
 import { FavoriteEntity } from './FavoriteEntity';
 import { ComponentEntity } from '@backstage/catalog-model';
 import {
-  MockStorageApi,
+  mockApis,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -41,14 +41,12 @@ const entity: ComponentEntity = {
   },
 };
 
-const mockStorage = MockStorageApi.create();
-
 describe('<FavoriteEntity/>', () => {
   it('should add to favorites', async () => {
     await renderInTestApp(
       <TestApiProvider
         apis={[
-          [storageApiRef, mockStorage],
+          [storageApiRef, mockApis.storage()],
           [starredEntitiesApiRef, new MockStarredEntitiesApi()],
         ]}
       >
@@ -79,7 +77,7 @@ describe('<FavoriteEntity/>', () => {
     await renderInTestApp(
       <TestApiProvider
         apis={[
-          [storageApiRef, mockStorage],
+          [storageApiRef, mockApis.storage()],
           [starredEntitiesApiRef, starredEntities],
         ]}
       >

@@ -19,12 +19,18 @@ import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { EntityLinksEmptyStateClassKey } from './components/EntityLinksCard';
 import { SystemDiagramCardClassKey } from './components/SystemDiagramCard';
 import { EntityContextMenuClassKey } from './components/EntityContextMenu';
+import { CatalogSearchResultListItemClassKey } from './components/CatalogSearchResultListItem';
+import { CatalogTableToolbarClassKey } from './components/CatalogTable';
+import { EntityLabelsEmptyStateClassKey } from './components/EntityLabelsCard';
 
 /** @public */
 export type PluginCatalogComponentsNameToClassKey = {
   PluginCatalogEntityLinksEmptyState: EntityLinksEmptyStateClassKey;
   PluginCatalogSystemDiagramCard: SystemDiagramCardClassKey;
   PluginCatalogEntityContextMenu: EntityContextMenuClassKey;
+  PluginCatalogSearchResultListItem: CatalogSearchResultListItemClassKey;
+  PluginCatalogTableToolbar: CatalogTableToolbarClassKey;
+  PluginCatalogEntityLabelsEmptyState: EntityLabelsEmptyStateClassKey;
 };
 
 /** @public */

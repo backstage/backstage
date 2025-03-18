@@ -15,8 +15,8 @@
  */
 
 import PromiseRouter from 'express-promise-router';
-import { ApiRouter } from './router';
-import { RequiredDoc } from './types';
+import { ApiRouter, TypedRouter } from './router';
+import { EndpointMap, RequiredDoc } from './types';
 import {
   ErrorRequestHandler,
   RequestHandler,
@@ -24,6 +24,7 @@ import {
   Request,
   Response,
   json,
+  Router,
 } from 'express';
 import { InputError } from '@backstage/errors';
 import { middleware as OpenApiValidator } from 'express-openapi-validator';
@@ -58,19 +59,19 @@ export function getOpenApiSpecRoute(baseUrl: string) {
 }
 
 /**
- * Create a new OpenAPI router with some default middleware.
+ * Create a router with validation middleware. This is used by typing methods to create an
+ *  "OpenAPI router" with all of the expected validation + metadata.
  * @param spec - Your OpenAPI spec imported as a JSON object.
  * @param validatorOptions - `openapi-express-validator` options to override the defaults.
  * @returns A new express router with validation middleware.
- * @public
  */
-export function createValidatedOpenApiRouter<T extends RequiredDoc>(
-  spec: T,
+function createRouterWithValidation(
+  spec: RequiredDoc,
   options?: {
     validatorOptions?: Partial<Parameters<typeof OpenApiValidator>['0']>;
     middleware?: RequestHandler[];
   },
-) {
+): Router {
   const router = PromiseRouter();
   router.use(options?.middleware || getDefaultRouterMiddleware());
 
@@ -152,6 +153,41 @@ export function createValidatedOpenApiRouter<T extends RequiredDoc>(
     }
     res.json(mergeOutput.output);
   });
+  return router;
+}
 
-  return router as ApiRouter<typeof spec>;
+/**
+ * Create a new OpenAPI router with some default middleware.
+ * @param spec - Your OpenAPI spec imported as a JSON object.
+ * @param validatorOptions - `openapi-express-validator` options to override the defaults.
+ * @returns A new express router with validation middleware.
+ * @public
+ */
+export function createValidatedOpenApiRouter<T extends RequiredDoc>(
+  spec: T,
+  options?: {
+    validatorOptions?: Partial<Parameters<typeof OpenApiValidator>['0']>;
+    middleware?: RequestHandler[];
+  },
+) {
+  return createRouterWithValidation(spec, options) as ApiRouter<typeof spec>;
+}
+
+/**
+ * Create a new OpenAPI router with some default middleware.
+ * @param spec - Your OpenAPI spec imported as a JSON object.
+ * @param validatorOptions - `openapi-express-validator` options to override the defaults.
+ * @returns A new express router with validation middleware.
+ * @public
+ */
+export function createValidatedOpenApiRouterFromGeneratedEndpointMap<
+  T extends EndpointMap,
+>(
+  spec: RequiredDoc,
+  options?: {
+    validatorOptions?: Partial<Parameters<typeof OpenApiValidator>['0']>;
+    middleware?: RequestHandler[];
+  },
+) {
+  return createRouterWithValidation(spec, options) as TypedRouter<T>;
 }

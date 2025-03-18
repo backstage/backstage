@@ -16,11 +16,11 @@
 
 import { CatalogApi } from '@backstage/catalog-client';
 import {
-  Entity,
   ANNOTATION_LOCATION,
-  parseLocationRef,
   ANNOTATION_SOURCE_LOCATION,
   CompoundEntityRef,
+  Entity,
+  parseLocationRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -106,4 +106,45 @@ export async function findTemplate(options: {
   }
 
   return template as TemplateEntityV1beta3;
+}
+
+/**
+ * Takes a single unknown parameter and makes sure that it's a single string or
+ * an array of strings, and returns as an array.
+ */
+export function parseStringsParam(
+  param: unknown,
+  paramName: string,
+): string[] | undefined {
+  if (param === undefined) {
+    return undefined;
+  }
+
+  const array = [param].flat();
+  if (array.some(p => typeof p !== 'string')) {
+    throw new InputError(
+      `Invalid ${paramName}, not a string or array of strings`,
+    );
+  }
+
+  return array as string[];
+}
+
+export function parseNumberParam(
+  param: unknown,
+  paramName: string,
+): number[] | undefined {
+  return parseStringsParam(param, paramName)?.map(val => {
+    const ret = Number.parseInt(val, 10);
+    if (isNaN(ret)) {
+      throw new InputError(
+        `Invalid ${paramName} parameter "${val}", expected a number or array of numbers`,
+      );
+    }
+    return ret;
+  });
+}
+
+export function flattenParams<T>(...params: (undefined | T | T[])[]): T[] {
+  return [...params].flat().filter(Boolean) as T[];
 }

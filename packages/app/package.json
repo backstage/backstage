@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.101-next.1",
+  "version": "0.2.107",
   "backstage": {
     "role": "frontend"
   },
@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@backstage/app-defaults": "workspace:^",
+    "@backstage/canon": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^",
@@ -87,13 +88,15 @@
     "@playwright/test": "^1.32.3",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^15.0.0",
+    "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/jquery": "^3.3.34",
     "@types/react": "*",
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",
-    "cross-env": "^7.0.0"
+    "axios": "^1.7.7",
+    "cross-env": "^7.0.0",
+    "msw": "^1.0.0"
   },
   "bundled": true
 }

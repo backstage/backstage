@@ -56,19 +56,19 @@ In your `launch.json`, add a new entry with the following,
 
 ```jsonc
 {
-    "name": "Start Backend",
-    "type": "node",
-    "request": "launch",
-    "args": [
-        "package",
-        "start"
-    ],
-    "cwd": "${workspaceFolder}/packages/backend",
-    "program": "${workspaceFolder}/node_modules/.bin/backstage-cli",
-    "skipFiles": [
-        "<node_internals>/**"
-    ],
-    "console": "integratedTerminal"
+   "name": "Start Backend",
+   "type": "node",
+   "request": "launch",
+   "cwd": "${workspaceFolder}",
+   "runtimeExecutable": "yarn",
+   "args": [
+      "start-backend",
+      "--inspect"
+   ],
+   "skipFiles": [
+      "<node_internals>/**"
+   ],
+   "console": "integratedTerminal"
 },
 ```
 

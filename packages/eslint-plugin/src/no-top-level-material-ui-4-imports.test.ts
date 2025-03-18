@@ -47,6 +47,9 @@ ruleTester.run('path-imports-rule', rule, {
     {
       code: `import { CreateCSSProperties, StyledComponentProps } from '@material-ui/core/styles/withStyles';`,
     },
+    {
+      code: `import { DataGrid, GridColDef, GridValueGetterParams } from '@material-ui/data-grid';`,
+    },
   ],
   invalid: [
     {

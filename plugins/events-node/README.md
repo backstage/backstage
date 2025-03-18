@@ -27,7 +27,7 @@ import { DefaultEventsService } from '@backstage/plugin-events-node';
 
 function makeCreateEnv(config: Config) {
   // ...
-  const eventsService = DefaultEventsService.create({ logger: root });
+  const eventsService = DefaultEventsService.create({ logger: root, config });
   // ...
   return (plugin: string): PluginEnvironment => {
     // ...
@@ -78,5 +78,5 @@ and your custom implementation:
 
 ```diff
 // packages/backend/src/index.ts
-+  backend.add(customEventsServiceFactory());
++  backend.add(customEventsServiceFactory);
 ```

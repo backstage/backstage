@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import { PassThrough, Writable } from 'stream';
 
@@ -29,7 +30,12 @@ export type ExecuteShellCommandOptions = {
   args: string[];
   /** options to pass to spawn */
   options?: SpawnOptionsWithoutStdio;
-  /** stream to capture stdout and stderr output */
+  /** logger to capture stdout and stderr output */
+  logger?: LoggerService;
+  /**
+   * stream to capture stdout and stderr output
+   * @deprecated  please provide a logger instead.
+   */
   logStream?: Writable;
 };
 
@@ -45,20 +51,25 @@ export async function executeShellCommand(
     command,
     args,
     options: spawnOptions,
+    logger,
     logStream = new PassThrough(),
   } = options;
 
   await new Promise<void>((resolve, reject) => {
     const process = spawn(command, args, spawnOptions);
 
-    process.stdout.on('data', stream => {
-      logStream.write(stream);
+    process.stdout.on('data', chunk => {
+      logStream?.write(chunk);
+      logger?.info(
+        Buffer.isBuffer(chunk) ? chunk.toString('utf8').trim() : chunk.trim(),
+      );
     });
-
-    process.stderr.on('data', stream => {
-      logStream.write(stream);
+    process.stderr.on('data', chunk => {
+      logStream?.write(chunk);
+      logger?.error(
+        Buffer.isBuffer(chunk) ? chunk.toString('utf8').trim() : chunk.trim(),
+      );
     });
-
     process.on('error', error => {
       return reject(error);
     });

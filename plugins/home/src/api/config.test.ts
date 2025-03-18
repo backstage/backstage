@@ -15,15 +15,17 @@
  */
 
 import { readFilterConfig, createFilterByQueryParamFromConfig } from './config';
-import { MockConfigApi } from '@backstage/test-utils';
+import { mockApis } from '@backstage/test-utils';
 
 describe('config', () => {
   describe('readFilterConfig', () => {
     it('returns filter data', async () => {
-      const mockConfig = new MockConfigApi({
-        field: 'pathname',
-        operator: '==',
-        value: '/home',
+      const mockConfig = mockApis.config({
+        data: {
+          field: 'pathname',
+          operator: '==',
+          value: '/home',
+        },
       });
       const res = readFilterConfig(mockConfig);
       expect(res).toEqual({
@@ -34,10 +36,12 @@ describe('config', () => {
     });
 
     it('returns undefined for invalid filter', async () => {
-      const mockInvalidConfig = new MockConfigApi({
-        myField: 'pathname',
-        operator: '==',
-        value: '3',
+      const mockInvalidConfig = mockApis.config({
+        data: {
+          myField: 'pathname',
+          operator: '==',
+          value: '3',
+        },
       });
       const res = readFilterConfig(mockInvalidConfig);
       expect(res).toEqual(undefined);
@@ -46,15 +50,19 @@ describe('config', () => {
 
   describe('createFilterByQueryParamFromConfig', () => {
     it('returns filter data', async () => {
-      const mockConfig1 = new MockConfigApi({
-        field: 'id',
-        operator: '==',
-        value: '3',
+      const mockConfig1 = mockApis.config({
+        data: {
+          field: 'id',
+          operator: '==',
+          value: '3',
+        },
       });
-      const mockConfig2 = new MockConfigApi({
-        field: 'pathname',
-        operator: '==',
-        value: 'path',
+      const mockConfig2 = mockApis.config({
+        data: {
+          field: 'pathname',
+          operator: '==',
+          value: 'path',
+        },
       });
       const res = createFilterByQueryParamFromConfig([
         mockConfig1,
@@ -67,15 +75,19 @@ describe('config', () => {
     });
 
     it('returns only valid filters', async () => {
-      const mockValidConfig = new MockConfigApi({
-        field: 'id',
-        operator: '==',
-        value: 3,
+      const mockValidConfig = mockApis.config({
+        data: {
+          field: 'id',
+          operator: '==',
+          value: 3,
+        },
       });
-      const mockInvalidConfig = new MockConfigApi({
-        myField: 'pathname',
-        operator: '==',
-        value: 'path',
+      const mockInvalidConfig = mockApis.config({
+        data: {
+          myField: 'pathname',
+          operator: '==',
+          value: 'path',
+        },
       });
       const res = createFilterByQueryParamFromConfig([
         mockValidConfig,

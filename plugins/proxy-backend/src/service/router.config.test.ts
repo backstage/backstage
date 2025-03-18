@@ -29,7 +29,6 @@ import {
 } from '@backstage/config-loader';
 import { HttpResponse, http, passthrough } from 'msw';
 import { setupServer } from 'msw/node';
-import fetch from 'node-fetch';
 
 // this test is stored in its own file to work around the mocked
 // http-proxy-middleware module used in the main test file
@@ -61,7 +60,7 @@ describe('createRouter reloadable configuration', () => {
 
     const backend = await startTestBackend({
       features: [
-        import('../alpha'),
+        import('..'),
         createServiceFactory({
           service: coreServices.rootConfig,
           deps: {},

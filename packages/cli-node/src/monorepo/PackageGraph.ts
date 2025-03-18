@@ -16,11 +16,29 @@
 
 import path from 'path';
 import { getPackages, Package } from '@manypkg/get-packages';
-import { paths } from '../paths';
+import { paths } from '../util';
 import { PackageRole } from '../roles';
 import { GitUtils } from '../git';
 import { Lockfile } from './Lockfile';
 import { JsonValue } from '@backstage/types';
+
+/**
+ * A list of the feature types we want to extract from the project
+ * and include in the metadata
+ *
+ * @public
+ */
+export const packageFeatureType = [
+  '@backstage/BackendFeature',
+  '@backstage/BackstagePlugin',
+  '@backstage/FrontendPlugin',
+  '@backstage/FrontendModule',
+] as const;
+
+/**
+ * @public
+ */
+export type BackstagePackageFeatureType = (typeof packageFeatureType)[number];
 
 /**
  * Known fields in Backstage package.json files.
@@ -43,9 +61,20 @@ export interface BackstagePackageJson {
   // that the package bundles all of its dependencies in its build output.
   bundled?: boolean;
 
+  type?: 'module' | 'commonjs';
+
   backstage?: {
     role?: PackageRole;
     moved?: string;
+
+    /**
+     * If set to `true`, the package will be treated as an internal package
+     * where any imports will be inlined into the consuming package.
+     *
+     * When set to `true`, the top-level `private` field must be set to `true`
+     * as well.
+     */
+    inline?: boolean;
 
     /**
      * The ID of the plugin if this is a plugin package. Must always be set for plugin and module packages, and may be set for library packages. A `null` value means that the package is explicitly not a plugin package.
@@ -61,6 +90,11 @@ export interface BackstagePackageJson {
      * All packages that are part of the plugin. Must always and only be set for plugin packages and plugin library packages.
      */
     pluginPackages?: string[];
+
+    /**
+     * The feature types exported from the package, indexed by path.
+     */
+    features?: Record<string, BackstagePackageFeatureType>;
   };
 
   exports?: JsonValue;

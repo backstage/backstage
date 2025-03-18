@@ -19,6 +19,7 @@ import { decodeJwt } from 'jose';
 import { Strategy } from 'passport';
 import { PassportProfile } from './types';
 import { ProfileInfo } from '../types';
+import { ForwardedError } from '@backstage/errors';
 
 // Re-declared here to avoid direct dependency on passport-oauth2
 /** @internal */
@@ -76,7 +77,10 @@ export class PassportHelpers {
           displayName = decoded.name;
         }
       } catch (e) {
-        throw new Error(`Failed to parse id token and get profile info, ${e}`);
+        throw new ForwardedError(
+          `Failed to parse id token and get profile info`,
+          e,
+        );
       }
     }
 
@@ -101,8 +105,11 @@ export class PassportHelpers {
      */
     status?: number;
   }> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       const strategy = Object.create(providerStrategy);
+      strategy.error = (error: Error) => {
+        reject(new Error(`Authentication failed, ${error.message ?? ''}`));
+      };
       strategy.redirect = (url: string, status?: number) => {
         resolve({ url, status: status ?? undefined });
       };
@@ -191,9 +198,7 @@ export class PassportHelpers {
           params: any,
         ) => {
           if (err) {
-            reject(
-              new Error(`Failed to refresh access token ${err.toString()}`),
-            );
+            reject(new ForwardedError(`Failed to refresh access token`, err));
           }
           if (!accessToken) {
             reject(

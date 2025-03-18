@@ -1,5 +1,269 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.2.0
+
+### Minor Changes
+
+- 36677bb: Use update `createTemplateAction` kinds
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.0
+  - @backstage/backend-test-utils@1.3.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/types@1.2.1
+
+## 0.2.0-next.2
+
+### Minor Changes
+
+- 36677bb: Use update `createTemplateAction` kinds
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.0-next.2
+  - @backstage/backend-test-utils@1.3.1-next.2
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/types@1.2.1
+
+## 0.1.20-next.1
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.7.1-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/backend-test-utils@1.3.1-next.1
+  - @backstage/types@1.2.1
+
+## 0.1.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.3.1-next.0
+  - @backstage/plugin-scaffolder-node@0.7.1-next.0
+
+## 0.1.19
+
+### Patch Changes
+
+- 7ec0a5a: Changing the default behaviour of the checkpoint in createMockActionContext. It will reduce the code boilerplate in the tests where checkpoint is used.
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/backend-test-utils@1.3.0
+  - @backstage/plugin-scaffolder-node@0.7.0
+  - @backstage/types@1.2.1
+
+## 0.1.19-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.3.0-next.3
+  - @backstage/plugin-scaffolder-node@0.7.0-next.2
+  - @backstage/types@1.2.1
+
+## 0.1.19-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.3.0-next.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-node@0.7.0-next.1
+
+## 0.1.19-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/backend-test-utils@1.3.0-next.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-node@0.7.0-next.0
+
+## 0.1.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.3.0-next.0
+  - @backstage/plugin-scaffolder-node@0.7.0-next.0
+  - @backstage/types@1.2.1
+
+## 0.1.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.6.3
+  - @backstage/types@1.2.1
+  - @backstage/backend-test-utils@1.2.1
+
+## 0.1.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-test-utils@1.2.1-next.1
+  - @backstage/plugin-scaffolder-node@0.6.3-next.1
+
+## 0.1.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.6.3-next.0
+  - @backstage/backend-test-utils@1.2.1-next.0
+  - @backstage/types@1.2.0
+
+## 0.1.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.2.0
+  - @backstage/plugin-scaffolder-node@0.6.2
+  - @backstage/types@1.2.0
+
+## 0.1.17-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.2.0-next.2
+  - @backstage/plugin-scaffolder-node@0.6.2-next.2
+  - @backstage/types@1.2.0
+
+## 0.1.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.6.2-next.1
+  - @backstage/backend-test-utils@1.2.0-next.1
+  - @backstage/types@1.2.0
+
+## 0.1.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.2.0-next.0
+  - @backstage/plugin-scaffolder-node@0.6.1-next.0
+  - @backstage/types@1.2.0
+
+## 0.1.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.0
+  - @backstage/backend-test-utils@1.1.0
+  - @backstage/plugin-scaffolder-node@0.6.0
+
+## 0.1.15-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.1.0-next.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.5.1-next.3
+
+## 0.1.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.1.0-next.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.5.1-next.2
+
+## 0.1.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.0.3-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.5.1-next.1
+
+## 0.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.0.3-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.5.1-next.0
+
+## 0.1.13
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/backend-test-utils@1.0.1
+  - @backstage/plugin-scaffolder-node@0.5.0
+  - @backstage/types@1.1.1
+
+## 0.1.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.0.1-next.2
+  - @backstage/plugin-scaffolder-node@0.5.0-next.2
+  - @backstage/types@1.1.1
+
+## 0.1.13-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/backend-test-utils@1.0.1-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.5.0-next.1
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.5.0-next.0
+  - @backstage/backend-test-utils@1.0.1-next.0
+  - @backstage/types@1.1.1
+
+## 0.1.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-test-utils@1.0.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.11
+
+## 0.1.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.2
+  - @backstage/backend-test-utils@1.0.0-next.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.11-next.2
+
 ## 0.1.12-next.1
 
 ### Patch Changes

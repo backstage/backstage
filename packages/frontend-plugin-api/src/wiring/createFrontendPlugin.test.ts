@@ -15,14 +15,15 @@
  */
 
 import React from 'react';
-import { createApp } from '@backstage/frontend-app-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { createApp } from '../../../frontend-defaults/src/createApp';
 import { screen } from '@testing-library/react';
 import { FrontendPlugin, createFrontendPlugin } from './createFrontendPlugin';
 import { JsonObject } from '@backstage/types';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { coreExtensionData } from './coreExtensionData';
-import { MockConfigApi, renderWithEffects } from '@backstage/test-utils';
+import { mockApis, renderWithEffects } from '@backstage/test-utils';
 import { createExtensionInput } from './createExtensionInput';
 
 const nameExtensionDataRef = createExtensionDataRef<string>().with({
@@ -127,7 +128,7 @@ function createTestAppRoot({
 }) {
   return createApp({
     features: [...features],
-    configLoader: async () => ({ config: new MockConfigApi(config) }),
+    configLoader: async () => ({ config: mockApis.config({ data: config }) }),
   }).createRoot();
 }
 
@@ -170,7 +171,9 @@ describe('createFrontendPlugin', () => {
       }
     `);
     // @ts-expect-error
-    expect(plugin.getExtension('nonexistent')).toBeUndefined();
+    expect(() => plugin.getExtension('nonexistent')).toThrow(
+      /Attempted to get non-existent extension/,
+    );
 
     await renderWithEffects(
       createTestAppRoot({

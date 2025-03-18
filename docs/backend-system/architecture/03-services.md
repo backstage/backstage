@@ -197,7 +197,7 @@ When declaring a service factory you may also want to make the export the buildi
 ```ts
 export class DefaultFooService {
   static create(options: { transform: (foo: string) => string }) {
-    return new DefaultFooService(options.transform ?? (foo) => foo);
+    return new DefaultFooService(options.transform ?? ((foo) => foo);
   }
 
   private constructor(private readonly transform: (foo: string) => string) {}

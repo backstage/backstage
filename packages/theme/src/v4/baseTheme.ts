@@ -16,12 +16,10 @@
 
 import { Theme as Mui5Theme } from '@mui/material/styles';
 import { createTheme as createMuiTheme } from '@material-ui/core/styles';
-import type {
-  GridProps,
-  SwitchProps,
-  Theme,
-  ThemeOptions,
-} from '@material-ui/core';
+import type { Theme, ThemeOptions } from '@material-ui/core/styles/createTheme';
+import type { GridProps } from '@material-ui/core/Grid';
+import type { SwitchProps } from '@material-ui/core/Switch';
+
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { SimpleThemeOptions } from './types';
 import { createBaseThemeOptions } from '../base';

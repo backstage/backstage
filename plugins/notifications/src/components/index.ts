@@ -15,4 +15,5 @@
  */
 export * from './NotificationsSideBarItem';
 export * from './NotificationsTable';
+export * from './UserNotificationSettingsCard';
 export type { NotificationsPageProps } from './NotificationsPage';

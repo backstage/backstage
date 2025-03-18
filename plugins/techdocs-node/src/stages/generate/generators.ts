@@ -24,7 +24,7 @@ import {
   SupportedGeneratorKey,
 } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { TechDocsContainerRunner } from '../publish/types';
+import { TechDocsContainerRunner } from './types';
 
 /**
  * Collection of docs generators

@@ -92,6 +92,19 @@ describe('API integration tests', () => {
         });
       },
     });
+  const startPermissionDeniedTestServer = async () => {
+    permissionsMock.authorize.mockResolvedValue([
+      { result: AuthorizeResult.DENY },
+    ]);
+    const { server } = await startTestBackend({
+      features: [
+        minimalValidConfigService,
+        permissionsMock.factory,
+        import('@backstage/plugin-kubernetes-backend'),
+      ],
+    });
+    return server;
+  };
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -121,8 +134,8 @@ describe('API integration tests', () => {
     const { server } = await startTestBackend({
       features: [
         minimalValidConfigService,
-        import('@backstage/plugin-kubernetes-backend/alpha'),
-        import('@backstage/plugin-permission-backend/alpha'),
+        import('@backstage/plugin-kubernetes-backend'),
+        import('@backstage/plugin-permission-backend'),
         import('@backstage/plugin-permission-backend-module-allow-all-policy'),
         createBackendModule({
           pluginId: 'kubernetes',
@@ -187,7 +200,7 @@ describe('API integration tests', () => {
       const { server } = await startTestBackend({
         features: [
           minimalValidConfigService,
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
           createBackendModule({
             pluginId: 'kubernetes',
             moduleId: 'testObjectsProvider',
@@ -284,7 +297,7 @@ describe('API integration tests', () => {
       const { server } = await startTestBackend({
         features: [
           minimalValidConfigService,
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
           withClusters([
             {
               name: 'cluster-name',
@@ -304,6 +317,12 @@ describe('API integration tests', () => {
       expect(response.body).toEqual({
         items: [expect.objectContaining({ title: 'cluster-title' })],
       });
+    });
+
+    it('returns 403 response when permission blocks endpoint', async () => {
+      app = await startPermissionDeniedTestServer();
+      const response = await request(app).get('/api/kubernetes/clusters');
+      expect(response.status).toEqual(403);
     });
   });
 
@@ -377,7 +396,7 @@ describe('API integration tests', () => {
       const { server } = await startTestBackend({
         features: [
           minimalValidConfigService,
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
           withClusters(clusters),
           createBackendModule({
             pluginId: 'kubernetes',
@@ -440,7 +459,7 @@ describe('API integration tests', () => {
       const { server } = await startTestBackend({
         features: [
           minimalValidConfigService,
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
           withClusters([
             {
               name: 'custom-cluster',
@@ -503,6 +522,14 @@ describe('API integration tests', () => {
           credential: { type: 'bearer token', token: 'custom-token' },
         }),
       );
+    });
+
+    it('returns 403 response when permission blocks endpoint', async () => {
+      app = await startPermissionDeniedTestServer();
+      const response = await request(app).post(
+        '/api/kubernetes/services/test-service',
+      );
+      expect(response.status).toEqual(403);
     });
   });
 
@@ -571,18 +598,7 @@ metadata:
     });
 
     it('returns 403 response when permission blocks endpoint', async () => {
-      permissionsMock.authorize.mockResolvedValue([
-        { result: AuthorizeResult.DENY },
-      ]);
-
-      const { server } = await startTestBackend({
-        features: [
-          minimalValidConfigService,
-          permissionsMock.factory,
-          import('@backstage/plugin-kubernetes-backend/alpha'),
-        ],
-      });
-      app = server;
+      app = await startPermissionDeniedTestServer();
 
       const proxyEndpointRequest = request(app)
         .post('/api/kubernetes/proxy/api/v1/namespaces')
@@ -614,7 +630,7 @@ metadata:
       const { server } = await startTestBackend({
         features: [
           minimalValidConfigService,
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
           withClusters([
             {
               name: 'custom-cluster',
@@ -689,7 +705,7 @@ metadata:
               },
             },
           }),
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
           createBackendModule({
             pluginId: 'kubernetes',
             moduleId: 'testAuthStrategy',
@@ -741,7 +757,7 @@ metadata:
               },
             },
           }),
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
           createBackendModule({
             pluginId: 'kubernetes',
             moduleId: 'testAuthStrategy',
@@ -779,6 +795,8 @@ metadata:
     expect(response.body).toMatchObject({
       permissions: [
         { type: 'basic', name: 'kubernetes.proxy', attributes: {} },
+        { type: 'basic', name: 'kubernetes.resources.read', attributes: {} },
+        { type: 'basic', name: 'kubernetes.clusters.read', attributes: {} },
       ],
       rules: [],
     });
@@ -796,7 +814,7 @@ metadata:
               },
             },
           }),
-          import('@backstage/plugin-kubernetes-backend/alpha'),
+          import('@backstage/plugin-kubernetes-backend'),
         ],
       }),
     ).rejects.toThrow(

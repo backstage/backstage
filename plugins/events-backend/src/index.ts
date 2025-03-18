@@ -20,5 +20,5 @@
  * @packageDocumentation
  */
 
-export * from './deprecated';
+export { eventsPlugin as default } from './service/EventsPlugin';
 export { HttpPostIngressEventPublisher } from './service/http';

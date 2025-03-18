@@ -28,7 +28,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import SettingsIcon from '@material-ui/icons/Settings';
-import StarIcon from '@material-ui/icons/Star';
+import { StarIcon } from '@backstage/core-components';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { EntityUserFilter } from '../../filters';
 import { useEntityList } from '../../hooks';
@@ -74,9 +74,7 @@ const useStyles = makeStyles(
       margin: theme.spacing(1, 1, 2, 1),
     },
   }),
-  {
-    name: 'CatalogReactUserListPicker',
-  },
+  { name: 'CatalogReactUserListPicker' },
 );
 
 export type ButtonGroup = {
@@ -124,11 +122,13 @@ function getFilterGroups(
 export type UserListPickerProps = {
   initialFilter?: UserListFilterKind;
   availableFilters?: UserListFilterKind[];
+  hidden?: boolean;
+  alwaysKeepFilters?: boolean;
 };
 
 /** @public */
 export const UserListPicker = (props: UserListPickerProps) => {
-  const { initialFilter, availableFilters } = props;
+  const { initialFilter, availableFilters, hidden, alwaysKeepFilters } = props;
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const { t } = useTranslationRef(catalogReactTranslationRef);
@@ -200,11 +200,18 @@ export const UserListPicker = (props: UserListPickerProps) => {
       !loading &&
       !!selectedUserFilter &&
       selectedUserFilter !== 'all' &&
-      filterCounts[selectedUserFilter] === 0
+      filterCounts[selectedUserFilter] === 0 &&
+      !alwaysKeepFilters
     ) {
       setSelectedUserFilter('all');
     }
-  }, [loading, filterCounts, selectedUserFilter, setSelectedUserFilter]);
+  }, [
+    loading,
+    filterCounts,
+    selectedUserFilter,
+    setSelectedUserFilter,
+    alwaysKeepFilters,
+  ]);
 
   useEffect(() => {
     if (!selectedUserFilter) {
@@ -234,7 +241,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
     loading,
   ]);
 
-  return (
+  return hidden ? null : (
     <Card className={classes.root}>
       {filterGroups.map(group => (
         <Fragment key={group.name}>

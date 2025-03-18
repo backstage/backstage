@@ -179,6 +179,7 @@ export type DbFinalEntitiesRow = {
   stitch_ticket: string;
   final_entity?: string;
   last_updated_at?: string | Date;
+  entity_ref: string;
 };
 
 export type DbSearchRow = {

@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import {
   EventsService,
+  HttpBodyParser,
   HttpPostIngressOptions,
   RequestValidator,
 } from '@backstage/plugin-events-node';
+import contentType from 'content-type';
 import express from 'express';
 import Router from 'express-promise-router';
+import { defaultHttpBodyParsers } from './body-parser';
 import { RequestValidationContextImpl } from './validation';
-
+import { UnsupportedMediaTypeError } from './errors';
 /**
  * Publishes events received from their origin (e.g., webhook events from an SCM system)
  * via HTTP POST endpoint and passes the request body as event payload to the registered subscribers.
@@ -38,6 +40,7 @@ export class HttpPostIngressEventPublisher {
     config: Config;
     events: EventsService;
     ingresses?: { [topic: string]: Omit<HttpPostIngressOptions, 'topic'> };
+    bodyParsers?: { [contentType: string]: HttpBodyParser };
     logger: LoggerService;
   }): HttpPostIngressEventPublisher {
     const topics =
@@ -52,7 +55,14 @@ export class HttpPostIngressEventPublisher {
       }
     });
 
-    return new HttpPostIngressEventPublisher(env.events, env.logger, ingresses);
+    const parsers = { ...defaultHttpBodyParsers, ...env.bodyParsers };
+
+    return new HttpPostIngressEventPublisher(
+      env.events,
+      env.logger,
+      ingresses,
+      parsers,
+    );
   }
 
   private constructor(
@@ -60,6 +70,9 @@ export class HttpPostIngressEventPublisher {
     private readonly logger: LoggerService,
     private readonly ingresses: {
       [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
+    },
+    private readonly bodyParsers: {
+      [contentType: string]: HttpBodyParser;
     },
   ) {}
 
@@ -71,13 +84,12 @@ export class HttpPostIngressEventPublisher {
     [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
   }): express.Router {
     const router = Router();
-    router.use(express.json());
+    router.use(express.raw({ type: '*/*', limit: '5mb' }));
 
     Object.keys(ingresses).forEach(topic =>
       this.addRouteForTopic(router, topic, ingresses[topic].validator),
     );
 
-    router.use(errorHandler());
     return router;
   }
 
@@ -87,25 +99,46 @@ export class HttpPostIngressEventPublisher {
     validator?: RequestValidator,
   ): void {
     const path = `/${topic}`;
+    const logger = this.logger;
 
     router.post(path, async (request, response) => {
-      const requestDetails = {
-        body: request.body,
-        headers: request.headers,
-      };
-      const context = new RequestValidationContextImpl();
-      await validator?.(requestDetails, context);
-      if (context.wasRejected()) {
-        response
-          .status(context.rejectionDetails!.status)
-          .json(context.rejectionDetails!.payload);
-        return;
+      const requestContentType = contentType.parse(request);
+      const bodyParser = this.bodyParsers[requestContentType.type ?? ''];
+
+      if (!bodyParser) {
+        throw new UnsupportedMediaTypeError(requestContentType.type);
       }
 
-      const eventPayload = request.body;
+      const { bodyParsed, bodyBuffer, encoding } = await bodyParser(
+        request,
+        requestContentType,
+        topic,
+      );
+
+      if (validator) {
+        const requestDetails = {
+          body: bodyParsed,
+          headers: request.headers,
+          raw: {
+            body: bodyBuffer,
+            encoding: encoding as BufferEncoding,
+          },
+        };
+
+        const context = new RequestValidationContextImpl();
+        await validator(requestDetails, context);
+
+        if (context.wasRejected()) {
+          response
+            .status(context.rejectionDetails!.status)
+            .json(context.rejectionDetails!.payload);
+          return;
+        }
+      }
+
       await this.events.publish({
         topic,
-        eventPayload,
+        eventPayload: bodyParsed,
         metadata: request.headers,
       });
 
@@ -114,6 +147,6 @@ export class HttpPostIngressEventPublisher {
 
     // TODO(pjungermann): We don't really know the externally defined path prefix here,
     //  however it is more useful for users to have it. Is there a better way?
-    this.logger.info(`Registered /api/events/http${path} to receive events`);
+    logger.info(`Registered /api/events/http${path} to receive events`);
   }
 }

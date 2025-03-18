@@ -42,7 +42,7 @@ yarn --cwd packages/backend add @backstage/plugin-events-backend-module-aws-sqs
 
 ```ts
 // packages/backend/src/index.ts
-backend.add(import('@backstage/plugin-events-backend-module-aws-sqs/alpha'));
+backend.add(import('@backstage/plugin-events-backend-module-aws-sqs'));
 ```
 
 ### Legacy Backend System

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-node",
-  "version": "1.12.7-next.1",
+  "version": "1.16.1",
   "description": "The plugin-catalog-node module for @backstage/plugin-catalog-backend",
   "backstage": {
     "role": "node-library",
@@ -16,6 +16,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
@@ -26,6 +29,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
+    "./testUtils": "./src/testUtils.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -34,6 +38,9 @@
     "*": {
       "alpha": [
         "src/alpha.ts"
+      ],
+      "testUtils": [
+        "src/testUtils.ts"
       ],
       "package.json": [
         "package.json"
@@ -64,6 +71,7 @@
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "msw": "^1.0.0"
   }
 }

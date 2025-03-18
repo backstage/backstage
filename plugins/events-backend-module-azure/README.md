@@ -29,7 +29,7 @@ yarn --cwd packages/backend add @backstage/plugin-events-backend-module-azure
 
 ```ts
 // packages/backend/src/index.ts
-backend.add(import('@backstage/plugin-events-backend-module-azure/alpha'));
+backend.add(import('@backstage/plugin-events-backend-module-azure'));
 ```
 
 ### Legacy Backend System

@@ -28,8 +28,8 @@ import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/esm/useAsync';
 import React, { useState } from 'react';
 import {
-  ScaffolderTask,
   scaffolderApiRef,
+  ScaffolderTask,
 } from '@backstage/plugin-scaffolder-react';
 import { OwnerListPicker } from './OwnerListPicker';
 import {
@@ -46,11 +46,18 @@ import { scaffolderTranslationRef } from '../../translation';
 
 export interface MyTaskPageProps {
   initiallySelectedFilter?: 'owned' | 'all';
+  contextMenu?: {
+    editor?: boolean;
+    actions?: boolean;
+    create?: boolean;
+  };
 }
 
 const ListTaskPageContent = (props: MyTaskPageProps) => {
   const { initiallySelectedFilter = 'owned' } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
+  const [limit, setLimit] = useState(5);
+  const [page, setPage] = useState(0);
 
   const scaffolderApi = useApi(scaffolderApiRef);
   const rootLink = useRouteRef(rootRouteRef);
@@ -58,7 +65,11 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
   const [ownerFilter, setOwnerFilter] = useState(initiallySelectedFilter);
   const { value, loading, error } = useAsync(() => {
     if (scaffolderApi.listTasks) {
-      return scaffolderApi.listTasks?.({ filterByOwnership: ownerFilter });
+      return scaffolderApi.listTasks?.({
+        filterByOwnership: ownerFilter,
+        limit,
+        offset: page * limit,
+      });
     }
 
     // eslint-disable-next-line no-console
@@ -66,8 +77,8 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
       'listTasks is not implemented in the scaffolderApi, please make sure to implement this method.',
     );
 
-    return Promise.resolve({ tasks: [] });
-  }, [scaffolderApi, ownerFilter]);
+    return Promise.resolve({ tasks: [], totalTasks: 0 });
+  }, [scaffolderApi, ownerFilter, limit, page]);
 
   if (loading) {
     return <Progress />;
@@ -96,7 +107,15 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
       </CatalogFilterLayout.Filters>
       <CatalogFilterLayout.Content>
         <Table<ScaffolderTask>
+          onRowsPerPageChange={pageSize => {
+            setPage(0);
+            setLimit(pageSize);
+          }}
+          onPageChange={newPage => setPage(newPage)}
+          options={{ pageSize: limit, emptyRowsWhenPaging: false }}
           data={value?.tasks ?? []}
+          page={page}
+          totalCount={value?.totalTasks ?? 0}
           title={t('listTaskPage.content.tableTitle')}
           columns={[
             {
@@ -147,10 +166,19 @@ export const ListTasksPage = (props: MyTaskPageProps) => {
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const scaffolderPageContextMenuProps = {
-    onEditorClicked: () => navigate(editorLink()),
-    onActionsClicked: () => navigate(actionsLink()),
+    onEditorClicked:
+      props?.contextMenu?.editor !== false
+        ? () => navigate(editorLink())
+        : undefined,
+    onActionsClicked:
+      props?.contextMenu?.actions !== false
+        ? () => navigate(actionsLink())
+        : undefined,
     onTasksClicked: undefined,
-    onCreateClicked: () => navigate(createLink()),
+    onCreateClicked:
+      props?.contextMenu?.create !== false
+        ? () => navigate(createLink())
+        : undefined,
   };
   return (
     <Page themeId="home">

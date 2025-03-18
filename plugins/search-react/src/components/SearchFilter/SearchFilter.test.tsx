@@ -22,7 +22,7 @@ import { configApiRef } from '@backstage/core-plugin-api';
 
 import { SearchContextProvider } from '../../context';
 import { SearchFilter } from './SearchFilter';
-import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { searchApiRef } from '../../api';
 
 describe('SearchFilter', () => {
@@ -37,10 +37,12 @@ describe('SearchFilter', () => {
   const values = ['value1', 'value2'];
   const filters = { unrelated: 'unrelated' };
 
-  const configApiMock = new MockConfigApi({
-    search: {
-      query: {
-        pagelimit: 10,
+  const configApiMock = mockApis.config({
+    data: {
+      search: {
+        query: {
+          pagelimit: 10,
+        },
       },
     },
   });
@@ -287,12 +289,14 @@ describe('SearchFilter', () => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      expect(
-        screen.getByRole('option', { name: values[0] }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole('option', { name: values[1] }),
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          screen.getByRole('option', { name: values[0] }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('option', { name: values[1] }),
+        ).toBeInTheDocument();
+      });
     });
 
     it('Renders correctly based on filter state', async () => {

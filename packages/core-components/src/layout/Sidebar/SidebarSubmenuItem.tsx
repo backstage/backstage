@@ -29,6 +29,18 @@ import { isLocationMatch } from './utils';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 
+/** @public */
+export type SidebarSubmenuItemClassKey =
+  | 'item'
+  | 'itemContainer'
+  | 'selected'
+  | 'label'
+  | 'subtitle'
+  | 'dropdownArrow'
+  | 'dropdown'
+  | 'dropdownItem'
+  | 'textContent';
+
 const useStyles = makeStyles(
   theme => ({
     item: {
@@ -87,6 +99,10 @@ const useStyles = makeStyles(
           theme.palette.navigation.navItem?.hoverBackground || '#6f6f6f',
         color: theme.palette.navigation.selectedColor,
       },
+    },
+    dropdownButton: {
+      textTransform: 'none',
+      justifyContent: 'flex-start',
     },
     textContent: {
       color: theme.palette.navigation.color,
@@ -171,6 +187,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
             onTouchStart={e => e.stopPropagation()}
             className={classnames(
               classes.item,
+              classes.dropdownButton,
               isActive ? classes.selected : undefined,
             )}
           >

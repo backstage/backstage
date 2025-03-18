@@ -15,8 +15,11 @@
  */
 
 import { Descriptor, Workspace, structUtils } from '@yarnpkg/core';
-import { getCurrentBackstageVersion, getPackageVersion } from '../util';
+import { getPackageVersion } from '../util';
 import { PROTOCOL } from '../constants';
+
+const hasBackstageVersion = (range: string) =>
+  structUtils.parseRange(range).protocol === PROTOCOL;
 
 const getFinalDependencyType = (
   dependencyType: string,
@@ -38,8 +41,6 @@ export const beforeWorkspacePacking = async (
   workspace: Workspace,
   rawManifest: any,
 ) => {
-  const backstageVersion = getCurrentBackstageVersion();
-
   for (const dependencyType of ['dependencies', 'devDependencies'] as const) {
     const entries = Array.from(
       workspace.manifest.getForScope(dependencyType).values(),
@@ -62,11 +63,22 @@ export const beforeWorkspacePacking = async (
       );
 
       rawManifest[finalDependencyType][ident] = `^${await getPackageVersion(
-        structUtils.makeDescriptor(
-          descriptor,
-          `${PROTOCOL}${backstageVersion}`,
-        ),
+        descriptor,
+        workspace.project.configuration,
       )}`;
     }
+  }
+
+  if (
+    ['dependencies', 'devDependencies', 'optionalDependencies'].some(
+      dependencyType =>
+        Object.values<string>(rawManifest[dependencyType] ?? {}).some(
+          hasBackstageVersion,
+        ),
+    )
+  ) {
+    throw new Error(
+      `Failed to replace all "backstage:" ranges in manifest for ${rawManifest.name}`,
+    );
   }
 };

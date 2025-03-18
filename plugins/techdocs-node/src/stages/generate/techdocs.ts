@@ -43,7 +43,7 @@ import {
 import { ForwardedError } from '@backstage/errors';
 import { DockerContainerRunner } from './DockerContainerRunner';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { TechDocsContainerRunner } from '../publish/types';
+import { TechDocsContainerRunner } from './types';
 
 /**
  * Generates documentation files
@@ -54,7 +54,7 @@ export class TechdocsGenerator implements GeneratorBase {
    * The default docker image (and version) used to generate content. Public
    * and static so that techdocs-node consumers can use the same version.
    */
-  public static readonly defaultDockerImage = 'spotify/techdocs:v1.2.4';
+  public static readonly defaultDockerImage = 'spotify/techdocs:v1.2.6';
   private readonly logger: LoggerService;
   private readonly containerRunner?: TechDocsContainerRunner;
   private readonly options: GeneratorConfig;

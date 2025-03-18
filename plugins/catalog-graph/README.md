@@ -137,6 +137,20 @@ return (
 );
 ```
 
+Once you have your custom implementation, you can follow these steps to modify the required components:
+
+- In the `app.tsx` update the `CatalogGraphPage` component to include your custom styles:
+
+```tsx
+<Route path=“/catalog-graph” element={<CatalogGraphPage renderNode={MyCustomRenderNode} />} />
+```
+
+- In the `Entity.tsx` file, update the `EntityCatalogGraphCard` component to this:
+
+```tsx
+<EntityCatalogGraphCard variant=“gridItem” renderNode={MyCustomRenderNode} height={400} />
+```
+
 ## Development
 
 Run `yarn` in the root of this plugin to install all dependencies and then `yarn start` to run a [development version](./dev/index.tsx) of this plugin.

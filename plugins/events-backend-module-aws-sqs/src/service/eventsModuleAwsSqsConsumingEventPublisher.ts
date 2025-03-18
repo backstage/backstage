@@ -24,7 +24,7 @@ import { AwsSqsConsumingEventPublisher } from '../publisher/AwsSqsConsumingEvent
 /**
  * AWS SQS module for the Events plugin.
  *
- * @alpha
+ * @public
  */
 export const eventsModuleAwsSqsConsumingEventPublisher = createBackendModule({
   pluginId: 'events',

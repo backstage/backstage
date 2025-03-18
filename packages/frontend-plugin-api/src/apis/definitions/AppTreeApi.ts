@@ -15,7 +15,12 @@
  */
 
 import { createApiRef } from '@backstage/core-plugin-api';
-import { BackstagePlugin, Extension, ExtensionDataRef } from '../../wiring';
+import {
+  FrontendPlugin,
+  Extension,
+  ExtensionDataRef,
+  ExtensionAttachToSpec,
+} from '../../wiring';
 
 /**
  * The specification for this {@link AppNode} in the {@link AppTree}.
@@ -28,11 +33,11 @@ import { BackstagePlugin, Extension, ExtensionDataRef } from '../../wiring';
  */
 export interface AppNodeSpec {
   readonly id: string;
-  readonly attachTo: { id: string; input: string };
+  readonly attachTo: ExtensionAttachToSpec;
   readonly extension: Extension<unknown, unknown>;
   readonly disabled: boolean;
   readonly config?: unknown;
-  readonly source?: BackstagePlugin;
+  readonly source?: FrontendPlugin;
 }
 
 /**
@@ -104,6 +109,11 @@ export interface AppTreeApi {
    * Get the {@link AppTree} for the app.
    */
   getTree(): { tree: AppTree };
+
+  /**
+   * Get all nodes in the app that are mounted at a given route path.
+   */
+  getNodesByRoutePath(sourcePath: string): { nodes: AppNode[] };
 }
 
 /**

@@ -47,8 +47,9 @@ describe('createGithubSignatureValidator', () => {
       },
     },
   });
-  const payload = { test: 'payload' };
-  const payloadString = JSON.stringify(payload);
+  const payloadString = '{"test": "payload", "score": 5.0}';
+  const payload = JSON.parse(payloadString);
+  const payloadBuffer = Buffer.from(payloadString);
   const validSignature = sign({ secret, algorithm: 'sha256' }, payloadString);
 
   const requestWithSignature = async (signature: string | undefined) => {
@@ -56,6 +57,10 @@ describe('createGithubSignatureValidator', () => {
       body: payload,
       headers: {
         'x-hub-signature-256': signature,
+      },
+      raw: {
+        body: payloadBuffer,
+        encoding: 'utf-8',
       },
     } as RequestDetails;
   };

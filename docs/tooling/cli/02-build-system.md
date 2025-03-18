@@ -364,22 +364,19 @@ load performance.
 
 ### Backend Development
 
-The backend development bundling is also based on Webpack, but rather than
-starting up a web server, the backend is started up using the
-[`RunScriptWebpackPlugin`](https://www.npmjs.com/package/run-script-webpack-plugin).
-The reason for using Webpack for development of the backend is both that it is a
-convenient way to handle transpilation of a large set of packages, as well us
-allowing us to use hot module replacement and maintaining state while reloading
-individual backend modules. This is particularly useful when running the backend
-with in-memory SQLite as the database choice.
+The backend development setup does not use any bundling process. It runs a
+Node.js process directly, with on-the-fly transpilation from TypeScript to
+JavaScript. The transpilation is done with a custom transform based on
+[SWC](https://swc.rs/).
 
-Except for executing in Node.js rather than a web server, the backend
-development bundling configuration is quite similar to the frontend one. It
-shares most of the Webpack configuration, including the transpilation setup.
-Some differences are that it does not inject any environment variables or node
-module fallbacks, and it uses
-[`webpack-node-externals`](https://www.npmjs.com/package/webpack-node-externals)
-to avoid bundling in dependency modules.
+During development the backend Node.js process will restart whenever there is a
+change to the source code. This means that any in-memory data will be lost. In
+order to store data between restarts, the backend process has an IPC channel
+available to store and restore data from the parent CLI process. The primary
+purpose of this, which is already built-in, is to restore the contents of
+databases when using SQLite for development. You can also use it for your own
+purposes, with the `DevDataStore` utility exported from the
+`@backstage/backend-dev-utils` package.
 
 If you want to inspect the running Node.js process, the `--inspect` and
 `--inspect-brk` flags can be used, as they will be passed through as options to
@@ -420,7 +417,7 @@ The following is an example of a `Dockerfile` that can be used to package the
 output of building a package with role `'backend'` into an image:
 
 ```Dockerfile
-FROM node:18-bookworm-slim
+FROM node:20-bookworm-slim
 WORKDIR /app
 
 COPY yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
@@ -486,29 +483,41 @@ of the build system, including the bundling, tests, builds, and type checking.
 Loaders are always selected based on the file extension. The following is a list
 of all supported file extensions:
 
-| Extension | Exports       | Purpose            |
-| --------- | ------------- | ------------------ |
-| `.ts`     | Script Module | TypeScript         |
-| `.tsx`    | Script Module | TypeScript and XML |
-| `.js`     | Script Module | JavaScript         |
-| `.jsx`    | Script Module | JavaScript and XML |
-| `.mjs`    | Script Module | ECMAScript Module  |
-| `.cjs`    | Script Module | CommonJS Module    |
-| `.json`   | JSON Data     | JSON Data          |
-| `.yml`    | JSON Data     | YAML Data          |
-| `.yaml`   | JSON Data     | YAML Data          |
-| `.css`    | classes       | Style sheet        |
-| `.eot`    | URL Path      | Font               |
-| `.ttf`    | URL Path      | Font               |
-| `.woff2`  | URL Path      | Font               |
-| `.woff`   | URL Path      | Font               |
-| `.bmp`    | URL Path      | Image              |
-| `.gif`    | URL Path      | Image              |
-| `.jpeg`   | URL Path      | Image              |
-| `.jpg`    | URL Path      | Image              |
-| `.png`    | URL Path      | Image              |
-| `.svg`    | URL Path      | Image              |
-| `.md`     | URL Path      | Markdown File      |
+| Extension | Exports       | Purpose                      |
+| --------- | ------------- | ---------------------------- |
+| `.ts`     | Script Module | TypeScript                   |
+| `.tsx`    | Script Module | TypeScript and XML           |
+| `.mts`    | Script Module | ECMAScript Module TypeScript |
+| `.cts`    | Script Module | CommonJS TypeScript          |
+| `.js`     | Script Module | JavaScript                   |
+| `.jsx`    | Script Module | JavaScript and XML           |
+| `.mjs`    | Script Module | ECMAScript Module            |
+| `.cjs`    | Script Module | CommonJS Module              |
+| `.json`   | JSON Data     | JSON Data                    |
+| `.yml`    | JSON Data     | YAML Data                    |
+| `.yaml`   | JSON Data     | YAML Data                    |
+| `.css`    | classes       | Style sheet                  |
+| `.eot`    | URL Path      | Font                         |
+| `.ttf`    | URL Path      | Font                         |
+| `.woff2`  | URL Path      | Font                         |
+| `.woff`   | URL Path      | Font                         |
+| `.bmp`    | URL Path      | Image                        |
+| `.gif`    | URL Path      | Image                        |
+| `.jpeg`   | URL Path      | Image                        |
+| `.jpg`    | URL Path      | Image                        |
+| `.png`    | URL Path      | Image                        |
+| `.svg`    | URL Path      | Image                        |
+| `.md`     | URL Path      | Markdown File                |
+
+## ECMAScript Modules
+
+The Backstage tooling supports [ECMAScript modules (ESM)](https://nodejs.org/docs/latest-v22.x/api/esm.html) in Node.js packages. This includes support for all the script module file extensions listed above during local development, in built packages, in tests, and during type checking. [Dynamic imports](https://nodejs.org/docs/latest-v22.x/api/esm.html#import-expressions) can be used to load ESM-only packages from CommonJS and vice versa. There are however a couple of limitations to be aware of:
+
+- To enable support for native ESM in tests, you need to run the tests with the `--experimental-vm-modules` flag enabled, typically via `NODE_OPTIONS='--experimental-vm-modules'`.
+- Declaring a package as `"type": "module"` in `package.json` is supported, but in tests it will cause all local transitive dependencies to also be treated as ESM, regardless of whether they declare `"type": "module"` or not.
+- When running tests with coverage enabled the default `babel` coverage provider can mess with the hoisting of named exports. This can be worked around by using the `v8` provider instead by setting `"coverageProvider": "v8"` in the Jest configuration, although note that the `v8` provider is a fair bit slower than the `babel` one.
+- Node.js has an [ESM interoperability layer with CommonJS](https://nodejs.org/docs/latest-v22.x/api/esm.html#interoperability-with-commonjs) that allows for imports from ESM to identify named exports in CommonJS packages. This interoperability layer is **only** enabled when importing packages with a `.cts` or `.cjs` extension. This is because the interoperability layer is not fully compatible with the NPM ecosystem, and would break package if it was enabled for `.js` files.
+- Dynamic imports of CommonJS packages will vary in shape depending on the runtime, i.e. test vs local development, etc. It is therefore recommended to avoid dynamic imports of CommonJS packages and instead use `require`, or to use the explicit CommonJS extensions as mentioned above. If you do need to dynamically import CommonJS packages, avoid using `default` exports, as the shape of them vary across different environments and you would otherwise need to manually unwrap the import based on the shape of the module object.
 
 ## Jest Configuration
 
@@ -559,26 +568,62 @@ The overrides in a single `package.json` may for example look like this:
   },
 ```
 
+### Additional Configuration Options
+
+When using the built-in `@backstage/cli/config/jest` configuration the following options are available in addition to the standard Jest options.
+
+#### `rejectFrontendNetworkRequests` **[boolean]**
+
+Default: `false`
+
+If set to `true`, any attempt to make a network request in frontend package tests will result in an error. This option can only be set in the root `package.json` and will apply to all frontend packages in the monorepo.
+
+```json title="Example - in your root package.json"
+  "jest": {
+    "rejectFrontendNetworkRequests": true
+  },
+```
+
+## Caching
+
+Caching is used sparingly throughout the Backstage build system. It is always used as a way to squeeze out a little bit of extra performance, rather than requirement to keep things fast. The following is a list of places where optional caching is available:
+
+- **TypeScript** - The default `tsconfig.json` used by Backstage projects has `incremental` set to `true`, which enables local caching of type checking results. It is however generally not recommended in CI, where `yarn tsc:full` is preferred, which sets `--incremental false`.
+- **Testing** - The `backstage-cli repo test` command has a `--successCache` flag that enables caching of successful test results. This is done at the package level, meaning that if a package has not been changed since the last test run and it was successful, the testing will be skipped. This is recommended to be used in CI, but not during local development.
+- **Linting** - The `backstage-cli repo lint` command has a `--successCache` flag that enables caching of successful linting results. This is done at the package level, meaning that if a package has not been changed since the last lint run and it was successful, the linting will be skipped. This is recommended to be used in CI, but not during local development.
+- **Webpack** - It is possible to enable experimental caching of frontend package builds using the `BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE` environment variable. This will enable the Webpack filesystem cache.
+
 ### Debugging Jest Tests
 
 For your productivity working with unit tests it's quite essential to have your debugging configured in IDE. It will help you to identify the root cause of the issue faster.
 
+We cannot execute tests with just raw `jest`, because there are a few concerns such as module transforms that need to be in place for the `jest` runtime to be happy.
+Therefore, we delegate to the Backstage CLI to wrap the jest run for us, since it knows how to put those things in place.
+This aligns things so that your in-IDE test runs work the same way as your CI and manual command line test runs do.
+
+With that in mind, here are some IDEs configurations to run backstage components' `jest` tests with `backstage-cli` in the role of `jest`.
+
 #### IntelliJ IDEA
 
-1. Update Jest configuration template by:
+1.  Update Jest configuration template by:
 
-- Click on "Edit Configurations" on top panel
-- In the modal dialog click on link "Edit configuration templates..." located in the bottom left corner.
-- In "Jest package" you have to point to relative path of jest module (it will be suggested by IntelliJ), i.e. `~/proj/backstage/node_modules/jest`
-- In "Jest config" point to your jest configuration file, use absolute path for that, i.e. `--config /Users/user/proj/backstage/packages/cli/config/jest.js --runInBand`
+    1.  Click on "Edit Configurations" on top panel
+    2.  In the modal dialog click on link "Edit configuration templates..." located in the bottom left corner.
+    3.  "Configuration file": leave empty (`backstage-cli` adds the config)
+    4.  "Node options": `--no-node-snapshot --experimental-vm-modules`
+    5.  "Jest package": `~/workspace/backstage/node_modules/@backstage/cli` - the location of the backstage cli package.
+    6.  "Working directory": `~/workspace/backstage`
+    7.  "Jest Options": `repo test --runInBand --watch=false`
 
-2. Now you can run any tests by clicking on green arrow located on `describe` or `it`.
+2.  Currently, intellij has an issue that if you right-click on a jest test and press "run", intellij will create a playwright run configuration instead of jest configuration, see [WEB-67720](https://youtrack.jetbrains.com/issue/WEB-67720/Jest-test-runs-as-playwright-test).
+
+    Until intellij maintainers resolve the issue, create a jest configuration manually. Happily, intellij will pre-fill the configuration from the template. The only thing you need to do is provide a path to the test file. Note, that after intellij runs test in the file you can click on the individual tests from the run panel and re-run them, this time intellij will create a correct jest run configuration.
 
 #### VS Code
 
 ```jsonc
 {
-  "jest.jestCommandLine": "node_modules/.bin/jest --config node_modules/@backstage/cli/config/jest.js",
+  "jest.jestCommandLine": "yarn test",
   // In a large repo like the Backstage main repo you likely want to disable
   // watch mode and the initial test run too, leaving just manual and perhaps
   // on-save test runs in place.

@@ -50,14 +50,14 @@ Translation extension provide custom translation messages for the app. They can 
 
 These are the [extension blueprints](../architecture/23-extension-blueprints.md) provided by the Backstage core feature plugins.
 
-### EntityCard - [Reference](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md)
+### EntityCard - [Reference](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md)
 
 Creates entity cards to be displayed on the entity pages of the catalog plugin. Exported as `EntityCardBlueprint`.
 
-### EntityContent - [Reference](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md)
+### EntityContent - [Reference](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md)
 
 Creates entity content to be displayed on the entity pages of the catalog plugin. Exported as `EntityContentBlueprint`.
 
-### SearchResultListItem - [Reference](https://github.com/backstage/backstage/blob/master/plugins/search-react/api-report-alpha.md)
+### SearchResultListItem - [Reference](https://github.com/backstage/backstage/blob/master/plugins/search-react/report-alpha.api.md)
 
 Creates search result list items for different types of search results, to be displayed in search result lists. Exported as `SearchResultListItemBlueprint`.

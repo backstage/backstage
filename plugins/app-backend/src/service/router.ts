@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { notFoundHandler } from '@backstage/backend-common';
 import {
   DatabaseService,
   resolvePackagePath,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { AppConfig } from '@backstage/config';
+import type { AppConfig } from '@backstage/config';
 import helmet from 'helmet';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import Router from 'express-promise-router';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
@@ -36,34 +35,33 @@ import {
   CACHE_CONTROL_NO_CACHE,
   CACHE_CONTROL_REVALIDATE_CACHE,
 } from '../lib/headers';
-import { ConfigSchema } from '@backstage/config-loader';
+import type { ConfigSchema } from '@backstage/config-loader';
 import {
   AuthService,
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { AuthenticationError } from '@backstage/errors';
+import { AuthenticationError, InputError } from '@backstage/errors';
 import { injectConfig, readFrontendConfig } from '../lib/config';
 
 // express uses mime v1 while we only have types for mime v2
 type Mime = { lookup(arg0: string): string };
 
 /**
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ * @internal
  */
 export interface RouterOptions {
   config: RootConfigService;
   logger: LoggerService;
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
 
   /**
    * If a database is provided it will be used to cache previously deployed static assets.
    *
    * This is a built-in alternative to using a `staticFallbackHandler`.
    */
-  database?: DatabaseService;
+  database: DatabaseService;
 
   /**
    * The name of the app package that content should be served from. The same app package should be
@@ -88,17 +86,6 @@ export interface RouterOptions {
   staticFallbackHandler?: express.Handler;
 
   /**
-   * Disables the configuration injection. This can be useful if you're running in an environment
-   * with a read-only filesystem, or for some other reason don't want configuration to be injected.
-   *
-   * Note that this will cause the configuration used when building the app bundle to be used, unless
-   * a separate configuration loading strategy is set up.
-   *
-   * This also disables configuration injection though `APP_CONFIG_` environment variables.
-   */
-  disableConfigInjection?: boolean;
-
-  /**
    *
    * Provides a ConfigSchema.
    *
@@ -107,8 +94,7 @@ export interface RouterOptions {
 }
 
 /**
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ * @internal
  */
 export async function createRouter(
   options: RouterOptions,
@@ -123,9 +109,9 @@ export async function createRouter(
     schema,
   } = options;
 
-  const disableConfigInjection =
-    options.disableConfigInjection ??
-    config.getOptionalBoolean('app.disableConfigInjection');
+  const disableConfigInjection = config.getOptionalBoolean(
+    'app.disableConfigInjection',
+  );
   const disableStaticFallbackCache = config.getOptionalBoolean(
     'app.disableStaticFallbackCache',
   );
@@ -154,13 +140,12 @@ export async function createRouter(
         schema,
       });
 
-  const assetStore =
-    options.database && !disableStaticFallbackCache
-      ? await StaticAssetsStore.create({
-          logger,
-          database: options.database,
-        })
-      : undefined;
+  const assetStore = !disableStaticFallbackCache
+    ? await StaticAssetsStore.create({
+        logger,
+        database: options.database,
+      })
+    : undefined;
 
   const router = Router();
 
@@ -168,10 +153,9 @@ export async function createRouter(
 
   const publicDistDir = resolvePath(appDistDir, 'public');
 
-  const enablePublicEntryPoint =
-    (await fs.pathExists(publicDistDir)) && auth && httpAuth;
+  const enablePublicEntryPoint = await fs.pathExists(publicDistDir);
 
-  if (enablePublicEntryPoint && auth && httpAuth) {
+  if (enablePublicEntryPoint) {
     logger.info(
       `App is running in protected mode, serving public content from ${publicDistDir}`,
     );
@@ -220,7 +204,9 @@ export async function createRouter(
           req.method = 'GET';
           next('router');
         } else {
-          throw new Error('Invalid POST request to /');
+          throw new InputError(
+            'Invalid POST request to app-backend wildcard endpoint',
+          );
         }
       },
     );
@@ -265,7 +251,7 @@ async function createEntryPointRouter({
 }) {
   const staticDir = resolvePath(rootDir, 'static');
 
-  const injectedConfigPath =
+  const injectResult =
     appConfigs &&
     (await injectConfig({ appConfigs, logger, rootDir, staticDir }));
 
@@ -276,7 +262,7 @@ async function createEntryPointRouter({
   staticRouter.use(
     express.static(staticDir, {
       setHeaders: (res, path) => {
-        if (path === injectedConfigPath) {
+        if (injectResult?.injectedPath === path) {
           res.setHeader('Cache-Control', CACHE_CONTROL_REVALIDATE_CACHE);
         } else {
           res.setHeader('Cache-Control', CACHE_CONTROL_MAX_CACHE);
@@ -297,10 +283,22 @@ async function createEntryPointRouter({
   if (staticFallbackHandler) {
     staticRouter.use(staticFallbackHandler);
   }
-  staticRouter.use(notFoundHandler());
+  staticRouter.use((_req: Request, res: Response) => {
+    res.status(404).end();
+  });
 
   router.use('/static', staticRouter);
-  router.use(
+
+  const rootRouter = Router();
+  rootRouter.use((req, _res, next) => {
+    // Make sure / and /index.html are handled by the HTML5 route below
+    if (req.path === '/' || req.path === '/index.html') {
+      next('router');
+    } else {
+      next();
+    }
+  });
+  rootRouter.use(
     express.static(rootDir, {
       setHeaders: (res, path) => {
         // The Cache-Control header instructs the browser to not cache html files since it might
@@ -313,15 +311,23 @@ async function createEntryPointRouter({
       },
     }),
   );
+  router.use(rootRouter);
 
+  // HTML5 routing
   router.get('/*', (_req, res) => {
-    res.sendFile(resolvePath(rootDir, 'index.html'), {
-      headers: {
-        // The Cache-Control header instructs the browser to not cache the index.html since it might
-        // link to static assets from recently deployed versions.
-        'cache-control': CACHE_CONTROL_NO_CACHE,
-      },
-    });
+    if (injectResult?.indexHtmlContent) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Cache-Control', CACHE_CONTROL_NO_CACHE);
+      res.send(injectResult.indexHtmlContent);
+    } else {
+      res.sendFile(resolvePath(rootDir, 'index.html'), {
+        headers: {
+          // The Cache-Control header instructs the browser to not cache the index.html since it might
+          // link to static assets from recently deployed versions.
+          'cache-control': CACHE_CONTROL_NO_CACHE,
+        },
+      });
+    }
   });
 
   return router;

@@ -73,6 +73,7 @@ export function resolveRouteBindings(
 ) {
   const routesById = collectRouteIds(plugins);
   const result = new Map<ExternalRouteRef, RouteRef | SubRouteRef>();
+  const disabledExternalRefs = new Set<ExternalRouteRef>();
 
   // Perform callback bindings first with highest priority
   if (bindRoutes) {
@@ -87,11 +88,15 @@ export function resolveRouteBindings(
         }
         if (!value && !externalRoute.optional) {
           throw new Error(
-            `External route ${key} is required but was undefined`,
+            `External route ${key} is required but was ${
+              value === false ? 'disabled' : 'not provided'
+            }`,
           );
         }
         if (value) {
           result.set(externalRoute, value);
+        } else if (value === false) {
+          disabledExternalRefs.add(externalRoute);
         }
       }
     };
@@ -102,7 +107,6 @@ export function resolveRouteBindings(
   const bindings = config
     .getOptionalConfig('app.routes.bindings')
     ?.get<JsonObject>();
-  const disabledExternalRefs = new Set<ExternalRouteRef>();
   if (bindings) {
     for (const [externalRefId, targetRefId] of Object.entries(bindings)) {
       if (!isValidTargetRefId(targetRefId)) {
@@ -118,11 +122,14 @@ export function resolveRouteBindings(
         );
       }
 
+      // Skip if binding was already defined in code
+      if (result.has(externalRef) || disabledExternalRefs.has(externalRef)) {
+        continue;
+      }
+
       if (targetRefId === false) {
         disabledExternalRefs.add(externalRef);
-
-        result.delete(externalRef);
-      } else if (!result.has(externalRef)) {
+      } else {
         const targetRef = routesById.routes.get(targetRefId);
         if (!targetRef) {
           throw new Error(

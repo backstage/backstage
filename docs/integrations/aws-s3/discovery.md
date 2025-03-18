@@ -73,8 +73,8 @@ yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-aws
 Then update your backend by adding the following line:
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-catalog-backend-module-aws/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend-module-aws'));
 /* highlight-add-end */
 ```

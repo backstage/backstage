@@ -38,7 +38,6 @@ describe('AppRootElementBlueprint', () => {
         "inputs": {},
         "kind": "app-root-element",
         "name": undefined,
-        "namespace": undefined,
         "output": [
           [Function],
         ],

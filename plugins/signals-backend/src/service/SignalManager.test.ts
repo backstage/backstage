@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { WebSocket } from 'ws';
 import { EventsServiceSubscribeOptions } from '@backstage/plugin-events-node';
 import { SignalManager } from './SignalManager';
-import { ConfigReader } from '@backstage/config';
 import { mockServices } from '@backstage/backend-test-utils';
 
 class MockWebSocket {
@@ -70,15 +70,15 @@ describe('SignalManager', () => {
   };
 
   const shutdownHooks: Function[] = [];
-  const mockLifecycle = {
+  const mockLifecycle = mockServices.lifecycle.mock({
     addShutdownHook: (hook: Function) => shutdownHooks.push(hook),
-  };
+  });
 
   const manager = SignalManager.create({
     events: mockEvents,
     logger: mockServices.logger.mock(),
-    config: new ConfigReader({}),
-    lifecycle: mockLifecycle as any,
+    config: mockServices.rootConfig(),
+    lifecycle: mockLifecycle,
   });
 
   it('should close all connections when server is closed', () => {

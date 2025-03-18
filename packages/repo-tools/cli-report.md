@@ -14,7 +14,9 @@ Options:
 Commands:
   api-reports [options] [paths...]
   type-deps
+  peer-deps [options]
   generate-catalog-info [options]
+  generate-patch [options] <package>
   knip-reports [options] [paths...]
   package [command]
   repo [command]
@@ -31,6 +33,7 @@ Options:
   --ci
   --tsc
   --docs
+  --sql-reports
   --include <pattern>
   --exclude <pattern>
   -a, --allow-warnings <allowWarningsPaths>
@@ -48,6 +51,20 @@ Usage: backstage-repo-tools generate-catalog-info [options]
 Options:
   --dry-run
   --ci
+  -h, --help
+```
+
+### `backstage-repo-tools generate-patch`
+
+```
+Usage: backstage-repo-tools generate-patch [options] <package>
+
+Options:
+  --target <target-repo>
+  --registry-url <registry-url>
+  --base-version <version>
+  --query <query>
+  --skip-install
   -h, --help
 ```
 
@@ -153,6 +170,16 @@ Options:
 Usage: backstage-repo-tools package schema openapi init [options]
 
 Options:
+  -h, --help
+```
+
+### `backstage-repo-tools peer-deps`
+
+```
+Usage: backstage-repo-tools peer-deps [options]
+
+Options:
+  --fix
   -h, --help
 ```
 

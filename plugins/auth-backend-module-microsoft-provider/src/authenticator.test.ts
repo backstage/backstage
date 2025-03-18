@@ -262,7 +262,7 @@ describe('microsoftAuthenticator', () => {
       expect(profile.photos).toStrictEqual([{ value: photo }]);
     });
 
-    it('returns access token for  non-microsoft graph scope', async () => {
+    it('returns access token for non-microsoft graph scope', async () => {
       const foreignScope = 'aks-audience/user.read';
       const refreshResponse = await microsoftAuthenticator.refresh(
         createRefreshRequest(foreignScope),
@@ -272,6 +272,30 @@ describe('microsoftAuthenticator', () => {
       expect(refreshResponse.fullProfile).toBeUndefined();
       expect(refreshResponse.session.accessToken).toBe(
         microsoftApi.generateAccessToken(foreignScope),
+      );
+    });
+
+    it('returns access token when skipping user profile load', async () => {
+      // Replace implementation to set skipUserProfile config
+      implementation = microsoftAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          tenantId: 'tenantId',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+          additionalScopes: ['User.Read.All'],
+          skipUserProfile: true,
+        }),
+      });
+
+      const refreshResponse = await microsoftAuthenticator.refresh(
+        createRefreshRequest(scope),
+        implementation,
+      );
+
+      expect(refreshResponse.fullProfile).toBeUndefined();
+      expect(refreshResponse.session.accessToken).toBe(
+        microsoftApi.generateAccessToken(scope),
       );
     });
   });

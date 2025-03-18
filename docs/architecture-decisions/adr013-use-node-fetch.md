@@ -1,9 +1,15 @@
 ---
 id: adrs-adr013
-title: 'ADR013: Proper use of HTTP fetching libraries'
+title: 'ADR013: [superseded] Proper use of HTTP fetching libraries'
 # prettier-ignore
 description: Architecture Decision Record (ADR) for the proper use of fetchApiRef, node-fetch, and cross-fetch for data fetching.
 ---
+
+:::note Superseded
+
+This ADR has been superseded by [ADR014](./adr014-use-fetch.md) and no longer applies.
+
+:::
 
 ## Context
 
@@ -32,6 +38,8 @@ It uses `cross-fetch` internally. Example:
 
 ```ts
 import { useApi } from '@backstage/core-plugin-api';
+
+// Inside some functional React component...
 const { fetch } = useApi(fetchApiRef);
 
 const response = await fetch('https://example.com/api/v1/users.json');

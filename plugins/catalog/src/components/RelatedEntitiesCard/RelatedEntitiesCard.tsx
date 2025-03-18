@@ -33,10 +33,13 @@ import {
 } from '@backstage/core-components';
 import {
   asComponentEntities,
+  asDomainEntities,
   asResourceEntities,
   asSystemEntities,
   componentEntityColumns,
   componentEntityHelpLink,
+  domainEntityColumns,
+  domainEntityHelpLink,
   resourceEntityColumns,
   resourceEntityHelpLink,
   systemEntityColumns,
@@ -84,7 +87,6 @@ export const RelatedEntitiesCard = <T extends Entity>(
     asRenderableEntities,
     tableOptions = {},
   } = props;
-
   const { t } = useTranslationRef(catalogTranslationRef);
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
@@ -116,7 +118,7 @@ export const RelatedEntitiesCard = <T extends Entity>(
         <div style={{ textAlign: 'center' }}>
           <Typography variant="body1">{emptyMessage}</Typography>
           <Typography variant="body2">
-            <Link to={emptyHelpLink}>
+            <Link to={emptyHelpLink} externalLinkIcon>
               {t('relatedEntitiesCard.emptyHelpLinkTitle')}
             </Link>
           </Typography>
@@ -138,3 +140,6 @@ RelatedEntitiesCard.asResourceEntities = asResourceEntities;
 RelatedEntitiesCard.systemEntityColumns = systemEntityColumns;
 RelatedEntitiesCard.systemEntityHelpLink = systemEntityHelpLink;
 RelatedEntitiesCard.asSystemEntities = asSystemEntities;
+RelatedEntitiesCard.domainEntityColums = domainEntityColumns;
+RelatedEntitiesCard.domainEntityHelpLink = domainEntityHelpLink;
+RelatedEntitiesCard.asDomainEntities = asDomainEntities;

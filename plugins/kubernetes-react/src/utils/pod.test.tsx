@@ -33,6 +33,7 @@ describe('pod', () => {
       [10.0, '100'],
       [10.1, '100'],
       ['10', 100.1],
+      ['10.0', 100.1],
     ])('%p out of %p gives 10%%', (current, resource) =>
       expect(currentToDeclaredResourceToPerc(current, resource)).toBe('10%'),
     );

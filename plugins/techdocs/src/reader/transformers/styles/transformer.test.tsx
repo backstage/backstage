@@ -47,6 +47,9 @@ describe('Transformers > Styles', () => {
     expect(style).toHaveTextContent(
       '/*================== Extensions ==================*/',
     );
+    expect(style).toHaveTextContent(
+      '/*================== Palette ==================*/',
+    );
   });
 
   it('should use headers relative font-size value as the factor for the md-typeset variable', () => {

@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-import { Manifest, Workspace } from '@yarnpkg/core';
+import {
+  Configuration,
+  Manifest,
+  Project,
+  Workspace,
+  httpUtils,
+} from '@yarnpkg/core';
 import { npath, ppath } from '@yarnpkg/fslib';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
 import { beforeWorkspacePacking } from './beforeWorkspacePacking';
 
-jest.mock('@backstage/release-manifests', () => ({
-  getManifestByVersion: jest.fn().mockResolvedValue({
-    releaseVersion: '1.23.45',
-    packages: [
-      {
-        name: '@backstage/core',
-        version: '3.2.1',
-      },
-    ],
-  }),
-}));
-
 const makeWorkspace = (manifest: object) => {
   return {
     manifest: Manifest.fromText(JSON.stringify(manifest)),
+    project: new Project(ppath.cwd(), {
+      configuration: Configuration.create(ppath.cwd()),
+    }),
   } as Workspace;
 };
 
@@ -49,6 +46,24 @@ describe('beforeWorkspacePacking', () => {
     jest
       .spyOn(process, 'cwd')
       .mockReturnValue(npath.toPortablePath(mockDir.path));
+
+    jest.spyOn(httpUtils, 'get').mockResolvedValue({
+      releaseVersion: '1.23.45',
+      packages: [
+        {
+          name: '@backstage/core',
+          version: '3.2.1',
+        },
+        {
+          name: '@backstage/plugin-1',
+          version: '6.5.4',
+        },
+        {
+          name: '@backstage/plugin-2',
+          version: '9.8.7',
+        },
+      ],
+    });
 
     mockDir.setContent({
       'backstage.json': JSON.stringify({
@@ -100,7 +115,29 @@ describe('beforeWorkspacePacking', () => {
 
       await expect(() =>
         beforeWorkspacePacking(makeWorkspace(result), result),
-      ).rejects.toThrow();
+      ).rejects.toThrow(/unexpected version range/i);
+    });
+
+    it(`throws an error if the final manifest unexpectedly contains backstage: versions`, async () => {
+      const result = {
+        name: 'test-package',
+        [dependencyType]: {
+          get ['@backstage/core']() {
+            return 'backstage:^';
+          },
+          set ['@backstage/core'](_value: unknown) {
+            // ignore the attempt to set the value to
+            // allow testing the validation logic at
+            // the end of the hook.
+          },
+          '@backstage/plugin-1': 'backstage:^',
+          '@backstage/plugin-2': 'backstage:^',
+        },
+      };
+
+      await expect(() =>
+        beforeWorkspacePacking(makeWorkspace(result), result),
+      ).rejects.toThrow(/failed to replace all "backstage:" ranges/i);
     });
 
     it('converts backstage:^ versions to the corresponding package version prefixed by ^', async () => {

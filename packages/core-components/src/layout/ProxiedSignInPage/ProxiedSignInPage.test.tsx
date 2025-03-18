@@ -19,8 +19,9 @@ import { render, screen } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
-  TestApiProvider,
+  mockApis,
   registerMswTestHooks,
+  TestApiProvider,
   wrapInTestApp,
 } from '@backstage/test-utils';
 import { ProxiedSignInPage } from './ProxiedSignInPage';
@@ -37,9 +38,7 @@ describe('ProxiedSignInPage', () => {
           apis={[
             [
               discoveryApiRef,
-              {
-                getBaseUrl: async () => 'http://example.com/api/auth',
-              },
+              mockApis.discovery({ baseUrl: 'http://example.com' }),
             ],
           ]}
         >
@@ -95,6 +94,60 @@ describe('ProxiedSignInPage', () => {
     );
 
     render(Subject);
+
+    await expect(
+      screen.findByText('Request failed with 401 Unauthorized'),
+    ).resolves.toBeInTheDocument();
+  });
+
+  it('should allow custom error component', async () => {
+    const ErrorComponent = ({ error }: { error?: Error }) => (
+      <>
+        <h1>Failed to authenticate</h1>
+        <div>{error?.message}</div>
+      </>
+    );
+
+    const CustomSubject = wrapInTestApp(<div>authenticated</div>, {
+      components: {
+        SignInPage: props => (
+          <TestApiProvider
+            apis={[
+              [
+                discoveryApiRef,
+                {
+                  getBaseUrl: async () => 'http://example.com/api/auth',
+                },
+              ],
+            ]}
+          >
+            <ProxiedSignInPage
+              {...props}
+              provider="test"
+              ErrorComponent={ErrorComponent}
+            />
+          </TestApiProvider>
+        ),
+      },
+    });
+
+    worker.use(
+      rest.get('http://example.com/api/auth/test/refresh', (_, res, ctx) =>
+        res(
+          ctx.status(401),
+          ctx.set('Content-Type', 'application/json'),
+          ctx.json({
+            error: { name: 'Error', message: 'not-displayed' },
+          }),
+        ),
+      ),
+    );
+
+    render(CustomSubject);
+
+    await expect(
+      screen.findByText('Failed to authenticate'),
+    ).resolves.toBeInTheDocument();
 
     await expect(
       screen.findByText('Request failed with 401 Unauthorized'),

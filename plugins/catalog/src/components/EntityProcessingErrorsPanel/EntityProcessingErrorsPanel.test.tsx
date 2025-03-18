@@ -18,21 +18,19 @@ import { AlphaEntity } from '@backstage/catalog-model/alpha';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
-  CatalogApi,
   catalogApiRef,
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { EntityProcessingErrorsPanel } from './EntityProcessingErrorsPanel';
 
 describe('<EntityProcessErrors />', () => {
-  const getEntityAncestors: jest.MockedFunction<
-    CatalogApi['getEntityAncestors']
-  > = jest.fn();
-  const apis = TestApiRegistry.from([catalogApiRef, { getEntityAncestors }]);
+  const catalogApi = catalogApiMock.mock();
+  const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
 
   it('renders EntityProcessErrors if the entity has errors', async () => {
     const entity: AlphaEntity = {
@@ -98,7 +96,7 @@ describe('<EntityProcessErrors />', () => {
       },
     };
 
-    getEntityAncestors.mockResolvedValue({
+    catalogApi.getEntityAncestors.mockResolvedValue({
       rootEntityRef: stringifyEntityRef(entity),
       items: [{ entity, parentEntityRefs: [] }],
     });
@@ -199,7 +197,7 @@ describe('<EntityProcessErrors />', () => {
         ],
       },
     };
-    getEntityAncestors.mockResolvedValue({
+    catalogApi.getEntityAncestors.mockResolvedValue({
       rootEntityRef: stringifyEntityRef(entity),
       items: [
         { entity, parentEntityRefs: [stringifyEntityRef(parent)] },

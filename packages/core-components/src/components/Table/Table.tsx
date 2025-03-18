@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  TranslationFunction,
+  useTranslationRef,
+} from '@backstage/core-plugin-api/alpha';
 import MTable, {
   Column,
   Icons,
@@ -41,6 +45,7 @@ import Clear from '@material-ui/icons/Clear';
 import DeleteOutline from '@material-ui/icons/DeleteOutline';
 import Edit from '@material-ui/icons/Edit';
 import FilterList from '@material-ui/icons/FilterList';
+import Search from '@material-ui/icons/Search';
 import FirstPage from '@material-ui/icons/FirstPage';
 import LastPage from '@material-ui/icons/LastPage';
 import Remove from '@material-ui/icons/Remove';
@@ -57,6 +62,7 @@ import React, {
   useState,
 } from 'react';
 
+import { coreComponentsTranslationRef } from '../../translation';
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
 import { TableLoadingBody } from './TableLoadingBody';
@@ -103,7 +109,7 @@ const tableIcons: Icons = {
     <Clear {...props} ref={ref} />
   )),
   Search: forwardRef<SVGSVGElement>((props, ref) => (
-    <FilterList {...props} ref={ref} />
+    <Search {...props} ref={ref} />
   )),
   SortArrow: forwardRef<SVGSVGElement>((props, ref) => (
     <ArrowUpward {...props} ref={ref} />
@@ -295,6 +301,7 @@ export function TableToolbar(toolbarProps: {
     selectedFiltersLength,
     toggleFilters,
   } = toolbarProps;
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
   const filtersClasses = useFilterStyles();
   const onSearchChanged = useCallback(
     (searchText: string) => {
@@ -312,7 +319,7 @@ export function TableToolbar(toolbarProps: {
             <FilterList />
           </IconButton>
           <Typography className={filtersClasses.title}>
-            Filters ({selectedFiltersLength})
+            {t('table.filter.title')} ({selectedFiltersLength})
           </Typography>
         </Box>
         <StyledMTableToolbar
@@ -350,8 +357,10 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     onStateChange,
     components,
     isLoading: loading,
+    style,
     ...restProps
   } = props;
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
   const tableClasses = useTableStyles();
 
   const theme = useTheme();
@@ -455,7 +464,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
     <Box className={tableClasses.root}>
       {filtersOpen && data && typeof data !== 'function' && filters?.length && (
         <Filters
-          filters={constructFilters(filters, data as any[], columns)}
+          filters={constructFilters(filters, data as any[], columns, t)}
           selectedFilters={selectedFilters}
           onChangeFilters={setSelectedFilters}
         />
@@ -483,10 +492,27 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
           </>
         }
         data={tableData}
-        style={{ width: '100%' }}
+        style={{ width: '100%', ...style }}
         localization={{
-          toolbar: { searchPlaceholder: 'Filter', searchTooltip: 'Filter' },
           ...localization,
+          body: {
+            emptyDataSourceMessage: t('table.body.emptyDataSourceMessage'),
+            ...localization?.body,
+          },
+          pagination: {
+            firstTooltip: t('table.pagination.firstTooltip'),
+            labelDisplayedRows: t('table.pagination.labelDisplayedRows'),
+            labelRowsSelect: t('table.pagination.labelRowsSelect'),
+            lastTooltip: t('table.pagination.lastTooltip'),
+            nextTooltip: t('table.pagination.nextTooltip'),
+            previousTooltip: t('table.pagination.previousTooltip'),
+            ...localization?.pagination,
+          },
+          toolbar: {
+            searchPlaceholder: t('table.toolbar.search'),
+            searchTooltip: t('table.toolbar.search'),
+            ...localization?.toolbar,
+          },
         }}
         {...restProps}
       />
@@ -530,6 +556,7 @@ function constructFilters<T extends object>(
   filterConfig: TableFilter[],
   dataValue: any[] | undefined,
   columns: TableColumn<T>[],
+  t: TranslationFunction<typeof coreComponentsTranslationRef.T>,
 ): Filter[] {
   const extractDistinctValues = (field: string | keyof T): Set<any> => {
     const distinctValues = new Set<any>();
@@ -561,7 +588,7 @@ function constructFilters<T extends object>(
     filter: TableFilter,
   ): Without<SelectProps, 'onChange'> => {
     return {
-      placeholder: 'All results',
+      placeholder: t('table.filter.placeholder'),
       label: filter.column,
       multiple: filter.type === 'multiple-select',
       items: [...extractDistinctValues(filter.column)].sort().map(value => ({

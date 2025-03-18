@@ -15,11 +15,11 @@
  */
 
 import React, { Component, ComponentType, PropsWithChildren } from 'react';
-import { BackstagePlugin } from '../wiring';
+import { FrontendPlugin } from '../wiring';
 import { CoreErrorBoundaryFallbackProps } from '../types';
 
 type ErrorBoundaryProps = PropsWithChildren<{
-  plugin?: BackstagePlugin;
+  plugin?: FrontendPlugin;
   Fallback: ComponentType<CoreErrorBoundaryFallbackProps>;
 }>;
 type ErrorBoundaryState = { error?: Error };

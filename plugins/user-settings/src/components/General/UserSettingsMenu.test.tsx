@@ -18,6 +18,7 @@ import {
   MockErrorApi,
   TestApiProvider,
   renderInTestApp,
+  mockApis,
 } from '@backstage/test-utils';
 import { errorApiRef, identityApiRef } from '@backstage/core-plugin-api';
 import { fireEvent, waitFor, screen } from '@testing-library/react';
@@ -35,9 +36,9 @@ describe('<UserSettingsMenu />', () => {
   });
 
   it('handles errors that occur when signing out', async () => {
-    const failingIdentityApi = {
-      signOut: jest.fn().mockRejectedValue(new Error('Logout error')),
-    };
+    const failingIdentityApi = mockApis.identity.mock({
+      signOut: () => Promise.reject(new Error('Logout error')),
+    });
     const mockErrorApi = new MockErrorApi({ collect: true });
     await renderInTestApp(
       <TestApiProvider

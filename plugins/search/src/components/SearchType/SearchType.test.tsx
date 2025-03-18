@@ -23,7 +23,7 @@ import {
   searchApiRef,
 } from '@backstage/plugin-search-react';
 import { SearchType } from './SearchType';
-import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
 
 describe('SearchType', () => {
   const initialState = {
@@ -36,10 +36,12 @@ describe('SearchType', () => {
   const values = ['value1', 'value2'];
   const typeValues = ['preselected'];
 
-  const configApiMock = new MockConfigApi({
-    search: {
-      query: {
-        pagelimit: 10,
+  const configApiMock = mockApis.config({
+    data: {
+      search: {
+        query: {
+          pagelimit: 10,
+        },
       },
     },
   });

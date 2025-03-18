@@ -16,7 +16,7 @@
 
 import React from 'react';
 import {
-  MockAnalyticsApi,
+  mockApis,
   TestApiProvider,
   renderInTestApp,
 } from '@backstage/test-utils';
@@ -36,9 +36,8 @@ const useStyles = makeStyles({
   },
 });
 
-let analyticsApiMock: MockAnalyticsApi;
-
 const handleSidebarItemClick = jest.fn();
+const analyticsApiMock = mockApis.analytics();
 
 async function renderSidebar() {
   const { result } = renderHook(() => useStyles());
@@ -79,7 +78,6 @@ async function renderSidebar() {
 describe('Items', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
-    analyticsApiMock = new MockAnalyticsApi();
     await renderSidebar();
   });
 
@@ -107,8 +105,7 @@ describe('Items', () => {
         await screen.findByRole('button', { name: /create/i }),
       );
       expect(handleSidebarItemClick).toHaveBeenCalledTimes(1);
-      expect(analyticsApiMock.getEvents()).toHaveLength(1);
-      expect(analyticsApiMock.getEvents()[0]).toMatchObject({
+      expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
         action: 'click',
         subject: 'Create...',
         context: { routeRef: 'unknown', pluginId: 'root', extension: 'App' },
@@ -119,8 +116,7 @@ describe('Items', () => {
     it('should send link clicks to analytics', async () => {
       await userEvent.click(await screen.findByRole('link', { name: /docs/i }));
       expect(handleSidebarItemClick).toHaveBeenCalledTimes(1);
-      expect(analyticsApiMock.getEvents()).toHaveLength(1);
-      expect(analyticsApiMock.getEvents()[0]).toMatchObject({
+      expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
         action: 'click',
         subject: 'Docs',
         context: { routeRef: 'unknown', pluginId: 'root', extension: 'App' },
@@ -132,10 +128,10 @@ describe('Items', () => {
       await userEvent.click(
         await screen.findByRole('link', { name: /explore/i }),
       );
-      expect(handleSidebarItemClick).toHaveBeenCalledTimes(1);
-      expect(analyticsApiMock.getEvents()).toHaveLength(0);
+      expect(analyticsApiMock.captureEvent).not.toHaveBeenCalled();
     });
   });
+
   describe('SidebarSearchField', () => {
     it('should be defaultPrevented when enter is pressed', async () => {
       const searchEvent = createEvent.keyDown(

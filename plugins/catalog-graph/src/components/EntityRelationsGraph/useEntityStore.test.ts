@@ -18,26 +18,14 @@ import { Entity } from '@backstage/catalog-model';
 import { useApi as useApiMocked } from '@backstage/core-plugin-api';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { useEntityStore } from './useEntityStore';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 jest.mock('@backstage/core-plugin-api');
 
 const useApi = useApiMocked as jest.Mocked<any>;
 
 describe('useEntityStore', () => {
-  const catalogApi = {
-    getEntities: jest.fn(),
-    getEntityByRef: jest.fn(),
-    getEntitiesByRefs: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    getLocationById: jest.fn(),
-    getLocationByRef: jest.fn(),
-    addLocation: jest.fn(),
-    removeLocationById: jest.fn(),
-    refreshEntity: jest.fn(),
-    getEntityAncestors: jest.fn(),
-    getEntityFacets: jest.fn(),
-    validateEntity: jest.fn(),
-  };
+  const catalogApi = catalogApiMock.mock();
 
   beforeEach(() => {
     useApi.mockReturnValue(catalogApi);

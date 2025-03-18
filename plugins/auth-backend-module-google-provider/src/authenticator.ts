@@ -73,6 +73,7 @@ export const googleAuthenticator = createOAuthAuthenticator({
     return helper.start(input, {
       accessType: 'offline',
       prompt: 'consent',
+      includeGrantedScopes: 'true',
     });
   },
 

@@ -64,7 +64,6 @@ describe('SearchResultListItemBlueprint', () => {
         "inputs": {},
         "kind": "search-result-list-item",
         "name": "test",
-        "namespace": undefined,
         "output": [
           [Function],
         ],

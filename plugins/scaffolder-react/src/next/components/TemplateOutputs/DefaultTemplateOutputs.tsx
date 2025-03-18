@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { InfoCard, MarkdownContent } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import {
   ScaffolderOutputText,
   ScaffolderTaskOutput,
@@ -21,6 +22,8 @@ import {
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import React, { useEffect, useMemo, useState } from 'react';
+
+import { scaffolderReactTranslationRef } from '../../../translation';
 import { LinkOutputs } from './LinkOutputs';
 import { TextOutputs } from './TextOutputs';
 
@@ -32,6 +35,7 @@ import { TextOutputs } from './TextOutputs';
 export const DefaultTemplateOutputs = (props: {
   output?: ScaffolderTaskOutput;
 }) => {
+  const { t } = useTranslationRef(scaffolderReactTranslationRef);
   const { output } = props;
   const [textOutputIndex, setTextOutputIndex] = useState<number | undefined>(
     undefined,
@@ -40,7 +44,7 @@ export const DefaultTemplateOutputs = (props: {
   useEffect(() => {
     if (textOutputIndex === undefined && output?.text) {
       const defaultIndex = output.text.findIndex(
-        (t: ScaffolderOutputText) => t.default,
+        (text: ScaffolderOutputText) => text.default,
       );
       setTextOutputIndex(defaultIndex >= 0 ? defaultIndex : 0);
     }
@@ -56,7 +60,8 @@ export const DefaultTemplateOutputs = (props: {
     return null;
   }
 
-  const emptyOutput = Object.keys(output).length === 0;
+  const displayTextButtons = (output.text || []).length > 1;
+  const emptyOutput = (output.links || []).length === 0 && !displayTextButtons;
 
   return (
     <>
@@ -70,11 +75,14 @@ export const DefaultTemplateOutputs = (props: {
               gridGap={16}
               flexWrap="wrap"
             >
-              <TextOutputs
-                output={output}
-                index={textOutputIndex}
-                setIndex={setTextOutputIndex}
-              />
+              {displayTextButtons && (
+                <TextOutputs
+                  data-testid="text-outputs"
+                  output={output}
+                  index={textOutputIndex}
+                  setIndex={setTextOutputIndex}
+                />
+              )}
               <LinkOutputs output={output} />
             </Box>
           </Paper>
@@ -83,7 +91,7 @@ export const DefaultTemplateOutputs = (props: {
       {textOutput ? (
         <Box paddingBottom={2} data-testid="text-output-box">
           <InfoCard
-            title={textOutput.title ?? 'Text Output'}
+            title={textOutput.title ?? t('templateOutputs.title')}
             noPadding
             titleTypographyProps={{ component: 'h2' }}
           >

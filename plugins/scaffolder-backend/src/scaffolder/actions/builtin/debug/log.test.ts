@@ -35,8 +35,9 @@ describe('debug:log', () => {
 
   beforeEach(() => {
     mockDir.setContent({
-      [`${mockContext.workspacePath}/README.md`]: '',
-      [`${mockContext.workspacePath}/a-directory/index.md`]: '',
+      [`${mockContext.workspacePath}/README.md`]: 'This is a README file',
+      [`${mockContext.workspacePath}/a-directory/index.md`]:
+        'This is a markdown file',
     });
     jest.resetAllMocks();
   });
@@ -91,6 +92,34 @@ describe('debug:log', () => {
     );
     expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining(join('a-directory', 'index.md')),
+    );
+  });
+
+  it('should log the workspace content with file contents from an example, if active', async () => {
+    const example = action.examples?.find(
+      sample =>
+        sample.description ===
+        'List the workspace directory with file contents',
+    )?.example as string;
+    expect(typeof example).toEqual('string');
+    const context = {
+      ...mockContext,
+      ...yaml.parse(example).steps[0],
+    };
+
+    await action.handler(context);
+
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('README.md'),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining(join('a-directory', 'index.md')),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('This is a README file'),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('This is a markdown file'),
     );
   });
 

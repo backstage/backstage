@@ -24,10 +24,10 @@ A feature loader can simply return a list of features to be installed:
 export default createBackendFeatureLoader({
   loader() {
     return [
-      import('@backstage/plugin-search-backend/alpha'),
-      import('@backstage/plugin-search-backend-module-catalog/alpha'),
-      import('@backstage/plugin-search-backend-module-explore/alpha'),
-      import('@backstage/plugin-search-backend-module-techdocs/alpha'),
+      import('@backstage/plugin-search-backend'),
+      import('@backstage/plugin-search-backend-module-catalog'),
+      import('@backstage/plugin-search-backend-module-explore'),
+      import('@backstage/plugin-search-backend-module-techdocs'),
     ];
   },
 });
@@ -64,14 +64,37 @@ export default createBackendFeatureLoader({
   *loader({ config }) {
     // Example of a custom config flag to enable search
     if (config.getOptionalString('customFeatureToggle.search')) {
-      yield import('@backstage/plugin-search-backend/alpha');
-      yield import('@backstage/plugin-search-backend-module-catalog/alpha');
-      yield import('@backstage/plugin-search-backend-module-explore/alpha');
-      yield import('@backstage/plugin-search-backend-module-techdocs/alpha');
+      yield import('@backstage/plugin-search-backend');
+      yield import('@backstage/plugin-search-backend-module-catalog');
+      yield import('@backstage/plugin-search-backend-module-explore');
+      yield import('@backstage/plugin-search-backend-module-techdocs');
     }
   },
 });
 ```
+
+### Overriding service factories
+
+Service factories registered by feature loaders have lower priority than ones added directly via `backend.add`. This allows you to use a feature loader for a larger number of service implementations, but still override individual services.
+
+The ordering in which different feature loaders or service factories are added does not matter. There is also no priority between feature loaders, if two different feature loaders add a factory for the same service, the backend will fail to start.
+
+```ts
+const backend = createBackend();
+
+backend.add(
+  createBackendFeatureLoader({
+    async *loader() {
+      yield import('./commonDiscoveryService'); // discovery service
+      yield import('./commonRootLoggerService'); // root logger service
+    },
+  }),
+);
+
+backend.add(import('./myDiscoveryService')); // discovery service
+```
+
+The result of the above example is that the backend starts up with `./myDiscoveryService` as the discovery service implementation, while `./commonDiscoveryService` is ignored. The `./commonRootLoggerService` will still be used.
 
 ### Dynamic logic
 
@@ -84,16 +107,16 @@ export default createBackendFeatureLoader({
     const localMetadata = await readMetadataFromDisk();
 
     if (localMetadata.enableSearch) {
-      yield import('@backstage/plugin-search-backend/alpha');
-      yield import('@backstage/plugin-search-backend-module-catalog/alpha');
+      yield import('@backstage/plugin-search-backend');
+      yield import('@backstage/plugin-search-backend-module-catalog');
 
       const remoteMetadata = await fetchMetadata();
 
       if (remoteMetadata.enableExplore) {
-        yield import('@backstage/plugin-search-backend-module-explore/alpha');
+        yield import('@backstage/plugin-search-backend-module-explore');
       }
       if (remoteMetadata.enableTechDocs) {
-        yield import('@backstage/plugin-search-backend-module-techdocs/alpha');
+        yield import('@backstage/plugin-search-backend-module-techdocs');
       }
     }
   },

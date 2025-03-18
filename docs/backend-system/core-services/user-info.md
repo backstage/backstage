@@ -9,8 +9,12 @@ This service lets you extract more information about a set of user credentials.
 Specifically, it can be used to extract the ownership entity refs for a user
 principal.
 
-See also the [`auth`](./auth.md) and [`httpAuth`](./http-auth.md) services for
-general credentials handling.
+:::note Note
+
+Please also refer to [`auth`](./auth.md) and [`httpAuth`](./http-auth.md) services for
+general credentials handling which is a prerequisite for the below examples.
+
+:::
 
 ## Using the Service
 
@@ -47,6 +51,7 @@ additional information about that principal.
 router.get('/some-request', async (req, res) => {
   const credentials = await httpAuth.credentials(req, { allow: ['user'] });
   const info = await userInfo.getUserInfo(credentials);
+});
 ```
 
 The `userInfo` service only deals with credentials that contain user principals,
@@ -61,6 +66,8 @@ router.get('/some-request', async (req, res) => {
   if (auth.isPrincipal(credentials, 'user')) {
     const info = await userInfo.getUserInfo(credentials);
     // ...
+  }
+});
 ```
 
 The user info contains data that was extracted during sign-in for the given

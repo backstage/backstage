@@ -13,84 +13,86 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z } from 'zod';
-import { makeFieldSchemaFromZod } from '../utils';
+
+import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
 
 /**
  * @public
  */
-export const RepoUrlPickerFieldSchema = makeFieldSchemaFromZod(
-  z.string(),
-  z.object({
-    allowedHosts: z
-      .array(z.string())
-      .optional()
-      .describe('List of allowed SCM platform hosts'),
-    allowedOrganizations: z
-      .array(z.string())
-      .optional()
-      .describe('List of allowed organizations in the given SCM platform'),
-    allowedOwners: z
-      .array(z.string())
-      .optional()
-      .describe('List of allowed owners in the given SCM platform'),
-    allowedProjects: z
-      .array(z.string())
-      .optional()
-      .describe('List of allowed projects in the given SCM platform'),
-    allowedRepos: z
-      .array(z.string())
-      .optional()
-      .describe('List of allowed repos in the given SCM platform'),
-    requestUserCredentials: z
-      .object({
-        secretsKey: z
-          .string()
-          .describe(
-            'Key used within the template secrets context to store the credential',
-          ),
-        additionalScopes: z
-          .object({
-            gitea: z
-              .array(z.string())
-              .optional()
-              .describe('Additional Gitea scopes to request'),
-            gerrit: z
-              .array(z.string())
-              .optional()
-              .describe('Additional Gerrit scopes to request'),
-            github: z
-              .array(z.string())
-              .optional()
-              .describe('Additional GitHub scopes to request'),
-            gitlab: z
-              .array(z.string())
-              .optional()
-              .describe('Additional GitLab scopes to request'),
-            bitbucket: z
-              .array(z.string())
-              .optional()
-              .describe('Additional BitBucket scopes to request'),
-            azure: z
-              .array(z.string())
-              .optional()
-              .describe('Additional Azure scopes to request'),
-          })
-          .optional()
-          .describe('Additional permission scopes to request'),
-      })
-      .optional()
-      .describe(
-        'If defined will request user credentials to auth against the given SCM platform',
-      ),
-  }),
-);
+export const RepoUrlPickerFieldSchema = makeFieldSchema({
+  output: z => z.string(),
+  uiOptions: z =>
+    z.object({
+      allowedHosts: z
+        .array(z.string())
+        .optional()
+        .describe('List of allowed SCM platform hosts'),
+      allowedOrganizations: z
+        .array(z.string())
+        .optional()
+        .describe('List of allowed organizations in the given SCM platform'),
+      allowedOwners: z
+        .array(z.string())
+        .optional()
+        .describe('List of allowed owners in the given SCM platform'),
+      allowedProjects: z
+        .array(z.string())
+        .optional()
+        .describe('List of allowed projects in the given SCM platform'),
+      allowedRepos: z
+        .array(z.string())
+        .optional()
+        .describe('List of allowed repos in the given SCM platform'),
+      requestUserCredentials: z
+        .object({
+          secretsKey: z
+            .string()
+            .describe(
+              'Key used within the template secrets context to store the credential',
+            ),
+          additionalScopes: z
+            .object({
+              gitea: z
+                .array(z.string())
+                .optional()
+                .describe('Additional Gitea scopes to request'),
+              gerrit: z
+                .array(z.string())
+                .optional()
+                .describe('Additional Gerrit scopes to request'),
+              github: z
+                .array(z.string())
+                .optional()
+                .describe('Additional GitHub scopes to request'),
+              gitlab: z
+                .array(z.string())
+                .optional()
+                .describe('Additional GitLab scopes to request'),
+              bitbucket: z
+                .array(z.string())
+                .optional()
+                .describe('Additional BitBucket scopes to request'),
+              azure: z
+                .array(z.string())
+                .optional()
+                .describe('Additional Azure scopes to request'),
+            })
+            .optional()
+            .describe('Additional permission scopes to request'),
+        })
+        .optional()
+        .describe(
+          'If defined will request user credentials to auth against the given SCM platform',
+        ),
+    }),
+});
 
 /**
  * The input props that can be specified under `ui:options` for the
  * `RepoUrlPicker` field extension.
  *
  * @public
+ * @deprecated this will be removed as it's no longer used
  */
 export type RepoUrlPickerUiOptions =
   typeof RepoUrlPickerFieldSchema.uiOptionsType;

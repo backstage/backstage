@@ -42,11 +42,11 @@ auth:
       development:
         clientId: ${AUTH_GOOGLE_CLIENT_ID}
         clientSecret: ${AUTH_GOOGLE_CLIENT_SECRET}
+        ## uncomment to set lifespan of user session
+        # sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
         signIn:
           resolvers:
-            # typically you would pick one of these
-            - resolver: emailMatchingUserEntityProfileEmail
-            - resolver: emailLocalPartMatchingUserEntityName
+            # See https://backstage.io/docs/auth/google/provider#resolvers for more resolvers
             - resolver: emailMatchingUserEntityAnnotation
 ```
 
@@ -55,6 +55,10 @@ The Google provider is a structure with two configuration keys:
 - `clientId`: The client ID that you generated, e.g.
   `10023341500512-beui241gjwwkrdkr2eh7dprewj2pp1q.apps.googleusercontent.com`
 - `clientSecret`: The client secret tied to the generated client ID.
+
+### Optional
+
+- `sessionDuration`: Lifespan of the user session.
 
 ### Resolvers
 
@@ -91,6 +95,6 @@ backend.add(import('@backstage/plugin-auth-backend-module-google-provider'));
 
 ## Adding the provider to the Backstage frontend
 
-To add the provider to the frontend, add the `googleAuthApi` reference and
+To add the provider to the frontend, add the `googleAuthApiRef` reference and
 `SignInPage` component as shown in
 [Adding the provider to the sign-in page](../index.md#sign-in-configuration).

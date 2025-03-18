@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * from './deprecated';
-export * from './database';
+export { default } from './plugin';

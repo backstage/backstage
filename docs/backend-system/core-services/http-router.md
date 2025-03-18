@@ -70,4 +70,67 @@ access the incoming credentials.
 
 ## Configuring the service
 
-This service does not have any configuration options.
+For more advanced customization, there are several APIs from the `@backstage/backend-defaults/httpRouter` package that allow you to customize the implementation of the config service. The default implementation uses all of the middleware exported from `@backstage/backend-defaults/httpRouter`, including `createLifecycleMiddleware`, `createAuthIntegrationRouter`, `createCredentialsBarrier` and `createCookieAuthRefreshMiddleware`. You can use these to create your own `httpRouter` service implementation, for example - here's how you would add a custom health check route to all plugins:
+
+```ts
+import {
+  createLifecycleMiddleware,
+  createCookieAuthRefreshMiddleware,
+  createCredentialsBarrier,
+  createAuthIntegrationRouter,
+} from '@backstage/backend-defaults/httpRouter';
+import { createServiceFactory } from '@backstage/backend-plugin-api';
+
+const backend = createBackend();
+
+backend.add(
+  createServiceFactory({
+    service: coreServices.httpRouter,
+    initialization: 'always',
+    deps: {
+      plugin: coreServices.pluginMetadata,
+      config: coreServices.rootConfig,
+      lifecycle: coreServices.lifecycle,
+      rootHttpRouter: coreServices.rootHttpRouter,
+      auth: coreServices.auth,
+      httpAuth: coreServices.httpAuth,
+    },
+    async factory({
+      auth,
+      httpAuth,
+      config,
+      plugin,
+      rootHttpRouter,
+      lifecycle,
+    }) {
+      const router = PromiseRouter();
+
+      rootHttpRouter.use(`/api/${plugin.getId()}`, router);
+
+      const credentialsBarrier = createCredentialsBarrier({
+        httpAuth,
+        config,
+      });
+
+      router.use(createAuthIntegrationRouter({ auth }));
+      router.use(createLifecycleMiddleware({ config, lifecycle }));
+      router.use(credentialsBarrier.middleware);
+      router.use(createCookieAuthRefreshMiddleware({ auth, httpAuth }));
+
+      // Add a custom healthcheck endpoint for all plugins.
+      router.use('/health', (_, res) => {
+        res.status(200);
+      });
+
+      return {
+        use(handler: Handler): void {
+          router.use(handler);
+        },
+        addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void {
+          credentialsBarrier.addAuthPolicy(policy);
+        },
+      };
+    },
+  }),
+);
+```

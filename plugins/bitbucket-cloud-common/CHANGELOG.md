@@ -1,5 +1,105 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.2.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.2
+
+## 0.2.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.2-next.0
+
+## 0.2.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.1
+
+## 0.2.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.1-next.0
+
+## 0.2.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.0
+
+## 0.2.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.1
+
+## 0.2.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.0
+
+## 0.2.25
+
+### Patch Changes
+
+- 23f1da2: Updated dependency `ts-morph` to `^24.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.15.2
+
+## 0.2.25-next.0
+
+### Patch Changes
+
+- 23f1da2: Updated dependency `ts-morph` to `^24.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.15.1
+
+## 0.2.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.15.1
+
+## 0.2.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.15.1-next.1
+
+## 0.2.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.15.1-next.0
+
+## 0.2.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.15.0
+
+## 0.2.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.15.0-next.0
+
 ## 0.2.22
 
 ### Patch Changes

@@ -7,7 +7,7 @@ description: Finding performance bottlenecks in your Backstage application
 Profiling can help you find performance bottlenecks in your code. This guide will show you how to profile
 both the backend and frontend of your Backstage application.
 
-# Backend
+## Backend
 
 To profile the backend, start the backend with the `--inspect` flag:
 
@@ -27,7 +27,7 @@ You can also use the `Memory` tab to profile the backend's memory usage and find
 
 It's recommended to start profiling with short periods of time to avoid too much data being collected.
 
-## Stress testing
+### Stress testing
 
 To get more out of profiling, you might want to introduce additional load to your application with some tooling.
 One such tool is called [AutoCannon](https://www.npmjs.com/package/autocannon) which can be used to stress test the
@@ -55,7 +55,7 @@ autocannon -H "Authorization=Bearer autocannon12345" http://localhost:7007/api/c
 
 See more command options in the AutoCannon documentation.
 
-# Frontend
+## Frontend
 
 Profiling the frontend can be done by using the `React DevTools` extension for Chrome or Firefox.
 The extension is available for download from the Chrome Web Store or the Firefox Add-ons website.

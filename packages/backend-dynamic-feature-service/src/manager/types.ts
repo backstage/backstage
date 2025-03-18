@@ -16,12 +16,6 @@
 
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
-import {
-  PluginCacheManager,
-  PluginDatabaseManager,
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
 import { Router } from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -36,13 +30,15 @@ import {
   UrlReaderService,
   SchedulerService,
   SchedulerServiceTaskRunner,
+  DatabaseService,
+  DiscoveryService,
 } from '@backstage/backend-plugin-api';
 import { PackagePlatform, PackageRole } from '@backstage/cli-node';
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { IndexBuilder } from '@backstage/plugin-search-backend-node';
-import { EventsBackend } from '@backstage/plugin-events-backend';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
+import { ScannedPluginPackage } from '../scanner';
 
 /**
  * @public
@@ -58,12 +54,10 @@ import { PermissionPolicy } from '@backstage/plugin-permission-node';
  */
 export type LegacyPluginEnvironment = {
   logger: Logger;
-  cache: PluginCacheManager;
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   config: Config;
   reader: UrlReaderService;
-  discovery: PluginEndpointDiscovery;
-  tokenManager: TokenManager;
+  discovery: DiscoveryService;
   permissions: PermissionEvaluator;
   scheduler: SchedulerService;
   identity: IdentityApi;
@@ -78,21 +72,24 @@ export type LegacyPluginEnvironment = {
 export interface DynamicPluginProvider
   extends FrontendPluginProvider,
     BackendPluginProvider {
-  plugins(): DynamicPlugin[];
+  plugins(options?: { includeFailed?: boolean }): DynamicPlugin[];
+  getScannedPackage(plugin: DynamicPlugin): ScannedPluginPackage;
 }
 
 /**
  * @public
  */
 export interface BackendPluginProvider {
-  backendPlugins(): BackendDynamicPlugin[];
+  backendPlugins(options?: { includeFailed?: boolean }): BackendDynamicPlugin[];
 }
 
 /**
  * @public
  */
 export interface FrontendPluginProvider {
-  frontendPlugins(): FrontendDynamicPlugin[];
+  frontendPlugins(options?: {
+    includeFailed?: boolean;
+  }): FrontendDynamicPlugin[];
 }
 
 /**
@@ -103,6 +100,7 @@ export interface BaseDynamicPlugin {
   version: string;
   role: PackageRole;
   platform: PackagePlatform;
+  failure?: string;
 }
 
 /**
@@ -122,7 +120,7 @@ export interface FrontendDynamicPlugin extends BaseDynamicPlugin {
  */
 export interface BackendDynamicPlugin extends BaseDynamicPlugin {
   platform: 'node';
-  installer: BackendDynamicPluginInstaller;
+  installer?: BackendDynamicPluginInstaller;
 }
 
 /**
@@ -167,10 +165,7 @@ export interface LegacyBackendPluginInstaller {
     schedule: SchedulerServiceTaskRunner,
     env: LegacyPluginEnvironment,
   ): void;
-  events?(
-    eventsBackend: EventsBackend,
-    env: LegacyPluginEnvironment,
-  ): HttpPostIngressOptions[];
+  events?(env: LegacyPluginEnvironment): HttpPostIngressOptions[];
   permissions?: {
     policy?: PermissionPolicy;
   };

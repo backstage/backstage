@@ -15,7 +15,7 @@
  */
 
 import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
-import { Observable } from '@backstage/types';
+import { Expand, ExpandRecursive, Observable } from '@backstage/types';
 import { TranslationRef } from '../../translation';
 
 /**
@@ -97,22 +97,6 @@ type CollapsedMessages<TMessages extends { [key in string]: string }> = {
     ? K
     : key]: TMessages[key];
 };
-
-/**
- * Helper type that expands type hints
- *
- * @ignore
- */
-type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
-
-/**
- * Helper type that expands type hints recursively
- *
- * @ignore
- */
-type ExpandRecursive<T> = T extends infer O
-  ? { [K in keyof O]: ExpandRecursive<O[K]> }
-  : never;
 
 /**
  * Trim away whitespace

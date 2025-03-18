@@ -19,7 +19,7 @@ import { Content } from './Content';
 import {
   TestApiProvider,
   renderInTestApp,
-  MockConfigApi,
+  mockApis,
 } from '@backstage/test-utils';
 import { visitsApiRef } from '../../api';
 import { ContextProvider } from './Context';
@@ -138,16 +138,18 @@ describe('<Content kind="recent"/>', () => {
   });
 
   it('allows recent items to be filtered using config', async () => {
-    const configApiMock = new MockConfigApi({
-      home: {
-        recentVisits: {
-          filterBy: [
-            {
-              field: 'pathname',
-              operator: '==',
-              value: '/tech-radar',
-            },
-          ],
+    const configApiMock = mockApis.config({
+      data: {
+        home: {
+          recentVisits: {
+            filterBy: [
+              {
+                field: 'pathname',
+                operator: '==',
+                value: '/tech-radar',
+              },
+            ],
+          },
         },
       },
     });
@@ -206,20 +208,22 @@ describe('<Content kind="recent"/>', () => {
   });
 
   it('allows recent items to have no filter if the filter config is not valid', async () => {
-    const configApiMock = new MockConfigApi({
-      home: {
-        recentVisits: {
-          filterBy: [
-            {
-              operator: '==',
-              value: '/tech-radar',
-            },
-            {
-              field: 'pathname',
-              operator: '==',
-              value: '/explore',
-            },
-          ],
+    const configApiMock = mockApis.config({
+      data: {
+        home: {
+          recentVisits: {
+            filterBy: [
+              {
+                operator: '==',
+                value: '/tech-radar',
+              },
+              {
+                field: 'pathname',
+                operator: '==',
+                value: '/explore',
+              },
+            ],
+          },
         },
       },
     });
@@ -283,16 +287,18 @@ describe('<Content kind="top"/>', () => {
   });
 
   it('allows top items to be filtered using config', async () => {
-    const configApiMock = new MockConfigApi({
-      home: {
-        topVisits: {
-          filterBy: [
-            {
-              field: 'pathname',
-              operator: '==',
-              value: '/explore',
-            },
-          ],
+    const configApiMock = mockApis.config({
+      data: {
+        home: {
+          topVisits: {
+            filterBy: [
+              {
+                field: 'pathname',
+                operator: '==',
+                value: '/explore',
+              },
+            ],
+          },
         },
       },
     });

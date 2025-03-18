@@ -39,6 +39,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
   private readonly cache: CacheService;
   private readonly skipReposWithoutExactFileMatch: boolean;
   private readonly skipForkedRepos: boolean;
+  private readonly includeArchivedRepos: boolean;
 
   static fromConfig(
     config: Config,
@@ -46,6 +47,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       logger: LoggerService;
       skipReposWithoutExactFileMatch?: boolean;
       skipForkedRepos?: boolean;
+      includeArchivedRepos?: boolean;
     },
   ): GitLabDiscoveryProcessor {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -65,6 +67,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     logger: LoggerService;
     skipReposWithoutExactFileMatch?: boolean;
     skipForkedRepos?: boolean;
+    includeArchivedRepos?: boolean;
   }) {
     this.integrations = options.integrations;
     this.cache = options.pluginCache;
@@ -72,6 +75,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     this.skipReposWithoutExactFileMatch =
       options.skipReposWithoutExactFileMatch || false;
     this.skipForkedRepos = options.skipForkedRepos || false;
+    this.includeArchivedRepos = options.includeArchivedRepos || false;
   }
 
   getProcessorName(): string {
@@ -105,12 +109,12 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
 
     const lastActivity = (await this.cache.get(this.getCacheKey())) as string;
     const opts = {
-      archived: false,
       group,
       page: 1,
       // We check for the existence of lastActivity and only set it if it's present to ensure
       // that the options doesn't include the key so that the API doesn't receive an empty query parameter.
       ...(lastActivity && { last_activity_after: lastActivity }),
+      ...(!this.includeArchivedRepos && { archived: false }),
     };
 
     const projects = paginated(options => client.listProjects(options), opts);

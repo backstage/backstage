@@ -22,7 +22,6 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { decodeJwt } from 'jose';
-import fetch from 'node-fetch';
 import { toInternalBackstageCredentials } from '../auth/helpers';
 
 export type Options = {

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import FormControl from '@material-ui/core/FormControl';
-import React, { useCallback, useState } from 'react';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import React, { useCallback, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
-import { useApi } from '@backstage/core-plugin-api';
 import { BaseRepoBranchPickerProps } from './types';
-import FormHelperText from '@material-ui/core/FormHelperText';
 
 /**
  * The underlying component that is rendered in the form for the `BitbucketRepoBranchPicker`
@@ -36,6 +36,7 @@ export const BitbucketRepoBranchPicker = ({
   state,
   rawErrors,
   accessToken,
+  isDisabled,
   required,
 }: BaseRepoBranchPickerProps<{
   accessToken?: string;
@@ -66,7 +67,7 @@ export const BitbucketRepoBranchPicker = ({
         provider: 'bitbucket-cloud',
       })
       .then(({ results }) => {
-        setAvailableBranches(results.map(r => r.title));
+        setAvailableBranches(results.map(r => r.id));
       })
       .catch(() => {
         setAvailableBranches([]);
@@ -86,9 +87,15 @@ export const BitbucketRepoBranchPicker = ({
         onChange={(_, newValue) => {
           onChange({ branch: newValue || '' });
         }}
+        disabled={isDisabled}
         options={availableBranches}
         renderInput={params => (
-          <TextField {...params} label="Branch" required={required} />
+          <TextField
+            {...params}
+            label="Branch"
+            disabled={isDisabled}
+            required={required}
+          />
         )}
         freeSolo
         autoSelect

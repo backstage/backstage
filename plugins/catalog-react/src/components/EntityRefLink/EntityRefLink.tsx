@@ -39,6 +39,7 @@ export type EntityRefLinkProps = {
   title?: string;
   children?: React.ReactNode;
   hideIcon?: boolean;
+  disableTooltip?: boolean;
 } & Omit<LinkProps, 'to'>;
 
 /**
@@ -55,6 +56,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       title,
       children,
       hideIcon,
+      disableTooltip,
       ...linkProps
     } = props;
     const entityRoute = useEntityRoute(props.entityRef);
@@ -65,6 +67,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
         defaultKind={defaultKind}
         defaultNamespace={defaultNamespace}
         hideIcon={hideIcon}
+        disableTooltip={disableTooltip}
       />
     );
 

@@ -1,5 +1,75 @@
 # @backstage/theme
 
+## 0.6.4
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+
+## 0.6.4-next.0
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+
+## 0.6.3
+
+### Patch Changes
+
+- 5f04976: Fixed a bug that caused missing code in published packages.
+
+## 0.6.3-next.0
+
+### Patch Changes
+
+- 5f04976: Fixed a bug that caused missing code in published packages.
+
+## 0.6.1
+
+### Patch Changes
+
+- ea75c37: Internal refactor to avoid top-level imports from MUI.
+
+## 0.6.1-next.0
+
+### Patch Changes
+
+- ea75c37: Internal refactor to avoid top-level imports from MUI.
+
+## 0.6.0
+
+### Minor Changes
+
+- e77ff3d: Adds support for custom background colors in code blocks and inline code within TechDocs.
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+
+## 0.6.0-next.1
+
+### Minor Changes
+
+- e77ff3d: Adds support for custom background colors in code blocks and inline code within TechDocs.
+
+## 0.5.8-next.0
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+
+## 0.5.7
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+
 ## 0.5.6
 
 ### Patch Changes

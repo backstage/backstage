@@ -26,8 +26,11 @@ import {
   createMockDirectory,
   mockServices,
 } from '@backstage/backend-test-utils';
+import { StorageOptions } from '@google-cloud/storage';
 
 const mockDir = createMockDirectory();
+
+let createdStorageOptions: Array<StorageOptions | undefined> = [];
 
 jest.mock('@google-cloud/storage', () => {
   class GCSFile {
@@ -118,6 +121,10 @@ jest.mock('@google-cloud/storage', () => {
   }
 
   class Storage {
+    constructor(readonly options?: StorageOptions) {
+      createdStorageOptions.push(options);
+    }
+
     bucket(bucketName: string) {
       return new Bucket(bucketName);
     }
@@ -144,10 +151,12 @@ const createPublisherFromConfig = ({
   bucketName = 'bucketName',
   bucketRootPath = '/',
   legacyUseCaseSensitiveTripletPaths = false,
+  storageOptions = {},
 }: {
   bucketName?: string;
   bucketRootPath?: string;
   legacyUseCaseSensitiveTripletPaths?: boolean;
+  storageOptions?: StorageOptions;
 } = {}) => {
   const config = new ConfigReader({
     techdocs: {
@@ -162,7 +171,7 @@ const createPublisherFromConfig = ({
       legacyUseCaseSensitiveTripletPaths,
     },
   });
-  return GoogleGCSPublish.fromConfig(config, logger);
+  return GoogleGCSPublish.fromConfig(config, logger, storageOptions);
 };
 
 describe('GoogleGCSPublish', () => {
@@ -211,9 +220,22 @@ describe('GoogleGCSPublish', () => {
   };
 
   beforeEach(() => {
+    createdStorageOptions = [];
     mockDir.setContent({
       [directory]: files,
     });
+  });
+
+  it('should pass options to storage', () => {
+    createPublisherFromConfig({
+      storageOptions: {
+        userAgent: 'Test-UA',
+      },
+    });
+
+    expect(createdStorageOptions.map(opt => opt?.userAgent)).toContain(
+      'Test-UA',
+    );
   });
 
   describe('getReadiness', () => {

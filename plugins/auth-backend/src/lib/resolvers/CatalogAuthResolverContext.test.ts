@@ -15,34 +15,36 @@
  */
 
 import { CatalogAuthResolverContext } from './CatalogAuthResolverContext';
-import { CatalogApi } from '@backstage/catalog-client';
 import { mockServices } from '@backstage/backend-test-utils';
 import { TokenIssuer } from '../../identity/types';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
+import { NotFoundError } from '@backstage/errors';
 
 describe('CatalogAuthResolverContext', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  const mockCatalogApi = {
-    getEntities: jest.fn().mockResolvedValue({ items: [{}] }),
-  } as Partial<jest.Mocked<CatalogApi>>;
+  const catalogApi = catalogServiceMock();
+  jest.spyOn(catalogApi, 'getEntities');
 
   it('adds kind to filter when missing', async () => {
     const context = CatalogAuthResolverContext.create({
       logger: mockServices.logger.mock(),
-      catalogApi: mockCatalogApi as CatalogApi,
+      catalogApi,
       tokenIssuer: {} as TokenIssuer,
       discovery: {} as DiscoveryService,
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
     });
 
-    await context.findCatalogUser({
-      filter: [{}, { kind: 'group' }, { KIND: 'USER' }],
-    });
-    expect(mockCatalogApi.getEntities).toHaveBeenCalledWith(
+    await expect(
+      context.findCatalogUser({
+        filter: [{}, { kind: 'group' }, { KIND: 'USER' }],
+      }),
+    ).rejects.toThrow(NotFoundError);
+    expect(catalogApi.getEntities).toHaveBeenCalledWith(
       {
         filter: [{ kind: 'user' }, { kind: 'group' }, { KIND: 'USER' }],
       },

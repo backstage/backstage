@@ -102,10 +102,10 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
     null;
 
   useEffect(() => {
-    if (groups?.catalogEntities.length === 1 && !selectedEntity) {
+    if (required && groups?.catalogEntities.length === 1 && !selectedEntity) {
       onChange(stringifyEntityRef(groups.catalogEntities[0]));
     }
-  }, [groups, onChange, selectedEntity]);
+  }, [groups, onChange, selectedEntity, required]);
 
   return (
     <FormControl
@@ -114,7 +114,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
       error={rawErrors?.length > 0}
     >
       <Autocomplete
-        disabled={groups?.catalogEntities.length === 1}
+        disabled={required && groups?.catalogEntities.length === 1}
         id="OwnershipEntityRefPicker-dropdown"
         options={groups?.catalogEntities || []}
         value={selectedEntity}

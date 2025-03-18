@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-export const performanceTraceEnabled = !!process.env.PERFORMANCE_TRACE;
+import yn from 'yn';
 
-export const describePerformanceTest: jest.Describe = process.env
-  .PERFORMANCE_TEST
+export const performanceTraceEnabled = yn(process.env.PERFORMANCE_TRACE, {
+  default: false,
+});
+
+export const performanceTestEnabled = yn(process.env.PERFORMANCE_TEST, {
+  default: false,
+});
+
+export const describePerformanceTest: jest.Describe = performanceTestEnabled
   ? describe
   : describe.skip;

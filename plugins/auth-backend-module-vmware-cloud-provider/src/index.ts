@@ -26,4 +26,3 @@ export {
   type VMwarePassportProfile,
 } from './authenticator';
 export { authModuleVmwareCloudProvider as default } from './module';
-export { vmwareCloudSignInResolvers } from './resolvers';

@@ -41,13 +41,14 @@ Like with other extension types, you replace Utility APIs with your own custom i
 
 ```tsx title="in your app"
 /* highlight-add-start */
-import { createExtensionOverrides } from '@backstage/frontend-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 
 class CustomWorkImpl implements WorkApi {
   /* ... */
 }
 
-const myOverrides = createExtensionOverrides({
+const workModule = createFrontendModule({
+  pluginId: 'work',
   extensions: [
     ApiBlueprint.make({
       params: {
@@ -66,7 +67,7 @@ export default createApp({
   features: [
     // ... other features
     /* highlight-add-next-line */
-    myOverrides,
+    workModule,
   ],
 });
 ```

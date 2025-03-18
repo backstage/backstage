@@ -49,12 +49,6 @@ type Props = {
   readMoreUrl?: string;
 };
 
-/**
- * @public
- * @deprecated This component is deprecated, please use {@link @backstage/plugin-catalog-react#MissingAnnotationEmptyStateClassKey} instead
- */
-export type MissingAnnotationEmptyStateClassKey = 'code';
-
 const useStyles = makeStyles(
   theme => ({
     code: {

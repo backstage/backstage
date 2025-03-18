@@ -337,3 +337,21 @@ const routableExtension = createExtension({
   },
 });
 ```
+
+## Multiple attachment points
+
+For some cases it can be useful to attach extensions to multiple parents. An example of this are Scaffolder field extensions or TechDocs addons that are consumed by multiple extensions. Specifying multiple attachments is done by providing an array of attachment points to the `attachTo` property of the extension. Keep in mind that this increases the complexity of your extension tree and should only be done when necessary. The following example shows how to attach our example extension to multiple parents:
+
+```tsx
+const extension = createExtension({
+  name: 'my-extension',
+  attachTo: [
+    { id: 'my-first-parent', input: 'content' },
+    { id: 'my-second-parent', input: 'children' }, // The input names do not need to match
+  ],
+  output: [coreExtensionData.reactElement],
+  factory() {
+    return [coreExtensionData.reactElement(<div>Hello World</div>)];
+  },
+});
+```

@@ -16,10 +16,10 @@
 
 import { ApiHolder, AppNode } from '../apis';
 import {
+  ExtensionAttachToSpec,
   ExtensionDefinition,
   ExtensionDefinitionParameters,
   ResolvedExtensionInputs,
-  toInternalExtensionDefinition,
 } from './createExtension';
 import { PortableSchema } from '../schema';
 import { ExtensionInput } from './createExtensionInput';
@@ -27,12 +27,13 @@ import {
   AnyExtensionDataRef,
   ExtensionDataValue,
 } from './createExtensionDataRef';
+import { OpaqueExtensionDefinition } from '@internal/frontend';
 
 /** @public */
 export interface Extension<TConfig, TConfigInput = TConfig> {
   $$type: '@backstage/Extension';
   readonly id: string;
-  readonly attachTo: { id: string; input: string };
+  readonly attachTo: ExtensionAttachToSpec;
   readonly disabled: boolean;
   readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
 }
@@ -111,22 +112,15 @@ export function toInternalExtension<TConfig, TConfigInput>(
 /** @ignore */
 export type ResolveExtensionId<
   TExtension extends ExtensionDefinition,
-  TDefaultNamespace extends string | undefined,
+  TNamespace extends string,
 > = TExtension extends ExtensionDefinition<{
   kind: infer IKind extends string | undefined;
-  namespace: infer INamespace extends string | undefined;
   name: infer IName extends string | undefined;
 }>
-  ? [string | undefined] extends [IKind | INamespace | IName]
+  ? [string] extends [IKind | IName]
     ? never
     : (
-        (
-          undefined extends TDefaultNamespace ? INamespace : TDefaultNamespace
-        ) extends infer ISelectedNamespace extends string
-          ? undefined extends IName
-            ? ISelectedNamespace
-            : `${ISelectedNamespace}/${IName}`
-          : IName
+        undefined extends IName ? TNamespace : `${TNamespace}/${IName}`
       ) extends infer INamePart extends string
     ? IKind extends string
       ? `${IKind}:${INamePart}`
@@ -141,7 +135,7 @@ export function resolveExtensionDefinition<
   definition: ExtensionDefinition<T>,
   context?: { namespace?: string },
 ): Extension<T['config'], T['configInput']> {
-  const internalDefinition = toInternalExtensionDefinition(definition);
+  const internalDefinition = OpaqueExtensionDefinition.toInternal(definition);
   const {
     name,
     kind,

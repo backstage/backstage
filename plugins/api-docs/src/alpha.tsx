@@ -189,7 +189,7 @@ const apiDocsProvidingComponentsEntityCard = EntityCardBlueprint.make({
 const apiDocsDefinitionEntityContent = EntityContentBlueprint.make({
   name: 'definition',
   params: {
-    defaultPath: '/defintion',
+    defaultPath: '/definition',
     defaultTitle: 'Definition',
     filter: 'kind:api',
     loader: async () =>

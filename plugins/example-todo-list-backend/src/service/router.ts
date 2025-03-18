@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { add, getAll, update } from './todos';
@@ -23,8 +22,6 @@ import { HttpAuthService, LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Dependencies of the todo-list router
- *
- * @public
  */
 export interface RouterOptions {
   logger: LoggerService;
@@ -35,7 +32,6 @@ export interface RouterOptions {
  * Creates an express.Router with some endpoints
  * for creating, editing and deleting todo items.
  *
- * @public
  * @param options - the dependencies of the router
  * @returns an express.Router
  *
@@ -78,7 +74,6 @@ export async function createRouter(
     res.json(update(req.body));
   });
 
-  router.use(errorHandler());
   return router;
 }
 

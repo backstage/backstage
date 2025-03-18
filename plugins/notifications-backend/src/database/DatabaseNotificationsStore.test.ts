@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  TestDatabaseId,
+  TestDatabases,
+} from '@backstage/backend-test-utils';
 import { DatabaseNotificationsStore } from './DatabaseNotificationsStore';
 import { Knex } from 'knex';
 import {
   Notification,
+  NotificationSettings,
   NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
 
@@ -27,15 +32,10 @@ const databases = TestDatabases.create();
 
 async function createStore(databaseId: TestDatabaseId) {
   const knex = await databases.init(databaseId);
-  const mgr = {
-    getClient: async () => knex,
-    migrations: {
-      skip: false,
-    },
-  };
+  const database = mockServices.database({ knex, migrations: { skip: false } });
   return {
     knex,
-    storage: await DatabaseNotificationsStore.create({ database: mgr }),
+    storage: await DatabaseNotificationsStore.create({ database }),
   };
 }
 
@@ -150,6 +150,23 @@ const otherUserNotification: Notification = {
     link: '/catalog',
     severity: 'normal',
   },
+};
+const notificationSettings: NotificationSettings = {
+  channels: [
+    {
+      id: 'Web',
+      origins: [
+        {
+          id: 'plugin-test',
+          enabled: true,
+        },
+        {
+          id: 'plugin-test2',
+          enabled: false,
+        },
+      ],
+    },
+  ],
 };
 
 describe.each(databases.eachSupportedId())(
@@ -710,6 +727,68 @@ describe.each(databases.eachSupportedId())(
         await storage.markUnsaved({ ids: [id1], user });
         const notification = await storage.getNotification({ id: id1 });
         expect(notification?.saved).toBeNull();
+      });
+    });
+
+    describe('settings', () => {
+      it('should save and load notification settings', async () => {
+        await storage.saveNotificationSettings({
+          user: 'user:default/test',
+          settings: notificationSettings,
+        });
+        const settings = await storage.getNotificationSettings({
+          user: 'user:default/test',
+        });
+        expect(settings).toEqual(notificationSettings);
+      });
+    });
+
+    describe('topics', () => {
+      it('should return all topics for user', async () => {
+        await storage.saveNotification(testNotification1);
+        await storage.saveNotification(testNotification2);
+        await storage.saveBroadcast(testNotification3);
+        await storage.saveNotification(testNotification4); // One without topic
+        await storage.saveNotification(otherUserNotification);
+
+        const topics = await storage.getTopics({ user });
+        expect(topics.topics.sort()).toEqual([
+          testNotification1.payload.topic,
+          testNotification3.payload.topic,
+          testNotification2.payload.topic,
+        ]);
+      });
+
+      it('should return filtered topics for user by title', async () => {
+        await storage.saveNotification(testNotification1);
+        await storage.saveNotification(testNotification2);
+        await storage.saveBroadcast(testNotification3);
+        await storage.saveBroadcast(testNotification4);
+        await storage.saveNotification(otherUserNotification);
+
+        const topics = await storage.getTopics({
+          user,
+          search: 'Notification 3',
+        });
+        expect(topics).toEqual({
+          topics: [testNotification3.payload.topic],
+        });
+      });
+
+      it('should return filtered topics for user by severity', async () => {
+        await storage.saveNotification(testNotification1);
+        await storage.saveNotification(testNotification2);
+        await storage.saveBroadcast(testNotification3);
+        await storage.saveBroadcast(testNotification4);
+        await storage.saveNotification(otherUserNotification);
+
+        const topics = await storage.getTopics({
+          user,
+          minimumSeverity: 'critical',
+        });
+        expect(topics).toEqual({
+          topics: [testNotification1.payload.topic],
+        });
       });
     });
   },

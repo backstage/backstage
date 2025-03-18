@@ -86,7 +86,11 @@ export class Publisher implements PublisherBuilder {
         logger.info('Creating Google Storage Bucket publisher for TechDocs');
         publishers.register(
           publisherType,
-          GoogleGCSPublish.fromConfig(config, logger),
+          GoogleGCSPublish.fromConfig(
+            config,
+            logger,
+            options.publisherSettings?.googleGcs,
+          ),
         );
         break;
       case 'awsS3':

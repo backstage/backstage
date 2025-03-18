@@ -19,14 +19,17 @@ import {
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadUrlOptions,
   UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import fetch, { Response } from 'node-fetch';
+import {
+  assertError,
+  NotFoundError,
+  NotModifiedError,
+} from '@backstage/errors';
 import { ReaderFactory } from './types';
 import path from 'path';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
-import { parseLastModified } from './util';
 
 const isInRange = (num: number, [start, end]: [number, number]) => {
   return num >= start && num <= end;
@@ -150,12 +153,7 @@ export class FetchUrlReader implements UrlReaderService {
     }
 
     if (response.ok) {
-      return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
-        etag: response.headers.get('ETag') ?? undefined,
-        lastModifiedAt: parseLastModified(
-          response.headers.get('Last-Modified'),
-        ),
-      });
+      return ReadUrlResponseFactory.fromResponse(response);
     }
 
     const message = `could not read ${url}, ${response.status} ${response.statusText}`;
@@ -169,8 +167,39 @@ export class FetchUrlReader implements UrlReaderService {
     throw new Error('FetchUrlReader does not implement readTree');
   }
 
-  async search(): Promise<UrlReaderServiceSearchResponse> {
-    throw new Error('FetchUrlReader does not implement search');
+  async search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse> {
+    const { pathname } = new URL(url);
+
+    if (pathname.match(/[*?]/)) {
+      throw new Error('Unsupported search pattern URL');
+    }
+
+    try {
+      const data = await this.readUrl(url, options);
+
+      return {
+        files: [
+          {
+            url: url,
+            content: data.buffer,
+            lastModifiedAt: data.lastModifiedAt,
+          },
+        ],
+        etag: data.etag ?? '',
+      };
+    } catch (error) {
+      assertError(error);
+      if (error.name === 'NotFoundError') {
+        return {
+          files: [],
+          etag: '',
+        };
+      }
+      throw error;
+    }
   }
 
   toString() {

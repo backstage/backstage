@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
-
 const VERSIONS_BASE_URL = 'https://versions.backstage.io';
 const GITHUB_RAW_BASE_URL =
   'https://raw.githubusercontent.com/backstage/versions/main';
@@ -35,6 +33,10 @@ export type ReleaseManifest = {
  */
 export type GetManifestByVersionOptions = {
   version: string;
+  fetch?: (
+    url: string,
+    options?: { signal?: AbortSignal },
+  ) => Promise<Pick<Response, 'status' | 'json' | 'url'>>;
 };
 
 // Wait for waitMs, or until signal is aborted.
@@ -84,15 +86,21 @@ export async function getManifestByVersion(
   options: GetManifestByVersionOptions,
 ): Promise<ReleaseManifest> {
   const versionEnc = encodeURIComponent(options.version);
+
+  const fetchFn = options.fetch ?? fetch;
+
   const res = await withFallback(
     signal =>
-      fetch(`${VERSIONS_BASE_URL}/v1/releases/${versionEnc}/manifest.json`, {
+      fetchFn(`${VERSIONS_BASE_URL}/v1/releases/${versionEnc}/manifest.json`, {
         signal,
       }),
     signal =>
-      fetch(`${GITHUB_RAW_BASE_URL}/v1/releases/${versionEnc}/manifest.json`, {
-        signal,
-      }),
+      fetchFn(
+        `${GITHUB_RAW_BASE_URL}/v1/releases/${versionEnc}/manifest.json`,
+        {
+          signal,
+        },
+      ),
     500,
   );
   if (res.status === 404) {

@@ -16,7 +16,7 @@
 import React from 'react';
 import type { FieldValidation } from '@rjsf/utils';
 import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
-import { TextField } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
 import {
   createScaffolderFieldExtension,
   FieldExtensionComponentProps,

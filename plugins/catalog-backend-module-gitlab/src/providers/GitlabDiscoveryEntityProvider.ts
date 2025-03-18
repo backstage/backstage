@@ -210,10 +210,10 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     const projects = paginated<GitLabProject>(
       options => this.gitLabClient.listProjects(options),
       {
-        archived: false,
         group: this.config.group,
         page: 1,
         per_page: 50,
+        ...(!this.config.includeArchivedRepos && { archived: false }),
       },
     );
 
@@ -418,8 +418,8 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   /**
    * Converts a target URL to a LocationSpec object.
    *
-   * @param {string} target - The target URL to be converted.
-   * @returns {LocationSpec} The LocationSpec object representing the URL.
+   * @param target - The target URL to be converted.
+   * @returns The LocationSpec object representing the URL.
    */
   private toLocationSpec(target: string): LocationSpec {
     return {

@@ -69,10 +69,8 @@ auth:
         domainHint: ${AZURE_TENANT_ID}
         signIn:
           resolvers:
-            # typically you would pick one of these
-            - resolver: emailMatchingUserEntityProfileEmail
-            - resolver: emailLocalPartMatchingUserEntityName
-            - resolver: emailMatchingUserEntityAnnotation
+            # See https://backstage.io/docs/auth/microsoft/provider#resolvers for more resolvers
+            - resolver: userIdMatchingUserEntityAnnotation
 ```
 
 The Microsoft provider is a structure with three mandatory configuration keys:
@@ -85,6 +83,8 @@ The Microsoft provider is a structure with three mandatory configuration keys:
   When specified, this reduces login friction for users with accounts in multiple tenants by automatically filtering away accounts from other tenants.
   For more details, see [Home Realm Discovery](https://learn.microsoft.com/en-us/azure/active-directory/manage-apps/home-realm-discovery-policy)
 - `additionalScopes` (optional): List of scopes for the App Registration, to be requested in addition to the required ones.
+- `skipUserProfile` (optional): If true, skips loading the user profile even if the `User.Read` scope is present. This is a performance optimization during login and can be used with resolvers that only needs the email address in `spec.profile.email` obtained when the `email` OAuth2 scope is present.
+- `sessionDuration` (optional): Lifespan of the user session.
 
 ### Resolvers
 
@@ -93,6 +93,7 @@ This provider includes several resolvers out of the box that you can use:
 - `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found it will throw a `NotFoundError`.
 - `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
 - `emailMatchingUserEntityAnnotation`: Matches the email address from the auth provider with the User entity where the value of the `microsoft.com/email` annotation matches. If no match is found it will throw a `NotFoundError`.
+- `userIdMatchingUserEntityAnnotation`: Matches the user profile ID from the auth provider with the User entity where the value of the `graph.microsoft.com/user-id` annotation matches. This resolver is recommended to resolve users without an email in their profile. If no match is found it will throw a `NotFoundError`.
 
 :::note Note
 

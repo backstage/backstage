@@ -1,5 +1,29 @@
 # @backstage/plugin-api-docs-module-protoc-gen-doc
 
+## 0.1.9
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+
+## 0.1.8
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+
+## 0.1.8-next.0
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+
 ## 0.1.7
 
 ### Patch Changes

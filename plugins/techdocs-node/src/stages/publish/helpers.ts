@@ -25,10 +25,37 @@ import recursiveReadDir from 'recursive-readdir';
  */
 const getContentTypeForExtension = (ext: string): string => {
   const defaultContentType = 'text/plain; charset=utf-8';
+  const excludedTypes = [
+    'text/html',
+    'text/xml',
+    'image/svg+xml',
+    'text/xsl',
+    'application/vnd.wap.xhtml+xml',
+    'multipart/x-mixed-replace',
+    'text/rdf',
+    'application/mathml+xml',
+    'application/octet-stream',
+    'application/rdf+xml',
+    'application/xhtml+xml',
+    'application/xml',
+    'text/cache-manifest',
+    'text/vtt',
+  ];
 
   // Prevent sanitization bypass by preventing browsers from directly rendering
   // the contents of untrusted files.
-  if (ext.match(/htm|xml|svg/i)) {
+  if (
+    ext.match(
+      /htm|xml|svg|appcache|manifest|mathml|owl|rdf|rng|vtt|xht|xsd|xsl/i,
+    )
+  ) {
+    return defaultContentType;
+  }
+
+  // Check again to make sure that the content type is not in the excluded mime-type list
+  // We use .lookup here to avoid the "; charset=..." addition
+  const contentType = mime.lookup(ext);
+  if (contentType && excludedTypes.includes(contentType)) {
     return defaultContentType;
   }
 
@@ -229,4 +256,21 @@ export const bulkStorageOperation = async <T>(
 ) => {
   const limiter = createLimiter(concurrencyLimit);
   await Promise.all(args.map(arg => limiter(operation, arg)));
+};
+
+// Checks content path is the same as or a child path of bucketRoot, specifically for posix paths.
+export const isValidContentPath = (
+  bucketRoot: string,
+  contentPath: string,
+): boolean => {
+  const relativePath = path.posix.relative(bucketRoot, contentPath);
+  if (relativePath === '') {
+    // The same directory
+    return true;
+  }
+
+  const outsideBase = relativePath.startsWith('..'); // not outside base
+  const differentDrive = path.posix.isAbsolute(relativePath); // on Windows, this means dir is on a different drive from base.
+
+  return !outsideBase && !differentDrive;
 };

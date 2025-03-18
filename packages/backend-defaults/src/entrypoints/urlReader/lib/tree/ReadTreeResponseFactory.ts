@@ -15,6 +15,7 @@
  */
 
 import os from 'os';
+import { Readable } from 'stream';
 import { Config } from '@backstage/config';
 import {
   ReadTreeResponseFactoryOptions,
@@ -25,6 +26,7 @@ import { TarArchiveResponse } from './TarArchiveResponse';
 import { ZipArchiveResponse } from './ZipArchiveResponse';
 import { ReadableArrayResponse } from './ReadableArrayResponse';
 import { UrlReaderServiceReadTreeResponse } from '@backstage/backend-plugin-api';
+import { responseToReadable } from '../util';
 
 export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
   static create(options: { config: Config }): DefaultReadTreeResponseFactory {
@@ -41,11 +43,21 @@ export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
       stripFirstDirectory?: boolean;
     },
   ): Promise<UrlReaderServiceReadTreeResponse> {
+    let stream: Readable;
+    let etag: string;
+    if ('stream' in options) {
+      stream = options.stream;
+      etag = options.etag;
+    } else {
+      stream = responseToReadable(options.response);
+      etag = (options.etag ?? options.response.headers.get('etag')) || '';
+    }
+
     return new TarArchiveResponse(
-      options.stream,
+      stream,
       options.subpath ?? '',
       this.workDir,
-      options.etag,
+      etag,
       options.filter,
       options.stripFirstDirectory ?? true,
     );
@@ -54,11 +66,21 @@ export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
   async fromZipArchive(
     options: ReadTreeResponseFactoryOptions,
   ): Promise<UrlReaderServiceReadTreeResponse> {
+    let stream: Readable;
+    let etag: string;
+    if ('stream' in options) {
+      stream = options.stream;
+      etag = options.etag;
+    } else {
+      stream = responseToReadable(options.response);
+      etag = (options.etag ?? options.response.headers.get('etag')) || '';
+    }
+
     return new ZipArchiveResponse(
-      options.stream,
+      stream,
       options.subpath ?? '',
       this.workDir,
-      options.etag,
+      etag,
       options.filter,
     );
   }

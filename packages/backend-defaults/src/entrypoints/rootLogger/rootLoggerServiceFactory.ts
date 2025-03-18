@@ -25,7 +25,7 @@ import { createConfigSecretEnumerator } from '../rootConfig/createConfigSecretEn
 /**
  * Root-level logging.
  *
- * See {@link @backstage/code-plugin-api#RootLoggerService}
+ * See {@link @backstage/backend-plugin-api#RootLoggerService}
  * and {@link https://backstage.io/docs/backend-system/core-services/root-logger | the service docs}
  * for more information.
  *

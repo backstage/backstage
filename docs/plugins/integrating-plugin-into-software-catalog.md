@@ -21,7 +21,8 @@ should have a separate package in a folder, which represents your plugin.
 Example:
 
 ```
-$ yarn new --select plugin
+$ yarn new
+# Select `frontend-plugin`
 > ? Enter an ID for the plugin [required] my-plugin
 > ? Enter the owner(s) of the plugin. If specified, this will be added to CODEOWNERS for the plugin path. [optional]
 
@@ -54,7 +55,7 @@ To begin, you will need to import your plugin in the entities page. Located at
 your backstage app.
 
 ```tsx
-import { MyPluginEntityContent } from '@backstage/plugin-my-plugin;
+import { MyPluginEntityContent } from '@backstage/plugin-my-plugin';
 ```
 
 To add your component to the Entity view, you will need to modify the

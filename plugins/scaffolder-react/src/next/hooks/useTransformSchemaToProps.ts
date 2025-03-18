@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useMemo } from 'react';
 import { LayoutOptions } from '../../layouts';
 import { type ParsedTemplateSchema } from './useTemplateSchema';
 
@@ -28,24 +29,24 @@ export const useTransformSchemaToProps = (
   const objectFieldTemplate = step?.uiSchema['ui:ObjectFieldTemplate'] as
     | string
     | undefined;
+  return useMemo(() => {
+    if (typeof objectFieldTemplate !== 'string') {
+      return step;
+    }
 
-  if (typeof objectFieldTemplate !== 'string') {
-    return step;
-  }
+    const Layout = layouts.find(
+      layout => layout.name === objectFieldTemplate,
+    )?.component;
 
-  const Layout = layouts.find(
-    layout => layout.name === objectFieldTemplate,
-  )?.component;
-
-  if (!Layout) {
-    return step;
-  }
-
-  return {
-    ...step,
-    uiSchema: {
-      ...step.uiSchema,
-      ['ui:ObjectFieldTemplate']: Layout,
-    },
-  };
+    if (!Layout) {
+      return step;
+    }
+    return {
+      ...step,
+      uiSchema: {
+        ...step.uiSchema,
+        ['ui:ObjectFieldTemplate']: Layout,
+      },
+    };
+  }, [layouts, objectFieldTemplate, step]);
 };

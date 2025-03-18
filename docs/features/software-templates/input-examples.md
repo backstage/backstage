@@ -189,13 +189,30 @@ parameters:
         title: Select features
         type: array
         items:
-          type: boolean
+          type: string
           enum:
             - 'Enable scraping'
             - 'Enable HPA'
             - 'Enable cache'
         uniqueItems: true
         ui:widget: checkboxes
+```
+
+## Markdown text blocks
+
+```yaml
+parameters:
+  - title: Fill in some steps
+    properties:
+      markdown:
+        type: 'null' # Needs to be quoted
+        description: |
+          ## Markdown Text Block
+
+          Standard markdown formatting is supported including *italics*, **bold** and [links](https://example.com)
+
+          * bullet 1
+          * bullet 2
 ```
 
 ## Use parameters as condition in steps
@@ -248,6 +265,54 @@ parameters:
               # You can use additional fields of parameters within conditional parameters such as required.
               required:
                 - lastName
+```
+
+### Multiple conditional fields with custom ordering
+
+```yaml
+parameters:
+  - title: Fill in some steps
+    ui:order:
+      - includeName
+      - lastName
+      - includeAddress
+      - address
+    properties:
+      includeName:
+        title: Include Name?
+        type: boolean
+        default: true
+      includeAddress:
+        title: Include Address?
+        type: boolean
+        default: true
+    dependencies:
+      includeName:
+        allOf:
+          - if:
+              properties:
+                includeName:
+                  const: true
+            then:
+              properties:
+                lastName:
+                  title: Name
+                  type: string
+              required:
+                - lastName
+      includeAddress:
+        allOf:
+          - if:
+              properties:
+                includeAddress:
+                  const: true
+            then:
+              properties:
+                address:
+                  title: Address
+                  type: string
+              required:
+                - address
 ```
 
 ## Conditionally set parameters

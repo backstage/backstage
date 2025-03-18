@@ -52,6 +52,12 @@ const ERR_SWITCHED = (
 const ERR_SWITCH_BACK = () => ({
   message: 'Switch back to import declaration',
 });
+const ERR_INLINE_DIRECT = (name: string) => ({
+  message: `The dependency on the inline package ${name} must not be declared in package dependencies.`,
+});
+const ERR_INLINE_MISSING = (name: string, missing: string) => ({
+  message: `Each production dependency from the inline package ${name} must be re-declared by this package, the following dependencies are missing: ${missing}`,
+});
 
 // cwd must be restored
 const origDir = process.cwd();
@@ -101,6 +107,17 @@ ruleTester.run(RULE, rule, {
       // We're only able to validate literals
       code: `require('lod' + 'ash')`,
       filename: joinPath(FIXTURE, 'packages/bar/src/index.ts'),
+    },
+    {
+      code: `import '@internal/inline'`,
+      filename: joinPath(FIXTURE, 'packages/inline-dep-valid/src/index.ts'),
+    },
+    {
+      code: `import '@internal/inline'`,
+      filename: joinPath(
+        FIXTURE,
+        'packages/inline-dep-valid/src/index.test.ts',
+      ),
     },
   ],
   invalid: [
@@ -264,6 +281,29 @@ ruleTester.run(RULE, rule, {
         ),
       ],
     },
+    {
+      code: `import '@internal/inline'`,
+      output: `import 'directive:inline-imports:@internal/inline'`,
+      filename: joinPath(
+        FIXTURE,
+        'packages/inline-dep-invalid-direct/src/index.ts',
+      ),
+      errors: [ERR_INLINE_DIRECT('@internal/inline')],
+    },
+    {
+      code: `import '@internal/inline'`,
+      output: `import 'directive:inline-imports:@internal/inline'`,
+      filename: joinPath(
+        FIXTURE,
+        'packages/inline-dep-invalid-missing/src/index.ts',
+      ),
+      errors: [
+        ERR_INLINE_MISSING(
+          '@internal/inline',
+          '@internal/inline-dep-valid, react',
+        ),
+      ],
+    },
 
     // Switching back to original import declarations
     {
@@ -300,6 +340,15 @@ ruleTester.run(RULE, rule, {
       code: `require('directive:add-import:dependencies:lodash')`,
       output: `require('lodash')`,
       filename: joinPath(FIXTURE, 'packages/bar/src/index.ts'),
+      errors: [ERR_SWITCH_BACK()],
+    },
+    {
+      code: `import 'directive:inline-imports:@internal/inline'`,
+      output: `import '@internal/inline'`,
+      filename: joinPath(
+        FIXTURE,
+        'packages/inline-dep-invalid-direct/src/index.ts',
+      ),
       errors: [ERR_SWITCH_BACK()],
     },
   ],

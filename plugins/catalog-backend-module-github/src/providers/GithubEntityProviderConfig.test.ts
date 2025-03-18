@@ -15,7 +15,10 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { readProviderConfigs } from './GithubEntityProviderConfig';
+import {
+  readProviderConfigs,
+  DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
+} from './GithubEntityProviderConfig';
 
 describe('readProviderConfigs', () => {
   afterEach(() => jest.resetAllMocks());
@@ -124,7 +127,7 @@ describe('readProviderConfigs', () => {
         },
         visibility: undefined,
       },
-      schedule: undefined,
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
     });
     expect(providerConfigs[1]).toEqual({
@@ -142,7 +145,7 @@ describe('readProviderConfigs', () => {
         },
         visibility: undefined,
       },
-      schedule: undefined,
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
     });
     expect(providerConfigs[2]).toEqual({
@@ -160,7 +163,7 @@ describe('readProviderConfigs', () => {
         },
         visibility: undefined,
       },
-      schedule: undefined,
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
     });
     expect(providerConfigs[3]).toEqual({
@@ -178,7 +181,7 @@ describe('readProviderConfigs', () => {
         },
         visibility: undefined,
       },
-      schedule: undefined,
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
     });
     expect(providerConfigs[4]).toEqual({
@@ -196,7 +199,7 @@ describe('readProviderConfigs', () => {
         },
         visibility: undefined,
       },
-      schedule: undefined,
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
     });
     expect(providerConfigs[5]).toEqual({
@@ -214,7 +217,7 @@ describe('readProviderConfigs', () => {
         },
         visibility: undefined,
       },
-      schedule: undefined,
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
     });
     expect(providerConfigs[6]).toEqual({
@@ -232,7 +235,7 @@ describe('readProviderConfigs', () => {
         },
         visibility: ['public', 'internal'],
       },
-      schedule: undefined,
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
     });
     expect(providerConfigs[7]).toEqual({
@@ -251,7 +254,7 @@ describe('readProviderConfigs', () => {
         visibility: undefined,
       },
       validateLocationsExist: false,
-      schedule: undefined,
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
     });
     expect(providerConfigs[8]).toEqual({
       id: 'providerWithSchedule',

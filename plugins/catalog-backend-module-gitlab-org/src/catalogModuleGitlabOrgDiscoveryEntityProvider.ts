@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendModule,
@@ -44,7 +43,7 @@ export const catalogModuleGitlabOrgDiscoveryEntityProvider =
         async init({ config, catalog, logger, scheduler, events }) {
           const gitlabOrgDiscoveryEntityProvider =
             GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-              logger: loggerToWinstonLogger(logger),
+              logger,
               events,
               scheduler,
             });

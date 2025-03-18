@@ -18,7 +18,7 @@ import { StructuredMetadataTable } from '@backstage/core-components';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
-import { isJsonObject, formatKey } from './util';
+import { isJsonObject, formatKey, findSchemaForKey } from './util';
 
 /**
  * The props for the {@link ReviewState} component.
@@ -94,10 +94,10 @@ export const ReviewState = (props: ReviewStateProps) => {
   const reviewData = Object.fromEntries(
     Object.entries(props.formState)
       .flatMap(([key, value]) => {
-        for (const step of props.schemas) {
-          return processSchema(key, value, step, props.formState);
-        }
-        return [[key, value]];
+        const schema = findSchemaForKey(key, props.schemas, props.formState);
+        return schema
+          ? processSchema(key, value, schema, props.formState)
+          : [[key, value]];
       })
       .filter(prop => prop.length > 0),
   );

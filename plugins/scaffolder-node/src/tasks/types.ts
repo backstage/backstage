@@ -76,6 +76,7 @@ export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
  */
 export type SerializedTaskEvent = {
   id: number;
+  isTaskRecoverable?: boolean;
   taskId: string;
   body: JsonObject;
   type: TaskEventType;
@@ -109,6 +110,7 @@ export type TaskBrokerDispatchOptions = {
  * @public
  */
 export interface TaskContext {
+  taskId?: string;
   cancelSignal: AbortSignal;
   spec: TaskSpec;
   secrets?: TaskSecrets;
@@ -163,6 +165,8 @@ export interface TaskContext {
 export interface TaskBroker {
   cancel?(taskId: string): Promise<void>;
 
+  retry?(taskId: string): Promise<void>;
+
   claim(): Promise<TaskContext>;
 
   recoverTasks?(): Promise<void>;
@@ -181,7 +185,22 @@ export interface TaskBroker {
   get(taskId: string): Promise<SerializedTask>;
 
   list?(options?: {
+    filters?: {
+      createdBy?: string | string[];
+      status?: TaskStatus | TaskStatus[];
+    };
+    pagination?: {
+      limit?: number;
+      offset?: number;
+    };
+    order?: { order: 'asc' | 'desc'; field: string }[];
+  }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
+
+  /**
+   * @deprecated Make sure to pass `createdBy` and `status` in the `filters` parameter instead
+   */
+  list?(options: {
     createdBy?: string;
     status?: TaskStatus;
-  }): Promise<{ tasks: SerializedTask[] }>;
+  }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
 }

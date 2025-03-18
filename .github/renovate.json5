@@ -40,6 +40,11 @@
       matchSourceUrls: ['https://github.com/yarnpkg/berry'],
       enabled: false,
     },
+    // https://github.com/backstage/backstage/issues/27123
+    {
+      matchPackageNames: ['browser-actions/setup-chrome'],
+      enabled: false,
+    },
     // ESM only majors, that we're not ready for yet
     {
       matchPackageNames: ['node-fetch'],

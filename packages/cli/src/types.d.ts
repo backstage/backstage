@@ -30,6 +30,11 @@ declare module '@svgr/rollup' {
   export default function svgr(options?: any): any;
 }
 
+declare module 'rollup/parseAst' {
+  export function parseAst(code: string): any;
+  export function parseAstAsync(code: string): any;
+}
+
 declare module '@rollup/plugin-yaml';
 declare module 'react-dev-utils/formatWebpackMessages' {
   export default function (stats: any): {

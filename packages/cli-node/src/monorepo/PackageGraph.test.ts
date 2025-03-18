@@ -23,7 +23,7 @@ import { GitUtils } from '../git';
 const mockListChangedFiles = jest.spyOn(GitUtils, 'listChangedFiles');
 const mockReadFileAtRef = jest.spyOn(GitUtils, 'readFileAtRef');
 
-jest.mock('../paths', () => ({
+jest.mock('../util', () => ({
   paths: {
     targetRoot: '/',
     resolveTargetRoot: (...paths: string[]) => resolvePath('/', ...paths),

@@ -15,16 +15,20 @@
  */
 
 import {
-  CatalogApi,
   EntityProvider,
   catalogApiRef,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
+import {
+  TestApiProvider,
+  mockApis,
+  renderInTestApp,
+} from '@backstage/test-utils';
 import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 
 import { AboutCard } from './AboutCard';
@@ -37,21 +41,8 @@ import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { SWRConfig } from 'swr';
 
-const mockAuthorize = jest.fn();
-
-const mockPermissionApi = { authorize: mockAuthorize };
-
 describe('<AboutCard />', () => {
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
-    getEntityByRef: jest.fn(),
-    getEntities: jest.fn(),
-    addLocation: jest.fn(),
-    getLocationByRef: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    refreshEntity: jest.fn(),
-  } as any;
+  const catalogApi = catalogApiMock.mock();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -420,10 +411,6 @@ describe('<AboutCard />', () => {
       },
     };
 
-    mockAuthorize.mockImplementation(async () => ({
-      result: AuthorizeResult.ALLOW,
-    }));
-
     await renderInTestApp(
       <TestApiProvider
         apis={[
@@ -432,7 +419,7 @@ describe('<AboutCard />', () => {
             ScmIntegrationsApi.fromConfig(new ConfigReader({})),
           ],
           [catalogApiRef, catalogApi],
-          [permissionApiRef, mockPermissionApi],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <EntityProvider entity={entity}>
@@ -475,10 +462,6 @@ describe('<AboutCard />', () => {
       },
     };
 
-    mockAuthorize.mockImplementation(async () => ({
-      result: AuthorizeResult.DENY,
-    }));
-
     await renderInTestApp(
       <TestApiProvider
         apis={[
@@ -487,7 +470,10 @@ describe('<AboutCard />', () => {
             ScmIntegrationsApi.fromConfig(new ConfigReader({})),
           ],
           [catalogApiRef, catalogApi],
-          [permissionApiRef, mockPermissionApi],
+          [
+            permissionApiRef,
+            mockApis.permission({ authorize: AuthorizeResult.DENY }),
+          ],
         ]}
       >
         <EntityProvider entity={entity}>
@@ -775,9 +761,6 @@ describe('<AboutCard />', () => {
         namespace: 'default',
       },
     };
-    mockAuthorize.mockImplementation(async () => ({
-      result: AuthorizeResult.ALLOW,
-    }));
     await renderInTestApp(
       <TestApiProvider
         apis={[
@@ -797,7 +780,7 @@ describe('<AboutCard />', () => {
             ),
           ],
           [catalogApiRef, catalogApi],
-          [permissionApiRef, mockPermissionApi],
+          [permissionApiRef, mockApis.permission()],
         ]}
       >
         <EntityProvider entity={entity}>
@@ -828,9 +811,6 @@ describe('<AboutCard />', () => {
         namespace: 'default',
       },
     };
-    mockAuthorize.mockImplementation(async () => ({
-      result: AuthorizeResult.DENY,
-    }));
     await renderInTestApp(
       <SWRConfig value={{ provider: () => new Map() }}>
         <TestApiProvider
@@ -851,7 +831,10 @@ describe('<AboutCard />', () => {
               ),
             ],
             [catalogApiRef, catalogApi],
-            [permissionApiRef, mockPermissionApi],
+            [
+              permissionApiRef,
+              mockApis.permission({ authorize: AuthorizeResult.DENY }),
+            ],
           ]}
         >
           <EntityProvider entity={entity}>

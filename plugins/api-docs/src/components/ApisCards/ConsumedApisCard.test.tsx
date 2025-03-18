@@ -16,11 +16,11 @@
 
 import { Entity, RELATION_CONSUMES_API } from '@backstage/catalog-model';
 import {
-  CatalogApi,
   catalogApiRef,
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
@@ -31,9 +31,7 @@ describe('<ConsumedApisCard />', () => {
   const apiDocsConfig: jest.Mocked<ApiDocsConfig> = {
     getApiDefinitionWidget: jest.fn(),
   } as any;
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getEntitiesByRefs: jest.fn(),
-  } as any;
+  const catalogApi = catalogApiMock.mock();
   let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
@@ -62,7 +60,7 @@ describe('<ConsumedApisCard />', () => {
       relations: [],
     };
 
-    const { getByText } = await renderInTestApp(
+    const { getByText, getByRole, container } = await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <ConsumedApisCard />
@@ -77,6 +75,17 @@ describe('<ConsumedApisCard />', () => {
 
     expect(getByText(/Consumed APIs/i)).toBeInTheDocument();
     expect(getByText(/does not consume any APIs/i)).toBeInTheDocument();
+
+    // Also render external link icon
+    const externalLink = getByRole('link');
+    expect(externalLink).toHaveAttribute(
+      'href',
+      'https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional',
+    );
+    const externalLinkIcon: HTMLElement | null = container.querySelector(
+      'svg[class*="externalLink"]',
+    );
+    expect(externalLink).toContainElement(externalLinkIcon);
   });
 
   it('shows consumed APIs', async () => {

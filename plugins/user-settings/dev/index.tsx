@@ -17,10 +17,37 @@
 import React from 'react';
 import { CatalogEntityPage } from '@backstage/plugin-catalog';
 import { createDevApp } from '@backstage/dev-utils';
-import { userSettingsPlugin, UserSettingsPage } from '../src/plugin';
+import { UserSettingsPage, userSettingsPlugin } from '../src';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  CompoundEntityRef,
+  Entity,
+  UserEntity,
+} from '@backstage/catalog-model';
 
+const userEntity: UserEntity = {
+  apiVersion: 'backstage.io/v1beta1',
+  kind: 'User',
+  metadata: {
+    name: 'Guest',
+  },
+  spec: {},
+};
 createDevApp()
   .registerPlugin(userSettingsPlugin)
+  .registerApi({
+    api: catalogApiRef,
+    deps: {},
+    factory() {
+      return {
+        async getEntityByRef(
+          _: string | CompoundEntityRef,
+        ): Promise<Entity | undefined> {
+          return userEntity;
+        },
+      } as Partial<CatalogApi> as unknown as CatalogApi;
+    },
+  })
   .addPage({
     title: 'Settings',
     path: '/settings',

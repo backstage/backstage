@@ -60,13 +60,29 @@ import {
   atlassianAuthApiRef,
   vmwareCloudAuthApiRef,
 } from '@backstage/core-plugin-api';
-import { ApiBlueprint } from '@backstage/frontend-plugin-api';
+import { ApiBlueprint, dialogApiRef } from '@backstage/frontend-plugin-api';
+import {
+  ScmAuth,
+  ScmIntegrationsApi,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
 import {
   permissionApiRef,
   IdentityPermissionApi,
 } from '@backstage/plugin-permission-react';
+import { DefaultDialogApi } from './apis/DefaultDialogApi';
 
 export const apis = [
+  ApiBlueprint.make({
+    name: 'dialog',
+    params: {
+      factory: createApiFactory({
+        api: dialogApiRef,
+        deps: {},
+        factory: () => new DefaultDialogApi(),
+      }),
+    },
+  }),
   ApiBlueprint.make({
     name: 'discovery',
     params: {
@@ -318,6 +334,7 @@ export const apis = [
             discoveryApi,
             oauthRequestApi,
             defaultScopes: ['REPO_READ'],
+            environment: configApi.getOptionalString('auth.environment'),
           }),
       }),
     },
@@ -376,6 +393,22 @@ export const apis = [
         },
         factory: ({ config, discovery, identity }) =>
           IdentityPermissionApi.create({ config, discovery, identity }),
+      }),
+    },
+  }),
+  ApiBlueprint.make({
+    name: 'scm-auth',
+    params: {
+      factory: ScmAuth.createDefaultApiFactory(),
+    },
+  }),
+  ApiBlueprint.make({
+    name: 'scm-integrations',
+    params: {
+      factory: createApiFactory({
+        api: scmIntegrationsApiRef,
+        deps: { configApi: configApiRef },
+        factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
       }),
     },
   }),

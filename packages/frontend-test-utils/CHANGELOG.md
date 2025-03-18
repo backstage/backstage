@@ -1,5 +1,375 @@
 # @backstage/frontend-test-utils
 
+## 0.3.0
+
+### Minor Changes
+
+- bba525b: **BREAKING**: Removed deprecated `setupRequestMockHandlers` which was replaced by `registerMswTestHooks`.
+
+### Patch Changes
+
+- f861bfc: Added a `initialRouteEntries` option to `renderInTestApp`.
+- f861bfc: The `renderInTestApp` helper now provides a default mock config with mock values for both `app.baseUrl` and `backend.baseUrl`.
+- abcdf44: Internal refactor to match updated `createSpecializedApp`.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.11.0
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-app@0.1.7
+  - @backstage/test-utils@1.7.6
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.0-next.2
+
+### Minor Changes
+
+- bba525b: **BREAKING**: Removed deprecated `setupRequestMockHandlers` which was replaced by `registerMswTestHooks`.
+
+### Patch Changes
+
+- f861bfc: Added a `initialRouteEntries` option to `renderInTestApp`.
+- f861bfc: The `renderInTestApp` helper now provides a default mock config with mock values for both `app.baseUrl` and `backend.baseUrl`.
+- abcdf44: Internal refactor to match updated `createSpecializedApp`.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.11.0-next.2
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/plugin-app@0.1.7-next.2
+  - @backstage/test-utils@1.7.6-next.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.2.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.1.7-next.1
+  - @backstage/config@1.3.2
+  - @backstage/frontend-app-api@0.10.6-next.1
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/test-utils@1.7.5
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.2.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+  - @backstage/frontend-app-api@0.10.6-next.0
+  - @backstage/plugin-app@0.1.7-next.0
+
+## 0.2.6
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/frontend-app-api@0.10.5
+  - @backstage/version-bridge@1.0.11
+  - @backstage/test-utils@1.7.5
+  - @backstage/plugin-app@0.1.6
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+
+## 0.2.6-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+  - @backstage/frontend-app-api@0.10.5-next.3
+  - @backstage/config@1.3.2
+  - @backstage/test-utils@1.7.5-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/plugin-app@0.1.6-next.3
+
+## 0.2.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/frontend-app-api@0.10.5-next.2
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/test-utils@1.7.5-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/plugin-app@0.1.6-next.2
+
+## 0.2.6-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.1
+  - @backstage/frontend-app-api@0.10.5-next.1
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/test-utils@1.7.5-next.0
+  - @backstage/plugin-app@0.1.6-next.1
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+
+## 0.2.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.0
+  - @backstage/frontend-app-api@0.10.5-next.0
+  - @backstage/config@1.3.2
+  - @backstage/test-utils@1.7.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-app@0.1.6-next.0
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/types@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/frontend-app-api@0.10.4
+  - @backstage/test-utils@1.7.4
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-app@0.1.5
+
+## 0.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4-next.0
+  - @backstage/types@1.2.1-next.0
+  - @backstage/frontend-app-api@0.10.4-next.0
+  - @backstage/plugin-app@0.1.5-next.0
+  - @backstage/test-utils@1.7.4-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/version-bridge@1.0.10
+
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.1.4
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/config@1.3.1
+  - @backstage/frontend-app-api@0.10.3
+  - @backstage/test-utils@1.7.3
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
+## 0.2.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.1-next.0
+  - @backstage/frontend-app-api@0.10.3-next.2
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/test-utils@1.7.3-next.1
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-app@0.1.4-next.2
+
+## 0.2.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/frontend-app-api@0.10.3-next.1
+  - @backstage/frontend-plugin-api@0.9.3-next.1
+  - @backstage/test-utils@1.7.3-next.0
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-app@0.1.4-next.1
+
+## 0.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.1.4-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.0
+  - @backstage/config@1.3.0
+  - @backstage/frontend-app-api@0.10.3-next.0
+  - @backstage/test-utils@1.7.3-next.0
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/types@1.2.0
+  - @backstage/frontend-app-api@0.10.1
+  - @backstage/frontend-plugin-api@0.9.1
+  - @backstage/test-utils@1.7.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-app@0.1.2
+
+## 0.2.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/frontend-app-api@0.10.1-next.2
+  - @backstage/frontend-plugin-api@0.9.1-next.2
+  - @backstage/test-utils@1.7.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-app@0.1.2-next.2
+
+## 0.2.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/frontend-app-api@0.10.1-next.1
+  - @backstage/frontend-plugin-api@0.9.1-next.1
+  - @backstage/test-utils@1.7.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-app@0.1.2-next.1
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/frontend-app-api@0.10.1-next.0
+  - @backstage/frontend-plugin-api@0.9.1-next.0
+  - @backstage/test-utils@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-app@0.1.2-next.0
+
+## 0.2.1
+
+### Patch Changes
+
+- 666d5b1: Disable the built-in `SignInPage` in `createExtensionTester` in order to not mess with existing tests
+- e969dc7: Move `@types/react` to a peer dependency.
+- 873e424: Internal refactor of usage of opaque types.
+- 0801db6: Added an `ApiMock`, analogous to `ServiceMock` from the backend test utils.
+- 9cc7dd6: Added a `mockApis` export, which will replace the `MockX` API implementation classes and their related types. This is analogous with the backend's `mockServices`.
+
+  **DEPRECATED** several old helpers:
+
+  - Deprecated `MockAnalyticsApi`, please use `mockApis.analytics` instead.
+  - Deprecated `MockConfigApi`, please use `mockApis.config` instead.
+  - Deprecated `MockPermissionApi`, please use `mockApis.permission` instead.
+  - Deprecated `MockStorageApi`, please use `mockApis.storage` instead.
+  - Deprecated `MockTranslationApi`, please use `mockApis.translation` instead.
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0
+  - @backstage/frontend-app-api@0.10.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/test-utils@1.7.0
+  - @backstage/plugin-app@0.1.1
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 0.2.1-next.2
+
+### Patch Changes
+
+- 0801db6: Added an `ApiMock`, analogous to `ServiceMock` from the backend test utils.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/frontend-app-api@0.10.0-next.2
+  - @backstage/frontend-plugin-api@0.9.0-next.2
+  - @backstage/test-utils@1.6.1-next.2
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/plugin-app@0.1.1-next.2
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0-next.1
+  - @backstage/frontend-app-api@0.10.0-next.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/test-utils@1.6.1-next.1
+  - @backstage/plugin-app@0.1.1-next.1
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- 873e424: Internal refactor of usage of opaque types.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.0-next.0
+  - @backstage/frontend-app-api@0.10.0-next.0
+  - @backstage/plugin-app@0.1.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/test-utils@1.6.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.9
+
+## 0.2.0
+
+### Minor Changes
+
+- 5446061: Removed support for testing "v1" extensions, where outputs are defined as an object rather than an array.
+- e6e488c: **BREAKING**: The deprecated `.render()` method has been removed from the extension tester.
+
+### Patch Changes
+
+- 2a61422: The extension tester will no longer unconditionally enable any additional extensions that have been added.
+- fec8b57: Updated exports to use the new type parameters for extensions and extension blueprints.
+- 4a66456: Internal update to add support for passing an `ApiRegistry` when creating the node tree
+- 2bb9517: Introduce the `@backstage/plugin-app` package to hold all of the built-in extensions for easy consumption and overriding.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 948d431: Removing deprecated `namespace` parameter in favour of `pluginId` instead
+- 043d7cd: Internal refactor
+- f6d1874: Added the ability to provide additional `extensions` and `features` to `renderInTestApp`
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.8.0
+  - @backstage/frontend-app-api@0.9.0
+  - @backstage/plugin-app@0.1.0
+  - @backstage/test-utils@1.6.0
+  - @backstage/version-bridge@1.0.9
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 0.2.0-next.2
+
+### Patch Changes
+
+- 2a61422: The extension tester will no longer unconditionally enable any additional extensions that have been added.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 043d7cd: Internal refactor
+- Updated dependencies
+  - @backstage/test-utils@1.6.0-next.1
+  - @backstage/plugin-app@0.1.0-next.2
+  - @backstage/frontend-app-api@0.9.0-next.2
+  - @backstage/frontend-plugin-api@0.8.0-next.2
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 0.2.0-next.1
 
 ### Patch Changes

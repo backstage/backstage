@@ -20,5 +20,6 @@
  * @packageDocumentation
  */
 
+export { default } from './module';
 export * from './database';
 export * from './PgSearchEngine';

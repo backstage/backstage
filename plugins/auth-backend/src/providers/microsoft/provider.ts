@@ -36,6 +36,7 @@ import {
  * Auth provider integration for Microsoft auth
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export const microsoft = createAuthProviderIntegration({
   create(options?: {

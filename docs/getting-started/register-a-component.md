@@ -6,6 +6,10 @@ description: Start populating your Backstage app with your data.
 
 Audience: Developers
 
+:::note Note
+Entity files are stored in YAML format, if you are not familiar with YAML, you can learn more about it [here](https://yaml.org).
+:::
+
 ## Summary
 
 This guide will walk you through how to pull Backstage data from other locations manually. There are integrations that will automatically do this for you.

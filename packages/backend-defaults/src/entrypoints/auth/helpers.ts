@@ -28,16 +28,23 @@ export function createCredentialsWithServicePrincipal(
   token?: string,
   accessRestrictions?: BackstagePrincipalAccessRestrictions,
 ): InternalBackstageCredentials<BackstageServicePrincipal> {
-  return {
-    $$type: '@backstage/BackstageCredentials',
-    version: 'v1',
-    token,
-    principal: {
-      type: 'service',
-      subject: sub,
-      accessRestrictions,
+  return Object.defineProperty(
+    {
+      $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
+      principal: {
+        type: 'service',
+        subject: sub,
+        accessRestrictions,
+      },
     },
-  };
+    'token',
+    {
+      enumerable: false,
+      configurable: true,
+      value: token,
+    },
+  );
 }
 
 export function createCredentialsWithUserPrincipal(
@@ -45,16 +52,23 @@ export function createCredentialsWithUserPrincipal(
   token: string,
   expiresAt?: Date,
 ): InternalBackstageCredentials<BackstageUserPrincipal> {
-  return {
-    $$type: '@backstage/BackstageCredentials',
-    version: 'v1',
-    token,
-    expiresAt,
-    principal: {
-      type: 'user',
-      userEntityRef: sub,
+  return Object.defineProperty(
+    {
+      $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
+      expiresAt,
+      principal: {
+        type: 'user',
+        userEntityRef: sub,
+      },
     },
-  };
+    'token',
+    {
+      enumerable: false,
+      configurable: true,
+      value: token,
+    },
+  );
 }
 
 export function createCredentialsWithNonePrincipal(): InternalBackstageCredentials<BackstageNonePrincipal> {

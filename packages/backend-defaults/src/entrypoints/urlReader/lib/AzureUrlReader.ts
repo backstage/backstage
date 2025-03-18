@@ -32,10 +32,13 @@ import {
   ScmIntegrations,
   AzureIntegration,
 } from '@backstage/integration';
-import fetch, { Response } from 'node-fetch';
+import parseGitUrl from 'git-url-parse';
 import { Minimatch } from 'minimatch';
-import { Readable } from 'stream';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import {
+  assertError,
+  NotFoundError,
+  NotModifiedError,
+} from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
@@ -101,7 +104,7 @@ export class AzureUrlReader implements UrlReaderService {
 
     // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
     if (response.ok && response.status !== 203) {
-      return ReadUrlResponseFactory.fromNodeJSReadable(response.body);
+      return ReadUrlResponseFactory.fromResponse(response);
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
@@ -172,7 +175,7 @@ export class AzureUrlReader implements UrlReaderService {
     }
 
     return await this.deps.treeResponseFactory.fromZipArchive({
-      stream: Readable.from(archiveAzureResponse.body),
+      response: archiveAzureResponse,
       etag: commitSha,
       filter,
       subpath,
@@ -183,6 +186,35 @@ export class AzureUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceSearchOptions,
   ): Promise<UrlReaderServiceSearchResponse> {
+    const { filepath } = parseGitUrl(url);
+
+    // If it's a direct URL we use readUrl instead
+    if (!filepath?.match(/[*?]/)) {
+      try {
+        const data = await this.readUrl(url, options);
+
+        return {
+          files: [
+            {
+              url: url,
+              content: data.buffer,
+              lastModifiedAt: data.lastModifiedAt,
+            },
+          ],
+          etag: data.etag ?? '',
+        };
+      } catch (error) {
+        assertError(error);
+        if (error.name === 'NotFoundError') {
+          return {
+            files: [],
+            etag: '',
+          };
+        }
+        throw error;
+      }
+    }
+
     const treeUrl = new URL(url);
 
     const path = treeUrl.searchParams.get('path');

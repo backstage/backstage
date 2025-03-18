@@ -1,5 +1,128 @@
 # @backstage/plugin-permission-react
 
+## 0.4.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.4.31
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.4.31-next.0
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.4.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.4.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/plugin-permission-common@0.8.4-next.0
+
+## 0.4.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.1
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/plugin-permission-common@0.8.3
+
+## 0.4.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.1-next.0
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+
+## 0.4.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/core-plugin-api@1.10.1
+
+## 0.4.27
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.4.27-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/config@1.2.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.4.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.4.26
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/config@1.2.0
+  - @backstage/plugin-permission-common@0.8.1
+
+## 0.4.26-next.0
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-permission-common@0.8.1
+
 ## 0.4.25
 
 ### Patch Changes

@@ -40,6 +40,7 @@ import {
   IconComponent,
   RouteRef,
 } from '@backstage/core-plugin-api';
+import { TranslationResource } from '@backstage/core-plugin-api/alpha';
 import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
@@ -50,7 +51,7 @@ import React, { ComponentType, PropsWithChildren, ReactNode } from 'react';
 import { createRoutesFromChildren, Route } from 'react-router-dom';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
 import 'react-dom';
-import { SidebarSignOutButton } from '../components';
+import { SidebarLanguageSwitcher, SidebarSignOutButton } from '../components';
 
 let ReactDOMPromise: Promise<
   typeof import('react-dom') | typeof import('react-dom/client')
@@ -98,9 +99,12 @@ export class DevAppBuilder {
   private readonly routes = new Array<JSX.Element>();
   private readonly sidebarItems = new Array<JSX.Element>();
   private readonly signInProviders = new Array<SignInProviderConfig>();
+  private readonly translationResources = new Array<TranslationResource>();
 
   private defaultPage?: string;
   private themes?: Array<AppTheme>;
+  private languages?: string[];
+  private defaultLanguage?: string;
 
   /**
    * Register one or more plugins to render in the dev app
@@ -194,6 +198,30 @@ export class DevAppBuilder {
   }
 
   /**
+   * Set available languages to be shown in the dev app
+   */
+  setAvailableLanguages(languages: string[]) {
+    this.languages = languages;
+    return this;
+  }
+
+  /**
+   * Add translation resource to the dev app
+   */
+  addTranslationResource(resource: TranslationResource) {
+    this.translationResources.push(resource);
+    return this;
+  }
+
+  /**
+   * Set default language for the dev app
+   */
+  setDefaultLanguage(language: string) {
+    this.defaultLanguage = language;
+    return this;
+  }
+
+  /**
    * Build a DevApp component using the resources registered so far
    */
   build(): ComponentType<PropsWithChildren<{}>> {
@@ -237,6 +265,11 @@ export class DevAppBuilder {
           bind(plugin.externalRoutes, targets);
         }
       },
+      __experimentalTranslations: {
+        defaultLanguage: this.defaultLanguage,
+        availableLanguages: this.languages,
+        resources: this.translationResources,
+      },
     });
 
     const DevApp = (
@@ -252,6 +285,7 @@ export class DevAppBuilder {
               <SidebarSpace />
               <SidebarDivider />
               <SidebarThemeSwitcher />
+              <SidebarLanguageSwitcher />
               <SidebarSignOutButton />
             </Sidebar>
             <FlatRoutes>

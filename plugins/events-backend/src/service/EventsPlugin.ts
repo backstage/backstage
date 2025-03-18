@@ -24,13 +24,16 @@ import {
 } from '@backstage/plugin-events-node/alpha';
 import {
   eventsServiceRef,
+  HttpBodyParserOptions,
   HttpPostIngressOptions,
 } from '@backstage/plugin-events-node';
 import Router from 'express-promise-router';
 import { HttpPostIngressEventPublisher } from './http';
+import { createEventBusRouter } from './hub';
 
 class EventsExtensionPointImpl implements EventsExtensionPoint {
-  #httpPostIngresses: HttpPostIngressOptions[] = [];
+  readonly #httpPostIngresses: HttpPostIngressOptions[] = [];
+  readonly #httpBodyParsers: HttpBodyParserOptions[] = [];
 
   setEventBroker(_: any): void {
     throw new Error(
@@ -54,15 +57,23 @@ class EventsExtensionPointImpl implements EventsExtensionPoint {
     this.#httpPostIngresses.push(options);
   }
 
+  addHttpPostBodyParser(options: HttpBodyParserOptions): void {
+    this.#httpBodyParsers.push(options);
+  }
+
   get httpPostIngresses() {
     return this.#httpPostIngresses;
+  }
+
+  get httpBodyParsers() {
+    return this.#httpBodyParsers;
   }
 }
 
 /**
  * Events plugin
  *
- * @alpha
+ * @public
  */
 export const eventsPlugin = createBackendPlugin({
   pluginId: 'events',
@@ -74,10 +85,23 @@ export const eventsPlugin = createBackendPlugin({
       deps: {
         config: coreServices.rootConfig,
         events: eventsServiceRef,
+        database: coreServices.database,
+        httpAuth: coreServices.httpAuth,
+        httpRouter: coreServices.httpRouter,
+        lifecycle: coreServices.lifecycle,
         logger: coreServices.logger,
-        router: coreServices.httpRouter,
+        scheduler: coreServices.scheduler,
       },
-      async init({ config, events, logger, router }) {
+      async init({
+        config,
+        events,
+        database,
+        httpAuth,
+        httpRouter,
+        lifecycle,
+        logger,
+        scheduler,
+      }) {
         const ingresses = Object.fromEntries(
           extensionPoint.httpPostIngresses.map(ingress => [
             ingress.topic,
@@ -85,16 +109,44 @@ export const eventsPlugin = createBackendPlugin({
           ]),
         );
 
+        const bodyParsers = Object.fromEntries(
+          extensionPoint.httpBodyParsers.map(option => [
+            option.contentType,
+            option.parser,
+          ]),
+        );
+
         const http = HttpPostIngressEventPublisher.fromConfig({
           config,
           events,
           ingresses,
+          bodyParsers,
           logger,
         });
         const eventsRouter = Router();
         http.bind(eventsRouter);
-        router.use(eventsRouter);
-        router.addAuthPolicy({
+
+        // MUST be registered *before* the event bus router.
+        // Otherwise, it would already make use of `express.json()`
+        // that is used there as part of the middleware stack.
+        httpRouter.use(eventsRouter);
+
+        const notifyTimeoutMs = config.getOptionalNumber(
+          'events.notifyTimeoutMs',
+        );
+
+        httpRouter.use(
+          await createEventBusRouter({
+            database,
+            lifecycle,
+            logger,
+            httpAuth,
+            scheduler,
+            notifyTimeoutMs,
+          }),
+        );
+
+        httpRouter.addAuthPolicy({
           allow: 'unauthenticated',
           path: '/http',
         });

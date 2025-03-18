@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { FavoriteToggle } from './FavoriteToggle';
 import {
   UnifiedThemeProvider,
@@ -21,10 +21,14 @@ import {
   createUnifiedTheme,
   palettes,
 } from '@backstage/theme';
+import { wrapInTestApp } from '@backstage/test-utils';
 
 export default {
   title: 'Core/FavoriteToggle',
   component: FavoriteToggle,
+  decorators: [
+    (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
+  ],
 };
 
 export const Default = () => {

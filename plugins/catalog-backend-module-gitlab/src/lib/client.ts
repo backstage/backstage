@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// NOTE(freben): Intentionally uses node-fetch because of https://github.com/backstage/backstage/issues/28190
+import fetch from 'node-fetch';
+
 import {
   getGitLabRequestOptions,
   GitLabIntegrationConfig,
 } from '@backstage/integration';
-import fetch from 'node-fetch';
 import { LoggerService } from '@backstage/backend-plugin-api';
-
 import {
   GitLabDescendantGroupsResponse,
   GitLabGroup,
@@ -137,12 +139,25 @@ export class GitLabClient {
   async listSaaSUsers(
     groupPath: string,
     options?: CommonListOptions,
+    includeUsersWithoutSeat?: boolean,
   ): Promise<PagedResponse<GitLabUser>> {
+    const botFilterRegex = /^(?:project|group)_(\w+)_bot_(\w+)$/;
+
     return this.listGroupMembers(groupPath, {
       ...options,
+      active: true, // Users with seat are always active but for users without seat we need to filter
       show_seat_info: true,
     }).then(resp => {
-      resp.items = resp.items.filter(user => user.is_using_seat);
+      // Filter is optional to allow to import Gitlab Free users without seats
+      // https://github.com/backstage/backstage/issues/26438
+      // Filter out API tokens https://docs.gitlab.com/ee/user/project/settings/project_access_tokens.html#bot-users-for-projects
+      if (includeUsersWithoutSeat) {
+        resp.items = resp.items.filter(user => {
+          return !botFilterRegex.test(user.username);
+        });
+      } else {
+        resp.items = resp.items.filter(user => user.is_using_seat);
+      }
       return resp;
     });
   }
@@ -151,6 +166,18 @@ export class GitLabClient {
     options?: CommonListOptions,
   ): Promise<PagedResponse<GitLabGroup>> {
     return this.pagedRequest(`/groups`, options);
+  }
+
+  // https://docs.gitlab.com/ee/api/groups.html#list-group-details
+  // id can either be group id or encoded full path
+  async getGroupByPath(
+    groupPath: string,
+    options?: CommonListOptions,
+  ): Promise<GitLabGroup> {
+    return this.nonPagedRequest(
+      `/groups/${encodeURIComponent(groupPath)}`,
+      options,
+    );
   }
 
   async listDescendantGroups(

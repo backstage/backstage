@@ -1,6 +1,6 @@
 {
   "name": "@internal/plugin-todo-list-common",
-  "version": "1.0.21",
+  "version": "1.0.24",
   "backstage": {
     "role": "common-library",
     "pluginId": "todo-list",
@@ -12,7 +12,8 @@
   },
   "publishConfig": {
     "access": "public",
-    "main": "dist/index.esm.js",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
   "private": true,

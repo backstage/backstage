@@ -23,7 +23,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import {
   renderInTestApp,
   TestApiProvider,
-  MockAnalyticsApi,
+  mockApis,
 } from '@backstage/test-utils';
 import {
   createPlugin,
@@ -38,7 +38,7 @@ import {
   SearchResultListItemExtensionOptions,
 } from './extensions';
 
-const analyticsApiMock = new MockAnalyticsApi();
+const analyticsApiMock = mockApis.analytics();
 
 const results = [
   {
@@ -118,7 +118,7 @@ describe('extensions', () => {
       screen.getByRole('link', { name: /Search Result 1/ }),
     );
 
-    expect(analyticsApiMock.getEvents()[0]).toMatchObject({
+    expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
       action: 'discover',
       subject: 'Search Result 1',
       context: { routeRef: 'unknown', pluginId: 'root', extension: 'App' },
@@ -141,7 +141,7 @@ describe('extensions', () => {
 
     await userEvent.click(screen.getByRole('listitem'));
 
-    expect(analyticsApiMock.getEvents()[0]).toMatchObject({
+    expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
       action: 'discover',
       subject: 'Search Result 1',
       context: { routeRef: 'unknown', pluginId: 'root', extension: 'App' },

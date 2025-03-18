@@ -202,6 +202,20 @@ describe('createExtension', () => {
     });
   });
 
+  it('should create an extension with multiple attachment points', () => {
+    const extension = createExtension({
+      attachTo: [
+        { id: 'root', input: 'default' },
+        { id: 'other', input: 'default' },
+      ],
+      output: [stringDataRef, numberDataRef.optional()],
+      factory: () => [stringDataRef('bar')],
+    });
+    expect(String(extension)).toBe(
+      'ExtensionDefinition{attachTo=root@default+other@default}',
+    );
+  });
+
   it('should create an extension with input', () => {
     const extension = createExtension({
       attachTo: { id: 'root', input: 'default' },
@@ -567,7 +581,7 @@ describe('createExtension', () => {
         },
       });
 
-      // @ts-expect-error - this should fail because string output should be merged?
+      // @ts-expect-error
       const override2 = testExtension.override({
         output: [numberDataRef],
         factory(_, { inputs }) {
@@ -679,6 +693,97 @@ describe('createExtension', () => {
           config: { foo: 'hello', bar: 'world' },
         }).get(stringDataRef),
       ).toBe('foo-hello-override-world');
+    });
+
+    it('should be able to disable extension with override', () => {
+      const subject = createExtension({
+        name: 'root',
+        attachTo: { id: 'ignored', input: 'ignored' },
+        inputs: {
+          input: createExtensionInput([stringDataRef], {
+            singleton: true,
+            optional: true,
+          }),
+        },
+        output: [stringDataRef.optional()],
+        factory({ inputs }) {
+          return inputs.input ?? [];
+        },
+      });
+
+      const attached = createExtension({
+        attachTo: { id: 'root', input: 'input' },
+        output: [stringDataRef],
+        factory() {
+          return [stringDataRef('test')];
+        },
+      });
+
+      expect(
+        createExtensionTester(subject).add(attached).get(stringDataRef),
+      ).toBe('test');
+
+      expect(
+        createExtensionTester(subject)
+          .add(attached.override({ disabled: true }))
+          .get(stringDataRef),
+      ).toBe(undefined);
+    });
+
+    it('should complain when overriding with incompatible output', () => {
+      const testExtension = createExtension({
+        attachTo: { id: 'root', input: 'blob' },
+        output: [stringDataRef],
+        factory() {
+          return [stringDataRef('0')];
+        },
+      });
+
+      // @ts-expect-error - override output is incompatible with factory
+      const override = testExtension.override({
+        output: [numberDataRef],
+        factory() {
+          return [stringDataRef('1')];
+        },
+      });
+      expect(override).toBeDefined();
+
+      expect(() =>
+        testExtension.override({
+          output: [numberDataRef],
+        }),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"Refused to override output without also overriding factory"`,
+      );
+    });
+
+    it('should not have params unless explicitly defined', () => {
+      const ext = createExtension({
+        attachTo: { id: 'root', input: 'blob' },
+        output: [stringDataRef],
+        factory() {
+          return [stringDataRef('0')];
+        },
+      });
+
+      ext.override({
+        // @ts-expect-error - params are not allowed
+        params: {} as any,
+      });
+
+      ext.override({
+        // @ts-expect-error - params are not provided
+        factory(origFactory, { params }) {
+          return origFactory({
+            // @ts-expect-error - params are not allowed
+            params: {
+              ...params,
+            },
+          });
+        },
+      });
+
+      expect(ext).toBeDefined();
     });
 
     it('should be able to override input values', () => {

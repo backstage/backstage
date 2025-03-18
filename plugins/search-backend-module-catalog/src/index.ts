@@ -16,7 +16,13 @@
 
 /**
  * @packageDocumentation
+ *
  * A module for the search backend that exports Catalog modules.
  */
 
+export {
+  type CatalogCollatorExtensionPoint,
+  catalogCollatorExtensionPoint,
+  searchModuleCatalogCollator as default,
+} from './module';
 export * from './collators';

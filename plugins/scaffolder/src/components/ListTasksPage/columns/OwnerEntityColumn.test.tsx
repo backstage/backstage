@@ -15,27 +15,20 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
-  CatalogApi,
-  catalogApiRef,
-  entityRouteRef,
-} from '@backstage/plugin-catalog-react';
+  renderInTestApp,
+  TestApiProvider,
+  mockApis,
+} from '@backstage/test-utils';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import React from 'react';
 import { OwnerEntityColumn } from './OwnerEntityColumn';
 import { identityApiRef } from '@backstage/core-plugin-api';
 
 describe('<OwnerEntityColumn />', () => {
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getEntityByRef: jest.fn(),
-  } as any;
-
-  const identityApi = {
-    getBackstageIdentity: jest.fn(),
-    getProfileInfo: jest.fn(),
-    getCredentials: jest.fn(),
-    signOut: jest.fn(),
-  };
+  const catalogApi = catalogApiMock.mock();
+  const identityApi = mockApis.identity();
 
   it('should render the column with the user', async () => {
     const props = {

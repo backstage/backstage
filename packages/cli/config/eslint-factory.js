@@ -95,7 +95,7 @@ function createConfig(dir, extraConfig = {}) {
       '@typescript-eslint/no-unused-expressions': 'error',
       '@typescript-eslint/consistent-type-assertions': 'error',
       '@typescript-eslint/no-unused-vars': [
-        'warn',
+        'error',
         {
           vars: 'all',
           args: 'after-used',
@@ -167,13 +167,13 @@ function createConfig(dir, extraConfig = {}) {
         },
       },
       {
-        files: ['**/src/generated/**/*.ts'],
+        files: ['**/src/**/generated/**/*.ts'],
         rules: {
           ...tsRules,
           'no-unused-vars': 'off',
           'unused-imports/no-unused-imports': 'error',
           'unused-imports/no-unused-vars': [
-            'warn',
+            'error',
             {
               vars: 'all',
               varsIgnorePattern: '^_',

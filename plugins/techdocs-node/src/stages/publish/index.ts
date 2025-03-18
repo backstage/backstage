@@ -24,5 +24,5 @@ export type {
   MigrateRequest,
   ReadinessResponse,
   TechDocsMetadata,
-  TechDocsContainerRunner,
+  PublisherSettings,
 } from './types';

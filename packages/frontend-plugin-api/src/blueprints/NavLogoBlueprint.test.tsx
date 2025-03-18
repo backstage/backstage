@@ -41,7 +41,6 @@ describe('NavLogoBlueprint', () => {
         "inputs": {},
         "kind": "nav-logo",
         "name": undefined,
-        "namespace": undefined,
         "output": [
           [Function],
         ],

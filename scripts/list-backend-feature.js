@@ -52,7 +52,7 @@ async function main(args) {
         backendFeatureReport.alpha = false;
       }
 
-      const apiReportAlphaPath = join(pkg.dir, 'api-report-alpha.md');
+      const apiReportAlphaPath = join(pkg.dir, 'report-alpha.api.md');
       if (fs.existsSync(apiReportAlphaPath)) {
         const apiReportAlpha = (
           await fs.readFile(apiReportAlphaPath)

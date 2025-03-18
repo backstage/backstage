@@ -22,4 +22,16 @@ export {
   type BaseSearchResultListItemProps,
   type SearchResultItemExtensionComponent,
   type SearchResultItemExtensionPredicate,
+  type SearchFilterExtensionComponent,
+  type SearchFilterExtensionComponentProps,
 } from './types';
+
+export {
+  SearchFilterResultTypeBlueprint,
+  type SearchFilterResultTypeBlueprintParams,
+} from './SearchFilterResultTypeBlueprint';
+
+export {
+  SearchFilterBlueprint,
+  type SearchFilterBlueprintParams,
+} from './SearchFilterBlueprint';

@@ -16,7 +16,6 @@
 
 import { Entity, RELATION_PROVIDES_API } from '@backstage/catalog-model';
 import {
-  CatalogApi,
   catalogApiRef,
   EntityProvider,
   entityRouteRef,
@@ -26,14 +25,13 @@ import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { ApiDocsConfig, apiDocsConfigRef } from '../../config';
 import { ProvidedApisCard } from './ProvidedApisCard';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 describe('<ProvidedApisCard />', () => {
   const apiDocsConfig: jest.Mocked<ApiDocsConfig> = {
     getApiDefinitionWidget: jest.fn(),
   } as any;
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getEntitiesByRefs: jest.fn(),
-  } as any;
+  const catalogApi = catalogApiMock.mock();
   let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
@@ -62,7 +60,7 @@ describe('<ProvidedApisCard />', () => {
       relations: [],
     };
 
-    const { getByText } = await renderInTestApp(
+    const { getByText, getByRole, container } = await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
           <ProvidedApisCard />
@@ -77,6 +75,18 @@ describe('<ProvidedApisCard />', () => {
 
     expect(getByText(/Provided APIs/i)).toBeInTheDocument();
     expect(getByText(/does not provide any APIs/i)).toBeInTheDocument();
+    expect(getByText(/Learn how to change this/)).toBeInTheDocument();
+
+    // Also render external link icon
+    const externalLink = getByRole('link');
+    expect(externalLink).toHaveAttribute(
+      'href',
+      'https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional',
+    );
+    const externalLinkIcon: HTMLElement | null = container.querySelector(
+      'svg[class*="externalLink"]',
+    );
+    expect(externalLink).toContainElement(externalLinkIcon);
   });
 
   it('shows consumed APIs', async () => {

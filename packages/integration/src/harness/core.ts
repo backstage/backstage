@@ -62,13 +62,19 @@ export function getHarnessFileContentsUrl(
 ) {
   const parsedUrl = parseHarnessUrl(config, url);
 
-  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${
-    parsedUrl.accountId
-  }/${parsedUrl.orgName}${
-    parsedUrl.projectName !== '' ? `/${parsedUrl.projectName}/` : '/'
-  }${parsedUrl.repoName}/+/raw/${parsedUrl.path}?routingId=${
-    parsedUrl.accountId
-  }&git_ref=refs/heads/${parsedUrl.refString}`;
+  let constructedUrl = `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${parsedUrl.accountId}`;
+
+  if (parsedUrl.orgName) {
+    constructedUrl += `/${parsedUrl.orgName}`;
+  }
+
+  if (parsedUrl.projectName) {
+    constructedUrl += `/${parsedUrl.projectName}`;
+  }
+
+  constructedUrl += `/${parsedUrl.repoName}/+/raw/${parsedUrl.path}?routingId=${parsedUrl.accountId}&git_ref=refs/heads/${parsedUrl.refString}`;
+
+  return constructedUrl;
 }
 
 /**
@@ -90,13 +96,20 @@ export function getHarnessArchiveUrl(
   url: string,
 ) {
   const parsedUrl = parseHarnessUrl(config, url);
-  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${
-    parsedUrl.accountId
-  }/${parsedUrl.orgName}${
-    parsedUrl.projectName !== '' ? `/${parsedUrl.projectName}/` : '/'
-  }${parsedUrl.repoName}/+/archive/${parsedUrl.branch}.zip?routingId=${
-    parsedUrl.accountId
-  }`;
+
+  let constructedUrl = `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${parsedUrl.accountId}`;
+
+  if (parsedUrl.orgName) {
+    constructedUrl += `/${parsedUrl.orgName}`;
+  }
+
+  if (parsedUrl.projectName) {
+    constructedUrl += `/${parsedUrl.projectName}`;
+  }
+
+  constructedUrl += `/${parsedUrl.repoName}/+/archive/${parsedUrl.branch}.zip?routingId=${parsedUrl.accountId}`;
+
+  return constructedUrl;
 }
 
 /**
@@ -118,13 +131,20 @@ export function getHarnessLatestCommitUrl(
   url: string,
 ) {
   const parsedUrl = parseHarnessUrl(config, url);
-  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${
-    parsedUrl.accountId
-  }/${parsedUrl.orgName}${
-    parsedUrl.projectName !== '' ? `/${parsedUrl.projectName}/` : '/'
-  }${parsedUrl.repoName}/+/content?routingId=${
-    parsedUrl.accountId
-  }&include_commit=true&git_ref=refs/heads/${parsedUrl.branch}`;
+
+  let constructedUrl = `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${parsedUrl.accountId}`;
+
+  if (parsedUrl.orgName) {
+    constructedUrl += `/${parsedUrl.orgName}`;
+  }
+
+  if (parsedUrl.projectName) {
+    constructedUrl += `/${parsedUrl.projectName}`;
+  }
+
+  constructedUrl += `/${parsedUrl.repoName}/+/content?routingId=${parsedUrl.accountId}&include_commit=true&git_ref=refs/heads/${parsedUrl.branch}`;
+
+  return constructedUrl;
 }
 
 /**
@@ -185,18 +205,20 @@ export function parseHarnessUrl(
 
     const orgNameIndex = pathSegments.findIndex(segment => segment === 'orgs');
     const orgName = orgNameIndex !== -1 ? pathSegments[orgNameIndex + 1] : '';
-
     const projectNameIndex = pathSegments.findIndex(
       segment => segment === 'projects',
     );
 
     const projectName =
       projectNameIndex !== -1 ? pathSegments[projectNameIndex + 1] : '';
-
+    // Adjust repoNameIndex to correctly identify the repository name
     const repoNameIndex =
-      pathSegments.findIndex(segment => segment === 'repos') + 1;
+      pathSegments.findIndex(
+        (segment, index) =>
+          segment === 'repos' &&
+          index > Math.max(accountIdIndex, orgNameIndex, projectNameIndex),
+      ) + 1;
     const repoName = pathSegments[repoNameIndex];
-
     const refAndPath = urlParts.slice(
       urlParts.findIndex(i => i === 'files' || i === 'edit') + 1,
     );

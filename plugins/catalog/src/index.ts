@@ -38,6 +38,7 @@ export * from './components/EntitySwitch';
 export * from './components/FilteredEntityLayout';
 export * from './overridableComponents';
 export * from './components/EntityLabelsCard';
+export * from './components/CatalogSearchResultListItem';
 export {
   CatalogEntityPage,
   CatalogIndexPage,

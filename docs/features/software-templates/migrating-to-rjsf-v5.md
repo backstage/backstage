@@ -44,7 +44,7 @@ It's possible that if you have a hard dependency on any of the `@rjsf/*` librari
 /* highlight-remove-next-line */
 import { FieldValidation } from '@rjsf/core';
 /* highlight-add-next-line */
-import { FieldValidation } from '@rjsf/utils;
+import { FieldValidation } from '@rjsf/utils';
 ```
 
 ## Escape hatch

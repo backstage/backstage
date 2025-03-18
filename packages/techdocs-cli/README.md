@@ -44,7 +44,8 @@ yarn techdocs-cli:dev [...options]
 
 ```sh
 # Prior to executing the techdocs-cli command
-export GLOBAL_AGENT_HTTPS_PROXY=${HTTP_PROXY}
+export GLOBAL_AGENT_HTTP_PROXY=${HTTP_PROXY}
+export GLOBAL_AGENT_HTTPS_PROXY=${HTTPS_PROXY}
 export GLOBAL_AGENT_NO_PROXY=${NO_PROXY}
 ```
 

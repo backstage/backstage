@@ -39,7 +39,7 @@ export interface ReadConfigDataOptions {
 }
 
 /**
- * The the generator returned by {@link ConfigSource.readConfigData}.
+ * The generator returned by {@link ConfigSource.readConfigData}.
  *
  * @public
  */

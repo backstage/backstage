@@ -126,12 +126,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         );
       }
 
-      if (!options.schedule && !providerConfig.schedule) {
-        throw new Error(
-          `No schedule provided neither via code nor config for github-provider:${providerConfig.id}.`,
-        );
-      }
-
       const taskRunner =
         options.schedule ??
         options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
@@ -164,12 +158,12 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       SingleInstanceGithubCredentialsProvider.create(integration.config);
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName(): string {
     return `github-provider:${this.config.id}`;
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
     await this.events?.subscribe({
@@ -472,7 +466,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    * Removes all entities associated with the repository.
    *
    * @param event - The repository archived event.
-   * @private
    */
   private async onRepoArchived(event: RepositoryArchivedEvent) {
     const repository = this.createRepoFromEvent(event);
@@ -488,7 +481,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    * Removes all entities associated with the repository.
    *
    * @param event - The repository deleted event.
-   * @private
    */
   private async onRepoDeleted(event: RepositoryDeletedEvent) {
     const repository = this.createRepoFromEvent(event);
@@ -506,7 +498,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    * Removes all entities associated with the repository if the repository no longer matches the filters.
    *
    * @param event - The repository edited event.
-   * @private
    */
   private async onRepoEdited(event: RepositoryEditedEvent) {
     const repository = this.createRepoFromEvent(event);
@@ -525,7 +516,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    * Creates new entities for the repository's new name if it still matches the filters.
    *
    * @param event - The repository renamed event.
-   * @private
    */
   private async onRepoRenamed(event: RepositoryRenamedEvent) {
     const repository = this.createRepoFromEvent(event);
@@ -560,7 +550,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    * Creates new entities for the repository if it matches the filters.
    *
    * @param event - The repository unarchived event.
-   * @private
    */
   private async onRepoTransferred(event: RepositoryTransferredEvent) {
     const repository = this.createRepoFromEvent(event);
@@ -582,7 +571,6 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    * Creates new entities for the repository if it matches the filters.
    *
    * @param event - The repository unarchived event.
-   * @private
    */
   private async onRepoUnarchived(event: RepositoryUnarchivedEvent) {
     const repository = this.createRepoFromEvent(event);

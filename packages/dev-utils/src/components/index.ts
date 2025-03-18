@@ -16,3 +16,4 @@
 
 export * from './EntityGridItem';
 export * from './SidebarSignOutButton';
+export * from './SidebarLanguageSwitcher';

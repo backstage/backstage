@@ -15,14 +15,7 @@
  */
 
 import { ReactNode } from 'react';
-import { BackstagePlugin } from './wiring';
-
-// TODO(Rugvip): This might be a quite useful utility type, maybe add to @backstage/types?
-/**
- * Utility type to expand type aliases into their equivalent type.
- * @ignore
- */
-export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+import { FrontendPlugin } from './wiring';
 
 /** @public */
 export type CoreProgressProps = {};
@@ -34,7 +27,7 @@ export type CoreNotFoundErrorPageProps = {
 
 /** @public */
 export type CoreErrorBoundaryFallbackProps = {
-  plugin?: BackstagePlugin;
+  plugin?: FrontendPlugin;
   error: Error;
   resetError: () => void;
 };

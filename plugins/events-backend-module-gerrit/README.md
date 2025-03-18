@@ -28,7 +28,7 @@ yarn --cwd packages/backend add @backstage/plugin-events-backend-module-gerrit
 
 ```ts
 // packages/backend/src/index.ts
-backend.add(import('@backstage/plugin-events-backend-module-gerrit/alpha'));
+backend.add(import('@backstage/plugin-events-backend-module-gerrit'));
 ```
 
 ### Legacy Backend System

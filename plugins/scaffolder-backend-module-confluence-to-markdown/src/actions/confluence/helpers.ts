@@ -17,7 +17,7 @@
 import { Config } from '@backstage/config';
 import { ResponseError, ConflictError, InputError } from '@backstage/errors';
 import fs from 'fs-extra';
-import fetch, { Response } from 'node-fetch';
+import { Readable } from 'stream';
 
 interface Links {
   webui: string;
@@ -164,7 +164,9 @@ export const getAndWriteAttachments = async (
         const writeStream = fs.createWriteStream(
           `${workspace}/${mkdocsDir}docs/img/${downloadTitle}`,
         );
-        res.body.pipe(writeStream);
+        // TODO(freben): This cast is sketchy, but for some reason the node types don't quite line up here
+        // https://stackoverflow.com/questions/44672942/stream-response-to-file-using-fetch-api-and-fs-createwritestream/73879265#73879265
+        Readable.fromWeb(res.body as any).pipe(writeStream);
         await new Promise((resolve, reject) => {
           writeStream.on('finish', () => {
             resolve(`${workspace}/${mkdocsDir}docs/img/${downloadTitle}`);

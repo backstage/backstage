@@ -166,10 +166,10 @@ the final say in what APIs will be loaded at runtime? The app may override the
 factories for any of the core or plugin APIs, with the exception of the config,
 app theme, and identity APIs. These are static APIs that are tied into the
 [`createApp`](../reference/app-defaults.createapp.md) implementation and
-therefore not possible to override.
+therefore, not possible to override.
 
 Overriding APIs is useful for apps that want to switch out behavior to tailor it
-to their environment. In some cases plugins, may also export multiple
+to their environment. In some cases, plugins may also export multiple
 implementations of the same API, where they each have their own different
 requirements, for example, backend storage and the surrounding environment.
 

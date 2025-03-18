@@ -20,6 +20,7 @@
  * @packageDocumentation
  */
 
+export { default } from './module';
 export { GithubLocationAnalyzer } from './analyzers/GithubLocationAnalyzer';
 export type { GithubLocationAnalyzerOptions } from './analyzers/GithubLocationAnalyzer';
 export { GithubDiscoveryProcessor } from './processors/GithubDiscoveryProcessor';

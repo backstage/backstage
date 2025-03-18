@@ -145,14 +145,14 @@ const backend = createBackend();
 
 /* highlight-add-start */
 // search plugin
-backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend'));
 
 // search engines
-backend.add(import('@backstage/plugin-search-backend-module-pg/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-pg'));
 
 // search collators
-backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
-backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-catalog'));
+backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 /* highlight-add-end */
 
 backend.start();
@@ -301,11 +301,15 @@ indexBuilder.addCollator({
 });
 ```
 
-Note: if you are using the in-memory Lunr search engine, you probably want to
+:::note Note
+
+if you are using the in-memory Lunr search engine, you probably want to
 implement a non-distributed `SchedulerServiceTaskRunner` like the following to ensure consistency
 if you're running multiple search backend nodes (alternatively, you can configure
 the search plugin to use a non-distributed database such as
 [SQLite](../../tutorials/configuring-plugin-databases.md#postgresql-and-sqlite-3)):
+
+:::
 
 ```typescript
 import {

@@ -27,7 +27,6 @@ import {
   PreparerBuilder,
   PublisherBase,
 } from '@backstage/plugin-techdocs-node';
-import fetch from 'node-fetch';
 import pLimit, { Limit } from 'p-limit';
 import { PassThrough } from 'stream';
 import * as winston from 'winston';
@@ -37,7 +36,7 @@ import {
   DocsBuilder,
   shouldCheckForUpdate,
 } from '../DocsBuilder';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 
 export type DocsSynchronizerSyncOpts = {
   log: (message: string) => void;
@@ -47,7 +46,7 @@ export type DocsSynchronizerSyncOpts = {
 
 export class DocsSynchronizer {
   private readonly publisher: PublisherBase;
-  private readonly logger: winston.Logger;
+  private readonly logger: LoggerService;
   private readonly buildLogTransport?: winston.transport;
   private readonly config: Config;
   private readonly scmIntegrations: ScmIntegrationRegistry;
@@ -63,7 +62,7 @@ export class DocsSynchronizer {
     cache,
   }: {
     publisher: PublisherBase;
-    logger: winston.Logger;
+    logger: LoggerService;
     buildLogTransport?: winston.transport;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TestApiProvider } from '@backstage/test-utils';
+
+import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import React from 'react';
 import { BackstageRouteObject } from './types';
 import { fireEvent, render } from '@testing-library/react';
 import { RouteTracker } from './RouteTracker';
 import { Link, MemoryRouter, Route, Routes } from 'react-router-dom';
 import {
-  AnalyticsApi,
   analyticsApiRef,
   createPlugin,
   createRouteRef,
@@ -68,9 +68,7 @@ describe('RouteTracker', () => {
     },
   ];
 
-  const mockedAnalytics: jest.Mocked<AnalyticsApi> = {
-    captureEvent: jest.fn(),
-  };
+  const mockedAnalytics = mockApis.analytics();
 
   beforeEach(() => {
     jest.clearAllMocks();

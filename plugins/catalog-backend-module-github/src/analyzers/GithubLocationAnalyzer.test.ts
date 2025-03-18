@@ -32,34 +32,28 @@ jest.mock('@octokit/rest', () => {
   return { Octokit };
 });
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { GithubLocationAnalyzer } from './GithubLocationAnalyzer';
 import {
   registerMswTestHooks,
   mockServices,
 } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
-import { ConfigReader } from '@backstage/config';
+import { http, HttpResponse } from 'msw';
 
 const server = setupServer();
 
 describe('GithubLocationAnalyzer', () => {
-  const mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery> = {
-    getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
-    getExternalBaseUrl: jest.fn(),
-  };
+  const mockDiscovery = mockServices.discovery.mock({
+    getBaseUrl: async () => 'http://localhost:7007',
+  });
   const mockAuthService = mockServices.auth.mock({
     getPluginRequestToken: async () => ({ token: 'abc123' }),
   });
-  const config = new ConfigReader({
-    integrations: {
-      github: [
-        {
-          host: 'h.com',
-          token: 't',
-        },
-      ],
+  const config = mockServices.rootConfig({
+    data: {
+      integrations: {
+        github: [{ host: 'h.com', token: 't' }],
+      },
     },
   });
 
@@ -67,10 +61,9 @@ describe('GithubLocationAnalyzer', () => {
 
   beforeEach(() => {
     server.use(
-      rest.post('http://localhost:7007/locations', async (_, res, ctx) => {
-        return res(
-          ctx.status(201),
-          ctx.json({
+      http.post('http://localhost:7007/locations', () =>
+        HttpResponse.json(
+          {
             location: 'test',
             exists: false,
             entities: [
@@ -100,9 +93,10 @@ describe('GithubLocationAnalyzer', () => {
                 },
               },
             ],
-          }),
-        );
-      }),
+          },
+          { status: 201 },
+        ),
+      ),
     );
 
     octokit.repos.get.mockResolvedValue({
@@ -121,7 +115,7 @@ describe('GithubLocationAnalyzer', () => {
     });
 
     const analyzer = new GithubLocationAnalyzer({
-      discovery: mockDiscoveryApi,
+      discovery: mockDiscovery,
       auth: mockAuthService,
       config,
     });
@@ -148,7 +142,7 @@ describe('GithubLocationAnalyzer', () => {
     });
 
     const analyzer = new GithubLocationAnalyzer({
-      discovery: mockDiscoveryApi,
+      discovery: mockDiscovery,
       auth: mockAuthService,
       config,
     });
@@ -174,7 +168,7 @@ describe('GithubLocationAnalyzer', () => {
     });
 
     const analyzer = new GithubLocationAnalyzer({
-      discovery: mockDiscoveryApi,
+      discovery: mockDiscovery,
       auth: mockAuthService,
       config,
     });

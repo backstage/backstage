@@ -24,13 +24,12 @@ import { InjectOptions } from './types';
  */
 export async function injectConfig(
   options: InjectOptions,
-): Promise<string | undefined> {
-  // In order to minimize the potential impact when rolling out the new config
-  // injection, we use both methods for a few releases. This allows the frontend
-  // app to be behind the backend by a version or two, but temporarily increases
-  // config injection overhead.
-  // TODO(Rugvip): After the 1.32 release we can stop calling the static injection if the HTML one is successful
-  await injectConfigIntoHtml(options);
+): Promise<{ injectedPath?: string | undefined; indexHtmlContent?: Buffer }> {
+  const indexHtmlContent = await injectConfigIntoHtml(options);
+  if (indexHtmlContent) {
+    return { indexHtmlContent };
+  }
 
-  return injectConfigIntoStatic(options);
+  const injectedPath = await injectConfigIntoStatic(options);
+  return { injectedPath };
 }

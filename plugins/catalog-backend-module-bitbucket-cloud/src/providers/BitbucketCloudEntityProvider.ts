@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { TokenManager } from '@backstage/backend-common';
 import {
+  AuthService,
   LoggerService,
   SchedulerService,
   SchedulerServiceTaskRunner,
@@ -66,26 +66,25 @@ interface IngestionTarget {
  * @public
  */
 export class BitbucketCloudEntityProvider implements EntityProvider {
+  private readonly auth: AuthService;
+  private readonly catalogApi: CatalogApi;
   private readonly client: BitbucketCloudClient;
   private readonly config: BitbucketCloudEntityProviderConfig;
+  private readonly events: EventsService;
   private readonly logger: LoggerService;
   private readonly scheduleFn: () => Promise<void>;
-  private readonly catalogApi?: CatalogApi;
-  private readonly events?: EventsService;
-  private readonly tokenManager?: TokenManager;
-  private connection?: EntityProviderConnection;
 
-  private eventConfigErrorThrown = false;
+  private connection?: EntityProviderConnection;
 
   static fromConfig(
     config: Config,
     options: {
-      catalogApi?: CatalogApi;
-      events?: EventsService;
+      auth: AuthService;
+      catalogApi: CatalogApi;
+      events: EventsService;
       logger: LoggerService;
       schedule?: SchedulerServiceTaskRunner;
       scheduler?: SchedulerService;
-      tokenManager?: TokenManager;
     },
   ): BitbucketCloudEntityProvider[] {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -112,35 +111,35 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
         options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
 
       return new BitbucketCloudEntityProvider(
+        options.auth,
+        options.catalogApi,
         providerConfig,
+        options.events,
         integration,
         options.logger,
         taskRunner,
-        options.catalogApi,
-        options.events,
-        options.tokenManager,
       );
     });
   }
 
   private constructor(
+    auth: AuthService,
+    catalogApi: CatalogApi,
     config: BitbucketCloudEntityProviderConfig,
+    events: EventsService,
     integration: BitbucketCloudIntegration,
     logger: LoggerService,
     taskRunner: SchedulerServiceTaskRunner,
-    catalogApi?: CatalogApi,
-    events?: EventsService,
-    tokenManager?: TokenManager,
   ) {
+    this.auth = auth;
+    this.catalogApi = catalogApi;
     this.client = BitbucketCloudClient.fromConfig(integration.config);
     this.config = config;
+    this.events = events;
     this.logger = logger.child({
       target: this.getProviderName(),
     });
     this.scheduleFn = this.createScheduleFn(taskRunner);
-    this.catalogApi = catalogApi;
-    this.events = events;
-    this.tokenManager = tokenManager;
   }
 
   private createScheduleFn(
@@ -170,34 +169,32 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     };
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName(): string {
     return `bitbucketCloud-provider:${this.config.id}`;
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getTaskId} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getTaskId} */
   getTaskId(): string {
     return `${this.getProviderName()}:refresh`;
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
     await this.scheduleFn();
 
-    if (this.events) {
-      await this.events.subscribe({
-        id: this.getProviderName(),
-        topics: [TOPIC_REPO_PUSH],
-        onEvent: async params => {
-          if (params.topic !== TOPIC_REPO_PUSH) {
-            return;
-          }
+    await this.events.subscribe({
+      id: this.getProviderName(),
+      topics: [TOPIC_REPO_PUSH],
+      onEvent: async params => {
+        if (params.topic !== TOPIC_REPO_PUSH) {
+          return;
+        }
 
-          await this.onRepoPush(params.eventPayload as Events.RepoPushEvent);
-        },
-      });
-    }
+        await this.onRepoPush(params.eventPayload as Events.RepoPushEvent);
+      },
+    });
   }
 
   async refresh(logger: LoggerService) {
@@ -220,32 +217,12 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     );
   }
 
-  private canHandleEvents(): boolean {
-    if (this.catalogApi && this.tokenManager) {
-      return true;
-    }
-
-    // throw only once
-    if (!this.eventConfigErrorThrown) {
-      this.eventConfigErrorThrown = true;
-      throw new Error(
-        `${this.getProviderName()} not well configured to handle repo:push. Missing CatalogApi and/or TokenManager.`,
-      );
-    }
-
-    return false;
-  }
-
   private enhanceEvent(event: Events.RepoPushEvent): void {
     // add missing slug
     event.repository.slug = event.repository.full_name!.split('/', 2)[1];
   }
 
   async onRepoPush(event: Events.RepoPushEvent): Promise<void> {
-    if (!this.canHandleEvents()) {
-      return;
-    }
-
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -273,8 +250,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
     const targets = await this.findCatalogFiles(repoSlug);
 
-    const { token } = await this.tokenManager!.getToken();
-    const existing = await this.findExistingLocations(repoUrl, token);
+    const existing = await this.findExistingLocations(repoUrl);
 
     const added: DeferredEntity[] = this.toDeferredEntities(
       targets.filter(
@@ -321,16 +297,20 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
   private async findExistingLocations(
     repoUrl: string,
-    token: string,
   ): Promise<LocationEntity[]> {
     const filter: Record<string, string> = {};
     filter.kind = 'Location';
     filter[`metadata.annotations.${ANNOTATION_BITBUCKET_CLOUD_REPO_URL}`] =
       repoUrl;
 
-    return this.catalogApi!.getEntities({ filter }, { token }).then(
-      result => result.items,
-    ) as Promise<LocationEntity[]>;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: await this.auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
+
+    return this.catalogApi
+      .getEntities({ filter }, { token })
+      .then(result => result.items) as Promise<LocationEntity[]>;
   }
 
   private async findCatalogFiles(
@@ -343,6 +323,28 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       catalogPath.lastIndexOf('/') + 1,
     );
 
+    const optRepoFilter = repoSlug ? ` repo:${repoSlug}` : '';
+    const query = `"${catalogFilename}" path:${catalogPath}${optRepoFilter}`;
+
+    const projects = this.client
+      .listProjectsByWorkspace(workspace)
+      .iterateResults();
+
+    let results: IngestionTarget[] = [];
+
+    for await (const project of projects) {
+      const projectQuery = `${query} project:${project.key}`;
+      const result = await this.processQuery(workspace, projectQuery);
+      results = results.concat(result);
+    }
+
+    return results;
+  }
+
+  private async processQuery(
+    workspace: string,
+    query: string,
+  ): Promise<IngestionTarget[]> {
     // load all fields relevant for creating refs later, but not more
     const fields = [
       // exclude code/content match details
@@ -358,8 +360,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       // ...except the one we need
       '+values.file.commit.repository.links.html.href',
     ].join(',');
-    const optRepoFilter = repoSlug ? ` repo:${repoSlug}` : '';
-    const query = `"${catalogFilename}" path:${catalogPath}${optRepoFilter}`;
+
     const searchResults = this.client
       .searchCode(workspace, query, { fields })
       .iterateResults();

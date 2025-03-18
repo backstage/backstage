@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { AuthenticationError } from '@backstage/errors';
 import {
   createRemoteJWKSet,
@@ -24,10 +23,11 @@ import {
   JWSHeaderParameters,
   jwtVerify,
 } from 'jose';
-import { GetKeyFunction } from 'jose/dist/types/types';
+import { GetKeyFunction } from 'jose';
 import { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
 import { IdentityApi, IdentityApiGetIdentityRequest } from './IdentityApi';
 import { BackstageIdentityResponse } from '../types';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 const CLOCK_MARGIN_S = 10;
 
@@ -38,7 +38,7 @@ const CLOCK_MARGIN_S = 10;
  * @public
  */
 export type IdentityClientOptions = {
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   issuer?: string;
 
   /** JWS "alg" (Algorithm) Header Parameter values. Defaults to an array containing just ES256.
@@ -54,7 +54,7 @@ export type IdentityClientOptions = {
  * @public
  */
 export class DefaultIdentityClient implements IdentityApi {
-  private readonly discovery: PluginEndpointDiscovery;
+  private readonly discovery: DiscoveryService;
   private readonly issuer?: string;
   private readonly algorithms?: string[];
   private keyStore?: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>;

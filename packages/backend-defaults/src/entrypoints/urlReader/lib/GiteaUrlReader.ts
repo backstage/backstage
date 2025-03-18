@@ -20,6 +20,7 @@ import {
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadUrlOptions,
   UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 import {
@@ -32,15 +33,16 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
-import fetch, { Response } from 'node-fetch';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
+  assertError,
   AuthenticationError,
   NotFoundError,
   NotModifiedError,
 } from '@backstage/errors';
 import { Readable } from 'stream';
 import { parseLastModified } from './util';
+import parseGitUrl from 'git-url-parse';
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for the Gitea v1 api.
@@ -149,15 +151,46 @@ export class GiteaUrlReader implements UrlReaderService {
     const parsedUri = parseGiteaUrl(this.integration.config, url);
 
     return this.deps.treeResponseFactory.fromTarArchive({
-      stream: Readable.from(response.body),
+      response: response,
       subpath: parsedUri.path,
       etag: lastCommitHash,
       filter: options?.filter,
     });
   }
 
-  search(): Promise<UrlReaderServiceSearchResponse> {
-    throw new Error('GiteaUrlReader search not implemented.');
+  async search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse> {
+    const { filepath } = parseGitUrl(url);
+
+    if (filepath.match(/[*?]/)) {
+      throw new Error('Unsupported search pattern URL');
+    }
+
+    try {
+      const data = await this.readUrl(url, options);
+
+      return {
+        files: [
+          {
+            url: url,
+            content: data.buffer,
+            lastModifiedAt: data.lastModifiedAt,
+          },
+        ],
+        etag: data.etag ?? '',
+      };
+    } catch (error) {
+      assertError(error);
+      if (error.name === 'NotFoundError') {
+        return {
+          files: [],
+          etag: '',
+        };
+      }
+      throw error;
+    }
   }
 
   toString() {

@@ -173,7 +173,7 @@ export class ScmAuth implements ScmAuthApi {
     const host = options?.host ?? 'gitlab.com';
     return new ScmAuth('gitlab', gitlabAuthApi, host, {
       default: ['read_user', 'read_api', 'read_repository'],
-      repoWrite: ['write_repository', 'api'],
+      repoWrite: ['write_repository api'],
     });
   }
 
@@ -226,12 +226,60 @@ export class ScmAuth implements ScmAuthApi {
     bitbucketAuthApi: OAuthApi,
     options?: {
       host?: string;
+      scopeMapping?: {
+        default?: string[];
+        repoWrite?: string[];
+      };
     },
   ): ScmAuth {
     const host = options?.host ?? 'bitbucket.org';
+    const defaultScopes = options?.scopeMapping?.default ?? [
+      'account',
+      'team',
+      'pullrequest',
+      'snippet',
+      'issue',
+    ];
+    const repoWriteScopes = options?.scopeMapping?.repoWrite ?? [
+      'pullrequest:write',
+      'snippet:write',
+      'issue:write',
+    ];
     return new ScmAuth('bitbucket', bitbucketAuthApi, host, {
-      default: ['account', 'team', 'pullrequest', 'snippet', 'issue'],
-      repoWrite: ['pullrequest:write', 'snippet:write', 'issue:write'],
+      default: defaultScopes,
+      repoWrite: repoWriteScopes,
+    });
+  }
+
+  /**
+   * Creates a new ScmAuth instance that handles authentication towards Bitbucket Server.
+   *
+   * The host option determines which URLs that are handled by this instance.
+   *
+   * The default scopes are:
+   *
+   * `PUBLIC_REPOS REPO_READ`
+   *
+   * If the additional `repoWrite` permission is requested, these scopes are added:
+   *
+   * `REPO_WRITE`
+   */
+  static forBitbucketServer(
+    bitbucketAuthApi: OAuthApi,
+    options: {
+      host: string;
+      scopeMapping?: {
+        default?: string[];
+        repoWrite?: string[];
+      };
+    },
+  ): ScmAuth {
+    return this.forBitbucket(bitbucketAuthApi, {
+      host: options.host,
+      scopeMapping: {
+        default: options.scopeMapping?.default ?? ['PUBLIC_REPOS', 'REPO_READ'],
+        repoWrite: options.scopeMapping?.repoWrite ?? ['REPO_WRITE'],
+      },
     });
   }
 

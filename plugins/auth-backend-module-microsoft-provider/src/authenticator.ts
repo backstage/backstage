@@ -45,30 +45,29 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
     const clientSecret = config.getString('clientSecret');
     const tenantId = config.getString('tenantId');
     const domainHint = config.getOptionalString('domainHint');
+    const skipUserProfile =
+      config.getOptionalBoolean('skipUserProfile') ?? false;
 
-    const helper = PassportOAuthAuthenticatorHelper.from(
-      new ExtendedMicrosoftStrategy(
-        {
-          clientID: clientId,
-          clientSecret: clientSecret,
-          callbackURL: callbackUrl,
-          tenant: tenantId,
-        },
-        (
-          accessToken: string,
-          refreshToken: string,
-          params: any,
-          fullProfile: PassportProfile,
-          done: PassportOAuthDoneCallback,
-        ) => {
-          done(
-            undefined,
-            { fullProfile, params, accessToken },
-            { refreshToken },
-          );
-        },
-      ),
+    const strategy = new ExtendedMicrosoftStrategy(
+      {
+        clientID: clientId,
+        clientSecret: clientSecret,
+        callbackURL: callbackUrl,
+        tenant: tenantId,
+      },
+      (
+        accessToken: string,
+        refreshToken: string,
+        params: any,
+        fullProfile: PassportProfile,
+        done: PassportOAuthDoneCallback,
+      ) => {
+        done(undefined, { fullProfile, params, accessToken }, { refreshToken });
+      },
     );
+
+    strategy.setSkipUserProfile(skipUserProfile);
+    const helper = PassportOAuthAuthenticatorHelper.from(strategy);
 
     return {
       helper,

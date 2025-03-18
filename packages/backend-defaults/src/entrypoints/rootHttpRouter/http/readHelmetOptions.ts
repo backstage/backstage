@@ -17,7 +17,6 @@
 import { Config } from '@backstage/config';
 import helmet from 'helmet';
 import { HelmetOptions } from 'helmet';
-import { ContentSecurityPolicyOptions } from 'helmet/dist/types/middlewares/content-security-policy';
 import kebabCase from 'lodash/kebabCase';
 
 /**
@@ -81,10 +80,15 @@ function readCspDirectives(config?: Config): CspDirectives {
   return result;
 }
 
+type ContentSecurityPolicyDirectives = Exclude<
+  HelmetOptions['contentSecurityPolicy'],
+  boolean | undefined
+>['directives'];
+
 export function applyCspDirectives(
   directives: CspDirectives,
-): ContentSecurityPolicyOptions['directives'] {
-  const result: ContentSecurityPolicyOptions['directives'] =
+): ContentSecurityPolicyDirectives {
+  const result: ContentSecurityPolicyDirectives =
     helmet.contentSecurityPolicy.getDefaultDirectives();
 
   // TODO(Rugvip): We currently use non-precompiled AJV for validation in the frontend, which uses eval.

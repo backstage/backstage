@@ -46,7 +46,6 @@ describe('RouterBlueprint', () => {
         "inputs": {},
         "kind": "app-router-component",
         "name": undefined,
-        "namespace": undefined,
         "output": [
           [Function],
         ],

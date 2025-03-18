@@ -409,6 +409,20 @@ export interface Config {
               members?: string;
             };
           }>;
+      /**
+       *  Configuration for overriding the vendor-specific default attribute names.
+       */
+      vendor?: {
+        /**
+         * Attribute name for the distinguished name (DN) of an entry,
+         */
+        dnAttributeName?: string;
+
+        /**
+         * Attribute name for the unique identifier (UUID) of an entry,
+         */
+        uuidAttributeName?: string;
+      };
     }>;
   };
 
@@ -423,7 +437,7 @@ export interface Config {
       /**
        * LdapOrg provider key
        */
-      ldapOrg: {
+      ldapOrg?: {
         /**
          * Id of the LdapOrg provider
          */
@@ -464,179 +478,366 @@ export interface Config {
           /**
            * The settings that govern the reading and interpretation of users.
            */
-          users: {
-            /**
-             * The DN under which users are stored.
-             *
-             * E.g. "ou=people,ou=example,dc=example,dc=net"
-             */
-            dn: string;
-            /**
-             * The search options to use. The default is scope "one" and
-             * attributes "*" and "+".
-             *
-             * It is common to want to specify a filter, to narrow down the set
-             * of matching items.
-             */
-            options: {
-              scope?: 'base' | 'one' | 'sub';
-              filter?: string;
-              attributes?: string | string[];
-              sizeLimit?: number;
-              timeLimit?: number;
-              derefAliases?: number;
-              typesOnly?: boolean;
-              paged?:
-                | boolean
-                | {
-                    pageSize?: number;
-                    pagePause?: boolean;
-                  };
-            };
-            /**
-             * JSON paths (on a.b.c form) and hard coded values to set on those
-             * paths.
-             *
-             * This can be useful for example if you want to hard code a
-             * namespace or similar on the generated entities.
-             */
-            set?: { [key: string]: JsonValue };
-            /**
-             * Mappings from well known entity fields, to LDAP attribute names
-             */
-            map?: {
-              /**
-               * The name of the attribute that holds the relative
-               * distinguished name of each entry. Defaults to "uid".
-               */
-              rdn?: string;
-              /**
-               * The name of the attribute that shall be used for the value of
-               * the metadata.name field of the entity. Defaults to "uid".
-               */
-              name?: string;
-              /**
-               * The name of the attribute that shall be used for the value of
-               * the metadata.description field of the entity.
-               */
-              description?: string;
-              /**
-               * The name of the attribute that shall be used for the value of
-               * the spec.profile.displayName field of the entity. Defaults to
-               * "cn".
-               */
-              displayName?: string;
-              /**
-               * The name of the attribute that shall be used for the value of
-               * the spec.profile.email field of the entity. Defaults to
-               * "mail".
-               */
-              email?: string;
-              /**
-               * The name of the attribute that shall be used for the value of
-               * the spec.profile.picture field of the entity.
-               */
-              picture?: string;
-              /**
-               * The name of the attribute that shall be used for the values of
-               * the spec.memberOf field of the entity. Defaults to "memberOf".
-               */
-              memberOf?: string;
-            };
-          };
+          users?:
+            | {
+                /**
+                 * The DN under which users are stored.
+                 *
+                 * E.g. "ou=people,ou=example,dc=example,dc=net"
+                 */
+                dn: string;
+                /**
+                 * The search options to use. The default is scope "one" and
+                 * attributes "*" and "+".
+                 *
+                 * It is common to want to specify a filter, to narrow down the set
+                 * of matching items.
+                 */
+                options: {
+                  scope?: 'base' | 'one' | 'sub';
+                  filter?: string;
+                  attributes?: string | string[];
+                  sizeLimit?: number;
+                  timeLimit?: number;
+                  derefAliases?: number;
+                  typesOnly?: boolean;
+                  paged?:
+                    | boolean
+                    | {
+                        pageSize?: number;
+                        pagePause?: boolean;
+                      };
+                };
+                /**
+                 * JSON paths (on a.b.c form) and hard coded values to set on those
+                 * paths.
+                 *
+                 * This can be useful for example if you want to hard code a
+                 * namespace or similar on the generated entities.
+                 */
+                set?: { [key: string]: JsonValue };
+                /**
+                 * Mappings from well known entity fields, to LDAP attribute names
+                 */
+                map?: {
+                  /**
+                   * The name of the attribute that holds the relative
+                   * distinguished name of each entry. Defaults to "uid".
+                   */
+                  rdn?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the metadata.name field of the entity. Defaults to "uid".
+                   */
+                  name?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the metadata.description field of the entity.
+                   */
+                  description?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the spec.profile.displayName field of the entity. Defaults to
+                   * "cn".
+                   */
+                  displayName?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the spec.profile.email field of the entity. Defaults to
+                   * "mail".
+                   */
+                  email?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the spec.profile.picture field of the entity.
+                   */
+                  picture?: string;
+                  /**
+                   * The name of the attribute that shall be used for the values of
+                   * the spec.memberOf field of the entity. Defaults to "memberOf".
+                   */
+                  memberOf?: string;
+                };
+              }
+            | Array<{
+                /**
+                 * The DN under which users are stored.
+                 *
+                 * E.g. "ou=people,ou=example,dc=example,dc=net"
+                 */
+                dn: string;
+                /**
+                 * The search options to use. The default is scope "one" and
+                 * attributes "*" and "+".
+                 *
+                 * It is common to want to specify a filter, to narrow down the set
+                 * of matching items.
+                 */
+                options: {
+                  scope?: 'base' | 'one' | 'sub';
+                  filter?: string;
+                  attributes?: string | string[];
+                  sizeLimit?: number;
+                  timeLimit?: number;
+                  derefAliases?: number;
+                  typesOnly?: boolean;
+                  paged?:
+                    | boolean
+                    | {
+                        pageSize?: number;
+                        pagePause?: boolean;
+                      };
+                };
+                /**
+                 * JSON paths (on a.b.c form) and hard coded values to set on those
+                 * paths.
+                 *
+                 * This can be useful for example if you want to hard code a
+                 * namespace or similar on the generated entities.
+                 */
+                set?: { [key: string]: JsonValue };
+                /**
+                 * Mappings from well known entity fields, to LDAP attribute names
+                 */
+                map?: {
+                  /**
+                   * The name of the attribute that holds the relative
+                   * distinguished name of each entry. Defaults to "uid".
+                   */
+                  rdn?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the metadata.name field of the entity. Defaults to "uid".
+                   */
+                  name?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the metadata.description field of the entity.
+                   */
+                  description?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the spec.profile.displayName field of the entity. Defaults to
+                   * "cn".
+                   */
+                  displayName?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the spec.profile.email field of the entity. Defaults to
+                   * "mail".
+                   */
+                  email?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the spec.profile.picture field of the entity.
+                   */
+                  picture?: string;
+                  /**
+                   * The name of the attribute that shall be used for the values of
+                   * the spec.memberOf field of the entity. Defaults to "memberOf".
+                   */
+                  memberOf?: string;
+                };
+              }>;
 
           /**
            * The settings that govern the reading and interpretation of groups.
            */
-          groups: {
+          groups?:
+            | {
+                /**
+                 * The DN under which groups are stored.
+                 *
+                 * E.g. "ou=people,ou=example,dc=example,dc=net"
+                 */
+                dn: string;
+                /**
+                 * The search options to use. The default is scope "one" and
+                 * attributes "*" and "+".
+                 *
+                 * It is common to want to specify a filter, to narrow down the set
+                 * of matching items.
+                 */
+                options: {
+                  scope?: 'base' | 'one' | 'sub';
+                  filter?: string;
+                  attributes?: string | string[];
+                  sizeLimit?: number;
+                  timeLimit?: number;
+                  derefAliases?: number;
+                  typesOnly?: boolean;
+                  paged?:
+                    | boolean
+                    | {
+                        pageSize?: number;
+                        pagePause?: boolean;
+                      };
+                };
+                /**
+                 * JSON paths (on a.b.c form) and hard coded values to set on those
+                 * paths.
+                 *
+                 * This can be useful for example if you want to hard code a
+                 * namespace or similar on the generated entities.
+                 */
+                set?: { [key: string]: JsonValue };
+                /**
+                 * Mappings from well known entity fields, to LDAP attribute names
+                 */
+                map?: {
+                  /**
+                   * The name of the attribute that holds the relative
+                   * distinguished name of each entry. Defaults to "cn".
+                   */
+                  rdn?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the metadata.name field of the entity. Defaults to "cn".
+                   */
+                  name?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the metadata.description field of the entity. Defaults to
+                   * "description".
+                   */
+                  description?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the spec.type field of the entity. Defaults to "groupType".
+                   */
+                  type?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the spec.profile.displayName field of the entity. Defaults to
+                   * "cn".
+                   */
+                  displayName?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the spec.profile.email field of the entity.
+                   */
+                  email?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the spec.profile.picture field of the entity.
+                   */
+                  picture?: string;
+                  /**
+                   * The name of the attribute that shall be used for the values of
+                   * the spec.parent field of the entity. Defaults to "memberOf".
+                   */
+                  memberOf?: string;
+                  /**
+                   * The name of the attribute that shall be used for the values of
+                   * the spec.children field of the entity. Defaults to "member".
+                   */
+                  members?: string;
+                };
+              }
+            | Array<{
+                /**
+                 * The DN under which groups are stored.
+                 *
+                 * E.g. "ou=people,ou=example,dc=example,dc=net"
+                 */
+                dn: string;
+                /**
+                 * The search options to use. The default is scope "one" and
+                 * attributes "*" and "+".
+                 *
+                 * It is common to want to specify a filter, to narrow down the set
+                 * of matching items.
+                 */
+                options: {
+                  scope?: 'base' | 'one' | 'sub';
+                  filter?: string;
+                  attributes?: string | string[];
+                  sizeLimit?: number;
+                  timeLimit?: number;
+                  derefAliases?: number;
+                  typesOnly?: boolean;
+                  paged?:
+                    | boolean
+                    | {
+                        pageSize?: number;
+                        pagePause?: boolean;
+                      };
+                };
+                /**
+                 * JSON paths (on a.b.c form) and hard coded values to set on those
+                 * paths.
+                 *
+                 * This can be useful for example if you want to hard code a
+                 * namespace or similar on the generated entities.
+                 */
+                set?: { [key: string]: JsonValue };
+                /**
+                 * Mappings from well known entity fields, to LDAP attribute names
+                 */
+                map?: {
+                  /**
+                   * The name of the attribute that holds the relative
+                   * distinguished name of each entry. Defaults to "cn".
+                   */
+                  rdn?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the metadata.name field of the entity. Defaults to "cn".
+                   */
+                  name?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the metadata.description field of the entity. Defaults to
+                   * "description".
+                   */
+                  description?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the spec.type field of the entity. Defaults to "groupType".
+                   */
+                  type?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the spec.profile.displayName field of the entity. Defaults to
+                   * "cn".
+                   */
+                  displayName?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the spec.profile.email field of the entity.
+                   */
+                  email?: string;
+                  /**
+                   * The name of the attribute that shall be used for the value of
+                   * the spec.profile.picture field of the entity.
+                   */
+                  picture?: string;
+                  /**
+                   * The name of the attribute that shall be used for the values of
+                   * the spec.parent field of the entity. Defaults to "memberOf".
+                   */
+                  memberOf?: string;
+                  /**
+                   * The name of the attribute that shall be used for the values of
+                   * the spec.children field of the entity. Defaults to "member".
+                   */
+                  members?: string;
+                };
+              }>;
+
+          /**
+           *  Configuration for overriding the vendor-specific default attribute names.
+           */
+          vendor?: {
             /**
-             * The DN under which groups are stored.
-             *
-             * E.g. "ou=people,ou=example,dc=example,dc=net"
+             * Attribute name for the distinguished name (DN) of an entry,
              */
-            dn: string;
+            dnAttributeName?: string;
+
             /**
-             * The search options to use. The default is scope "one" and
-             * attributes "*" and "+".
-             *
-             * It is common to want to specify a filter, to narrow down the set
-             * of matching items.
+             * Attribute name for the unique identifier (UUID) of an entry,
              */
-            options: {
-              scope?: 'base' | 'one' | 'sub';
-              filter?: string;
-              attributes?: string | string[];
-              sizeLimit?: number;
-              timeLimit?: number;
-              derefAliases?: number;
-              typesOnly?: boolean;
-              paged?:
-                | boolean
-                | {
-                    pageSize?: number;
-                    pagePause?: boolean;
-                  };
-            };
-            /**
-             * JSON paths (on a.b.c form) and hard coded values to set on those
-             * paths.
-             *
-             * This can be useful for example if you want to hard code a
-             * namespace or similar on the generated entities.
-             */
-            set?: { [key: string]: JsonValue };
-            /**
-             * Mappings from well known entity fields, to LDAP attribute names
-             */
-            map?: {
-              /**
-               * The name of the attribute that holds the relative
-               * distinguished name of each entry. Defaults to "cn".
-               */
-              rdn?: string;
-              /**
-               * The name of the attribute that shall be used for the value of
-               * the metadata.name field of the entity. Defaults to "cn".
-               */
-              name?: string;
-              /**
-               * The name of the attribute that shall be used for the value of
-               * the metadata.description field of the entity. Defaults to
-               * "description".
-               */
-              description?: string;
-              /**
-               * The name of the attribute that shall be used for the value of
-               * the spec.type field of the entity. Defaults to "groupType".
-               */
-              type?: string;
-              /**
-               * The name of the attribute that shall be used for the value of
-               * the spec.profile.displayName field of the entity. Defaults to
-               * "cn".
-               */
-              displayName?: string;
-              /**
-               * The name of the attribute that shall be used for the value of
-               * the spec.profile.email field of the entity.
-               */
-              email?: string;
-              /**
-               * The name of the attribute that shall be used for the value of
-               * the spec.profile.picture field of the entity.
-               */
-              picture?: string;
-              /**
-               * The name of the attribute that shall be used for the values of
-               * the spec.parent field of the entity. Defaults to "memberOf".
-               */
-              memberOf?: string;
-              /**
-               * The name of the attribute that shall be used for the values of
-               * the spec.children field of the entity. Defaults to "member".
-               */
-              members?: string;
-            };
+            uuidAttributeName?: string;
           };
         };
       };
@@ -864,6 +1065,20 @@ export interface Config {
                */
               members?: string;
             };
+          };
+          /**
+           *  Configuration for overriding the vendor-specific default attribute names.
+           */
+          vendor?: {
+            /**
+             * Attribute name for the distinguished name (DN) of an entry,
+             */
+            dnAttributeName?: string;
+
+            /**
+             * Attribute name for the unique identifier (UUID) of an entry,
+             */
+            uuidAttributeName?: string;
           };
         }>;
       };

@@ -20,10 +20,9 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
-import { ResizableBox } from 'react-resizable';
 import {
-  ScaffolderTaskOutput,
   scaffolderApiRef,
+  ScaffolderTaskOutput,
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
 import { selectedTemplateRouteRef } from '../../routes';
@@ -39,11 +38,13 @@ import { useAsync } from '@react-hookz/web';
 import { usePermission } from '@backstage/plugin-permission-react';
 import {
   taskCancelPermission,
-  taskReadPermission,
   taskCreatePermission,
+  taskReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
+import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
+import { default as reactUseAsync } from 'react-use/esm/useAsync';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -56,6 +57,9 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'right',
   },
   cancelButton: {
+    marginRight: theme.spacing(1),
+  },
+  retryButton: {
     marginRight: theme.spacing(1),
   },
   logsVisibilityButton: {
@@ -77,6 +81,7 @@ export const OngoingTask = (props: {
   const navigate = useNavigate();
   const analytics = useAnalytics();
   const scaffolderApi = useApi(scaffolderApiRef);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
   const taskStream = useTaskEventStream(taskId!);
   const classes = useStyles();
   const steps = useMemo(
@@ -116,9 +121,18 @@ export const OngoingTask = (props: {
 
   useEffect(() => {
     if (taskStream.completed && !taskStream.error) {
+      setLogVisibleState(true);
       setButtonBarVisibleState(false);
     }
   }, [taskStream.error, taskStream.completed]);
+
+  const { value: presentation } = reactUseAsync(async () => {
+    const templateEntityRef = taskStream.task?.spec.templateInfo?.entityRef;
+    if (!templateEntityRef) {
+      return undefined;
+    }
+    return entityPresentationApi.forEntity(templateEntityRef).promise;
+  }, [entityPresentationApi, taskStream.task?.spec.templateInfo?.entityRef]);
 
   const activeStep = useMemo(() => {
     for (let i = steps.length - 1; i >= 0; i--) {
@@ -129,6 +143,12 @@ export const OngoingTask = (props: {
 
     return 0;
   }, [steps]);
+
+  const isRetryableTask =
+    taskStream.task?.spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ===
+    'startOver';
+
+  const canRetry = canReadTask && canCreateTask && isRetryableTask;
 
   const startOver = useCallback(() => {
     const { namespace, name } =
@@ -157,6 +177,13 @@ export const OngoingTask = (props: {
     templateRouteRef,
   ]);
 
+  const [{ status: _ }, { execute: triggerRetry }] = useAsync(async () => {
+    if (taskId) {
+      analytics.captureEvent('retried', 'Template has been retried');
+      await scaffolderApi.retry?.(taskId);
+    }
+  });
+
   const [{ status: cancelStatus }, { execute: triggerCancel }] = useAsync(
     async () => {
       if (taskId) {
@@ -168,31 +195,34 @@ export const OngoingTask = (props: {
 
   const Outputs = props.TemplateOutputsComponent ?? DefaultTemplateOutputs;
 
-  const templateName =
-    taskStream.task?.spec.templateInfo?.entity?.metadata.name || '';
-
   const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
 
   return (
     <Page themeId="website">
       <Header
         pageTitleOverride={
-          templateName
-            ? t('ongoingTask.pageTitle.hasTemplateName', { templateName })
+          presentation
+            ? t('ongoingTask.pageTitle.hasTemplateName', {
+                templateName: presentation.primaryTitle,
+              })
             : t('ongoingTask.pageTitle.noTemplateName')
         }
         title={
           <div>
-            {t('ongoingTask.title')} <code>{templateName}</code>
+            {t('ongoingTask.title')}{' '}
+            <code>{presentation ? presentation.primaryTitle : ''}</code>
           </div>
         }
         subtitle={t('ongoingTask.subtitle', { taskId: taskId as string })}
       >
         <ContextMenu
           cancelEnabled={cancelEnabled}
+          canRetry={canRetry}
+          isRetryableTask={isRetryableTask}
           logsVisible={logsVisible}
           buttonBarVisible={buttonBarVisible}
           onStartOver={startOver}
+          onRetry={triggerRetry}
           onToggleLogs={setLogVisibleState}
           onToggleButtonBar={setButtonBarVisibleState}
           taskId={taskId}
@@ -229,7 +259,7 @@ export const OngoingTask = (props: {
                     className={classes.cancelButton}
                     disabled={
                       !cancelEnabled ||
-                      cancelStatus !== 'not-executed' ||
+                      (cancelStatus !== 'not-executed' && !isRetryableTask) ||
                       !canCancelTask
                     }
                     onClick={triggerCancel}
@@ -237,6 +267,16 @@ export const OngoingTask = (props: {
                   >
                     {t('ongoingTask.cancelButtonTitle')}
                   </Button>
+                  {isRetryableTask && (
+                    <Button
+                      className={classes.retryButton}
+                      disabled={cancelEnabled || !canRetry}
+                      onClick={triggerRetry}
+                      data-testid="retry-button"
+                    >
+                      {t('ongoingTask.retryButtonTitle')}
+                    </Button>
+                  )}
                   <Button
                     className={classes.logsVisibilityButton}
                     color="primary"
@@ -263,13 +303,11 @@ export const OngoingTask = (props: {
         ) : null}
 
         {logsVisible ? (
-          <ResizableBox height={240} minConstraints={[0, 160]} axis="y">
-            <Paper style={{ height: '100%' }}>
-              <Box padding={2} height="100%">
-                <TaskLogStream logs={taskStream.stepLogs} />
-              </Box>
-            </Paper>
-          </ResizableBox>
+          <Paper style={{ height: '100%' }}>
+            <Box padding={2} height="100%">
+              <TaskLogStream logs={taskStream.stepLogs} />
+            </Box>
+          </Paper>
         ) : null}
       </Content>
     </Page>

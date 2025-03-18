@@ -15,7 +15,7 @@
  */
 
 import { createProxyAuthenticator } from '@backstage/plugin-auth-node';
-import { NotImplementedError } from '@backstage/errors';
+import { NotAllowedError } from '@backstage/errors';
 
 export const guestAuthenticator = createProxyAuthenticator({
   defaultProfileTransform: async () => {
@@ -25,13 +25,14 @@ export const guestAuthenticator = createProxyAuthenticator({
     const allowOutsideDev = config.getOptionalBoolean(
       'dangerouslyAllowOutsideDevelopment',
     );
-    if (process.env.NODE_ENV !== 'development' && allowOutsideDev !== true) {
-      throw new NotImplementedError(
-        'The guest provider cannot be used outside of a development environment',
+    return process.env.NODE_ENV !== 'development' && allowOutsideDev !== true;
+  },
+  async authenticate(_, disabled) {
+    if (disabled) {
+      throw new NotAllowedError(
+        "The guest provider cannot be used outside of a development environment unless 'auth.providers.guest.dangerouslyAllowOutsideDevelopment' is enabled",
       );
     }
-  },
-  async authenticate() {
     return { result: {} };
   },
 });

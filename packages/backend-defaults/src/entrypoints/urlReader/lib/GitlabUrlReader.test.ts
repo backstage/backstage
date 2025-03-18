@@ -31,6 +31,7 @@ import {
   GitLabIntegration,
   readGitLabIntegrationConfig,
 } from '@backstage/integration';
+import { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
 
 const logger = mockServices.logger.mock();
 
@@ -663,6 +664,23 @@ describe('GitlabUrlReader', () => {
         ),
       ).rejects.toThrow(NotModifiedError);
     });
+
+    it('returns a single file for exact urls', async () => {
+      gitlabProcessor.readUrl = jest.fn().mockResolvedValue({
+        buffer: async () => Buffer.from('content'),
+        etag: 'etag',
+      } as UrlReaderServiceReadUrlResponse);
+      const data = await gitlabProcessor.search(
+        'https://github.com/backstage/mock/tree/main/o',
+      );
+      expect(gitlabProcessor.readUrl).toHaveBeenCalledTimes(1);
+      expect(data.etag).toBe('etag');
+      expect(data.files.length).toBe(1);
+      expect(data.files[0].url).toBe(
+        'https://github.com/backstage/mock/tree/main/o',
+      );
+      expect((await data.files[0].content()).toString()).toEqual('content');
+    });
   });
 
   describe('getGitlabFetchUrl', () => {
@@ -697,7 +715,9 @@ describe('GitlabUrlReader', () => {
         (gitlabProcessor as any).getGitlabFetchUrl(
           'https://gitlab.com/some/random/endpoint',
         ),
-      ).rejects.toThrow('Please provide full path to yaml file from GitLab');
+      ).rejects.toThrow(
+        'Failed converting /some/random/endpoint to a project id. Url path must include /blob/.',
+      );
     });
   });
 

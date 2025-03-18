@@ -141,6 +141,14 @@ export const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([
     instanceOf: UnknownTag,
     construct: (data: string, type?: string) => new UnknownTag(data, type),
   }),
+  new Type('tag:', {
+    kind: 'mapping',
+    multi: true,
+    representName: o => (o as UnknownTag).type,
+    represent: o => (o as UnknownTag).data ?? '',
+    instanceOf: UnknownTag,
+    construct: (data: string, type?: string) => new UnknownTag(data, type),
+  }),
   new Type('', {
     kind: 'sequence',
     multi: true,

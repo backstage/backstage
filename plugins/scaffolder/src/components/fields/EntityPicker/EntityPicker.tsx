@@ -73,6 +73,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
+  const isDisabled = uiSchema?.['ui:disabled'] ?? false;
 
   const catalogApi = useApi(catalogApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
@@ -167,10 +168,15 @@ export const EntityPicker = (props: EntityPickerProps) => {
     (allowArbitraryValues && formData ? getLabel(formData) : '');
 
   useEffect(() => {
-    if (entities?.catalogEntities.length === 1 && selectedEntity === '') {
+    if (
+      required &&
+      !allowArbitraryValues &&
+      entities?.catalogEntities.length === 1 &&
+      selectedEntity === ''
+    ) {
       onChange(stringifyEntityRef(entities.catalogEntities[0]));
     }
-  }, [entities, onChange, selectedEntity]);
+  }, [entities, onChange, selectedEntity, required, allowArbitraryValues]);
 
   return (
     <FormControl
@@ -179,7 +185,12 @@ export const EntityPicker = (props: EntityPickerProps) => {
       error={rawErrors?.length > 0 && !formData}
     >
       <Autocomplete
-        disabled={entities?.catalogEntities.length === 1}
+        disabled={
+          isDisabled ||
+          (required &&
+            !allowArbitraryValues &&
+            entities?.catalogEntities.length === 1)
+        }
         id={idSchema?.$id}
         value={selectedEntity}
         loading={loading}
@@ -203,6 +214,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
             FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
             variant="outlined"
             required={required}
+            disabled={isDisabled}
             InputProps={params.InputProps}
           />
         )}

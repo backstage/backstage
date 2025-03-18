@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { BackstageCredentials, BackstagePrincipalTypes } from './AuthService';
 
 /**

@@ -77,12 +77,12 @@ export const awsAlbAuthenticator = createProxyAuthenticator({
         provider: 'unknown',
         id: claims.sub,
         displayName: claims.name,
-        username: claims.email.split('@')[0].toLowerCase(),
+        username: claims.email.split('@')[0],
         name: {
           familyName: claims.family_name,
           givenName: claims.given_name,
         },
-        emails: [{ value: claims.email.toLowerCase() }],
+        emails: [{ value: claims.email }],
         photos: [{ value: claims.picture }],
       };
 

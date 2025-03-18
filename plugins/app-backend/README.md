@@ -21,7 +21,7 @@ Now add the plugin to your app, creating it for example like this:
 import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-app-backend/alpha'));
+backend.add(import('@backstage/plugin-app-backend'));
 backend.start();
 ```
 

@@ -34,10 +34,7 @@ export function createOAuthProviderFactory<TProfile>(options: {
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
   signInResolverFactories?: {
-    [name in string]: SignInResolverFactory<
-      OAuthAuthenticatorResult<TProfile>,
-      unknown
-    >;
+    [name in string]: SignInResolverFactory;
   };
 }): AuthProviderFactory {
   return ctx => {

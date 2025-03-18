@@ -257,12 +257,12 @@ export class LdapOrgEntityProvider implements EntityProvider {
     },
   ) {}
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName() {
     return `LdapOrgEntityProvider:${this.options.id}`;
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection) {
     this.connection = connection;
     await this.scheduleFn?.();
@@ -294,6 +294,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
       client,
       this.options.provider.users,
       this.options.provider.groups,
+      this.options.provider.vendor,
       {
         groupTransformer: this.options.groupTransformer,
         userTransformer: this.options.userTransformer,

@@ -25,13 +25,13 @@ const HTML_TEMPLATE_NAME = 'index.html.tmpl';
 /** @internal */
 export async function injectConfigIntoHtml(
   options: InjectOptions,
-): Promise<boolean> {
+): Promise<Buffer | undefined> {
   const { rootDir, appConfigs } = options;
 
   const templatePath = resolvePath(rootDir, HTML_TEMPLATE_NAME);
 
   if (!(await fs.exists(templatePath))) {
-    return false;
+    return undefined;
   }
 
   const templateContent = await fs.readFile(
@@ -55,18 +55,19 @@ export async function injectConfigIntoHtml(
     '</head>',
     `
 <script type="backstage.io/config">
-${JSON.stringify(appConfigs, null, 2)}
+${JSON.stringify(appConfigs, null, 2)
+  // Note on the security aspects of this: We generally trust the app config to
+  // be safe, since control of the app config effectively means full control of
+  // the app. These substitutions are here as an extra precaution to avoid
+  // unintentionally breaking the app, to avoid this being flagged, and in case
+  // someone decides to hook up user input to the app config in their own setup.
+  .replaceAll('</script', '')
+  .replaceAll('<!--', '')}
 </script>
 </head>`,
   );
 
-  await fs.writeFile(
-    resolvePath(rootDir, 'index.html'),
-    indexHtmlContentWithConfig,
-    'utf8',
-  );
-
-  return true;
+  return Buffer.from(indexHtmlContentWithConfig, 'utf8');
 }
 
 export function resolvePublicPath(config: Config) {

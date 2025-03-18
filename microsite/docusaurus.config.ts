@@ -22,6 +22,8 @@ import { themes } from 'prism-react-renderer';
 import type * as Preset from '@docusaurus/preset-classic';
 import { Config } from '@docusaurus/types';
 import RedirectPlugin from '@docusaurus/plugin-client-redirects';
+import { releases } from './releases';
+import type * as OpenApiPlugin from 'docusaurus-plugin-openapi-docs';
 
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
@@ -53,6 +55,14 @@ const PatchedRedirectPlugin: typeof RedirectPlugin = (ctx, opts) => {
   };
 };
 
+const defaultOpenApiOptions = {
+  hideSendButton: true,
+  sidebarOptions: {
+    groupPathsBy: 'tag',
+    categoryLinkSource: 'tag',
+  },
+} satisfies OpenApiPlugin.Options;
+
 const config: Config = {
   title: 'Backstage Software Catalog and Developer Platform',
   tagline: 'An open source framework for building developer portals',
@@ -83,9 +93,12 @@ const config: Config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       {
         docs: {
-          editUrl: 'https://github.com/backstage/backstage/edit/master/docs/',
+          editUrl: ({ docPath }) => {
+            // Always point to the non-versioned directory when editing a doc page
+            return `https://github.com/backstage/backstage/edit/master/docs/${docPath}`;
+          },
           path: '../docs',
-          sidebarPath: 'sidebars.json',
+          sidebarPath: 'sidebars.ts',
           ...(useVersionedDocs
             ? {
                 includeCurrentVersion: true,
@@ -106,6 +119,7 @@ const config: Config = {
                 },
               }
             : undefined),
+          docItemComponent: '@theme/ApiItem',
         },
         blog: {
           path: 'blog',
@@ -262,8 +276,72 @@ const config: Config = {
         ratingMode: 'stars',
       },
     ],
+    [
+      'docusaurus-plugin-openapi-docs',
+      {
+        id: 'api', // plugin id
+        docsPluginId: 'classic', // configured for preset-classic
+        config: {
+          catalog: {
+            ...defaultOpenApiOptions,
+            specPath: '../plugins/catalog-backend/src/schema/openapi.yaml',
+            outputDir: '../docs/features/software-catalog/api',
+          } satisfies OpenApiPlugin.Options,
+          search: {
+            ...defaultOpenApiOptions,
+            specPath: '../plugins/search-backend/src/schema/openapi.yaml',
+            outputDir: '../docs/features/search/api',
+          } satisfies OpenApiPlugin.Options,
+        },
+      },
+    ],
   ],
+  themes: ['docusaurus-theme-openapi-docs'],
   themeConfig: {
+    languageTabs: [
+      {
+        highlight: 'javascript',
+        language: 'nodejs',
+        logoClass: 'nodejs',
+      },
+      {
+        highlight: 'javascript',
+        language: 'javascript',
+        logoClass: 'javascript',
+      },
+      {
+        highlight: 'bash',
+        language: 'curl',
+        logoClass: 'curl',
+      },
+      {
+        highlight: 'powershell',
+        language: 'powershell',
+        logoClass: 'powershell',
+      },
+      {
+        highlight: 'python',
+        language: 'python',
+        logoClass: 'python',
+      },
+      {
+        highlight: 'java',
+        language: 'java',
+        logoClass: 'java',
+        variant: 'unirest',
+      },
+      {
+        highlight: 'go',
+        language: 'go',
+        logoClass: 'go',
+      },
+      {
+        highlight: 'rust',
+        language: 'rust',
+        logoClass: 'rust',
+      },
+    ],
+
     colorMode: {
       defaultMode: 'dark',
       disableSwitch: true,
@@ -277,6 +355,11 @@ const config: Config = {
         {
           href: 'https://github.com/backstage/backstage',
           label: 'GitHub',
+          position: 'left',
+        },
+        {
+          href: 'https://discord.gg/backstage-687207715902193673',
+          label: 'Discord',
           position: 'left',
         },
         {
@@ -295,7 +378,7 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: 'docs/releases/v1.30.0',
+          to: `docs/releases/${releases[0]}`,
           label: 'Releases',
           position: 'left',
         },
@@ -401,10 +484,14 @@ const config: Config = {
               label: 'GitHub',
               to: 'https://github.com/backstage/',
             },
+            {
+              label: 'Assets',
+              to: 'https://github.com/cncf/artwork/tree/main/projects/backstage',
+            },
           ],
         },
       ],
-      copyright: `<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage</p>`,
+      copyright: `<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: <a href="https://www.linuxfoundation.org/trademark-usage" />https://www.linuxfoundation.org/trademark-usage</a></p>`,
     },
     algolia: {
       apiKey: '1f0ba86672ccfc3576faa94583e5b318',

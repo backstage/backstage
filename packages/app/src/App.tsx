@@ -81,7 +81,10 @@ import { TwoColumnLayout } from './components/scaffolder/customScaffolderLayouts
 import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
-import { NotificationsPage } from '@backstage/plugin-notifications';
+import {
+  NotificationsPage,
+  UserNotificationSettingsCard,
+} from '@backstage/plugin-notifications';
 
 const app = createApp({
   apis,
@@ -117,7 +120,10 @@ const routes = (
     <Route path="/home" element={<HomepageCompositionRoot />}>
       {homePage}
     </Route>
-    <Route path="/catalog" element={<CatalogIndexPage />} />
+    <Route
+      path="/catalog"
+      element={<CatalogIndexPage pagination={{ mode: 'offset', limit: 20 }} />}
+    />
     <Route
       path="/catalog/:namespace/:kind/:name"
       element={<CatalogEntityPage />}
@@ -158,7 +164,10 @@ const routes = (
         />
       }
     />
-    <Route path="/docs" element={<TechDocsIndexPage />} />
+    <Route
+      path="/docs"
+      element={<TechDocsIndexPage pagination={{ mode: 'offset', limit: 20 }} />}
+    />
     <Route
       path="/docs/:namespace/:kind/:name/*"
       element={<TechDocsReaderPage />}
@@ -202,6 +211,11 @@ const routes = (
     <Route path="/settings" element={<UserSettingsPage />}>
       <SettingsLayout.Route path="/advanced" title="Advanced">
         <AdvancedSettings />
+      </SettingsLayout.Route>
+      <SettingsLayout.Route path="/notifications" title="Notifications">
+        <UserNotificationSettingsCard
+          originNames={{ 'plugin:scaffolder': 'Scaffolder' }}
+        />
       </SettingsLayout.Route>
     </Route>
     <Route path="/devtools" element={<DevToolsPage />}>

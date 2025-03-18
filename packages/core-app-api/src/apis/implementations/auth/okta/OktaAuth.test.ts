@@ -17,7 +17,7 @@
 import OktaAuth from './OktaAuth';
 import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import { UrlPatternDiscovery } from '../../DiscoveryApi';
-import { MockConfigApi } from '@backstage/test-utils';
+import { mockApis } from '@backstage/test-utils';
 
 const PREFIX = 'okta.';
 
@@ -51,7 +51,7 @@ describe('OktaAuth', () => {
     [`${PREFIX}profile`, [`${PREFIX}profile`]],
     [`${PREFIX}openid`, [`${PREFIX}openid`]],
   ])(`should normalize scopes correctly - %p`, (scope, scopes) => {
-    const configApi = new MockConfigApi({});
+    const configApi = mockApis.config();
     const auth = OktaAuth.create({
       configApi: configApi,
       oauthRequestApi: new MockOAuthApi(),

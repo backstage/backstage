@@ -22,6 +22,7 @@ export interface Config {
       | 'configmaps'
       | 'deployments'
       | 'limitranges'
+      | 'resourcequotas'
       | 'replicasets'
       | 'horizontalpodautoscalers'
       | 'jobs'
@@ -32,7 +33,7 @@ export interface Config {
       | 'daemonsets'
     >;
     serviceLocatorMethod: {
-      type: 'multiTenant';
+      type: 'multiTenant' | 'singleTenant' | 'catalogRelation';
     };
     clusterLocatorMethods: Array<
       | {
@@ -48,14 +49,7 @@ export interface Config {
             /** @visibility secret  */
             serviceAccountToken?: string;
             /** @visibility frontend */
-            authProvider?:
-              | 'aks'
-              | 'aws'
-              | 'azure'
-              | 'google'
-              | 'googleServiceAccount'
-              | 'oidc'
-              | 'serviceAccount';
+            authProvider?: string;
             /** @visibility secret  */
             authMetadata?: object;
             /** @visibility frontend */
@@ -116,6 +110,7 @@ export interface Config {
       configmaps?: string;
       deployments?: string;
       limitranges?: string;
+      resourcequotas?: string;
       replicasets?: string;
       horizontalpodautoscalers?: string;
       jobs?: string;

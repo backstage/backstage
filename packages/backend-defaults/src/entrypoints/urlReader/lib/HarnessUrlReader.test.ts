@@ -35,14 +35,6 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
 
-jest.mock('./git', () => ({
-  Git: {
-    fromAuth: () => ({
-      clone: jest.fn(() => Promise.resolve({})),
-    }),
-  },
-}));
-
 const harnessProcessor = new HarnessUrlReader(
   new HarnessIntegration(
     readHarnessConfig(
@@ -255,6 +247,38 @@ describe('HarnessUrlReader', () => {
           'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName3/projects/projectName/repos/repoName/files/branchName3',
         ),
       ).rejects.toThrow(NotFoundError);
+    });
+  });
+
+  describe('search', () => {
+    it('should return a single file when given an exact URL', async () => {
+      const data = await harnessProcessor.search(
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/buffer.TXT',
+      );
+      expect(data.etag).toBe('');
+      expect(data.files.length).toBe(1);
+      expect(data.files[0].url).toBe(
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/buffer.TXT',
+      );
+      expect((await data.files[0].content()).toString()).toEqual(
+        'Apache License',
+      );
+    });
+
+    it('should return empty list of files for not found files.', async () => {
+      const data = await harnessProcessor.search(
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/404error.yaml',
+      );
+      expect(data.etag).toBe('');
+      expect(data.files.length).toBe(0);
+    });
+
+    it('throws if given URL with wildcard', async () => {
+      await expect(
+        harnessProcessor.search(
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/*.yaml',
+        ),
+      ).rejects.toThrow('Unsupported search pattern URL');
     });
   });
 });

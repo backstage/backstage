@@ -64,7 +64,7 @@ describe('AuthorizedEntitiesCatalog', () => {
           credentials: mockCredentials.none(),
         }),
       ).toEqual({
-        entities: [],
+        entities: { type: 'object', entities: [] },
         pageInfo: { hasNextPage: false },
       });
     });
@@ -113,7 +113,7 @@ describe('AuthorizedEntitiesCatalog', () => {
           credentials: mockCredentials.none(),
         }),
       ).resolves.toEqual({
-        items: [null],
+        items: { type: 'object', entities: [null] },
       });
 
       expect(fakeCatalog.entitiesBatch).not.toHaveBeenCalled();
@@ -174,7 +174,7 @@ describe('AuthorizedEntitiesCatalog', () => {
           filter: { key: 'kind', values: ['b'] },
         }),
       ).resolves.toEqual({
-        items: [],
+        items: { type: 'object', entities: [] },
         pageInfo: {},
         totalItems: 0,
       });
@@ -226,7 +226,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       ];
 
       fakeCatalog.queryEntities.mockResolvedValue({
-        items: entities,
+        items: { type: 'object', entities },
         pageInfo: {
           nextCursor: {
             isPrevious: false,
@@ -254,7 +254,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       });
 
       expect(response).toEqual({
-        items: entities,
+        items: { type: 'object', entities: entities },
         totalItems: 4,
         pageInfo: {
           nextCursor: {
@@ -290,7 +290,7 @@ describe('AuthorizedEntitiesCatalog', () => {
       });
 
       expect(response).toEqual({
-        items: entities,
+        items: { type: 'object', entities: entities },
         totalItems: 4,
         pageInfo: {
           nextCursor: {
@@ -338,7 +338,9 @@ describe('AuthorizedEntitiesCatalog', () => {
           conditions: { rule: 'IS_ENTITY_KIND', params: { kinds: ['b'] } },
         },
       ]);
-      fakeCatalog.entities.mockResolvedValue({ entities: [] });
+      fakeCatalog.entities.mockResolvedValue({
+        entities: { type: 'object', entities: [] },
+      });
       const catalog = new AuthorizedEntitiesCatalog(
         fakeCatalog,
         fakePermissionApi,
@@ -360,7 +362,10 @@ describe('AuthorizedEntitiesCatalog', () => {
         },
       ]);
       fakeCatalog.entities.mockResolvedValue({
-        entities: [{ kind: 'b', namespace: 'default', name: 'my-component' }],
+        entities: {
+          type: 'object',
+          entities: [{ kind: 'b', namespace: 'default', name: 'my-component' }],
+        },
       });
       const catalog = new AuthorizedEntitiesCatalog(
         fakeCatalog,

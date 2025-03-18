@@ -20,30 +20,26 @@ import React from 'react';
 import { EntityPeekAheadPopover } from './EntityPeekAheadPopover';
 import { ApiProvider } from '@backstage/core-app-api';
 import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { catalogApiRef } from '../../api';
-import { Entity } from '@backstage/catalog-model';
-import { CatalogApi } from '@backstage/catalog-client';
 import Button from '@material-ui/core/Button';
 import { entityRouteRef } from '../../routes';
 
-const catalogApi: Partial<CatalogApi> = {
-  getEntityByRef: async (entityRef: string): Promise<Entity | undefined> => {
-    if (entityRef === 'component:default/service1') {
-      return {
-        apiVersion: '',
-        kind: 'Component',
-        metadata: {
-          namespace: 'default',
-          name: 'service1',
-        },
-        spec: {
-          tags: ['java'],
-        },
-      };
-    }
-    return undefined;
-  },
-};
+const catalogApi = catalogApiMock({
+  entities: [
+    {
+      apiVersion: '',
+      kind: 'Component',
+      metadata: {
+        namespace: 'default',
+        name: 'service1',
+      },
+      spec: {
+        tags: ['java'],
+      },
+    },
+  ],
+});
 
 const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
 

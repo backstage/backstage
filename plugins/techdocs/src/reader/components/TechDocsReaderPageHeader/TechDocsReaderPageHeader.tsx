@@ -29,17 +29,23 @@ import {
   TechDocsMetadata,
 } from '@backstage/plugin-techdocs-react';
 import {
+  entityPresentationApiRef,
   EntityRefLink,
   EntityRefLinks,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
-import { RELATION_OWNED_BY, CompoundEntityRef } from '@backstage/catalog-model';
+import {
+  RELATION_OWNED_BY,
+  CompoundEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { Header, HeaderLabel } from '@backstage/core-components';
 import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 
-import { capitalize } from 'lodash';
+import capitalize from 'lodash/capitalize';
 
 import { rootRouteRef } from '../../../routes';
+import { useParams } from 'react-router-dom';
 
 const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
 
@@ -68,6 +74,9 @@ export const TechDocsReaderPageHeader = (
   const addons = useTechDocsAddons();
   const configApi = useApi(configApiRef);
 
+  const entityPresentationApi = useApi(entityPresentationApiRef);
+  const { '*': path = '' } = useParams();
+
   const {
     title,
     setTitle,
@@ -91,7 +100,6 @@ export const TechDocsReaderPageHeader = (
   }, [metadata, setTitle, setSubtitle]);
 
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
-  const tabTitle = [title, subtitle, appTitle].filter(Boolean).join(' | ');
 
   const { locationMetadata, spec } = entityMetadata || {};
   const lifecycle = spec?.lifecycle;
@@ -156,6 +164,26 @@ export const TechDocsReaderPageHeader = (
   const noEntMetadata = !entityMetadataLoading && entityMetadata === undefined;
   const noTdMetadata = !metadataLoading && metadata === undefined;
   if (noEntMetadata || noTdMetadata) return null;
+
+  const stringEntityRef = stringifyEntityRef(entityRef);
+
+  const entityDisplayName =
+    entityPresentationApi.forEntity(stringEntityRef).snapshot.primaryTitle;
+
+  const removeTrailingSlash = (str: string) => str.replace(/\/$/, '');
+  const normalizeAndSpace = (str: string) =>
+    str.replace(/-/g, ' ').split(' ').map(capitalize).join(' ');
+
+  let techdocsTabTitleItems: string[] = [];
+
+  if (path !== '')
+    techdocsTabTitleItems = removeTrailingSlash(path)
+      .split('/')
+      .slice(0, 3)
+      .map(normalizeAndSpace);
+
+  const tabTitleItems = [appTitle, entityDisplayName, ...techdocsTabTitleItems];
+  const tabTitle = tabTitleItems.join(' | ');
 
   return (
     <Header

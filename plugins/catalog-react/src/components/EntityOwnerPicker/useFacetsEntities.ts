@@ -17,8 +17,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef } from '../../api';
 import { useState } from 'react';
-import { Entity } from '@backstage/catalog-model';
-import get from 'lodash/get';
+import { Entity, parseEntityRef } from '@backstage/catalog-model';
 
 type FacetsCursor = {
   start: number;
@@ -34,15 +33,13 @@ type FacetsInitialRequest = {
   text: string;
 };
 
-const maybeString = (value: unknown): string | undefined =>
-  typeof value === 'string' ? value : undefined;
-
 /**
  * This hook asynchronously loads the entity owners using the facets endpoint.
  * EntityOwnerPicker uses this hook when mode="owners-only" is passed as prop.
  * All the owners are kept internally in memory and rendered in batches once requested
  * by the frontend. The values returned by this hook are compatible with `useQueryEntities`
  * hook, which is also used by EntityOwnerPicker.
+ * In this mode, the EntityOwnerPicker won't show detailed information of the owners.
  */
 export function useFacetsEntities({ enabled }: { enabled: boolean }) {
   const catalogApi = useApi(catalogApiRef);
@@ -52,37 +49,30 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
       return [];
     }
     const facet = 'relations.ownedBy';
-    const facetsResponse = await catalogApi.getEntityFacets({
-      facets: [facet],
-    });
-    const entityRefs = facetsResponse.facets[facet]?.map(e => e.value) ?? [];
 
     return catalogApi
-      .getEntitiesByRefs({ entityRefs })
-      .then(resp =>
-        resp.items
-          .filter(entity => entity !== undefined)
-          .map(entity => entity as Entity)
+      .getEntityFacets({ facets: [facet] })
+      .then(response =>
+        response.facets[facet]
+          .map(e => e.value)
+          .map(ref => {
+            const { kind, name, namespace } = parseEntityRef(ref);
+            return {
+              apiVersion: 'backstage.io/v1beta1',
+              kind,
+              metadata: { name, namespace },
+            };
+          })
           .sort(
             (a, b) =>
-              (a.metadata.namespace || '').localeCompare(
-                b.metadata.namespace || '',
+              a.kind.localeCompare(b.kind, 'en-US') ||
+              a.metadata.namespace.localeCompare(
+                b.metadata.namespace,
                 'en-US',
               ) ||
-              (
-                maybeString(get(a, 'spec.profile.displayName')) ||
-                a.metadata.title ||
-                a.metadata.name
-              ).localeCompare(
-                maybeString(get(b, 'spec.profile.displayName')) ||
-                  b.metadata.title ||
-                  b.metadata.name,
-                'en-US',
-              ) ||
-              a.kind.localeCompare(b.kind, 'en-US'),
+              a.metadata.name.localeCompare(b.metadata.name, 'en-US'),
           ),
       )
-      .then(entities => entities)
       .catch(() => []);
   });
 
@@ -161,10 +151,6 @@ function filterEntity(text: string, entity: Entity) {
   return (
     entity.kind.includes(normalizedText) ||
     entity.metadata.namespace?.includes(normalizedText) ||
-    entity.metadata.name.includes(normalizedText) ||
-    entity.metadata.title?.includes(normalizedText) ||
-    (get(entity, 'spec.profile.displayName') as unknown as string)?.includes(
-      normalizedText,
-    )
+    entity.metadata.name.includes(normalizedText)
   );
 }

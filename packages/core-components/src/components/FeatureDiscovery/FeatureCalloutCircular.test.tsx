@@ -58,8 +58,8 @@ describe('<FeatureCalloutCircular />', () => {
         description="description"
       />,
     );
-    rendered.getByText('description');
-    rendered.getByText('title');
+    expect(rendered.getByText('description')).toBeInTheDocument();
+    expect(rendered.getByText('title')).toBeInTheDocument();
   });
 
   it('renders with correct style', async () => {

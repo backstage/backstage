@@ -20,7 +20,6 @@ import {
   ClientSecretCredential,
 } from '@azure/identity';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
-import fetch, { Response } from 'node-fetch';
 import qs from 'qs';
 import { MicrosoftGraphProviderConfig } from './config';
 
@@ -392,7 +391,7 @@ export class MicrosoftGraphClient {
    * from Graph API
    *
    * @param entityName - type of parent resource, either `User` or `Group`
-   * @param id - The unique identifier for the {@link entityName | entityName} resource
+   * @param id - The unique identifier for the `entityName` resource
    * @param maxSize - Maximum pixel height of the photo
    *
    */

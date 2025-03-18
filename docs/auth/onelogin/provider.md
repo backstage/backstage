@@ -38,11 +38,11 @@ auth:
         clientId: ${AUTH_ONELOGIN_CLIENT_ID}
         clientSecret: ${AUTH_ONELOGIN_CLIENT_SECRET}
         issuer: https://<company>.onelogin.com/oidc/2
+        ## uncomment to set lifespan of user session
+        # sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
         signIn:
           resolvers:
-            # typically you would pick one of these
-            - resolver: emailMatchingUserEntityProfileEmail
-            - resolver: emailLocalPartMatchingUserEntityName
+            # See https://backstage.io/docs/auth/onelogin/provider#resolvers for more resolvers
             - resolver: usernameMatchingUserEntityName
 ```
 
@@ -52,6 +52,10 @@ found on the SSO tab** for the OneLogin Application:
 - `clientId`: The client ID
 - `clientSecret`: The client secret
 - `issuer`: The issuer URL
+
+### Optional
+
+- `sessionDuration`: Lifespan of the user session.
 
 ### Resolvers
 

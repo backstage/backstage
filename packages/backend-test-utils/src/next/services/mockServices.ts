@@ -16,14 +16,12 @@
 
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
-import {
-  HostDiscovery,
-  discoveryServiceFactory,
-} from '@backstage/backend-defaults/discovery';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
 import { permissionsServiceFactory } from '@backstage/backend-defaults/permissions';
+import { permissionsRegistryServiceFactory } from '@backstage/backend-defaults/permissionsRegistry';
 import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
@@ -33,6 +31,7 @@ import {
   AuthService,
   BackstageCredentials,
   BackstageUserInfo,
+  DatabaseService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
@@ -49,11 +48,13 @@ import {
   eventsServiceRef,
 } from '@backstage/plugin-events-node';
 import { JsonObject } from '@backstage/types';
+import { Knex } from 'knex';
 import { MockAuthService } from './MockAuthService';
 import { MockHttpAuthService } from './MockHttpAuthService';
 import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockUserInfoService } from './MockUserInfoService';
 import { mockCredentials } from './mockCredentials';
+import { auditorServiceFactory } from '@backstage/backend-defaults/auditor';
 
 /** @internal */
 function createLoggerMock() {
@@ -128,7 +129,46 @@ function simpleMock<TService>(
 }
 
 /**
+ * Mock implementations of the core services, to be used in tests.
+ *
  * @public
+ * @remarks
+ *
+ * There are some variations among the services depending on what needs tests
+ * might have, but overall there are three main usage patterns:
+ *
+ * 1. Creating an actual fake service instance, often with a simplified version
+ * of functionality, by calling the mock service itself as a function.
+ *
+ * ```ts
+ * // The function often accepts parameters that control its behavior
+ * const foo = mockServices.foo();
+ * ```
+ *
+ * 2. Creating a mock service, where all methods are replaced with jest mocks, by
+ * calling the service's `mock` function.
+ *
+ * ```ts
+ * // You can optionally supply a subset of its methods to implement
+ * const foo = mockServices.foo.mock({
+ *   someMethod: () => 'mocked result',
+ * });
+ * // After exercising your test, you can make assertions on the mock:
+ * expect(foo.someMethod).toHaveBeenCalledTimes(2);
+ * expect(foo.otherMethod).toHaveBeenCalledWith(testData);
+ * ```
+ *
+ * 3. Creating a service factory that behaves similarly to the mock as per above.
+ *
+ * ```ts
+ * await startTestBackend({
+ *   features: [
+ *     mockServices.foo.factory({
+ *       someMethod: () => 'mocked result',
+ *     })
+ *   ],
+ * });
+ * ```
  */
 export namespace mockServices {
   export function rootConfig(options?: rootConfig.Options): RootConfigService {
@@ -179,6 +219,19 @@ export namespace mockServices {
       error: jest.fn(),
       info: jest.fn(),
       warn: jest.fn(),
+    }));
+  }
+
+  export namespace auditor {
+    export const factory = () => auditorServiceFactory;
+
+    export const mock = simpleMock(coreServices.auditor, () => ({
+      createEvent: jest.fn(async _ => {
+        return {
+          success: jest.fn(),
+          fail: jest.fn(),
+        };
+      }),
     }));
   }
 
@@ -234,7 +287,12 @@ export namespace mockServices {
     );
   }
   export namespace discovery {
-    export const factory = () => discoveryServiceFactory;
+    export const factory = () =>
+      createServiceFactory({
+        service: coreServices.discovery,
+        deps: {},
+        factory: () => discovery(),
+      });
     export const mock = simpleMock(coreServices.discovery, () => ({
       getBaseUrl: jest.fn(),
       getExternalBaseUrl: jest.fn(),
@@ -335,8 +393,45 @@ export namespace mockServices {
     }));
   }
 
+  /**
+   * Creates a mock implementation of the
+   * {@link @backstage/backend-plugin-api#coreServices.database}. Just returns
+   * the given `knex` instance, which is useful in combination with the
+   * {@link TestDatabases} facility.
+   */
+  export function database(options: {
+    knex: Knex;
+    migrations?: { skip?: boolean };
+  }): DatabaseService {
+    return {
+      getClient: async () => options.knex,
+      migrations: options.migrations,
+    };
+  }
   export namespace database {
-    export const factory = () => databaseServiceFactory;
+    /**
+     * Creates a mock factory for the
+     * {@link @backstage/backend-plugin-api#coreServices.database}. Just returns
+     * the given `knex` instance if you supply one, which is useful in
+     * combination with the {@link TestDatabases} facility. Otherwise, it
+     * returns the regular default database factory which reads config settings.
+     */
+    export const factory = (options?: {
+      knex: Knex;
+      migrations?: { skip?: boolean };
+    }) =>
+      options
+        ? createServiceFactory({
+            service: coreServices.database,
+            deps: {},
+            factory: () => database(options),
+          })
+        : databaseServiceFactory;
+    /**
+     * Creates a mock of the
+     * {@link @backstage/backend-plugin-api#coreServices.database}, optionally
+     * with some given method implementations.
+     */
     export const mock = simpleMock(coreServices.database, () => ({
       getClient: jest.fn(),
     }));
@@ -388,10 +483,21 @@ export namespace mockServices {
     }));
   }
 
+  export namespace permissionsRegistry {
+    export const factory = () => permissionsRegistryServiceFactory;
+    export const mock = simpleMock(coreServices.permissionsRegistry, () => ({
+      addPermissionRules: jest.fn(),
+      addPermissions: jest.fn(),
+      addResourceType: jest.fn(),
+      getPermissionRuleset: jest.fn(),
+    }));
+  }
+
   export namespace rootLifecycle {
     export const factory = () => rootLifecycleServiceFactory;
     export const mock = simpleMock(coreServices.rootLifecycle, () => ({
       addShutdownHook: jest.fn(),
+      addBeforeShutdownHook: jest.fn(),
       addStartupHook: jest.fn(),
     }));
   }

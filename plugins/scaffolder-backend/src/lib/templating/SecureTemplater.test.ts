@@ -107,8 +107,9 @@ describe('SecureTemplater', () => {
     const mockFilter1 = jest.fn(() => 'filtered text');
     const mockFilter2 = jest.fn((var1, var2) => `${var1} ${var2}`);
     const mockFilter3 = jest.fn((var1, var2) => ({ var1, var2 }));
+    const mockFilter4 = jest.fn(() => undefined);
     const renderWith = await SecureTemplater.loadRenderer({
-      templateFilters: { mockFilter1, mockFilter2, mockFilter3 },
+      templateFilters: { mockFilter1, mockFilter2, mockFilter3, mockFilter4 },
     });
     const renderWithout = await SecureTemplater.loadRenderer();
 
@@ -131,6 +132,7 @@ describe('SecureTemplater', () => {
         var2: 'another extra arg',
       }),
     );
+    expect(renderWith('${{ inputValue | mockFilter4 }}', ctx)).toBe('');
 
     expect(() => renderWithout('${{ inputValue | mockFilter1 }}', ctx)).toThrow(
       /Error: filter not found: mockFilter1/,
@@ -152,8 +154,9 @@ describe('SecureTemplater', () => {
     const mockGlobal1 = jest.fn(() => 'awesome global function');
     const mockGlobal2 = 'foo';
     const mockGlobal3 = 123456;
+    const mockGlobal4 = jest.fn(() => undefined);
     const renderWith = await SecureTemplater.loadRenderer({
-      templateGlobals: { mockGlobal1, mockGlobal2, mockGlobal3 },
+      templateGlobals: { mockGlobal1, mockGlobal2, mockGlobal3, mockGlobal4 },
     });
     const renderWithout = await SecureTemplater.loadRenderer();
 
@@ -164,6 +167,7 @@ describe('SecureTemplater', () => {
     );
     expect(renderWith('${{ mockGlobal2 }}', ctx)).toBe('foo');
     expect(renderWith('${{ mockGlobal3 }}', ctx)).toBe('123456');
+    expect(renderWith('${{ mockGlobal4() }}', ctx)).toBe('');
 
     expect(() => renderWithout('${{ mockGlobal1() }}', ctx)).toThrow(
       /Error: Unable to call `mockGlobal1`/,

@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { Knex as KnexType } from 'knex';
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import {
+  TestDatabaseId,
+  TestDatabases,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { PgSearchHighlightOptions } from '../PgSearchEngine';
 import { DatabaseDocumentStore } from './DatabaseDocumentStore';
@@ -31,18 +34,6 @@ const highlightOptions: PgSearchHighlightOptions = {
   maxFragments: 0,
   fragmentDelimiter: ' ... ',
 };
-
-function createDatabaseManager(
-  client: KnexType,
-  skipMigrations: boolean = false,
-) {
-  return {
-    getClient: async () => client,
-    migrations: {
-      skip: skipMigrations,
-    },
-  };
-}
 
 jest.setTimeout(60_000);
 
@@ -66,8 +57,7 @@ describe('DatabaseDocumentStore', () => {
       'should fail to create, %p',
       async databaseId => {
         const knex = await databases.init(databaseId);
-        const databaseManager = createDatabaseManager(knex);
-
+        const databaseManager = mockServices.database({ knex });
         await expect(
           async () => await DatabaseDocumentStore.create(databaseManager),
         ).rejects.toThrow();
@@ -82,7 +72,7 @@ describe('DatabaseDocumentStore', () => {
 
     async function createStore(databaseId: TestDatabaseId) {
       const knex = await databases.init(databaseId);
-      const databaseManager = createDatabaseManager(knex);
+      const databaseManager = mockServices.database({ knex });
       const store = await DatabaseDocumentStore.create(databaseManager);
 
       return { store, knex };
@@ -250,6 +240,7 @@ describe('DatabaseDocumentStore', () => {
             pgTerm: 'Hello & World',
             offset: 1,
             limit: 1,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
@@ -295,6 +286,7 @@ describe('DatabaseDocumentStore', () => {
             pgTerm: 'Hello & World',
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
@@ -356,6 +348,7 @@ describe('DatabaseDocumentStore', () => {
             types: ['my-type'],
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
@@ -409,6 +402,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
@@ -475,6 +469,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: ['this', 'that'] },
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
@@ -556,6 +551,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this', otherField: 'another' },
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );
@@ -605,6 +601,7 @@ describe('DatabaseDocumentStore', () => {
             fields: { myField: 'this' },
             offset: 0,
             limit: 25,
+            normalization: 0,
             options: highlightOptions,
           }),
         );

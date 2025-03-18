@@ -296,7 +296,7 @@ export function resolveRelations(
   groupMember: Map<string, Set<string>>,
   groupMemberOf: Map<string, Set<string>>,
 ) {
-  // Build reference lookup tables, we reference them by the id the the graph
+  // Build reference lookup tables, we reference them by the id of the graph
   const groupMap: Map<string, GroupEntity> = new Map(); // by group-id or tenant-id
 
   for (const group of groups) {

@@ -17,7 +17,6 @@
 import { NotificationService } from './NotificationService';
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { NotificationPayload } from '@backstage/plugin-notifications-common';
-import fetch from 'node-fetch';
 
 /** @public */
 export type NotificationServiceOptions = {

@@ -15,6 +15,7 @@
       "spec": {
         "owner": "artist-relations-team",
         "type": "website",
+        "lifecycle": "production",
         "parameters": {
           "required": ["name", "description", "repoUrl"],
           "backstage:permissions": {
@@ -95,6 +96,12 @@
               "description": "The user (or group) owner of the template",
               "minLength": 1
             },
+            "lifecycle": {
+              "type": "string",
+              "description": "The lifecycle state of the template.",
+              "examples": ["experimental", "production", "deprecated"],
+              "minLength": 1
+            },
             "parameters": {
               "oneOf": [
                 {
@@ -170,6 +177,23 @@
                 "EXPERIMENTAL_strategy": {
                   "type": "string",
                   "description": "Recovery strategy for your task (none or startOver). By default none"
+                }
+              }
+            },
+            "EXPERIMENTAL_formDecorators": {
+              "type": "array",
+              "description": "A list of decorators and their inputs that the form should trigger before submitting the job",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The form hook ID"
+                  },
+                  "input": {
+                    "type": "object",
+                    "description": "A object describing the inputs to the form hook."
+                  }
                 }
               }
             },

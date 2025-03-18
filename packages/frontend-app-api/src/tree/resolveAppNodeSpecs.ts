@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import { Extension, ExtensionOverrides } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalExtensionOverrides } from '../../../frontend-plugin-api/src/wiring/createExtensionOverrides';
+import { Extension } from '@backstage/frontend-plugin-api';
 import { ExtensionParameters } from './readAppExtensionsConfig';
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import {
-  isInternalFrontendPlugin,
-  toInternalFrontendPlugin,
-} from '../../../frontend-plugin-api/src/wiring/createFrontendPlugin';
+import { OpaqueFrontendPlugin } from '@internal/frontend';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   isInternalFrontendModule,
@@ -47,18 +41,16 @@ export function resolveAppNodeSpecs(options: {
     features = [],
   } = options;
 
-  const plugins = features.filter(isInternalFrontendPlugin);
-  const overrides = features.filter(
-    (f): f is ExtensionOverrides =>
-      f.$$type === '@backstage/ExtensionOverrides',
-  );
+  const plugins = features.filter(OpaqueFrontendPlugin.isType);
   const modules = features.filter(isInternalFrontendModule);
 
   const pluginExtensions = plugins.flatMap(source => {
-    return toInternalFrontendPlugin(source).extensions.map(extension => ({
-      ...extension,
-      source,
-    }));
+    return OpaqueFrontendPlugin.toInternal(source).extensions.map(
+      extension => ({
+        ...extension,
+        source,
+      }),
+    );
   });
   const moduleExtensions = modules.flatMap(mod =>
     toInternalFrontendModule(mod).extensions.flatMap(extension => {
@@ -70,9 +62,6 @@ export function resolveAppNodeSpecs(options: {
 
       return [{ ...extension, source }];
     }),
-  );
-  const overrideExtensions = overrides.flatMap(
-    override => toInternalExtensionOverrides(override).extensions,
   );
 
   // Prevent core override
@@ -94,28 +83,6 @@ export function resolveAppNodeSpecs(options: {
     const forbiddenStr = [...forbidden].map(id => `'${id}'`).join(', ');
     throw new Error(
       `It is forbidden to override the following extension(s): ${forbiddenStr}, which is done by a module for the following plugin(s): ${pluginsStr}`,
-    );
-  }
-  if (overrideExtensions.some(({ id }) => forbidden.has(id))) {
-    const forbiddenStr = [...forbidden].map(id => `'${id}'`).join(', ');
-    throw new Error(
-      `It is forbidden to override the following extension(s): ${forbiddenStr}, which is done by one or more extension overrides`,
-    );
-  }
-
-  const overrideExtensionIds = overrideExtensions.map(({ id }) => id);
-  if (overrideExtensionIds.length !== new Set(overrideExtensionIds).size) {
-    const counts = new Map<string, number>();
-    for (const id of overrideExtensionIds) {
-      counts.set(id, (counts.get(id) ?? 0) + 1);
-    }
-    const duplicated = Array.from(counts.entries())
-      .filter(([, count]) => count > 1)
-      .map(([id]) => id);
-    throw new Error(
-      `The following extensions had duplicate overrides: ${duplicated.join(
-        ', ',
-      )}`,
     );
   }
 
@@ -145,33 +112,6 @@ export function resolveAppNodeSpecs(options: {
       };
     }),
   ];
-
-  // Install all extension overrides
-  for (const extension of overrideExtensions) {
-    const internalExtension = toInternalExtension(extension);
-
-    // Check if our override is overriding an extension that already exists
-    const index = configuredExtensions.findIndex(
-      e => e.extension.id === extension.id,
-    );
-    if (index !== -1) {
-      // Only implementation, attachment point and default disabled status are overridden, the source is kept
-      configuredExtensions[index].extension = internalExtension;
-      configuredExtensions[index].params.attachTo = internalExtension.attachTo;
-      configuredExtensions[index].params.disabled = internalExtension.disabled;
-    } else {
-      // Add the extension as a new one when not overriding an existing one
-      configuredExtensions.push({
-        extension: internalExtension,
-        params: {
-          source: undefined,
-          attachTo: internalExtension.attachTo,
-          disabled: internalExtension.disabled,
-          config: undefined,
-        },
-      });
-    }
-  }
 
   // Install all module overrides
   for (const extension of moduleExtensions) {

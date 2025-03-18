@@ -4,6 +4,14 @@ title: Configuring App with plugins
 description: Documentation on How Configuring App with plugins
 ---
 
+Audience: Developers
+
+:::note Note
+Backstage plugins are primarily written using [TypeScript](https://www.typescriptlang.org), [Node.js](https://nodejs.org) and [React](https://reactjs.org). Having an understanding of these technologies will be beneficial on your journey to customizing Backstage!
+:::
+
+## Summary
+
 Backstage plugins customize the app for your needs. There is a
 [plugin directory](https://backstage.io/plugins) with plugins for many common
 infrastructure needs - CI/CD, monitoring, auditing, and more.

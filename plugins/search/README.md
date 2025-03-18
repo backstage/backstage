@@ -30,7 +30,7 @@ This search plugin is primarily responsible for the following:
 
 - Providing a `<SearchPage />` routable extension.
 - Exposing various search-related components (like `<SearchModal />`,
-  `<SidebarSearch />`, etc), which can be composed by a Backstage App or by
+  `<SidebarSearch />`, etc.), which can be composed by a Backstage App or by
   other Backstage Plugins to power search experiences of all kinds.
 
 Don't forget, a lot of functionality is available in web libraries and backend plugins:

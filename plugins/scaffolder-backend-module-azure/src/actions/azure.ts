@@ -20,10 +20,10 @@ import {
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import {
-  initRepoAndPush,
-  getRepoSourceDirectory,
-  parseRepoUrl,
   createTemplateAction,
+  getRepoSourceDirectory,
+  initRepoAndPush,
+  parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {
@@ -54,6 +54,7 @@ export function createPublishAzureAction(options: {
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    signCommit?: boolean;
   }>({
     id: 'publish:azure',
     examples,
@@ -103,6 +104,11 @@ export function createPublishAzureAction(options: {
             type: 'string',
             description: 'The token to use for authorization to Azure',
           },
+          signCommit: {
+            title: 'Sign commit',
+            type: 'boolean',
+            description: 'Sign commit with configured PGP private key',
+          },
         },
       },
       output: {
@@ -134,6 +140,7 @@ export function createPublishAzureAction(options: {
         gitCommitMessage = 'initial commit',
         gitAuthorName,
         gitAuthorEmail,
+        signCommit,
       } = ctx.input;
 
       const { project, repo, host, organization } = parseRepoUrl(
@@ -151,6 +158,7 @@ export function createPublishAzureAction(options: {
       const credentialProvider =
         DefaultAzureDevOpsCredentialsProvider.fromIntegrations(integrations);
       const credentials = await credentialProvider.getCredentials({ url: url });
+      const integrationConfig = integrations.azure.byHost(host);
 
       if (credentials === undefined && ctx.input.token === undefined) {
         throw new InputError(
@@ -207,13 +215,19 @@ export function createPublishAzureAction(options: {
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
-      const auth =
-        ctx.input.token || credentials?.type === 'pat'
-          ? {
-              username: 'notempty',
-              password: ctx.input.token ?? credentials!.token,
-            }
-          : { token: credentials!.token };
+      const auth = {
+        username: 'notempty',
+        password: ctx.input.token ?? credentials!.token,
+      };
+
+      const signingKey =
+        integrationConfig?.config.commitSigningKey ??
+        config.getOptionalString('scaffolder.defaultCommitSigningKey');
+      if (signCommit && !signingKey) {
+        throw new Error(
+          'Signing commits is enabled but no signing key is provided in the configuration',
+        );
+      }
 
       const commitResult = await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
@@ -225,6 +239,7 @@ export function createPublishAzureAction(options: {
           ? gitCommitMessage
           : config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
+        signingKey: signCommit ? signingKey : undefined,
       });
 
       ctx.output('commitHash', commitResult?.commitHash);

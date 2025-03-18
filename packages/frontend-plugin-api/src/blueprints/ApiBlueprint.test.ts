@@ -48,7 +48,6 @@ describe('ApiBlueprint', () => {
         "inputs": {},
         "kind": "api",
         "name": "test",
-        "namespace": undefined,
         "output": [
           [Function],
         ],
@@ -123,7 +122,6 @@ describe('ApiBlueprint', () => {
         },
         "kind": "api",
         "name": "test",
-        "namespace": undefined,
         "output": [
           [Function],
         ],

@@ -90,7 +90,7 @@ Route binding is also possible through code. For more information, see [this](ht
 
 ### Entity Group Profile Card
 
-This [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension allows you to view, edit, or update groups metadata, such as team avatar, name, email, parent, and child groups.
+This [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension allows you to view, edit, or update groups metadata, such as team avatar, name, email, parent, and child groups.
 
 | Kind          | Namespace | Name            | Id                              |
 | ------------- | --------- | --------------- | ------------------------------- |
@@ -119,14 +119,14 @@ app:
 Use extension overrides for completely re-implementing the group-profile entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'org',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name are necessary so the system knows that this extension will override the default 'group-profile' entity card extension provided by the 'org' plugin
-      namespace: 'org',
+      // Name is necessary so the system knows that this extension will override the default 'group-profile' entity card extension provided by the 'org' plugin
       name: 'group-profile',
       // By default, this card will show up only for groups
       filter: 'kind:group'
@@ -142,7 +142,7 @@ For more information about where to place extension overrides, see the official 
 
 ### Entity Members List Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that displays the names and emails of group members. By clicking the member's name, you'll be directed to the user's catalog page, and the email opens your default email program.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that displays the names and emails of group members. By clicking the member's name, you'll be directed to the user's catalog page, and the email opens your default email program.
 
 | Kind          | Namespace | Name           | Id                             |
 | ------------- | --------- | -------------- | ------------------------------ |
@@ -171,14 +171,14 @@ app:
 Use extension overrides for completely re-implementing the members-list entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'org',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name are necessary so the system knows that this extension will override the default 'members-list' entity card extension provided by the 'org' plugin
-      namespace: 'org',
+      // Name is necessary so the system knows that this extension will override the default 'members-list' entity card extension provided by the 'org' plugin
       name: 'members-list',
       // By default, this card will show up only for groups
       filter: 'kind:group'
@@ -194,7 +194,7 @@ For more information about where to place extension overrides, see the official 
 
 ### Entity Ownership Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension that displays direct or aggregated group or user ownership relationships. Each entity listed in the card links to its respective entity page in the catalog.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that displays direct or aggregated group or user ownership relationships. Each entity listed in the card links to its respective entity page in the catalog.
 
 | Kind          | Namespace | Name        | Id                          |
 | ------------- | --------- | ----------- | --------------------------- |
@@ -223,14 +223,14 @@ app:
 Use extension overrides for completely re-implementing the ownership entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'org',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name are necessary so the system knows that this extension will override the default 'ownership' entity card extension provided by the 'org' plugin
-      namespace: 'org',
+      // Name is necessary so the system knows that this extension will override the default 'ownership' entity card extension provided by the 'org' plugin
       name: 'ownership',
       // By default, this card will show up only for groups or users
       filter: 'kind:group,user'
@@ -246,7 +246,7 @@ For more information about where to place extension overrides, see the official 
 
 ### Entity User Profile Card
 
-This [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/api-report-alpha.md) extension allows you to view user metadata including avatar, name, email, and team. Clicking on the email link will open your default email program while clicking on the team link will direct you to the team page in the catalog plugin.
+This [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension allows you to view user metadata including avatar, name, email, and team. Clicking on the email link will open your default email program while clicking on the team link will direct you to the team page in the catalog plugin.
 
 | Kind          | Namespace | Name           | Id                             |
 | ------------- | --------- | -------------- | ------------------------------ |
@@ -275,14 +275,14 @@ app:
 Use extension overrides for completely re-implementing the user-profile entity card extension:
 
 ```tsx
-import { createExtensionOverrides } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/backstage-plugin-api';
 import { createEntityCardExtension } from '@backstage/plugin-catalog-react/alpha';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'org',
   extensions: [
     createEntityCardExtension({
-      // These namespace and name are necessary so the system knows that this extension will override the default 'user-profile' entity card extension provided by the 'org' plugin
-      namespace: 'org',
+      // Name is necessary so the system knows that this extension will override the default 'user-profile' entity card extension provided by the 'org' plugin
       name: 'user-profile',
       // By default, this card will show up only for groups or users
       filter: 'kind:user'
@@ -308,11 +308,11 @@ As the [NavItem](https://backstage.io/docs/reference/frontend-plugin-api.createn
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import GroupIcon from '@material-ui/icons/People';
 
-export default createExtensionOverrides({
+export default createFrontendModule({
+  pluginId: 'app',
   extensions: [
     createExtension({
-      // These namespace and name are necessary so the system knows that this extension will override the default app nav extension
-      namespace: 'app',
+      // Name is necessary so the system knows that this extension will override the default app nav extension
       name: 'nav',
       // Keeping the same attachment point as in the default App/Nav extension
       attachTo: { id: 'app/layout', input: 'nav' },

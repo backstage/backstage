@@ -72,33 +72,35 @@ putting all extensions like this in a backend module package of their own in the
 `plugins` folder of your Backstage repo:
 
 ```sh
-yarn new --select backend-module --option id=catalog
+yarn new --select backend-module --option pluginId=catalog
 ```
 
 The class will have this basic structure:
 
-```ts
-import { UrlReader } from '@backstage/backend-common';
+```ts title="plugins/catalog-backend-module-frobs/src/FrobsProvider.ts"
 import { Entity } from '@backstage/catalog-model';
 import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
+import {
+  SchedulerServiceTaskRunner,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * Provides entities from fictional frobs service.
  */
 export class FrobsProvider implements EntityProvider {
   private readonly env: string;
-  private readonly reader: UrlReader;
+  private readonly reader: UrlReaderService;
   private connection?: EntityProviderConnection;
   private taskRunner: SchedulerServiceTaskRunner;
 
   /** [1] */
   constructor(
     env: string,
-    reader: UrlReader,
+    reader: UrlReaderService,
     taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.env = env;
@@ -114,7 +116,7 @@ export class FrobsProvider implements EntityProvider {
   /** [3] */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
-    this.taskRunner.run({
+    await this.taskRunner.run({
       id: this.getProviderName(),
       fn: async () => {
         await this.run();
@@ -131,7 +133,7 @@ export class FrobsProvider implements EntityProvider {
     const response = await this.reader.readUrl(
       `https://frobs-${this.env}.example.com/data`,
     );
-    const data = JSON.parse(await response.buffer()).toString();
+    const data = JSON.parse((await response.buffer()).toString());
 
     /** [5] */
     const entities: Entity[] = frobsToEntities(data);
@@ -200,7 +202,7 @@ bucket is accessible.
 There are two different types of mutation.
 
 The first is `'full'`, which means to figuratively throw away the contents of
-the bucket and replacing it with all of the new contents specified. Under the
+the bucket and replacing it with all the new contents specified. Under the
 hood, this is actually implemented through a highly efficient delta mechanism
 for performance reasons, since it is common that the difference from one run to
 the other is actually very small. This strategy is convenient for providers that
@@ -324,7 +326,7 @@ export const catalogModuleFrobsProvider = createBackendModule({
 
 const backend = createBackend();
 
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(catalogModuleFrobsProvider);
 
 // Other plugins ...
@@ -436,66 +438,66 @@ We create a basic entity provider as shown above. In the example below we might 
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
-} from '@backstage/catalog-model'
+} from '@backstage/catalog-model';
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend'
-import { WebClient } from '@slack/web-api'
-import {kebabCase} from 'lodash'
+} from '@backstage/plugin-catalog-backend';
+import { WebClient } from '@slack/web-api';
+import { kebabCase } from 'lodash';
 
 interface Staff {
-  displayName: string
-  slackUserId: string
-  jobTitle: string
-  photoUrl: string
-  address: string
-  email:string
+  displayName: string;
+  slackUserId: string;
+  jobTitle: string;
+  photoUrl: string;
+  address: string;
+  email: string;
 }
 
 export class UserEntityProvider implements EntityProvider {
-  private readonly getStaffUrl: string
-  protected readonly slackTeam: string
-  protected readonly slackToken: string
-  protected connection?: EntityProviderConnection
+  private readonly getStaffUrl: string;
+  protected readonly slackTeam: string;
+  protected readonly slackToken: string;
+  protected connection?: EntityProviderConnection;
 
   static fromConfig(config: Config, options: { logger: Logger }) {
-    const getStaffUrl = config.getString('staff.url')
-    const slackToken = config.getString('slack.token')
-    const slackTeam = config.getString('slack.team')
+    const getStaffUrl = config.getString('staff.url');
+    const slackToken = config.getString('slack.token');
+    const slackTeam = config.getString('slack.team');
     return new UserEntityProvider({
       ...options,
       getStaffUrl,
       slackToken,
       slackTeam,
-    })
+    });
   }
 
   private constructor(options: {
-    getStaffUrl: string
-    slackToken: string
-    slackTeam: string
+    getStaffUrl: string;
+    slackToken: string;
+    slackTeam: string;
   }) {
-    this.getStaffUrl = options.getStaffUrl
-    this.slackToken = options.slackToken
-    this.slackTeam = options.slackTeam
+    this.getStaffUrl = options.getStaffUrl;
+    this.slackToken = options.slackToken;
+    this.slackTeam = options.slackTeam;
   }
 
-  async getAllStaff(): Promise<Staff[]>{
-    await return axios.get(this.getStaffUrl)
+  async getAllStaff(): Promise<Staff[]> {
+    return await axios.get(this.getStaffUrl);
   }
 
   public async connect(connection: EntityProviderConnection): Promise<void> {
-    this.connection = connection
+    this.connection = connection;
   }
 
   async run(): Promise<void> {
     if (!this.connection) {
-      throw new Error('User Connection Not initialized')
+      throw new Error('User Connection Not initialized');
     }
 
-    const userResources: UserEntity[] = []
-    const staff = await this.getAllStaff()
+    const userResources: UserEntity[] = [];
+    const staff = await this.getAllStaff();
 
     for (const user of staff) {
       // we can add any links here in this case it would be adding a slack link to the users so you can directly slack them.
@@ -508,7 +510,7 @@ export class UserEntityProvider implements EntityProvider {
                 icon: 'message',
               },
             ]
-          : undefined
+          : undefined;
       const userEntity: UserEntity = {
         kind: 'User',
         apiVersion: 'backstage.io/v1alpha1',
@@ -531,20 +533,20 @@ export class UserEntityProvider implements EntityProvider {
           },
           memberOf: [],
         },
-      }
+      };
 
-      userResources.push(userEntity)
+      userResources.push(userEntity);
     }
 
     await this.connection.applyMutation({
       type: 'full',
-      entities: userResources.map((entity) => ({
+      entities: userResources.map(entity => ({
         entity,
         locationKey: 'hr-user-https://www.hrurl.com/',
       })),
-    })
+    });
+  }
 }
-
 ```
 
 ## Custom Processors
@@ -595,7 +597,7 @@ startup. They are at the heart of all catalog logic, and have the ability to
 read the contents of locations, modify in-flight entities that were read out of
 a location, perform validation, and more. The catalog comes with a set of
 builtin processors, that have the ability to read from a list of well known
-location types, to perform the basic processing needs, etc, but more can be
+location types, to perform the basic processing needs, etc., but more can be
 added by the organization that adopts Backstage.
 
 We will now show the process of creating a new processor and location type,
@@ -648,24 +650,24 @@ putting all extensions like this in a backend module package of their own in the
 `plugins` folder of your Backstage repo:
 
 ```sh
-yarn new --select backend-module --option id=catalog
+yarn new --select backend-module --option pluginId=catalog
 ```
 
 The class will have this basic structure:
 
 ```ts
-import { UrlReader } from '@backstage/backend-common';
 import {
   processingResult,
   CatalogProcessor,
   CatalogProcessorEmit,
 } from '@backstage/plugin-catalog-node';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 // A processor that reads from the fictional System-X
 export class SystemXReaderProcessor implements CatalogProcessor {
-  constructor(private readonly reader: UrlReader) {}
+  constructor(private readonly reader: UrlReaderService) {}
 
   getProcessorName(): string {
     return 'SystemXReaderProcessor';
@@ -684,9 +686,8 @@ export class SystemXReaderProcessor implements CatalogProcessor {
 
     try {
       // Use the builtin reader facility to grab data from the
-      // API. If you prefer, you can just use plain fetch here
-      // (from the node-fetch package), or any other method of
-      // your choosing.
+      // API. If you prefer, you can just use plain fetch here,
+      // or any other method of your choosing.
       const response = await this.reader.readUrl(location.target);
       const json = JSON.parse((await response.buffer()).toString());
       // Repeatedly call emit(processingResult.entity(location, <entity>))
@@ -762,7 +763,7 @@ export const catalogModuleSystemXReaderProcessor = createBackendModule({
 
 const backend = createBackend();
 
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(catalogModuleSystemXReaderProcessor);
 
 // Other plugins ...
@@ -784,8 +785,8 @@ locations in GitHub. This example aims to demonstrate how to add the same
 behavior for `system-x` that we implemented earlier.
 
 ```ts
-import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import {
   processingResult,
   CatalogProcessor,
@@ -808,7 +809,7 @@ type CacheItem = {
 };
 
 export class SystemXReaderProcessor implements CatalogProcessor {
-  constructor(private readonly reader: UrlReader) {}
+  constructor(private readonly reader: UrlReaderService) {}
 
   getProcessorName() {
     // The processor name must be unique.
@@ -851,7 +852,7 @@ export class SystemXReaderProcessor implements CatalogProcessor {
       }
 
       // For this example the JSON payload is a single entity.
-      const entity: Entity = JSON.parse(response.buffer.toString());
+      const entity: Entity = JSON.parse((await response.buffer()).toString());
       emit(processingResult.entity(location, entity));
 
       // Update the cache with the new ETag and entity used for the next run.
@@ -922,13 +923,13 @@ const makeEntityFromCustomFormatJson = (
         [ANNOTATION_LOCATION]: `${location.type}:${location.target}`,
         [ANNOTATION_ORIGIN_LOCATION]: `${location.type}:${location.target}`,
       },
-    }
+    },
     spec: {
       type: component.type,
       owner: component.author,
-      lifecycle: 'experimental'
-    }
-  }
+      lifecycle: 'experimental',
+    },
+  };
 };
 
 export const customEntityDataParser: CatalogProcessorParser = async function* ({
@@ -960,9 +961,8 @@ export const customEntityDataParser: CatalogProcessorParser = async function* ({
         // Is this a catalog-info.yaml file?
         if (json.apiVersion) {
           yield processingResult.entity(location, json as Entity);
-
-        // let's treat this like it's our custom format instead.
         } else {
+          // let's treat this like it's our custom format instead.
           yield processingResult.entity(
             location,
             makeEntityFromCustomFormatJson(json, location),
@@ -978,7 +978,7 @@ export const customEntityDataParser: CatalogProcessorParser = async function* ({
       }
     }
   }
-}
+};
 ```
 
 This is a lot of code right now, as this is a pretty niche use-case, so we don't currently provide many helpers for you to be able to provide custom implementations easier or to compose together different parsers.
@@ -1024,7 +1024,7 @@ export const catalogModuleCustomDataParser = createBackendModule({
 
 const backend = createBackend();
 
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(catalogModuleCustomDataParser);
 
 // Other plugins ...
@@ -1085,7 +1085,7 @@ interface Service {
 }
 ```
 
-These are the only 3 methods that you need to implement. `getProviderName()` is pretty self explanatory and it's identical to the `getProviderName()` method on a regular Entity Provider.
+These are the only 3 methods that you need to implement. `getProviderName()` is pretty self-explanatory and it's identical to the `getProviderName()` method on a regular Entity Provider.
 
 ```ts
 import { IncrementalEntityProvider } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
@@ -1178,7 +1178,7 @@ export class MyIncrementalEntityProvider
 
   async next(
     context: Context,
-    cursor?: Cursor = { page: 1 },
+    cursor: Cursor = { page: 1 },
   ): Promise<EntityIteratorResult<Cursor>> {
     const { apiClient } = context;
 

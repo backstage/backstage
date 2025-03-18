@@ -27,6 +27,7 @@ import { GcpIapResult } from './types';
  * Auth provider integration for Google Identity-Aware Proxy auth
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export const gcpIap = createAuthProviderIntegration({
   create(options: {

@@ -11,7 +11,7 @@ Components inside Backstage. By default, it has the ability to load skeletons of
 code, template in some variables, and then publish the template to some
 locations like GitHub or GitLab.
 
-<video width="100%" height="100%" controls>
+<video width="100%" height="fit-content" controls>
   <source src="/video/software-templates.mp4" type="video/mp4" />
 </video>
 
@@ -25,7 +25,9 @@ locations like GitHub or GitLab.
 If you're running Backstage with Node 20 or later, you'll need to pass the flag `--no-node-snapshot` to Node in order to
 use the templates feature.
 One way to do this is to specify the `NODE_OPTIONS` environment variable before starting Backstage:
-`export NODE_OPTIONS=--no-node-snapshot`
+`export NODE_OPTIONS="${NODE_OPTIONS:-} --no-node-snapshot"`
+
+> It's important to append to the existing `NODE_OPTIONS` value, if it's already set, rather than overwriting it, since some NodeJS Debugging tools may rely on this environment variable to work properly.
 
 :::
 
@@ -91,19 +93,29 @@ There could be situations where you would like to disable the
 
 ![Disable Button](../../assets/software-templates/disable-register-existing-component-button.png)
 
-To do so, you will un-register / remove the `catalogImportPlugin.routes.importPage`
-from `backstage/packages/app/src/App.tsx`:
+To do so, you need to explicitly disable the default route binding from the `scaffolderPlugin.registerComponent` to the Catalog Import page.
+
+This can be done in `backstage/packages/app/src/App.tsx`:
 
 ```diff
  const app = createApp({
    apis,
    bindRoutes({ bind }) {
--    bind(scaffolderPlugin.externalRoutes, {
+     bind(scaffolderPlugin.externalRoutes, {
++      registerComponent: false,
 -      registerComponent: catalogImportPlugin.routes.importPage,
--    });
-     bind(orgPlugin.externalRoutes, {
-       catalogIndex: catalogPlugin.routes.catalogIndex,
+       viewTechDoc: techdocsPlugin.routes.docRoot,
      });
+})
+```
+
+OR in `app-config.yaml`:
+
+```yaml
+app:
+  routes:
+    bindings:
+      scaffolder.registerComponent: false
 ```
 
 After the change, you should no longer see the button.

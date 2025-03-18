@@ -1,5 +1,374 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.8.1
+
+### Patch Changes
+
+- 0df33ea: fix: Creating a repository in a user namespace would always lead to an error
+- 984b283: Made "gitlab:pipeline:trigger" action idempotent
+- 225c733: Made gitlab:repo:push action idempotent.
+- a08cb20: Remove usages of `@backstage/backend-common`
+- ac58f84: Made gitlab:issue:edit action idempotent.
+- f6b51a8: Made "gitlab:projectDeployToken:create" action idempotent
+- a75e18f: Change the if statement in the catch block to match what the new version of Gitbeaker will return
+- 36af946: Made "gitlab:projectVariable:create" action idempotent
+- 1cea434: Made "gitlab:projectAccessToken:create" action idempotent
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- 83ae330: Made "gitlab:group:migrate" action idempotent
+- Updated dependencies
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-scaffolder-node@0.8.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.8.1-next.2
+
+### Patch Changes
+
+- 0df33ea: fix: Creating a repository in a user namespace would always lead to an error
+- ac58f84: Made gitlab:issue:edit action idempotent.
+- a75e18f: Change the if statement in the catch block to match what the new version of Gitbeaker will return
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.0-next.2
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.8.1-next.1
+
+### Patch Changes
+
+- a08cb20: Remove usages of `@backstage/backend-common`
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.7.1-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.8.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-scaffolder-node@0.7.1-next.0
+
+## 0.8.0
+
+### Minor Changes
+
+- 06eee14: Support empty repository creation in gitlab without workspace pushing and conditionally skip if the repository already exists.
+
+### Patch Changes
+
+- a0419a6: Made gitlab:group:ensureExists action idempotent
+- 9d04e91: Fix automated assignment of reviewers for instances without premium/ultimate license (404). Introduce opt-in flag for automatic reviewer assignment based on approval rules
+- 9545c5f: `createGitlabProjectMigrateAction` can now output the `migrationId`
+- e52cee6: Made gitlab:issues:create action idempotent.
+- fe44946: Fixed bug of passing wrong value to `onChange` handler when using `GitLab` autocomplete
+- 66e392f: Making publish:gitlab:merge-request idempotent.
+- a7b22eb: Fixed bug in gitlabRepoPush where it was looking in the wrong place in the exception response from gitbeaker when checking if the branch already exists
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-scaffolder-node@0.7.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.8.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.7.0-next.2
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.8.0-next.2
+
+### Patch Changes
+
+- 9d04e91: Fix automated assignment of reviewers for instances without premium/ultimate license (404). Introduce opt-in flag for automatic reviewer assignment based on approval rules
+- 9545c5f: `createGitlabProjectMigrateAction` can now output the `migrationId`
+- fe44946: Fixed bug of passing wrong value to `onChange` handler when using `GitLab` autocomplete
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-scaffolder-node@0.7.0-next.1
+
+## 0.8.0-next.1
+
+### Minor Changes
+
+- 06eee14: Support empty repository creation in gitlab without workspace pushing and conditionally skip if the repository already exists.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-scaffolder-node@0.7.0-next.0
+
+## 0.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/plugin-scaffolder-node@0.7.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.7.1
+
+### Patch Changes
+
+- 8fb529a: Added `reviewerIds` to the Gitlab Merge Request action.
+- a913beb: Added action `gitlab:group:migrate` to migrate projects using `bulk_import`
+- 7b62987: Updated the path field in the `gitlab:group:ensureExists` action to accept an array of either strings or objects with name and slug fields.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.6.3
+  - @backstage/integration@1.16.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.7.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-scaffolder-node@0.6.3-next.1
+  - @backstage/integration@1.16.1-next.0
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.6.3-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/integration@1.16.0
+
+## 0.7.0
+
+### Minor Changes
+
+- c4ffd13: Added the autocomplete feature to GitlabRepoUrlPicker
+- 32459d0: **BREAKING**: Upgraded the `gitbeaker` library to version 41. As part of this, the `scopes` parameter to the `gitlab:projectDeployToken:create` is no longer optional, so you will have to pass it a value (for example `['read_repository']`).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.0
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-scaffolder-node@0.6.2
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+
+## 0.7.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-scaffolder-node@0.6.2-next.2
+  - @backstage/config@1.3.1-next.0
+  - @backstage/integration@1.16.0-next.1
+
+## 0.7.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.6.2-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.16.0-next.0
+
+## 0.7.0-next.0
+
+### Minor Changes
+
+- c4ffd13: Added the autocomplete feature to GitlabRepoUrlPicker
+- 32459d0: **BREAKING**: Upgraded the `gitbeaker` library to version 41. As part of this, the `scopes` parameter to the `gitlab:projectDeployToken:create` is no longer optional, so you will have to pass it a value (for example `['read_repository']`).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/backend-plugin-api@1.0.3-next.0
+  - @backstage/plugin-scaffolder-node@0.6.1-next.0
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+
+## 0.6.1
+
+### Patch Changes
+
+- cdc8b4c: Improve error messages from Gitlab
+- 2dbdccb: Removed circular import
+- Updated dependencies
+  - @backstage/config@1.3.0
+  - @backstage/backend-plugin-api@1.0.2
+  - @backstage/plugin-scaffolder-node@0.6.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.15.2
+
+## 0.6.1-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/plugin-scaffolder-node@0.5.1-next.3
+
+## 0.6.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/plugin-scaffolder-node@0.5.1-next.2
+
+## 0.6.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/plugin-scaffolder-node@0.5.1-next.1
+
+## 0.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.0.2-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.1
+  - @backstage/plugin-scaffolder-node@0.5.1-next.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 73f2ccf: declare correct type (number) for publish:gitlab output.projectId
+
+### Patch Changes
+
+- 9adfe46: GitLab MR: introduce 'skip' commit action.
+- bc71718: Updated installation instructions in README to not include `/alpha`.
+- 094eaa3: Remove references to in-repo backend-common
+- f2f68cf: Updated `gitlab:group:ensureExists` action to instead use oauth client.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.5.0
+  - @backstage/integration@1.15.1
+  - @backstage/backend-plugin-api@1.0.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.6.0-next.2
+
+### Minor Changes
+
+- 73f2ccf: declare correct type (number) for publish:gitlab output.projectId
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.15.1-next.1
+  - @backstage/plugin-scaffolder-node@0.5.0-next.2
+  - @backstage/backend-plugin-api@1.0.1-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.5.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.15.1-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-scaffolder-node@0.5.0-next.1
+
+## 0.5.1-next.0
+
+### Patch Changes
+
+- 094eaa3: Remove references to in-repo backend-common
+- f2f68cf: Updated `gitlab:group:ensureExists` action to instead use oauth client.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.5.0-next.0
+  - @backstage/backend-plugin-api@1.0.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.15.0
+
+## 0.5.0
+
+### Minor Changes
+
+- d425fc4: **BREAKING**: The return values from `createBackendPlugin`, `createBackendModule`, and `createServiceFactory` are now simply `BackendFeature` and `ServiceFactory`, instead of the previously deprecated form of a function that returns them. For this reason, `createServiceFactory` also no longer accepts the callback form where you provide direct options to the service. This also affects all `coreServices.*` service refs.
+
+  This may in particular affect tests; if you were effectively doing `createBackendModule({...})()` (note the parentheses), you can now remove those extra parentheses at the end. You may encounter cases of this in your `packages/backend/src/index.ts` too, where you add plugins, modules, and services. If you were using `createServiceFactory` with a function as its argument for the purpose of passing in options, this pattern has been deprecated for a while and is no longer supported. You may want to explore the new multiton patterns to achieve your goals, or moving settings to app-config.
+
+  As part of this change, the `IdentityFactoryOptions` type was removed, and can no longer be used to tweak that service. The identity service was also deprecated some time ago, and you will want to [migrate to the new auth system](https://backstage.io/docs/tutorials/auth-service-migration) if you still rely on it.
+
+### Patch Changes
+
+- 5d1670f: Update README installation instructions
+- Updated dependencies
+  - @backstage/backend-common@0.25.0
+  - @backstage/backend-plugin-api@1.0.0
+  - @backstage/integration@1.15.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-scaffolder-node@0.4.11
+
+## 0.5.0-next.2
+
+### Patch Changes
+
+- 5d1670f: Update README installation instructions
+- Updated dependencies
+  - @backstage/backend-common@0.25.0-next.2
+  - @backstage/backend-plugin-api@1.0.0-next.2
+  - @backstage/integration@1.15.0-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-scaffolder-node@0.4.11-next.2
+
 ## 0.5.0-next.1
 
 ### Patch Changes

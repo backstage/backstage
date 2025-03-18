@@ -139,11 +139,28 @@ export interface Config {
     }>;
 
     /**
+     * Disables the compatibility layer for relations in returned entities that
+     * ensures that all relations objects have both `target` and `targetRef`.
+     *
+     * Enabling this option significantly reduces the memory usage of the
+     * catalog, and slightly increases performance, but may break consumers that
+     * rely on the existence of `target` in the relations objects.
+     */
+    disableRelationsCompatibility?: boolean;
+
+    /**
      * The strategy to use for entities that are orphaned, i.e. no longer have
      * any other entities or providers referencing them. The default value is
      * "keep".
      */
     orphanStrategy?: 'keep' | 'delete';
+
+    /**
+     * The strategy to use for entities that are referenced by providers that are orphaned,
+     * i.e. entities with no providers currently configured in the catalog. The default value is
+     * "keep".
+     */
+    orphanProviderStrategy?: 'keep' | 'delete';
 
     /**
      * The strategy to use when stitching together the final entities.
@@ -156,11 +173,14 @@ export interface Config {
       | {
           /** Defer stitching to be performed asynchronously */
           mode: 'deferred';
+          /** Polling interval for tasks in seconds */
+          pollingInterval?: HumanDuration | string;
+          /** How long to wait for a stitch to complete before giving up in seconds */
+          stitchTimeout?: HumanDuration | string;
         };
 
     /**
      * The interval at which the catalog should process its entities.
-     *
      * @remarks
      *
      * Example:
@@ -168,6 +188,13 @@ export interface Config {
      * ```yaml
      * catalog:
      *   processingInterval: { minutes: 30 }
+     * ```
+     *
+     * or to disabled processing:
+     *
+     * ```yaml
+     * catalog:
+     *  processingInterval: false
      * ```
      *
      * Note that this is only a suggested minimum, and the actual interval may
@@ -181,6 +208,20 @@ export interface Config {
      * systems that are queried by processors, such as version control systems
      * housing catalog-info files.
      */
-    processingInterval?: HumanDuration;
+    processingInterval?: HumanDuration | false;
+
+    /**
+     * Defines if the UrlReaderProcessor should always call the search method of the
+     * different UrlReaders.
+     *
+     * If set to false, the UrlReaderProcessor will use the legacy behavior that tries to
+     * parse a Git URL and calls search if there's wildcard patterns and readUrl otherwise.
+     *
+     * If set to true, the UrlReaderProcessor always call the search method and lets each UrlReader
+     * determine if it's a search pattern or not.
+     *
+     * This flag is temporary and will be enabled by default in future releases.
+     */
+    useUrlReadersSearch?: boolean;
   };
 }

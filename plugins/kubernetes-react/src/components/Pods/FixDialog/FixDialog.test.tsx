@@ -21,13 +21,13 @@ import { renderInTestApp } from '@backstage/test-utils';
 
 jest.mock('../Events', () => ({
   Events: () => {
-    return <React.Fragment data-testid="events" />;
+    return <React.Fragment />;
   },
 }));
 
 jest.mock('../PodLogs', () => ({
   PodLogs: () => {
-    return <React.Fragment data-testid="logs" />;
+    return <React.Fragment />;
   },
 }));
 

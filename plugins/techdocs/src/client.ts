@@ -236,6 +236,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
         onerror(err) {
           ctrl.abort();
           reject(err);
+          throw err; // rethrow to stop the operation
         },
       });
     });

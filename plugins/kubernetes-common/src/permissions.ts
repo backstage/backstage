@@ -24,8 +24,32 @@ export const kubernetesProxyPermission = createPermission({
   attributes: {},
 });
 
+/** This permission is used to check access to the /resources and /services/:serviceId endpoints
+ * @public
+ */
+export const kubernetesResourcesReadPermission = createPermission({
+  name: 'kubernetes.resources.read',
+  attributes: {
+    action: 'read',
+  },
+});
+
+/** This permission is used to check access to the /clusters endpoint
+ * @public
+ */
+export const kubernetesClustersReadPermission = createPermission({
+  name: 'kubernetes.clusters.read',
+  attributes: {
+    action: 'read',
+  },
+});
+
 /**
  * List of all Kubernetes permissions.
  * @public
  */
-export const kubernetesPermissions = [kubernetesProxyPermission];
+export const kubernetesPermissions = [
+  kubernetesProxyPermission,
+  kubernetesResourcesReadPermission,
+  kubernetesClustersReadPermission,
+];

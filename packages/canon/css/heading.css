@@ -1,0 +1,37 @@
+.canon-Heading {
+  font-family: var(--canon-font-regular);
+  color: var(--canon-fg-primary);
+  margin: 0;
+  padding: 0;
+  line-height: 100%;
+}
+
+.canon-Heading--variant-display {
+  font-size: var(--canon-font-size-10);
+  font-weight: var(--canon-font-weight-bold);
+}
+
+.canon-Heading--variant-title1 {
+  font-size: var(--canon-font-size-9);
+  font-weight: var(--canon-font-weight-bold);
+}
+
+.canon-Heading--variant-title2 {
+  font-size: var(--canon-font-size-8);
+  font-weight: var(--canon-font-weight-bold);
+}
+
+.canon-Heading--variant-title3 {
+  font-size: var(--canon-font-size-7);
+  font-weight: var(--canon-font-weight-bold);
+}
+
+.canon-Heading--variant-title4 {
+  font-size: var(--canon-font-size-title4);
+  font-weight: var(--canon-font-weight-bold);
+}
+
+.canon-Heading--variant-title5 {
+  font-size: var(--canon-font-size-5);
+  font-weight: var(--canon-font-weight-bold);
+}

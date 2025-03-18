@@ -29,9 +29,7 @@ auth:
       jwtHeader: x-custom-header # Optional: Only if you are using a custom header for the IAP JWT
       signIn:
         resolvers:
-          # typically you would pick one of these
-          - resolver: emailMatchingUserEntityProfileEmail
-          - resolver: emailLocalPartMatchingUserEntityName
+          # See https://backstage.io/docs/auth/google/gcp-iap-auth#resolvers for more resolvers
           - resolver: emailMatchingUserEntityAnnotation
 ```
 

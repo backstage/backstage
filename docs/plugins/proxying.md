@@ -20,7 +20,7 @@ The plugin is already added to a default Backstage project.
 To add it to a project, add the following line in `packages/backend/src/index.ts`:
 
 ```ts
-backend.add(import('@backstage/plugin-proxy-backend/alpha'));
+backend.add(import('@backstage/plugin-proxy-backend'));
 ```
 
 ### Old Backend
@@ -28,7 +28,7 @@ backend.add(import('@backstage/plugin-proxy-backend/alpha'));
 In `packages/backend/src/index.ts`:
 
 ```ts
-backend.add(import('@backstage/plugin-proxy-backend/alpha'));
+backend.add(import('@backstage/plugin-proxy-backend'));
 ```
 
 ## Configuration
@@ -110,13 +110,52 @@ There are also additional settings:
   from the target.
 
 By default, the proxy will only forward safe HTTP request headers to the target.
-Those are based on the headers that are considered safe for CORS and includes
+These are based on the headers that are considered safe for CORS and include
 headers like `content-type` or `last-modified`, as well as all headers that are
-set by the proxy. If the proxy should forward other headers like
+set by the proxy. If the proxy should forward other headers, like
 `authorization`, this must be enabled by the `allowedHeaders` config, for
 example `allowedHeaders: ['Authorization']`. This should help to not
 accidentally forward confidential headers (`cookie`, `X-Auth-Request-User`) to
-third-parties.
+third parties.
 
 The same logic applies to headers that are sent from the target back to the
 frontend.
+
+### Proxy Extension Endpoint
+
+The proxy plugin additionally supports a `proxyExtensionEndpoint` which a proxy
+plugin module can utilize in order to programmatically register additional
+endpoints, whose payloads are specified exactly as in app-config (described
+above). Note that endpoints configured in app-config will always override those
+registered in this manner.
+
+Example:
+
+```ts
+backend.add(
+  createBackendModule({
+    pluginId: 'proxy',
+    moduleId: 'demo-additional-endpoints',
+    register: reg => {
+      reg.registerInit({
+        deps: {
+          proxyEndpoints: proxyEndpointsExtensionPoint,
+        },
+        init: async ({ proxyEndpoints }) => {
+          let largerExampleAuth: string = /* exercise for the reader */;
+          proxyEndpoints.addProxyEndpoints({
+            "/simple-example": "http://simple.example.com:8080",
+            "/larger-example/v1": {
+              target: "http://larger.example.com:8080/svc.v1",
+              credentials: "require",
+              headers: {
+                Authorization: largerExampleAuth
+              },
+            },
+          });
+        },
+      });
+    },
+  }),
+);
+```

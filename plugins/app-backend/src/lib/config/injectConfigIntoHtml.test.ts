@@ -38,25 +38,22 @@ describe('injectConfigIntoHtml', () => {
     mockDir.setContent({
       'index.html.tmpl': "<html><%= config.getNumber('x') %></html>",
     });
-    await injectConfigIntoHtml({
+    const result = await injectConfigIntoHtml({
       ...baseOptions,
       appConfigs: [{ context: 'mock', data: { x: 1 } }],
     });
-    expect(mockDir.content()).toMatchObject({
-      'index.html': '<html>1</html>',
-    });
+    expect(result?.toString('utf8')).toBe('<html>1</html>');
   });
 
   it('should inject config', async () => {
     mockDir.setContent({
       'index.html.tmpl': '<html><head></head></html>',
     });
-    await injectConfigIntoHtml({
+    const result = await injectConfigIntoHtml({
       ...baseOptions,
       appConfigs: [{ context: 'mock', data: { x: 1 } }],
     });
-    expect(mockDir.content()).toMatchObject({
-      'index.html': `<html><head>
+    expect(result?.toString('utf8')).toBe(`<html><head>
 <script type="backstage.io/config">
 [
   {
@@ -67,7 +64,33 @@ describe('injectConfigIntoHtml', () => {
   }
 ]
 </script>
-</head></html>`,
+</head></html>`);
+  });
+
+  it('should trim script tag endings from injected config', async () => {
+    mockDir.setContent({
+      'index.html.tmpl': '<html><head></head></html>',
     });
+    const result = await injectConfigIntoHtml({
+      ...baseOptions,
+      appConfigs: [
+        {
+          context: 'mock',
+          data: { x: "</script><script>alert('hi')</script><!-- Hi -->" },
+        },
+      ],
+    });
+    expect(result?.toString('utf8')).toBe(`<html><head>
+<script type="backstage.io/config">
+[
+  {
+    "context": "mock",
+    "data": {
+      "x": "><script>alert('hi')> Hi -->"
+    }
+  }
+]
+</script>
+</head></html>`);
   });
 });

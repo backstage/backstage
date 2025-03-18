@@ -46,7 +46,7 @@ We will use some libraries in the module, so let's add them to your plugin modul
 git checkout -b tutorials/new-faq-snippets-collator
 
 # Install the package containing the interface
-yarn workspace @internal/backstage-plugin-search-backend-module-faq-snippets-collator add node-fetch @backstage/plugin-search-common @backstage/plugin-search-backend-node
+yarn workspace @internal/backstage-plugin-search-backend-module-faq-snippets-collator add @backstage/plugin-search-common @backstage/plugin-search-backend-node
 ```
 
 #### 3. Use Backstage App configuration
@@ -106,15 +106,12 @@ Imagine your FAQs can be retrieved at the URL `https://backstage.example.biz/faq
 Below we provide an example implementation of how the FAQ collator factory could look like using our new document type, placed in the `plugins/search-backend-module-faq-snippets-collator/src/factory.ts` file:
 
 ```ts
-import fetch from 'node-fetch';
 import { Readable } from 'stream';
-
 import {
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
-
 import { FaqSnippetDocument } from './types';
 
 const DEFAULT_BASE_URL = 'https://backstage.example.biz/faq-snippets';
@@ -227,7 +224,7 @@ import { createBackend } from '@backstage/backend-defaults';
 //...
 const backend = createBackend();
 // Installing the search backend plugin
-backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend'));
 // Installing the newly created faq snippets collator module
 backend.add(
   import(

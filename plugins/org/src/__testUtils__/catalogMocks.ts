@@ -15,7 +15,6 @@
  */
 
 import {
-  CatalogApi,
   GetEntitiesByRefsRequest,
   GetEntitiesRequest,
 } from '@backstage/catalog-client';
@@ -25,6 +24,7 @@ import {
   GroupEntity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 export const groupA: GroupEntity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -308,7 +308,7 @@ const mockedMembersMapping = new Map<string, Entity[]>([
 
 type Nullable<T> = T | undefined;
 
-export const mockedCatalogApiSupportingGroups: Partial<CatalogApi> = {
+export const mockedCatalogApiSupportingGroups = catalogApiMock.mock({
   getEntities: async (request?: GetEntitiesRequest) => {
     const actualFilter = (request?.filter as Nullable<{
       'relations.memberof': string[];
@@ -331,4 +331,4 @@ export const mockedCatalogApiSupportingGroups: Partial<CatalogApi> = {
     );
     return { items };
   },
-};
+});

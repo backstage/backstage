@@ -36,10 +36,9 @@ export async function readFrontendConfig(options: {
 }): Promise<AppConfig[]> {
   const { env, appDistDir, config } = options;
 
-  const appConfigs = readEnvConfig(env);
-
   const schemaPath = resolvePath(appDistDir, '.config-schema.json');
   if (await fs.pathExists(schemaPath)) {
+    const envConfigs = readEnvConfig(env);
     const serializedSchema = await fs.readJson(schemaPath);
 
     try {
@@ -49,11 +48,10 @@ export async function readFrontendConfig(options: {
           serialized: serializedSchema,
         }));
 
-      const frontendConfigs = await schema.process(
-        [{ data: config.get() as JsonObject, context: 'app' }],
+      return await schema.process(
+        [...envConfigs, { data: config.get() as JsonObject, context: 'app' }],
         { visibility: ['frontend'], withDeprecatedKeys: true },
       );
-      appConfigs.push(...frontendConfigs);
     } catch (error) {
       throw new Error(
         'Invalid app bundle schema. If this error is unexpected you need to run `yarn build` in the app. ' +
@@ -63,5 +61,5 @@ export async function readFrontendConfig(options: {
     }
   }
 
-  return appConfigs;
+  return [];
 }

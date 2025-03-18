@@ -17,7 +17,6 @@
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
-  CatalogApi,
   catalogApiRef,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
@@ -28,6 +27,7 @@ import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -36,7 +36,10 @@ const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
 });
 
 describe('<EntityPicker />', () => {
-  let entities: Entity[];
+  const entities: Entity[] = [
+    makeEntity('Group', 'default', 'team-a'),
+    makeEntity('Group', 'default', 'squad-b'),
+  ];
   const onChange = jest.fn();
   const schema = {};
   const required = false;
@@ -46,23 +49,13 @@ describe('<EntityPicker />', () => {
 
   let props: FieldProps<string>;
 
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
+  const catalogApi = catalogApiMock.mock({
     getEntities: jest.fn(async () => ({ items: entities })),
-    addLocation: jest.fn(),
-    getLocationByRef: jest.fn(),
-    removeEntityByUid: jest.fn(),
-  } as any;
+  });
 
   let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    entities = [
-      makeEntity('Group', 'default', 'team-a'),
-      makeEntity('Group', 'default', 'squad-b'),
-    ];
-
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
       <TestApiProvider
         apis={[
@@ -91,8 +84,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps;
-
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
 
     it('searches for all entities', async () => {
@@ -267,6 +258,73 @@ describe('<EntityPicker />', () => {
           ],
         }),
       );
+    });
+  });
+
+  describe('ui:disabled EntityPicker', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+    it('Prevents user from modifying input when ui:disabled is true', async () => {
+      props.uiSchema = { 'ui:disabled': true };
+      props.formData = 'component:default/myentity';
+
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      // Expect input to be disabled
+      expect(input).toBeDisabled();
+      expect(input).toHaveValue('component:default/myentity');
+    });
+
+    it('Allows user to edit when ui:disabled is false', async () => {
+      props.uiSchema = { 'ui:disabled': false };
+      props.formData = 'component:default/myentity';
+
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+      expect(input).not.toBeDisabled();
+
+      fireEvent.change(input, {
+        target: { value: 'component:default/mynewentity' },
+      });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('component:default/mynewentity');
+      expect(onChange).toHaveBeenCalledWith('component:default/mynewentity');
     });
   });
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import yaml from 'yaml';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -155,6 +155,19 @@ const loadSpecs = async ({
   return mergeSpecs({ baseUrl, specs });
 };
 
+const formatDefinition = (
+  definition: any,
+  format: string | 'json' | 'yaml',
+) => {
+  if (format === 'json') {
+    return JSON.stringify(definition, null, 2);
+  }
+  if (format === 'yaml') {
+    return yaml.stringify(definition);
+  }
+  throw new Error(`Unsupported format type: ${format}`);
+};
+
 export class InternalOpenApiDocumentationProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
   private readonly scheduleFn: () => Promise<void>;
@@ -194,12 +207,12 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
       taskRunner,
     );
   }
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName() {
     return `InternalOpenApiDocumentationProvider`;
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection) {
     this.connection = connection;
     return await this.scheduleFn();
@@ -236,6 +249,10 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
     const configToMerge = this.config.getOptional(
       'catalog.providers.backstageOpenapi.entityOverrides',
     );
+    const formatConfig =
+      this.config.getOptionalString(
+        'catalog.providers.backstageOpenapi.definitionFormat',
+      ) ?? 'json';
 
     const baseConfig = {
       metadata: {
@@ -262,7 +279,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
       },
       spec: {
         type: 'openapi',
-        definition: JSON.stringify(
+        definition: formatDefinition(
           await loadSpecs({
             baseUrl: this.config.getString('backend.baseUrl'),
             discovery: this.discovery,
@@ -270,6 +287,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
             plugins: pluginsToMerge,
             logger,
           }),
+          formatConfig,
         ),
       },
     };

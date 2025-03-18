@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { BackstagePlugin } from '@backstage/frontend-plugin-api';
+import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin as LegacyBackstagePlugin } from '@backstage/core-plugin-api';
 import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 // Make sure that we only convert each new plugin instance to its legacy equivalent once
 const legacyPluginStore = getOrCreateGlobalSingleton(
   'legacy-plugin-compatibility-store',
-  () => new WeakMap<BackstagePlugin, LegacyBackstagePlugin>(),
+  () => new WeakMap<FrontendPlugin, LegacyBackstagePlugin>(),
 );
 
-export function toLegacyPlugin(plugin: BackstagePlugin): LegacyBackstagePlugin {
+export function toLegacyPlugin(plugin: FrontendPlugin): LegacyBackstagePlugin {
   let legacy = legacyPluginStore.get(plugin);
   if (legacy) {
     return legacy;

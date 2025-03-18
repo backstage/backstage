@@ -25,6 +25,8 @@ import {
   CatalogReactEntityTagPickerClassKey,
   CatalogReactEntityOwnerPickerClassKey,
   CatalogReactEntityProcessingStatusPickerClassKey,
+  FixedWidthFormControlLabelClassKey,
+  MissingAnnotationEmptyStateClassKey,
 } from './components';
 import { CatalogReactEntityAutocompletePickerClassKey } from './components/EntityAutocompletePicker/EntityAutocompletePicker';
 
@@ -36,8 +38,10 @@ export type CatalogReactComponentsNameToClassKey = {
   CatalogReactEntitySearchBar: CatalogReactEntitySearchBarClassKey;
   CatalogReactEntityTagPicker: CatalogReactEntityTagPickerClassKey;
   CatalogReactEntityOwnerPicker: CatalogReactEntityOwnerPickerClassKey;
+  CatalogReactFixedWidthFormControlLabel: FixedWidthFormControlLabelClassKey;
   CatalogReactEntityProcessingStatusPicker: CatalogReactEntityProcessingStatusPickerClassKey;
   CatalogReactEntityAutocompletePickerClassKey: CatalogReactEntityAutocompletePickerClassKey;
+  CatalogReactMissingAnnotationEmptyState: MissingAnnotationEmptyStateClassKey;
 };
 
 /** @public */

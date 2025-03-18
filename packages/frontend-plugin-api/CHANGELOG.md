@@ -1,5 +1,456 @@
 # @backstage/frontend-plugin-api
 
+## 0.10.0
+
+### Minor Changes
+
+- 4823831: Introduced a `createFrontendFeatureLoader()` function, as well as a `FrontendFeatureLoader` interface, to gather several frontend plugins, modules or feature loaders in a single exported entrypoint and load them, possibly asynchronously. This new feature, very similar to the `createBackendFeatureLoader()` already available on the backend, supersedes the previous `CreateAppFeatureLoader` type which has been deprecated.
+- 8250ffe: **BREAKING**: Removed the deprecated `ExtensionOverrides` and `FrontendFeature` types.
+- 0d1a397: **BREAKING**: Removed deprecated variant of `createExtensionDataRef` where the ID is passed directly.
+
+### Patch Changes
+
+- 5aa7f2c: Added a new Utility API, `DialogApi`, which can be used to show dialogs in the React tree that can collect input from the user.
+- e23f5e0: Added new `ExtensionMiddlewareFactory` type.
+- a6cb67d: The extensions map for plugins created with `createFrontendPlugin` is now sorted alphabetically by ID in the TypeScript type.
+- de72253: Added a new `ExtensionBoundary.lazyComponent` helper in addition to the existing `ExtensionBoundary.lazy` helper.
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.0-next.2
+
+### Minor Changes
+
+- 8250ffe: **BREAKING**: Removed the deprecated `ExtensionOverrides` and `FrontendFeature` types.
+- 0d1a397: **BREAKING**: Removed deprecated variant of `createExtensionDataRef` where the ID is passed directly.
+
+### Patch Changes
+
+- 5aa7f2c: Added a new Utility API, `DialogApi`, which can be used to show dialogs in the React tree that can collect input from the user.
+- e23f5e0: Added new `ExtensionMiddlewareFactory` type.
+- a6cb67d: The extensions map for plugins created with `createFrontendPlugin` is now sorted alphabetically by ID in the TypeScript type.
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.9.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.9.6-next.0
+
+### Patch Changes
+
+- de72253: Added a new `ExtensionBoundary.lazyComponent` helper in addition to the existing `ExtensionBoundary.lazy` helper.
+
+## 0.9.5
+
+### Patch Changes
+
+- 3e21b8d: Added `getNodesByRoutePath` method to the `AppTreeApi`.
+- f1efb47: Add support for defining multiple attachment points for extensions and blueprints.
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- 9ff3322: Allow route references to be installed in multiple app instances as long as their name is the same.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/version-bridge@1.0.11
+  - @backstage/types@1.2.1
+
+## 0.9.5-next.3
+
+### Patch Changes
+
+- f1efb47: Add support for defining multiple attachment points for extensions and blueprints.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+
+## 0.9.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+
+## 0.9.5-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- 9ff3322: Allow route references to be installed in multiple app instances as long as their name is the same.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/types@1.2.1
+
+## 0.9.5-next.0
+
+### Patch Changes
+
+- 3e21b8d: Added `getNodesByRoutePath` method to the `AppTreeApi`.
+- Updated dependencies
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.4
+
+### Patch Changes
+
+- b40eb41: Move `Expand` and `ExpandRecursive` to `@backstage/types`
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/core-components@0.16.3
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.4-next.0
+
+### Patch Changes
+
+- b40eb41: Move `Expand` and `ExpandRecursive` to `@backstage/types`
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/types@1.2.1-next.0
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.3
+
+### Patch Changes
+
+- 5f04976: Fixed a bug that caused missing code in published packages.
+- Updated dependencies
+  - @backstage/core-components@0.16.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.3-next.0
+
+### Patch Changes
+
+- 5f04976: Fixed a bug that caused missing code in published packages.
+- Updated dependencies
+  - @backstage/core-components@0.16.2-next.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.0
+  - @backstage/core-components@0.16.0
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.2
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.0-next.0
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.0
+
+### Minor Changes
+
+- 4a5ba19: Removed deprecated `namespace` option from `createExtension` and `createExtensionBlueprint`, including `.make` and `.makeWithOverides`, it's no longer necessary and will use the `pluginId` instead.
+
+  Removed deprecated `createExtensionOverrides` this should be replaced with `createFrontendModule` instead.
+
+  Removed deprecated `BackstagePlugin` type, use `FrontendPlugin` type instead from this same package.
+
+- bfd4bec: **BREAKING PRODUCERS**: The `IconComponent` no longer accepts `fontSize="default"`. This has effectively been removed from Material-UI since its last two major versions, and has not worked properly for them in a long time.
+
+  This change should not have an effect on neither users of MUI4 nor MUI5/6, since the updated interface should still let you send the respective `SvgIcon` types into interfaces where relevant (e.g. as app icons).
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- 873e424: Internal refactor of usage of opaque types.
+- 323aae8: It is now possible to override the blueprint parameters when overriding an extension created from a blueprint:
+
+  ```ts
+  const myExtension = MyBlueprint.make({
+    params: {
+      myParam: 'myDefault',
+    },
+  });
+
+  const myOverride = myExtension.override({
+    params: {
+      myParam: 'myOverride',
+    },
+  });
+  const myFactoryOverride = myExtension.override({
+    factory(origFactory) {
+      return origFactory({
+        params: {
+          myParam: 'myOverride',
+        },
+      });
+    },
+  });
+  ```
+
+  The provided parameters will be merged with the original parameters of the extension.
+
+- Updated dependencies
+  - @backstage/core-components@0.15.1
+  - @backstage/core-plugin-api@1.10.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/types@1.1.1
+
+## 0.9.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.2
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.10-next.0
+
+## 0.9.0-next.1
+
+### Patch Changes
+
+- e969dc7: Move `@types/react` to a peer dependency.
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.1
+  - @backstage/core-plugin-api@1.10.0-next.1
+  - @backstage/version-bridge@1.0.10-next.0
+  - @backstage/types@1.1.1
+
+## 0.9.0-next.0
+
+### Minor Changes
+
+- 4a5ba19: Removed deprecated `namespace` option from `createExtension` and `createExtensionBlueprint`, including `.make` and `.makeWithOverides`, it's no longer necessary and will use the `pluginId` instead.
+
+  Removed deprecated `createExtensionOverrides` this should be replaced with `createFrontendModule` instead.
+
+  Removed deprecated `BackstagePlugin` type, use `FrontendPlugin` type instead from this same package.
+
+- bfd4bec: **BREAKING PRODUCERS**: The `IconComponent` no longer accepts `fontSize="default"`. This has effectively been removed from Material-UI since its last two major versions, and has not worked properly for them in a long time.
+
+  This change should not have an effect on neither users of MUI4 nor MUI5/6, since the updated interface should still let you send the respective `SvgIcon` types into interfaces where relevant (e.g. as app icons).
+
+### Patch Changes
+
+- 873e424: Internal refactor of usage of opaque types.
+- 323aae8: It is now possible to override the blueprint parameters when overriding an extension created from a blueprint:
+
+  ```ts
+  const myExtension = MyBlueprint.make({
+    params: {
+      myParam: 'myDefault',
+    },
+  });
+
+  const myOverride = myExtension.override({
+    params: {
+      myParam: 'myOverride',
+    },
+  });
+  const myFactoryOverride = myExtension.override({
+    factory(origFactory) {
+      return origFactory({
+        params: {
+          myParam: 'myOverride',
+        },
+      });
+    },
+  });
+  ```
+
+  The provided parameters will be merged with the original parameters of the extension.
+
+- Updated dependencies
+  - @backstage/core-components@0.15.1-next.0
+  - @backstage/core-plugin-api@1.10.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.9
+
+## 0.8.0
+
+### Minor Changes
+
+- 5446061: **BREAKING**: Removed support for "v1" extensions. This means that it is no longer possible to declare inputs and outputs as objects when using `createExtension`. In addition, all extension creators except for `createComponentExtension` have been removed, use the equivalent blueprint instead. See the [1.30 migration documentation](https://backstage.io/docs/frontend-system/architecture/migrations/#130) for more information on this change.
+- fec8b57: **BREAKING**: Updated the type parameters for `ExtensionDefinition` and `ExtensionBlueprint` to only have a single object parameter. The base type parameter is exported as `ExtensionDefinitionParameters` and `ExtensionBlueprintParameters` respectively. This is shipped as an immediate breaking change as we expect usage of these types to be rare, and it does not affect the runtime behavior of the API.
+
+  This is a breaking change as it changes the type parameters. Existing usage can generally be updated as follows:
+
+  - `ExtensionDefinition<any>` -> `ExtensionDefinition`
+  - `ExtensionDefinition<any, any>` -> `ExtensionDefinition`
+  - `ExtensionDefinition<TConfig>` -> `ExtensionDefinition<{ config: TConfig }>`
+  - `ExtensionDefinition<TConfig, TConfigInput>` -> `ExtensionDefinition<{ config: TConfig, configInput: TConfigInput }>`
+
+  If you need to infer the parameter you can use `ExtensionDefinitionParameters`, for example:
+
+  ```ts
+  import {
+    ExtensionDefinition,
+    ExtensionDefinitionParameters,
+  } from '@backstage/frontend-plugin-api';
+
+  function myUtility<T extends ExtensionDefinitionParameters>(
+    ext: ExtensionDefinition<T>,
+  ): T['config'] {
+    // ...
+  }
+  ```
+
+  The same patterns apply to `ExtensionBlueprint`.
+
+  This change is made to improve the readability of API references and ability to evolve the type parameters in the future.
+
+### Patch Changes
+
+- 2bb9517: Introduce the `@backstage/plugin-app` package to hold all of the built-in extensions for easy consumption and overriding.
+- c816e2d: Added `createFrontendModule` as a replacement for `createExtensionOverrides`, which is now deprecated.
+
+  Deprecated the `BackstagePlugin` and `FrontendFeature` type in favor of `FrontendPlugin` and `FrontendFeature` from `@backstage/frontend-app-api` respectively.
+
+- 52f9c5a: Deprecated the `namespace` option for `createExtensionBlueprint` and `createExtension`, these are no longer required and will default to the `pluginId` instead.
+
+  You can migrate some of your extensions that use `createExtensionOverrides` to using `createFrontendModule` instead and providing a `pluginId` there.
+
+  ```ts
+  // Before
+  createExtensionOverrides({
+    extensions: [
+      createExtension({
+        name: 'my-extension',
+        namespace: 'my-namespace',
+        kind: 'test',
+        ...
+      })
+    ],
+  });
+
+  // After
+  createFrontendModule({
+    pluginId: 'my-namespace',
+    extensions: [
+      createExtension({
+        name: 'my-extension',
+        kind: 'test',
+        ...
+      })
+    ],
+  });
+  ```
+
+- f3a2b91: Moved several implementations of built-in APIs from being hardcoded in the app to instead be provided as API extensions. This moves all API-related inputs from the `app` extension to the respective API extensions. For example, extensions created with `ThemeBlueprint` are now attached to the `themes` input of `api:app-theme` rather than the `app` extension.
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 948d431: Removing deprecated `namespace` parameter in favour of `pluginId` instead
+- 043d7cd: Internal refactor
+- 220f4f7: Remove unnecessary config object on IconBundleBlueprint
+- 2a61422: The `factory` option is no longer required when overriding an extension.
+- 98850de: Added support for defining `replaces` in `createExtensionInput` which will allow extensions to redirect missing `attachTo` points to an input of the created extension.
+
+  ```ts
+  export const AppThemeApi = ApiBlueprint.makeWithOverrides({
+    name: 'app-theme',
+    inputs: {
+      themes: createExtensionInput([ThemeBlueprint.dataRefs.theme], {
+        // attachTo: { id: 'app', input: 'themes'} will be redirected to this input instead
+        replaces: [{ id: 'app', input: 'themes' }],
+      }),
+    },
+    factory: () {
+      ...
+    }
+  });
+  ```
+
+- 4a66456: A new `apis` parameter has been added to `factory` for extensions. This is a way to access utility APIs without being coupled to the React context.
+- Updated dependencies
+  - @backstage/core-components@0.15.0
+  - @backstage/core-plugin-api@1.9.4
+  - @backstage/version-bridge@1.0.9
+  - @backstage/types@1.1.1
+
+## 0.8.0-next.2
+
+### Patch Changes
+
+- 836127c: Updated dependency `@testing-library/react` to `^16.0.0`.
+- 043d7cd: Internal refactor
+- 2a61422: The `factory` option is no longer required when overriding an extension.
+- Updated dependencies
+  - @backstage/core-components@0.14.11-next.1
+  - @backstage/core-plugin-api@1.9.4-next.0
+  - @backstage/version-bridge@1.0.9-next.0
+  - @backstage/types@1.1.1
+
 ## 0.8.0-next.1
 
 ### Patch Changes

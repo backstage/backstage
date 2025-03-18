@@ -356,6 +356,34 @@ describe('api', () => {
       const result = await apiClient.listTasks({ filterByOwnership: 'all' });
       expect(result).toHaveLength(2);
     });
+
+    it('should list tasks with limit and offset', async () => {
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/v2/tasks?limit=5&offset=0`,
+          (_req, res, ctx) => {
+            return res(
+              ctx.json([
+                {
+                  createdBy: null,
+                },
+                {
+                  createdBy: null,
+                },
+              ]),
+            );
+          },
+        ),
+      );
+
+      const result = await apiClient.listTasks({
+        filterByOwnership: 'all',
+        limit: 5,
+        offset: 0,
+      });
+      expect(result).toHaveLength(2);
+    });
+
     it('should list task using the current user as owner', async () => {
       server.use(
         rest.get(`${mockBaseUrl}/v2/tasks`, (req, res, ctx) => {

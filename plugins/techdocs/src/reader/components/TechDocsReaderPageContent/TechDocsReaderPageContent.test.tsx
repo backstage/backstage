@@ -34,9 +34,11 @@ jest.mock('../useReaderState', () => ({
   ...jest.requireActual('../useReaderState'),
   useReaderState: (...args: any[]) => useReaderState(...args),
 }));
+const useShadowDomStylesLoading = jest.fn().mockReturnValue(false);
 jest.mock('@backstage/plugin-techdocs-react', () => ({
   ...jest.requireActual('@backstage/plugin-techdocs-react'),
-  useShadowDomStylesLoading: jest.fn().mockReturnValue(false),
+  useShadowDomStylesLoading: (...args: any[]) =>
+    useShadowDomStylesLoading(...args),
   useShadowRootElements: jest.fn(),
 }));
 
@@ -124,20 +126,19 @@ describe('<TechDocsReaderPageContent />', () => {
     useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
     useReaderState.mockReturnValue({ state: 'cached' });
 
-    const rendered = await renderInTestApp(
-      <Wrapper>
-        <TechDocsReaderPageContent withSearch={false} />
-      </Wrapper>,
-    );
+    await expect(
+      renderInTestApp(
+        <Wrapper>
+          <TechDocsReaderPageContent withSearch={false} />
+        </Wrapper>,
+      ),
+    ).rejects.toThrow('Reached NotFound Page');
 
-    await waitFor(() => {
-      expect(
-        rendered.queryByTestId('techdocs-native-shadowroot'),
-      ).not.toBeInTheDocument();
-      expect(
-        rendered.getByText('ERROR 404: PAGE NOT FOUND'),
-      ).toBeInTheDocument();
-    });
+    // Check the global document for the absence of the shadow root
+    const shadowRoot = document.querySelector(
+      '[data-testid="techdocs-native-shadowroot"]',
+    );
+    expect(shadowRoot).not.toBeInTheDocument();
   });
 
   it('should render 404 if there is no dom and reader state is not found', async () => {
@@ -219,5 +220,40 @@ describe('<TechDocsReaderPageContent />', () => {
     });
 
     window.location.hash = '';
+  });
+
+  it('should render progress bar when content is loading', async () => {
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
+    useReaderState.mockReturnValue({ state: 'CHECKING' });
+
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageContent withSearch={false} />
+      </Wrapper>,
+    );
+
+    await waitFor(() => {
+      expect(rendered.queryByRole('progressbar')).toBeInTheDocument();
+    });
+  });
+
+  it('should render progress bar when styles are loading', async () => {
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
+    useReaderState.mockReturnValue({ state: 'cached' });
+    useShadowDomStylesLoading.mockReturnValue(true);
+
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageContent withSearch={false} />
+      </Wrapper>,
+    );
+
+    await waitFor(() => {
+      expect(rendered.queryByRole('progressbar')).toBeInTheDocument();
+    });
   });
 });

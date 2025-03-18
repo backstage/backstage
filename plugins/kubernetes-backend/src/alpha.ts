@@ -13,4 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { kubernetesPlugin as default } from './plugin';
+
+import { kubernetesPlugin as feature } from './plugin';
+
+/** @alpha */
+const _feature = feature;
+export default _feature;

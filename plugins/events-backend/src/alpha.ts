@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export { eventsPlugin as default } from './service/EventsPlugin';
+import { eventsPlugin } from './service/EventsPlugin';
+
+/** @alpha */
+const _feature = eventsPlugin;
+export default _feature;

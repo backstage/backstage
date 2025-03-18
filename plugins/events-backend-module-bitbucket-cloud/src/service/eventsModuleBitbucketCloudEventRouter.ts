@@ -23,7 +23,7 @@ import { BitbucketCloudEventRouter } from '../router/BitbucketCloudEventRouter';
  *
  * Registers the `BitbucketCloudEventRouter`.
  *
- * @alpha
+ * @public
  */
 export const eventsModuleBitbucketCloudEventRouter = createBackendModule({
   pluginId: 'events',

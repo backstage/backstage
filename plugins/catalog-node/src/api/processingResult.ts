@@ -76,8 +76,24 @@ export const processingResult = Object.freeze({
   /**
    * Emits a child of the current entity, associated with a certain location.
    */
-  entity(atLocation: LocationSpec, newEntity: Entity): CatalogProcessorResult {
-    return { type: 'entity', location: atLocation, entity: newEntity };
+  entity(
+    atLocation: LocationSpec,
+    newEntity: Entity,
+    options?: {
+      /**
+       * Sets the location key of the emitted entity, overriding the default one derived from the location.
+       *
+       * To set a `null` location key the value `null` must be used.
+       */
+      locationKey?: string | null;
+    },
+  ): CatalogProcessorResult {
+    return {
+      type: 'entity',
+      location: atLocation,
+      entity: newEntity,
+      locationKey: options?.locationKey,
+    };
   },
 
   /**

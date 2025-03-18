@@ -22,8 +22,8 @@ import { TemplateTypePicker } from './TemplateTypePicker';
 import {
   catalogApiRef,
   EntityKindFilter,
-  MockEntityListContextProvider,
 } from '@backstage/plugin-catalog-react';
+import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider } from '@backstage/core-app-api';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
@@ -90,7 +90,7 @@ describe('<TemplateTypePicker/>', () => {
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
-            filters: { kind: new EntityKindFilter('template') },
+            filters: { kind: new EntityKindFilter('template', 'Template') },
             backendEntities: entities,
           }}
         >
@@ -113,7 +113,7 @@ describe('<TemplateTypePicker/>', () => {
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
-            filters: { kind: new EntityKindFilter('template') },
+            filters: { kind: new EntityKindFilter('template', 'Template') },
             backendEntities: entities,
           }}
         >

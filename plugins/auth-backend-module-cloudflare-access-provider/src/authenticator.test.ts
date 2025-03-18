@@ -18,15 +18,36 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { createCloudflareAccessAuthenticator } from './authenticator';
 
 describe('authenticator', () => {
-  it('createCloudflareAccessAuthenticator works', async () => {
+  it('works for normal users', async () => {
     const auth = createCloudflareAccessAuthenticator({
       cache: mockServices.cache.mock(),
     });
 
     const profile = await auth.defaultProfileTransform(
       {
-        cfIdentity: { name: 'Name' } as any,
+        cfIdentity: { name: 'Name', email: 'hello@example.com' } as any,
         claims: { email: 'hello@example.com' } as any,
+        token: 'fake',
+      },
+      {} as any,
+    );
+    expect(profile).toEqual({
+      profile: {
+        displayName: 'Name',
+        email: 'hello@example.com',
+      },
+    });
+  });
+
+  it('works for service tokens', async () => {
+    const auth = createCloudflareAccessAuthenticator({
+      cache: mockServices.cache.mock(),
+    });
+
+    const profile = await auth.defaultProfileTransform(
+      {
+        cfIdentity: { name: 'Name', email: 'hello@example.com' } as any,
+        claims: {} as any,
         token: 'fake',
       },
       {} as any,

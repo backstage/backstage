@@ -21,7 +21,7 @@ const manypkg = require('@manypkg/get-packages');
 
 /**
  * @typedef ExtendedPackage
- * @type {import('@manypkg/get-packages').Package & { packageJson: { exports?: Record<string, string>, files?: Array<string> }}} packageJson
+ * @type {import('@manypkg/get-packages').Package & { packageJson: { exports?: Record<string, string>, files?: Array<string>, backstage?: { inline?: boolean } }}} packageJson
  */
 
 /**

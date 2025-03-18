@@ -30,7 +30,7 @@ import { GithubLocationAnalyzer } from '../analyzers/GithubLocationAnalyzer';
 /**
  * Registers the `GithubEntityProvider` with the catalog processing extension point.
  *
- * @alpha
+ * @public
  */
 export const githubCatalogModule = createBackendModule({
   pluginId: 'catalog',

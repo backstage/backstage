@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core-plugin-api';
+import { createApiRef } from '@backstage/frontend-plugin-api';
 import { ScaffolderApi } from './types';
-import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 /** @public */
-export const scaffolderApiRef = getOrCreateGlobalSingleton(
-  'scaffolder:scaffolder-api-ref',
-  () =>
-    createApiRef<ScaffolderApi>({
-      id: 'plugin.scaffolder.service',
-    }),
-);
+export const scaffolderApiRef = createApiRef<ScaffolderApi>({
+  id: 'plugin.scaffolder.service',
+});

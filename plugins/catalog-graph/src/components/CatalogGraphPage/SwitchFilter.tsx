@@ -25,6 +25,9 @@ export type Props = {
   onChange: (value: boolean) => void;
 };
 
+/** @public */
+export type SwitchFilterClassKey = 'root';
+
 const useStyles = makeStyles(
   {
     root: {

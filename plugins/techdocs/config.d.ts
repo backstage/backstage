@@ -42,6 +42,22 @@ export interface Config {
        * @visibility frontend
        */
       allowedIframeHosts?: string[];
+      /**
+       * Allows listed custom element tag name regex
+       * Example:
+       *  allowedCustomElementTagNameRegExp: '^backstage-'
+       *  this will allow all custom elements with tag name matching `^backstage-` like <backstage-custom-element /> etc.
+       * @visibility frontend
+       */
+      allowedCustomElementTagNameRegExp?: string;
+      /**
+       * Allows listed custom element attribute name regex
+       * Example:
+       *  allowedCustomElementAttributeNameRegExp: 'attribute1|attribute2'
+       *  this will allow all custom element attributes matching `attribute1` or `attribute2` like <backstage-custom-element attribute1="yes" attribute2/>
+       * @visibility frontend
+       */
+      allowedCustomElementAttributeNameRegExp?: string;
     };
   };
 }

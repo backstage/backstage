@@ -18,6 +18,10 @@ import { pathExists } from 'fs-extra';
 import { paths } from '../paths';
 import { YAML_SCHEMA_PATH } from './constants';
 import { resolve } from 'path';
+import YAML from 'js-yaml';
+import { cloneDeep } from 'lodash';
+import Parser from '@apidevtools/swagger-parser';
+import fs from 'fs-extra';
 
 export const getPathToFile = async (directory: string, filename: string) => {
   return resolve(directory, filename);
@@ -41,3 +45,29 @@ export const getPathToOpenApiSpec = async (directory: string) => {
 export const getPathToCurrentOpenApiSpec = async () => {
   return await assertExists(await getRelativePathToFile(YAML_SCHEMA_PATH));
 };
+
+export async function loadAndValidateOpenApiYaml(path: string) {
+  const yaml = YAML.load(await fs.readFile(path, 'utf8'));
+  await Parser.validate(cloneDeep(yaml) as any);
+  return yaml;
+}
+
+export function toGeneratorAdditionalProperties({
+  initialValue,
+  defaultValue,
+}: {
+  initialValue?: string;
+  defaultValue?: Record<string, any>;
+}) {
+  const items = initialValue?.split(',') ?? [];
+  const parsed = items.reduce(
+    (acc, item) => {
+      const [key, value] = item.split('=');
+      return { ...acc, [key]: value };
+    },
+    { ...defaultValue },
+  );
+  return Object.entries(parsed)
+    .map(([key, value]) => `${key}=${value}`)
+    .join(',');
+}

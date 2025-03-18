@@ -83,6 +83,18 @@ export interface Config {
           | {
               /** Only for debugging, disables the actual sending of emails */
               transport: 'stream';
+            }
+          | {
+              transport: 'azure';
+              /**
+               * Azure Communication Services endpoint
+               */
+              endpoint: string;
+              /**
+               * Optional Azure Communication Services access key
+               * @visibility secret
+               */
+              accessKey?: string;
             };
         /**
          * Sender email address
@@ -99,7 +111,7 @@ export interface Config {
         /**
          * Throttle duration between email sending, defaults to 100ms
          */
-        throttleInterval?: HumanDuration;
+        throttleInterval?: HumanDuration | string;
         /**
          * Configuration for broadcast notifications
          */
@@ -120,7 +132,7 @@ export interface Config {
           /**
            * Email cache TTL, defaults to 1 hour
            */
-          ttl?: HumanDuration;
+          ttl?: HumanDuration | string;
         };
         filter?: {
           /**

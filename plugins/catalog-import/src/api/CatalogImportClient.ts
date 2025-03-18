@@ -174,14 +174,17 @@ the component will become available.\n\nFor more information, read an \
     body: string;
   }): Promise<{ link: string; location: string }> {
     const { repositoryUrl, fileContent, title, body } = options;
-    const parseData = YAML.parse(fileContent);
 
-    const validationResponse = await this.catalogApi.validateEntity(
-      parseData,
-      `url:${repositoryUrl}`,
-    );
-    if (!validationResponse.valid) {
-      throw new Error(validationResponse.errors[0].message);
+    const parseData = YAML.parseAllDocuments(fileContent);
+
+    for (const document of parseData) {
+      const validationResponse = await this.catalogApi.validateEntity(
+        document.toJS(),
+        `url:${repositoryUrl}`,
+      );
+      if (!validationResponse.valid) {
+        throw new Error(validationResponse.errors[0].message);
+      }
     }
 
     const provider = this.scmIntegrationsApi.byUrl(repositoryUrl);

@@ -18,7 +18,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { DeleteEntityDialog } from './DeleteEntityDialog';
 import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
-import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -30,9 +30,7 @@ describe('DeleteEntityDialog', () => {
     alert$: jest.fn(),
   };
 
-  const catalogClient: jest.Mocked<CatalogApi> = {
-    removeEntityByUid: jest.fn(),
-  } as any;
+  const catalogClient = catalogApiMock.mock();
 
   const entity = {
     apiVersion: 'backstage.io/v1alpha1',

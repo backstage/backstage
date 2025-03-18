@@ -20,14 +20,15 @@ import { JobsAccordions } from './JobsAccordions';
 import * as oneCronJobsFixture from '../../__fixtures__/1-cronjobs.json';
 import { renderInTestApp } from '@backstage/test-utils';
 import { kubernetesProviders } from '../../hooks/test-utils';
-import { V1Job, ObjectSerializer } from '@kubernetes/client-node';
+import { V1Job } from '@kubernetes/client-node';
+import { ObjectSerializer } from '@kubernetes/client-node/dist/gen/models/ObjectSerializer';
 
 describe('JobsAccordions', () => {
   it('should render 2 jobs', async () => {
     const wrapper = kubernetesProviders(oneCronJobsFixture, new Set<string>());
 
     const jobs: V1Job[] = oneCronJobsFixture.jobs.map(
-      job => ObjectSerializer.deserialize(job, 'V1Job') as V1Job,
+      job => ObjectSerializer.deserialize(job, 'V1Job', '') as V1Job,
     );
 
     await renderInTestApp(wrapper(<JobsAccordions jobs={jobs} />));

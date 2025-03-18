@@ -375,13 +375,17 @@ Fields of a link are:
 | `icon`  | String | [Optional] A key representing a visual icon to be displayed in the UI.               |
 | `type`  | String | [Optional] An optional value to categorize links into specific groups.               |
 
-_NOTE_: The `icon` field value is meant to be a semantic key that will map to a
+:::note Note
+
+The `icon` field value is meant to be a semantic key that will map to a
 specific icon that may be provided by an icon library (e.g. `material-ui`
 icons). These keys should be a sequence of `[a-z0-9A-Z]`, possibly separated by
 one of `[-_.]`. Backstage may support some basic icons out of the box such as those [defined in app-defaults](https://github.com/backstage/backstage/blob/master/packages/app-defaults/src/defaults/icons.tsx), but the
 Backstage integrator will ultimately be left to provide the appropriate icon
 component mappings. A generic fallback icon would be provided if a mapping
 cannot be resolved.
+
+:::
 
 The semantics of the `type` field are undefined. The adopter is free to define their own set of types and utilize them as they wish. Some potential use cases can be to utilize the type field to validate certain links exist on entities or to create customized UI components for specific link types.
 
@@ -527,6 +531,8 @@ spec:
   system: artist-engagement-portal
   dependsOn:
     - resource:default/artists-db
+  dependencyOf:
+    - component:default/artist-web-lookup
   providesApis:
     - artist-api
 ```
@@ -635,6 +641,17 @@ field is optional.
 | --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------- |
 | [`Component`](#kind-component)          | Same as this entity, typically `default`   | [`dependsOn`, and reverse `dependencyOf`](well-known-relations.md#dependson-and-dependencyof) |
 | [`Resource`](#kind-resource)            | Same as this entity, typically `default`   | [`dependsOn`, and reverse `dependencyOf`](well-known-relations.md#dependson-and-dependencyof) |
+
+### `spec.dependencyOf` [optional]
+
+An array of [entity references](references.md#string-references) to the
+components and resources that the component is a dependency of, e.g. `artist-web-lookup`.
+This field is optional.
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                            |
+| --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| [`Component`](#kind-component)          | Same as this entity, typically `default`   | [`dependencyOf`, and reverse `dependsOn`](well-known-relations.md#dependson-and-dependencyof) |
+| [`Resource`](#kind-resource)            | Same as this entity, typically `default`   | [`dependencyOf`, and reverse `dependsOn`](well-known-relations.md#dependson-and-dependencyof) |
 
 ## Kind: Template
 

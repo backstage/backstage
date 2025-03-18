@@ -22,7 +22,7 @@ import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/
 import { BitbucketServerEntityProvider } from '../providers';
 
 /**
- * @alpha
+ * @public
  */
 export const catalogModuleBitbucketServerEntityProvider = createBackendModule({
   pluginId: 'catalog',

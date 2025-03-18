@@ -16,20 +16,18 @@
 
 import { Entity, RELATION_API_CONSUMED_BY } from '@backstage/catalog-model';
 import {
-  CatalogApi,
   catalogApiRef,
   EntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { ConsumingComponentsCard } from './ConsumingComponentsCard';
 
 describe('<ConsumingComponentsCard />', () => {
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getEntitiesByRefs: jest.fn(),
-  } as any;
+  const catalogApi = catalogApiMock.mock();
   let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {

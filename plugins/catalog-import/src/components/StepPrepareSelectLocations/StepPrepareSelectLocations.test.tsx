@@ -21,15 +21,13 @@ import React from 'react';
 import { AnalyzeResult } from '../../api';
 import { StepPrepareSelectLocations } from './StepPrepareSelectLocations';
 import {
-  CatalogApi,
   catalogApiRef,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
-import { Entity } from '@backstage/catalog-model';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 describe('<StepPrepareSelectLocations />', () => {
-  let entities: Entity[];
   const analyzeResult = {
     type: 'locations',
     locations: [
@@ -61,19 +59,11 @@ describe('<StepPrepareSelectLocations />', () => {
     ],
   } as Extract<AnalyzeResult, { type: 'locations' }>;
 
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
-    getEntities: jest.fn(async () => ({ items: entities })),
-    addLocation: jest.fn(),
-    getLocationByRef: jest.fn(),
-    removeEntityByUid: jest.fn(),
-  } as any;
+  const catalogApi = catalogApiMock();
   let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    catalogApi.getEntities.mockResolvedValue({ items: entities });
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
       <TestApiProvider
         apis={[

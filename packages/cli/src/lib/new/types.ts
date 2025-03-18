@@ -14,68 +14,104 @@
  * limitations under the License.
  */
 
-import { Answers, DistinctQuestion } from 'inquirer';
+export type PortableTemplateConfig = {
+  /**
+   * The pointers to templates that can be used.
+   */
+  templatePointers: PortableTemplatePointer[];
 
-export interface CreateContext {
-  /** The package scope to use for new packages */
-  scope?: string;
-  /** The NPM registry to use for new packages */
-  npmRegistry?: string;
-  /** Whether new packages should be marked as private */
-  private: boolean;
-  /** Whether we are creating something in a monorepo or not */
-  isMonoRepo: boolean;
-  /** The default version to use for new packages */
-  defaultVersion: string;
-  /** License to use for new packages */
+  /**
+   * Whether the default set of templates are being used or not.
+   */
+  isUsingDefaultTemplates: boolean;
+
   license: string;
 
-  /** Creates a temporary directory. This will always be deleted after creation is done. */
-  createTemporaryDirectory(name: string): Promise<string>;
+  version: string;
 
-  /** Signal that the creation process got to a point where permanent modifications were made */
-  markAsModified(): void;
-}
+  private: boolean;
 
-export type AnyOptions = Record<string, string>;
+  publishRegistry?: string;
 
-export type Prompt<TOptions extends Answers> = DistinctQuestion<TOptions> & {
-  name: string;
+  packageNamePrefix: string;
+
+  packageNamePluginInfix: string;
 };
 
-export interface Factory<TOptions extends AnyOptions> {
-  /**
-   * The name used for this factory.
-   */
+export const TEMPLATE_FILE_NAME = 'portable-template.yaml';
+
+export type PortableTemplatePointer = {
   name: string;
+  description?: string;
+  target: string;
+};
 
-  /**
-   * A description that describes what this factory creates to the user.
-   */
-  description: string;
+export const TEMPLATE_ROLES = [
+  'web-library',
+  'node-library',
+  'common-library',
+  'plugin-web-library',
+  'plugin-node-library',
+  'plugin-common-library',
+  'frontend-plugin',
+  'frontend-plugin-module',
+  'backend-plugin',
+  'backend-plugin-module',
+] as const;
 
-  /**
-   * An optional options discovery step that is run
-   * before the prompts to potentially fill in some of the options.
-   */
-  optionsDiscovery?(): Promise<Partial<TOptions>>;
+export type PortableTemplateRole = (typeof TEMPLATE_ROLES)[number];
 
-  /**
-   * Inquirer prompts that will be filled in either interactively or
-   * through command line arguments.
-   */
-  optionsPrompts?: ReadonlyArray<Prompt<TOptions>>;
+export type PortableTemplateFile = {
+  path: string;
+  content: string;
+  syntax?: 'handlebars';
+};
 
-  /**
-   * The main method of the factory that handles creation.
-   */
-  create(options: TOptions, context?: CreateContext): Promise<void>;
-}
+export type PortableTemplate = {
+  name: string;
+  role: PortableTemplateRole;
+  files: PortableTemplateFile[];
+  values: Record<string, string>;
+};
 
-export type AnyFactory = Factory<AnyOptions>;
+export type PortableTemplateParams = {
+  [KName in string]?: string | number | boolean;
+};
 
-export function createFactory<TOptions extends AnyOptions>(
-  config: Factory<TOptions>,
-): AnyFactory {
-  return config as AnyFactory;
-}
+export type PortableTemplateInputRoleParams =
+  | {
+      role: 'web-library' | 'node-library' | 'common-library';
+      name: string;
+    }
+  | {
+      role:
+        | 'plugin-web-library'
+        | 'plugin-node-library'
+        | 'plugin-common-library'
+        | 'frontend-plugin'
+        | 'backend-plugin';
+      pluginId: string;
+    }
+  | {
+      role: 'frontend-plugin-module' | 'backend-plugin-module';
+      pluginId: string;
+      moduleId: string;
+    };
+
+export type PortableTemplateInput = {
+  roleParams: PortableTemplateInputRoleParams;
+
+  owner?: string;
+
+  license: string;
+
+  version: string;
+
+  private: boolean;
+
+  publishRegistry?: string;
+
+  packageName: string;
+
+  packagePath: string;
+};

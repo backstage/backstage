@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { Stepper, type StepperProps } from './Stepper';
+export {
+  Stepper,
+  type StepperProps,
+  type BackstageTemplateStepperClassKey,
+} from './Stepper';
 export {
   createAsyncValidators,
   type FormValidation,

@@ -34,7 +34,11 @@ import fixture2 from '../src/__fixtures__/2-deployments.json';
 import fixture3 from '../src/__fixtures__/1-cronjobs.json';
 import fixture4 from '../src/__fixtures__/2-cronjobs.json';
 import fixture5 from '../src/__fixtures__/1-rollouts.json';
-import { TestApiProvider } from '@backstage/test-utils';
+import fixture6 from '../src/__fixtures__/3-ingresses.json';
+import fixture7 from '../src/__fixtures__/2-statefulsets.json';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { StructuredMetadataTable } from '@backstage/core-components';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -134,13 +138,22 @@ class MockKubernetesClient implements KubernetesApi {
   }
 }
 
+const metadata = {
+  testA: 'stuff',
+  testB: { testC: 'stuff' },
+  testD: [{ testE: 'stuff' }],
+};
+
 createDevApp()
   .addPage({
     path: '/fixture-1',
     title: 'Fixture 1',
     element: (
       <TestApiProvider
-        apis={[[kubernetesApiRef, new MockKubernetesClient(fixture1)]]}
+        apis={[
+          [kubernetesApiRef, new MockKubernetesClient(fixture1)],
+          [permissionApiRef, mockApis.permission()],
+        ]}
       >
         <EntityProvider entity={mockEntity}>
           <EntityKubernetesContent />
@@ -153,7 +166,10 @@ createDevApp()
     title: 'Fixture 2',
     element: (
       <TestApiProvider
-        apis={[[kubernetesApiRef, new MockKubernetesClient(fixture2)]]}
+        apis={[
+          [kubernetesApiRef, new MockKubernetesClient(fixture2)],
+          [permissionApiRef, mockApis.permission()],
+        ]}
       >
         <EntityProvider entity={mockEntity}>
           <EntityKubernetesContent />
@@ -166,7 +182,10 @@ createDevApp()
     title: 'Fixture 3',
     element: (
       <TestApiProvider
-        apis={[[kubernetesApiRef, new MockKubernetesClient(fixture3)]]}
+        apis={[
+          [kubernetesApiRef, new MockKubernetesClient(fixture3)],
+          [permissionApiRef, mockApis.permission()],
+        ]}
       >
         <EntityProvider entity={mockEntity}>
           <EntityKubernetesContent />
@@ -179,7 +198,10 @@ createDevApp()
     title: 'Fixture 4',
     element: (
       <TestApiProvider
-        apis={[[kubernetesApiRef, new MockKubernetesClient(fixture4)]]}
+        apis={[
+          [kubernetesApiRef, new MockKubernetesClient(fixture4)],
+          [permissionApiRef, mockApis.permission()],
+        ]}
       >
         <EntityProvider entity={mockEntity}>
           <EntityKubernetesContent />
@@ -192,9 +214,42 @@ createDevApp()
     title: 'Fixture 5',
     element: (
       <TestApiProvider
-        apis={[[kubernetesApiRef, new MockKubernetesClient(fixture5)]]}
+        apis={[
+          [kubernetesApiRef, new MockKubernetesClient(fixture5)],
+          [permissionApiRef, mockApis.permission()],
+        ]}
       >
         <EntityProvider entity={mockEntity}>
+          <EntityKubernetesContent />
+        </EntityProvider>
+      </TestApiProvider>
+    ),
+  })
+  .addPage({
+    path: '/fixture-6',
+    title: 'Fixture 6',
+    element: (
+      <TestApiProvider
+        apis={[[kubernetesApiRef, new MockKubernetesClient(fixture6)]]}
+      >
+        <EntityProvider entity={mockEntity}>
+          <EntityKubernetesContent />
+        </EntityProvider>
+      </TestApiProvider>
+    ),
+  })
+  .addPage({
+    path: '/fixture-7',
+    title: 'Fixture 7',
+    element: (
+      <TestApiProvider
+        apis={[[kubernetesApiRef, new MockKubernetesClient(fixture7)]]}
+      >
+        <EntityProvider entity={mockEntity}>
+          <StructuredMetadataTable
+            metadata={metadata}
+            options={{ nestedValuesAsYaml: true }}
+          />
           <EntityKubernetesContent />
         </EntityProvider>
       </TestApiProvider>

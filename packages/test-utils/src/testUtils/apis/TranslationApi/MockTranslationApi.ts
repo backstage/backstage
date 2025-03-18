@@ -30,7 +30,10 @@ import { toInternalTranslationRef } from '../../../../../core-plugin-api/src/tra
 
 const DEFAULT_LANGUAGE = 'en';
 
-/** @alpha */
+/**
+ * @alpha
+ * @deprecated Use `mockApis` from `@backstage/test-utils` instead
+ */
 export class MockTranslationApi implements TranslationApi {
   static create() {
     const i18n = createI18n({

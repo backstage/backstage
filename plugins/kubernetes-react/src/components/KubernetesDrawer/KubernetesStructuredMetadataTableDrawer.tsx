@@ -237,6 +237,7 @@ const KubernetesStructuredMetadataTableDrawerContent = <
         {!isYaml && (
           <StructuredMetadataTable
             metadata={renderObject(replaceNullsWithUndefined(object))}
+            options={{ nestedValuesAsYaml: true }}
           />
         )}
       </div>

@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export { httpAuthServiceFactory } from './httpAuthServiceFactory';
+export {
+  httpAuthServiceFactory,
+  DefaultHttpAuthService,
+} from './httpAuthServiceFactory';
+export type { DefaultHttpAuthServiceOptions } from './httpAuthServiceFactory';

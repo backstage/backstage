@@ -17,6 +17,9 @@ The following is a full example entry in `app-config.yaml`:
 
 ```yaml
 kubernetes:
+  frontend:
+    podDelete:
+      enabled: true
   serviceLocatorMethod:
     type: 'multiTenant'
   clusterLocatorMethods:
@@ -46,6 +49,71 @@ kubernetes:
       skipTLSVerify: true
       skipMetricsLookup: true
       exposeDashboard: true
+```
+
+### `frontend` (optional)
+
+This is an array used to configure some frontend features.
+
+Valid values are:
+
+- `podDelete`
+
+#### `podDelete` (optional)
+
+This configures the behavior of the delete pod button in the container panel.
+
+Valid configurations are:
+
+- `enabled`
+
+##### `enabled`
+
+This configuration controls the visibility of this feature.
+
+Valid values are:
+
+- `true`
+- `false`
+
+The default value is `false`.
+
+#### Internationalization
+
+To customize or translate text in some of the components, use the following approach:
+
+```js
+import { createTranslationMessages } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '@backstage/plugin-kubernetes-react/alpha';
+import { kubernetesTranslationRef } from '@backstage/plugin-kubernetes/alpha';
+import { kubernetesClusterTranslationRef } from '@backstage/plugin-kubernetes-cluster/alpha';
+
+const app = createApp({
+  __experimentalTranslations: {
+    resources: [
+      createTranslationMessages({
+        ref: kubernetesReactTranslationRef,
+        messages: {
+          "podDrawer.buttons.delete": 'Restart Pod'
+        }
+      }),
+      createTranslationMessages({
+        ref: kubernetesTranslationRef,
+        messages: {
+          'kubernetesContentPage.permissionAlert.title': 'Insufficient permissions',
+          'kubernetesContentPage.permissionAlert.message': 'You do not have permissions to view Kubernetes objects.',
+        },
+      }),
+      createTranslationMessages({
+        ref: kubernetesClusterTranslationRef,
+        messages: {
+          'kubernetesClusterContentPage.permissionAlert.title': 'Insufficient permissions',
+          'kubernetesClusterContentPage.permissionAlert.message': 'You do not have permissions to view Kubernetes objects.',
+        },
+      }),
+    ]
+  },
+  ...
 ```
 
 ### `serviceLocatorMethod`
@@ -526,23 +594,22 @@ view the Kubernetes API docs for your Kubernetes version (e.g.
 
 Overrides for the Kubernetes object types fetched from the cluster. The default object types are:
 
-- pods
-- services
-- configmaps
-- limitranges
-- resourcequotas
-- deployments
-- replicasets
-- horizontalpodautoscalers
-- jobs
-- cronjobs
-- ingresses
-- statefulsets
-- daemonsets
+- `pods`
+- `services`
+- `configmaps`
+- `limitranges`
+- `resourcequotas`
+- `deployments`
+- `replicasets`
+- `horizontalpodautoscalers`
+- `jobs`
+- `cronjobs`
+- `ingresses`
+- `statefulsets`
+- `daemonsets`
 
-You may use this config to override the default object types if you only want a subset of
-the default ones. However, it's currently not supported to fetch object types other
-than the ones specified in the default types.
+You may use this config to override the default object types if you only want specific ones.
+However, the only additional object type to fetch at the moment is `secrets`.
 
 Example:
 
@@ -556,6 +623,7 @@ kubernetes:
     - pods
     - services
     - statefulsets
+    - secrets
 ```
 
 ### Role Based Access Control

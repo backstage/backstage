@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -27,28 +26,22 @@ import * as winston from 'winston';
 import { TechDocsCache } from '../cache';
 import { DocsBuilder, shouldCheckForUpdate } from '../DocsBuilder';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
-import { mockServices } from '@backstage/backend-test-utils';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
+import {
+  mockServices,
+  registerMswTestHooks,
+} from '@backstage/backend-test-utils';
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
 
 jest.mock('../DocsBuilder');
 jest.useFakeTimers();
 
-jest.mock('node-fetch', () => ({
-  __esModule: true,
-  default: async () => {
-    return {
-      json: async () => {
-        return {
-          build_timestamp: 123,
-        };
-      },
-    };
-  },
-}));
-
 const MockedDocsBuilder = DocsBuilder as jest.MockedClass<typeof DocsBuilder>;
 
 describe('DocsSynchronizer', () => {
+  const worker = setupServer();
+  registerMswTestHooks(worker);
+
   const preparers: jest.Mocked<PreparerBuilder> = {
     register: jest.fn(),
     get: jest.fn(),
@@ -64,10 +57,7 @@ describe('DocsSynchronizer', () => {
     hasDocsBeenGenerated: jest.fn(),
     publish: jest.fn(),
   };
-  const discovery: jest.Mocked<DiscoveryService> = {
-    getBaseUrl: jest.fn(),
-    getExternalBaseUrl: jest.fn(),
-  };
+  const discovery = mockServices.discovery.mock();
   const cache: jest.Mocked<TechDocsCache> = {
     get: jest.fn(),
     set: jest.fn(),
@@ -96,11 +86,18 @@ describe('DocsSynchronizer', () => {
     docsSynchronizer = new DocsSynchronizer({
       publisher,
       config: new ConfigReader({}),
-      logger: loggerToWinstonLogger(mockServices.logger.mock()),
+      logger: mockServices.logger.mock(),
       buildLogTransport: mockBuildLogTransport,
       scmIntegrations: ScmIntegrations.fromConfig(new ConfigReader({})),
       cache,
     });
+
+    worker.use(
+      http.get(
+        'http://backstage.local/api/techdocs/static/docs/default/component/test/techdocs_metadata.json',
+        () => HttpResponse.json({ build_timestamp: 123 }),
+      ),
+    );
   });
 
   afterEach(() => {
@@ -345,7 +342,7 @@ describe('DocsSynchronizer', () => {
         config: new ConfigReader({
           techdocs: { legacyUseCaseSensitiveTripletPaths: true },
         }),
-        logger: loggerToWinstonLogger(mockServices.logger.mock()),
+        logger: mockServices.logger.mock(),
         buildLogTransport: new winston.transports.Stream({
           stream: new PassThrough(),
         }),

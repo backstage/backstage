@@ -244,7 +244,7 @@ export const providerAuthenticator = createOAuthAuthenticator({
 Here are some examples of authenticators that are already implemented in the codebase:
 
 - [Google](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-google-provider/src/authenticator.ts)
-- [Github](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-github-provider/src/authenticator.ts)
+- [GitHub](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-github-provider/src/authenticator.ts)
 - [Okta](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-okta-provider/src/authenticator.ts)
 
 ### Creating proxy auth based provider

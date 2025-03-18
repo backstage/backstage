@@ -30,6 +30,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { PluginScanner } from '../scanner/plugin-scanner';
 import { ConfigSchema, loadConfigSchema } from '@backstage/config-loader';
+import { dynamicPluginsFeatureLoader } from '../features';
 
 /**
  *
@@ -68,10 +69,7 @@ export interface DynamicPluginsSchemasOptions {
   schemaLocator?: (pluginPackage: ScannedPluginPackage) => string;
 }
 
-/**
- * @public
- */
-export const dynamicPluginsSchemasServiceFactoryWithOptions = (
+const dynamicPluginsSchemasServiceFactoryWithOptions = (
   options?: DynamicPluginsSchemasOptions,
 ) =>
   createServiceFactory({
@@ -143,9 +141,12 @@ export const dynamicPluginsSchemasServiceFactoryWithOptions = (
 
 /**
  * @public
+ * @deprecated Use {@link dynamicPluginsFeatureLoader} instead, which gathers all services and features required for dynamic plugins.
  */
-export const dynamicPluginsSchemasServiceFactory =
-  dynamicPluginsSchemasServiceFactoryWithOptions();
+export const dynamicPluginsSchemasServiceFactory = Object.assign(
+  dynamicPluginsSchemasServiceFactoryWithOptions,
+  dynamicPluginsSchemasServiceFactoryWithOptions(),
+);
 
 /** @internal */
 async function gatherDynamicPluginsSchemas(
@@ -160,10 +161,7 @@ async function gatherDynamicPluginsSchemas(
     let schemaLocation = schemaLocator(pluginPackage);
 
     if (!path.isAbsolute(schemaLocation)) {
-      let pluginLocation = url.fileURLToPath(pluginPackage.location);
-      if (path.basename(pluginLocation) === 'alpha') {
-        pluginLocation = path.dirname(pluginLocation);
-      }
+      const pluginLocation = url.fileURLToPath(pluginPackage.location);
       schemaLocation = path.resolve(pluginLocation, schemaLocation);
     }
 

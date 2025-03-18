@@ -36,6 +36,9 @@ import MuiPersonIcon from '@material-ui/icons/Person';
 import MuiWarningIcon from '@material-ui/icons/Warning';
 import MuiStorageIcon from '@material-ui/icons/Storage';
 import MuiFeaturedPlayListIcon from '@material-ui/icons/FeaturedPlayList';
+import Star from '@material-ui/icons/Star';
+import StarBorder from '@material-ui/icons/StarBorder';
+import OpenInNew from '@material-ui/icons/OpenInNew';
 
 export const icons = {
   brokenImage: MuiBrokenImageIcon as IconComponent,
@@ -62,4 +65,7 @@ export const icons = {
   'kind:template': MuiFeaturedPlayListIcon as IconComponent,
   user: MuiPersonIcon as IconComponent,
   warning: MuiWarningIcon as IconComponent,
+  star: Star as IconComponent,
+  unstarred: StarBorder as IconComponent,
+  externalLink: OpenInNew as IconComponent,
 };
