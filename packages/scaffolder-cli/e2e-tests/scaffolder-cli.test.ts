@@ -86,7 +86,7 @@ test.describe('scaffolder-cli with example-backend', () => {
   test('can generate with yaml file', async () => {
     await runGenerateCommandAndExpectOutput(
       entryPoint,
-      'e2e-tests/test-template-dir/test-values.yaml',
+      'e2e-tests/__fixtures__/test-values.yaml',
     );
     verifyOutputDirectoryExists();
     verifyOutputDirectoryNotEmpty();
@@ -100,7 +100,7 @@ async function runGenerateCommandAndExpectOutput(
 ): Promise<void> {
   const proc: ChildProcessWithoutNullStreams = spawn(entryPoint, [
     'generate',
-    'e2e-tests/test-template-dir',
+    'e2e-tests/__fixtures__',
     '--values',
     values,
   ]);

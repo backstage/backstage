@@ -83,7 +83,7 @@ async function getDryRunOptions(
   }));
   return {
     template: templateJson,
-    values: dryRunData, // Use dryRunData here
+    values: dryRunData,
     directoryContents,
   };
 }

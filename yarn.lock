@@ -8820,6 +8820,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/scaffolder-cli@workspace:packages/scaffolder-cli":
+  version: 0.0.0-use.local
+  resolution: "@backstage/scaffolder-cli@workspace:packages/scaffolder-cli"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-react": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@playwright/test": ^1.32.3
+    "@types/js-yaml": ^3.12.5
+    "@types/node": ^16.7.13
+    chalk: ^4.0.0
+    commander: ^12.1.0
+    fs-extra: ^11.2.0
+    js-yaml: ^4.1.0
+    nodemon: ^2.0.15
+  bin:
+    scaffolder-cli: bin/scaffolder-cli
+  languageName: unknown
+  linkType: soft
+
 "@backstage/test-utils@npm:^1.7.5":
   version: 1.7.5
   resolution: "@backstage/test-utils@npm:1.7.5"
@@ -16545,29 +16567,6 @@ __metadata:
   checksum: 1c29a1bb81fa14573d37f485170083b0f43ecee66d08422f8ff6d3083ab65954cff9178502132d87175f34cf1e432e1ee7985d60417e350a730de907c63ef633
   languageName: node
   linkType: hard
-
-"@scaffolder/cli@workspace:packages/scaffolder-cli":
-  version: 0.0.0-use.local
-  resolution: "@scaffolder/cli@workspace:packages/scaffolder-cli"
-  dependencies:
-    "@backstage/cli": "workspace:^"
-    "@backstage/errors": "workspace:^"
-    "@backstage/plugin-scaffolder-node": "workspace:^"
-    "@backstage/plugin-scaffolder-react": "workspace:^"
-    "@backstage/types": "workspace:^"
-    "@playwright/test": ^1.32.3
-    "@types/js-yaml": ^3.12.5
-    "@types/node": ^16.7.13
-    chalk: ^4.0.0
-    commander: ^12.1.0
-    fs-extra: ^11.2.0
-    js-yaml: ^4.1.0
-    nodemon: ^2.0.15
-    typescript: ^4.4.4
-  bin:
-    cli: bin/scaffolder-cli
-  languageName: unknown
-  linkType: soft
 
 "@scarf/scarf@npm:=1.4.0":
   version: 1.4.0
@@ -46274,16 +46273,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.4.4":
-  version: 4.9.5
-  resolution: "typescript@npm:4.9.5"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: ee000bc26848147ad423b581bd250075662a354d84f0e06eb76d3b892328d8d4440b7487b5a83e851b12b255f55d71835b008a66cbf8f255a11e4400159237db
-  languageName: node
-  linkType: hard
-
 "typescript@npm:~5.5.0":
   version: 5.5.4
   resolution: "typescript@npm:5.5.4"
@@ -46311,16 +46300,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 797ac213c03a19749181c745647b4cab03d13bf4b6b738b05a3426f46c6b540f908989e839d9b0c89d7a4ee2bdb50493b4d4898d4ef1c897c3e9d0b082e78a67
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@^4.4.4#~builtin<compat/typescript>":
-  version: 4.9.5
-  resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=289587"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 1f8f3b6aaea19f0f67cba79057674ba580438a7db55057eb89cc06950483c5d632115c14077f6663ea76fd09fce3c190e6414bb98582ec80aa5a4eaf345d5b68
   languageName: node
   linkType: hard
 

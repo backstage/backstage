@@ -1,8 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: scaffolder-cli
-  title: '@scaffolder/cli'
+  name: backstage-scaffolder-cli
+  title: '@backstage/scaffolder-cli'
   description: CLI for developing Backstage plugins and apps
 spec:
   lifecycle: experimental
