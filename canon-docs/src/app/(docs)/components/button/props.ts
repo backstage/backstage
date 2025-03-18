@@ -1,7 +1,7 @@
 import { classNamePropDefs, stylePropDefs } from '../../../../utils/propDefs';
 import type { PropDef } from '../../../../utils/propDefs';
 
-export const boxPropDefs: Record<string, PropDef> = {
+export const buttonPropDefs: Record<string, PropDef> = {
   variant: {
     type: 'enum',
     values: ['primary', 'secondary'],

@@ -28,8 +28,8 @@ export const ButtonWithIcons = () => {
   return (
     <Flex align="center">
       <Button iconStart="cloud">Button</Button>
-      <Button iconEnd="chevronRight">Button</Button>
-      <Button iconStart="cloud" iconEnd="chevronRight">
+      <Button iconEnd="chevron-right">Button</Button>
+      <Button iconStart="cloud" iconEnd="chevron-right">
         Button
       </Button>
     </Flex>
@@ -40,8 +40,8 @@ export const ButtonFullWidth = () => {
   return (
     <Flex direction="column" style={{ width: '300px' }}>
       <Button iconStart="cloud">Button</Button>
-      <Button iconEnd="chevronRight">Button</Button>
-      <Button iconStart="cloud" iconEnd="chevronRight">
+      <Button iconEnd="chevron-right">Button</Button>
+      <Button iconStart="cloud" iconEnd="chevron-right">
         Button
       </Button>
     </Flex>
@@ -78,7 +78,7 @@ export const ButtonPlayground = () => {
                 Button
               </Button>
               <Button
-                iconEnd="chevronRight"
+                iconEnd="chevron-right"
                 variant={variant as ButtonProps['variant']}
                 size={size as ButtonProps['size']}
               >
@@ -86,7 +86,7 @@ export const ButtonPlayground = () => {
               </Button>
               <Button
                 iconStart="cloud"
-                iconEnd="chevronRight"
+                iconEnd="chevron-right"
                 style={{ width: '200px' }}
                 variant={variant as ButtonProps['variant']}
                 size={size as ButtonProps['size']}
