@@ -50,6 +50,8 @@ export const PropsTable = <T extends Record<string, PropData>>({
                   style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}
                 >
                   {data[n].type === 'string' && <Chip>string</Chip>}
+                  {data[n].type === 'number' && <Chip>number</Chip>}
+                  {data[n].type === 'boolean' && <Chip>boolean</Chip>}
                   {data[n].type === 'enum' && enumValues}
                   {data[n].type === 'enum | string' && (
                     <>

@@ -3,7 +3,7 @@ import type { Breakpoint } from '@backstage/canon/src/types';
 const breakpoints = ['initial', 'xs', 'sm', 'md', 'lg', 'xl'] as Breakpoint[];
 
 export type PropDef = {
-  type: 'string' | 'enum' | 'enum | string';
+  type: 'string' | 'enum' | 'enum | string' | 'number' | 'boolean';
   values?: string | string[];
   default?: string;
   required?: boolean;

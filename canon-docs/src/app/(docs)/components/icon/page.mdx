@@ -3,6 +3,7 @@ import { IconPreview } from '@/snippets/icon';
 import { Snippet } from '@/components/Snippet';
 import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
+import { iconPropDefs } from './props';
 
 # Icon
 
@@ -40,23 +41,4 @@ Icons are used to represent an action or a state.
 
 ## API reference
 
-<PropsTable
-  data={{
-    name: {
-      type: 'icon',
-      responsive: false,
-    },
-    size: {
-      type: 'number',
-      responsive: false,
-    },
-    className: {
-      type: 'string',
-      responsive: false,
-    },
-    style: {
-      type: 'CSSProperties',
-      responsive: false,
-    },
-  }}
-/>
+<PropsTable data={iconPropDefs} />

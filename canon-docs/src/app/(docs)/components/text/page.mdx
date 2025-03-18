@@ -8,6 +8,7 @@ import {
 import { Snippet } from '@/components/Snippet';
 import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
+import { textPropDefs } from './props';
 
 # Text
 
@@ -48,30 +49,7 @@ The `Text` component is used to display content on your page.
 
 ## API reference
 
-<PropsTable
-  data={{
-    variant: {
-      type: ['display', 'title1', 'title2', 'title3', 'title4', 'title5'],
-      responsive: true,
-    },
-    weight: {
-      type: ['regular', 'bold'],
-      responsive: true,
-    },
-    children: {
-      type: 'ReactNode',
-      responsive: false,
-    },
-    className: {
-      type: 'string',
-      responsive: false,
-    },
-    style: {
-      type: 'CSSProperties',
-      responsive: false,
-    },
-  }}
-/>
+<PropsTable data={textPropDefs} />
 
 ## Examples
 
