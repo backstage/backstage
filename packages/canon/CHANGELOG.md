@@ -1,5 +1,24 @@
 # @backstage/canon
 
+## 0.2.0
+
+### Minor Changes
+
+- 5a5db29: Fix CSS imports and move CSS outputs out of the dist folder.
+- 4557beb: Added a new Tooltip component to Canon.
+- 1e4dfdb: We added a new IconButton component with fixed sizes showcasing a single icon.
+- e8d12f9: Added about 40 new icons to Canon.
+- 8689010: We are renaming CanonProvider to IconProvider to improve clarity on how to override icons.
+- bf319b7: Added a new Menu component to Canon.
+- cb7e99d: Updating styles for Text and Link components as well as global surface tokens.
+- bd8520d: Added a new ScrollArea component for Canon.
+
+### Patch Changes
+
+- 56850ca: Fix Button types that was preventing the use of native attributes like onClick.
+- 89e8686: To avoid conflicts with Backstage, we removed global styles and set font-family and font-weight for each components.
+- 05e9d41: Introducing Canon to Backstage. Canon styling system is based on pure CSS. We are adding our styles.css at the top of your Backstage instance.
+
 ## 0.2.0-next.1
 
 ### Minor Changes

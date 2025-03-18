@@ -1,5 +1,25 @@
 # @backstage/plugin-search-backend
 
+## 2.0.0
+
+### Major Changes
+
+- d5c4a9d: **BREAKING** Removed support for the legacy backend system and references to `@backstage/backend-common`, please migrate to the new backend system.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.2
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/backend-openapi-utils@0.5.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-node@1.3.9
+  - @backstage/plugin-search-common@1.2.17
+
 ## 1.8.3-next.2
 
 ### Patch Changes

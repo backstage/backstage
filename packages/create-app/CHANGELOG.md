@@ -1,5 +1,20 @@
 # @backstage/create-app
 
+## 0.6.0
+
+### Minor Changes
+
+- 31731b0: Upgraded the TypeScript version in the template to `5.8`.
+
+### Patch Changes
+
+- 7d083ce: Canon is now ready to be used in Alpha. We are adding a custom CSS file at the root of the app to make all styles available for Canon components.
+- aed536a: Bumped create-app version.
+- f9fb465: Bumped create-app version.
+- 19e5c3f: Added link to multi-stage Dockerfile documentation as alternative option
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.6.0-next.2
 
 ### Minor Changes

@@ -1,5 +1,20 @@
 # @backstage/plugin-techdocs-node
 
+## 1.13.1
+
+### Patch Changes
+
+- 052a10a: Bumps the version of the techdocs generator container used.
+- Updated dependencies
+  - @backstage/integration@1.16.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-techdocs-common@0.1.0
+
 ## 1.13.1-next.2
 
 ### Patch Changes
