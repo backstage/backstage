@@ -1,1 +1,0 @@
-{"version":3,"sourceRoot":null,"mappings":"AAAA","sources":["css/box.css"],"sourcesContent":[".canon-Box {\n  font-family: var(--canon-font-regular);\n  font-weight: var(--canon-font-weight-regular);\n  color: var(--canon-fg-primary);\n}\n"],"names":[]}

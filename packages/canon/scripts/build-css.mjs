@@ -69,15 +69,13 @@ async function buildCSS(logs = true) {
       filename: file.path,
     });
 
-    let { code, map } = transform({
+    let { code } = transform({
       filename: `${distDir}/${file.newName}`,
       code: bundleCode,
       minify: true,
-      sourceMap: true,
     });
 
     fs.writeFileSync(`${distDir}/${file.newName}`, code);
-    fs.writeFileSync(`${distDir}/${file.newName}.map`, map);
 
     if (logs) {
       console.log(chalk.blue('CSS bundled: ') + file.newName);

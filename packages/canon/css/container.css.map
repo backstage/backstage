@@ -1,1 +1,0 @@
-{"version":3,"sourceRoot":null,"mappings":"AAAA","sources":["css/container.css"],"sourcesContent":[".canon-Container {\n  max-width: 75rem;\n  margin: 0 auto;\n  padding: 0 1rem;\n}\n"],"names":[]}
