@@ -45,8 +45,6 @@ import { convertLegacyPlugin } from '@backstage/core-compat-api';
 import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 
-import '@backstage/canon/css/styles.css';
-
 /*
 
 # Notes
