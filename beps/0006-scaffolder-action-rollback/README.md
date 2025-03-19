@@ -71,14 +71,15 @@ Rollback is going to be performed:
 
 ### Securing Rollbacks
 
-We will provide a helper function that encapsulates the logic of verifying the resource and executing the rollback. Core security checks can be performed in this function to ensure the resource is
-valid and can be rolled back. There is a possible opportunity to allow others to extend this function to provide custom security checks.
+For actions that require additional security checks during rollback, we provide an optional helper function that encapsulates the logic of verifying the resource and executing the rollback. This helper is not required, but can be useful when you need to ensure resources being rolled back match what was originally created.
 
-By default, we can handle the following:
+The helper function handles:
 
-1. Verify we reached the point of setting output
-1. Parse resource details from the output and validate them against the input
-1. Execute the actual rollback with the validated resource
+1. Verifying we reached the point of setting output
+1. Parsing resource details from the output and validating them against the input
+1. Executing the actual rollback with the validated resource
+
+The solution aims to only operate on resources that were actually created by the action.
 
 ```typescript
 export function createSecureRollback
@@ -139,6 +140,10 @@ export function createSecureRollback
 Implementers must provide a method to parse the resource details from the output and a method to validate the resource details against the input. An example implementation looks like
 
 ```typescript
+handler: async (ctx) => {
+  const { owner, repo } = ctx.input;
+  ctx.output.repoUrl = await githubClient.repos.create({ owner, repo });
+},
 rollback: createSecureRollback(
   async (ctx, resource) => {
     // Execute the actual deletion using the validated resource
@@ -164,8 +169,6 @@ rollback: createSecureRollback(
   },
 );
 ```
-
-The solution aims to only operate on resources that were actually created by the action.
 
 ### Rollback mechanism
 
@@ -230,16 +233,16 @@ const createPublishGitHubAction = createTemplateAction({
 
 The rollback will be performed in the reverse order of the execution. For example, if the following actions are executed, where the rollback is provided for the last 3 actions:
 
-1. create a repository (no rollback provided)
-1. create a pull request (rollback provided)
-1. create a branch (rollback provided)
-1. create third party resource (rollback provided)
+- create a repository (no rollback provided)
+- create a pull request (rollback provided)
+- create a branch (rollback provided)
+- create third party resource (rollback provided)
 
 The rollback will be performed in the following order:
 
-1. delete the third party resource
-1. delete the branch
-1. delete the pull request
+- delete the third party resource
+- delete the branch
+- delete the pull request
 
 The repository will not be deleted because the rollback is not provided for it.
 
