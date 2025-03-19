@@ -99,7 +99,7 @@ The following table details common keys found within the `meta` object of audit 
 | `queryType`   | Specifies the type of query performed when fetching data.                      | A kebab-case string                   | `all`, `by-id`, `by-name`, `by-query`, `by-refs`, `ancestry`, `by-entity` |
 | `actionType`  | Specifies the type of action performed when modifying data.                    | A kebab-case string                   | `create`, `delete`, `refresh`                                             |
 | `entityRef`   | The full reference of an entity, including kind, namespace, and name.          | `[kind]:[namespace]/[name]`           | `component:default/my-component`, `group:my-org/team-a`                   |
-| `locationRef` | A specific reference to a location being operated on.                          | Any string representing the location. | `Url:https://example.com/catalog-info.yaml`, `custom:default/my-location` |
+| `locationRef` | A specific reference to a location being operated on.                          | Any string representing the location. | `url:https://example.com/catalog-info.yaml`, `custom:default/my-location` |
 | `uid`         | The unique identifier of a location or other object involved in the operation. | Any valid unique ID string            | `9a4e740b-e557-427f-b9f2-0d4f092b1c1e`                                    |
 
 By following these conventions, you create a more structured and informative audit trail that is easier to search, filter, and understand. This allows you to better group and understand the events being logged.
