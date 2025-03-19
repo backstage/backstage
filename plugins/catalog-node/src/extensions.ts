@@ -15,7 +15,12 @@
  */
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { Entity, Validators } from '@backstage/catalog-model';
+import {
+  defaultEntityMetadataSchema,
+  Entity,
+  EntitySchema,
+  Validators,
+} from '@backstage/catalog-model';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
@@ -24,7 +29,6 @@ import {
   PlaceholderResolver,
   LocationAnalyzer,
   ScmLocationAnalyzer,
-  EntitySchema,
 } from '@backstage/plugin-catalog-node';
 import {
   Permission,
@@ -88,10 +92,14 @@ export interface CatalogModelExtensionPoint {
   setEntityDataParser(parser: CatalogProcessorParser): void;
 
   /**
-   * Sets the entity schemas to use for validation.
-   * @param schemas - The entity schemas to use for validation
+   * Adds an entity schema to the catalog model.
+   * @param schemas - The entity schemas to add
    */
-  setEntitySchemas(schemas: Record<string, EntitySchema<any, any>>): void;
+  addEntitySchema(...schemas: EntitySchema[]): void;
+
+  setDefaultEntityMetadataSchema(
+    schema: typeof defaultEntityMetadataSchema,
+  ): void;
 }
 
 /**

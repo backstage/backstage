@@ -23,7 +23,6 @@
 export * from './api';
 export * from './conversion';
 export * from './processing';
-export * from './schemas';
 export {
   catalogServiceRef,
   type CatalogService,

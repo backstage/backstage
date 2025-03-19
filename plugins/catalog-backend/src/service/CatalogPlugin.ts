@@ -18,16 +18,10 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import {
-  domainKindSchema,
+  defaultEntityMetadataSchema,
   Entity,
-  groupKindSchema,
-  locationKindSchema,
+  EntitySchema,
   Validators,
-  componentKindSchema,
-  resourceKindSchema,
-  userKindSchema,
-  systemKindSchema,
-  apiKindSchema,
 } from '@backstage/catalog-model';
 import { ForwardedError } from '@backstage/errors';
 import {
@@ -53,7 +47,6 @@ import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Permission } from '@backstage/plugin-permission-common';
 import { merge } from 'lodash';
 import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
-import { EntitySchema } from '../processors/BuiltinKindsEntityProcessor';
 
 class CatalogLocationsExtensionPointImpl
   implements CatalogLocationsExtensionPoint
@@ -165,6 +158,7 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
   }
 
   #entityDataParser?: CatalogProcessorParser;
+  #defaultEntityMetadataSchema = defaultEntityMetadataSchema;
 
   setEntityDataParser(parser: CatalogProcessorParser): void {
     if (this.#entityDataParser) {
@@ -175,23 +169,24 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
     this.#entityDataParser = parser;
   }
 
-  #entitySchemas: Record<string, EntitySchema<{}>> = {
-    apiKindSchema,
-    componentKindSchema,
-    resourceKindSchema,
-    groupKindSchema,
-    locationKindSchema,
-    userKindSchema,
-    systemKindSchema,
-    domainKindSchema,
-  };
+  #entitySchemas: EntitySchema[] = [];
 
-  setEntitySchemas(schemas: Record<string, EntitySchema<{}>>): void {
-    this.#entitySchemas = { ...this.#entitySchemas, ...schemas };
+  addEntitySchema(...schemas: EntitySchema[]): void {
+    this.#entitySchemas = [...this.#entitySchemas, ...schemas];
+  }
+
+  setDefaultEntityMetadataSchema(
+    schema: typeof defaultEntityMetadataSchema,
+  ): void {
+    this.#defaultEntityMetadataSchema = schema;
   }
 
   get entitySchemas() {
     return this.#entitySchemas;
+  }
+
+  get defaultEntityMetadataSchema() {
+    return this.#defaultEntityMetadataSchema;
   }
 
   get entityDataParser() {

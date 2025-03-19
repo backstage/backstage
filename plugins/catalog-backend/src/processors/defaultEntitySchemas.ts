@@ -23,9 +23,10 @@ import {
   userKindSchema,
   systemKindSchema,
   domainKindSchema,
+  EntitySchema,
 } from '@backstage/catalog-model';
 
-export const defaultEntitySchemas = {
+export const defaultEntitySchemas: Record<string, EntitySchema> = {
   apiKindSchema,
   componentKindSchema,
   resourceKindSchema,

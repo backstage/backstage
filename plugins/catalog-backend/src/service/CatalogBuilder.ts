@@ -19,10 +19,12 @@ import {
   HostDiscovery,
 } from '@backstage/backend-common';
 import {
+  defaultEntityMetadataSchema,
   DefaultNamespaceEntityPolicy,
   Entity,
   EntityPolicies,
   EntityPolicy,
+  EntitySchema,
   FieldFormatEntityPolicy,
   makeValidator,
   NoForeignRootFieldsEntityPolicy,
@@ -117,7 +119,6 @@ import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultRefreshService } from './DefaultRefreshService';
 import { entitiesResponseToObjects } from './response';
 import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
-import { EntitySchema } from '../processors/BuiltinKindsEntityProcessor';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -194,8 +195,8 @@ export class CatalogBuilder {
   private allowedLocationType: string[];
   private legacySingleProcessorValidation = false;
   private eventBroker?: EventBroker | EventsService;
-  private entitySchemas: Record<string, EntitySchema<{}>> = {};
-
+  private entitySchemas: EntitySchema[] = [];
+  private defaultEntityMetadataSchema = defaultEntityMetadataSchema;
   /**
    * Creates a catalog builder.
    */
@@ -470,9 +471,15 @@ export class CatalogBuilder {
     return this;
   }
 
-  setEntitySchemas(schemas: Record<string, EntitySchema<{}>>): CatalogBuilder {
+  setEntitySchemas(schemas: EntitySchema[]): CatalogBuilder {
     this.entitySchemas = schemas;
     return this;
+  }
+
+  setDefaultEntityMetadataSchema(
+    metadataSchema: typeof defaultEntityMetadataSchema,
+  ) {
+    this.defaultEntityMetadataSchema = metadataSchema;
   }
 
   /**
@@ -730,8 +737,13 @@ export class CatalogBuilder {
       }),
     ];
 
-    const builtinKindsEntityProcessor = new BuiltinKindsEntityProcessor();
-    builtinKindsEntityProcessor.setSchemas?.(this.entitySchemas);
+    const builtinKindsEntityProcessor = new BuiltinKindsEntityProcessor(
+      config.getOptionalBoolean('catalog.useZodSchemas'),
+    );
+    builtinKindsEntityProcessor.addEntitySchema(...this.entitySchemas);
+    builtinKindsEntityProcessor.setDefaultEntityMetadataSchema(
+      this.defaultEntityMetadataSchema,
+    );
     // If the user adds a processor named 'BuiltinKindsEntityProcessor',
     //   skip inclusion of the catalog-backend version.
     if (

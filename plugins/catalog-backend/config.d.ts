@@ -223,5 +223,12 @@ export interface Config {
      * This flag is temporary and will be enabled by default in future releases.
      */
     useUrlReadersSearch?: boolean;
+
+    /**
+     * Use Zod schemas for entity validation instead of Ajv.
+     *
+     * This is currently experimental and may not work as expected.
+     */
+    useZodSchemas?: boolean;
   };
 }
