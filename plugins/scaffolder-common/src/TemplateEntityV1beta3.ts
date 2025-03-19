@@ -15,6 +15,8 @@
  */
 
 import {
+  createEntitySchema,
+  createFromZod,
   Entity,
   entityKindSchemaValidator,
   KindValidator,
@@ -179,3 +181,189 @@ export const isTemplateEntityV1beta3 = (
 ): entity is TemplateEntityV1beta3 =>
   entity.apiVersion === 'scaffolder.backstage.io/v1beta3' &&
   entity.kind === 'Template';
+
+export const templateEntityV1beta3Schema = createFromZod(z => {
+  const parameterSchema = z
+    .object({
+      'backstage:permissions': z
+        .object({
+          tags: z.array(z.string()),
+        })
+        .passthrough()
+        .describe('Object used for authorizing the parameter'),
+    })
+    .passthrough();
+
+  return createEntitySchema({
+    kind: z.literal('Template'),
+    apiVersion: z.enum(['scaffolder.backstage.io/v1beta3']),
+    spec: z
+      .object({
+        type: z
+          .string()
+          .min(1)
+          .describe(
+            'The type of component created by the template. The software catalog accepts any type value, but an organization should take great care to establish a proper taxonomy for these. Tools including Backstage itself may read this field and behave differently depending on its value. For example, a website type component may present tooling in the Backstage interface that is specific to just websites.',
+          ),
+        steps: z.array(
+          z
+            .object({
+              action: z.string().describe('The name of the action to execute.'),
+              id: z
+                .string()
+                .optional()
+                .describe(
+                  'The ID of the step, which can be used to refer to its outputs.',
+                ),
+              name: z
+                .string()
+                .optional()
+                .describe(
+                  'The name of the step, which will be displayed in the UI during the scaffolding process.',
+                ),
+              input: z
+                .object({})
+                .passthrough()
+                .optional()
+                .describe(
+                  'A templated object describing the inputs to the action.',
+                ),
+              if: z
+                .string()
+                .or(z.boolean())
+                .optional()
+                .describe(
+                  'A templated condition that skips the step when evaluated to false. If the condition is true or not defined, the step is executed. The condition is true, if the input is not `false`, `undefined`, `null`, `""`, `0`, or `[]`.',
+                ),
+              'backstage:permissions': z
+                .object({
+                  tags: z.array(z.string()).optional(),
+                })
+                .passthrough()
+                .optional()
+                .describe('Object used for authorizing the step'),
+            })
+            .passthrough()
+            .describe('A list of steps to execute.'),
+        ),
+        output: z
+          .object({
+            links: z
+              .array(
+                z.object({
+                  url: z.string().describe('The URL of the link.'),
+                  entityRef: z
+                    .string()
+                    .optional()
+                    .describe(
+                      'An entity reference to an entity in the catalog.',
+                    ),
+                  title: z
+                    .string()
+                    .min(1)
+                    .optional()
+                    .describe('The title of the link.'),
+                  icon: z
+                    .string()
+                    .min(1)
+                    .optional()
+                    .describe('The icon of the link.'),
+                }),
+              )
+              .optional()
+              .describe(
+                'A list of external hyperlinks, typically pointing to resources created or updated by the template',
+              ),
+            text: z
+              .array(
+                z.object({
+                  title: z
+                    .string()
+                    .min(1)
+                    .optional()
+                    .describe('The title of the text.'),
+                  icon: z
+                    .string()
+                    .min(1)
+                    .optional()
+                    .describe('The icon of the text.'),
+                  content: z
+                    .string()
+                    .optional()
+                    .describe('The content of the text.'),
+                }),
+              )
+              .optional()
+              .describe(
+                'A list of Markdown text blobs, like output data from the template.',
+              ),
+          })
+          .and(z.record(z.string(), z.string()))
+          .optional()
+          .describe(
+            'A templated object describing the outputs of the scaffolding task.',
+          ),
+        owner: z
+          .string()
+          .min(1)
+          .optional()
+          .describe('The user (or group) owner of the template'),
+        parameters: parameterSchema
+          .optional()
+          .describe('The JSONSchema describing the inputs for the template.')
+          .or(
+            z
+              .array(parameterSchema)
+              .describe('A list of separate forms to collect parameters.'),
+          ),
+        presentation: z
+          .object({
+            buttonLabels: z
+              .object({
+                backButtonText: z
+                  .string()
+                  .describe('A button which return the user to one step back.'),
+                createButtonText: z
+                  .string()
+                  .describe(
+                    'A button which start the execution of the template.',
+                  ),
+                reviewButtonText: z
+                  .string()
+                  .describe(
+                    'A button which open the review step to verify the input prior to start the execution.',
+                  ),
+              })
+              .passthrough()
+              .optional()
+              .describe('A way to redefine the labels for actionable buttons.'),
+          })
+          .passthrough()
+          .optional()
+          .describe('A way to redefine the presentation of the scaffolder.'),
+        EXPERIMENTAL_recovery: z
+          .object({
+            EXPERIMENTAL_strategy: z
+              .enum(['none', 'startOver'])
+              .describe('The recovery strategy for the template.'),
+          })
+          .passthrough()
+          .optional()
+          .describe('EXPERIMENTAL: Recovery strategy for the template'),
+        EXPERIMENTAL_formDecorators: z
+          .array(
+            z.object({
+              id: z.string().optional().describe('The form hook ID'),
+              input: z
+                .object({})
+                .passthrough()
+                .optional()
+                .describe('A object describing the inputs to the form hook.'),
+            }),
+          )
+          .optional()
+          .describe('EXPERIMENTAL: Form hooks to be run'),
+      })
+      .passthrough(),
+  });
+});

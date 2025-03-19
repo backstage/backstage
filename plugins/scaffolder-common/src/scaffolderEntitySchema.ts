@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-/**
- * Common functionalities for the scaffolder, to be shared between scaffolder and scaffolder-backend plugin
- *
- * @packageDocumentation
- */
+import { createEntitySchema, createFromZod } from '@backstage/catalog-model';
 
-export * from './TaskSpec';
-
-export {
-  templateEntityV1beta3Validator,
-  isTemplateEntityV1beta3,
-  templateEntityV1beta3Schema,
-} from './TemplateEntityV1beta3';
-export type {
-  TemplatePresentationV1beta3,
-  TemplateEntityV1beta3,
-  TemplateEntityStepV1beta3,
-  TemplateParametersV1beta3,
-  TemplatePermissionsV1beta3,
-  TemplateRecoveryV1beta3,
-} from './TemplateEntityV1beta3';
+export const scaffolderEntitySchema = createFromZod(z =>
+  createEntitySchema({
+    kind: z.literal('Template'),
+    apiVersion: z.enum(['scaffolder.backstage.io/v1beta3']),
+    spec: z.object({
+      type: z.string(),
+    }),
+  }),
+);

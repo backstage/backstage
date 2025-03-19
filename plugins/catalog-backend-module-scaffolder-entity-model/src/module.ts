@@ -15,8 +15,12 @@
  */
 
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import {
+  catalogModelExtensionPoint,
+  catalogProcessingExtensionPoint,
+} from '@backstage/plugin-catalog-node/alpha';
 import { ScaffolderEntitiesProcessor } from './processor';
+import { templateEntityV1beta3Schema } from '@backstage/plugin-scaffolder-common';
 
 /**
  * Registers support for the scaffolder specific entity model (e.g. the Template
@@ -31,9 +35,11 @@ export const catalogModuleScaffolderEntityModel = createBackendModule({
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
+        catalogModel: catalogModelExtensionPoint,
       },
-      async init({ catalog }) {
+      async init({ catalog, catalogModel }) {
         catalog.addProcessor(new ScaffolderEntitiesProcessor());
+        catalogModel.addEntitySchema(templateEntityV1beta3Schema);
       },
     });
   },
