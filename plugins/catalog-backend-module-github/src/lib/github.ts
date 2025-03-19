@@ -511,7 +511,7 @@ export async function getOrganizationRepositories(
     query,
     org,
     r => r?.repositoryOwner?.repositories,
-    async x => x,
+    async x => (x.catalogInfoFile ? x : undefined),
     { org, catalogPathRef },
     logger,
   );
@@ -652,10 +652,6 @@ export async function queryWithPaging<
   const result: OutputType[] = [];
   const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-  if (logger) {
-    logger.debug(`queryWithPaging starts, query=${JSON.stringify(query)}`);
-  }
-
   let cursor: string | undefined = undefined;
   for (let j = 0; j < 1000 /* just for sanity */; ++j) {
     let attempts = 0;
@@ -669,9 +665,6 @@ export async function queryWithPaging<
           cursor,
         });
 
-        if (logger) {
-          logger.debug(`j=${j} response=${JSON.stringify(response)}`);
-        }
         if (response) {
           break;
         }
@@ -684,7 +677,10 @@ export async function queryWithPaging<
             )}`,
           );
         }
-        if (error?.status !== 502 || attempts === maxRetries) {
+        if (
+          !(error?.status === 502 || error?.status === 504) ||
+          attempts === maxRetries
+        ) {
           throw error;
         }
         await sleep(Math.pow(2, attempts - 1) * 1000);
@@ -693,9 +689,6 @@ export async function queryWithPaging<
 
     const conn = connection(response);
     if (!conn) {
-      if (logger) {
-        logger.warn(`connection was not found for j=${j}`);
-      }
       throw new Error(`Found no match for ${JSON.stringify(variables)}`);
     }
 
@@ -716,12 +709,6 @@ export async function queryWithPaging<
     } else {
       await sleep(1000);
       cursor = conn.pageInfo.endCursor;
-    }
-
-    // TODO: remove this when we are done testing
-    const maxLength = 50000;
-    if (result.length > maxLength) {
-      break;
     }
   }
 
