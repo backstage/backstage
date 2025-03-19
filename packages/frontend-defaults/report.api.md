@@ -7,7 +7,8 @@ import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { CreateAppRouteBinder } from '@backstage/frontend-app-api';
 import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
-import { FrontendFeature } from '@backstage/frontend-app-api';
+import { FrontendFeature } from '@backstage/frontend-plugin-api';
+import { FrontendFeatureLoader } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
@@ -17,7 +18,7 @@ export function createApp(options?: CreateAppOptions): {
   createRoot(): JSX_2.Element;
 };
 
-// @public
+// @public @deprecated
 export interface CreateAppFeatureLoader {
   getLoaderName(): string;
   load(options: { config: ConfigApi }): Promise<{
@@ -38,7 +39,11 @@ export interface CreateAppOptions {
     | ExtensionFactoryMiddleware
     | ExtensionFactoryMiddleware[];
   // (undocumented)
-  features?: (FrontendFeature | CreateAppFeatureLoader)[];
+  features?: (
+    | FrontendFeature
+    | FrontendFeatureLoader
+    | CreateAppFeatureLoader
+  )[];
   loadingComponent?: ReactNode;
 }
 
@@ -49,13 +54,17 @@ export function createPublicSignInApp(options?: CreateAppOptions): {
 
 // @public (undocumented)
 export function discoverAvailableFeatures(config: Config): {
-  features: FrontendFeature[];
+  features: (FrontendFeature | FrontendFeatureLoader)[];
 };
 
 // @public (undocumented)
 export function resolveAsyncFeatures(options: {
   config: Config;
-  features?: (FrontendFeature | CreateAppFeatureLoader)[];
+  features?: (
+    | FrontendFeature
+    | FrontendFeatureLoader
+    | CreateAppFeatureLoader
+  )[];
 }): Promise<{
   features: FrontendFeature[];
 }>;

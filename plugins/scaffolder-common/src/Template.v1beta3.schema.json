@@ -15,6 +15,7 @@
       "spec": {
         "owner": "artist-relations-team",
         "type": "website",
+        "lifecycle": "production",
         "parameters": {
           "required": ["name", "description", "repoUrl"],
           "backstage:permissions": {
@@ -93,6 +94,12 @@
             "owner": {
               "type": "string",
               "description": "The user (or group) owner of the template",
+              "minLength": 1
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "The lifecycle state of the template.",
+              "examples": ["experimental", "production", "deprecated"],
               "minLength": 1
             },
             "parameters": {

@@ -1,5 +1,16 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.42
+
+### Patch Changes
+
+- 8155b04: Enable normalization in postgres query to change the behavior of the search.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-backend-node@1.3.9
+  - @backstage/plugin-search-common@1.2.17
+
 ## 0.5.42-next.1
 
 ### Patch Changes

@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.8.1
+
+### Patch Changes
+
+- 0df33ea: fix: Creating a repository in a user namespace would always lead to an error
+- 984b283: Made "gitlab:pipeline:trigger" action idempotent
+- 225c733: Made gitlab:repo:push action idempotent.
+- a08cb20: Remove usages of `@backstage/backend-common`
+- ac58f84: Made gitlab:issue:edit action idempotent.
+- f6b51a8: Made "gitlab:projectDeployToken:create" action idempotent
+- a75e18f: Change the if statement in the catch block to match what the new version of Gitbeaker will return
+- 36af946: Made "gitlab:projectVariable:create" action idempotent
+- 1cea434: Made "gitlab:projectAccessToken:create" action idempotent
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- 83ae330: Made "gitlab:group:migrate" action idempotent
+- Updated dependencies
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-scaffolder-node@0.8.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.8.1-next.2
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @internal/plugin-todo-list
 
+## 1.0.37
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+
 ## 1.0.37-next.1
 
 ### Patch Changes

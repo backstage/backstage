@@ -17,7 +17,7 @@ const defaultTheme = `:root {
 const myTheme = createTheme({
   theme: 'light',
   settings: {
-    background: 'var(--canon-bg-elevated)',
+    background: 'var(--canon-bg-surface-1)',
     backgroundImage: '',
     foreground: '#6182B8',
     caret: '#5d00ff',

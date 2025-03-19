@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+import {
+  createFrontendFeatureLoader,
+  createFrontendPlugin,
+} from '@backstage/frontend-plugin-api';
 import { discoverAvailableFeatures } from './discovery';
 import { ConfigReader } from '@backstage/config';
 
@@ -48,6 +51,20 @@ describe('discoverAvailableFeatures', () => {
     });
     expect(discoverAvailableFeatures(config)).toEqual({
       features: [testPlugin],
+    });
+  });
+
+  it('should discover a frontend feature loader', () => {
+    const testLoader = createFrontendFeatureLoader({
+      loader() {
+        return [];
+      },
+    });
+    globalSpy.mockReturnValue({
+      modules: [{ default: testLoader }],
+    });
+    expect(discoverAvailableFeatures(config)).toEqual({
+      features: [testLoader],
     });
   });
 

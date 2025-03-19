@@ -88,6 +88,11 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
+    title: 'IconButton',
+    slug: 'icon-button',
+    status: 'alpha',
+  },
+  {
     title: 'Input',
     slug: 'input',
     status: 'alpha',

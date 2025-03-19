@@ -1,5 +1,12 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.2.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.2
+
 ## 0.2.28-next.0
 
 ### Patch Changes

@@ -18,7 +18,7 @@
   border-radius: var(--canon-radius-3);
   border: 1px solid var(--canon-border);
   padding: 0 var(--canon-space-4);
-  background-color: var(--canon-bg-elevated);
+  background-color: var(--canon-bg-surface-1);
   font-size: var(--canon-font-size-3);
   font-family: var(--canon-font-regular);
   font-weight: var(--canon-font-weight-regular);

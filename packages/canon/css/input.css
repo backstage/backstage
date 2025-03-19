@@ -1,0 +1,38 @@
+.canon-Input {
+  border-radius: var(--canon-radius-3);
+  border: 1px solid var(--canon-border);
+  padding: 0 var(--canon-space-4);
+  background-color: var(--canon-bg-surface-1);
+  font-size: var(--canon-font-size-3);
+  font-family: var(--canon-font-regular);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-primary);
+  width: 100%;
+  transition: border-color .2s ease-in-out, outline-color .2s ease-in-out;
+}
+
+.canon-Input::placeholder {
+  color: var(--canon-fg-secondary);
+}
+
+.canon-Input:hover {
+  border-color: var(--canon-border-hover);
+}
+
+.canon-Input:focus-visible {
+  outline-color: var(--canon-border-pressed);
+  border-color: var(--canon-border-pressed);
+  outline-width: 0;
+}
+
+.canon-Input[data-invalid] {
+  border-color: var(--canon-fg-danger);
+}
+
+.canon-Input--size-sm {
+  height: 2rem;
+}
+
+.canon-Input--size-md {
+  height: 2.5rem;
+}

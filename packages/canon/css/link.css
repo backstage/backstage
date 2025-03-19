@@ -1,0 +1,45 @@
+.canon-Link {
+  font-family: var(--canon-font-regular);
+  color: var(--canon-fg-link);
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  text-decoration-line: none;
+
+  &:hover {
+    color: var(--canon-fg-link-hover);
+    text-underline-offset: calc(.025em + 2px);
+    text-decoration-line: underline;
+    text-decoration-style: solid;
+    text-decoration-thickness: min(2px, max(1px, .05em));
+    text-decoration-color: color-mix(in srgb, var(--canon-fg-link-hover) 30%, transparent);
+  }
+}
+
+.canon-Link--variant-body {
+  font-size: var(--canon-font-size-3);
+  line-height: 140%;
+}
+
+.canon-Link--variant-subtitle {
+  font-size: var(--canon-font-size-4);
+  line-height: 140%;
+}
+
+.canon-Link--variant-caption {
+  font-size: var(--canon-font-size-2);
+  line-height: 140%;
+}
+
+.canon-Link--variant-label {
+  font-size: var(--canon-font-size-1);
+  line-height: 140%;
+}
+
+.canon-Link--weight-regular {
+  font-weight: var(--canon-font-weight-regular);
+}
+
+.canon-Link--weight-bold {
+  font-weight: var(--canon-font-weight-bold);
+}

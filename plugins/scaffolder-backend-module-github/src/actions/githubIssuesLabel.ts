@@ -101,11 +101,16 @@ export function createGithubIssuesLabelAction(options: {
       );
 
       try {
-        await client.rest.issues.addLabels({
-          owner,
-          repo,
-          issue_number: number,
-          labels,
+        await ctx.checkpoint({
+          key: `github.issues.add.label.${owner}.${repo}.${number}`,
+          fn: async () => {
+            await client.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: number,
+              labels,
+            });
+          },
         });
       } catch (e) {
         assertError(e);

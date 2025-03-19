@@ -46,6 +46,11 @@ export {
   type FrontendModule,
   type CreateFrontendModuleOptions,
 } from './createFrontendModule';
+export {
+  createFrontendFeatureLoader,
+  type FrontendFeatureLoader,
+  type CreateFrontendFeatureLoaderOptions,
+} from './createFrontendFeatureLoader';
 export { type Extension } from './resolveExtensionDefinition';
 export {
   type AnyRoutes,
@@ -53,6 +58,7 @@ export {
   type ExtensionDataContainer,
   type FeatureFlagConfig,
   type ExtensionFactoryMiddleware,
+  type FrontendFeature,
 } from './types';
 export {
   type CreateExtensionBlueprintOptions,

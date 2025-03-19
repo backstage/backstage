@@ -1,0 +1,102 @@
+.canon-MenuTrigger {
+  box-sizing: border-box;
+  border: 1px solid var(--color-gray-200);
+  background-color: var(--color-gray-50);
+  height: 2.5rem;
+  color: var(--color-gray-900);
+  user-select: none;
+  border-radius: .375rem;
+  outline: 0;
+  justify-content: center;
+  align-items: center;
+  gap: .375rem;
+  margin: 0;
+  padding: 0 .875rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5rem;
+  display: flex;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-gray-100);
+    }
+  }
+
+  &:active, &[data-popup-open] {
+    background-color: var(--color-gray-100);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: -1px;
+  }
+}
+
+.canon-MenuPositioner {
+  outline: 0;
+}
+
+.canon-MenuPopup {
+  box-sizing: border-box;
+  background-color: var(--canon-bg-elevated);
+  color: var(--color-fg-primary);
+  transform-origin: var(--transform-origin);
+  border-radius: .375rem;
+  padding-block: .25rem;
+  transition: transform .15s, opacity .15s;
+
+  &[data-starting-style], &[data-ending-style] {
+    opacity: 0;
+    transform: scale(.9);
+  }
+
+  @media (prefers-color-scheme: light) {
+    & {
+      outline: 1px solid var(--color-gray-200);
+      box-shadow: 0px 10px 15px -3px var(--color-gray-200), 0px 4px 6px -4px var(--color-gray-200);
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    & {
+      outline: 1px solid var(--color-gray-300);
+      outline-offset: -1px;
+    }
+  }
+}
+
+.canon-MenuItem {
+  cursor: default;
+  user-select: none;
+  padding-block: .5rem;
+  outline: 0;
+  padding-left: 1rem;
+  padding-right: 2rem;
+  font-size: .875rem;
+  line-height: 1rem;
+  display: flex;
+
+  &[data-highlighted] {
+    z-index: 0;
+    color: var(--color-gray-50);
+    position: relative;
+  }
+
+  &[data-highlighted]:before {
+    content: "";
+    z-index: -1;
+    background-color: var(--color-gray-900);
+    border-radius: .25rem;
+    position: absolute;
+    inset-block: 0;
+    inset-inline: .25rem;
+  }
+}
+
+.canon-MenuSeparator {
+  background-color: var(--color-gray-200);
+  height: 1px;
+  margin: .375rem 1rem;
+}

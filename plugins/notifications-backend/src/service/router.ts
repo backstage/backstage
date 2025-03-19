@@ -470,8 +470,8 @@ export async function createRouter(
         },
         channel: 'notifications',
       });
-      postProcessNotification(ret, opts);
     }
+    postProcessNotification(ret, opts);
     return notification;
   };
 

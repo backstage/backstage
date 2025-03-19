@@ -15,7 +15,7 @@
  */
 
 import { withLogCollector } from '@backstage/test-utils';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import React from 'react';
 import { useAnalyticsContext } from '../analytics/AnalyticsContext';
 import { useApp, ErrorBoundaryFallbackProps } from '../app';
@@ -27,6 +27,7 @@ import {
   createReactExtension,
   createRoutableExtension,
 } from './extensions';
+import { ForwardedError } from '@backstage/errors';
 
 jest.mock('../app');
 
@@ -118,6 +119,48 @@ describe('extensions', () => {
     });
     screen.getByText('Error in my-plugin');
     expect(errors[0]).toMatchObject({ detail: new Error('Test error') });
+  });
+
+  it('should handle failed lazy loads', async () => {
+    const BrokenComponent = plugin.provide(
+      createComponentExtension({
+        name: 'BrokenComponent',
+        component: {
+          lazy: async () => {
+            if (true as boolean) {
+              throw new Error('Test error');
+            }
+            return () => <div />;
+          },
+        },
+      }),
+    );
+
+    mocked(useApp).mockReturnValue({
+      getComponents: () => ({
+        Progress: () => null,
+        ErrorBoundaryFallback: (props: ErrorBoundaryFallbackProps) => (
+          <>
+            Error in {props.plugin?.getId()}: {String(props.error)}
+          </>
+        ),
+      }),
+    });
+
+    const { error: errors } = await withLogCollector(['error'], async () => {
+      await act(async () => {
+        render(<BrokenComponent />);
+      });
+    });
+    screen.getByText(
+      'Error in my-plugin: Error: Failed lazy loading of the BrokenComponent extension, try to reload the page; caused by Error: Test error',
+    );
+    expect(errors[0]).toMatchObject({
+      detail: new ForwardedError(
+        'Failed lazy loading of the BrokenComponent extension, try to reload the page',
+        new Error('Test error'),
+      ),
+    });
   });
 
   it('should wrap extended component with analytics context', async () => {

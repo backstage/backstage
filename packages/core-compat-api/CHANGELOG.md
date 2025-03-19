@@ -1,5 +1,71 @@
 # @backstage/core-compat-api
 
+## 0.4.0
+
+### Minor Changes
+
+- 8250ffe: **BREAKING**: Dropped support for the removed opaque `@backstage/ExtensionOverrides` and `@backstage/BackstagePlugin` types.
+
+### Patch Changes
+
+- cbe6177: Improved route path normalization when converting existing route elements in `converLegacyApp`, for example handling trailing `/*` in paths.
+- d34e0e5: Added a new `convertLegacyAppOptions` helper that converts many of the options passed to `createApp` in the old frontend system to a module with app overrides for the new system. The supported options are `apis`, `icons`, `plugins`, `components`, and `themes`.
+
+  For example, given the following options for the old `createApp`:
+
+  ```ts
+  import { createApp } from '@backstage/app-deafults';
+
+  const app = createApp({
+    apis,
+    plugins,
+    icons: {
+      custom: MyIcon,
+    },
+    components: {
+      SignInPage: MySignInPage,
+    },
+    themes: [myTheme],
+  });
+  ```
+
+  They can be converted to the new system like this:
+
+  ```ts
+  import { createApp } from '@backstage/frontend-deafults';
+  import { convertLegacyAppOptions } from '@backstage/core-compat-api';
+
+  const app = createApp({
+    features: [
+      convertLegacyAppOptions({
+        apis,
+        plugins,
+        icons: {
+          custom: MyIcon,
+        },
+        components: {
+          SignInPage: MySignInPage,
+        },
+        themes: [myTheme],
+      }),
+    ],
+  });
+  ```
+
+- e7fab55: Added the `entityPage` option to `convertLegacyApp`, which you can read more about in the [app migration docs](https://backstage.io/docs/frontend-system/building-apps/migrating#entity-pages).
+- 18faf65: The `convertLegacyApp` has received the following changes:
+
+  - `null` routes will now be ignored.
+  - Converted routes no longer need to belong to a plugin, falling back to a `converted-orphan-routes` plugin instead.
+  - The generate layout override extension is now properly attached to the `app/root` extension.
+  - Converted root elements are now automatically wrapped with `compatWrapper`.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-catalog-react@1.16.0
+  - @backstage/version-bridge@1.0.11
+
 ## 0.4.0-next.2
 
 ### Minor Changes

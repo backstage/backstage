@@ -1,5 +1,21 @@
 # @backstage/plugin-api-docs
 
+## 0.12.5
+
+### Patch Changes
+
+- 74871cc: Use consistent Typography in Entity HasApisCard
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/plugin-catalog@1.28.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-catalog-react@1.16.0
+  - @backstage/core-compat-api@0.4.0
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-catalog-common@1.1.3
+
 ## 0.12.5-next.2
 
 ### Patch Changes

@@ -5,7 +5,7 @@ export const customTheme = `:root {
   --canon-font-weight-regular: 400;
   --canon-font-weight-bold: 600;
   --canon-bg: #f8f8f8;
-  --canon-bg-elevated: #fff;
+  --canon-bg-surface-1: #fff;
   /* ... other CSS variables */
 
   /* Add your custom components styles here */
@@ -20,7 +20,7 @@ export const customTheme = `:root {
   --canon-font-weight-regular: 400;
   --canon-font-weight-bold: 600;
   --canon-bg: #f8f8f8;
-  --canon-bg-elevated: #fff;
+  --canon-bg-surface-1: #fff;
   /* ... other CSS variables */
 
   /* Add your custom components styles here */
@@ -38,7 +38,7 @@ export const grid = `import { Grid } from '@backstage/canon';
 </Grid>
 `;
 
-export const buttonVariants = `<Inline alignY="center">
+export const buttonVariants = `<Flex align="center">
   <Button iconStart="cloud" variant="primary">
     Button
   </Button>
@@ -48,7 +48,13 @@ export const buttonVariants = `<Inline alignY="center">
   <Button iconStart="cloud" variant="tertiary">
     Button
   </Button>
-</Inline>
+</Flex>
+`;
+
+export const iconButtonVariants = `<Flex align="center">
+  <IconButton icon="cloud" variant="primary" />
+  <IconButton icon="cloud" variant="secondary" />
+</Flex>
 `;
 
 export const flexFAQ1 = `<Grid columns={3} gap="4">

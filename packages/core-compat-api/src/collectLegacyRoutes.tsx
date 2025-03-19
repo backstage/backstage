@@ -41,6 +41,7 @@ import {
 } from './convertLegacyRouteRef';
 import { compatWrapper } from './compatWrapper';
 import { collectEntityPageContents } from './collectEntityPageContents';
+import { normalizeRoutePath } from './normalizeRoutePath';
 
 /*
 
@@ -236,7 +237,7 @@ export function collectLegacyRoutes(
           factory(originalFactory, { inputs: _inputs }) {
             // todo(blam): why do we not use the inputs here?
             return originalFactory({
-              defaultPath: path[0] === '/' ? path.slice(1) : path,
+              defaultPath: normalizeRoutePath(path),
               routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
               loader: async () =>
                 compatWrapper(

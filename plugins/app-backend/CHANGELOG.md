@@ -1,5 +1,24 @@
 # @backstage/plugin-app-backend
 
+## 0.5.0
+
+### Minor Changes
+
+- 32be48c: **BREAKING**: Removed support for the old backend system.
+
+  As part of this change the plugin export from `/alpha` as been removed. If you are currently importing `@backstage/plugin-app-backend/alpha`, please update your import to `@backstage/plugin-app-backend`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.0
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-app-node@0.1.31
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.5.0-next.2
 
 ### Patch Changes

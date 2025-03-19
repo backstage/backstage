@@ -1,0 +1,61 @@
+.canon-TooltipPopup {
+  box-sizing: border-box;
+  transform-origin: var(--transform-origin);
+  background-color: canvas;
+  background-color: var(--canon-bg-surface-1);
+  color: var(--canon-fg-primary);
+  outline: 1px solid var(--canon-border);
+  box-shadow: 0 10px 15px -3px var(--canon-border), 0 4px 6px -4px var(--canon-border);
+  border-radius: .375rem;
+  flex-direction: column;
+  padding: .25rem .5rem;
+  font-size: .875rem;
+  line-height: 1.25rem;
+  transition: transform .15s, opacity .15s;
+  display: flex;
+
+  &[data-starting-style], &[data-ending-style] {
+    opacity: 0;
+    transform: scale(.9);
+  }
+
+  &[data-instant] {
+    transition-duration: 0s;
+  }
+}
+
+.canon-TooltipArrow {
+  display: flex;
+
+  &[data-side="top"] {
+    bottom: -8px;
+    rotate: 180deg;
+  }
+
+  &[data-side="bottom"] {
+    top: -8px;
+    rotate: none;
+  }
+
+  &[data-side="left"] {
+    right: -13px;
+    rotate: 90deg;
+  }
+
+  &[data-side="right"] {
+    left: -13px;
+    rotate: -90deg;
+  }
+}
+
+.canon-TooltipArrow-fill {
+  fill: var(--canon-bg-surface-1);
+}
+
+.canon-TooltipArrow-outer-stroke {
+  @media (prefers-color-scheme: light) {
+    & {
+      fill: var(--canon-border);
+    }
+  }
+}

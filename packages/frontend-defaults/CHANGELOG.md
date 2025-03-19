@@ -1,5 +1,24 @@
 # @backstage/frontend-defaults
 
+## 0.2.0
+
+### Minor Changes
+
+- 4823831: Introduced a `createFrontendFeatureLoader()` function, as well as a `FrontendFeatureLoader` interface, to gather several frontend plugins, modules or feature loaders in a single exported entrypoint and load them, possibly asynchronously. This new feature, very similar to the `createBackendFeatureLoader()` already available on the backend, supersedes the previous `CreateAppFeatureLoader` type which has been deprecated.
+- 8250ffe: **BREAKING**: Dropped support for the removed opaque `@backstage/ExtensionOverrides` and `@backstage/BackstagePlugin` types.
+
+### Patch Changes
+
+- 4d18b55: It's now possible to provide a middleware that wraps all extension factories by passing an `extensionFactoryMiddleware` to either `createApp()` or `createSpecializedApp()`.
+- abcdf44: Internal refactor to match updated `createSpecializedApp`.
+- e3f19db: Feature discovery and resolution logic used in `createApp` is now exposed via the `discoverAvailableFeatures` and `resolveAsyncFeatures` functions respectively.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.11.0
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-app@0.1.7
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.2.0-next.2
 
 ### Minor Changes

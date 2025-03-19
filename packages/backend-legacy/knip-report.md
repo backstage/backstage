@@ -1,6 +1,6 @@
 # Knip report
 
-## Unused dependencies (13)
+## Unused dependencies (12)
 
 | Name                                               | Location     | Severity |
 | :------------------------------------------------- | :----------- | :------- |
@@ -12,7 +12,6 @@
 | @gitbeaker/node                                    | package.json | error    |
 | better-sqlite3                                     | package.json | error    |
 | @octokit/rest                                      | package.json | error    |
-| example-app                                        | package.json | error    |
 | dockerode                                          | package.json | error    |
 | mysql2                                             | package.json | error    |
 | luxon                                              | package.json | error    |

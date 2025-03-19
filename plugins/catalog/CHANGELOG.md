@@ -1,5 +1,123 @@
 # @backstage/plugin-catalog
 
+## 1.28.0
+
+### Minor Changes
+
+- 247a40b: Now a custom entity page header can be passed as input to the default entity page.
+- a3d93ca: The default layout of the entity page can now optionally be customized with 3 card types: info, peek and full.
+
+  - Cards of type `info` are rendered in a fixed area on the right;
+  - Cards of type `peek` are rendered on top of the main content area;
+  - Cards of type `full` and cards with undefined type are rendered as they were before, in the main content area, below the peek cards.
+
+  If you want to keep the layout as it was before, you don't need to do anything. But if you want to experiment with the card types and see how they render, here is an example setting the about card to be rendered as an `info` card:
+
+  ```diff
+  app:
+    extensions:
+      # Entity page cards
+  +   - entity-card:catalog/about:
+  +       config:
+  +         type: info # or peek or full
+  ```
+
+- 93533bd: The order in which group tabs appear on the entity page has been changed.
+
+  ### Before
+
+  Previously, entity contents determined the order in which groups were rendered, so a group was rendered as soon as its first entity content was detected.
+
+  ### After
+
+  Groups are now rendered first by default based on their order in the `app-config.yaml` file:
+
+  ```diff
+  app:
+    extensions:
+      - page:catalog/entity:
+  +       config:
+  +         groups:
+  +           # this will be the first tab of the default entity page
+  +           - deployment:
+  +               title: Deployment
+  +           # this will be the second tab of the default entiy page
+  +           - documentation:
+  +               title: Documentation
+  ```
+
+  If you wish to place a normal tab before a group, you must add the tab to a group and place the group in the order you wish it to appear on the entity page (groups that contains only one tab are rendered as normal tabs).
+
+  ```diff
+  app:
+    extensions:
+      - page:catalog/entity:
+          config:
+            groups:
+  +            # Example placing the overview tab first
+  +           - overview:
+  +               title: Overview
+              - deployment:
+                  title: Deployment
+              # this will be the second tab of the default entiy page
+              - documentation:
+                  title: Documentation
+      - entity-content:catalog/overview:
+  +       config:
+  +          group: 'overview'
+  ```
+
+- 06d1226: Allow providing `kind` parameters to replace the default `Component` kind for `SubComponents` card
+
+### Patch Changes
+
+- 31731b0: Internal refactor to avoid `expiry-map` dependency.
+- ba9649a: Update the default entity page extension component to support grouping multiple entity content items in the same tab.
+
+  Disable all default groups:
+
+  ```diff
+  # app-config.yaml
+  app:
+    extensions:
+      # Pages
+  +   - page:catalog/entity:
+  +       config:
+  +         groups: []
+  ```
+
+  Create a custom list of :
+
+  ```diff
+  # app-config.yaml
+  app:
+    extensions:
+      # Pages
+  +   - page:catalog/entity:
+  +       config:
+  +         groups:
+  +           # This array of groups completely replaces the default groups
+  +           - custom:
+  +               title: 'Custom'
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/plugin-search-react@1.8.7
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-catalog-react@1.16.0
+  - @backstage/core-compat-api@0.4.0
+  - @backstage/plugin-scaffolder-common@1.5.10
+  - @backstage/integration-react@1.2.5
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-search-common@1.2.17
+
 ## 1.28.0-next.2
 
 ### Minor Changes

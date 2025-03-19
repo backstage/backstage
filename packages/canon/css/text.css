@@ -1,0 +1,54 @@
+.canon-Text {
+  font-family: var(--canon-font-regular);
+  color: var(--canon-fg-primary);
+  margin: 0;
+  padding: 0;
+}
+
+.canon-Text--variant-body {
+  font-size: var(--canon-font-size-3);
+  line-height: 140%;
+}
+
+.canon-Text--variant-subtitle {
+  font-size: var(--canon-font-size-4);
+  line-height: 140%;
+}
+
+.canon-Text--variant-caption {
+  font-size: var(--canon-font-size-2);
+  line-height: 140%;
+}
+
+.canon-Text--variant-label {
+  font-size: var(--canon-font-size-1);
+  line-height: 140%;
+}
+
+.canon-Text--weight-regular {
+  font-weight: var(--canon-font-weight-regular);
+}
+
+.canon-Text--weight-bold {
+  font-weight: var(--canon-font-weight-bold);
+}
+
+.canon-Text--color-primary {
+  color: var(--canon-fg-primary);
+}
+
+.canon-Text--color-secondary {
+  color: var(--canon-fg-secondary);
+}
+
+.canon-Text--color-danger {
+  color: var(--canon-fg-danger);
+}
+
+.canon-Text--color-warning {
+  color: var(--canon-fg-warning);
+}
+
+.canon-Text--color-success {
+  color: var(--canon-fg-success);
+}

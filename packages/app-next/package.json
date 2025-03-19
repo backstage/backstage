@@ -1,6 +1,6 @@
 {
   "name": "example-app-next",
-  "version": "0.0.21-next.2",
+  "version": "0.0.21",
   "backstage": {
     "role": "frontend"
   },
@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@backstage/app-defaults": "workspace:^",
+    "@backstage/canon": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^",

@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.2.0
+
+### Minor Changes
+
+- 36677bb: Use update `createTemplateAction` kinds
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.0
+  - @backstage/backend-test-utils@1.3.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/types@1.2.1
+
 ## 0.2.0-next.2
 
 ### Minor Changes

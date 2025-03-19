@@ -1,5 +1,24 @@
 # @backstage/plugin-events-backend
 
+## 0.5.0
+
+### Minor Changes
+
+- ee519c5: **BREAKING** Removed deprecated events related code
+- bda96a7: **BREAKING** Removed support for the legacy backend, please migrate to the new backend system. Also removed deprecated code.
+
+### Patch Changes
+
+- 2f4d3bc: Allow webhook content to be 5mb instead the default 100kb
+- b95aa77: add `addHttpPostBodyParser` to events extension to allow body parse customization. This feature will enhance flexibility in handling HTTP POST requests in event-related operations.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/backend-openapi-utils@0.5.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.4.4-next.2
 
 ### Patch Changes

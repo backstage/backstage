@@ -1,5 +1,23 @@
 # @backstage/plugin-home
 
+## 0.8.6
+
+### Patch Changes
+
+- 2d11521: The starred entities component uses the entity title or display name if it exists
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/core-app-api@1.16.0
+  - @backstage/plugin-catalog-react@1.16.0
+  - @backstage/core-compat-api@0.4.0
+  - @backstage/plugin-home-react@0.1.24
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/theme@0.6.4
+
 ## 0.8.6-next.2
 
 ### Patch Changes
