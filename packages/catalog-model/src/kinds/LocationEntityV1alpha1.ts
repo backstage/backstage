@@ -18,7 +18,7 @@ import { z } from 'zod';
 import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Location.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
-
+import { createEntitySchema } from './schemaUtils';
 /**
  * Backstage catalog Location kind Entity.
  *
@@ -43,39 +43,36 @@ export interface LocationEntityV1alpha1 extends Entity {
 export const locationEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);
 
-export const locationKindSchema = z
-  .object({
-    apiVersion: z.enum(['backstage.io/v1alpha1', 'backstage.io/v1beta1']),
-    kind: z.literal('Location'),
-    spec: z
-      .object({
-        type: z
-          .string()
-          .min(1)
-          .optional()
-          .describe(
-            "The single location type, that's common to the targets specified in the spec. If it is left out, it is inherited from the location type that originally read the entity data.",
-          ),
-        target: z
-          .string()
-          .min(1)
-          .optional()
-          .describe(
-            'A single target as a string. Can be either an absolute path/URL (depending on the type), or a relative path such as ./details/catalog-info.yaml which is resolved relative to the location of this Location entity itself.',
-          ),
-        targets: z
-          .array(z.string().min(1))
-          .optional()
-          .describe(
-            'A list of targets as strings. They can all be either absolute paths/URLs (depending on the type), or relative paths such as ./details/catalog-info.yaml which are resolved relative to the location of this Location entity itself.',
-          ),
-        presence: z
-          .enum(['required', 'optional'])
-          .optional()
-          .describe(
-            'Whether the presence of the location target is required and it should be considered an error if it can not be found',
-          ),
-      })
-      .passthrough(),
-  })
-  .passthrough();
+export const locationEntitySchema = createEntitySchema({
+  kind: z.literal('Location'),
+  spec: z
+    .object({
+      type: z
+        .string()
+        .min(1)
+        .optional()
+        .describe(
+          "The single location type, that's common to the targets specified in the spec. If it is left out, it is inherited from the location type that originally read the entity data.",
+        ),
+      target: z
+        .string()
+        .min(1)
+        .optional()
+        .describe(
+          'A single target as a string. Can be either an absolute path/URL (depending on the type), or a relative path such as ./details/catalog-info.yaml which is resolved relative to the location of this Location entity itself.',
+        ),
+      targets: z
+        .array(z.string().min(1))
+        .optional()
+        .describe(
+          'A list of targets as strings. They can all be either absolute paths/URLs (depending on the type), or relative paths such as ./details/catalog-info.yaml which are resolved relative to the location of this Location entity itself.',
+        ),
+      presence: z
+        .enum(['required', 'optional'])
+        .optional()
+        .describe(
+          'Whether the presence of the location target is required and it should be considered an error if it can not be found',
+        ),
+    })
+    .passthrough(),
+});

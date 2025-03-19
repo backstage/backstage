@@ -17,6 +17,7 @@
 import {
   LocationEntityV1alpha1,
   locationEntityV1alpha1Validator as validator,
+  locationEntitySchema,
 } from './LocationEntityV1alpha1';
 
 describe('LocationV1alpha1Validator', () => {
@@ -37,52 +38,62 @@ describe('LocationV1alpha1Validator', () => {
 
   it('happy path: accepts valid data', async () => {
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(locationEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('silently accepts v1beta1 as well', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta1';
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(locationEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('ignores unknown apiVersion', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta0';
     await expect(validator.check(entity)).resolves.toBe(false);
+    expect(locationEntitySchema.safeParse(entity).success).toBe(false);
   });
 
   it('ignores unknown kind', async () => {
     (entity as any).kind = 'Wizard';
     await expect(validator.check(entity)).resolves.toBe(false);
+    expect(locationEntitySchema.safeParse(entity).success).toBe(false);
   });
 
   it('accepts missing type', async () => {
     delete (entity as any).spec.type;
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(locationEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('rejects wrong type', async () => {
     (entity as any).spec.type = 7;
     await expect(validator.check(entity)).rejects.toThrow(/type/);
+    expect(() => locationEntitySchema.parse(entity)).toThrow(/type/);
   });
 
   it('rejects empty type', async () => {
     (entity as any).spec.type = '';
     await expect(validator.check(entity)).rejects.toThrow(/type/);
+    expect(() => locationEntitySchema.parse(entity)).toThrow(/type/);
   });
 
   it('accepts good target', async () => {
     (entity as any).spec.target =
       'https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/examples/artist-lookup-component.yaml';
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(locationEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('rejects wrong target', async () => {
     (entity as any).spec.target = 7;
     await expect(validator.check(entity)).rejects.toThrow(/target/);
+    expect(() => locationEntitySchema.parse(entity)).toThrow(/target/);
   });
 
   it('rejects empty target', async () => {
     (entity as any).spec.target = '';
     await expect(validator.check(entity)).rejects.toThrow(/target/);
+    expect(() => locationEntitySchema.parse(entity)).toThrow(/target/);
   });
 
   it('accepts good targets', async () => {
@@ -91,34 +102,42 @@ describe('LocationV1alpha1Validator', () => {
       'https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/examples/playback-order-component.yaml',
     ];
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(locationEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('accepts empty targets', async () => {
     (entity as any).spec.targets = [];
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(locationEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('rejects wrong targets', async () => {
     (entity as any).spec.targets = 7;
     await expect(validator.check(entity)).rejects.toThrow(/targets/);
+    expect(() => locationEntitySchema.parse(entity)).toThrow(/targets/);
   });
 
   it('accepts good presence', async () => {
     (entity as any).spec.presence = 'required';
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(locationEntitySchema.safeParse(entity).success).toBe(true);
     (entity as any).spec.presence = 'optional';
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(locationEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('rejects empty presence', async () => {
     (entity as any).spec.presence = '';
     await expect(validator.check(entity)).rejects.toThrow(/presence/);
+    expect(() => locationEntitySchema.parse(entity)).toThrow(/presence/);
   });
 
   it('rejects wrong presence', async () => {
     (entity as any).spec.presence = 7;
     await expect(validator.check(entity)).rejects.toThrow(/presence/);
+    expect(() => locationEntitySchema.parse(entity)).toThrow(/presence/);
     (entity as any).spec.presence = 'nope';
     await expect(validator.check(entity)).rejects.toThrow(/presence/);
+    expect(() => locationEntitySchema.parse(entity)).toThrow(/presence/);
   });
 });

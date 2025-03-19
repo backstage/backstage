@@ -17,6 +17,7 @@
 import {
   UserEntityV1alpha1,
   userEntityV1alpha1Validator as validator,
+  userEntitySchema,
 } from './UserEntityV1alpha1';
 
 describe('userEntityV1alpha1Validator', () => {
@@ -42,6 +43,7 @@ describe('userEntityV1alpha1Validator', () => {
 
   it('happy path: accepts valid data', async () => {
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(userEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   // root
@@ -49,21 +51,25 @@ describe('userEntityV1alpha1Validator', () => {
   it('silently accepts v1beta1 as well', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta1';
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(userEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('ignores unknown apiVersion', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta0';
     await expect(validator.check(entity)).resolves.toBe(false);
+    expect(userEntitySchema.safeParse(entity).success).toBe(false);
   });
 
   it('ignores unknown kind', async () => {
     (entity as any).kind = 'Wizard';
     await expect(validator.check(entity)).resolves.toBe(false);
+    expect(userEntitySchema.safeParse(entity).success).toBe(false);
   });
 
   it('spec accepts unknown additional fields', async () => {
     (entity as any).spec.foo = 'data';
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(userEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   // profile
@@ -76,11 +82,13 @@ describe('userEntityV1alpha1Validator', () => {
   it('rejects wrong profile', async () => {
     (entity as any).spec.profile = 7;
     await expect(validator.check(entity)).rejects.toThrow(/profile/);
+    expect(() => userEntitySchema.parse(entity)).toThrow(/profile/);
   });
 
   it('profile accepts missing displayName', async () => {
     delete (entity as any).spec.profile.displayName;
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(userEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('profile rejects wrong displayName', async () => {
@@ -96,36 +104,43 @@ describe('userEntityV1alpha1Validator', () => {
   it('profile accepts missing email', async () => {
     delete (entity as any).spec.profile.email;
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(userEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('profile rejects wrong email', async () => {
     (entity as any).spec.profile.email = 7;
     await expect(validator.check(entity)).rejects.toThrow(/email/);
+    expect(() => userEntitySchema.parse(entity)).toThrow(/email/);
   });
 
   it('profile rejects empty email', async () => {
     (entity as any).spec.profile.email = '';
     await expect(validator.check(entity)).rejects.toThrow(/email/);
+    expect(() => userEntitySchema.parse(entity)).toThrow(/email/);
   });
 
   it('profile accepts missing picture', async () => {
     delete (entity as any).spec.profile.picture;
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(userEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('profile rejects wrong picture', async () => {
     (entity as any).spec.profile.picture = 7;
     await expect(validator.check(entity)).rejects.toThrow(/picture/);
+    expect(() => userEntitySchema.parse(entity)).toThrow(/picture/);
   });
 
   it('profile rejects empty picture', async () => {
     (entity as any).spec.profile.picture = '';
     await expect(validator.check(entity)).rejects.toThrow(/picture/);
+    expect(() => userEntitySchema.parse(entity)).toThrow(/picture/);
   });
 
   it('profile accepts unknown additional fields', async () => {
     (entity as any).spec.profile.foo = 'data';
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(userEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   // memberOf
@@ -133,25 +148,30 @@ describe('userEntityV1alpha1Validator', () => {
   it('rejects missing memberOf', async () => {
     delete (entity as any).spec.memberOf;
     await expect(validator.check(entity)).rejects.toThrow(/memberOf/);
+    expect(() => userEntitySchema.parse(entity)).toThrow(/memberOf/);
   });
 
   it('rejects wrong memberOf', async () => {
     (entity as any).spec.memberOf = 7;
     await expect(validator.check(entity)).rejects.toThrow(/memberOf/);
+    expect(() => userEntitySchema.parse(entity)).toThrow(/memberOf/);
   });
 
   it('rejects wrong memberOf item', async () => {
     (entity as any).spec.memberOf[0] = 7;
     await expect(validator.check(entity)).rejects.toThrow(/memberOf/);
+    expect(() => userEntitySchema.parse(entity)).toThrow(/memberOf/);
   });
 
   it('accepts empty memberOf', async () => {
     (entity as any).spec.memberOf = [];
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(userEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('rejects null memberOf', async () => {
     (entity as any).spec.memberOf = null;
     await expect(validator.check(entity)).rejects.toThrow(/memberOf/);
+    expect(() => userEntitySchema.parse(entity)).toThrow(/memberOf/);
   });
 });

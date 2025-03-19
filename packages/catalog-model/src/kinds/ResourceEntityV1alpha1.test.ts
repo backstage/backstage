@@ -16,6 +16,7 @@
 
 import {
   ResourceEntityV1alpha1,
+  resourceEntitySchema,
   resourceEntityV1alpha1Validator as validator,
 } from './ResourceEntityV1alpha1';
 
@@ -40,85 +41,102 @@ describe('ResourceV1alpha1Validator', () => {
 
   it('happy path: accepts valid data', async () => {
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(resourceEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('silently accepts v1beta1 as well', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta1';
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(resourceEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('ignores unknown apiVersion', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta0';
     await expect(validator.check(entity)).resolves.toBe(false);
+    expect(resourceEntitySchema.safeParse(entity).success).toBe(false);
   });
 
   it('ignores unknown kind', async () => {
     (entity as any).kind = 'Wizard';
     await expect(validator.check(entity)).resolves.toBe(false);
+    expect(resourceEntitySchema.safeParse(entity).success).toBe(false);
   });
 
   it('rejects missing type', async () => {
     delete (entity as any).spec.type;
     await expect(validator.check(entity)).rejects.toThrow(/type/);
+    expect(() => resourceEntitySchema.parse(entity)).toThrow(/type/);
   });
 
   it('rejects wrong type', async () => {
     (entity as any).spec.type = 7;
     await expect(validator.check(entity)).rejects.toThrow(/type/);
+    expect(() => resourceEntitySchema.parse(entity)).toThrow(/type/);
   });
 
   it('rejects empty type', async () => {
     (entity as any).spec.type = '';
     await expect(validator.check(entity)).rejects.toThrow(/type/);
+    expect(() => resourceEntitySchema.parse(entity)).toThrow(/type/);
   });
 
   it('rejects missing owner', async () => {
     delete (entity as any).spec.owner;
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
+    expect(() => resourceEntitySchema.parse(entity)).toThrow(/owner/);
   });
 
   it('rejects wrong owner', async () => {
     (entity as any).spec.owner = 7;
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
+    expect(() => resourceEntitySchema.parse(entity)).toThrow(/owner/);
   });
 
   it('rejects empty owner', async () => {
     (entity as any).spec.owner = '';
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
+    expect(() => resourceEntitySchema.parse(entity)).toThrow(/owner/);
   });
 
   it('accepts missing dependsOn', async () => {
     delete (entity as any).spec.dependsOn;
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(resourceEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('rejects empty dependsOn', async () => {
     (entity as any).spec.dependsOn = [''];
     await expect(validator.check(entity)).rejects.toThrow(/dependsOn/);
+    expect(() => resourceEntitySchema.parse(entity)).toThrow(/dependsOn/);
   });
 
   it('rejects undefined dependsOn', async () => {
     (entity as any).spec.dependsOn = [undefined];
     await expect(validator.check(entity)).rejects.toThrow(/dependsOn/);
+    expect(() => resourceEntitySchema.parse(entity)).toThrow(/dependsOn/);
   });
 
   it('accepts no dependsOn', async () => {
     (entity as any).spec.dependsOn = [];
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(resourceEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('accepts missing system', async () => {
     delete (entity as any).spec.system;
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(resourceEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('rejects wrong system', async () => {
     (entity as any).spec.system = 7;
     await expect(validator.check(entity)).rejects.toThrow(/system/);
+    expect(() => resourceEntitySchema.parse(entity)).toThrow(/system/);
   });
 
   it('rejects empty system', async () => {
     (entity as any).spec.system = '';
     await expect(validator.check(entity)).rejects.toThrow(/system/);
+    expect(() => resourceEntitySchema.parse(entity)).toThrow(/system/);
   });
 });

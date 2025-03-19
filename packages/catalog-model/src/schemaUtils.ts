@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-/**
- * Types and validators that help describe the model of a Backstage Catalog
- *
- * @packageDocumentation
- */
+import { z } from 'zod';
 
-export * from './entity';
-export { EntityPolicies } from './EntityPolicies';
-export * from './kinds';
-export * from './location';
-export { createFromZod } from './schemaUtils';
-export type { CompoundEntityRef } from './types';
-export type { EntitySchema, EntityValidator } from './kinds';
-export * from './validation';
+export function createFromZod<TOutput>(
+  creatorFn: (zImpl: typeof z) => TOutput,
+) {
+  return creatorFn(z);
+}

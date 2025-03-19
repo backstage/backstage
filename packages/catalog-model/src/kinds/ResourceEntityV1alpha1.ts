@@ -18,6 +18,7 @@ import { z } from 'zod';
 import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Resource.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
+import { createEntitySchema } from './schemaUtils';
 
 /**
  * Backstage catalog Resource kind Entity. Represents infrastructure required to operate Components.
@@ -48,31 +49,28 @@ export interface ResourceEntityV1alpha1 extends Entity {
 export const resourceEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);
 
-export const resourceKindSchema = z
-  .object({
-    apiVersion: z.enum(['backstage.io/v1alpha1', 'backstage.io/v1beta1']),
-    kind: z.literal('Resource'),
-    spec: z
-      .object({
-        type: z.string().min(1).describe('The type of resource.'),
-        owner: z
-          .string()
-          .min(1)
-          .describe('An entity reference to the owner of the resource.'),
-        dependsOn: z
-          .array(z.string().min(1))
-          .optional()
-          .describe(
-            'An array of references to other entities that the resource depends on to function.',
-          ),
-        system: z
-          .string()
-          .min(1)
-          .optional()
-          .describe(
-            'An entity reference to the system that the resource belongs to.',
-          ),
-      })
-      .passthrough(),
-  })
-  .passthrough();
+export const resourceEntitySchema = createEntitySchema({
+  kind: z.literal('Resource'),
+  spec: z
+    .object({
+      type: z.string().min(1).describe('The type of resource.'),
+      owner: z
+        .string()
+        .min(1)
+        .describe('An entity reference to the owner of the resource.'),
+      dependsOn: z
+        .array(z.string().min(1))
+        .optional()
+        .describe(
+          'An array of references to other entities that the resource depends on to function.',
+        ),
+      system: z
+        .string()
+        .min(1)
+        .optional()
+        .describe(
+          'An entity reference to the system that the resource belongs to.',
+        ),
+    })
+    .passthrough(),
+});

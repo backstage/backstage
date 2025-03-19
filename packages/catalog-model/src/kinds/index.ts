@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-export { apiEntityV1alpha1Validator, apiKindSchema } from './ApiEntityV1alpha1';
+export {
+  apiEntityV1alpha1Validator,
+  apiEntitySchema as apiKindSchema,
+} from './ApiEntityV1alpha1';
 export type {
   ApiEntityV1alpha1 as ApiEntity,
   ApiEntityV1alpha1,
 } from './ApiEntityV1alpha1';
 export {
   componentEntityV1alpha1Validator,
-  componentKindSchema,
+  componentEntitySchema as componentKindSchema,
 } from './ComponentEntityV1alpha1';
 export type {
   ComponentEntityV1alpha1 as ComponentEntity,
@@ -29,7 +32,7 @@ export type {
 } from './ComponentEntityV1alpha1';
 export {
   domainEntityV1alpha1Validator,
-  domainKindSchema,
+  domainEntitySchema as domainKindSchema,
 } from './DomainEntityV1alpha1';
 export type {
   DomainEntityV1alpha1 as DomainEntity,
@@ -37,7 +40,7 @@ export type {
 } from './DomainEntityV1alpha1';
 export {
   groupEntityV1alpha1Validator,
-  groupKindSchema,
+  groupEntitySchema as groupKindSchema,
 } from './GroupEntityV1alpha1';
 export type {
   GroupEntityV1alpha1 as GroupEntity,
@@ -45,7 +48,7 @@ export type {
 } from './GroupEntityV1alpha1';
 export {
   locationEntityV1alpha1Validator,
-  locationKindSchema,
+  locationEntitySchema as locationKindSchema,
 } from './LocationEntityV1alpha1';
 export type {
   LocationEntityV1alpha1 as LocationEntity,
@@ -54,7 +57,7 @@ export type {
 export * from './relations';
 export {
   resourceEntityV1alpha1Validator,
-  resourceKindSchema,
+  resourceEntitySchema as resourceKindSchema,
 } from './ResourceEntityV1alpha1';
 export type {
   ResourceEntityV1alpha1 as ResourceEntity,
@@ -62,7 +65,7 @@ export type {
 } from './ResourceEntityV1alpha1';
 export {
   systemEntityV1alpha1Validator,
-  systemKindSchema,
+  systemEntitySchema as systemKindSchema,
 } from './SystemEntityV1alpha1';
 export type {
   SystemEntityV1alpha1 as SystemEntity,
@@ -71,9 +74,16 @@ export type {
 export type { KindValidator } from './types';
 export {
   userEntityV1alpha1Validator,
-  userKindSchema,
+  userEntitySchema as userKindSchema,
 } from './UserEntityV1alpha1';
 export type {
   UserEntityV1alpha1 as UserEntity,
   UserEntityV1alpha1,
 } from './UserEntityV1alpha1';
+export { defaultEntityMetadataSchema } from './metadata';
+export {
+  type EntitySchema,
+  type EntityValidator,
+  createEntitySchema,
+  schemasToParser,
+} from './schemaUtils';

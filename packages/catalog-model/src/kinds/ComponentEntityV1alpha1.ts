@@ -18,7 +18,7 @@ import { z } from 'zod';
 import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Component.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
-
+import { createEntitySchema } from './schemaUtils';
 /**
  * Backstage catalog Component kind Entity. Represents a single, individual piece of software.
  *
@@ -52,52 +52,49 @@ export interface ComponentEntityV1alpha1 extends Entity {
 export const componentEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);
 
-export const componentKindSchema = z
-  .object({
-    apiVersion: z.enum(['backstage.io/v1alpha1', 'backstage.io/v1beta1']),
-    kind: z.literal('Component'),
-    spec: z
-      .object({
-        type: z.string().min(1).describe('The type of component.'),
-        lifecycle: z
-          .string()
-          .min(1)
-          .describe('The lifecycle state of the component.'),
-        owner: z
-          .string()
-          .min(1)
-          .describe('An entity reference to the owner of the component.'),
-        subcomponentOf: z
-          .string()
-          .min(1)
-          .optional()
-          .describe('An entity reference to the parent component.'),
-        providesApis: z
-          .array(z.string().min(1))
-          .optional()
-          .describe(
-            'An array of entity references to the APIs that the component provides.',
-          ),
-        consumesApis: z
-          .array(z.string().min(1))
-          .optional()
-          .describe(
-            'An array of entity references to the APIs that the component consumes.',
-          ),
-        dependsOn: z
-          .array(z.string().min(1))
-          .optional()
-          .describe(
-            'An array of references to other entities that the component depends on to function.',
-          ),
-        system: z
-          .string()
-          .min(1)
-          .optional()
-          .describe(
-            'An entity reference to the system that the component belongs to.',
-          ),
-      })
-      .passthrough(),
-  })
-  .passthrough();
+export const componentEntitySchema = createEntitySchema({
+  kind: z.literal('Component'),
+  spec: z
+    .object({
+      type: z.string().min(1).describe('The type of component.'),
+      lifecycle: z
+        .string()
+        .min(1)
+        .describe('The lifecycle state of the component.'),
+      owner: z
+        .string()
+        .min(1)
+        .describe('An entity reference to the owner of the component.'),
+      subcomponentOf: z
+        .string()
+        .min(1)
+        .optional()
+        .describe('An entity reference to the parent component.'),
+      providesApis: z
+        .array(z.string().min(1))
+        .optional()
+        .describe(
+          'An array of entity references to the APIs that the component provides.',
+        ),
+      consumesApis: z
+        .array(z.string().min(1))
+        .optional()
+        .describe(
+          'An array of entity references to the APIs that the component consumes.',
+        ),
+      dependsOn: z
+        .array(z.string().min(1))
+        .optional()
+        .describe(
+          'An array of references to other entities that the component depends on to function.',
+        ),
+      system: z
+        .string()
+        .min(1)
+        .optional()
+        .describe(
+          'An entity reference to the system that the component belongs to.',
+        ),
+    })
+    .passthrough(),
+});

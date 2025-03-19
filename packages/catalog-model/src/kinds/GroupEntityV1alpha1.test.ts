@@ -17,6 +17,7 @@
 import {
   GroupEntityV1alpha1,
   groupEntityV1alpha1Validator as validator,
+  groupEntitySchema,
 } from './GroupEntityV1alpha1';
 
 describe('GroupV1alpha1Validator', () => {
@@ -46,36 +47,43 @@ describe('GroupV1alpha1Validator', () => {
 
   it('happy path: accepts valid data', async () => {
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(groupEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('silently accepts v1beta1 as well', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta1';
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(groupEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('ignores unknown apiVersion', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta0';
     await expect(validator.check(entity)).resolves.toBe(false);
+    expect(groupEntitySchema.safeParse(entity).success).toBe(false);
   });
 
   it('ignores unknown kind', async () => {
     (entity as any).kind = 'Wizard';
     await expect(validator.check(entity)).resolves.toBe(false);
+    expect(groupEntitySchema.safeParse(entity).success).toBe(false);
   });
 
   it('rejects missing type', async () => {
     delete (entity as any).spec.type;
     await expect(validator.check(entity)).rejects.toThrow(/type/);
+    expect(() => groupEntitySchema.parse(entity)).toThrow(/type/);
   });
 
   it('rejects wrong type', async () => {
     (entity as any).spec.type = 7;
     await expect(validator.check(entity)).rejects.toThrow(/type/);
+    expect(() => groupEntitySchema.parse(entity)).toThrow(/type/);
   });
 
   it('rejects empty type', async () => {
     (entity as any).spec.type = '';
     await expect(validator.check(entity)).rejects.toThrow(/type/);
+    expect(() => groupEntitySchema.parse(entity)).toThrow(/type/);
   });
 
   // profile
@@ -83,61 +91,73 @@ describe('GroupV1alpha1Validator', () => {
   it('accepts missing profile', async () => {
     delete (entity as any).spec.profile;
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(groupEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('rejects wrong profile', async () => {
     (entity as any).spec.profile = 7;
     await expect(validator.check(entity)).rejects.toThrow(/profile/);
+    expect(groupEntitySchema.safeParse(entity).success).toBe(false);
   });
 
   it('profile accepts missing displayName', async () => {
     delete (entity as any).spec.profile.displayName;
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(groupEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('profile rejects wrong displayName', async () => {
     (entity as any).spec.profile.displayName = 7;
     await expect(validator.check(entity)).rejects.toThrow(/displayName/);
+    expect(() => groupEntitySchema.parse(entity)).toThrow(/displayName/);
   });
 
   it('profile rejects empty displayName', async () => {
     (entity as any).spec.profile.displayName = '';
     await expect(validator.check(entity)).rejects.toThrow(/displayName/);
+    expect(() => groupEntitySchema.parse(entity)).toThrow(/displayName/);
   });
 
   it('profile accepts missing email', async () => {
     delete (entity as any).spec.profile.email;
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(groupEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('profile rejects wrong email', async () => {
     (entity as any).spec.profile.email = 7;
     await expect(validator.check(entity)).rejects.toThrow(/email/);
+    expect(() => groupEntitySchema.parse(entity)).toThrow(/email/);
   });
 
   it('profile rejects empty email', async () => {
     (entity as any).spec.profile.email = '';
     await expect(validator.check(entity)).rejects.toThrow(/email/);
+    expect(() => groupEntitySchema.parse(entity)).toThrow(/email/);
   });
 
   it('profile accepts missing picture', async () => {
     delete (entity as any).spec.profile.picture;
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(groupEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('profile rejects wrong picture', async () => {
     (entity as any).spec.profile.picture = 7;
     await expect(validator.check(entity)).rejects.toThrow(/picture/);
+    expect(() => groupEntitySchema.parse(entity)).toThrow(/picture/);
   });
 
   it('profile rejects empty picture', async () => {
     (entity as any).spec.profile.picture = '';
     await expect(validator.check(entity)).rejects.toThrow(/picture/);
+    expect(() => groupEntitySchema.parse(entity)).toThrow(/picture/);
   });
 
   it('profile accepts unknown additional fields', async () => {
     (entity as any).spec.profile.foo = 'data';
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(groupEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   // parent
@@ -145,11 +165,13 @@ describe('GroupV1alpha1Validator', () => {
   it('accepts missing parent', async () => {
     delete (entity as any).spec.parent;
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(groupEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('rejects empty parent', async () => {
     (entity as any).spec.parent = '';
     await expect(validator.check(entity)).rejects.toThrow(/parent/);
+    expect(() => groupEntitySchema.parse(entity)).toThrow(/parent/);
   });
 
   // children
@@ -157,21 +179,25 @@ describe('GroupV1alpha1Validator', () => {
   it('rejects missing children', async () => {
     delete (entity as any).spec.children;
     await expect(validator.check(entity)).rejects.toThrow(/children/);
+    expect(() => groupEntitySchema.parse(entity)).toThrow(/children/);
   });
 
   it('rejects empty children', async () => {
     (entity as any).spec.children = [''];
     await expect(validator.check(entity)).rejects.toThrow(/children/);
+    expect(() => groupEntitySchema.parse(entity)).toThrow(/children/);
   });
 
   it('rejects undefined children', async () => {
     (entity as any).spec.children = [undefined];
     await expect(validator.check(entity)).rejects.toThrow(/children/);
+    expect(() => groupEntitySchema.parse(entity)).toThrow(/children/);
   });
 
   it('accepts no children', async () => {
     (entity as any).spec.children = [];
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(groupEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   // members
@@ -179,20 +205,24 @@ describe('GroupV1alpha1Validator', () => {
   it('accepts missing members', async () => {
     delete (entity as any).spec.members;
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(groupEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('rejects empty members', async () => {
     (entity as any).spec.members = [''];
     await expect(validator.check(entity)).rejects.toThrow(/members/);
+    expect(() => groupEntitySchema.parse(entity)).toThrow(/members/);
   });
 
   it('rejects undefined members', async () => {
     (entity as any).spec.members = [undefined];
     await expect(validator.check(entity)).rejects.toThrow(/members/);
+    expect(() => groupEntitySchema.parse(entity)).toThrow(/members/);
   });
 
   it('accepts no members', async () => {
     (entity as any).spec.members = [];
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(groupEntitySchema.safeParse(entity).success).toBe(true);
   });
 });

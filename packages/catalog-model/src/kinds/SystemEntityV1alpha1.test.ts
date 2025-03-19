@@ -16,6 +16,7 @@
 
 import {
   SystemEntityV1alpha1,
+  systemEntitySchema,
   systemEntityV1alpha1Validator as validator,
 } from './SystemEntityV1alpha1';
 
@@ -31,73 +32,84 @@ describe('SystemV1alpha1Validator', () => {
       },
       spec: {
         owner: 'me',
-        domain: 'domain',
-        type: 'system-type',
       },
     };
   });
 
   it('happy path: accepts valid data', async () => {
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(systemEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('silently accepts v1beta1 as well', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta1';
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(systemEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('ignores unknown apiVersion', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta0';
     await expect(validator.check(entity)).resolves.toBe(false);
+    expect(systemEntitySchema.safeParse(entity).success).toBe(false);
   });
 
   it('ignores unknown kind', async () => {
     (entity as any).kind = 'Wizard';
     await expect(validator.check(entity)).resolves.toBe(false);
+    expect(systemEntitySchema.safeParse(entity).success).toBe(false);
   });
 
   it('rejects missing owner', async () => {
     delete (entity as any).spec.owner;
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
+    expect(() => systemEntitySchema.parse(entity)).toThrow(/owner/);
   });
 
   it('rejects wrong owner', async () => {
     (entity as any).spec.owner = 7;
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
+    expect(() => systemEntitySchema.parse(entity)).toThrow(/owner/);
   });
 
   it('rejects empty owner', async () => {
     (entity as any).spec.owner = '';
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
+    expect(() => systemEntitySchema.parse(entity)).toThrow(/owner/);
   });
 
   it('accepts missing domain', async () => {
     delete (entity as any).spec.domain;
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(systemEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('rejects wrong domain', async () => {
     (entity as any).spec.domain = 7;
     await expect(validator.check(entity)).rejects.toThrow(/domain/);
+    expect(() => systemEntitySchema.parse(entity)).toThrow(/domain/);
   });
 
   it('rejects empty domain', async () => {
     (entity as any).spec.domain = '';
     await expect(validator.check(entity)).rejects.toThrow(/domain/);
+    expect(() => systemEntitySchema.parse(entity)).toThrow(/domain/);
   });
 
   it('accepts missing type', async () => {
     delete (entity as any).spec.type;
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(systemEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('rejects wrong type', async () => {
     (entity as any).spec.type = 7;
     await expect(validator.check(entity)).rejects.toThrow(/type/);
+    expect(() => systemEntitySchema.parse(entity)).toThrow(/type/);
   });
 
   it('rejects empty type', async () => {
     (entity as any).spec.type = '';
     await expect(validator.check(entity)).rejects.toThrow(/type/);
+    expect(() => systemEntitySchema.parse(entity)).toThrow(/type/);
   });
 });

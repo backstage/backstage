@@ -16,6 +16,7 @@
 
 import {
   ApiEntityV1alpha1,
+  apiEntitySchema,
   apiEntityV1alpha1Validator as validator,
 } from './ApiEntityV1alpha1';
 
@@ -77,96 +78,117 @@ components:
 
   it('happy path: accepts valid data', async () => {
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(apiEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('silently accepts v1beta1 as well', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta1';
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(apiEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('ignores unknown apiVersion', async () => {
     (entity as any).apiVersion = 'backstage.io/v1beta0';
     await expect(validator.check(entity)).resolves.toBe(false);
+    expect(apiEntitySchema.safeParse(entity).success).toBe(false);
   });
 
   it('ignores unknown kind', async () => {
     (entity as any).kind = 'Wizard';
     await expect(validator.check(entity)).resolves.toBe(false);
+    expect(apiEntitySchema.safeParse(entity).success).toBe(false);
   });
 
   it('rejects missing type', async () => {
     delete (entity as any).spec.type;
     await expect(validator.check(entity)).rejects.toThrow(/type/);
+
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/type/);
   });
 
   it('rejects wrong type', async () => {
     (entity as any).spec.type = 7;
     await expect(validator.check(entity)).rejects.toThrow(/type/);
+
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/type/);
   });
 
   it('rejects empty type', async () => {
     (entity as any).spec.type = '';
     await expect(validator.check(entity)).rejects.toThrow(/type/);
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/type/);
   });
 
   it('rejects missing lifecycle', async () => {
     delete (entity as any).spec.lifecycle;
     await expect(validator.check(entity)).rejects.toThrow(/lifecycle/);
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/lifecycle/);
   });
 
   it('rejects wrong lifecycle', async () => {
     (entity as any).spec.lifecycle = 7;
     await expect(validator.check(entity)).rejects.toThrow(/lifecycle/);
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/lifecycle/);
   });
 
   it('rejects empty lifecycle', async () => {
     (entity as any).spec.lifecycle = '';
     await expect(validator.check(entity)).rejects.toThrow(/lifecycle/);
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/lifecycle/);
   });
 
   it('rejects missing owner', async () => {
     delete (entity as any).spec.owner;
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/owner/);
   });
 
   it('rejects wrong owner', async () => {
     (entity as any).spec.owner = 7;
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/owner/);
   });
 
   it('rejects empty owner', async () => {
     (entity as any).spec.owner = '';
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/owner/);
   });
 
   it('rejects missing definition', async () => {
     delete (entity as any).spec.definition;
     await expect(validator.check(entity)).rejects.toThrow(/definition/);
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/definition/);
   });
 
   it('rejects wrong definition', async () => {
     (entity as any).spec.definition = 7;
     await expect(validator.check(entity)).rejects.toThrow(/definition/);
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/definition/);
   });
 
   it('rejects empty definition', async () => {
     (entity as any).spec.definition = '';
     await expect(validator.check(entity)).rejects.toThrow(/definition/);
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/definition/);
   });
 
   it('accepts missing system', async () => {
     delete (entity as any).spec.system;
     await expect(validator.check(entity)).resolves.toBe(true);
+    expect(apiEntitySchema.safeParse(entity).success).toBe(true);
   });
 
   it('rejects wrong system', async () => {
     (entity as any).spec.system = 7;
     await expect(validator.check(entity)).rejects.toThrow(/system/);
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/system/);
   });
 
   it('rejects empty system', async () => {
     (entity as any).spec.system = '';
     await expect(validator.check(entity)).rejects.toThrow(/system/);
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/system/);
   });
 
   it('rejects additional properties', async () => {
@@ -174,10 +196,12 @@ components:
     await expect(validator.check(entity)).rejects.toThrow(
       /additional properties/,
     );
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/unrecognized_keys/);
   });
 
   it('rejects with useful error message', async () => {
     (entity as any).annotations = 'Test';
     await expect(validator.check(entity)).rejects.toThrow(/annotations/);
+    expect(() => apiEntitySchema.parse(entity)).toThrow(/annotations/);
   });
 });

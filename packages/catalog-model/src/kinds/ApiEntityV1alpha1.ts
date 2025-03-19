@@ -18,6 +18,7 @@ import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/API.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 import { z } from 'zod';
+import { createEntitySchema } from './schemaUtils';
 
 /**
  * Backstage API kind Entity. APIs describe the interfaces for Components to communicate.
@@ -48,35 +49,27 @@ export interface ApiEntityV1alpha1 extends Entity {
 export const apiEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);
 
-export const apiKindSchema = z
-  .object({
-    apiVersion: z.enum(['backstage.io/v1alpha1', 'backstage.io/v1beta1']),
-    kind: z.literal('API'),
-    spec: z
-      .object({
-        type: z.string().min(1).describe('The type of the API definition.'),
-        lifecycle: z
-          .string()
-          .min(1)
-          .describe('The lifecycle state of the API.'),
-        owner: z
-          .string()
-          .min(1)
-          .describe('An entity reference to the owner of the API.'),
-        system: z
-          .string()
-          .min(1)
-          .optional()
-          .describe(
-            'An entity reference to the system that the API belongs to.',
-          ),
-        definition: z
-          .string()
-          .min(1)
-          .describe(
-            'The definition of the API, based on the format defined by the type.',
-          ),
-      })
-      .passthrough(),
-  })
-  .passthrough();
+export const apiEntitySchema = createEntitySchema({
+  kind: z.literal('API'),
+  spec: z
+    .object({
+      type: z.string().min(1).describe('The type of the API definition.'),
+      lifecycle: z.string().min(1).describe('The lifecycle state of the API.'),
+      owner: z
+        .string()
+        .min(1)
+        .describe('An entity reference to the owner of the API.'),
+      system: z
+        .string()
+        .min(1)
+        .optional()
+        .describe('An entity reference to the system that the API belongs to.'),
+      definition: z
+        .string()
+        .min(1)
+        .describe(
+          'The definition of the API, based on the format defined by the type.',
+        ),
+    })
+    .passthrough(),
+});
