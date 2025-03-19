@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
 import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Domain.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
@@ -46,7 +45,7 @@ export interface DomainEntityV1alpha1 extends Entity {
 export const domainEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);
 
-export const domainEntitySchema = createEntitySchema({
+export const domainEntitySchema = createEntitySchema(z => ({
   kind: z.literal('Domain'),
   spec: z
     .object({
@@ -70,4 +69,4 @@ export const domainEntitySchema = createEntitySchema({
         ),
     })
     .passthrough(),
-});
+}));

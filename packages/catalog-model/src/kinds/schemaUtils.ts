@@ -18,17 +18,44 @@ import { Entity } from '../entity/Entity';
 import { z } from 'zod';
 import { defaultEntityMetadataSchema } from './metadata';
 
+// export function createEntitySchema<
+//   TApiVersion extends [string, ...string[]],
+//   TKind extends string,
+//   TMetadata extends z.ZodObject<any, any>,
+//   TSpec extends z.ZodObject<any, any>,
+// >(options: {
+//   kind: z.ZodLiteral<TKind>;
+//   apiVersion?: z.ZodEnum<TApiVersion>;
+//   metadata?: TMetadata;
+//   spec: TSpec;
+// }) {
+//   return z
+//     .object({
+//       apiVersion:
+//         options.apiVersion ??
+//         z.enum(['backstage.io/v1alpha1', 'backstage.io/v1beta1']),
+//       kind: options.kind,
+//       spec: options.spec,
+//       metadata: options.metadata ?? defaultEntityMetadataSchema,
+//     })
+//     .strict();
+// }
+
 export function createEntitySchema<
   TApiVersion extends [string, ...string[]],
   TKind extends string,
   TMetadata extends z.ZodObject<any, any>,
   TSpec extends z.ZodObject<any, any>,
->(options: {
-  kind: z.ZodLiteral<TKind>;
-  apiVersion?: z.ZodEnum<TApiVersion>;
-  metadata?: TMetadata;
-  spec: TSpec;
-}) {
+>(
+  creatorFn: (zImpl: typeof z) => {
+    kind: z.ZodLiteral<TKind>;
+    apiVersion?: z.ZodEnum<TApiVersion>;
+    metadata?: TMetadata;
+    spec: TSpec;
+  },
+) {
+  const options = creatorFn(z);
+
   return z
     .object({
       apiVersion:
@@ -90,18 +117,3 @@ export type EntityValidator = {
         data?: never;
       };
 };
-
-/*
-export type EntitySchema<TOutput, TInput> = {
-  safeParse: (input: TInput) => z.SafeParseReturnType<TInput, TOutput>;
-};
-
-export function createEntitySchema<TOutput, TInput>(
-  schemaCreator: (zImpl: typeof z) => ZodSchema<TOutput, ZodTypeDef, TInput>,
-): EntitySchema<TOutput, TInput> {
-  const schema = schemaCreator(z);
-  return {
-    safeParse: (input: TInput) => schema.safeParse(input),
-  };
-}
-*/

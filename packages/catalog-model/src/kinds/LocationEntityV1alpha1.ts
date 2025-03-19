@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
 import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Location.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
@@ -43,7 +42,7 @@ export interface LocationEntityV1alpha1 extends Entity {
 export const locationEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);
 
-export const locationEntitySchema = createEntitySchema({
+export const locationEntitySchema = createEntitySchema(z => ({
   kind: z.literal('Location'),
   spec: z
     .object({
@@ -75,4 +74,4 @@ export const locationEntitySchema = createEntitySchema({
         ),
     })
     .passthrough(),
-});
+}));

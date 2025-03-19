@@ -17,7 +17,6 @@
 import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/API.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
-import { z } from 'zod';
 import { createEntitySchema } from './schemaUtils';
 
 /**
@@ -49,7 +48,7 @@ export interface ApiEntityV1alpha1 extends Entity {
 export const apiEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);
 
-export const apiEntitySchema = createEntitySchema({
+export const apiEntitySchema = createEntitySchema(z => ({
   kind: z.literal('API'),
   spec: z
     .object({
@@ -72,4 +71,4 @@ export const apiEntitySchema = createEntitySchema({
         ),
     })
     .passthrough(),
-});
+}));

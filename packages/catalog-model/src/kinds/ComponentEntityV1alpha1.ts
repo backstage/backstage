@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
 import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Component.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
@@ -52,7 +51,7 @@ export interface ComponentEntityV1alpha1 extends Entity {
 export const componentEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);
 
-export const componentEntitySchema = createEntitySchema({
+export const componentEntitySchema = createEntitySchema(z => ({
   kind: z.literal('Component'),
   spec: z
     .object({
@@ -97,4 +96,4 @@ export const componentEntitySchema = createEntitySchema({
         ),
     })
     .passthrough(),
-});
+}));

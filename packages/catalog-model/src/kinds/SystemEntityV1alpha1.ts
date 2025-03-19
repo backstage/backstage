@@ -17,7 +17,6 @@
 import type { Entity } from '../entity/Entity';
 import { ajvCompiledJsonSchemaValidator } from './util';
 import schema from '../schema/kinds/System.v1alpha1.schema.json';
-import { z } from 'zod';
 import { createEntitySchema } from './schemaUtils';
 /**
  * Backstage catalog System kind Entity. Systems group Components, Resources and APIs together.
@@ -46,7 +45,7 @@ export interface SystemEntityV1alpha1 extends Entity {
 export const systemEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);
 
-export const systemEntitySchema = createEntitySchema({
+export const systemEntitySchema = createEntitySchema(z => ({
   kind: z.literal('System'),
   spec: z
     .object({
@@ -70,4 +69,4 @@ export const systemEntitySchema = createEntitySchema({
         ),
     })
     .passthrough(),
-});
+}));

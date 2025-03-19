@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
 import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/User.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
@@ -46,7 +45,7 @@ export interface UserEntityV1alpha1 extends Entity {
 export const userEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);
 
-export const userEntitySchema = createEntitySchema({
+export const userEntitySchema = createEntitySchema(z => ({
   kind: z.literal('User'),
   spec: z
     .object({
@@ -74,9 +73,10 @@ export const userEntitySchema = createEntitySchema({
         ),
       memberOf: z
         .array(z.string().min(1))
+        .optional()
         .describe(
           'The list of groups that the user is a direct member of (i.e., no transitive memberships are listed here). The list must be present, but may be empty if the user is not member of any groups. The items are not guaranteed to be ordered in any particular way. The entries of this array are entity references.',
         ),
     })
     .passthrough(),
-});
+}));

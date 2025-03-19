@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
 import type { Entity } from '../entity/Entity';
 import schema from '../schema/kinds/Group.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
@@ -47,7 +46,7 @@ export interface GroupEntityV1alpha1 extends Entity {
 export const groupEntityV1alpha1Validator =
   ajvCompiledJsonSchemaValidator(schema);
 
-export const groupEntitySchema = createEntitySchema({
+export const groupEntitySchema = createEntitySchema(z => ({
   kind: z.literal('Group'),
   spec: z
     .object({
@@ -99,4 +98,4 @@ export const groupEntitySchema = createEntitySchema({
         ),
     })
     .passthrough(),
-});
+}));
