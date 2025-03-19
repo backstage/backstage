@@ -56,7 +56,7 @@ describe('EntityContextMenuItemBlueprint', () => {
         "T": undefined,
         "attachTo": {
           "id": "page:catalog/entity",
-          "input": "extraContextMenuItems",
+          "input": "contextMenuItems",
         },
         "configSchema": undefined,
         "disabled": false,

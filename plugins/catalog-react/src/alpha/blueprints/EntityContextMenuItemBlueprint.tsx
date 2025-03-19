@@ -62,7 +62,7 @@ export type EntityContextMenuItemParams =
 /** @alpha */
 export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
   kind: 'entity-context-menu-item',
-  attachTo: { id: 'page:catalog/entity', input: 'extraContextMenuItems' },
+  attachTo: { id: 'page:catalog/entity', input: 'contextMenuItems' },
   output: [coreExtensionData.reactElement],
   *factory(params: EntityContextMenuItemParams, { node, apis }) {
     const loaderFactory = () => {
