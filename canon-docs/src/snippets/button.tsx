@@ -1,102 +1,26 @@
 'use client';
 
-import { Button, Flex, ButtonProps, Text } from '../../../packages/canon';
+import { composeStories } from '@storybook/react';
+import * as ButtonStories from '../../../packages/canon/src/components/Button/Button.stories';
+import { useEffect, useState } from 'react';
 
-export const ButtonPreview = () => {
-  return (
-    <Flex align="center">
-      <Button iconStart="cloud" variant="primary">
-        Button
-      </Button>
-      <Button iconStart="cloud" variant="secondary">
-        Button
-      </Button>
-    </Flex>
-  );
-};
+export const ButtonSnippet = ({ story }: { story: string }) => {
+  const stories = composeStories(ButtonStories);
+  const [isReady, setIsReady] = useState(false);
 
-export const ButtonSizes = () => {
-  return (
-    <Flex align="center">
-      <Button size="medium">Medium</Button>
-      <Button size="small">Small</Button>
-    </Flex>
-  );
-};
+  useEffect(() => {
+    setIsReady(true);
+  }, [story]);
 
-export const ButtonWithIcons = () => {
-  return (
-    <Flex align="center">
-      <Button iconStart="cloud">Button</Button>
-      <Button iconEnd="chevron-right">Button</Button>
-      <Button iconStart="cloud" iconEnd="chevron-right">
-        Button
-      </Button>
-    </Flex>
-  );
-};
+  if (!isReady) return null;
 
-export const ButtonFullWidth = () => {
-  return (
-    <Flex direction="column" style={{ width: '300px' }}>
-      <Button iconStart="cloud">Button</Button>
-      <Button iconEnd="chevron-right">Button</Button>
-      <Button iconStart="cloud" iconEnd="chevron-right">
-        Button
-      </Button>
-    </Flex>
-  );
-};
+  if (story === 'Variants') return <stories.Variants />;
+  if (story === 'Sizes') return <stories.Sizes />;
+  if (story === 'WithIcons') return <stories.WithIcons />;
+  if (story === 'FullWidth') return <stories.FullWidth />;
+  if (story === 'Disabled') return <stories.Disabled />;
+  if (story === 'Responsive') return <stories.Responsive />;
+  if (story === 'Playground') return <stories.Playground />;
 
-export const ButtonDisabled = () => {
-  return <Button disabled>Button</Button>;
-};
-
-export const ButtonResponsive = () => {
-  return (
-    <Button variant={{ initial: 'primary', lg: 'secondary' }}>
-      Responsive Button
-    </Button>
-  );
-};
-
-export const ButtonPlayground = () => {
-  const variants: string[] = ['primary', 'secondary', 'tertiary'];
-
-  return (
-    <Flex direction="column">
-      {variants.map(variant => (
-        <Flex direction="column" key={variant}>
-          <Text>{variant}</Text>
-          {['small', 'medium'].map(size => (
-            <Flex align="center" key={size}>
-              <Button
-                iconStart="cloud"
-                variant={variant as ButtonProps['variant']}
-                size={size as ButtonProps['size']}
-              >
-                Button
-              </Button>
-              <Button
-                iconEnd="chevron-right"
-                variant={variant as ButtonProps['variant']}
-                size={size as ButtonProps['size']}
-              >
-                Button
-              </Button>
-              <Button
-                iconStart="cloud"
-                iconEnd="chevron-right"
-                style={{ width: '200px' }}
-                variant={variant as ButtonProps['variant']}
-                size={size as ButtonProps['size']}
-              >
-                Button
-              </Button>
-            </Flex>
-          ))}
-        </Flex>
-      ))}
-    </Flex>
-  );
+  return null;
 };
