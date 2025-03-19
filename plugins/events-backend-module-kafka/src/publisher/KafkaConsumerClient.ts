@@ -21,6 +21,13 @@ import { KafkaEventSourceConfig, readConfig } from './config';
 import { KafkaConsumingEventPublisher } from './KafkaConsumingEventPublisher';
 import { LoggerServiceCreator } from './LoggerServiceCreator';
 
+/**
+ * KafkaConsumerClient
+ *
+ * This class creates the Kafka client that will be used to create the KafkaConsumingEventPublisher
+ *
+ * @public
+ */
 export class KafkaConsumerClient {
   private readonly kafka: Kafka;
   private readonly consumers: KafkaConsumingEventPublisher[];

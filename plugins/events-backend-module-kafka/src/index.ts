@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
+/**
+ * The module "kafka" for the Backstage backend plugin "events"
+ * adding an Kafka-based publisher,
+ * receiving events from an Kafka topic and passing it to the
+ * internal event broker.
+ *
+ * @packageDocumentation
+ */
+
 export { KafkaConsumerClient } from './publisher/KafkaConsumerClient';
 export { KafkaConsumingEventPublisher } from './publisher/KafkaConsumingEventPublisher';
 export { eventsModuleKafkaConsumingEventPublisher as default } from './service/eventsModuleKafkaConsumingEventPublisher';
+export type {
+  KafkaConsumerConfig,
+  KafkaEventSourceConfig,
+} from './publisher/config';
