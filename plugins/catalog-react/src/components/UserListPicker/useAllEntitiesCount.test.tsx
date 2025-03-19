@@ -74,6 +74,12 @@ describe('useAllEntitiesCount', () => {
           'relations.ownedBy': ['user:default/owner'],
         },
         limit: 0,
+        orderFields: [
+          {
+            field: 'metadata.name',
+            order: 'asc',
+          },
+        ],
       }),
     );
     expect(result.current).toEqual({ count: 10, loading: false });
