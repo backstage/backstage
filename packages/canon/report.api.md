@@ -590,7 +590,7 @@ export const heightPropDefs: {
 export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
 
 // @public (undocumented)
-export const Icon: (props: IconProps) => React_2.JSX.Element;
+export const Icon: (props: IconProps) => React_2.JSX.Element | null;
 
 // @public (undocumented)
 export const IconButton: React_2.ForwardRefExoticComponent<

@@ -7,6 +7,7 @@ import {
 import { Snippet } from '@/components/Snippet';
 import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
+import { headingPropDefs } from './props';
 
 # Heading
 
@@ -43,26 +44,7 @@ Headings are used to structure the content of your page.
 
 ## API reference
 
-<PropsTable
-  data={{
-    variant: {
-      type: ['display', 'title1', 'title2', 'title3', 'title4', 'title5'],
-      responsive: true,
-    },
-    children: {
-      type: 'ReactNode',
-      responsive: false,
-    },
-    className: {
-      type: 'string',
-      responsive: false,
-    },
-    style: {
-      type: 'CSSProperties',
-      responsive: false,
-    },
-  }}
-/>
+<PropsTable data={headingPropDefs} />
 
 ## Examples
 

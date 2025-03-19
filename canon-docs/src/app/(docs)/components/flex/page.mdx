@@ -1,5 +1,4 @@
 import { PropsTable } from '@/components/PropsTable';
-import { spacePropsList } from '@/utils/spaceProps';
 import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
 import {
@@ -10,6 +9,8 @@ import {
 } from '@/snippets/_snippets';
 import { Snippet } from '@/components/Snippet';
 import { FlexPreview } from '@/snippets/flex';
+import { flexPropDefs } from './props';
+import { spacingPropDefs } from '../../../../utils/propDefs';
 
 # Flex
 
@@ -44,30 +45,11 @@ columns. All values are responsive.
 
 ## API reference
 
-<PropsTable
-  data={{
-    align: {
-      type: ['start', 'center', 'end'],
-      responsive: true,
-    },
-    children: {
-      type: 'ReactNode',
-      required: false,
-    },
-    className: {
-      type: 'string',
-      required: false,
-    },
-    style: {
-      type: 'CSSProperties',
-      required: false,
-    },
-  }}
-/>
+<PropsTable data={flexPropDefs} />
 
 The grid component also accepts all the spacing props from the Box component.
 
-<PropsTable data={spacePropsList} />
+<PropsTable data={spacingPropDefs} />
 
 ## Common questions
 

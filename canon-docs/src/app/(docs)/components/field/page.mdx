@@ -4,6 +4,12 @@ import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
 import { FieldPreview } from '@/snippets/field';
 import { BaseUI } from '@/components/HeadlessBanners/BaseUI';
+import {
+  fieldRootPropDefs,
+  fieldLabelPropDefs,
+  fieldDescriptionPropDefs,
+  fieldErrorPropDefs,
+} from './props';
 
 # Field
 
@@ -49,113 +55,25 @@ A wrapper around `Input` or `Select` component to add label, description and err
 
 Groups all parts of the field. Renders a `<div>` element.
 
-<PropsTable
-  data={{
-    name: {
-      type: 'string',
-      responsive: false,
-    },
-    disabled: {
-      type: 'boolean',
-      responsive: false,
-    },
-    invalid: {
-      type: 'boolean',
-      responsive: false,
-    },
-    validate: {
-      type: '(value) => string | string[] | null | Promise',
-      responsive: false,
-    },
-    validationMode: {
-      type: ['onBlur', 'onChange'],
-      responsive: false,
-    },
-    validationDebounceTime: {
-      type: 'number',
-      responsive: false,
-    },
-    className: {
-      type: 'string',
-      responsive: false,
-    },
-    style: {
-      type: 'CSSProperties',
-      responsive: false,
-    },
-  }}
-/>
+<PropsTable data={fieldRootPropDefs} />
 
 ### Field.Label
 
 An accessible label that is automatically associated with the field control. Renders a `<label>` element.
 
-<PropsTable
-  data={{
-    className: {
-      type: 'string',
-      responsive: false,
-    },
-    style: {
-      type: 'CSSProperties',
-      responsive: false,
-    },
-  }}
-/>
+<PropsTable data={fieldLabelPropDefs} />
 
 ### Field.Description
 
 A paragraph with additional information about the field. Renders a `<p>` element.
 
-<PropsTable
-  data={{
-    className: {
-      type: 'string',
-      responsive: false,
-    },
-    style: {
-      type: 'CSSProperties',
-      responsive: false,
-    },
-  }}
-/>
+<PropsTable data={fieldDescriptionPropDefs} />
 
 ### Field.Error
 
 An error message displayed if the field control fails validation. Renders a `<div>` element.
 
-<PropsTable
-  data={{
-    match: {
-      type: [
-        'badInput',
-        'customError',
-        'patternMismatch',
-        'rangeOverflow',
-        'rangeUnderflow',
-        'stepMismatch',
-        'tooLong',
-        'tooShort',
-        'typeMismatch',
-        'valid',
-        'valueMissing',
-      ],
-      responsive: false,
-    },
-    forceShow: {
-      type: 'boolean',
-      responsive: false,
-    },
-    className: {
-      type: 'string',
-      responsive: false,
-    },
-    style: {
-      type: 'CSSProperties',
-      responsive: false,
-    },
-  }}
-/>
+<PropsTable data={fieldErrorPropDefs} />
 
 ## Examples
 

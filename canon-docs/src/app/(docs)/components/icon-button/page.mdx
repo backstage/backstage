@@ -9,7 +9,7 @@ import {
   IconButtonResponsive,
 } from '@/snippets/icon-button';
 import { iconButtonVariants } from '@/snippets/_snippets';
-import { iconButtonPropDefs } from '../../../../../../packages/canon/src/components/IconButton/IconButton.props';
+import { iconButtonPropDefs } from './props';
 
 # Icon Button
 
@@ -50,12 +50,7 @@ A button component with a single icon that can be used to trigger actions.
 
 ## API reference
 
-<PropsTable
-  data={{
-    ...iconButtonPropDefs,
-    icon: { values: 'icon', responsive: false },
-  }}
-/>
+<PropsTable data={iconButtonPropDefs} />
 
 ## Examples
 

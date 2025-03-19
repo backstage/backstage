@@ -1,9 +1,9 @@
 import { CodeBlock } from '@/components/CodeBlock';
 import { PropsTable } from '@/components/PropsTable';
-import { spacePropsList } from '@/utils/spaceProps';
 import { Tabs } from '@/components/Tabs';
 import { Snippet } from '@/components/Snippet';
 import { ContainerPreview } from '@/snippets/container';
+import { containerPropDefs } from './props';
 
 # Container
 
@@ -32,46 +32,7 @@ content on the page.
 
 ## API reference
 
-<PropsTable
-  data={{
-    children: {
-      type: 'ReactNode',
-      responsive: false,
-    },
-    className: {
-      type: 'string',
-      responsive: false,
-    },
-    marginY: {
-      type: spacePropsList.marginY.type,
-      responsive: spacePropsList.marginY.responsive,
-    },
-    marginBottom: {
-      type: spacePropsList.marginBottom.type,
-      responsive: spacePropsList.marginBottom.responsive,
-    },
-    marginTop: {
-      type: spacePropsList.marginTop.type,
-      responsive: spacePropsList.marginTop.responsive,
-    },
-    paddingY: {
-      type: spacePropsList.paddingY.type,
-      responsive: spacePropsList.paddingY.responsive,
-    },
-    paddingBottom: {
-      type: spacePropsList.paddingBottom.type,
-      responsive: spacePropsList.paddingBottom.responsive,
-    },
-    paddingTop: {
-      type: spacePropsList.paddingTop.type,
-      responsive: spacePropsList.paddingTop.responsive,
-    },
-    style: {
-      type: 'CSSProperties',
-      responsive: false,
-    },
-  }}
-/>
+<PropsTable data={containerPropDefs} />
 
 ## Examples
 

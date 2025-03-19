@@ -1,10 +1,11 @@
 import { CodeBlock } from '@/components/CodeBlock';
 import { PropsTable } from '@/components/PropsTable';
-import { spacePropsList } from '@/utils/spaceProps';
 import { Tabs } from '@/components/Tabs';
 import { grid } from '@/snippets/_snippets';
 import { Snippet } from '@/components/Snippet';
 import { GridPreview } from '@/snippets/grid';
+import { spacingPropDefs } from '../../../../utils/propDefs';
+import { gridPropDefs, gridItemPropDefs } from './props';
 
 # Grid
 
@@ -38,34 +39,11 @@ This is the grid container component. It will help to define the number of
 columns that will be used in the grid. You can also define the gap between the
 columns. All values are responsive.
 
-<PropsTable
-  data={{
-    columns: {
-      type: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'auto'],
-      responsive: true,
-    },
-    gap: {
-      type: ['xs', 'sm', 'md', 'lg', 'xl'],
-      responsive: true,
-    },
-    children: {
-      type: 'ReactNode',
-      required: false,
-    },
-    className: {
-      type: 'string',
-      required: false,
-    },
-    style: {
-      type: 'CSSProperties',
-      required: false,
-    },
-  }}
-/>
+<PropsTable data={gridPropDefs} />
 
 The grid component also accepts all the spacing props from the Box component.
 
-<PropsTable data={spacePropsList} />
+<PropsTable data={spacingPropDefs} />
 
 ### Grid.Item
 
@@ -74,38 +52,7 @@ component. This will give you access to `rowSpan`, `colSpan`, `start` and
 `end`. All values are responsive. This component is optional, you can use any
 elements directly if you prefer.
 
-<PropsTable
-  data={{
-    colSpan: {
-      type: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'full'],
-      responsive: true,
-    },
-    rowSpan: {
-      type: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'full'],
-      responsive: true,
-    },
-    start: {
-      type: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'auto'],
-      responsive: true,
-    },
-    end: {
-      type: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'auto'],
-      responsive: true,
-    },
-    children: {
-      type: 'ReactNode',
-      required: false,
-    },
-    className: {
-      type: 'string',
-      required: false,
-    },
-    style: {
-      type: 'CSSProperties',
-      required: false,
-    },
-  }}
-/>
+<PropsTable data={gridItemPropDefs} />
 
 ## Examples
 

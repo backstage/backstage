@@ -28,7 +28,7 @@ export const Icon = (props: IconProps) => {
 
   if (!CanonIcon) {
     console.error(`Icon "${name}" not found or is not a valid component.`);
-    return <svg />; // Return a default icon or handle the error appropriately
+    return null;
   }
 
   return (
