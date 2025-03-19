@@ -161,8 +161,14 @@ const notificationSettings: NotificationSettings = {
           enabled: true,
         },
         {
-          id: 'plugin-test2',
-          enabled: false,
+          id: 'abcd-origin',
+          enabled: true,
+          topics: [
+            {
+              id: 'efgh-topic',
+              enabled: false,
+            },
+          ],
         },
       ],
     },

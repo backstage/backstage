@@ -17,6 +17,7 @@ export function createSendNotificationAction(options: {
     recipients: string;
     entityRefs?: string[];
     title: string;
+    topic?: string;
     info?: string;
     link?: string;
     severity?: NotificationSeverity;

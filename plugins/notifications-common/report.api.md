@@ -15,6 +15,7 @@ export const isNotificationsEnabledFor: (
   settings: NotificationSettings,
   channelId: string,
   originId: string,
+  topicId: string | null,
 ) => boolean;
 
 // @public (undocumented)
@@ -67,6 +68,10 @@ export type NotificationSettings = {
     origins: {
       id: string;
       enabled: boolean;
+      topics?: {
+        id: string;
+        enabled: boolean;
+      }[];
     }[];
   }[];
 };

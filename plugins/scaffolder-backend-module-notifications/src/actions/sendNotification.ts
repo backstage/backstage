@@ -35,6 +35,7 @@ export function createSendNotificationAction(options: {
     recipients: string;
     entityRefs?: string[];
     title: string;
+    topic?: string;
     info?: string;
     link?: string;
     severity?: NotificationSeverity;
@@ -86,6 +87,11 @@ export function createSendNotificationAction(options: {
             description: `Notification severity`,
             enum: ['low', 'normal', 'high', 'critical'],
           },
+          topic: {
+            title: 'Topic',
+            description: 'Notification topic',
+            type: 'string',
+          },
           scope: {
             title: 'Scope',
             description: 'Notification scope',
@@ -108,6 +114,7 @@ export function createSendNotificationAction(options: {
         info,
         link,
         severity,
+        topic,
         scope,
         optional,
       } = ctx.input;
@@ -129,6 +136,7 @@ export function createSendNotificationAction(options: {
         description: info,
         link,
         severity,
+        topic,
         scope,
       };
 
