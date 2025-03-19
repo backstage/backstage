@@ -16,12 +16,18 @@
 import { Config } from '@backstage/config';
 import { ConsumerConfig, ConsumerSubscribeTopics, KafkaConfig } from 'kafkajs';
 
+/**
+ * @public
+ */
 export interface KafkaConsumerConfig {
   backstageTopic: string;
   consumerConfig: ConsumerConfig;
   consumerSubscribeConfig: ConsumerSubscribeTopics;
 }
 
+/**
+ * @public
+ */
 export interface KafkaEventSourceConfig {
   kafkaConfig: KafkaConfig;
   kafkaConsumerConfig: KafkaConsumerConfig[];
