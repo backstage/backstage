@@ -1,6 +1,6 @@
 {
   "name": "@backstage/canon",
-  "version": "0.2.0-next.1",
+  "version": "0.2.0",
   "backstage": {
     "role": "web-library"
   },
@@ -28,14 +28,16 @@
   ],
   "scripts": {
     "build": "yarn build:app && yarn build:css",
+    "build-storybook": "storybook build",
     "build:app": "backstage-cli package build",
     "build:css": "node scripts/build-css.mjs",
-    "build-storybook": "storybook build",
+    "build:css:watch": "node scripts/build-css.mjs --watch",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "start": "storybook dev -p 6006",
+    "start": "yarn build:css:watch && yarn storybook",
+    "storybook": "storybook dev -p 6006",
     "test": "backstage-cli package test"
   },
   "dependencies": {

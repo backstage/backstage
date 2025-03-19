@@ -1,5 +1,22 @@
 # @backstage/plugin-permission-node
 
+## 0.9.0
+
+### Minor Changes
+
+- 22ace13: **BREAKING** The `ServerPermissionClient` can no longer be instantiated with a `tokenManager` and must instead be instantiated with an `auth` service. If you are still on the legacy backend system, use `createLegacyAuthAdapters()` from `@backstage/backend-common` to create a compatible `auth` service.
+
+### Patch Changes
+
+- 728e3e1: Improved type inference when passing a `PermissionResourceRef` to `createPermissionRule`.
+- 876f2e1: Deprecated `createPermissionIntegrationRouter` and related types, which has been replaced by `PermissionRegistryService`. For more information, including how to migrate existing plugins, see the [service docs](https://backstage.io/docs/backend-system/core-services/permissions-registry).
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.8.4
+
 ## 0.8.9-next.1
 
 ### Patch Changes

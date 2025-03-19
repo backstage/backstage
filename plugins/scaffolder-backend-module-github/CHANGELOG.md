@@ -1,5 +1,28 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.6.1
+
+### Patch Changes
+
+- 11bc3e6: Made "github:pages:enable" action idempotent
+- 3f45e0f: Made "github:environment:create" action idempotent
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- 8c38687: Made "github:issues:label" action idempotent
+- 89948b2: Made "github:repo:push" action idempotent
+- 9391f58: Pass `undefined` to some parameters for `createOrUpdateEnvironment` as these values are not always supported in different plans of GitHub
+- 8182a59: Made "github:webhook" action idempotent
+- 8f9c54c: Made "github:repo:create" action idempotent
+- 0ae0c77: Made "publish:github:pull-request" action idempotent
+- Updated dependencies
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-scaffolder-node@0.8.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.6.1-next.2
 
 ### Patch Changes
