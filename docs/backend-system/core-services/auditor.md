@@ -131,7 +131,8 @@ For an operation that deletes an entity, a typical audit event would look like t
   "eventId": "entity-mutate",
   "meta": {
     "actionType": "delete",
-    "uid": "some-entity-uid"
+    "uid": "some-entity-uid",
+    "entityRef": "component:default/petstore"
   },
   "severityLevel": "medium"
   ...
