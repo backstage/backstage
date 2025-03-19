@@ -73,9 +73,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       EntityContentBlueprint.dataRefs.filterExpression.optional(),
       EntityContentBlueprint.dataRefs.group.optional(),
     ]),
-    extraContextMenuItems: createExtensionInput([
-      coreExtensionData.reactElement,
-    ]),
+    contextMenuItems: createExtensionInput([coreExtensionData.reactElement]),
   },
   config: {
     schema: {
@@ -92,7 +90,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       loader: async () => {
         const { EntityLayout } = await import('./components/EntityLayout');
 
-        const extraMenuItems = inputs.extraContextMenuItems.map(item =>
+        const menuItems = inputs.contextMenuItems.map(item =>
           item.get(coreExtensionData.reactElement),
         );
 
@@ -103,7 +101,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
 
         const header = inputs.header?.get(
           EntityHeaderBlueprint.dataRefs.element,
-        ) ?? <EntityHeader extraMenuItems={extraMenuItems} />;
+        ) ?? <EntityHeader extraMenuItems={menuItems} />;
 
         let groups = Object.entries(defaultEntityContentGroups).reduce<Groups>(
           (rest, group) => {
@@ -142,7 +140,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
         const Component = () => {
           return (
             <AsyncEntityProvider {...useEntityFromUrl()}>
-              <EntityLayout header={header} extraMenuItems={extraMenuItems}>
+              <EntityLayout header={header} extraMenuItems={menuItems}>
                 {Object.values(groups).flatMap(({ title, items }) =>
                   items.map(output => (
                     <EntityLayout.Route
