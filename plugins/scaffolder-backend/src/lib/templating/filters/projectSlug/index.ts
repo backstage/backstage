@@ -30,7 +30,7 @@ export const createProjectSlug = (integrations: ScmIntegrations) =>
         z.string(),
       ),
     examples,
-    filter: (repoUrl: string) => {
+    filter: repoUrl => {
       const { owner, repo } = parseRepoUrl(repoUrl, integrations);
       return `${owner}/${repo}`;
     },

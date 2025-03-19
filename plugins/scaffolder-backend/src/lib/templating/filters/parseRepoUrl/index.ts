@@ -46,5 +46,5 @@ export const createParseRepoUrl = (integrations: ScmIntegrations) =>
           .describe('`RepoSpec`'),
       ),
     examples,
-    filter: (url: string) => parseRepoUrl(url, integrations),
+    filter: url => parseRepoUrl(url, integrations),
   });

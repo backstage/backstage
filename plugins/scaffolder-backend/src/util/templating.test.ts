@@ -64,7 +64,7 @@ describe('templating utilities', () => {
               z.string().describe('separator').optional(),
             )
             .returns(z.string()),
-        filter: (input: string, times: number, separator?: string) =>
+        filter: (input, times, separator) =>
           Array(times)
             .fill(input)
             .join(separator ?? ''),
@@ -149,7 +149,7 @@ describe('templating utilities', () => {
       id: 'respond',
       schema: z =>
         z.function().args(z.string().describe('prompt')).returns(z.string()),
-      fn: (prompt: string) =>
+      fn: prompt =>
         prompt === 'knock knock' ? "who's there?" : "nobody's home",
     }),
   ];
