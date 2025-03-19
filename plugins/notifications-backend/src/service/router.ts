@@ -95,21 +95,42 @@ export async function createRouter(
 
   const getNotificationSettings = async (user: string) => {
     const { origins } = await store.getUserNotificationOrigins({ user });
+    const { topics } = await store.getUserNotificationTopics({ user });
     const settings = await store.getNotificationSettings({ user });
     const channels = getNotificationChannels();
 
     const response: NotificationSettings = {
-      channels: channels.map(channel => {
-        const channelSettings = settings.channels.find(c => c.id === channel);
-        if (channelSettings) {
-          return channelSettings;
-        }
+      channels: channels.map(channelId => {
         return {
-          id: channel,
-          origins: origins.map(origin => ({
-            id: origin,
-            enabled: true,
-          })),
+          id: channelId,
+          origins: origins.map(originId => {
+            const existingChannel = settings.channels.find(
+              c => c.id === channelId,
+            );
+            const existingOrigin = existingChannel?.origins.find(
+              o => o.id === originId,
+            );
+            const defaultEnabled = existingOrigin
+              ? existingOrigin.enabled
+              : true;
+            return {
+              id: originId,
+              enabled: defaultEnabled,
+              topics: topics
+                .filter(t => t.origin === originId)
+                .map(t => {
+                  const existingTopic =
+                    existingOrigin?.topics &&
+                    existingOrigin.topics.find(topic => topic.id === t.topic);
+                  return {
+                    id: t.topic,
+                    enabled: existingTopic
+                      ? existingTopic.enabled
+                      : defaultEnabled,
+                  };
+                }),
+            };
+          }),
         };
       }),
     };
@@ -120,9 +141,15 @@ export async function createRouter(
     user: string;
     channel: string;
     origin: string;
+    topic: string | null;
   }) => {
     const settings = await getNotificationSettings(opts.user);
-    return isNotificationsEnabledFor(settings, opts.channel, opts.origin);
+    return isNotificationsEnabledFor(
+      settings,
+      opts.channel,
+      opts.origin,
+      opts.topic,
+    );
   };
 
   const filterProcessors = async (
@@ -139,6 +166,7 @@ export async function createRouter(
           user,
           origin,
           channel: processor.getName(),
+          topic: payload.topic ?? null,
         });
         if (!enabled) {
           continue;
@@ -496,6 +524,7 @@ export async function createRouter(
         user,
         channel: WEB_NOTIFICATION_CHANNEL,
         origin: userNotification.origin,
+        topic: userNotification.payload.topic ?? null,
       });
 
       let ret = notification;
