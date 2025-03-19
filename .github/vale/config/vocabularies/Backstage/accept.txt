@@ -168,6 +168,7 @@ globbing
 Gource
 Grafana
 graphql
+graphiql
 GraphQL
 graphviz
 Hackathons
