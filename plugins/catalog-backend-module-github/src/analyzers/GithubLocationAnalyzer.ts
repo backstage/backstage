@@ -21,10 +21,6 @@ import {
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
-// import { Octokit } from '@octokit/core';
-// import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods';
-// import { retry } from '@octokit/plugin-retry';
-// import { throttling } from '@octokit/plugin-throttling';
 import { isEmpty, trimEnd } from 'lodash';
 import parseGitUrl from 'git-url-parse';
 import {
@@ -101,28 +97,6 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
       throw new Error('Make sure you have a GitHub integration configured');
     }
 
-    // const { token: githubToken } =
-    //   await this.githubCredentialsProvider.getCredentials({
-    //     url,
-    //   });
-
-    // const ThrottledOctokit = Octokit.plugin(
-    //   restEndpointMethods,
-    //   retry,
-    //   throttling,
-    // );
-    // const octokitClient = new ThrottledOctokit({
-    //   auth: githubToken,
-    //   baseUrl: integration.config.apiBaseUrl,
-    //   throttle: {
-    //     onRateLimit: (_retryAfter, _rateLimitData, _, retryCount) => {
-    //       return retryCount < 2;
-    //     },
-    //     onSecondaryRateLimit: (_retryAfter, _rateLimitData, _, retryCount) => {
-    //       return retryCount < 2;
-    //     },
-    //   },
-    // });
     const { token } = await this.githubCredentialsProvider.getCredentials({
       url,
     });
