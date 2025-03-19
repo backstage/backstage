@@ -22,7 +22,12 @@ import {
 } from '@backstage/backend-plugin-api';
 import Keyv from 'keyv';
 import { DefaultCacheClient } from './CacheClient';
-import { CacheManagerOptions, ttlToMilliseconds } from './types';
+import {
+  CacheManagerOptions,
+  ttlToMilliseconds,
+  CacheStoreOptions,
+  RedisCacheStoreOptions,
+} from './types';
 import { durationToMilliseconds } from '@backstage/types';
 import { readDurationFromConfig } from '@backstage/config';
 
@@ -51,6 +56,7 @@ export class CacheManager {
   private readonly connection: string;
   private readonly errorHandler: CacheManagerOptions['onError'];
   private readonly defaultTtl?: number;
+  private readonly storeOptions?: CacheStoreOptions;
 
   /**
    * Creates a new {@link CacheManager} instance by reading from the `backend`
@@ -89,13 +95,87 @@ export class CacheManager {
       }
     }
 
+    // Read store-specific options from config
+    const storeOptions = CacheManager.parseStoreOptions(store, config, logger);
+
     return new CacheManager(
       store,
       connectionString,
       options.onError,
       logger,
       defaultTtl,
+      storeOptions,
     );
+  }
+
+  /**
+   * Parse store-specific options from configuration.
+   *
+   * @param store - The cache store type ('redis', 'memcache', or 'memory')
+   * @param config - The configuration service
+   * @param logger - Optional logger for warnings
+   * @returns The parsed store options
+   */
+  private static parseStoreOptions(
+    store: string,
+    config: RootConfigService,
+    logger?: LoggerService,
+  ): CacheStoreOptions | undefined {
+    const storeConfigPath = `backend.cache.${store}`;
+
+    if (store === 'redis' && config.has(storeConfigPath)) {
+      return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Parse Redis-specific options from configuration.
+   */
+  private static parseRedisOptions(
+    storeConfigPath: string,
+    config: RootConfigService,
+    logger?: LoggerService,
+  ): RedisCacheStoreOptions {
+    const redisOptions: RedisCacheStoreOptions = {};
+    const redisConfig = config.getConfig(storeConfigPath);
+
+    redisOptions.client = {
+      namespace: redisConfig.getOptionalString('client.namespace'),
+      keyPrefixSeparator:
+        redisConfig.getOptionalString('client.keyPrefixSeparator') || ':',
+      clearBatchSize: redisConfig.getOptionalNumber('client.clearBatchSize'),
+      useUnlink: redisConfig.getOptionalBoolean('client.useUnlink'),
+      noNamespaceAffectsAll: redisConfig.getOptionalBoolean(
+        'client.noNamespaceAffectsAll',
+      ),
+    };
+
+    if (redisConfig.has('cluster')) {
+      const clusterConfig = redisConfig.getConfig('cluster');
+
+      if (!clusterConfig.has('rootNodes')) {
+        logger?.warn(
+          `Redis cluster config has no 'rootNodes' key, defaulting to non-clustered mode`,
+        );
+        return redisOptions;
+      }
+
+      redisOptions.cluster = {
+        rootNodes: clusterConfig.get('rootNodes'),
+        defaults: clusterConfig.getOptional('defaults'),
+        minimizeConnections: clusterConfig.getOptionalBoolean(
+          'minimizeConnections',
+        ),
+        useReplicas: clusterConfig.getOptionalBoolean('useReplicas'),
+        maxCommandRedirections: clusterConfig.getOptionalNumber(
+          'maxCommandRedirections',
+        ),
+      };
+    }
+
+    return redisOptions;
   }
 
   /** @internal */
@@ -105,6 +185,7 @@ export class CacheManager {
     errorHandler: CacheManagerOptions['onError'],
     logger?: LoggerService,
     defaultTtl?: number,
+    storeOptions?: CacheStoreOptions,
   ) {
     if (!this.storeFactories.hasOwnProperty(store)) {
       throw new Error(`Unknown cache store: ${store}`);
@@ -114,6 +195,7 @@ export class CacheManager {
     this.connection = connectionString;
     this.errorHandler = errorHandler;
     this.defaultTtl = defaultTtl;
+    this.storeOptions = storeOptions;
   }
 
   /**
@@ -140,13 +222,23 @@ export class CacheManager {
 
   private createRedisStoreFactory(): StoreFactory {
     const KeyvRedis = require('@keyv/redis').default;
+    const { createCluster } = require('@keyv/redis');
     const stores: Record<string, typeof KeyvRedis> = {};
 
     return (pluginId, defaultTtl) => {
       if (!stores[pluginId]) {
-        stores[pluginId] = new KeyvRedis(this.connection, {
+        const redisOptions = this.storeOptions?.client || {
           keyPrefixSeparator: ':',
-        });
+        };
+        if (this.storeOptions?.cluster) {
+          // Create a Redis cluster
+          const cluster = createCluster(this.storeOptions?.cluster);
+          stores[pluginId] = new KeyvRedis(cluster, redisOptions);
+        } else {
+          // Create a regular Redis connection
+          stores[pluginId] = new KeyvRedis(this.connection, redisOptions);
+        }
+
         // Always provide an error handler to avoid stopping the process
         stores[pluginId].on('error', (err: Error) => {
           this.logger?.error('Failed to create redis cache client', err);
