@@ -49,18 +49,11 @@ export const entityContentGroupDataRef = createExtensionDataRef<string>().with({
   id: 'catalog.entity-content-group',
 });
 
-/**
- * @internal
- * Available entity card types
- */
-export const entityCardTypes = [
-  'summary',
-  'info',
-  'content',
-] as const satisfies readonly EntityCardType[];
+/** @alpha */
+export const defaultEntityCardTypes = ['summary', 'info', 'content'] as const;
 
 /** @alpha */
-export type EntityCardType = 'summary' | 'info' | 'content';
+export type EntityCardType = (typeof defaultEntityCardTypes)[number] | string;
 
 /** @internal */
 export const entityCardTypeDataRef =

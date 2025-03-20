@@ -174,12 +174,19 @@ describe('EntityCardBlueprint', () => {
                 ],
               },
               "type": {
-                "enum": [
-                  "summary",
-                  "info",
-                  "content",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "summary",
+                      "info",
+                      "content",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "type": "string",
+                  },
                 ],
-                "type": "string",
               },
             },
             "type": "object",
