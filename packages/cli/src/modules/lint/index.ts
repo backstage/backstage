@@ -62,6 +62,10 @@ export function registerRepoCommands(command: Command) {
       '--successCacheDir <path>',
       'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
     )
+    .option(
+      '--max-warnings <number>',
+      'Fail if more than this number of warnings. -1 allows warnings. (default: 0)',
+    )
     .option('--fix', 'Attempt to automatically fix violations')
     .action(lazy(() => import('./commands/repo/lint'), 'command'));
 }
