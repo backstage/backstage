@@ -24,6 +24,7 @@ import { LegacyTokenHandler } from './legacy';
 import { StaticTokenHandler } from './static';
 import { JWKSHandler } from './jwks';
 import { TokenHandler } from './types';
+import { Config } from '@backstage/config';
 
 const NEW_CONFIG_KEY = 'backend.auth.externalAccess';
 const OLD_CONFIG_KEY = 'backend.auth.keys';
@@ -40,17 +41,27 @@ export class ExternalTokenHandler {
     ownPluginId: string;
     config: RootConfigService;
     logger: LoggerService;
+    externalTokenHandlers?: {
+      [key: string]: (config: Config) => TokenHandler;
+    }[];
   }): ExternalTokenHandler {
-    const { ownPluginId, config, logger } = options;
+    const {
+      ownPluginId,
+      config,
+      logger,
+      externalTokenHandlers: customHandlers,
+    } = options;
 
     const staticHandler = new StaticTokenHandler();
     const legacyHandler = new LegacyTokenHandler();
     const jwksHandler = new JWKSHandler();
-    const handlers: Record<string, TokenHandler> = {
-      static: staticHandler,
-      legacy: legacyHandler,
-      jwks: jwksHandler,
+    const handlers: Record<string, (config: Config) => TokenHandler> = {
+      static: (handlerConfig: Config) => staticHandler.add(handlerConfig),
+      legacy: (handlerConfig: Config) => legacyHandler.add(handlerConfig),
+      jwks: (handlerConfig: Config) => jwksHandler.add(handlerConfig),
+      ...Object.assign({}, ...(customHandlers ?? [])),
     };
+    const configuredHandlers = [];
 
     // Load the new-style handlers
     const handlerConfigs = config.getOptionalConfigArray(NEW_CONFIG_KEY) ?? [];
@@ -65,7 +76,8 @@ export class ExternalTokenHandler {
           `Unknown type '${type}' in ${NEW_CONFIG_KEY}, expected one of ${valid}`,
         );
       }
-      handler.add(handlerConfig);
+      configuredHandlers.push(handler(handlerConfig));
+      // handler.add(handlerConfig);
     }
 
     // Load the old keys too
@@ -80,7 +92,7 @@ export class ExternalTokenHandler {
       legacyHandler.addOld(handlerConfig);
     }
 
-    return new ExternalTokenHandler(ownPluginId, Object.values(handlers));
+    return new ExternalTokenHandler(ownPluginId, configuredHandlers);
   }
 
   constructor(

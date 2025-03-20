@@ -4,12 +4,32 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public
 export const authServiceFactory: ServiceFactory<
   AuthService,
+  'plugin',
+  'singleton'
+>;
+
+// @public
+export interface ExternalTokenHandler {
+  // (undocumented)
+  verifyToken(token: string): Promise<
+    | {
+        subject: string;
+        accessRestrictions?: BackstagePrincipalAccessRestrictions;
+      }
+    | undefined
+  >;
+}
+
+// @public
+export const externalTokenHandlerDecoratorServiceRef: ServiceRef<
+  (defaultImplementation: ExternalTokenHandler) => ExternalTokenHandler,
   'plugin',
   'singleton'
 >;
