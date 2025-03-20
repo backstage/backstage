@@ -22,41 +22,35 @@ The following steps assume that you have
 [created a Backstage app](./index.md) and want to add an existing plugin
 to it.
 
-We are using the
-[CircleCI](https://github.com/CircleCI-Public/backstage-plugin/tree/main/plugins/circleci)
-plugin in this example, which is designed to show CI/CD pipeline information attached
-to an entity in the software catalog.
+You can find many wonderful plugins out there for Backstage including the [Community Plugins Repository](https://github.com/backstage/community-plugins) and the [Backstage Plugin Directory](https://backstage.io/plugins).
+
+Adding plugins to your Backstage app is generally a simple process, and ideally each plugin will come with its own documentation on how to install and configure it. The general steps usually include:
 
 1. Add the plugin's npm package to the repo:
 
    ```bash title="From your Backstage root directory"
-   yarn --cwd packages/app add @circleci/backstage-plugin
+   yarn --cwd packages/app add @<scope>/<plugin-name>
    ```
 
    Note the plugin is added to the `app` package, rather than the root
    `package.json`. Backstage Apps are set up as monorepos with
-   [Yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/). Since
-   CircleCI is a frontend UI plugin, it goes in `app` rather than `backend`.
+   [Yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/). Frontend UI Plugins are generally added to the `app` folder, while Backend Plugins are added to the `backend` folder. In the example above, the plugin is added to the `app` package assuming it is a frontend plugin.
 
-2. Add the `EntityCircleCIContent` extension to the entity pages in the app:
+2. Lets assume the frontend plugin we added contains a react component called `AwesomeCardContent` we can add to the `EntityPage` of our app, we could then import and use it as such:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-start */
-   import {
-     EntityCircleCIContent,
-     isCircleCIAvailable,
-   } from '@circleci/backstage-plugin';
+   import { AwesomeCardContent } from '@<scope>/<plugin-name>';
    /* highlight-add-end */
 
-   const cicdContent = (
-     <EntitySwitch>
-       {/* ... */}
-       {/* highlight-add-next-line */}
-       <EntitySwitch.Case if={isCircleCIAvailable}>
-         <EntityCircleCIContent />
-       </EntitySwitch.Case>
-       ;{/* highlight-add-end */}
-     </EntitySwitch>
+   const overviewContent = (
+     <Grid container spacing={3}>
+       /* highlight-add-start */
+       <Grid item md={6}>
+         <AwesomeCardContent />
+       </Grid>
+       /* highlight-add-end */
+     </Grid>
    );
    ```
 
@@ -68,16 +62,17 @@ to an entity in the software catalog.
 
 3. _[Optional]_ Add a proxy config:
 
-   Plugins that collect data off of external services may require the use of a proxy service.
-   This plugin accesses the CircleCI REST API, and thus requires a proxy definition.
+   Plugins that collect data off of external services may require the use of a proxy service, to support this you can add the following settings to your `app-config.yaml` file:
 
    ```yaml title="app-config.yaml"
    proxy:
-     '/circleci/api':
-       target: https://circleci.com/api/v1.1
+     '/<proxy-path>/api':
+       target: https://<your-target-instance>.com
        headers:
-         Circle-Token: ${CIRCLECI_AUTH_TOKEN}
+         Authorization: ${YOUR_AUTH_TOKEN}
    ```
+
+If you need more detailed instructions on how to use and setup the Backstage Proxy, you can find them [here](../plugins/proxying.md).
 
 ### Adding a plugin page to the Sidebar
 
