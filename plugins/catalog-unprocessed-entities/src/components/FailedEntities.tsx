@@ -34,7 +34,7 @@ import { EntityDialog } from './EntityDialog';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
 import useAsync from 'react-use/esm/useAsync';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { DeleteEntityDialog } from './DeleteEntityDialog';
+import { DeleteEntityConfirmationDialog } from './DeleteEntityConfirmationDialog';
 
 const useStyles = makeStyles((theme: Theme) => ({
   errorBox: {
@@ -274,7 +274,7 @@ export const FailedEntities = () => {
           );
         }}
       />
-      <DeleteEntityDialog
+      <DeleteEntityConfirmationDialog
         open={confirmationDialogOpen}
         onClose={() => setConfirmationDialogOpen(false)}
         onConfirm={cleanUpAfterRemoval}

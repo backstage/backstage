@@ -21,13 +21,15 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import React, { useState } from 'react';
 import { assertError } from '@backstage/errors';
 
-interface DeleteEntityDialogProps {
+interface DeleteEntityConfirmationProps {
   open: boolean;
   onClose: () => any;
   onConfirm: () => any;
 }
 
-export function DeleteEntityDialog(props: DeleteEntityDialogProps) {
+export function DeleteEntityConfirmationDialog(
+  props: DeleteEntityConfirmationProps,
+) {
   const { open, onClose, onConfirm } = props;
   const [busy, setBusy] = useState(false);
   const onDelete = async () => {
