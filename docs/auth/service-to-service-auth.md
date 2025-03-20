@@ -414,8 +414,12 @@ Each entry has one or more of the following fields:
 
 ## Adding custom or logic for validation and issuing of tokens
 
-The `pluginTokenHandlerDecoratorServiceRef` can be used to decorate the existing token handler without having to re-implement the entire `AuthService` implementation.
+The `pluginTokenHandlerDecoratorServiceRef` and `externalTokenHandlerDecoratorServiceRef` can be used to decorate the existing token handler without having to re-implement the entire `AuthService` implementation.
 This is particularly useful when you want to add additional logic to the handler, such as logging or metrics or custom token validation.
+
+### PluginTokenHandler decoration
+
+The `pluginTokenHandlerDecoratorServiceRef` can be used to decorate the default PluginTokenHandler used for create and verify tokens from plugins.
 
 The `PluginTokenHandler` interface has two methods:
 
@@ -435,6 +439,31 @@ const decoratedPluginTokenHandler = createServiceFactory({
   deps: {},
   async factory() {
     return (defaultImplementation: PluginTokenHandler) =>
+      new CustomTokenHandler(defaultImplementation);
+  },
+});
+```
+
+### ExternalTokenHandler decoration
+
+The `externalTokenHandlerDecoratorServiceRef` can be used to decorate the default ExternalTokenHandler used for verify tokens from external callers.
+
+The `ExternalTokenHandler` interface has one methods:
+
+- `verifyToken`: This method is used to verify a token. It takes in the token as an argument and returns a promise that resolves to an object containing the subject of the token and an optional limited user token.
+
+```ts
+import {
+  ExternalTokenHandler,
+  externalTokenHandlerDecoratorServiceRef,
+} from '@backstage/backend-defaults/auth';
+import { createServiceFactory } from '@backstage/backend-plugin-api';
+
+const decoratedPluginTokenHandler = createServiceFactory({
+  service: externalTokenHandlerDecoratorServiceRef,
+  deps: {},
+  async factory() {
+    return (defaultImplementation: ExternalTokenHandler) =>
       new CustomTokenHandler(defaultImplementation);
   },
 });
