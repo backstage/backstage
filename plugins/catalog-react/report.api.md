@@ -11,6 +11,7 @@ import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
+import { EntityOrderQuery } from '@backstage/catalog-client';
 import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
@@ -196,6 +197,7 @@ export type DefaultEntityFilters = {
   orphan?: EntityOrphanFilter;
   error?: EntityErrorFilter;
   namespace?: EntityNamespaceFilter;
+  order?: EntityOrderFilter;
 };
 
 // @public
@@ -405,6 +407,17 @@ export const EntityNamespacePicker: (
 export interface EntityNamespacePickerProps {
   // (undocumented)
   initiallySelectedNamespaces?: string[];
+}
+
+// @public
+export class EntityOrderFilter implements EntityFilter {
+  constructor(value: EntityOrderQuery);
+  // (undocumented)
+  filterEntity(_: Entity): boolean;
+  // (undocumented)
+  getOrderFilters(): EntityOrderQuery;
+  // (undocumented)
+  readonly value: EntityOrderQuery;
 }
 
 // @public
