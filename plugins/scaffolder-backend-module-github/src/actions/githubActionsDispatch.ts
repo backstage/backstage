@@ -115,15 +115,20 @@ export function createGithubActionsDispatchAction(options: {
         }),
       );
 
-      await client.rest.actions.createWorkflowDispatch({
-        owner,
-        repo,
-        workflow_id: workflowId,
-        ref: branchOrTagName,
-        inputs: workflowInputs,
-      });
+      await ctx.checkpoint({
+        key: `create.workflow.dispatch.${owner}.${repo}.${workflowId}`,
+        fn: async () => {
+          await client.rest.actions.createWorkflowDispatch({
+            owner,
+            repo,
+            workflow_id: workflowId,
+            ref: branchOrTagName,
+            inputs: workflowInputs,
+          });
 
-      ctx.logger.info(`Workflow ${workflowId} dispatched successfully`);
+          ctx.logger.info(`Workflow ${workflowId} dispatched successfully`);
+        },
+      });
     },
   });
 }
