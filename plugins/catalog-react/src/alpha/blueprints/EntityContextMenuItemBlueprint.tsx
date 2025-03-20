@@ -16,68 +16,77 @@
 
 import React from 'react';
 import {
-  DialogApiDialog,
-  ExtensionBoundary,
-  coreExtensionData,
   createExtensionBlueprint,
-  dialogApiRef,
+  ApiHolder,
+  createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
 /** @alpha */
-export type FactoryLoaderParams = {
-  loader: () => Promise<JSX.Element>;
-};
-
-/** @alpha */
 export type FactoryHrefParams =
   | {
-      title: string;
-      icon: JSX.Element;
+      useTitle: () => string;
+      icon: React.JSX.Element;
       useHref: () => string;
     }
   | {
-      title: string;
-      icon: JSX.Element;
+      useTitle: () => string;
+      icon: React.JSX.Element;
       href: string;
     };
 
 /** @alpha */
 export type FactoryDialogParams = {
-  dialogLoader: () => Promise<
-    ({ dialog }: { dialog: DialogApiDialog }) => JSX.Element
-  >;
-  title: string;
-  icon: JSX.Element;
+  useOnClick: ({
+    apis,
+  }: {
+    apis: ApiHolder;
+  }) => React.MouseEventHandler<HTMLLIElement>;
+  useTitle: () => string;
+  icon: React.JSX.Element;
 };
 
 /** @alpha */
 export type EntityContextMenuItemParams =
-  | FactoryLoaderParams
   | FactoryHrefParams
   | FactoryDialogParams;
+
+export type ContextMenuItemProps = {
+  onClose: () => void;
+};
+
+export type ContextMenuItemComponent = (
+  props: ContextMenuItemProps,
+) => React.JSX.Element;
+
+export const contextMenuItemComponentDataRef =
+  createExtensionDataRef<ContextMenuItemComponent>().with({
+    id: 'catalog.contextMenuItemComponent',
+  });
 
 /** @alpha */
 export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
   kind: 'entity-context-menu-item',
   attachTo: { id: 'page:catalog/entity', input: 'contextMenuItems' },
-  output: [coreExtensionData.reactElement],
-  *factory(params: EntityContextMenuItemParams, { node, apis }) {
-    const loaderFactory = () => {
-      if ('loader' in params) {
-        return params.loader;
-      }
+  output: [contextMenuItemComponentDataRef],
+  *factory(params: EntityContextMenuItemParams, { apis }) {
+    const loaderFactory = (): ContextMenuItemComponent => {
+      if ('useOnClick' in params) {
+        return ({ onClose }) => {
+          const onClick = params.useOnClick({ apis });
+          const title = params.useTitle();
 
-      if ('dialogLoader' in params) {
-        const dialogApi = apis.get(dialogApiRef);
-        return async () => {
-          const Dialog = await params.dialogLoader();
           return (
-            <MenuItem onClick={() => dialogApi?.show(Dialog)}>
+            <MenuItem
+              onClick={e => {
+                onClick(e);
+                onClose();
+              }}
+            >
               <ListItemIcon>{params.icon}</ListItemIcon>
-              <ListItemText primary={params.title} />
+              <ListItemText primary={title} />
             </MenuItem>
           );
         };
@@ -85,20 +94,19 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
 
       const useHref = 'useHref' in params ? params.useHref : () => params.href;
 
-      return async () => {
+      return () => {
         const href = useHref();
+        const title = params.useTitle();
 
         return (
           <MenuItem component="a" href={href}>
             <ListItemIcon>{params.icon}</ListItemIcon>
-            <ListItemText primary={params.title} />
+            <ListItemText primary={title} />
           </MenuItem>
         );
       };
     };
 
-    yield coreExtensionData.reactElement(
-      ExtensionBoundary.lazy(node, loaderFactory()),
-    );
+    yield contextMenuItemComponentDataRef(loaderFactory());
   },
 });
