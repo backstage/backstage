@@ -1,8 +1,7 @@
 {
   "name": "@backstage/plugin-notifications-react",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "license": "Apache-2.0",
-  "private": true,
   "description": "Web library for the notifications plugin",
   "main": "src/index.ts",
   "types": "src/index.ts",

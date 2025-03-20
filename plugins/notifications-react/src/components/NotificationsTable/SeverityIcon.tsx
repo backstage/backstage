@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.status.running,
   },
 }));
-
+/** @public */
 export const SeverityIcon = ({
   severity,
 }: {

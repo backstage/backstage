@@ -143,6 +143,13 @@ export type NotificationsTableProps = Pick<
 };
 
 // @public (undocumented)
+export const SeverityIcon: ({
+  severity,
+}: {
+  severity?: NotificationSeverity;
+}) => React_2.JSX.Element;
+
+// @public (undocumented)
 export type SortBy = Required<
   Pick<GetNotificationsOptions, 'sort' | 'sortOrder'>
 >;

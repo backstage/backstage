@@ -41,7 +41,7 @@ import {
   SnackbarProvider,
   VariantType,
 } from 'notistack';
-import { SeverityIcon } from '../NotificationsTable/SeverityIcon';
+import { SeverityIcon } from '@backstage/plugin-notifications-react';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
 import IconButton from '@material-ui/core/IconButton';

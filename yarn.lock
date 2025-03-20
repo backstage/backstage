@@ -7189,7 +7189,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-notifications-react@workspace:plugins/notifications-react":
+"@backstage/plugin-notifications-react@workspace:^, @backstage/plugin-notifications-react@workspace:plugins/notifications-react":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-notifications-react@workspace:plugins/notifications-react"
   dependencies:
@@ -7224,6 +7224,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/plugin-notifications-common": "workspace:^"
+    "@backstage/plugin-notifications-react": "workspace:^"
     "@backstage/plugin-signals": "workspace:^"
     "@backstage/plugin-signals-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"

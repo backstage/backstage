@@ -57,6 +57,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-notifications-common": "workspace:^",
+    "@backstage/plugin-notifications-react": "workspace:^",
     "@backstage/plugin-signals-react": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
