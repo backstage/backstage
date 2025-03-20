@@ -21,6 +21,8 @@ import {
 } from '@backstage/backend-test-utils';
 import {
   authServiceFactory,
+  externalTokenHandlersServiceRef,
+  // externalTokenHandlersServiceRef,
   pluginTokenHandlerDecoratorServiceRef,
 } from './authServiceFactory';
 import { base64url, decodeJwt } from 'jose';
@@ -30,6 +32,11 @@ import { setupServer } from 'msw/node';
 import { toInternalBackstageCredentials } from './helpers';
 import { PluginTokenHandler } from './plugin/PluginTokenHandler';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
+import { AccessRestriptionsMap, TokenHandler } from './external/types';
+import { Config } from '@backstage/config';
+import { x } from 'tar';
+// import { ExternalTokenHandler } from './external/ExternalTokenHandler';
+// import { TokenHandler } from './external/types';
 
 const server = setupServer();
 
@@ -56,6 +63,13 @@ const mockDeps = [
               options: {
                 token: 'unlimited-static-token',
                 subject: 'unlimited-static-subject',
+              },
+            },
+            {
+              type: 'custom',
+              options: {
+                [`custom-config`]: 'custom-config',
+                foo: 'bar',
               },
             },
           ],
@@ -450,8 +464,55 @@ describe('authServiceFactory', () => {
         dependencies: [...mockDeps, customPluginTokenHandler],
       });
       const searchAuth = await tester.getSubject('search');
-      searchAuth.authenticate('unlimited-static-token');
+      await searchAuth.authenticate('unlimited-static-token');
       expect(customLogic).toHaveBeenCalledWith('unlimited-static-token');
+    });
+  });
+  describe('add custom  ExternalTokenHandler', () => {
+    it('should allow custom logic to be injected into the plugin token handler', async () => {
+      const customLogic = jest.fn();
+      const customAddEntry = jest.fn();
+      const customPluginTokenHandler = createServiceFactory({
+        service: externalTokenHandlersServiceRef,
+        deps: {},
+        async factory() {
+          return {
+            custom: new (class CustomHandler implements TokenHandler {
+              add(options: Config): void {
+                customAddEntry(options);
+              }
+              async verifyToken(token: string): Promise<
+                | {
+                    subject: string;
+                    allAccessRestrictions?: AccessRestriptionsMap;
+                  }
+                | undefined
+              > {
+                customLogic(token);
+                return {
+                  subject: 'foo',
+                };
+              }
+            })(),
+          };
+        },
+      });
+      const tester = ServiceFactoryTester.from(authServiceFactory, {
+        dependencies: [...mockDeps, customPluginTokenHandler],
+      });
+      const searchAuth = await tester.getSubject('search');
+      await searchAuth.authenticate('custom-token');
+      expect(customAddEntry).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            options: expect.objectContaining({
+              [`custom-config`]: 'custom-config',
+              foo: 'bar',
+            }),
+          }),
+        }),
+      );
+      expect(customLogic).toHaveBeenCalledWith('custom-token');
     });
   });
 });
