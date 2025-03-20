@@ -41,6 +41,7 @@ export const defaultEntityContentGroups = {
   documentation: 'Documentation',
   development: 'Development',
   deployment: 'Deployment',
+  operation: 'Operation',
   observability: 'Observability',
 };
 

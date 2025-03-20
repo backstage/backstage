@@ -99,6 +99,7 @@ export const defaultEntityContentGroups: {
   documentation: string;
   development: string;
   deployment: string;
+  operation: string;
   observability: string;
 };
 
