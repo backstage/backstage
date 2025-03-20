@@ -567,20 +567,6 @@ describe('github', () => {
       const output = {
         repositories: [
           {
-            name: 'backstage',
-            url: 'https://github.com/backstage/backstage',
-            isArchived: false,
-            isFork: false,
-            repositoryTopics: {
-              nodes: [{ topic: { name: 'blah' } }],
-            },
-            defaultBranchRef: {
-              name: 'main',
-            },
-            catalogInfoFile: null,
-            visibility: 'public',
-          },
-          {
             name: 'demo',
             url: 'https://github.com/backstage/demo',
             isArchived: true,
