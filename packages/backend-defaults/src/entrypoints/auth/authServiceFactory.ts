@@ -20,13 +20,18 @@ import {
   createServiceRef,
 } from '@backstage/backend-plugin-api';
 import { DefaultAuthService } from './DefaultAuthService';
-import { ExternalTokenHandler } from './external/ExternalTokenHandler';
+import {
+  // DefaultExternalTokenHandler,
+  ExternalTokenHandler,
+} from './external/ExternalTokenHandler';
 import {
   DefaultPluginTokenHandler,
   PluginTokenHandler,
 } from './plugin/PluginTokenHandler';
 import { createPluginKeySource } from './plugin/keys/createPluginKeySource';
 import { UserTokenHandler } from './user/UserTokenHandler';
+import { TokenHandler } from './external/types';
+import { Config } from '@backstage/config';
 
 /**
  * @public
@@ -44,6 +49,22 @@ export const pluginTokenHandlerDecoratorServiceRef = createServiceRef<
         return impl => impl;
       },
     }),
+});
+/**
+ * @public
+ * This service is used to decorate the default plugin token handler with custom logic.
+ */
+export const externalTokenHandlersServiceRef = createServiceRef<{
+  [configKey: string]: (config: Config) => TokenHandler;
+}>({
+  id: 'core.auth.externalTokenHandlers',
+  multiton: true,
+  // defaultFactory: async service =>
+  //   createServiceFactory({
+  //     service,
+  //     deps: {},
+  //     factory: async () => {},
+  //   }),
 });
 
 /**
@@ -64,6 +85,7 @@ export const authServiceFactory = createServiceFactory({
     plugin: coreServices.pluginMetadata,
     database: coreServices.database,
     pluginTokenHandlerDecorator: pluginTokenHandlerDecoratorServiceRef,
+    externalTokenHandlers: externalTokenHandlersServiceRef,
   },
   async factory({
     config,
@@ -72,6 +94,7 @@ export const authServiceFactory = createServiceFactory({
     logger,
     database,
     pluginTokenHandlerDecorator,
+    externalTokenHandlers,
   }) {
     const disableDefaultAuthPolicy =
       config.getOptionalBoolean(
@@ -106,6 +129,7 @@ export const authServiceFactory = createServiceFactory({
       ownPluginId: plugin.getId(),
       config,
       logger,
+      externalTokenHandlers,
     });
 
     return new DefaultAuthService(

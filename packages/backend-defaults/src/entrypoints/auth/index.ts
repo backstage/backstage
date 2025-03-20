@@ -17,6 +17,9 @@
 export {
   authServiceFactory,
   pluginTokenHandlerDecoratorServiceRef,
+  externalTokenHandlerDecoratorServiceRef,
 } from './authServiceFactory';
+
+export type { ExternalTokenHandler } from './external/ExternalTokenHandler';
 
 export type { PluginTokenHandler } from './plugin/PluginTokenHandler';
