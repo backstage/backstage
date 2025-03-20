@@ -27,7 +27,7 @@ events:
               groupId: your-group-id # (Required) The GroupId to be used by the topic consumers.
 ```
 
-For a complete list of all available fields that can be configured, refer to the [config.d.ts file](path/to/config.d.ts).
+For a complete list of all available fields that can be configured, refer to the [config.d.ts file](./config.d.ts).
 
 ### Optional SSL Configuration
 
