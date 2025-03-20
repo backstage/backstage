@@ -24,41 +24,39 @@ to it.
 
 You can find many wonderful plugins out there for Backstage including the [Community Plugins Repository](https://github.com/backstage/community-plugins) and the [Backstage Plugin Directory](https://backstage.io/plugins).
 
-Adding plugins to your Backstage app is generally a simple process, and ideally each plugin will come with its own documentation on how to install and configure it. The general steps usually include:
+Adding plugins to your Backstage app is generally a simple process, and ideally each plugin will come with its own documentation on how to install and configure it. In this example we will add the [Tech Radar plugin](https://github.com/backstage/community-plugins/tree/main/workspaces/tech-radar/plugins/tech-radar) to our Backstage app.
 
 1. Add the plugin's npm package to the repo:
 
    ```bash title="From your Backstage root directory"
-   yarn --cwd packages/app add @<scope>/<plugin-name>
+   yarn --cwd packages/app add @backstage-community/plugin-tech-radar
    ```
 
    Note the plugin is added to the `app` package, rather than the root
    `package.json`. Backstage Apps are set up as monorepos with
-   [Yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/). Frontend UI Plugins are generally added to the `app` folder, while Backend Plugins are added to the `backend` folder. In the example above, the plugin is added to the `app` package assuming it is a frontend plugin.
+   [Yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/). Frontend UI Plugins are generally added to the `app` folder, while Backend Plugins are added to the `backend` folder. In the example above, the plugin is added to the `app` package because we are adding the frontend plugin.
 
-2. Lets assume the frontend plugin we added contains a react component called `AwesomeCardContent` we can add to the `EntityPage` of our app, we could then import and use it as such:
+2. Now, modify your app routes to include the Router component exported from the tech radar, for example:
 
-   ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
+   ```tsx title="packages/app/src/App.tsx"
    /* highlight-add-start */
-   import { AwesomeCardContent } from '@<scope>/<plugin-name>';
+   import { TechRadarPage } from '@backstage-community/plugin-tech-radar';
    /* highlight-add-end */
 
-   const overviewContent = (
-     <Grid container spacing={3}>
+   const routes = (
+     <FlatRoutes>
        /* highlight-add-start */
-       <Grid item md={6}>
-         <AwesomeCardContent />
-       </Grid>
+       <Route path="/tech-radar" element={<TechRadarPage />} />
        /* highlight-add-end */
-     </Grid>
+     </FlatRoutes>
    );
    ```
 
-   This is just one example, but each Backstage instance may integrate content or
+   This is just one example, and if you'd like to continue adding the Tech Radar plugin you can do so by going [here](https://github.com/backstage/community-plugins/tree/main/workspaces/tech-radar/plugins/tech-radar), keep in mind each Backstage instance may integrate content or
    cards to suit their needs on different pages, tabs, etc. In addition, while some
-   plugins such as this example are designed to annotate or support specific software
-   catalog entities, others may be intended to be used in a stand-alone fashion and
-   would be added outside the `EntityPage`, such as being added to the main navigation.
+   plugins such as this example are designed to be used in a stand-alone fashion,
+   others may be intended to annotate or support specific software catalog entities
+   and would be added elsewhere in the app.
 
 3. _[Optional]_ Add a proxy config:
 
