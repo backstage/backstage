@@ -21,6 +21,18 @@ integrations:
 
 :::note Note
 
+When using the [`backstage.io/source-location`](../../features/software-catalog/well-known-annotations.md#backstageiosource-location) annotation to link to a GitHub repository, you must include `/blob/main/` in the URL path. For example:
+
+```yaml
+backstage.io/source-location: url:https://github.com/org/repo/blob/main/
+```
+
+Without this path segment, the README section of the component page will fail to load.
+
+:::
+
+:::note Note
+
 A public GitLab provider is added automatically at startup for convenience, so you only need to list it if you want to supply a [token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html).
 
 :::
