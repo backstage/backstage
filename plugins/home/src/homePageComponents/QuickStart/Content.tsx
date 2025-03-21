@@ -30,7 +30,7 @@ export type QuickStartCardProps = {
   /** The modal link title */
   modalTitle?: string | React.JSX.Element;
   /** The link to docs title */
-  docsLinkTitle?: string;
+  docsLinkTitle?: string | React.JSX.Element;
   /** The link to docs */
   docsLink?: string;
   /** The video to play on the card */

@@ -21,11 +21,21 @@ import Box from '@material-ui/core/Box';
 
 import { useStyles } from './styles';
 
+/**
+ * Props customizing the <ContentModal/> component.
+ *
+ * @public
+ */
 export type ContentModalProps = {
   modalContent: React.JSX.Element;
   linkContent: string | React.JSX.Element;
 };
 
+/**
+ * A component to expand given content into a full screen modal.
+ *
+ * @public
+ */
 export const ContentModal = (props: ContentModalProps) => {
   const { modalContent, linkContent } = props;
   const styles = useStyles();
