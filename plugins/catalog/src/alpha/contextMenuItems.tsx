@@ -17,10 +17,12 @@
 import React from 'react';
 import { EntityContextMenuItemBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import FileCopyTwoToneIcon from '@material-ui/icons/FileCopyTwoTone';
+import BugReportIcon from '@material-ui/icons/BugReport';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { catalogTranslationRef } from './translation';
+import { useSearchParams } from 'react-router-dom';
 
 export const copyEntityUrlContextMenuItem = EntityContextMenuItemBlueprint.make(
   {
@@ -54,4 +56,24 @@ export const copyEntityUrlContextMenuItem = EntityContextMenuItemBlueprint.make(
   },
 );
 
-export default [copyEntityUrlContextMenuItem];
+export const inspectEntityContextMenuItem = EntityContextMenuItemBlueprint.make(
+  {
+    name: 'inspect-entity',
+    params: {
+      icon: <BugReportIcon fontSize="small" />,
+      useTitle: () => {
+        const { t } = useTranslationRef(catalogTranslationRef);
+        return t('entityContextMenu.inspectMenuTitle');
+      },
+      useOnClick: () => {
+        const [_, setSearchParams] = useSearchParams();
+
+        return () => {
+          setSearchParams('inspect');
+        };
+      },
+    },
+  },
+);
+
+export default [inspectEntityContextMenuItem, copyEntityUrlContextMenuItem];
