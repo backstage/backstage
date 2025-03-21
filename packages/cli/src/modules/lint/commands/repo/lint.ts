@@ -111,7 +111,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       fix: Boolean(opts.fix),
       format: opts.format as string | undefined,
       shouldCache: Boolean(cacheContext),
-      maxWarnings: Number(opts.maxWarnings) || 0,
+      maxWarnings: opts.maxWarnings ?? -1,
       successCache: cacheContext?.entries,
       rootDir: paths.targetRoot,
     },
