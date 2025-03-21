@@ -135,6 +135,10 @@ export type NotificationSettings = {
     origins: {
       id: string;
       enabled: boolean;
+      topics?: {
+        id: string;
+        enabled: boolean;
+      }[];
     }[];
   }[];
 };

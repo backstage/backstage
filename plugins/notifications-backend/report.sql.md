@@ -68,9 +68,10 @@
 | `channel` | `character varying` | false    | 255        | -       |
 | `enabled` | `boolean`           | false    | -          | `true`  |
 | `origin`  | `character varying` | false    | 255        | -       |
+| `topic`   | `character varying` | true     | 255        | -       |
 | `user`    | `character varying` | false    | 255        | -       |
 
 ### Indices
 
-- `user_settings_unique_idx` (`user`, `channel`, `origin`) unique
+- `user_settings_unique_idx` (`user`, `channel`, `origin`, `topic`) unique
 - `user_settings_user_idx` (`user`)
