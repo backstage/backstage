@@ -101,7 +101,7 @@ export class DefaultCatalogProcessingEngine {
     this.pollingIntervalMs = options.pollingIntervalMs ?? 1_000;
     this.orphanCleanupIntervalMs = options.orphanCleanupIntervalMs ?? 30_000;
     this.onProcessingError = options.onProcessingError;
-    this.tracker = options.tracker ?? progressTracker();
+    this.tracker = options.tracker ?? progressTracker(this.config);
     this.eventBroker = options.eventBroker;
 
     this.stopFunc = undefined;
@@ -389,7 +389,7 @@ export class DefaultCatalogProcessingEngine {
 }
 
 // Helps wrap the timing and logging behaviors
-function progressTracker() {
+function progressTracker(config: Config) {
   // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
   const promProcessedEntities = createCounterMetric({
     name: 'catalog_processed_entities_count',
@@ -411,6 +411,12 @@ function progressTracker() {
     help: 'The amount of delay between being scheduled for processing, and the start of actually being processed, DEPRECATED, use OpenTelemetry metrics instead',
   });
 
+  const metricsConfig = config.getOptionalConfig(
+    'catalog.opentelemetry.metrics',
+  );
+  const defaultBuckets = metricsConfig?.getOptional<number[]>(
+    'histogramBuckets.default',
+  );
   const meter = metrics.getMeter('default');
   const processedEntities = meter.createCounter(
     'catalog.processed.entities.count',
@@ -422,6 +428,12 @@ function progressTracker() {
     {
       description: 'Time spent executing the full processing flow',
       unit: 'seconds',
+      advice: {
+        explicitBucketBoundaries:
+          metricsConfig?.getOptional<number[]>(
+            'histogramBuckets.processingDuration',
+          ) || defaultBuckets,
+      },
     },
   );
 
@@ -430,6 +442,12 @@ function progressTracker() {
     {
       description: 'Time spent executing catalog processors',
       unit: 'seconds',
+      advice: {
+        explicitBucketBoundaries:
+          metricsConfig?.getOptional<number[]>(
+            'histogramBuckets.processorsDuration',
+          ) || defaultBuckets,
+      },
     },
   );
 
@@ -439,6 +457,12 @@ function progressTracker() {
       description:
         'The amount of delay between being scheduled for processing, and the start of actually being processed',
       unit: 'seconds',
+      advice: {
+        explicitBucketBoundaries:
+          metricsConfig?.getOptional<number[]>(
+            'histogramBuckets.processingQueueDelay',
+          ) || defaultBuckets,
+      },
     },
   );
 

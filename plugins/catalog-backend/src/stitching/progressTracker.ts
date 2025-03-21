@@ -20,10 +20,17 @@ import { Knex } from 'knex';
 import { DateTime } from 'luxon';
 import { DbRefreshStateRow } from '../database/tables';
 import { createCounterMetric } from '../util/metrics';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  RootConfigService,
+} from '@backstage/backend-plugin-api';
 
 // Helps wrap the timing and logging behaviors
-export function progressTracker(knex: Knex, logger: LoggerService) {
+export function progressTracker(
+  knex: Knex,
+  logger: LoggerService,
+  config?: RootConfigService,
+) {
   // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
   const promStitchedEntities = createCounterMetric({
     name: 'catalog_stitched_entities_count',
@@ -39,11 +46,23 @@ export function progressTracker(knex: Knex, logger: LoggerService) {
     },
   );
 
+  const metricsConfig = config?.getOptionalConfig(
+    'catalog.opentelemetry.metrics',
+  );
+  const defaultBuckets = metricsConfig?.getOptional<number[]>(
+    'histogramBuckets.default',
+  );
   const stitchingDuration = meter.createHistogram(
     'catalog.stitching.duration',
     {
       description: 'Time spent executing the full stitching flow',
       unit: 'seconds',
+      advice: {
+        explicitBucketBoundaries:
+          metricsConfig?.getOptional<number[]>(
+            'histogramBuckets.stitchingDuration',
+          ) || defaultBuckets,
+      },
     },
   );
 
