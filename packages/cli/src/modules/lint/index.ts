@@ -31,7 +31,7 @@ export function registerPackageCommands(command: Command) {
     .option('--fix', 'Attempt to automatically fix violations')
     .option(
       '--max-warnings <number>',
-      'Fail if more than this number of warnings. -1 allows warnings. (default: 0)',
+      'Fail if more than this number of warnings. -1 allows warnings. (default: -1)',
     )
     .description('Lint a package')
     .action(lazy(() => import('./commands/package/lint'), 'default'));
@@ -64,7 +64,7 @@ export function registerRepoCommands(command: Command) {
     )
     .option(
       '--max-warnings <number>',
-      'Fail if more than this number of warnings. -1 allows warnings. (default: 0)',
+      'Fail if more than this number of warnings. -1 allows warnings. (default: -1)',
     )
     .option('--fix', 'Attempt to automatically fix violations')
     .action(lazy(() => import('./commands/repo/lint'), 'command'));
