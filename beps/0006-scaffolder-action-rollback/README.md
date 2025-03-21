@@ -196,7 +196,7 @@ This enhancement allows us to identify checkpoints that failed to rollback for p
 
 ### WorkflowRunner Enhancements
 
-The NunjucksWorkflowRunner will be modified to track successfully completed checkpoints with their rollback functions. When a scaffolder task fails, the system will:
+The `NunjucksWorkflowRunner` will be modified to track successfully completed checkpoints with their rollback functions. When a scaffolder task fails, the system will:
 
 1. Query the database for completed checkpoints associated with the task
 2. Filter for checkpoints that have rollback functions defined
@@ -206,7 +206,7 @@ The implementation will ensure that:
 
 - Rollbacks are executed in proper LIFO order across all actions
 - Each rollback operation is properly logged and tracked
-- Failures in one rollback don't prevent other rollbacks from being attempted
+- **Failures in one rollback don't prevent other rollbacks from being attempted**
 
 ```typescript
 // Pseudo-code for rollback execution
@@ -222,6 +222,8 @@ for (const checkpoint of completedCheckpointsWithRollback.reverse()) {
 ```
 
 ### Enabling Rollback for Checkpoints
+
+!!! warning Work in progress
 
 Rollbacks will be disabled by default and need to be explicitly enabled. We will add a flag to enable rollback functionality at the task level, with the option to override this at the action level.
 
@@ -246,12 +248,14 @@ Additionally, we will add a system-level configuration option to enable/disable 
 
 ### Auditing and Permissions
 
-1. Implement the AuditorService for key operations related to checkpoints and rollbacks
-2. Add a rollback permission definition with permission checks in the NunjucksWorkflowRunner
+1. Implement the [AuditorService](https://backstage.io/docs/backend-system/core-services/auditor) for key operations related to checkpoints and rollbacks
+2. Add a rollback permission definition with permission checks in the `NunjucksWorkflowRunner`
 3. Add specific rules for rollback operations to `scaffolderActionRules`
 4. Log all rollback attempts and outcomes to provide a clear audit trail
 
 ### Securing Rollbacks
+
+!!! warning Is this still needed?
 
 For checkpoints that require additional security checks during rollback, we provide a secure rollback helper function. This function will ensure that the resources being rolled back match what was originally created by validating the checkpoint data.
 
