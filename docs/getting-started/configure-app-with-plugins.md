@@ -58,20 +58,6 @@ Adding plugins to your Backstage app is generally a simple process, and ideally 
    others may be intended to annotate or support specific software catalog entities
    and would be added elsewhere in the app.
 
-3. _[Optional]_ Add a proxy config:
-
-   Plugins that collect data off of external services may require the use of a proxy service, to support this you can add the following settings to your `app-config.yaml` file:
-
-   ```yaml title="app-config.yaml"
-   proxy:
-     '/<proxy-path>/api':
-       target: https://<your-target-instance>.com
-       headers:
-         Authorization: ${YOUR_AUTH_TOKEN}
-   ```
-
-If you need more detailed instructions on how to use and setup the Backstage Proxy, you can find them [here](../plugins/proxying.md).
-
 ### Adding a plugin page to the Sidebar
 
 In a standard Backstage app created with
