@@ -29,27 +29,6 @@ Backstage comes with a number of catalog concepts out of the box:
 
 We'll list different possibilities for extending this below.
 
-## Adding a New apiVersion of an Existing Kind
-
-Example intents:
-
-> "I want to evolve this core kind, tweaking the semantics a bit so I will bump
-> the apiVersion a step"
-
-> "This core kind is a decent fit but we want to evolve it at will so we'll move
-> it to our own company's apiVersion space and use that instead of
-> `backstage.io`."
-
-The `backstage.io` apiVersion space is reserved for use by the Backstage
-maintainers. Please do not change or add versions within that space.
-
-If you add an [apiVersion](descriptor-format.md#apiversion-and-kind-required)
-space of your own, you are effectively branching out from the underlying kind
-and making your own. An entity kind is identified by the apiVersion + kind pair,
-so even though the resulting entity may be similar to the core one, there will
-be no guarantees that plugins will be able to parse or understand its data. See
-below about adding a new kind.
-
 ## Adding a New Kind
 
 Example intents:
@@ -57,9 +36,7 @@ Example intents:
 > "The kinds that come with the package are lacking. I want to model this other
 > thing that is a poor fit for either of the builtins."
 
-> "This core kind is a decent fit but we want to evolve it at will so we'll move
-> it to our own company's apiVersion space and use that instead of
-> `backstage.io`."
+> "This core kind is a decent fit but we want to evolve it"
 
 A [kind](descriptor-format.md#apiversion-and-kind-required) is an overarching
 family, or an idea if you will, of entities that also share a schema. Backstage
@@ -68,16 +45,22 @@ variety of needs that one may want to model in Backstage. The primary ambition
 is to map things to these kinds, but sometimes you may want or need to extend
 beyond them.
 
-Introducing a new apiVersion is basically the same as adding a new kind. Bear in
-mind that most plugins will be compiled against the builtin
-`@backstage/catalog-model` package and have expectations that kinds align with
-that.
-
 The catalog backend itself, from a storage and API standpoint, does not care
 about the kind of entities it stores. Extending with new kinds is mainly a
-matter of permitting them to pass validation when building the backend catalog
-using the `CatalogBuilder`, and then to make plugins be able to understand the
+matter of permitting them to pass validation, and then to make plugins be able to understand the
 new kind.
+
+<!--
+### How to add a new kind
+
+```ts
+import { createBackend } from '@backstage/backend-defaults';
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+
+// TODO snippet
+```
+-->
 
 For the consuming side, it's a different story. Adding a kind has a very large
 impact. The very foundation of Backstage is to attach behavior and views and
@@ -124,108 +107,9 @@ For example, the
 only makes sense for Websites. The more specific you can be in how you model
 your software, the easier it is to provide plugins that are contextual.
 
-Adding a new type takes relatively little effort and carries little risk. Any
+Adding a new type takes relatively little effort. Any
 type value is accepted by the catalog backend, but plugins may have to be
 updated if you want particular behaviors attached to that new type.
-
-## Changing the Validation Rules for The Entity Envelope or Metadata Fields
-
-Example intents:
-
-> "We want to import our old catalog but the default set of allowed characters
-> for a metadata.name are too strict."
-
-> "I want to change the rules for annotations so that I'm allowed to store any
-> data in annotation values, not just strings."
-
-After pieces of raw entity data have been read from a location, they are passed
-through a field format validation step. This ensures that the types and syntax
-of the base envelope and metadata make sense - in short, things that aren't
-entity-kind-specific. Some or all of these validators can be replaced when
-building the backend using the catalog's dedicated `catalogModelExtensionPoint`
-(or directly on the `CatalogBuilder` if you are still using the old backend
-system).
-
-The risk and impact of this type of extension varies, based on what it is that
-you want to do. For example, extending the valid character set for kinds,
-namespaces and names can be fairly harmless, with a few notable exceptions -
-there is code that expects these to never ever contain a colon or slash, for
-example, and introducing URL-unsafe characters risks breaking plugins that
-aren't careful about encoding arguments. Supporting non-strings in annotations
-may be possible but has not yet been tried out in the real world - there is
-likely to be some level of plugin breakage that can be hard to predict.
-
-You must also be careful about not making the rules _more strict_ than they used
-to be after populating the catalog with data. This risks making previously valid
-entities start having processing errors and fail to update.
-
-Before making this kind of extension, we recommend that you contact the
-Backstage maintainers or a support partner to discuss your use case.
-
-This is an example of relaxing the format rules of the `metadata.name` field:
-
-```ts
-import { createBackend } from '@backstage/backend-defaults';
-import { createBackendModule } from '@backstage/backend-plugin-api';
-import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-
-const myCatalogCustomizations = createBackendModule({
-  pluginId: 'catalog',
-  moduleId: 'catalog-customization',
-  register(reg) {
-    reg.registerInit({
-      deps: {
-        catalogModel: catalogModelExtensionPoint,
-      },
-      async init({ catalogModel }) {
-        catalogModel.setFieldValidators({
-          // This is only one of many methods that you can pass into
-          // setFieldValidators; your editor of choice should help you
-          // find the others. The length checks and regexp inside are
-          // just examples and can be adjusted as needed, but take care
-          // to test your changes thoroughly to ensure that you get
-          // them right.
-          isValidEntityName(value) {
-            return (
-              typeof value === 'string' &&
-              value.length >= 1 &&
-              value.length <= 63 &&
-              /^[A-Za-z0-9@+_.-]+$/.test(value)
-            );
-          },
-        });
-      },
-    });
-  },
-});
-
-const backend = createBackend();
-// ... add other backend features and the catalog backend itself here ...
-backend.add(myCatalogCustomizations);
-backend.start();
-```
-
-## Changing the Validation Rules for Core Entity Fields
-
-Example intent:
-
-> "I don't like that the owner is mandatory. I'd like it to be optional."
-
-After reading and policy-checked entity data from a location, it is sent through
-the processor chain looking for processors that implement the
-`validateEntityKind` step, to see that the data is of a known kind and abides by
-its schema. There is a builtin processor that implements this for all known core
-kinds and matches the data against their fixed validation schema. This processor
-can be replaced when building the backend catalog using the `CatalogBuilder`,
-with a processor of your own that validates the data differently.
-This replacement processor must have a name that matches the builtin processor, `BuiltinKindsEntityProcessor`.
-
-This type of extension is high risk, and may have high impact across the
-ecosystem depending on the type of change that is made. It is therefore not
-recommended in normal cases. There will be a large number of plugins and
-processors - and even the core itself - that make assumptions about the shape of
-the data and import the typescript data type from the `@backstage/catalog-model`
-package.
 
 ## Adding New Fields to the Metadata Object
 
@@ -234,13 +118,12 @@ Example intent:
 > "Our entities have this auxiliary property that I would like to express for
 > several entity kinds and it doesn't really fit as a spec field."
 
-The metadata object is currently left open for extension. Any unknown fields
-found in the metadata will just be stored verbatim in the catalog. However we
-want to caution against extending the metadata excessively. Firstly, you run the
-risk of colliding with future extensions to the model. Secondly, it is common
-that this type of extension lives more comfortably elsewhere - primarily in the
-metadata labels or annotations, but sometimes you even may want to make a new
-component type or similar instead.
+The metadata object is designed to be flexible and extensible. You can add any custom fields
+to the metadata, and they will be stored in the catalog. This flexibility allows you to
+tailor the catalog to your specific needs. While you can extend the metadata freely, we
+recommend considering whether your data might fit better in metadata labels or annotations,
+or if it warrants a new component type. This helps maintain a clean and organized catalog
+structure as it evolves.
 
 There are some situations where metadata can be the right place. If you feel
 that you have run into such a case and that it would apply to others, do feel
@@ -254,15 +137,7 @@ Example intent:
 > "The builtin Component kind is fine but we want to add an additional field to
 > the spec for describing whether it's in prod or staging."
 
-A kind's schema validation typically doesn't forbid "unknown" fields in an
-entity `spec`, and the catalog will happily store whatever is in it. So doing
-this will usually work from the catalog's point of view.
-
-Adding fields like this is subject to the same risks as mentioned about metadata
-extensions above. Firstly, you run the risk of colliding with future extensions
-to the model. Secondly, it is common that this type of extension lives more
-comfortably elsewhere - primarily in the metadata labels or annotations, but
-sometimes you even may want to make a new component type or similar instead.
+Adding fields to the spec object is straightforward and the catalog will store any additional fields you include. While you have this flexibility, we recommend considering whether your data might be better suited for metadata labels or annotations, or if it warrants a new component type. This helps maintain a clean and organized catalog structure as it evolves.
 
 There are some situations where the spec can be the right place. If you feel
 that you have run into such a case and that it would apply to others, do feel
@@ -286,8 +161,7 @@ Annotations are mainly intended to be consumed by plugins, for feature detection
 or linking into external systems. Sometimes they are added by humans, but often
 they are automatically generated at ingestion time by processors. There is a set
 of [well-known annotations](well-known-annotations.md), but you are free to add
-additional ones. This carries no risk or impact to other systems as long as you
-abide by the following naming rules.
+additional ones. When you create a new annotation, please adhere to the following naming rules:
 
 - The `backstage.io` annotation prefix is reserved for use by the Backstage
   maintainers. Reach out to us if you feel that you would like to make an
@@ -321,13 +195,7 @@ systems that want to find entities that have some certain property. This is
 sometimes used for feature detection / selection. An example could be to add a
 label `deployments.my-company.net/register-srv: "true"`.
 
-At the time of writing this, the use of labels is very limited and we are still
-settling together with the community on how to best use them. If you feel that
-your use case fits the labels best, we would appreciate if you let the Backstage
-maintainers know.
-
-You are free to add labels. This carries no risk or impact to other systems as
-long as you abide by the following naming rules.
+When you create a new label, please adhere to the following naming rules:
 
 - The `backstage.io` label prefix is reserved for use by the Backstage
   maintainers. Reach out to us if you feel that you would like to make an
@@ -371,77 +239,8 @@ and have a source and target that have to be an
 have to make any changes to the catalog backend in order to accept new relation
 types.
 
-At the time of writing this, we do not have any namespacing/prefixing scheme for
-relation types. The type is also not validated to contain only some particular
-set of characters. Until rules for this are settled, you should stick to using
-only letters, dashes and digits, and to avoid collisions with future core
-relation types, you may want to prefix the type somehow. For example:
-`myCompany-maintainerOf` + `myCompany-maintainedBy`.
-
 If you have a suggestion for a relation type to be elevated to the core
 offering, reach out to the Backstage maintainers or a support partner.
-
-## Using a Well-Known Relation Type for a New Purpose
-
-Example intents:
-
-> "The ownerOf/ownedBy relation types sound like a good fit for expressing how
-> users are technical owners of our company specific ServiceAccount kind, and we
-> want to reuse those relation types for that."
-
-At the time of writing, this is uncharted territory. If the documented use of a
-relation states that one end of the relation commonly is a User or a Group, for
-example, then consumers are likely to have conditional statements on the form
-`if (x.kind === 'User') {} else {}`, which get confused when an unexpected kind
-appears.
-
-If you want to extend the use of an established relation type in a way that has
-an effect outside of your organization, reach out to the Backstage maintainers
-or a support partner to discuss risk/impact. It may even be that one end of the
-relation could be considered for addition to the core.
-
-## Adding a New Status field
-
-Example intent:
-
-> "We would like to convey entity statuses through the catalog in a generic way,
-> as an integration layer. Our monitoring and alerting system has a plugin with
-> Backstage, and it would be useful if the entity's status field contained the
-> current alert state close to the actual entity data for anyone to consume. We
-> find the `status.items` semantics a poor fit, so we would prefer to make our
-> own custom field under `status` for these purposes."
-
-We have not yet ventured to define any generic semantics for the `status`
-object. We recommend sticking with the `status.items` mechanism where possible
-(see below), since third party consumers will not be able to consume your status
-information otherwise. Please reach out to the maintainers on Discord or by
-making a GitHub issue describing your use case if you are interested in this
-topic.
-
-## Adding a New Status Item Type
-
-Example intent:
-
-> "The semantics of the entity `status.items` field are fine for our needs, but
-> we want to contribute our own type of status into that array instead of the
-> catalog specific one."
-
-This is a simple, low risk way of adding your own status information to
-entities. Consumers will be able to easily track and display the status together
-with other types / sources.
-
-We recommend that any status type that are not strictly private within the
-organization be namespaced to avoid collisions. Statuses emitted by Backstage
-core processes will for example be prefixed with `backstage.io/`, your
-organization may prefix with `my-org.net/`, and `pagerduty.com/active-alerts`
-could be a sensible complete status item type for that particular external
-system.
-
-The mechanics for how to emit custom statuses is not in place yet, so if this is
-of interest to you, you might consider contacting the maintainers on Discord or
-my making a GitHub issue describing your use case.
-[This issue](https://github.com/backstage/backstage/issues/2292) also contains
-more context.
 
 ## Referencing different environments with the model
 
@@ -460,8 +259,8 @@ similarly for other kinds as well, such as `API`.
 That being said - sometimes the differences between versions are so large, that
 they represent what is for all intents and purposes an entirely new entity as
 seen from the consumer's point of view. This can happen for example for
-different _significant_ major versions of an API, and in particular if the two
-major versions coexist in the ecosystem for some time. In those cases, it can be
+different _significant_ major versions of an API, in particular if the two
+major versions coexist in the ecosystem for some time, or if your internal platform has technical limitations that don't allow managing multiple versions under a single entity. In those cases, it can be
 motivated to have one `my-api-v2` and one `my-api-v3` named entity. This matches
 the end user's expectations when searching for the API, and matches the desire
 to maybe have separate documentation for the two and similar. But use this
