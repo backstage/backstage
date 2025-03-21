@@ -18,6 +18,7 @@ import React from 'react';
 import { EntityContextMenuItemBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import FileCopyTwoToneIcon from '@material-ui/icons/FileCopyTwoTone';
 import BugReportIcon from '@material-ui/icons/BugReport';
+import CancelIcon from '@material-ui/icons/Cancel';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
@@ -76,4 +77,26 @@ export const inspectEntityContextMenuItem = EntityContextMenuItemBlueprint.make(
   },
 );
 
-export default [inspectEntityContextMenuItem, copyEntityUrlContextMenuItem];
+export const unregisterEntityContextMenuItem =
+  EntityContextMenuItemBlueprint.make({
+    name: 'unregister-entity',
+    params: {
+      icon: <CancelIcon fontSize="small" />,
+      useTitle: () => {
+        const { t } = useTranslationRef(catalogTranslationRef);
+        return t('entityContextMenu.unregisterMenuTitle');
+      },
+      useOnClick: () => {
+        return () => {
+          // eslint-disable-next-line no-alert
+          window.alert('unregister clicked');
+        };
+      },
+    },
+  });
+
+export default [
+  unregisterEntityContextMenuItem,
+  inspectEntityContextMenuItem,
+  copyEntityUrlContextMenuItem,
+];
