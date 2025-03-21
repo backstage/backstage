@@ -411,13 +411,13 @@ export interface EntityNamespacePickerProps {
 
 // @public
 export class EntityOrderFilter implements EntityFilter {
-  constructor(value: EntityOrderQuery);
-  // (undocumented)
-  filterEntity(_: Entity): boolean;
+  constructor(values: [string, 'asc' | 'desc'][]);
   // (undocumented)
   getOrderFilters(): EntityOrderQuery;
   // (undocumented)
-  readonly value: EntityOrderQuery;
+  toQueryValue(): string[];
+  // (undocumented)
+  readonly values: [string, 'asc' | 'desc'][];
 }
 
 // @public
