@@ -105,12 +105,22 @@ function createFilter(
         if (expectedValue === CATALOG_FILTER_EXISTS) {
           continue;
         }
-        if (
-          !searchValues?.includes(
-            String(expectedValue).toLocaleLowerCase('en-US'),
-          )
-        ) {
-          return false;
+        if (Array.isArray(expectedValue)) {
+          if (
+            !expectedValue.some(val =>
+              searchValues.includes(String(val).toLocaleLowerCase('en-US')),
+            )
+          ) {
+            return false;
+          }
+        } else {
+          if (
+            !searchValues.includes(
+              String(expectedValue).toLocaleLowerCase('en-US'),
+            )
+          ) {
+            return false;
+          }
         }
       }
       return true;

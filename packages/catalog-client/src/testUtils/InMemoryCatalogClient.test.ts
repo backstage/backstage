@@ -39,7 +39,17 @@ const entity2: Entity = {
   },
 };
 
-const entities = [entity1, entity2];
+const entity3: Entity = {
+  apiVersion: 'v1',
+  kind: 'CustomKind',
+  metadata: {
+    namespace: 'custom',
+    name: 'e3',
+    uid: 'u3',
+  },
+};
+
+const entities = [entity1, entity2, entity3];
 
 describe('InMemoryCatalogClient', () => {
   it('getEntities', async () => {
@@ -47,10 +57,12 @@ describe('InMemoryCatalogClient', () => {
 
     await expect(client.getEntities()).resolves.toEqual({ items: entities });
 
+    // Case-insensitive name filtering
     await expect(
       client.getEntities({ filter: { 'metadata.name': 'E1' } }),
     ).resolves.toEqual({ items: [entity1] });
 
+    // Filtering by UID
     await expect(
       client.getEntities({ filter: { 'metadata.uid': 'u2' } }),
     ).resolves.toEqual({ items: [entity2] });
@@ -59,6 +71,7 @@ describe('InMemoryCatalogClient', () => {
       client.getEntities({ filter: { 'metadata.uid': 'U2' } }),
     ).resolves.toEqual({ items: [entity2] });
 
+    // Filtering with CATALOG_FILTER_EXISTS
     await expect(
       client.getEntities({
         filter: { 'relations.relatedto': CATALOG_FILTER_EXISTS },
@@ -70,6 +83,20 @@ describe('InMemoryCatalogClient', () => {
         filter: { 'relations.relatedTo': 'customkind:default/e2' },
       }),
     ).resolves.toEqual({ items: [entity1] });
+
+    // Filtering by multiple conditions (AND logic)
+    await expect(
+      client.getEntities({
+        filter: { 'metadata.namespace': 'default', 'metadata.name': 'e1' },
+      }),
+    ).resolves.toEqual({ items: [entity1] });
+
+    // Filtering with OR logic using an array
+    await expect(
+      client.getEntities({
+        filter: { 'metadata.name': ['e1', 'e2'] },
+      }),
+    ).resolves.toEqual({ items: [entity1, entity2] });
   });
 
   it('getEntitiesByRefs', async () => {
@@ -99,7 +126,7 @@ describe('InMemoryCatalogClient', () => {
     const client = new InMemoryCatalogClient({ entities });
     await expect(client.queryEntities()).resolves.toEqual({
       items: entities,
-      totalItems: 2,
+      totalItems: 3,
       pageInfo: {},
     });
     await expect(
