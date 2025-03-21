@@ -15,15 +15,28 @@
  */
 
 import React from 'react';
-import { EntityContextMenuItemBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import {
+  EntityContextMenuItemBlueprint,
+  useEntityPermission,
+} from '@backstage/plugin-catalog-react/alpha';
 import FileCopyTwoToneIcon from '@material-ui/icons/FileCopyTwoTone';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import CancelIcon from '@material-ui/icons/Cancel';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
-import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  dialogApiRef,
+  useTranslationRef,
+  type DialogApiDialog,
+} from '@backstage/frontend-plugin-api';
 import { catalogTranslationRef } from './translation';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import {
+  UnregisterEntityDialog,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
+import { rootRouteRef, unregisterRedirectRouteRef } from '../routes';
+import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
 
 export const copyEntityUrlContextMenuItem = EntityContextMenuItemBlueprint.make(
   {
@@ -86,10 +99,36 @@ export const unregisterEntityContextMenuItem =
         const { t } = useTranslationRef(catalogTranslationRef);
         return t('entityContextMenu.unregisterMenuTitle');
       },
+      useIsDisabled: () => {
+        const unregisterPermission = useEntityPermission(
+          catalogEntityDeletePermission,
+        );
+
+        return !unregisterPermission.allowed;
+      },
       useOnClick: () => {
-        return () => {
-          // eslint-disable-next-line no-alert
-          window.alert('unregister clicked');
+        const { entity } = useEntity();
+        const dialogApi = useApi(dialogApiRef);
+        const navigate = useNavigate();
+        const catalogRoute = useRouteRef(rootRouteRef);
+        const unregisterRedirectRoute = useRouteRef(unregisterRedirectRouteRef);
+
+        return async () => {
+          dialogApi.showModal(({ dialog }: { dialog: DialogApiDialog }) => (
+            <UnregisterEntityDialog
+              open
+              entity={entity}
+              onClose={() => dialog.close()}
+              onConfirm={() => {
+                dialog.close();
+                navigate(
+                  unregisterRedirectRoute
+                    ? unregisterRedirectRoute()
+                    : catalogRoute(),
+                );
+              }}
+            />
+          ));
         };
       },
     },
