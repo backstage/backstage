@@ -1,5 +1,3 @@
-import { TemplateFilterExample } from '@backstage/plugin-scaffolder-node/alpha';
-
 /*
  * Copyright 2025 The Backstage Authors
  *
@@ -15,6 +13,8 @@ import { TemplateFilterExample } from '@backstage/plugin-scaffolder-node/alpha';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { TemplateFilterExample } from '@backstage/plugin-scaffolder-node/alpha';
+
 export const examples: TemplateFilterExample[] = [
   {
     example: `\
