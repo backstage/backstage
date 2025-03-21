@@ -92,7 +92,7 @@ const RenderErrorContext = ({
  * Converts input datetime which lacks timezone info into user's local time so that they can
  * easily understand the times.
  */
-const convertTimeToLocalTimezone = (strDateTime: string | Date) => {
+export const convertTimeToLocalTimezone = (strDateTime: string | Date) => {
   const dateTime = DateTime.fromISO(strDateTime.toLocaleString(), {
     zone: DateTime.local().zoneName,
   });
