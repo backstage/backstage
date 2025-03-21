@@ -29,9 +29,15 @@ describe('components/FailedEntities/convertTimeToLocalTimezone', () => {
     expect(localTime).toBe('2024-09-03 08:15:08 UTC');
   });
 
-  it('should correctly convert a UTC Date object to local time', () => {
-    const utcTime = new Date('2024-09-03T08:15:08.088Z');
-    const localTime = convertTimeToLocalTimezone(utcTime);
-    expect(localTime).toBe('2024-09-03 08:15:08 UTC');
+  it('should return "Invalid Date" for an invalid date string', () => {
+    const invalidTime = 'invalid-date-string';
+    const localTime = convertTimeToLocalTimezone(invalidTime);
+    expect(localTime).toBe('Invalid DateTime');
+  });
+
+  it('should handle empty string input', () => {
+    const emptyString = '';
+    const localTime = convertTimeToLocalTimezone(emptyString);
+    expect(localTime).toBe('Invalid DateTime');
   });
 });
