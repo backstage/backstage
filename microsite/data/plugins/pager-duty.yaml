@@ -1,0 +1,14 @@
+---
+title: PagerDuty
+author: PagerDuty
+authorUrl: https://github.com/pagerduty
+category: Monitoring
+description: Bring the power of PagerDuty to Backstage, reduce cognitive load, improve service visibility and enforce incident management best practices.
+documentation: https://pagerduty.github.io/backstage-plugin-docs/index.html
+iconUrl: https://avatars2.githubusercontent.com/u/766800?s=200&v=4
+npmPackageName: '@pagerduty/backstage-plugin'
+tags:
+  - monitoring
+  - errors
+  - alerting
+addedDate: '2020-12-22'

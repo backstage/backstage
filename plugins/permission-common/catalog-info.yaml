@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-permission-common
+  title: '@backstage/plugin-permission-common'
+  description: Isomorphic types and client for Backstage permissions and authorization
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: permission-maintainers

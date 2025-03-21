@@ -1,0 +1,21 @@
+.pswp {
+  --pswp-bg: #f8f8f8;
+}
+.pswp__counter {
+  color: rgba(0, 0, 0, 0.87);
+  text-shadow: none;
+}
+
+.pswp__img {
+  cursor: pointer !important;
+}
+
+/* hide "-" icon path */
+.pswp--zoomed-allowed #photoswipe-zoom-icon-zoomout-path {
+  display: none;
+}
+
+/* hide "+" path and show "-" */
+.pswp--zoomed-in #photoswipe-zoom-icon-zoomin-path {
+  display: none;
+}

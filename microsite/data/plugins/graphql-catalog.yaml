@@ -1,0 +1,14 @@
+---
+title: GraphQL Catalog
+author: Frontside Software
+authorUrl: https://frontside.com/
+category: Discovery
+description: Adds the GraphQL Endpoint to Backstage Catalog as a plugin.
+documentation: https://github.com/thefrontside/playhouse/blob/main/plugins/graphql-backend/README.md
+iconUrl: https://raw.githubusercontent.com/thefrontside/frontside.com/production/legacy/src/img/frontside-logo.png
+npmPackageName: '@frontside/backstage-plugin-graphql-backend'
+tags:
+  - graphql
+  - catalog
+  - graphql-catalog
+addedDate: '2024-05-01'

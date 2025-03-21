@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-codemods
+  title: '@backstage/codemods'
+  description: A collection of codemods for Backstage projects
+spec:
+  lifecycle: experimental
+  type: backstage-cli
+  owner: maintainers

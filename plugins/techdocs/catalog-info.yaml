@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-techdocs
+  title: '@backstage/plugin-techdocs'
+  description: >-
+    The Backstage plugin that renders technical documentation for your
+    components
+spec:
+  lifecycle: production
+  type: backstage-frontend-plugin
+  owner: techdocs-maintainers

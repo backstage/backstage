@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-app-defaults
+  title: '@backstage/app-defaults'
+  description: Provides the default wiring of a Backstage App
+spec:
+  lifecycle: production
+  type: backstage-web-library
+  owner: maintainers

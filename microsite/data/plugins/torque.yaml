@@ -1,0 +1,12 @@
+---
+title: Torque
+author: Quali
+authorUrl: 'https://www.qtorque.io/'
+category: Orchestration
+description: |
+  Deploy the environments you need to keep building, testing and delivering incredible code. 
+  Plugin includes an Entity ComponentCard, Backend API route and scaffolder actions.
+documentation: https://github.com/QualiTorque/torque-backstage-plugin/tree/main/packages/torque#readme
+iconUrl: https://user-images.githubusercontent.com/8643801/214640977-751bc338-6b77-40a0-a897-cba41b6f006a.png
+npmPackageName: '@qtorque/backstage-plugin-torque'
+addedDate: '2023-01-25'

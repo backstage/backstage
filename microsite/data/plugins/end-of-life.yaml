@@ -1,0 +1,10 @@
+---
+title: End of life
+author: dweber019
+authorUrl: https://github.com/dweber019
+category: Quality
+description: Display end of life data for entities from endoflife.data
+documentation: https://github.com/dweber019/backstage-plugins/tree/main/plugins/endoflife
+iconUrl: https://raw.githubusercontent.com/dweber019/backstage-plugins/main/plugins/endoflife/docs/pluginIcon.png
+npmPackageName: '@dweber019/backstage-plugin-endoflife'
+addedDate: '2024-01-18'

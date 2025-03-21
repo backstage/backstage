@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli
+  title: '@backstage/cli'
+  description: CLI for developing Backstage plugins and apps
+spec:
+  lifecycle: experimental
+  type: backstage-cli
+  owner: maintainers

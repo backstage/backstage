@@ -1,0 +1,10 @@
+---
+title: Dev Quotes
+author: Peter Macdonald
+authorUrl: https://github.com/Parsifal-M
+category: Humor
+description: Displays a coding/progamming related quote designed as a footer for the Homepage, although to be honest it can be used anywhere you like!
+documentation: https://github.com/Parsifal-M/backstage-dev-quotes?tab=readme-ov-file#dev-quotes-homepage
+iconUrl: /img/dqicon.png
+npmPackageName: '@parsifal-m/plugin-dev-quotes-homepage'
+addedDate: '2023-12-13'

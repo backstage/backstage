@@ -1,0 +1,16 @@
+---
+title: VeeCode Kubernetes GPT Analyzer
+author: VeeCode Platform
+authorUrl: https://platform.vee.codes/
+category: Monitoring
+description: The Kubernetes GPT Analyzer plug-in uses artificial intelligence with the help of k8s-operator to analyze and optimize your Kubernetes entities, improving the management and performance of your cluster. It makes it easier to detect anomalies and suggest best practices.
+documentation: https://platform.vee.codes/plugin/kubernetes-gpt-analyzer/
+iconUrl: https://veecode-platform.github.io/support/imgs/logo_4.svg
+npmPackageName: '@veecode-platform/backstage-plugin-kubernetes-gpt-analyzer'
+tags:
+  - monitor
+  - ai
+  - kubernetes
+  - k8soperator
+  - gpt
+addedDate: '2024-07-31'

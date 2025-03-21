@@ -1,0 +1,15 @@
+---
+title: Blockchain Radar
+author: '@aurora-is-near'
+authorUrl: https://github.com/aurora-is-near
+category: Discovery
+description: Discover and manage contracts, multisigs and their access control policies on various blockchains.
+documentation: https://github.com/aurora-is-near/backstage-plugin-blockchainradar
+iconUrl: https://raw.githubusercontent.com/aurora-is-near/backstage-plugin-blockchainradar/main/docs/imgs/signs/sign-green.svg
+npmPackageName: '@aurora-is-near/backstage-plugin-blockchainradar-backend'
+tags:
+  - security
+  - monitoring
+  - blockchain
+  - alerting
+addedDate: '2023-08-31'

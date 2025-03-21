@@ -1,0 +1,46 @@
+$page-header-height: 44px;
+
+.hubSpotNewAdopterFormContainer {
+  top: 50%;
+  right: 0;
+  display: flex;
+  position: fixed;
+  transform: translateY(-50%);
+  margin-top: $page-header-height;
+  max-height: calc(100% - $page-header-height);
+
+  transition: all 250ms ease-in-out;
+
+  &:global(.adoptersFormHidden) {
+    transform: translate(500px, -50%);
+  }
+
+  > button {
+    top: 50%;
+    left: -2rem;
+    position: fixed;
+
+    transform: rotate(-90deg) translateX(-50%);
+    transform-origin: top left;
+  }
+}
+
+.hubSpotNewAdopterFormContent {
+  max-width: 500px;
+  border-radius: 8px 0 0 8px;
+  background-color: var(--ifm-color-white);
+
+  form {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+
+    padding-right: 2rem;
+  }
+  select[class*='hs-input'] {
+    color: black;
+  }
+  input[class*='hs-button'] {
+    color: black;
+  }
+}

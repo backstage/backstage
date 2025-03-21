@@ -1,0 +1,112 @@
+@use '../../theme/variables.scss';
+
+.homePage {
+  font-size: 1.25rem;
+
+  h1 {
+    font-size: 54px;
+    line-height: 56px;
+    word-break: break-word;
+  }
+
+  :global(.buttonsContainer) {
+    gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+  }
+}
+
+.newsletterBanner {
+  --ifm-link-hover-color: var(--ifm-color-info);
+
+  flex-direction: row;
+  color: var(--ifm-button-color);
+  background-color: var(--ifm-color-primary);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+
+  :global(.bannerContent) {
+    flex: 1;
+  }
+
+  :global(.bannerCloseButton) {
+    color: var(--ifm-color-secondary);
+  }
+}
+
+.svgContainer {
+  position: relative;
+
+  :global(img.laptopSvg) {
+    width: 100%;
+  }
+
+  :global(img.laptopScreenGif) {
+    position: absolute;
+    top: 3%;
+    left: 17%;
+    width: 70%;
+  }
+}
+
+// Shared container styles
+.catalogContainer,
+.softwareTemplatesContainer {
+  gap: 2rem;
+  display: grid;
+  align-items: center;
+
+  picture {
+    display: block;
+    text-align: center;
+  }
+
+  :global([class*='Title']),
+  :global([class*='title']),
+  :global([class*='gridHeader']) {
+    img {
+      max-width: 190px;
+      max-height: 190px;
+    }
+  }
+}
+
+.catalogContainer {
+  @media (min-width: variables.$desktopUpBreakpoint) {
+    grid-template-columns: repeat(4, 1fr);
+
+    picture {
+      grid-row: span 2;
+      grid-column: span 2;
+    }
+
+    :global(.catalogTitle) {
+      grid-column: span 2;
+    }
+  }
+}
+
+.softwareTemplatesContainer {
+  @media (min-width: variables.$desktopUpBreakpoint) {
+    grid: repeat(2, auto) / repeat(4, 1fr);
+
+    picture {
+      grid-row-start: 3;
+      grid-column: span 4;
+    }
+
+    :global(.softwareTemplatesTitle) {
+      grid-column: span 4;
+    }
+  }
+}
+
+.kubernetesSectionContainer {
+  :global([class*='gridHeader']) {
+    img {
+      max-width: 190px;
+      max-height: 190px;
+    }
+  }
+}

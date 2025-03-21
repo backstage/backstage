@@ -1,0 +1,106 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { Tabs } from '@/components/Tabs';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  IconButtonPreview,
+  IconButtonSizes,
+  IconButtonDisabled,
+  IconButtonResponsive,
+} from '@/snippets/icon-button';
+import { iconButtonVariants } from '@/snippets/_snippets';
+import { iconButtonPropDefs } from './props';
+
+# Icon Button
+
+A button component with a single icon that can be used to trigger actions.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<IconButtonPreview />}
+  code={`<Flex align="center">
+    <IconButton icon="cloud" variant="primary" />
+    <IconButton icon="cloud" variant="secondary" />
+</Flex>`}
+/>
+
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+    <Tabs.Tab>Theming</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock
+      code={`import { IconButton } from '@backstage/canon';
+
+<IconButton />
+`}
+    />
+  </Tabs.Panel>
+  <Tabs.Panel>
+    We recommend starting with our [global tokens](/theme/theming) to customize the library and align it with
+    your brand. For additional flexibility, you can use the provided class names for each element listed below.
+    <CodeBlock
+      code={`<IconButton className="canon-IconButton" />`}
+    />
+
+  </Tabs.Panel>
+</Tabs.Root>
+
+## API reference
+
+<PropsTable data={iconButtonPropDefs} />
+
+## Examples
+
+### Variants
+
+Here's a view when buttons have different variants.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<IconButtonPreview />}
+  code={iconButtonVariants}
+/>
+
+### Sizes
+
+Here's a view when buttons have different sizes.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<IconButtonSizes />}
+  code={`<Flex align="center">
+    <IconButton icon="cloud" size="small" />
+    <IconButton icon="cloud" size="medium" />
+</Flex>`}
+/>
+
+### Disabled
+
+Here's a view when buttons are disabled.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<IconButtonDisabled />}
+  code={`<IconButton icon="cloud" disabled />`}
+/>
+
+### Responsive
+
+Here's a view when buttons are responsive.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<IconButtonResponsive />}
+  code={`<IconButton icon="cloud" variant={{ initial: 'primary', lg: 'secondary' }} />`}
+/>

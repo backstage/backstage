@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-scaffolder-backend
+  title: '@backstage/plugin-scaffolder-backend'
+  description: The Backstage backend plugin that helps you create new things
+spec:
+  lifecycle: production
+  type: backstage-backend-plugin
+  owner: maintainers

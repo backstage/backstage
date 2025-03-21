@@ -1,0 +1,15 @@
+---
+title: Splunk On-Call
+author: ayshiff
+authorUrl: https://github.com/ayshiff
+category: Monitoring
+description: Splunk On-Call offers a simple way to identify incidents and escalation policies.
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/splunk/plugins/splunk-on-call
+iconUrl: /img/splunk-black-white-bg.png
+npmPackageName: '@backstage-community/plugin-splunk-on-call'
+tags:
+  - monitoring
+  - errors
+  - alerting
+  - splunk
+addedDate: '2021-11-17'

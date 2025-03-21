@@ -1,0 +1,10 @@
+{
+  "name": "@internal/inline-dep-valid",
+  "files": [
+    "dist",
+    "type-utils"
+  ],
+  "peerDependencies": {
+    "react": "*"
+  }
+}

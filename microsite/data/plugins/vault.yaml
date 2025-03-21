@@ -1,0 +1,12 @@
+---
+title: Vault
+author: Spread Group
+authorUrl: https://github.com/ivangonzalezacuna
+category: Security
+description: Visualize a list of the secrets stored in your HashiCorp Vault instance.
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/vault/plugins/vault
+iconUrl: /img/vault.png
+npmPackageName: '@backstage-community/plugin-vault'
+tags:
+  - vault
+addedDate: '2022-06-03'

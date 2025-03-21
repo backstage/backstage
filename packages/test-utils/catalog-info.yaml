@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-test-utils
+  title: '@backstage/test-utils'
+  description: Utilities to test Backstage plugins and apps.
+spec:
+  lifecycle: production
+  type: backstage-web-library
+  owner: maintainers

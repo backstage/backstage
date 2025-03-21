@@ -1,0 +1,10 @@
+---
+title: Statuspage.io Plugin
+author: AxisCommunications
+authorUrl: https://github.com/AxisCommunications
+category: Monitoring
+description: The Statuspage plugin allows you to embedd https://statuspage.io components, component groups and dashboards in Backstage.
+documentation: https://github.com/AxisCommunications/backstage-plugins/blob/main/plugins/statuspage/README.md
+iconUrl: https://raw.githubusercontent.com/AxisCommunications/backstage-plugins/main/plugins/statuspage/media/logo.png
+npmPackageName: '@axis-backstage/plugin-statuspage'
+addedDate: '2024-02-06'

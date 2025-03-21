@@ -1,0 +1,10 @@
+---
+title: 'DevTools'
+author: Keyloop
+authorUrl: https://keyloop.com/
+category: Tools
+description: Tools for helping with the Ops side of running a Backstage instance
+documentation: https://github.com/backstage/backstage/blob/master/plugins/devtools/README.md
+iconUrl: /img/devtools.svg
+npmPackageName: '@backstage/plugin-devtools'
+addedDate: '2023-06-17'

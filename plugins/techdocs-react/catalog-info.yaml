@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-techdocs-react
+  title: '@backstage/plugin-techdocs-react'
+  description: Shared frontend utilities for TechDocs and Addons
+spec:
+  lifecycle: production
+  type: backstage-web-library
+  owner: techdocs-maintainers

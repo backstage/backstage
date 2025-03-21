@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: example-domains
+  description: A collection of all Backstage example domains
+spec:
+  targets:
+    - ./domains/audio-domain.yaml
+    - ./domains/artists-domain.yaml
+    - ./domains/playback-domain.yaml

@@ -1,0 +1,3 @@
+name: node-library
+role: node-library
+description: A library package, exporting shared functionality for Node.js environments

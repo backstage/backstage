@@ -1,0 +1,10 @@
+---
+title: Synergy
+author: Jitesh Yadav
+authorUrl: https://github.com/jiteshy
+category: Collaboration
+description: An inner-source dashboard for managing in-house open-source projects, issues, and attracting maintainers to foster collaboration."
+documentation: https://github.com/jiteshy/backstage-plugin-synergy/blob/main/README.md
+iconUrl: /img/synergy-logo.png
+npmPackageName: '@jiteshy/backstage-plugin-synergy'
+addedDate: '2024-12-03'

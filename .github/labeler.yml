@@ -1,0 +1,74 @@
+area:catalog:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/catalog/**/*
+          - plugins/catalog-*/**/*
+          - packages/catalog-*/**/*
+area:home:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/home/**/*
+area:search:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/search/**/*
+          - plugins/search-*/**/*
+          - packages/search-*/**/*
+          - plugins/home/**/*
+area:events:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/events-*/**/*
+area:kubernetes:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/kubernetes/**/*
+          - plugins/kubernetes-*/**/*
+area:permission:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/permission-*/**/*
+area:scaffolder:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/scaffolder/**/*
+          - plugins/scaffolder-*/**/*
+area:techdocs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/techdocs/**/*
+          - plugins/techdocs-*/**/*
+          - packages/techdocs-*/**/*
+bep:
+  - changed-files:
+      - any-glob-to-any-file:
+          - beps/**/*
+auth:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/auth-*/**/*
+          - packages/core-app-api/src/apis/implementations/auth/**/*
+          - packages/core-app-api/src/lib/Auth*/**/*
+          - packages/core-plugin-api/src/apis/definitions/auth.ts
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - docs/**/*
+homepage:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/home/**/*
+microsite:
+  - changed-files:
+      - any-glob-to-any-file:
+          - microsite/**/*
+search:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/search/**/*
+          - plugins/search-*/**/*
+          - packages/search-*/**/*
+storybook:
+  - changed-files:
+      - any-glob-to-any-file:
+          - storybook/**/*

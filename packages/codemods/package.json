@@ -1,0 +1,57 @@
+{
+  "name": "@backstage/codemods",
+  "version": "0.1.52",
+  "description": "A collection of codemods for Backstage projects",
+  "backstage": {
+    "role": "cli"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/codemods"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "bin": {
+    "backstage-codemods": "bin/backstage-codemods"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "transforms"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "nodemon --",
+    "test": "backstage-cli package test"
+  },
+  "nodemonConfig": {
+    "exec": "bin/backstage-codemods",
+    "ext": "ts",
+    "watch": "./src"
+  },
+  "dependencies": {
+    "@backstage/cli-common": "workspace:^",
+    "chalk": "^4.0.0",
+    "commander": "^12.0.0",
+    "jscodeshift": "^0.16.0",
+    "jscodeshift-add-imports": "^1.0.10"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@types/jscodeshift": "^0.12.0",
+    "@types/node": "^20.16.0"
+  }
+}

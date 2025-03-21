@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-home-react
+  title: '@backstage/plugin-home-react'
+  description: >-
+    A Backstage plugin that contains react components helps you build a home
+    page
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: home-maintainers

@@ -1,0 +1,10 @@
+---
+title: Coder
+author: Coder
+authorUrl: https://www.coder.com
+category: Development
+description: Create and manage Coder workspaces from Backstage!
+documentation: https://github.com/coder/backstage-plugins/blob/main/plugins/backstage-plugin-coder/README.md
+iconUrl: /img/coder.png
+npmPackageName: '@coder/backstage-plugin-coder'
+addedDate: '2024-03-15'

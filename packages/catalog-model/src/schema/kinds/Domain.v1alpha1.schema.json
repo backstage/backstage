@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "DomainV1alpha1",
+  "description": "A Domain groups a collection of systems that share terminology, domain models, business purpose, or documentation, i.e. form a bounded context.",
+  "examples": [
+    {
+      "apiVersion": "backstage.io/v1alpha1",
+      "kind": "Domain",
+      "metadata": {
+        "name": "artists",
+        "description": "Everything about artists"
+      },
+      "spec": {
+        "owner": "artist-relations-team",
+        "subdomainOf": "audio",
+        "type": "product-group"
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["backstage.io/v1alpha1", "backstage.io/v1beta1"]
+        },
+        "kind": {
+          "enum": ["Domain"]
+        },
+        "spec": {
+          "type": "object",
+          "required": ["owner"],
+          "properties": {
+            "owner": {
+              "type": "string",
+              "description": "An entity reference to the owner of the component.",
+              "examples": ["artist-relations-team", "user:john.johnson"],
+              "minLength": 1
+            },
+            "subdomainOf": {
+              "type": "string",
+              "description": "An entity reference to another domain of which the domain is a part.",
+              "examples": ["audio"],
+              "minLength": 1
+            },
+            "type": {
+              "type": "string",
+              "description": "The type of domain. There is currently no enforced set of values for this field, so it is left up to the adopting organization to choose a nomenclature that matches their catalog hierarchy.",
+              "examples": ["product-group", "bundle"],
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

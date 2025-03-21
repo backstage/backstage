@@ -1,0 +1,10 @@
+---
+title: Container Image Registry for Quay
+author: Red Hat
+authorUrl: https://redhat.com
+category: Image
+description: View container image details from Quay in Backstage.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/quay/plugins/quay/README.md
+iconUrl: /img/quay.svg
+npmPackageName: '@backstage-community/plugin-quay'
+addedDate: '2023-05-15'

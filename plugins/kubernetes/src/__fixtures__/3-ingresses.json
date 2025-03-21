@@ -1,0 +1,372 @@
+{
+  "ingresses": [
+    {
+      "metadata": {
+        "name": "app-service-endpoint.dice-roller.backstage.io",
+        "namespace": "dice-roller",
+        "uid": "00000000-0000-0000-0000-000000000000",
+        "resourceVersion": "4749260703",
+        "generation": 1,
+        "creationTimestamp": "2023-08-16T14:52:16Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "ingress-class": "istio-internal"
+        },
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "spec",
+          "metacontroller.k8s.io/last-applied-configuration": "spec",
+          "nginx.ingress.kubernetes.io/auth-signin": "https://backstage.io/authenticate",
+          "nginx.ingress.kubernetes.io/configuration-snippet": "config",
+          "nginx.ingress.kubernetes.io/service-upstream": "true",
+          "nginx.ingress.kubernetes.io/upstream-vhost": "app-service-endpoint.dice-roller.backstage.services"
+        },
+        "ownerReferences": [
+          {
+            "apiVersion": "networking.backstage.com/v1beta1",
+            "kind": "MeshIntegration",
+            "name": "app-service-endpoint",
+            "uid": "00000000-0000-0000-0000-000000000000",
+            "controller": true,
+            "blockOwnerDeletion": true
+          }
+        ],
+        "managedFields": [
+          {
+            "manager": "nginx-ingress-controller",
+            "operation": "Update",
+            "apiVersion": "networking.k8s.io/v1",
+            "time": "2023-08-16T14:52:56Z",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:status": {
+                "f:loadBalancer": {
+                  "f:ingress": {}
+                }
+              }
+            },
+            "subresource": "status"
+          },
+          {
+            "manager": "kubectl-client-side-apply",
+            "operation": "Update",
+            "apiVersion": "networking.k8s.io/v1",
+            "time": "2023-12-15T16:33:17Z",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": {
+                "f:annotations": {
+                  ".": {},
+                  "f:kubectl.kubernetes.io/last-applied-configuration": {},
+                  "f:nginx.ingress.kubernetes.io/auth-signin": {},
+                  "f:nginx.ingress.kubernetes.io/configuration-snippet": {},
+                  "f:nginx.ingress.kubernetes.io/service-upstream": {},
+                  "f:nginx.ingress.kubernetes.io/upstream-vhost": {}
+                },
+                "f:labels": {
+                  ".": {},
+                  "f:backstage.io/kubernetes-id": {},
+                  "f:ingress-class": {}
+                }
+              },
+              "f:spec": {
+                "f:ingressClassName": {},
+                "f:rules": {},
+                "f:tls": {}
+              }
+            }
+          },
+          {
+            "manager": "kubectl-label",
+            "operation": "Update",
+            "apiVersion": "networking.k8s.io/v1",
+            "time": "2024-02-21T15:00:44Z",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": {
+                "f:labels": {
+                  "f:controller-uid": {}
+                }
+              }
+            }
+          },
+          {
+            "manager": "metacontroller",
+            "operation": "Update",
+            "apiVersion": "networking.k8s.io/v1",
+            "time": "2024-02-21T15:01:01Z",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": {
+                "f:annotations": {
+                  "f:metacontroller.k8s.io/last-applied-configuration": {}
+                },
+                "f:ownerReferences": {
+                  ".": {},
+                  "k:{\"uid\":\"00000000-0000-0000-0000-000000000000\"}": {}
+                }
+              }
+            }
+          }
+        ]
+      },
+      "spec": {
+        "ingressClassName": "istio-internal",
+        "tls": {
+          "hosts": ["app-service-endpoint.dice-roller.backstage.io"],
+          "secretName": "dice-roller-wildcard-certificate"
+        },
+        "rules": [
+          {
+            "host": "app-service-endpoint.dice-roller.backstage.io",
+            "http": {
+              "paths": [
+                {
+                  "pathType": "ImplementationSpecific",
+                  "backend": {
+                    "service": {
+                      "name": "app-service-endpoint",
+                      "port": {
+                        "number": 8080
+                      }
+                    }
+                  }
+                },
+                {
+                  "pathType": "Second item in the list",
+                  "backend": {
+                    "service": {
+                      "name": "app-service-endpoint",
+                      "port": {
+                        "number": 8080
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "status": {
+        "loadBalancer": {
+          "ingress": [
+            {
+              "ip": "1.2.3.4"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "deployments": [
+    {
+      "metadata": {
+        "annotations": {
+          "deployment.kubernetes.io/revision": "2",
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"backstage.io/kubernetes-id\":\"dice-roller\"},\"name\":\"dice-roller\",\"namespace\":\"default\"},\"spec\":{\"replicas\":10,\"selector\":{\"matchLabels\":{\"app\":\"dice-roller\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"dice-roller\",\"backstage.io/kubernetes-id\":\"dice-roller\"}},\"spec\":{\"containers\":[{\"image\":\"nginx:1.14.2\",\"name\":\"nginx\",\"ports\":[{\"containerPort\":80}]}]}}}}\n"
+        },
+        "creationTimestamp": "2020-09-23T12:00:55.000Z",
+        "generation": 3,
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller"
+        },
+        "managedFields": [
+          {
+            "apiVersion": "apps/v1",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": {
+                "f:annotations": {
+                  ".": {},
+                  "f:kubectl.kubernetes.io/last-applied-configuration": {}
+                },
+                "f:labels": {
+                  ".": {},
+                  "f:backstage.io/kubernetes-id": {}
+                }
+              },
+              "f:spec": {
+                "f:progressDeadlineSeconds": {},
+                "f:replicas": {},
+                "f:revisionHistoryLimit": {},
+                "f:selector": {
+                  "f:matchLabels": {
+                    ".": {},
+                    "f:app": {}
+                  }
+                },
+                "f:strategy": {
+                  "f:rollingUpdate": {
+                    ".": {},
+                    "f:maxSurge": {},
+                    "f:maxUnavailable": {}
+                  },
+                  "f:type": {}
+                },
+                "f:template": {
+                  "f:metadata": {
+                    "f:labels": {
+                      ".": {},
+                      "f:app": {},
+                      "f:backstage.io/kubernetes-id": {}
+                    }
+                  },
+                  "f:spec": {
+                    "f:containers": {
+                      "k:{\"name\":\"nginx\"}": {
+                        ".": {},
+                        "f:image": {},
+                        "f:imagePullPolicy": {},
+                        "f:name": {},
+                        "f:ports": {
+                          ".": {},
+                          "k:{\"containerPort\":80,\"protocol\":\"TCP\"}": {
+                            ".": {},
+                            "f:containerPort": {},
+                            "f:protocol": {}
+                          }
+                        },
+                        "f:resources": {},
+                        "f:terminationMessagePath": {},
+                        "f:terminationMessagePolicy": {}
+                      }
+                    },
+                    "f:dnsPolicy": {},
+                    "f:restartPolicy": {},
+                    "f:schedulerName": {},
+                    "f:securityContext": {},
+                    "f:terminationGracePeriodSeconds": {}
+                  }
+                }
+              }
+            },
+            "manager": "kubectl",
+            "operation": "Update",
+            "time": "2020-09-25T09:58:50.000Z"
+          },
+          {
+            "apiVersion": "apps/v1",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": {
+                "f:annotations": {
+                  "f:deployment.kubernetes.io/revision": {}
+                }
+              },
+              "f:status": {
+                "f:availableReplicas": {},
+                "f:conditions": {
+                  ".": {},
+                  "k:{\"type\":\"Available\"}": {
+                    ".": {},
+                    "f:lastTransitionTime": {},
+                    "f:lastUpdateTime": {},
+                    "f:message": {},
+                    "f:reason": {},
+                    "f:status": {},
+                    "f:type": {}
+                  },
+                  "k:{\"type\":\"Progressing\"}": {
+                    ".": {},
+                    "f:lastTransitionTime": {},
+                    "f:lastUpdateTime": {},
+                    "f:message": {},
+                    "f:reason": {},
+                    "f:status": {},
+                    "f:type": {}
+                  }
+                },
+                "f:observedGeneration": {},
+                "f:readyReplicas": {},
+                "f:replicas": {},
+                "f:updatedReplicas": {}
+              }
+            },
+            "manager": "kube-controller-manager",
+            "operation": "Update",
+            "time": "2020-09-25T09:58:55.000Z"
+          }
+        ],
+        "name": "dice-roller",
+        "namespace": "default",
+        "resourceVersion": "593230",
+        "selfLink": "/apis/apps/v1/namespaces/default/deployments/dice-roller",
+        "uid": "7551e949-42d1-4061-83c5-9da107186e47"
+      },
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 10,
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "app": "dice-roller"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "creationTimestamp": null,
+            "labels": {
+              "app": "dice-roller",
+              "backstage.io/kubernetes-id": "dice-roller"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "image": "nginx:1.14.2",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "nginx",
+                "ports": [
+                  {
+                    "containerPort": 80,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "terminationGracePeriodSeconds": 30
+          }
+        }
+      },
+      "status": {
+        "availableReplicas": 10,
+        "conditions": [
+          {
+            "lastTransitionTime": "2020-09-23T12:00:55.000Z",
+            "lastUpdateTime": "2020-09-24T11:39:28.000Z",
+            "message": "ReplicaSet \"dice-roller-6c8646bfd\" has successfully progressed.",
+            "reason": "NewReplicaSetAvailable",
+            "status": "True",
+            "type": "Progressing"
+          },
+          {
+            "lastTransitionTime": "2020-09-25T09:58:55.000Z",
+            "lastUpdateTime": "2020-09-25T09:58:55.000Z",
+            "message": "Deployment has minimum availability.",
+            "reason": "MinimumReplicasAvailable",
+            "status": "True",
+            "type": "Available"
+          }
+        ],
+        "observedGeneration": 3,
+        "readyReplicas": 10,
+        "replicas": 10,
+        "updatedReplicas": 10
+      }
+    }
+  ]
+}

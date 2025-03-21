@@ -1,0 +1,62 @@
+{
+  "name": "@backstage/e2e-test-utils",
+  "version": "0.1.1",
+  "description": "Shared end-to-end test utilities Backstage",
+  "backstage": {
+    "role": "node-library"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/e2e-test-utils"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    "./playwright": "./src/playwright/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "playwright": [
+        "src/playwright/index.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@manypkg/get-packages": "^1.1.3",
+    "fs-extra": "^11.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/cli-node": "workspace:^",
+    "@types/fs-extra": "^11.0.0"
+  },
+  "peerDependencies": {
+    "@playwright/test": "^1.32.3"
+  },
+  "peerDependenciesMeta": {
+    "@playwright/test": {
+      "optional": true
+    }
+  }
+}

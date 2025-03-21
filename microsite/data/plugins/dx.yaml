@@ -1,0 +1,10 @@
+---
+title: DX
+author: DX
+authorUrl: https://getdx.com
+category: Services
+description: DX Plugin for syncing Backstage data to DX and adding DX reports to Backstage.
+documentation: https://github.com/get-dx/backstage-plugin
+iconUrl: /img/dx-icon.png
+npmPackageName: '@get-dx/backstage-plugin'
+addedDate: '2024-03-05'

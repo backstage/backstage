@@ -1,0 +1,10 @@
+---
+title: Kubecost
+author: suxess-it
+authorUrl: https://github.com/suxess-it
+category: Discovery
+description: Get cost insights from Kubecost Installation for your k8s deployments
+documentation: https://github.com/suxess-it/backstage-plugin-kubecost/blob/main/README.md
+iconUrl: https://avatars.githubusercontent.com/u/45108136?s=200&v=4
+npmPackageName: '@suxess-it/backstage-plugin-kubecost'
+addedDate: '2023-06-29'

@@ -1,0 +1,10 @@
+---
+title: AWS CodePipeline
+author: Amazon Web Services
+authorUrl: https://aws.amazon.com/
+category: CI/CD
+description: View resources related to AWS CodePipeline for your components in Backstage.
+documentation: https://github.com/awslabs/backstage-plugins-for-aws/tree/main/plugins/codepipeline#readme
+iconUrl: https://raw.githubusercontent.com/awslabs/backstage-plugins-for-aws/main/docs/images/logos/aws-codepipeline-logo.png
+npmPackageName: 'https://www.npmjs.com/package/@aws/aws-codepipeline-plugin-for-backstage'
+addedDate: '2024-04-22'

@@ -1,0 +1,10 @@
+---
+title: GitHub Release Manager
+author: Spotify
+authorUrl: https://github.com/spotify
+category: Source Control Mgmt
+description: Manage releases without having to juggle git commands.
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/git-release-manager/plugins/git-release-manager
+iconUrl: /img/git-release-manager-logo.svg
+npmPackageName: '@backstage-community/plugin-git-release-manager'
+addedDate: '2021-10-04'

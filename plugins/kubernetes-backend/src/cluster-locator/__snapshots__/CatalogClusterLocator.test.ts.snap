@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CatalogClusterLocator returns the aws cluster details provided by annotations 1`] = `
+{
+  "authMetadata": {
+    "kubernetes.io/api-server": "https://apiserver.com",
+    "kubernetes.io/api-server-certificate-authority": "caData",
+    "kubernetes.io/auth-provider": "aws",
+    "kubernetes.io/aws-assume-role": "my-role",
+    "kubernetes.io/aws-external-id": "my-id",
+    "kubernetes.io/dashboard-app": "my-app",
+    "kubernetes.io/dashboard-url": "my-url",
+    "kubernetes.io/oidc-token-provider": "google",
+  },
+  "caData": "caData",
+  "dashboardApp": "my-app",
+  "dashboardParameters": undefined,
+  "dashboardUrl": "my-url",
+  "name": "owned",
+  "skipMetricsLookup": false,
+  "skipTLSVerify": false,
+  "title": undefined,
+  "url": "https://apiserver.com",
+}
+`;
+
+exports[`CatalogClusterLocator returns the cluster details provided by annotations 1`] = `
+{
+  "authMetadata": {
+    "kubernetes.io/api-server": "https://apiserver.com",
+    "kubernetes.io/api-server-certificate-authority": "caData",
+    "kubernetes.io/auth-provider": "oidc",
+    "kubernetes.io/dashboard-app": "my-app",
+    "kubernetes.io/dashboard-url": "my-url",
+    "kubernetes.io/oidc-token-provider": "google",
+    "kubernetes.io/skip-metrics-lookup": "true",
+    "kubernetes.io/skip-tls-verify": "true",
+  },
+  "caData": "caData",
+  "dashboardApp": "my-app",
+  "dashboardParameters": undefined,
+  "dashboardUrl": "my-url",
+  "name": "owned",
+  "skipMetricsLookup": true,
+  "skipTLSVerify": true,
+  "title": "title",
+  "url": "https://apiserver.com",
+}
+`;

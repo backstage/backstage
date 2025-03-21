@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-user-settings-common
+  title: '@backstage/plugin-user-settings-common'
+  description: The Backstage common plugin to manage user settings
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: maintainers

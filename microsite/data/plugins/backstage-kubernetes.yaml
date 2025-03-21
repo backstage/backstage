@@ -1,0 +1,11 @@
+---
+title: Backstage Kubernetes
+author: Spotify
+authorUrl: https://github.com/spotify
+category: Core Feature
+description: Monitor all your service's deployments at a glance, even across clusters.
+documentation: https://backstage.io/docs/features/kubernetes/
+iconUrl: /img/backstage-k8s.svg
+npmPackageName: '@backstage/plugin-kubernetes'
+order: 4
+addedDate: '2021-03-29'

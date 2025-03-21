@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-backend-module-gitlab-org
+  title: '@backstage/plugin-catalog-backend-module-gitlab-org'
+  description: The gitlab-org backend module for the catalog plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

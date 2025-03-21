@@ -1,0 +1,10 @@
+---
+title: Bulletin Board
+author: v-ngu
+authorUrl: https://github.com/v-ngu
+category: Discovery
+description: Share interesting ideas, news and links with your teammates within Backstage.
+documentation: https://github.com/v-ngu/backstage-plugin-bulletin-board
+iconUrl: /img/bulletin-board.png
+npmPackageName: 'backstage-plugin-bulletin-board'
+addedDate: '2023-04-01'

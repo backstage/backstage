@@ -1,0 +1,10 @@
+---
+title: Amazon Elastic Container Service
+author: Amazon Web Services
+authorUrl: https://aws.amazon.com/
+category: Infrastructure
+description: View resources related to Amazon Elastic Container Service for your components in Backstage.
+documentation: https://github.com/awslabs/backstage-plugins-for-aws/tree/main/plugins/ecs#readme
+iconUrl: https://raw.githubusercontent.com/awslabs/backstage-plugins-for-aws/main/docs/images/logos/amazon-ecs-logo.png
+npmPackageName: 'https://www.npmjs.com/package/@aws/amazon-ecs-plugin-for-backstage'
+addedDate: '2024-04-22'

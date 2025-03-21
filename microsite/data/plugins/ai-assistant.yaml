@@ -1,0 +1,10 @@
+---
+title: AI Assistant - RAG AI
+author: roadie.io
+authorUrl: https://roadie.io
+category: Search
+description: Query LLMs with contextual information from your catalog.
+documentation: https://roadie.io/backstage/plugins/ai-assistant-rag-ai/
+iconUrl: https://roadie.io/images/logos/roadie-racks-ai.png
+npmPackageName: '@roadiehq/rag-ai'
+addedDate: '2024-03-12'

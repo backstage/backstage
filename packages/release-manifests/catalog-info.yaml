@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-release-manifests
+  title: '@backstage/release-manifests'
+  description: Helper library for receiving release manifests
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: maintainers

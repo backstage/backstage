@@ -1,0 +1,12 @@
+---
+title: Harness Feature Flags
+author: harness.io
+authorUrl: https://github.com/harness/backstage-plugins
+category: Feature Flags
+description: This plugin lets you view Harness Feature Flags created in your project inside Backstage.
+documentation: https://github.com/harness/backstage-plugins/tree/main/plugins/harness-feature-flags
+iconUrl: https://static.harness.io/ng-static/images/favicon.png
+npmPackageName: '@harnessio/backstage-plugin-feature-flags'
+tags:
+  - feature-flags
+addedDate: '2023-03-01'

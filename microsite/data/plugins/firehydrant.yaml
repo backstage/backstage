@@ -1,0 +1,10 @@
+---
+title: FireHydrant
+author: FireHydrant
+authorUrl: https://firehydrant.io/
+category: Monitoring
+description: View service incidents information from FireHydrant, such as active incidents and incident metrics, directly within Backstage.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/firehydrant/plugins/firehydrant/README.md
+iconUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/firehydrant/plugins/firehydrant/doc/firehydrant_logo.png
+npmPackageName: '@backstage/plugin-firehydrant'
+addedDate: '2021-08-18'

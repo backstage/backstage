@@ -1,0 +1,129 @@
+{
+  "apiVersion": "argoproj.io/v1alpha1",
+  "kind": "Rollout",
+  "metadata": {
+    "annotations": {
+      "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"argoproj.io/v1alpha1\",\"kind\":\"Rollout\",\"metadata\":{\"annotations\":{},\"labels\":{\"backstage.io/kubernetes-id\":\"dice-roller\"},\"name\":\"dice-roller\",\"namespace\":\"default\"},\"spec\":{\"minReadySeconds\":30,\"replicas\":4,\"selector\":{\"matchLabels\":{\"app\":\"dice-roller\",\"backstage.io/kubernetes-id\":\"dice-roller\"}},\"strategy\":{\"canary\":{\"maxSurge\":\"25%\",\"maxUnavailable\":0,\"steps\":[{\"setWeight\":10},{\"analysis\":{\"templates\":[{\"templateName\":\"always-pass\"}]}},{\"pause\":{\"duration\":\"1m\"}},{\"setWeight\":20},{\"pause\":{\"duration\":\"1m\"}},{\"analysis\":{\"templates\":[{\"templateName\":\"always-pass\"}]}}]}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"dice-roller\",\"backstage.io/kubernetes-id\":\"dice-roller\",\"start\":\"1234\"}},\"spec\":{\"containers\":[{\"image\":\"nginx:1.15.4\",\"name\":\"nginx\",\"ports\":[{\"containerPort\":80}]}]}}}}\n",
+      "rollout.argoproj.io/revision": "4"
+    },
+    "creationTimestamp": "2021-03-08T10:38:23Z",
+    "generation": 12,
+    "labels": {
+      "backstage.io/kubernetes-id": "dice-roller"
+    },
+    "name": "dice-roller",
+    "namespace": "default",
+    "resourceVersion": "3336911046",
+    "selfLink": "/apis/argoproj.io/v1alpha1/namespaces/default/rollouts/dice-roller",
+    "uid": "8552f08d-32e8-4f95-a43f-8524763eeg60"
+  },
+  "spec": {
+    "minReadySeconds": 30,
+    "replicas": 4,
+    "selector": {
+      "matchLabels": {
+        "app": "dice-roller",
+        "backstage.io/kubernetes-id": "dice-roller"
+      }
+    },
+    "strategy": {
+      "canary": {
+        "maxSurge": "25%",
+        "maxUnavailable": 0,
+        "steps": [
+          {
+            "setWeight": 10
+          },
+          {
+            "analysis": {
+              "templates": [
+                {
+                  "templateName": "always-pass"
+                }
+              ]
+            }
+          },
+          {
+            "pause": {
+              "duration": "1h"
+            }
+          },
+          {
+            "setWeight": 20
+          },
+          {
+            "pause": {
+              "duration": "1m"
+            }
+          },
+          {
+            "analysis": {
+              "templates": [
+                {
+                  "templateName": "always-pass"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "template": {
+      "metadata": {
+        "creationTimestamp": null,
+        "labels": {
+          "app": "dice-roller",
+          "backstage.io/kubernetes-id": "dice-roller",
+          "start": "1236"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "image": "nginx:1.15.4",
+            "name": "nginx",
+            "ports": [
+              {
+                "containerPort": 80
+              }
+            ],
+            "resources": {}
+          }
+        ]
+      }
+    }
+  },
+  "status": {
+    "HPAReplicas": 4,
+    "availableReplicas": 4,
+    "blueGreen": {},
+    "canary": {},
+    "conditions": [
+      {
+        "lastTransitionTime": "2021-03-08T10:39:31Z",
+        "lastUpdateTime": "2021-03-08T10:39:31Z",
+        "message": "Rollout has minimum availability",
+        "reason": "AvailableReason",
+        "status": "True",
+        "type": "Available"
+      },
+      {
+        "lastTransitionTime": "2021-03-09T16:11:14Z",
+        "lastUpdateTime": "2021-03-09T16:13:09Z",
+        "message": "ReplicaSet \"dice-roller-546c476497\" has successfully progressed.",
+        "reason": "NewReplicaSetAvailable",
+        "status": "True",
+        "type": "Progressing"
+      }
+    ],
+    "currentPodHash": "546c476497",
+    "currentStepHash": "5b48bb87dc",
+    "currentStepIndex": 6,
+    "observedGeneration": "12",
+    "readyReplicas": 4,
+    "replicas": 4,
+    "selector": "app=dice-roller,backstage.io/kubernetes-id=dice-roller",
+    "stableRS": "546c476497",
+    "updatedReplicas": 4
+  }
+}
