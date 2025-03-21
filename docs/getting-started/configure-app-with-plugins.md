@@ -22,7 +22,7 @@ The following steps assume that you have
 [created a Backstage app](./index.md) and want to add an existing plugin
 to it.
 
-You can find many wonderful plugins out there for Backstage including the [Community Plugins Repository](https://github.com/backstage/community-plugins) and the [Backstage Plugin Directory](https://backstage.io/plugins).
+You can find many wonderful plugins out there for Backstage, for example through the [Community Plugins Repository](https://github.com/backstage/community-plugins) and the [Backstage Plugin Directory](https://backstage.io/plugins).
 
 Adding plugins to your Backstage app is generally a simple process, and ideally each plugin will come with its own documentation on how to install and configure it. In this example we will add the [Tech Radar plugin](https://github.com/backstage/community-plugins/tree/main/workspaces/tech-radar/plugins/tech-radar) to our Backstage app.
 
