@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-gateway-backend",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "gateway",
@@ -13,7 +13,6 @@
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
-  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
