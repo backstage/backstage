@@ -17,10 +17,8 @@
 import React from 'react';
 import {
   createExtensionBlueprint,
-  ApiHolder,
   createExtensionDataRef,
-  dialogApiRef,
-  useApiHolder,
+  ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -69,11 +67,11 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
   kind: 'entity-context-menu-item',
   attachTo: { id: 'page:catalog/entity', input: 'contextMenuItems' },
   output: [contextMenuItemComponentDataRef],
-  *factory(params: EntityContextMenuItemParams, { apis }) {
-    const loaderFactory = (): ContextMenuItemComponent => {
+  *factory(params: EntityContextMenuItemParams, { node }) {
+    const loader = async (): Promise<ContextMenuItemComponent> => {
       if ('useOnClick' in params) {
         return ({ onClose }) => {
-          const onClick = params.useOnClick({ apis });
+          const onClick = params.useOnClick();
           const title = params.useTitle();
 
           return (
@@ -105,6 +103,8 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
       };
     };
 
-    yield contextMenuItemComponentDataRef(loaderFactory());
+    yield contextMenuItemComponentDataRef(
+      ExtensionBoundary.lazyComponent(node, loader),
+    );
   },
 });

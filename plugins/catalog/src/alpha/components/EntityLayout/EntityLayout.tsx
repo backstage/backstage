@@ -62,7 +62,7 @@ export interface EntityLayoutProps {
   UNSTABLE_extraContextMenuItems?: ComponentProps<
     typeof EntityHeader
   >['UNSTABLE_extraContextMenuItems'];
-  extraMenuItems?: ComponentProps<typeof EntityHeader>['extraMenuItems'];
+  contextMenuItems?: ComponentProps<typeof EntityHeader>['contextMenuItems'];
   children?: ReactNode;
   header?: JSX.Element;
   NotFoundComponent?: ReactNode;
@@ -100,7 +100,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
   const {
     UNSTABLE_extraContextMenuItems,
     UNSTABLE_contextMenuOptions,
-    extraMenuItems,
+    contextMenuItems,
     children,
     header,
     NotFoundComponent,
@@ -147,7 +147,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
           parentEntityRelations={parentEntityRelations}
           UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
           UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
-          extraMenuItems={extraMenuItems}
+          contextMenuItems={contextMenuItems}
         />
       )}
 

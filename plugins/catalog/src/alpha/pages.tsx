@@ -101,7 +101,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
 
         const header = inputs.header?.get(
           EntityHeaderBlueprint.dataRefs.element,
-        ) ?? <EntityHeader extraMenuItems={menuItems} />;
+        ) ?? <EntityHeader contextMenuItems={menuItems} />;
 
         let groups = Object.entries(defaultEntityContentGroups).reduce<Groups>(
           (rest, group) => {
@@ -140,7 +140,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
         const Component = () => {
           return (
             <AsyncEntityProvider {...useEntityFromUrl()}>
-              <EntityLayout header={header} extraMenuItems={menuItems}>
+              <EntityLayout header={header} contextMenuItems={menuItems}>
                 {Object.values(groups).flatMap(({ title, items }) =>
                   items.map(output => (
                     <EntityLayout.Route
