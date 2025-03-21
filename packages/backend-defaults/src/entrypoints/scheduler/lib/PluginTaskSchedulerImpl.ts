@@ -16,6 +16,7 @@
 
 import {
   LoggerService,
+  RootConfigService,
   RootLifecycleService,
   SchedulerService,
   SchedulerServiceTaskDescriptor,
@@ -51,7 +52,14 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
     private readonly databaseFactory: () => Promise<Knex>,
     private readonly logger: LoggerService,
     rootLifecycle?: RootLifecycleService,
+    config?: RootConfigService,
   ) {
+    const metricsConfig = config?.getOptionalConfig(
+      'backend.scheduler.opentelemetry.metrics',
+    );
+    const defaultBuckets = metricsConfig?.getOptional<number[]>(
+      'histogramBuckets.default',
+    );
     const meter = metrics.getMeter('default');
     this.counter = meter.createCounter('backend_tasks.task.runs.count', {
       description: 'Total number of times a task has been run',
@@ -59,6 +67,11 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
     this.duration = meter.createHistogram('backend_tasks.task.runs.duration', {
       description: 'Histogram of task run durations',
       unit: 'seconds',
+      advice: {
+        explicitBucketBoundaries:
+          metricsConfig?.getOptional<number[]>('histogramBuckets.duration') ||
+          defaultBuckets,
+      },
     });
     this.lastStarted = meter.createGauge('backend_tasks.task.runs.started', {
       description: 'Epoch timestamp seconds when the task was last started',

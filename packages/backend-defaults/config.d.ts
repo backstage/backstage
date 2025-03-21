@@ -697,6 +697,32 @@ export interface Config {
         paths?: string[];
       }>;
     };
+
+    /**
+     * Configuration for the task scheduler
+     */
+    scheduler?: {
+      /**
+       * Defines configuration options for OpenTelemetry metrics
+       */
+      opentelemetry?: {
+        metrics?: {
+          /**
+           * Allows for configuring the default buckets for all histogram metrics or for specific histogram metrics.
+           * Learn more about histograms at https://opentelemetry.io/docs/specs/otel/metrics/data-model/#histogram.
+           *
+           * @remarks
+           *
+           * Configuration for the non 'default' keys will take precedence over 'default'. If no configuration is provided,
+           * falls back to the OpenTelemetry default buckets of [0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000, 7500, 10000].
+           */
+          histogramBuckets?: {
+            default?: Array<number>;
+            duration?: Array<number>;
+          };
+        };
+      };
+    };
   };
 
   /**

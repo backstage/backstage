@@ -17,6 +17,7 @@
 import {
   DatabaseService,
   LoggerService,
+  RootConfigService,
   RootLifecycleService,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
@@ -36,6 +37,7 @@ export class DefaultSchedulerService {
     database: DatabaseService;
     logger: LoggerService;
     rootLifecycle?: RootLifecycleService;
+    config?: RootConfigService;
   }): SchedulerService {
     const databaseFactory = once(async () => {
       const knex = await options.database.getClient();
@@ -63,6 +65,7 @@ export class DefaultSchedulerService {
       databaseFactory,
       options.logger,
       options.rootLifecycle,
+      options.config,
     );
   }
 }
