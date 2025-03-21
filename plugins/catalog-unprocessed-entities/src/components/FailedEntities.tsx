@@ -92,12 +92,15 @@ const RenderErrorContext = ({
  * Converts input datetime which lacks timezone info into user's local time so that they can
  * easily understand the times.
  */
-export const convertTimeToLocalTimezone = (strDateTime: string) => {
-  const dateTime = DateTime.fromISO(strDateTime.toLocaleString(), {
+export const convertTimeToLocalTimezone = (dateTime: string | Date) => {
+  const isoDateTime =
+    typeof dateTime === 'string' ? dateTime : dateTime.toISOString();
+
+  const strDateTime = DateTime.fromISO(isoDateTime, {
     zone: DateTime.local().zoneName,
   });
 
-  return dateTime.toFormat('yyyy-MM-dd hh:mm:ss ZZZZ');
+  return strDateTime.toFormat('yyyy-MM-dd hh:mm:ss ZZZZ');
 };
 
 export const FailedEntities = () => {
