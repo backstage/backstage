@@ -30,11 +30,13 @@ export type FactoryHrefParams =
       useTitle: () => string;
       icon: React.JSX.Element;
       useHref: () => string;
+      useIsDisabled?: () => boolean;
     }
   | {
       useTitle: () => string;
       icon: React.JSX.Element;
       href: string;
+      useIsDisabled?: () => boolean;
     };
 
 /** @alpha */
@@ -42,6 +44,7 @@ export type FactoryDialogParams = {
   useOnClick: () => React.MouseEventHandler<HTMLLIElement>;
   useTitle: () => string;
   icon: React.JSX.Element;
+  useIsDisabled?: () => boolean;
 };
 
 /** @alpha */
@@ -73,9 +76,11 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
         return ({ onClose }) => {
           const onClick = params.useOnClick();
           const title = params.useTitle();
+          const disabled = params.useIsDisabled?.() ?? false;
 
           return (
             <MenuItem
+              disabled={disabled}
               onClick={e => {
                 onClose();
                 onClick(e);
@@ -93,9 +98,10 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
       return () => {
         const href = useHref();
         const title = params.useTitle();
+        const disabled = params.useIsDisabled?.() ?? false;
 
         return (
-          <MenuItem component="a" href={href}>
+          <MenuItem disabled={disabled} component="a" href={href}>
             <ListItemIcon>{params.icon}</ListItemIcon>
             <ListItemText primary={title} />
           </MenuItem>
