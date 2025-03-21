@@ -60,12 +60,6 @@ const mockUser: UserEntity = {
 };
 
 const ownershipEntityRefs = ['user:default/testuser'];
-const orderFields = [
-  {
-    field: 'metadata.name',
-    order: 'asc',
-  },
-];
 
 const mockConfigApi = mockApis.config({
   data: { organization: { name: 'Test Company' } },
@@ -196,7 +190,6 @@ describe('<UserListPicker />', () => {
         'metadata.namespace': ['default'],
       },
       limit: 0,
-      orderFields,
     });
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       filter: {
@@ -204,7 +197,6 @@ describe('<UserListPicker />', () => {
         'relations.ownedBy': ['user:default/testuser'],
       },
       limit: 0,
-      orderFields,
     });
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       filter: {
@@ -212,7 +204,6 @@ describe('<UserListPicker />', () => {
         'metadata.name': ['e-1', 'e-2'],
       },
       limit: 1000,
-      orderFields,
     });
   });
 
@@ -238,12 +229,10 @@ describe('<UserListPicker />', () => {
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       filter: { 'metadata.tags': ['tag1'] },
       limit: 0,
-      orderFields,
     });
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       filter: { 'metadata.name': ['e-1', 'e-2'], 'metadata.tags': ['tag1'] },
       limit: 1000,
-      orderFields,
     });
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       filter: {
@@ -251,7 +240,6 @@ describe('<UserListPicker />', () => {
         'metadata.tags': ['tag1'],
       },
       limit: 0,
-      orderFields,
     });
   });
 
@@ -284,12 +272,10 @@ describe('<UserListPicker />', () => {
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       filter: { kind: 'component' },
       limit: 0,
-      orderFields,
     });
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       filter: { kind: 'component', 'metadata.name': ['e-1', 'e-2'] },
       limit: 1000,
-      orderFields,
     });
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       filter: {
@@ -297,7 +283,6 @@ describe('<UserListPicker />', () => {
         'relations.ownedBy': ['user:default/testuser'],
       },
       limit: 0,
-      orderFields,
     });
   });
 
@@ -323,12 +308,10 @@ describe('<UserListPicker />', () => {
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: { kind: 'component', 'metadata.name': ['e-1', 'e-2'] },
         limit: 1000,
-        orderFields,
       });
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: { kind: 'component' },
         limit: 0,
-        orderFields,
       });
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: {
@@ -336,7 +319,6 @@ describe('<UserListPicker />', () => {
           'relations.ownedBy': ['user:default/testuser'],
         },
         limit: 0,
-        orderFields,
       });
     });
 
@@ -469,7 +451,6 @@ describe('<UserListPicker />', () => {
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
             filter: { 'metadata.name': ['e-1', 'e-2'] },
             limit: 1000,
-            orderFields,
           });
         });
         expect(updateFilters).not.toHaveBeenCalledWith({
@@ -643,7 +624,6 @@ describe('<UserListPicker />', () => {
           expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
             filter: { 'metadata.name': ['e-1', 'e-2'] },
             limit: 1000,
-            orderFields,
           });
         });
         expect(updateFilters).not.toHaveBeenCalledWith({

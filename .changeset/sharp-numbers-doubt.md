@@ -7,8 +7,14 @@ Added EntityOrderFilter to sort entities by different fields/columns. This new f
 Example usage:
 
 ```ts
-import { EntityOrderFilter } from '@backstage/plugin-catalog-react';
+import {
+  EntityOrderFilter,
+  useEntityList,
+} from '@backstage/plugin-catalog-react';
+// ...
+const { updateFilters } = useEntityList();
 
+// ...
 updateFilters({
   order: new EntityOrderFilter([
     {

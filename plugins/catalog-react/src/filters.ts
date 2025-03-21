@@ -338,13 +338,13 @@ export class EntityErrorFilter implements EntityFilter {
  * @public
  */
 export class EntityOrderFilter implements EntityFilter {
-  constructor(readonly value: EntityOrderQuery) {}
+  constructor(readonly values: [string, 'asc' | 'desc'][]) {}
 
   getOrderFilters(): EntityOrderQuery {
-    return this.value;
+    return this.values.map(([field, order]) => ({ field, order }));
   }
 
-  filterEntity(_: Entity): boolean {
-    return true;
+  toQueryValue(): string[] {
+    return this.values.flat();
   }
 }

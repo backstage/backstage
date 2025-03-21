@@ -87,12 +87,6 @@ describe('useStarredEntitiesCount', () => {
           'metadata.name': ['favourite1', 'favourite2'],
         },
         limit: 1000,
-        orderFields: [
-          {
-            field: 'metadata.name',
-            order: 'asc',
-          },
-        ],
       });
       expect(result.current).toEqual({
         count: 2,

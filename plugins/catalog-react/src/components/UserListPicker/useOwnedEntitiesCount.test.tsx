@@ -115,12 +115,6 @@ describe('useOwnedEntitiesCount', () => {
           'relations.ownedBy': ['user:default/spiderman', 'user:group/a-group'],
         },
         limit: 0,
-        orderFields: [
-          {
-            field: 'metadata.name',
-            order: 'asc',
-          },
-        ],
       }),
     );
 
@@ -196,12 +190,6 @@ describe('useOwnedEntitiesCount', () => {
           'relations.ownedBy': ['user:group/a-group'],
         },
         limit: 0,
-        orderFields: [
-          {
-            field: 'metadata.name',
-            order: 'asc',
-          },
-        ],
       }),
     );
 
