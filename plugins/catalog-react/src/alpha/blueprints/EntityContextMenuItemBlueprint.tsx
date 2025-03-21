@@ -19,6 +19,8 @@ import {
   createExtensionBlueprint,
   ApiHolder,
   createExtensionDataRef,
+  dialogApiRef,
+  useApiHolder,
 } from '@backstage/frontend-plugin-api';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -39,11 +41,7 @@ export type FactoryHrefParams =
 
 /** @alpha */
 export type FactoryDialogParams = {
-  useOnClick: ({
-    apis,
-  }: {
-    apis: ApiHolder;
-  }) => React.MouseEventHandler<HTMLLIElement>;
+  useOnClick: () => React.MouseEventHandler<HTMLLIElement>;
   useTitle: () => string;
   icon: React.JSX.Element;
 };
@@ -81,8 +79,8 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
           return (
             <MenuItem
               onClick={e => {
-                onClick(e);
                 onClose();
+                onClick(e);
               }}
             >
               <ListItemIcon>{params.icon}</ListItemIcon>

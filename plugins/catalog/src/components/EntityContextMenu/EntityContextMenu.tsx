@@ -15,6 +15,7 @@
  */
 
 import Divider from '@material-ui/core/Divider';
+import FileCopyTwoToneIcon from '@material-ui/icons/FileCopyTwoTone';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -147,6 +148,9 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
       >
         <MenuList autoFocusItem={Boolean(anchorEl)}>
           {extraItems}
+          {extraMenuItems?.map(ExtraMenuItem => (
+            <ExtraMenuItem onClose={onClose} />
+          ))}
           <UnregisterEntity
             unregisterEntityOptions={UNSTABLE_contextMenuOptions}
             isUnregisterAllowed={isAllowed}
@@ -164,9 +168,17 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
             </ListItemIcon>
             <ListItemText primary={t('entityContextMenu.inspectMenuTitle')} />
           </MenuItem>
-          {extraMenuItems?.map(ExtraMenuItem => (
-            <ExtraMenuItem onClose={onClose} />
-          ))}
+          <MenuItem
+            onClick={() => {
+              onClose();
+              copyToClipboard(window.location.toString());
+            }}
+          >
+            <ListItemIcon>
+              <FileCopyTwoToneIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary={t('entityContextMenu.copyURLMenuTitle')} />
+          </MenuItem>
         </MenuList>
       </Popover>
     </>
