@@ -16,8 +16,8 @@
 import fs from 'fs-extra';
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
-import { paths } from '../../paths';
-import { Task } from '../../tasks';
+import { paths } from '../../../../lib/paths';
+import { Task } from '../../../../lib/tasks';
 import { PortableTemplateInput } from '../types';
 
 export async function installNewPackage(input: PortableTemplateInput) {
