@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 import { z } from 'zod';
-import { ZodFunctionSchema } from '../types';
 
-export type { TemplateFilter } from '../../types';
-
-/** @alpha */
-export type TemplateFilterExample = {
-  description?: string;
-  example: string;
-  notes?: string;
-};
-
-/** @alpha */
-export type CreatedTemplateFilter<
+/**
+ * @alpha
+ */
+export type ZodFunctionSchema<
   TFunctionArgs extends [z.ZodTypeAny, ...z.ZodTypeAny[]],
   TReturnType extends z.ZodTypeAny,
-> = {
-  id: string;
-  description?: string;
-  examples?: TemplateFilterExample[];
-  schema?: ZodFunctionSchema<TFunctionArgs, TReturnType>;
-  filter: (...args: z.infer<z.ZodTuple<TFunctionArgs>>) => z.infer<TReturnType>;
-};
+> = (
+  zod: typeof z,
+) =>
+  | z.ZodFunction<z.ZodTuple<TFunctionArgs, null>, TReturnType>
+  | z.ZodType<
+      (...args: z.infer<z.ZodTuple<TFunctionArgs>>) => z.infer<TReturnType>
+    >;

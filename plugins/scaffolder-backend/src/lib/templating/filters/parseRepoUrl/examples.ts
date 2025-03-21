@@ -13,26 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z } from 'zod';
-import { ZodFunctionSchema } from '../types';
 
-export type { TemplateFilter } from '../../types';
+import { TemplateFilterExample } from '@backstage/plugin-scaffolder-node/alpha';
 
-/** @alpha */
-export type TemplateFilterExample = {
-  description?: string;
-  example: string;
-  notes?: string;
-};
-
-/** @alpha */
-export type CreatedTemplateFilter<
-  TFunctionArgs extends [z.ZodTypeAny, ...z.ZodTypeAny[]],
-  TReturnType extends z.ZodTypeAny,
-> = {
-  id: string;
-  description?: string;
-  examples?: TemplateFilterExample[];
-  schema?: ZodFunctionSchema<TFunctionArgs, TReturnType>;
-  filter: (...args: z.infer<z.ZodTuple<TFunctionArgs>>) => z.infer<TReturnType>;
-};
+export const examples: TemplateFilterExample[] = [
+  {
+    example: `\
+- id: log
+  name: Parse Repo URL
+  action: debug:log
+  input:
+    message: \${{ parameters.repoUrl | parseRepoUrl }}`,
+    notes: ` - **Input**: \`github.com?repo=backstage&owner=backstage\`
+  - **Output**: \`{"host":"github.com","owner":"backstage","repo":"backstage"}\`
+`,
+  },
+];

@@ -179,7 +179,7 @@ export interface RouterOptions {
   taskBroker?: TaskBroker;
   additionalTemplateFilters?:
     | Record<string, TemplateFilter>
-    | CreatedTemplateFilter[];
+    | CreatedTemplateFilter<any, any>[];
   additionalTemplateGlobals?:
     | Record<string, TemplateGlobal>
     | CreatedTemplateGlobal[];
