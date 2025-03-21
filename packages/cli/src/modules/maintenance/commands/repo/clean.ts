@@ -19,7 +19,7 @@ import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import { promisify } from 'util';
 import { PackageGraph } from '@backstage/cli-node';
-import { paths } from '../../lib/paths';
+import { paths } from '../../../../lib/paths';
 
 const execFile = promisify(execFileCb);
 

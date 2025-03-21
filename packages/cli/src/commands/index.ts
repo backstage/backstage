@@ -35,6 +35,10 @@ import {
   registerPackageCommands as registerPackageLintCommands,
   registerRepoCommands as registerRepoLintCommands,
 } from '../modules/lint';
+import {
+  registerPackageCommands as registerMaintenancePackageCommands,
+  registerRepoCommands as registerMaintenanceRepoCommands,
+} from '../modules/maintenance';
 
 export function registerRepoCommand(program: Command) {
   const command = program
@@ -44,30 +48,7 @@ export function registerRepoCommand(program: Command) {
   registerRepoBuildCommands(command);
   registerRepoTestCommands(command);
   registerRepoLintCommands(command);
-
-  command
-    .command('fix')
-    .description('Automatically fix packages in the project')
-    .option(
-      '--publish',
-      'Enable additional fixes that only apply when publishing packages',
-    )
-    .option(
-      '--check',
-      'Fail if any packages would have been changed by the command',
-    )
-    .action(lazy(() => import('./repo/fix'), 'command'));
-
-  command
-    .command('clean')
-    .description('Delete cache and output directories')
-    .action(lazy(() => import('./repo/clean'), 'command'));
-
-  command
-    .command('list-deprecations')
-    .description('List deprecations')
-    .option('--json', 'Output as JSON')
-    .action(lazy(() => import('./repo/list-deprecations'), 'command'));
+  registerMaintenanceRepoCommands(command);
 }
 
 export function registerScriptCommand(program: Command) {
@@ -95,22 +76,8 @@ export function registerScriptCommand(program: Command) {
 
   registerPackageBuildCommands(command);
   registerPackageTestCommands(command);
-
+  registerMaintenancePackageCommands(command);
   registerPackageLintCommands(command);
-  command
-    .command('clean')
-    .description('Delete cache directories')
-    .action(lazy(() => import('./clean/clean'), 'default'));
-
-  command
-    .command('prepack')
-    .description('Prepares a package for packaging before publishing')
-    .action(lazy(() => import('./pack'), 'pre'));
-
-  command
-    .command('postpack')
-    .description('Restores the changes made by the prepack command')
-    .action(lazy(() => import('./pack'), 'post'));
 }
 
 export function registerCommands(program: Command) {
@@ -156,7 +123,6 @@ export function registerCommands(program: Command) {
   registerMigrateCommand(program);
   registerBuildCommands(program);
   registerInfoCommands(program);
-
   program
     .command('create-github-app <github-org>')
     .description('Create new GitHub App in your organization.')

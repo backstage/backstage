@@ -200,10 +200,10 @@ Commands:
   start [options]
   build [options]
   test
-  lint [options] [directories...]
   clean
   prepack
   postpack
+  lint [options] [directories...]
   help [command]
 ```
 
