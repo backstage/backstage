@@ -173,7 +173,6 @@ interface EntityContextMenuOptions {
 export interface EntityLayoutProps {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   UNSTABLE_contextMenuOptions?: EntityContextMenuOptions;
-  extraMenuItems?: JSX.Element[];
   children?: React.ReactNode;
   NotFoundComponent?: React.ReactNode;
   /**
@@ -240,7 +239,6 @@ export const EntityLayout = (props: EntityLayoutProps) => {
   const {
     UNSTABLE_extraContextMenuItems,
     UNSTABLE_contextMenuOptions,
-    extraMenuItems,
     children,
     NotFoundComponent,
     parentEntityRelations,
@@ -356,7 +354,6 @@ export const EntityLayout = (props: EntityLayoutProps) => {
             <EntityContextMenu
               UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
               UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
-              extraMenuItems={extraMenuItems}
               onUnregisterEntity={() => setConfirmationDialogOpen(true)}
               onInspectEntity={() => setSearchParams('inspect')}
             />

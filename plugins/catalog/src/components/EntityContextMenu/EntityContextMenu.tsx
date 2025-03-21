@@ -62,7 +62,7 @@ interface ExtraContextMenuItem {
 interface EntityContextMenuProps {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   UNSTABLE_contextMenuOptions?: UnregisterEntityOptions;
-  extraMenuItems?: ContextMenuItemComponent[];
+  contextMenuItems?: ContextMenuItemComponent[];
   onUnregisterEntity: () => void;
   onInspectEntity: () => void;
 }
@@ -71,7 +71,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   const {
     UNSTABLE_extraContextMenuItems,
     UNSTABLE_contextMenuOptions,
-    extraMenuItems,
+    contextMenuItems,
     onUnregisterEntity,
     onInspectEntity,
   } = props;
@@ -148,37 +148,46 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
       >
         <MenuList autoFocusItem={Boolean(anchorEl)}>
           {extraItems}
-          {extraMenuItems?.map(ExtraMenuItem => (
-            <ExtraMenuItem onClose={onClose} />
-          ))}
-          <UnregisterEntity
-            unregisterEntityOptions={UNSTABLE_contextMenuOptions}
-            isUnregisterAllowed={isAllowed}
-            onUnregisterEntity={onUnregisterEntity}
-            onClose={onClose}
-          />
-          <MenuItem
-            onClick={() => {
-              onClose();
-              onInspectEntity();
-            }}
-          >
-            <ListItemIcon>
-              <BugReportIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary={t('entityContextMenu.inspectMenuTitle')} />
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              onClose();
-              copyToClipboard(window.location.toString());
-            }}
-          >
-            <ListItemIcon>
-              <FileCopyTwoToneIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary={t('entityContextMenu.copyURLMenuTitle')} />
-          </MenuItem>
+          {contextMenuItems === undefined ? (
+            <>
+              <UnregisterEntity
+                unregisterEntityOptions={UNSTABLE_contextMenuOptions}
+                isUnregisterAllowed={isAllowed}
+                onUnregisterEntity={onUnregisterEntity}
+                onClose={onClose}
+              />
+              <MenuItem
+                onClick={() => {
+                  onClose();
+                  onInspectEntity();
+                }}
+              >
+                <ListItemIcon>
+                  <BugReportIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText
+                  primary={t('entityContextMenu.inspectMenuTitle')}
+                />
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  onClose();
+                  copyToClipboard(window.location.toString());
+                }}
+              >
+                <ListItemIcon>
+                  <FileCopyTwoToneIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText
+                  primary={t('entityContextMenu.copyURLMenuTitle')}
+                />
+              </MenuItem>
+            </>
+          ) : (
+            contextMenuItems.map(ExtraMenuItem => (
+              <ExtraMenuItem onClose={onClose} />
+            ))
+          )}
         </MenuList>
       </Popover>
     </>
