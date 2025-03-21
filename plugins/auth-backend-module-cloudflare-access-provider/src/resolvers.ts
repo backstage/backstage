@@ -19,6 +19,7 @@ import {
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { CloudflareAccessResult } from './types';
+import { z } from 'zod';
 
 /**
  * Available sign-in resolvers for the Cloudflare Access auth provider.
@@ -31,7 +32,12 @@ export namespace cloudflareAccessSignInResolvers {
    */
   export const emailMatchingUserEntityProfileEmail =
     createSignInResolverFactory({
-      create() {
+      optionsSchema: z
+        .object({
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        })
+        .optional(),
+      create(options = {}) {
         return async (info: SignInInfo<CloudflareAccessResult>, ctx) => {
           const { profile } = info;
 
@@ -41,11 +47,15 @@ export namespace cloudflareAccessSignInResolvers {
             );
           }
 
-          return ctx.signInWithCatalogUser({
-            filter: {
-              'spec.profile.email': profile.email,
+          return ctx.signInWithCatalogUser(
+            {
+              filter: {
+                'spec.profile.email': profile.email,
+              },
             },
-          });
+            profile.email,
+            options?.dangerouslyAllowSignInWithoutUserInCatalog,
+          );
         };
       },
     });
