@@ -12,10 +12,10 @@ import { JSX as JSX_2 } from 'react';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
 import { NotificationSettings } from '@backstage/plugin-notifications-common';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
+import { NotificationsTableProps as NotificationsTableProps_2 } from '@backstage/plugin-notifications-react';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
-import { TableProps } from '@backstage/core-components';
 
 // @public (undocumented)
 export type GetNotificationsCommonOptions = {
@@ -138,7 +138,7 @@ export const NotificationsSidebarItem: (props?: {
   noTrack?: boolean;
 }) => React_2.JSX.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const NotificationsTable: ({
   title,
   markAsReadOnLinkOpen,
@@ -152,21 +152,10 @@ export const NotificationsTable: ({
   page,
   pageSize,
   totalCount,
-}: NotificationsTableProps) => React_2.JSX.Element;
+}: NotificationsTableProps_2) => JSX_2.Element;
 
-// @public (undocumented)
-export type NotificationsTableProps = Pick<
-  TableProps,
-  'onPageChange' | 'onRowsPerPageChange' | 'page' | 'totalCount' | 'title'
-> & {
-  markAsReadOnLinkOpen?: boolean;
-  isLoading?: boolean;
-  isUnread: boolean;
-  notifications?: Notification_2[];
-  onUpdate: () => void;
-  setContainsText: (search: string) => void;
-  pageSize: number;
-};
+// @public @deprecated (undocumented)
+export type NotificationsTableProps = NotificationsTableProps_2;
 
 // @public (undocumented)
 export type UpdateNotificationsOptions = {
