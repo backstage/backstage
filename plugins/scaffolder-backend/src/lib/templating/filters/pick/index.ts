@@ -13,19 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTemplateFilter } from '@backstage/plugin-scaffolder-node/alpha';
-import { get as filter } from 'lodash';
-import { examples } from './examples';
-
-export const pick = createTemplateFilter({
-  id: 'pick',
-  description:
-    'Selects a specific property (e.g. kind, namespace, name) from an object.',
-  schema: z =>
-    z.function(
-      z.tuple([z.any(), z.string().describe('Property')]),
-      z.any().describe('Selected property'),
-    ),
-  examples,
-  filter,
-});
+export { pick } from './filter';

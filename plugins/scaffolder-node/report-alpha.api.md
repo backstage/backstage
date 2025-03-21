@@ -206,7 +206,7 @@ export interface WorkspaceProvider {
   }): Promise<void>;
 }
 
-// @alpha
+// @alpha (undocumented)
 export type ZodFunctionSchema<
   TFunctionArgs extends [z.ZodTypeAny, ...z.ZodTypeAny[]],
   TReturnType extends z.ZodTypeAny,

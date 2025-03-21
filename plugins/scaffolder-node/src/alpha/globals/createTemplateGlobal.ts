@@ -20,7 +20,7 @@ import {
   CreatedTemplateGlobalValue,
   TemplateGlobalFunctionExample,
 } from './types';
-import { ZodFunctionSchema } from '../filters';
+import { ZodFunctionSchema } from '../types';
 
 /**
  * This function is used to create new template global values in type-safe manner.

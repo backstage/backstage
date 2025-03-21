@@ -27,6 +27,7 @@ import { CreatedTemplateGlobal } from './globals';
 export * from '../tasks/alpha';
 export * from './filters';
 export * from './globals';
+export * from './types';
 
 /**
  * Extension point for managing scaffolder actions.

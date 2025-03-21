@@ -13,38 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ScmIntegrations } from '@backstage/integration';
-import { parseRepoUrl } from '@backstage/plugin-scaffolder-node';
-import { createTemplateFilter } from '@backstage/plugin-scaffolder-node/alpha';
-import { examples } from './examples';
-
-export const createParseRepoUrl = (integrations: ScmIntegrations) =>
-  createTemplateFilter({
-    id: 'parseRepoUrl',
-    description:
-      'Parses a repository URL into its constituent parts: owner, repository name, etc.',
-    schema: z =>
-      z.function(
-        z.tuple([
-          z.string().describe('repo URL as collected from repository picker'),
-        ]),
-        z
-          .object({
-            repo: z.string(),
-            host: z.string(),
-          })
-          .merge(
-            z
-              .object({
-                owner: z.string(),
-                organization: z.string(),
-                workspace: z.string(),
-                project: z.string(),
-              })
-              .partial(),
-          )
-          .describe('`RepoSpec`'),
-      ),
-    examples,
-    filter: url => parseRepoUrl(url, integrations),
-  });
+export { createParseRepoUrl } from './filter';

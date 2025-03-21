@@ -15,7 +15,7 @@
  */
 import { JsonValue } from '@backstage/types';
 import { z } from 'zod';
-import { ZodFunctionSchema } from '../filters/types';
+import { ZodFunctionSchema } from '../types';
 
 export type { TemplateGlobal } from '../../types';
 

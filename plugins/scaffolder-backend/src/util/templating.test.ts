@@ -28,7 +28,7 @@ import {
   extractGlobalValueMetadata,
 } from './templating';
 import { JsonValue } from '@backstage/types';
-import { createDefaultFilters } from '../lib/templating/filters';
+import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 

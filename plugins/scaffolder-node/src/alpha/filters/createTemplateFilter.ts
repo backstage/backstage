@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  CreatedTemplateFilter,
-  TemplateFilterExample,
-  ZodFunctionSchema,
-} from './types';
+import { ZodFunctionSchema } from '../types';
+import { CreatedTemplateFilter, TemplateFilterExample } from './types';
 import { z } from 'zod';
 
 /**
