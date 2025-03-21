@@ -111,6 +111,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       fix: Boolean(opts.fix),
       format: opts.format as string | undefined,
       shouldCache: Boolean(cacheContext),
+      maxWarnings: opts.maxWarnings ?? -1,
       successCache: cacheContext?.entries,
       rootDir: paths.targetRoot,
     },
@@ -120,6 +121,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       shouldCache,
       successCache,
       rootDir,
+      maxWarnings,
     }) => {
       const { ESLint } = require('eslint') as typeof import('eslint');
       const crypto = require('crypto') as typeof import('crypto');
@@ -131,7 +133,6 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       return async ({
         fullDir,
         relativeDir,
-        lintOptions,
         parentHash,
       }): Promise<{
         relativeDir: string;
@@ -199,7 +200,6 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           await ESLint.outputFixes(results);
         }
 
-        const maxWarnings = lintOptions?.maxWarnings ?? 0;
         const ignoreWarnings = +maxWarnings === -1;
 
         const resultText = formatter.format(results) as string;

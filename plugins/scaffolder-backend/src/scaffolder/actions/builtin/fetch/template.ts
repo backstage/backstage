@@ -29,7 +29,7 @@ import globby from 'globby';
 import fs from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
 import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
-import createDefaultFilters from '../../../../lib/templating/filters';
+import { createDefaultFilters } from '../../../../lib/templating/filters/createDefaultFilters';
 import { examples } from './template.examples';
 import { convertFiltersToRecord } from '../../../../util/templating';
 

@@ -55,7 +55,7 @@ import {
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
-import createDefaultFilters from '../../lib/templating/filters';
+import { createDefaultFilters } from '../../lib/templating/filters/createDefaultFilters';
 import { scaffolderActionRules } from '../../service/rules';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';

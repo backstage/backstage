@@ -272,7 +272,7 @@ Options:
   --check
   --inspect [host]
   --inspect-brk [host]
-  --require <path>
+  --require <path...>
   --link <path>
   -h, --help
 ```
@@ -452,6 +452,7 @@ Options:
   --since <ref>
   --successCache
   --successCacheDir <path>
+  --max-warnings <number>
   --fix
   -h, --help
 ```
