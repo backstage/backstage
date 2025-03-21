@@ -452,6 +452,7 @@ Options:
   --since <ref>
   --successCache
   --successCacheDir <path>
+  --max-warnings <number>
   --fix
   -h, --help
 ```
