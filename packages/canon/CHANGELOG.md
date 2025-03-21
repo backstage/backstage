@@ -1,5 +1,11 @@
 # @backstage/canon
 
+## 0.2.1
+
+### Patch Changes
+
+- 05a5003: Fix the Icon component when the name is not found to return null instead of an empty SVG.
+
 ## 0.2.0
 
 ### Minor Changes
