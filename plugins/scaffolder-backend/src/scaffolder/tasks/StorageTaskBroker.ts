@@ -33,36 +33,17 @@ import {
   TaskStatus,
 } from '@backstage/plugin-scaffolder-node';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
-import {
-  JsonObject,
-  JsonValue,
-  Observable,
-  createDeferred,
-} from '@backstage/types';
+import { JsonObject, Observable, createDeferred } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
 import { readDuration } from './helper';
 import { InternalTaskSecrets, TaskStore } from './types';
-
-type CheckpointStatus = 'failed' | 'success';
-
-export type CheckpointSuccessState = {
-  status: Extract<CheckpointStatus, 'success'>;
-  value: JsonValue;
-};
-
-export type CheckpointFailedState = {
-  status: Extract<CheckpointStatus, 'failed'>;
-  reason: string;
-};
-
-export type CheckpointState = {
-  [key: string]: CheckpointSuccessState | CheckpointFailedState;
-};
-
-export type UpdateCheckpointOptions = {
-  key: string;
-} & CheckpointState[keyof CheckpointState];
+import {
+  CheckpointState,
+  CheckpointSuccessState,
+  CheckpointFailedState,
+  UpdateCheckpointOptions,
+} from '@backstage/plugin-scaffolder-node';
 
 type TaskState = {
   checkpoints: CheckpointState;

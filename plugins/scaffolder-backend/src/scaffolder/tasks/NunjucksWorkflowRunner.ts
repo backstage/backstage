@@ -60,7 +60,7 @@ import { scaffolderActionRules } from '../../service/rules';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
 import { convertFiltersToRecord } from '../../util/templating';
-import { CheckpointState } from './StorageTaskBroker';
+import { CheckpointState } from '@backstage/plugin-scaffolder-node';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
