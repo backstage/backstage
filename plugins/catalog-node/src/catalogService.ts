@@ -96,6 +96,8 @@ export interface CatalogService {
     options: CatalogServiceRequestOptions,
   ): Promise<GetEntityFacetsResponse>;
 
+  getLocations(options: CatalogServiceRequestOptions): Promise<Location[]>;
+
   getLocationById(
     id: string,
     options: CatalogServiceRequestOptions,
@@ -221,6 +223,12 @@ class DefaultCatalogService implements CatalogService {
       request,
       await this.#getOptions(options),
     );
+  }
+
+  async getLocations(
+    options: CatalogServiceRequestOptions,
+  ): Promise<Location[]> {
+    return this.#catalogApi.getLocations(await this.#getOptions(options));
   }
 
   async getLocationById(

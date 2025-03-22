@@ -74,6 +74,10 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
   // (undocumented)
+  getLocations(
+    options?: CatalogServiceRequestOptions | CatalogRequestOptions,
+  ): Promise<Location_2[]>;
+  // (undocumented)
   queryEntities(
     request?: QueryEntitiesRequest,
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
