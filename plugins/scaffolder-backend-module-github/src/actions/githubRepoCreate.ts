@@ -55,6 +55,7 @@ export function createGithubRepoCreateAction(options: {
     squashMergeCommitMessage?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
     allowMergeCommit?: boolean;
     allowAutoMerge?: boolean;
+    allowUpdateBranch?: boolean;
     requireCodeOwnerReviews?: boolean;
     bypassPullRequestAllowances?: {
       users?: string[];
@@ -130,6 +131,7 @@ export function createGithubRepoCreateAction(options: {
           squashMergeCommitMessage: inputProps.squashMergeCommitMessage,
           allowRebaseMerge: inputProps.allowRebaseMerge,
           allowAutoMerge: inputProps.allowAutoMerge,
+          allowUpdateBranch: inputProps.allowUpdateBranch,
           collaborators: inputProps.collaborators,
           hasProjects: inputProps.hasProjects,
           hasWiki: inputProps.hasWiki,
@@ -167,6 +169,7 @@ export function createGithubRepoCreateAction(options: {
         squashMergeCommitMessage = 'COMMIT_MESSAGES',
         allowRebaseMerge = true,
         allowAutoMerge = false,
+        allowUpdateBranch = false,
         collaborators,
         hasProjects = undefined,
         hasWiki = undefined,
@@ -213,6 +216,7 @@ export function createGithubRepoCreateAction(options: {
             squashMergeCommitMessage,
             allowRebaseMerge,
             allowAutoMerge,
+            allowUpdateBranch,
             access,
             collaborators,
             hasProjects,
