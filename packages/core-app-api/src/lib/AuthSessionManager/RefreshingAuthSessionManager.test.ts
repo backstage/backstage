@@ -137,7 +137,7 @@ describe('RefreshingAuthSessionManager', () => {
     expect(refreshSession).toHaveBeenCalledWith(new Set());
   });
 
-  it('should forward option to instantly show auth popup and not attempt refresh', async () => {
+  it('should forward option to instantly show auth popup after attempting refresh', async () => {
     const createSession = jest.fn();
     const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
@@ -151,7 +151,7 @@ describe('RefreshingAuthSessionManager', () => {
       scopes: new Set(),
       instantPopup: true,
     });
-    expect(refreshSession).toHaveBeenCalledTimes(0);
+    expect(refreshSession).toHaveBeenCalledTimes(1);
   });
 
   it('should remove session straight away', async () => {
@@ -267,5 +267,27 @@ describe('RefreshingAuthSessionManager', () => {
     expect(session).toEqual({ scopes: new Set(['c']), expired: false });
     expect(refreshSession).toHaveBeenCalledTimes(1);
     expect(createSession).toHaveBeenCalledTimes(1);
+  });
+
+  it('should create a new session if refresh fails with existing expired session', async () => {
+    const createSession = jest.fn();
+    const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
+    const manager = new RefreshingAuthSessionManager({
+      connector: { createSession, refreshSession },
+      ...defaultOptions,
+    } as any);
+
+    createSession.mockResolvedValue({
+      scopes: new Set(['a']),
+      expired: true,
+    });
+    await manager.getSession({ scopes: new Set(['a']) });
+    expect(refreshSession).toHaveBeenCalledTimes(1);
+    expect(createSession).toHaveBeenCalledTimes(1);
+
+    await manager.getSession({ scopes: new Set(['a']) });
+    // call refresh session only once
+    expect(refreshSession).toHaveBeenCalledTimes(2);
+    expect(createSession).toHaveBeenCalledTimes(2);
   });
 });
