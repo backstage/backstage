@@ -23,7 +23,7 @@ import {
   entityFilterFunctionDataRef,
   entityFilterExpressionDataRef,
   entityCardTypeDataRef,
-  entityCardTypes,
+  defaultEntityCardTypes,
   EntityCardType,
 } from './extensionData';
 import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
@@ -53,7 +53,7 @@ export const EntityCardBlueprint = createExtensionBlueprint({
     schema: {
       filter: z =>
         z.union([z.string(), createEntityPredicateSchema(z)]).optional(),
-      type: z => z.enum(entityCardTypes).optional(),
+      type: z => z.enum(defaultEntityCardTypes).or(z.string()).optional(),
     },
   },
   *factory(

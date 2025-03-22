@@ -24,11 +24,11 @@ const _default: FrontendPlugin<
       name: 'group-profile';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: string | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: string | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -51,7 +51,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            EntityCardType,
+            string,
             'catalog.entity-card-type',
             {
               optional: true;
@@ -69,11 +69,11 @@ const _default: FrontendPlugin<
       name: 'members-list';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: string | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: string | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -96,7 +96,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            EntityCardType,
+            string,
             'catalog.entity-card-type',
             {
               optional: true;
@@ -114,11 +114,11 @@ const _default: FrontendPlugin<
       name: 'ownership';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: string | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: string | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -141,7 +141,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            EntityCardType,
+            string,
             'catalog.entity-card-type',
             {
               optional: true;
@@ -159,11 +159,11 @@ const _default: FrontendPlugin<
       name: 'user-profile';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        type: string | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        type?: string | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -186,7 +186,7 @@ const _default: FrontendPlugin<
             }
           >
         | ConfigurableExtensionDataRef<
-            EntityCardType,
+            string,
             'catalog.entity-card-type',
             {
               optional: true;

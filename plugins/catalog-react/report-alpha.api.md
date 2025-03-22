@@ -94,6 +94,9 @@ export function convertLegacyEntityContentExtension(
   },
 ): ExtensionDefinition;
 
+// @alpha (undocumented)
+export const defaultEntityCardTypes: readonly ['summary', 'info', 'content'];
+
 // @alpha
 export const defaultEntityContentGroups: {
   documentation: string;
@@ -129,7 +132,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
         }
       >
     | ConfigurableExtensionDataRef<
-        EntityCardType,
+        string,
         'catalog.entity-card-type',
         {
           optional: true;
@@ -138,11 +141,11 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   inputs: {};
   config: {
     filter: EntityPredicate | undefined;
-    type: 'content' | 'summary' | 'info' | undefined;
+    type: string | undefined;
   };
   configInput: {
     filter?: EntityPredicate | undefined;
-    type?: 'content' | 'summary' | 'info' | undefined;
+    type?: string | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<
@@ -155,16 +158,12 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
       'catalog.entity-filter-expression',
       {}
     >;
-    type: ConfigurableExtensionDataRef<
-      EntityCardType,
-      'catalog.entity-card-type',
-      {}
-    >;
+    type: ConfigurableExtensionDataRef<string, 'catalog.entity-card-type', {}>;
   };
 }>;
 
 // @alpha (undocumented)
-export type EntityCardType = 'summary' | 'info' | 'content';
+export type EntityCardType = (typeof defaultEntityCardTypes)[number] | string;
 
 // @alpha
 export const EntityContentBlueprint: ExtensionBlueprint<{
