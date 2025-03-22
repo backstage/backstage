@@ -26,6 +26,7 @@ import {
   ScaffolderTaskOutput,
   SecretsContextProvider,
   useCustomFieldExtensions,
+  useCustomFilters,
   useCustomLayouts,
 } from '@backstage/plugin-scaffolder-react';
 
@@ -104,6 +105,7 @@ export type RouterProps = {
     /** Whether to show a link to the create page (on /create subroutes) */
     create?: boolean;
   };
+  overrideFilters?: React.ReactNode;
 };
 
 /**
@@ -149,6 +151,8 @@ export const InternalRouter = (
 
   const customLayouts = useCustomLayouts(outlet);
 
+  const customFilters = useCustomFilters(outlet);
+
   return (
     <Routes>
       <Route
@@ -160,6 +164,7 @@ export const InternalRouter = (
             groups={props.groups}
             templateFilter={props.templateFilter}
             headerOptions={props.headerOptions}
+            additionalFilters={customFilters}
           />
         }
       />
