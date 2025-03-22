@@ -55,7 +55,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@kubernetes/client-node": "1.0.0-rc7",
+    "@kubernetes/client-node": "1.1.0",
     "kubernetes-models": "^4.3.1",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0"

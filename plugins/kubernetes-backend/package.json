@@ -78,7 +78,7 @@
     "@backstage/types": "workspace:^",
     "@google-cloud/container": "^5.0.0",
     "@jest-mock/express": "^2.0.1",
-    "@kubernetes/client-node": "1.0.0-rc7",
+    "@kubernetes/client-node": "1.1.0",
     "@types/express": "^4.17.6",
     "@types/http-proxy-middleware": "^1.0.0",
     "@types/luxon": "^3.0.0",

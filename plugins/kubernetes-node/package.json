@@ -42,7 +42,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@kubernetes/client-node": "1.0.0-rc7",
+    "@kubernetes/client-node": "1.1.0",
     "node-fetch": "^2.7.0",
     "winston": "^3.2.1"
   },

@@ -69,7 +69,7 @@
     "@backstage/plugin-permission-react": "workspace:^",
     "@kubernetes-models/apimachinery": "^2.0.0",
     "@kubernetes-models/base": "^5.0.0",
-    "@kubernetes/client-node": "1.0.0-rc7",
+    "@kubernetes/client-node": "1.1.0",
     "@material-ui/core": "^4.12.2",
     "cronstrue": "^2.2.0",
     "js-yaml": "^4.0.0",
