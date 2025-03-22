@@ -121,6 +121,11 @@ backend.add(
       app.use(middleware.cors());
       app.use(middleware.compression());
 
+      // Optional rate limiting middleware
+      app.use(middleware.rateLimit());
+      // If you are using rate limiting behind a proxy, you should set the `trust proxy` setting to true
+      app.set('trust proxy', true);
+
       app.use(healthRouter);
 
       // you can add you your own middleware in here
