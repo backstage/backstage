@@ -189,6 +189,30 @@ export const config_single_integration: MockObject = {
   },
 };
 
+export const config_single_integration_polling_disabled: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          group: 'group1',
+          skipForkedRepos: false,
+          disablePolling: true,
+        },
+      },
+    },
+  },
+};
+
 export const config_single_integration_specific_branch: MockObject = {
   integrations: {
     gitlab: [
@@ -423,6 +447,31 @@ export const config_no_schedule_integration: MockObject = {
           group: 'group1',
           projectPattern: 'test-repo',
           skipForkedRepos: true,
+        },
+      },
+    },
+  },
+};
+
+export const config_no_schedule_integration_polling_disabled: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          group: 'group1',
+          projectPattern: 'test-repo',
+          skipForkedRepos: true,
+          disablePolling: true,
         },
       },
     },
@@ -1744,6 +1793,31 @@ export const expected_added_location_entities: MockObject[] = added_commits.map(
 export const expected_removed_location_entities: MockObject[] =
   removed_commits.map(commit => {
     const targetUrl = `https://example.com/group1/test-repo1/-/blob/main/${commit.removed}`;
+
+    return {
+      entity: {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Location',
+        metadata: {
+          annotations: {
+            'backstage.io/managed-by-location': `url:${targetUrl}`,
+            'backstage.io/managed-by-origin-location': `url:${targetUrl}`,
+          },
+          name: locationSpecToMetadataName({ target: targetUrl, type: 'url' }),
+        },
+        spec: {
+          presence: 'optional',
+          target: targetUrl,
+          type: 'url',
+        },
+      },
+      locationKey: 'GitlabDiscoveryEntityProvider:test-id',
+    };
+  });
+
+export const expected_modified_location_entities: MockObject[] =
+  modified_commits.map(commit => {
+    const targetUrl = `https://example.com/group1/test-repo1/-/blob/main/${commit.modified}`;
 
     return {
       entity: {
