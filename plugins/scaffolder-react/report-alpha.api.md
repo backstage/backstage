@@ -342,8 +342,8 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'stepper.backButtonText': 'Back';
     readonly 'stepper.createButtonText': 'Create';
     readonly 'stepper.reviewButtonText': 'Review';
-    readonly 'stepper.stepIndexLabel': 'Step {{index, number}}';
     readonly 'stepper.nextButtonText': 'Next';
+    readonly 'stepper.stepIndexLabel': 'Step {{index, number}}';
     readonly 'templateCategoryPicker.title': 'Categories';
     readonly 'templateCard.noDescription': 'No description';
     readonly 'templateCard.chooseButtonText': 'Choose';
