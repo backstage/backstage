@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useNotificationsApi } from '../../hooks';
 import { Link, SidebarItem } from '@backstage/core-components';
 import NotificationsIcon from '@material-ui/icons/Notifications';
@@ -47,6 +47,8 @@ import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
 import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import { styled } from '@material-ui/core/styles';
+import { useStyles } from './styles';
+import Typography from '@material-ui/core/Typography';
 
 const StyledMaterialDesignContent = styled(MaterialDesignContent)(
   ({ theme }) => ({
@@ -85,6 +87,8 @@ export const NotificationsSidebarItem = (props?: {
   titleCounterEnabled?: boolean;
   snackbarEnabled?: boolean;
   snackbarAutoHideDuration?: number | null;
+  useIconCount?: boolean;
+  useChipCount?: boolean;
   className?: string;
   icon?: IconComponent;
   text?: string;
@@ -96,6 +100,8 @@ export const NotificationsSidebarItem = (props?: {
     titleCounterEnabled = true,
     snackbarEnabled = true,
     snackbarAutoHideDuration = 10000,
+    useIconCount = true,
+    useChipCount = false,
     icon = NotificationsIcon,
     text = 'Notifications',
     ...restProps
@@ -104,6 +110,8 @@ export const NotificationsSidebarItem = (props?: {
     titleCounterEnabled: true,
     snackbarEnabled: true,
     snackbarAutoHideDuration: 10000,
+    useIconCount: true,
+    useChipCount: false,
   };
 
   const { loading, error, value, retry } = useNotificationsApi(api =>
@@ -256,6 +264,23 @@ export const NotificationsSidebarItem = (props?: {
 
   const count = !error && !!unreadCount ? unreadCount : undefined;
 
+  const classes = useStyles();
+  const Icon = icon;
+  const iconWithCount: IconComponent = useMemo(
+    () => () =>
+      (
+        <div className={classes.iconWrapper}>
+          <Icon />
+          {count && count > 0 && (
+            <Typography variant="body2" className={classes.countBadge}>
+              {count}
+            </Typography>
+          )}
+        </div>
+      ),
+    [Icon, classes, count],
+  );
+
   return (
     <>
       {snackbarEnabled && (
@@ -280,10 +305,12 @@ export const NotificationsSidebarItem = (props?: {
           requestUserPermission();
         }}
         text={text}
-        icon={icon}
+        icon={useIconCount ? iconWithCount : icon}
         {...restProps}
       >
-        {count && <Chip size="small" label={count > 99 ? '99+' : count} />}
+        {count && useChipCount && (
+          <Chip size="small" label={count > 99 ? '99+' : count} />
+        )}
       </SidebarItem>
     </>
   );
