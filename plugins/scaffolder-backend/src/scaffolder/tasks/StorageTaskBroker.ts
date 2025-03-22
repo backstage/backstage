@@ -44,19 +44,30 @@ import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
 import { readDuration } from './helper';
 import { InternalTaskSecrets, TaskStore } from './types';
 
-type TaskState = {
-  checkpoints: {
-    [key: string]:
-      | {
-          status: 'failed';
-          reason: string;
-        }
-      | {
-          status: 'success';
-          value: JsonValue;
-        };
-  };
+type CheckpointStatus = 'failed' | 'success';
+
+export type CheckpointSuccessState = {
+  status: Extract<CheckpointStatus, 'success'>;
+  value: JsonValue;
 };
+
+export type CheckpointFailedState = {
+  status: Extract<CheckpointStatus, 'failed'>;
+  reason: string;
+};
+
+export type CheckpointState = {
+  [key: string]: CheckpointSuccessState | CheckpointFailedState;
+};
+
+export type UpdateCheckpointOptions = {
+  key: string;
+} & CheckpointState[keyof CheckpointState];
+
+type TaskState = {
+  checkpoints: CheckpointState;
+};
+
 /**
  * TaskManager
  * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
@@ -152,25 +163,57 @@ export class TaskManager implements TaskContext {
     return this.storage.getTaskState?.({ taskId: this.task.taskId });
   }
 
-  async updateCheckpoint?(
-    options:
-      | {
-          key: string;
-          status: 'success';
-          value: JsonValue;
-        }
-      | {
-          key: string;
-          status: 'failed';
-          reason: string;
-        },
-  ): Promise<void> {
-    const { key, ...value } = options;
-    if (this.task.state) {
-      (this.task.state as TaskState).checkpoints[key] = value;
-    } else {
-      this.task.state = { checkpoints: { [key]: value } };
+  /**
+   * Helper to safely access the checkpoints field from task state
+   * Ensures type safety when working with task state that might not match our structure
+   */
+  private getCheckpointsFromState(state?: JsonObject): CheckpointState {
+    if (
+      state &&
+      'checkpoints' in state &&
+      typeof state.checkpoints === 'object'
+    ) {
+      return state.checkpoints as CheckpointState;
     }
+    return {};
+  }
+
+  async updateCheckpoint?(options: UpdateCheckpointOptions): Promise<void> {
+    const { key, status } = options;
+
+    // Extract appropriate state value based on status
+    let checkpointValue: CheckpointSuccessState | CheckpointFailedState;
+
+    switch (status) {
+      case 'success': {
+        const { value } = options;
+        checkpointValue = { status, value };
+        break;
+      }
+      case 'failed': {
+        const { reason } = options;
+        checkpointValue = { status, reason };
+        break;
+      }
+      default: {
+        // Using status as 'never' gives compile-time guarantee we've handled all cases
+        const exhaustiveCheck: never = status;
+        throw new Error(`Unexpected status: ${exhaustiveCheck}`);
+      }
+    }
+
+    if (this.task.state) {
+      const taskState: TaskState = {
+        checkpoints: this.getCheckpointsFromState(this.task.state),
+      };
+
+      // Update with the new checkpoint
+      taskState.checkpoints[key] = checkpointValue;
+      this.task.state = taskState;
+    } else {
+      this.task.state = { checkpoints: { [key]: checkpointValue } };
+    }
+
     await this.storage.saveTaskState?.({
       taskId: this.task.taskId,
       state: this.task.state,
@@ -254,6 +297,9 @@ export interface CurrentClaimedTask {
   secrets?: TaskSecrets;
   /**
    * The state of checkpoints of the task.
+   * This will be a JsonObject that may contain a `checkpoints` field
+   * with a structure matching the CheckpointState interface.
+   * @see CheckpointState
    */
   state?: JsonObject;
   /**

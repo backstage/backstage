@@ -60,6 +60,7 @@ import { scaffolderActionRules } from '../../service/rules';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
 import { convertFiltersToRecord } from '../../util/templating';
+import { CheckpointState } from './StorageTaskBroker';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -90,16 +91,6 @@ type TemplateContext = {
     };
   };
 };
-
-type CheckpointState =
-  | {
-      status: 'failed';
-      reason: string;
-    }
-  | {
-      status: 'success';
-      value: JsonValue;
-    };
 
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
   return taskSpec.apiVersion === 'scaffolder.backstage.io/v1beta3';
@@ -396,9 +387,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
               if (prevTaskState) {
                 const prevState = (
-                  prevTaskState.state?.checkpoints as {
-                    [key: string]: CheckpointState;
-                  }
+                  prevTaskState.state?.checkpoints as CheckpointState
                 )?.[key];
 
                 if (prevState && prevState.status === 'success') {
