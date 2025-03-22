@@ -130,6 +130,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     configApi: Config;
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
+
     /** @deprecated identityApi is not needed any more */
     identityApi?: IdentityApi;
   }) {
@@ -170,9 +171,15 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     const storageUrl = await this.getStorageUrl();
     const url = `${storageUrl}/${namespace}/${kind}/${name}/${path}`;
 
-    const request = await this.fetchApi.fetch(
-      `${url.endsWith('/') ? url : `${url}/`}index.html`,
-    );
+    let updatedUrl = url;
+
+    if (url.endsWith('/')) {
+      updatedUrl += 'index.html';
+    } else if (!url.endsWith('.html')) {
+      updatedUrl += '/index.html';
+    }
+
+    const request = await this.fetchApi.fetch(updatedUrl);
 
     let errorMessage = '';
     switch (request.status) {
@@ -252,9 +259,13 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     const apiOrigin = await this.getApiOrigin();
     const newBaseUrl = `${apiOrigin}/static/docs/${namespace}/${kind}/${name}/${path}`;
 
-    return new URL(
-      oldBaseUrl,
-      newBaseUrl.endsWith('/') ? newBaseUrl : `${newBaseUrl}/`,
-    ).toString();
+    let updatedNewBaseUrl = newBaseUrl;
+    if (!newBaseUrl.endsWith('.html')) {
+      updatedNewBaseUrl = newBaseUrl.endsWith('/')
+        ? newBaseUrl
+        : `${newBaseUrl}/`;
+    }
+
+    return new URL(oldBaseUrl, updatedNewBaseUrl).toString();
   }
 }
