@@ -32,10 +32,9 @@ export type ActionContext<
       secrets?: TaskSecrets;
       workspacePath: string;
       input: TActionInput;
-      checkpoint<T extends JsonValue | void>(opts: {
-        key: string;
-        fn: () => Promise<T> | T;
-      }): Promise<T>;
+      checkpoint<T extends JsonValue | void>(
+        opts: CheckpointOptions<T>,
+      ): Promise<T>;
       output(
         name: keyof TActionOutput,
         value: TActionOutput[keyof TActionOutput],
@@ -60,10 +59,9 @@ export type ActionContext<
       secrets?: TaskSecrets;
       workspacePath: string;
       input: TActionInput;
-      checkpoint<T extends JsonValue | void>(opts: {
-        key: string;
-        fn: () => Promise<T> | T;
-      }): Promise<T>;
+      checkpoint<T extends JsonValue | void>(
+        opts: CheckpointOptions<T>,
+      ): Promise<T>;
       output(
         name: keyof TActionOutput,
         value: TActionOutput[keyof TActionOutput],
@@ -97,6 +95,32 @@ export function addFiles(options: {
       };
   logger?: Logger | undefined;
 }): Promise<void>;
+
+// @public
+export type CheckpointFailedState = {
+  status: Extract<CheckpointStatus, 'failed'>;
+  reason: string;
+};
+
+// @public
+export type CheckpointOptions<T extends JsonValue | void = JsonValue> = {
+  key: string;
+  fn: () => Promise<T> | T;
+};
+
+// @public
+export type CheckpointState = {
+  [key: string]: CheckpointSuccessState | CheckpointFailedState;
+};
+
+// @public
+export type CheckpointStatus = 'failed' | 'success';
+
+// @public
+export type CheckpointSuccessState = {
+  status: Extract<CheckpointStatus, 'success'>;
+  value: JsonValue;
+};
 
 // @public (undocumented)
 export function cloneRepo(options: {
@@ -475,19 +499,7 @@ export interface TaskContext {
   // (undocumented)
   taskId?: string;
   // (undocumented)
-  updateCheckpoint?(
-    options:
-      | {
-          key: string;
-          status: 'success';
-          value: JsonValue;
-        }
-      | {
-          key: string;
-          status: 'failed';
-          reason: string;
-        },
-  ): Promise<void>;
+  updateCheckpoint?(options: UpdateCheckpointOptions): Promise<void>;
 }
 
 // @public
@@ -575,4 +587,9 @@ export type TemplateFilter = (
 export type TemplateGlobal =
   | ((...args: JsonValue[]) => JsonValue | undefined)
   | JsonValue;
+
+// @public
+export type UpdateCheckpointOptions = {
+  key: string;
+} & CheckpointState[keyof CheckpointState];
 ```

@@ -43,7 +43,6 @@ import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
-import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
@@ -75,6 +74,7 @@ import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { UpdateCheckpointOptions } from '@backstage/plugin-scaffolder-node';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 
@@ -658,19 +658,7 @@ export class TaskManager implements TaskContext_2 {
   // (undocumented)
   get spec(): TaskSpecV1beta3;
   // (undocumented)
-  updateCheckpoint?(
-    options:
-      | {
-          key: string;
-          status: 'success';
-          value: JsonValue;
-        }
-      | {
-          key: string;
-          status: 'failed';
-          reason: string;
-        },
-  ): Promise<void>;
+  updateCheckpoint?(options: UpdateCheckpointOptions): Promise<void>;
 }
 
 // @public @deprecated (undocumented)
