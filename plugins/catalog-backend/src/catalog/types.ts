@@ -321,3 +321,17 @@ export type CatalogConflictEventPayload = {
    */
   lastConflictAt: string;
 };
+
+/**
+ * The details of the entity lifecycle event.
+ */
+export type EntityLifecycleEventsPayload = {
+  /**
+   * The lifecycle action which triggered the event.
+   */
+  action: 'upserted' | 'deleted';
+  /**
+   * The list of entity refs that were effected by the event.
+   */
+  entityRefs: string[];
+};

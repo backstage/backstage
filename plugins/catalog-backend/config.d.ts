@@ -223,5 +223,14 @@ export interface Config {
      * This flag is temporary and will be enabled by default in future releases.
      */
     useUrlReadersSearch?: boolean;
+
+    /**
+     * Enables the publishing of events when catalog entities are finalized or deleted.
+     *
+     * If true entity lifecycle events are published.
+     *
+     * If false or undefined event will not be published.
+     */
+    publishEntityLifecycleEvents?: boolean;
   };
 }

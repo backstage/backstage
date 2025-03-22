@@ -21,6 +21,7 @@ import {
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
 } from '../../tables';
+import { EntityLifecycleEvents } from '../../../events';
 
 /**
  * Given a number of entity refs originally created by a given entity provider
@@ -33,8 +34,9 @@ export async function deleteWithEagerPruningOfChildren(options: {
   knex: Knex | Knex.Transaction;
   entityRefs: string[];
   sourceKey: string;
+  entityLifecycleEvents?: EntityLifecycleEvents;
 }): Promise<number> {
-  const { knex, entityRefs, sourceKey } = options;
+  const { knex, entityRefs, sourceKey, entityLifecycleEvents } = options;
 
   // Split up the operation by (large) chunks, so that we do not hit database
   // limits for the number of permitted bindings on a precompiled statement
@@ -57,6 +59,7 @@ export async function deleteWithEagerPruningOfChildren(options: {
         .delete()
         .from('refresh_state')
         .whereIn('entity_ref', refsToDelete);
+      await entityLifecycleEvents?.publishDeletedEvent(refsToDelete);
     }
 
     // Delete the references that originate only from this entity provider. Note

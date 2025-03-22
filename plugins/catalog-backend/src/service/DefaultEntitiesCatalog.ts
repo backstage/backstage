@@ -53,6 +53,7 @@ import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { applyEntityFilterToQuery } from './request/applyEntityFilterToQuery';
 import { processRawEntitiesResult } from './response';
+import { EntityLifecycleEvents } from '../events';
 
 const DEFAULT_LIMIT = 200;
 
@@ -106,16 +107,19 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly logger: LoggerService;
   private readonly stitcher: Stitcher;
   private readonly disableRelationsCompatibility: boolean;
+  entityLifecycleEvents?: EntityLifecycleEvents;
 
   constructor(options: {
     database: Knex;
     logger: LoggerService;
     stitcher: Stitcher;
     disableRelationsCompatibility?: boolean;
+    entityLifecycleEvents?: EntityLifecycleEvents;
   }) {
     this.database = options.database;
     this.logger = options.logger;
     this.stitcher = options.stitcher;
+    this.entityLifecycleEvents = options.entityLifecycleEvents;
     this.disableRelationsCompatibility = Boolean(
       options.disableRelationsCompatibility,
     );
@@ -604,10 +608,19 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           .andWhere('refresh_state.entity_id', '!=', uid)
           .select({ ref: 'relations.source_entity_ref' }),
       );
+    const entityRefToBeDeleted = await this.database<DbRefreshStateRow>(
+      'refresh_state',
+    )
+      .select({ entityRef: 'entity_ref' })
+      .where('entity_id', uid);
 
     await this.database<DbRefreshStateRow>('refresh_state')
       .where('entity_id', uid)
       .delete();
+
+    this.entityLifecycleEvents?.publishDeletedEvent(
+      entityRefToBeDeleted.map(row => row.entityRef),
+    );
 
     await this.stitcher.stitch({
       entityRefs: new Set(relationPeers.map(p => p.ref)),
