@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 import { CatalogIcon, DocsIcon } from '@backstage/core-components';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import {
-  CATALOG_FILTER_EXISTS,
-  catalogApiRef,
-} from '@backstage/plugin-catalog-react';
+import { useRouteRef } from '@backstage/core-plugin-api';
 import { searchPlugin, SearchType } from '@backstage/plugin-search';
 import {
   SearchBar,
@@ -41,6 +37,7 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTechdocsEntities } from './use-techdocs-entities';
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {
@@ -84,11 +81,12 @@ const rootRouteRef = searchPlugin.routes.root;
 export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const catalogApi = useApi(catalogApiRef);
 
   const { types } = useSearch();
   const searchRootRoute = useRouteRef(rootRouteRef)();
   const searchBarRef = useRef<HTMLInputElement | null>(null);
+
+  const techdocsEntities = useTechdocsEntities();
 
   useEffect(() => {
     searchBarRef?.current?.focus();
@@ -145,20 +143,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                   className={classes.filter}
                   label="Entity"
                   name="name"
-                  values={async () => {
-                    // Return a list of entities which are documented.
-                    const { items } = await catalogApi.getEntities({
-                      fields: ['metadata.name'],
-                      filter: {
-                        'metadata.annotations.backstage.io/techdocs-ref':
-                          CATALOG_FILTER_EXISTS,
-                      },
-                    });
-
-                    const names = items.map(entity => entity.metadata.name);
-                    names.sort();
-                    return names;
-                  }}
+                  values={techdocsEntities}
                 />
               </Grid>
             )}
