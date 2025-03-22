@@ -27,6 +27,7 @@ import {
   Gitlab,
   RepositoryTreeSchema,
   SimpleUserSchema,
+  type CreateCommitOptions,
 } from '@gitbeaker/rest';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -38,6 +39,7 @@ import {
 import { createGitlabApi, getErrorMessage } from './helpers';
 import { examples } from './gitlabMergeRequest.examples';
 import { createHash } from 'crypto';
+import type { Config } from '@backstage/config';
 
 function computeSha256(file: SerializedFile): string {
   const hash = createHash('sha256');
@@ -135,14 +137,21 @@ async function getReviewersFromApprovalRules(
 }
 
 /**
- * Create a new action that creates a gitlab merge request.
+ * Create a new action that creates a Gitlab merge request.
  *
  * @public
  */
 export const createPublishGitlabMergeRequestAction = (options: {
+  /**
+   * An instance of {@link @backstage/integration#ScmIntegrationRegistry} that will be used in the action.
+   */
   integrations: ScmIntegrationRegistry;
+  /**
+   * An instance of {@link @backstage/config#Config} that will be used in the action.
+   */
+  config?: Config;
 }) => {
-  const { integrations } = options;
+  const { integrations, config } = options;
 
   return createTemplateAction<{
     repoUrl: string;
@@ -160,6 +169,9 @@ export const createPublishGitlabMergeRequestAction = (options: {
     assignee?: string;
     reviewers?: string[];
     assignReviewersFromApprovalRules?: boolean;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
+    useCustomGitAuthor?: boolean;
   }>({
     id: 'publish:gitlab:merge-request',
     examples,
@@ -253,6 +265,24 @@ which uses additional API calls in order to detect whether to 'create', 'update'
             description:
               'Automatically assign reviewers from the approval rules of the MR. Includes Codeowners',
           },
+          gitAuthorName: {
+            type: 'string',
+            title: 'Default Author Name',
+            description:
+              'Sets the author name for the commit. The default value is the name of the user associated to the token. Requires useCustomGitAuthor to be set to true.',
+          },
+          gitAuthorEmail: {
+            type: 'string',
+            title: 'Default Author Email',
+            description:
+              'Sets the author email for the commit. The default value is the commit email of the user associated to the token. Requires useCustomGitAuthor to be set to true.',
+          },
+          useCustomGitAuthor: {
+            type: 'boolean',
+            title: 'Use Custom Git Author',
+            description:
+              'Overrides the Git commit author. If false, the commit author will always be the one associated to the token. If true, values follow the action configuration, or default to the instance configuration, and finaly to Backstage default values.',
+          },
         },
       },
       output: {
@@ -291,6 +321,9 @@ which uses additional API calls in order to detect whether to 'create', 'update'
         sourcePath,
         title,
         token,
+        gitAuthorName,
+        gitAuthorEmail,
+        useCustomGitAuthor,
       } = ctx.input;
 
       const { owner, repo, project } = parseRepoUrl(repoUrl, integrations);
@@ -336,6 +369,28 @@ which uses additional API calls in order to detect whether to 'create', 'update'
             }),
           )
         ).filter(id => id !== undefined) as number[];
+      }
+
+      const gitAuthorInfo = {
+        name:
+          gitAuthorName ??
+          config?.getOptionalString('scaffolder.defaultAuthor.name') ??
+          'Scaffolder',
+        email:
+          gitAuthorEmail ??
+          config?.getOptionalString('scaffolder.defaultAuthor.email') ??
+          'scaffolder@backstage.io',
+      };
+
+      let commitOptions: CreateCommitOptions = {};
+      if (useCustomGitAuthor) {
+        if (gitAuthorInfo.name || gitAuthorInfo.email) {
+          commitOptions = {
+            ...commitOptions,
+            authorName: gitAuthorInfo.name,
+            authorEmail: gitAuthorInfo.email,
+          };
+        }
       }
 
       let fileRoot: string;
@@ -449,6 +504,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
                 branchName,
                 title,
                 actions,
+                commitOptions,
               );
               return commit.id;
             } catch (e) {
