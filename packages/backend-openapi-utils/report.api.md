@@ -274,7 +274,7 @@ type EndpointMap = Record<
   {
     query?: object;
     body?: object;
-    response?: object | void;
+    response?: object | string | void;
     path?: object;
   }
 >;

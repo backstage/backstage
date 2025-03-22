@@ -50,10 +50,13 @@ import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { EventsService } from '@backstage/plugin-events-node';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '../util/loggerToWinstonLogger';
+import { Server } from 'http';
+import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
 
 const mockAccess = jest.fn();
 
 jest.mock('fs-extra', () => ({
+  ...jest.requireActual('fs-extra'),
   access: (...args: any[]) => mockAccess(...args),
   promises: {
     access: (...args: any[]) => mockAccess(...args),
@@ -87,7 +90,8 @@ const mockUrlReader = UrlReaders.default({
 const config = new ConfigReader({});
 
 describe('createRouter', () => {
-  let app: express.Express;
+  let app: express.Express | Server;
+  let regularApp: express.Express;
   let loggerSpy: jest.SpyInstance;
   let taskBroker: TaskBroker;
   const catalogClient = catalogServiceMock.mock();
@@ -215,7 +219,8 @@ describe('createRouter', () => {
         discovery,
         events,
       });
-      app = express().use(router);
+      regularApp = express().use(router);
+      app = await wrapServer(regularApp);
 
       catalogClient.getEntityByRef.mockImplementation(async ref => {
         const { kind } = parseEntityRef(ref);
@@ -531,7 +536,7 @@ describe('createRouter', () => {
         let headers: any = {};
         const responseDataFn = jest.fn();
 
-        const req = request(app)
+        const req = request(regularApp)
           .get('/v2/tasks/a-random-id/eventstream')
           .set('accept', 'text/event-stream')
           .parse((res, _) => {
@@ -597,7 +602,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         let statusCode: any = undefined;
         let headers: any = {};
 
-        const req = request(app)
+        const req = request(regularApp)
           .get('/v2/tasks/a-random-id/eventstream')
           .query({ after: 10 })
           .set('accept', 'text/event-stream')
@@ -764,7 +769,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         httpAuth,
         discovery,
       });
-      app = express().use(router);
+      regularApp = express().use(router);
+      app = await wrapServer(regularApp);
 
       catalogClient.getEntityByRef.mockImplementation(async ref => {
         const { kind } = parseEntityRef(ref);
@@ -1333,7 +1339,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         let headers: any = {};
         const responseDataFn = jest.fn();
 
-        const req = request(app)
+        const req = request(regularApp)
           .get('/v2/tasks/a-random-id/eventstream')
           .set('accept', 'text/event-stream')
           .parse((res, _) => {
@@ -1399,7 +1405,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         let statusCode: any = undefined;
         let headers: any = {};
 
-        const req = request(app)
+        const req = request(regularApp)
           .get('/v2/tasks/a-random-id/eventstream')
           .query({ after: 10 })
           .set('accept', 'text/event-stream')
@@ -1518,7 +1524,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
       beforeEach(async () => {
         handleAutocompleteRequest = jest.fn().mockResolvedValue({
-          results: [{ title: 'blob' }],
+          results: [{ id: 'a-random-id', title: 'blob' }],
         });
 
         const router = await createRouter({
@@ -1537,7 +1543,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           },
         });
 
-        app = express().use(router).use(mockErrorHandler());
+        app = await wrapServer(express().use(router).use(mockErrorHandler()));
       });
 
       it('should throw an error when the provider is not registered', async () => {
@@ -1572,7 +1578,9 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
         expect(response.status).toEqual(200);
 
-        expect(response.body).toEqual({ results: [{ title: 'blob' }] });
+        expect(response.body).toEqual({
+          results: [{ id: 'a-random-id', title: 'blob' }],
+        });
         expect(handleAutocompleteRequest).toHaveBeenCalledWith({
           token: mockToken,
           context,
