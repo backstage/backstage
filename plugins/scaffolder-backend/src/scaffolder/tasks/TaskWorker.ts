@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { AuditorService } from '@backstage/backend-plugin-api';
+import {
+  AuditorService,
+  RootConfigService,
+} from '@backstage/backend-plugin-api';
 import { assertError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -77,6 +80,7 @@ export type CreateWorkerOptions = {
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionEvaluator;
   gracefulShutdown?: boolean;
+  config?: RootConfigService;
 };
 
 /**
@@ -112,6 +116,7 @@ export class TaskWorker {
       additionalTemplateGlobals,
       permissions,
       gracefulShutdown,
+      config,
     } = options;
 
     const workflowRunner = new NunjucksWorkflowRunner({
@@ -123,6 +128,7 @@ export class TaskWorker {
       additionalTemplateFilters,
       additionalTemplateGlobals,
       permissions,
+      config,
     });
 
     return new TaskWorker({
