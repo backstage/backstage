@@ -1,0 +1,78 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { JsonValue } from '@backstage/types';
+
+/**
+ * The status of a checkpoint, indicating whether it succeeded or failed.
+ *
+ * @public
+ */
+export type CheckpointStatus = 'failed' | 'success';
+
+/**
+ * Represents a successful checkpoint state with a value.
+ *
+ * @public
+ */
+export type CheckpointSuccessState = {
+  status: Extract<CheckpointStatus, 'success'>;
+  value: JsonValue;
+};
+
+/**
+ * Represents a failed checkpoint state with a reason for failure.
+ *
+ * @public
+ */
+export type CheckpointFailedState = {
+  status: Extract<CheckpointStatus, 'failed'>;
+  reason: string;
+};
+
+/**
+ * A map of checkpoint keys to their states.
+ *
+ * @public
+ */
+export type CheckpointState = {
+  [key: string]: CheckpointSuccessState | CheckpointFailedState;
+};
+
+/**
+ * Options for updating a checkpoint in a task.
+ *
+ * @public
+ */
+export type UpdateCheckpointOptions = {
+  key: string;
+} & CheckpointState[keyof CheckpointState];
+
+/**
+ * Options for checkpoint function invocation.
+ *
+ * @public
+ */
+export type CheckpointOptions<T extends JsonValue | void = JsonValue> = {
+  /**
+   * Unique key for the checkpoint
+   */
+  key: string;
+  /**
+   * Function to execute for the checkpoint
+   */
+  fn: () => Promise<T> | T;
+};
