@@ -26,16 +26,29 @@ dependency to `@backstage/plugin-catalog-backend-module-bitbucket-server` to you
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-bitbucket-server
 ```
 
-And update your backend by adding the following line:
+### Installation with New Backend System
 
-```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend'));
-/* highlight-add-start */
+```ts
+// optional if you want HTTP endpojnts to receive external events
+// backend.add(import('@backstage/plugin-events-backend'));
+// optional if you want to use AWS SQS instead of HTTP endpoints to receive external events
+// backend.add(import('@backstage/plugin-events-backend-module-aws-sqs'));
+backend.add(import('@backstage/plugin-events-backend-module-bitbucket-server'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-bitbucket-server'),
 );
-/* highlight-add-end */
 ```
+
+You need to decide how you want to receive events from external sources like
+
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+
+Further documentation:
+
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md>
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-server/README.md>
 
 ## Configuration
 
