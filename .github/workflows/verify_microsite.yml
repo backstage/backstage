@@ -36,7 +36,7 @@ jobs:
           node-version: 20.x
       - uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5
         with:
-          python-version: '3.9'
+          python-version: '3.13'
 
       - name: Install MkDocs dependencies
         run: pip install mkdocs mkdocs-techdocs-core
