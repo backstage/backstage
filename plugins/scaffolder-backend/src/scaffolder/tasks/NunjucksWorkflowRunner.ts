@@ -41,6 +41,7 @@ import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
 import type {
   AuditorService,
   PermissionsService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { UserEntity } from '@backstage/catalog-model';
 import {
@@ -71,6 +72,7 @@ type NunjucksWorkflowRunnerOptions = {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionsService;
+  config?: RootConfigService;
 };
 
 type TemplateContext = {
@@ -150,6 +152,7 @@ const isActionAuthorized = createConditionAuthorizer(
 
 export class NunjucksWorkflowRunner implements WorkflowRunner {
   private readonly defaultTemplateFilters: Record<string, TemplateFilter>;
+  private readonly tracker: ReturnType<typeof scaffoldingTracker>;
 
   constructor(private readonly options: NunjucksWorkflowRunnerOptions) {
     this.defaultTemplateFilters = convertFiltersToRecord(
@@ -157,9 +160,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         integrations: this.options.integrations,
       }),
     );
+    this.tracker = scaffoldingTracker(this.options.config);
   }
-
-  private readonly tracker = scaffoldingTracker();
 
   private isSingleTemplateString(input: string) {
     const { parser, nodes } = nunjucks as unknown as {
@@ -557,7 +559,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
   }
 }
 
-function scaffoldingTracker() {
+function scaffoldingTracker(config?: RootConfigService) {
   // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
   const promTaskCount = createCounterMetric({
     name: 'scaffolder_task_count',
@@ -580,6 +582,12 @@ function scaffoldingTracker() {
     labelNames: ['template', 'step', 'result'],
   });
 
+  const metricsConfig = config?.getOptionalConfig(
+    'scaffolder.opentelemetry.metrics',
+  );
+  const defaultBuckets = metricsConfig?.getOptional<number[]>(
+    'histogramBuckets.default',
+  );
   const meter = metrics.getMeter('default');
   const taskCount = meter.createCounter('scaffolder.task.count', {
     description: 'Count of task runs',
@@ -588,6 +596,11 @@ function scaffoldingTracker() {
   const taskDuration = meter.createHistogram('scaffolder.task.duration', {
     description: 'Duration of a task run',
     unit: 'seconds',
+    advice: {
+      explicitBucketBoundaries:
+        metricsConfig?.getOptional<number[]>('histogramBuckets.taskDuration') ||
+        defaultBuckets,
+    },
   });
 
   const stepCount = meter.createCounter('scaffolder.step.count', {
@@ -597,6 +610,11 @@ function scaffoldingTracker() {
   const stepDuration = meter.createHistogram('scaffolder.step.duration', {
     description: 'Duration of a step runs',
     unit: 'seconds',
+    advice: {
+      explicitBucketBoundaries:
+        metricsConfig?.getOptional<number[]>('histogramBuckets.stepDuration') ||
+        defaultBuckets,
+    },
   });
 
   async function taskStart(task: TaskContext) {
