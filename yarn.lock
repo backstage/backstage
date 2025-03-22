@@ -5564,7 +5564,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org":
+"@backstage/plugin-catalog-backend-module-github-org@workspace:^, @backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org"
   dependencies:
@@ -5597,8 +5597,10 @@ __metadata:
     "@backstage/plugin-events-node": "workspace:^"
     "@octokit/core": ^5.2.0
     "@octokit/graphql": ^7.0.2
+    "@octokit/plugin-rest-endpoint-methods": 13.2.2
     "@octokit/plugin-throttling": ^8.1.3
     "@octokit/rest": ^19.0.3
+    "@octokit/types": 13.6.2
     "@types/lodash": ^4.14.151
     git-url-parse: ^15.0.0
     lodash: ^4.17.21
@@ -9815,14 +9817,14 @@ __metadata:
   linkType: hard
 
 "@google-cloud/cloud-sql-connector@npm:^1.4.0":
-  version: 1.6.1
-  resolution: "@google-cloud/cloud-sql-connector@npm:1.6.1"
+  version: 1.6.0
+  resolution: "@google-cloud/cloud-sql-connector@npm:1.6.0"
   dependencies:
     "@googleapis/sqladmin": ^24.0.0
     gaxios: ^6.1.1
     google-auth-library: ^9.2.0
     p-throttle: ^7.0.0
-  checksum: a39c93029ef0ca0462f3a4d0d5ef503cb2c5cd8ffa99952429336005b017933688909f6c937ac1f65ad2d5c2285f0c91c0f04781830b3fe8b8864abbaa495f56
+  checksum: 62acc32cadebf45ccb5a87516e1bc4c97d3f948c15997d3f081298cda0d420f191024341abe3a2f521132ebde60aed9ba529695e087d3b5750e943ac0a7c2c97
   languageName: node
   linkType: hard
 
@@ -12880,6 +12882,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@octokit/openapi-types@npm:^24.2.0":
+  version: 24.2.0
+  resolution: "@octokit/openapi-types@npm:24.2.0"
+  checksum: 3c2d2f4cafd21c8a1e6a6fe6b56df6a3c09bc52ab6f829c151f9397694d028aa183ae856f08e006ee7ecaa7bd7eb413a903fbc0ffa6403e7b284ddcda20b1294
+  languageName: node
+  linkType: hard
+
 "@octokit/plugin-paginate-graphql@npm:^4.0.0":
   version: 4.0.0
   resolution: "@octokit/plugin-paginate-graphql@npm:4.0.0"
@@ -13072,6 +13081,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@octokit/types@npm:13.6.2":
+  version: 13.6.2
+  resolution: "@octokit/types@npm:13.6.2"
+  dependencies:
+    "@octokit/openapi-types": ^22.2.0
+  checksum: c4e51da1ccabc028b70fc90ca58d65091862a7fe3a65ec2692681f473a0aee4c355abfd15fd547bce3a9800d07c1592603fe84b4223e7beea0d493e4fcc1a65e
+  languageName: node
+  linkType: hard
+
 "@octokit/types@npm:^12.0.0, @octokit/types@npm:^12.2.0, @octokit/types@npm:^12.4.0":
   version: 12.4.0
   resolution: "@octokit/types@npm:12.4.0"
@@ -13082,11 +13100,11 @@ __metadata:
   linkType: hard
 
 "@octokit/types@npm:^13.0.0, @octokit/types@npm:^13.1.0, @octokit/types@npm:^13.5.0":
-  version: 13.6.2
-  resolution: "@octokit/types@npm:13.6.2"
+  version: 13.10.0
+  resolution: "@octokit/types@npm:13.10.0"
   dependencies:
-    "@octokit/openapi-types": ^22.2.0
-  checksum: c4e51da1ccabc028b70fc90ca58d65091862a7fe3a65ec2692681f473a0aee4c355abfd15fd547bce3a9800d07c1592603fe84b4223e7beea0d493e4fcc1a65e
+    "@octokit/openapi-types": ^24.2.0
+  checksum: fca3764548d5872535b9025c3b5fe6373fe588b287cb5b5259364796c1931bbe5e9ab8a86a5274ce43bb2b3e43b730067c3b86b6b1ade12a98cd59b2e8b3610d
   languageName: node
   linkType: hard
 
@@ -19240,13 +19258,13 @@ __metadata:
   linkType: hard
 
 "@types/dockerode@npm:^3.3.0, @types/dockerode@npm:^3.3.29":
-  version: 3.3.35
-  resolution: "@types/dockerode@npm:3.3.35"
+  version: 3.3.34
+  resolution: "@types/dockerode@npm:3.3.34"
   dependencies:
     "@types/docker-modem": "*"
     "@types/node": "*"
     "@types/ssh2": "*"
-  checksum: a59b7637de3a572bf4d41dc0cba3be75f14a734ae6e5f79c7f17dbfd1f100e507008f5a6b6aac657ccd13e67dd5d2cf6ee4608ded5ce97021737125d110a1d3b
+  checksum: 0cb35276fc76ee8ae9d6db7054198e23370f753894d06aa56efbf232032009c6f63a3bfce9d71e6272f3240040d9da2d2a56671d24f34e598ff2000df946ecbd
   languageName: node
   linkType: hard
 
@@ -28701,6 +28719,8 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-github": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-github-org": "workspace:^"
     "@backstage/plugin-catalog-backend-module-openapi": "workspace:^"
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"

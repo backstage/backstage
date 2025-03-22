@@ -21,7 +21,6 @@ import {
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
-import { Octokit } from '@octokit/rest';
 import { isEmpty, trimEnd } from 'lodash';
 import parseGitUrl from 'git-url-parse';
 import {
@@ -33,8 +32,13 @@ import {
   createLegacyAuthAdapters,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  DiscoveryService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { extname } from 'path';
+import { createRestClient } from '../lib/github';
 
 /** @public */
 export type GithubLocationAnalyzerOptions = {
@@ -44,6 +48,7 @@ export type GithubLocationAnalyzerOptions = {
   auth?: AuthService;
   githubCredentialsProvider?: GithubCredentialsProvider;
   catalog?: CatalogApi;
+  logger?: LoggerService;
 };
 
 /** @public */
@@ -52,6 +57,7 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
   private readonly integrations: ScmIntegrationRegistry;
   private readonly auth: AuthService;
+  private readonly logger: LoggerService | undefined;
 
   constructor(options: GithubLocationAnalyzerOptions) {
     this.catalogClient =
@@ -66,6 +72,7 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
       discovery: options.discovery,
       tokenManager: options.tokenManager,
     }).auth;
+    this.logger = options.logger;
   }
 
   supports(url: string) {
@@ -90,16 +97,20 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
       throw new Error('Make sure you have a GitHub integration configured');
     }
 
-    const { token: githubToken } =
-      await this.githubCredentialsProvider.getCredentials({
-        url,
-      });
-
-    const octokitClient = new Octokit({
-      auth: githubToken,
-      baseUrl: integration.config.apiBaseUrl,
+    const { token } = await this.githubCredentialsProvider.getCredentials({
+      url,
+    });
+    const octokitClient = createRestClient({
+      token: token!,
+      baseUrl: url,
+      logger: this.logger,
     });
 
+    if (this.logger) {
+      this.logger.debug(
+        `GithubLocationAnalyzer search ${JSON.stringify(query)}`,
+      );
+    }
     const searchResult = await octokitClient.search
       .code({ q: query })
       .catch(e => {
@@ -108,6 +119,11 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
 
     const exists = searchResult.data.total_count > 0;
     if (exists) {
+      if (this.logger) {
+        this.logger.debug(
+          `GithubLocationAnalyzer repos ${JSON.stringify(repo)}`,
+        );
+      }
       const repoInformation = await octokitClient.repos
         .get({ owner, repo })
         .catch(e => {

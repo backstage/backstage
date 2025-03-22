@@ -27,8 +27,8 @@ import {
   LocationSpec,
   processingResult,
 } from '@backstage/plugin-catalog-node';
-import { graphql } from '@octokit/graphql';
 import { getOrganizationRepositories } from '../lib';
+import { createGraphqlClient } from '../lib/github';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
@@ -91,6 +91,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
       return false;
     }
 
+    const logger = this.logger;
     const gitHubConfig = this.integrations.github.byUrl(
       location.target,
     )?.config;
@@ -103,35 +104,40 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     const { org, repoSearchPath, catalogPath, branch, host } = parseUrl(
       location.target,
     );
+    logger.debug(
+      `GithubDiscoveryProcessor readLocation ${catalogPath} ${location.target}`,
+    );
 
     // Building the org url here so that the github creds provider doesn't need to know
     // about how to handle the wild card which is special for this processor.
     const orgUrl = `https://${host}/${org}`;
 
-    const { headers } = await this.githubCredentialsProvider.getCredentials({
+    const { token } = await this.githubCredentialsProvider.getCredentials({
       url: orgUrl,
     });
 
-    const client = graphql.defaults({
-      baseUrl: gitHubConfig.apiBaseUrl,
-      headers,
+    const client = createGraphqlClient({
+      token: token!,
+      baseUrl: gitHubConfig.apiBaseUrl!,
+      logger,
     });
 
     // Read out all of the raw data
     const startTimestamp = Date.now();
-    this.logger.info(`Reading GitHub repositories from ${location.target}`);
+    this.logger.info(`Reading GitHub repositories for ${catalogPath}`);
 
     const { repositories } = await getOrganizationRepositories(
       client,
       org,
       catalogPath,
+      logger,
     );
     const matching = repositories.filter(
       r => !r.isArchived && repoSearchPath.test(r.name),
     );
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
-    this.logger.debug(
+    logger.debug(
       `Read ${repositories.length} GitHub repositories (${matching.length} matching the pattern) in ${duration} seconds`,
     );
 
@@ -148,6 +154,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
 
       const path = `/blob/${branchName}${catalogPath}`;
 
+      logger.debug(`emitting processingResult with target path ${path}`);
       emit(
         processingResult.location({
           type: 'url',

@@ -31,13 +31,13 @@ import {
 
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 
-import { graphql } from '@octokit/graphql';
 import * as uuid from 'uuid';
 import {
   GithubEntityProviderConfig,
   readProviderConfigs,
 } from './GithubEntityProviderConfig';
 import {
+  createGraphqlClient,
   getOrganizationRepositories,
   getOrganizationRepository,
   RepositoryResponse,
@@ -219,18 +219,19 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     );
   }
 
-  private async createGraphqlClient() {
+  private async createConfiguredGraphqlClient() {
     const organization = this.config.organization;
     const host = this.integration.host;
     const orgUrl = `https://${host}/${organization}`;
 
-    const { headers } = await this.githubCredentialsProvider.getCredentials({
+    const { token } = await this.githubCredentialsProvider.getCredentials({
       url: orgUrl,
     });
 
-    return graphql.defaults({
-      baseUrl: this.integration.apiBaseUrl,
-      headers,
+    return createGraphqlClient({
+      baseUrl: this.integration.apiBaseUrl!,
+      token: token!,
+      logger: this.logger,
     });
   }
 
@@ -238,10 +239,15 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   private async findCatalogFiles(): Promise<Repository[]> {
     const organization = this.config.organization;
     const catalogPath = this.config.catalogPath;
-    const client = await this.createGraphqlClient();
+    const client = await this.createConfiguredGraphqlClient();
 
     const { repositories: repositoriesFromGithub } =
-      await getOrganizationRepositories(client, organization, catalogPath);
+      await getOrganizationRepositories(
+        client,
+        organization,
+        catalogPath,
+        this.logger,
+      );
     const repositories = repositoriesFromGithub.map(
       this.createRepoFromGithubResponse,
     );
@@ -599,7 +605,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     if (this.config.validateLocationsExist) {
       const organization = this.config.organization;
       const catalogPath = this.config.catalogPath;
-      const client = await this.createGraphqlClient();
+      const client = await this.createConfiguredGraphqlClient();
 
       const repositoryFromGithub = await getOrganizationRepository(
         client,

@@ -15,18 +15,25 @@
  */
 
 const octokit = {
-  search: {
-    code: jest.fn(),
+  rest: {
+    search: {
+      code: jest.fn(),
+    },
+    repos: {
+      get: jest.fn(),
+    },
   },
-  repos: {
-    get: jest.fn(),
-  },
+  plugin: jest.fn(),
 };
 
-jest.mock('@octokit/rest', () => {
+jest.mock('@octokit/core', () => {
   class Octokit {
     constructor() {
       return octokit;
+    }
+
+    static plugin(..._args: any[]): typeof Octokit {
+      return Octokit;
     }
   }
   return { Octokit };
@@ -99,13 +106,13 @@ describe('GithubLocationAnalyzer', () => {
       ),
     );
 
-    octokit.repos.get.mockResolvedValue({
+    octokit.rest.repos.get.mockResolvedValue({
       data: { default_branch: 'my_default_branch' },
     });
   });
 
   it('should analyze', async () => {
-    octokit.search.code.mockImplementation((opts: { q: string }) => {
+    octokit.rest.search.code.mockImplementation((opts: { q: string }) => {
       if (opts.q === 'filename:catalog-info.yaml extension:yaml repo:foo/bar') {
         return Promise.resolve({
           data: { items: [{ path: 'catalog-info.yaml' }], total_count: 1 },
@@ -132,7 +139,7 @@ describe('GithubLocationAnalyzer', () => {
   });
 
   it('should use the provided entity filename for search', async () => {
-    octokit.search.code.mockImplementation((opts: { q: string }) => {
+    octokit.rest.search.code.mockImplementation((opts: { q: string }) => {
       if (opts.q === 'filename:anvil.yaml extension:yaml repo:foo/bar') {
         return Promise.resolve({
           data: { items: [{ path: 'anvil.yaml' }], total_count: 1 },
@@ -158,7 +165,7 @@ describe('GithubLocationAnalyzer', () => {
   });
 
   it('should use the provided entity file extension in search query only if present', async () => {
-    octokit.search.code.mockImplementation((opts: { q: string }) => {
+    octokit.rest.search.code.mockImplementation((opts: { q: string }) => {
       if (opts.q === 'filename:.gitignore  repo:foo/bar') {
         return Promise.resolve({
           data: { items: [{ path: '.gitignore' }], total_count: 1 },

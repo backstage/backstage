@@ -35,7 +35,6 @@ import {
   LocationSpec,
   processingResult,
 } from '@backstage/plugin-catalog-node';
-import { graphql } from '@octokit/graphql';
 import {
   assignGroupsToUsers,
   buildOrgHierarchy,
@@ -48,6 +47,7 @@ import {
   TeamTransformer,
   UserTransformer,
 } from '../lib';
+import { createGraphqlClient } from '../lib/github';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
@@ -113,6 +113,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
       return false;
     }
 
+    const logger = this.options.logger;
     const gitHubConfig = this.integrations.github.byUrl(
       location.target,
     )?.config;
@@ -131,13 +132,14 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
 
     for (const orgConfig of orgsToProcess) {
       try {
-        const { headers, type: tokenType } =
+        const { token, type: tokenType } =
           await this.githubCredentialsProvider.getCredentials({
             url: `${baseUrl}/${orgConfig.name}`,
           });
-        const client = graphql.defaults({
-          baseUrl: gitHubConfig.apiBaseUrl,
-          headers,
+        const client = createGraphqlClient({
+          token: token!,
+          baseUrl: gitHubConfig.apiBaseUrl!,
+          logger,
         });
 
         const startTimestamp = Date.now();
