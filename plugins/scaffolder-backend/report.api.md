@@ -14,7 +14,6 @@ import { Duration } from 'luxon';
 import { EventsService } from '@backstage/plugin-events-node';
 import { HumanDuration } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
-import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -38,6 +37,7 @@ import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal } from '@backstage/plugin-scaffolder-node';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { UpdateCheckpointOptions } from '@backstage/plugin-scaffolder-node';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 
@@ -442,19 +442,7 @@ export class TaskManager implements TaskContext {
   // (undocumented)
   get spec(): TaskSpecV1beta3;
   // (undocumented)
-  updateCheckpoint?(
-    options:
-      | {
-          key: string;
-          status: 'success';
-          value: JsonValue;
-        }
-      | {
-          key: string;
-          status: 'failed';
-          reason: string;
-        },
-  ): Promise<void>;
+  updateCheckpoint?(options: UpdateCheckpointOptions): Promise<void>;
 }
 
 // @public @deprecated
