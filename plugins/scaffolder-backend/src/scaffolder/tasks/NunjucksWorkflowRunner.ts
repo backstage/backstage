@@ -50,6 +50,7 @@ import {
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import {
+  CheckpointOptions,
   TaskContext,
   TemplateAction,
   TemplateFilter,
@@ -375,10 +376,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           secrets: task.secrets ?? {},
           logger: taskLogger,
           workspacePath,
-          async checkpoint<T extends JsonValue | void>(opts: {
-            key?: string;
-            fn: () => Promise<T> | T;
-          }) {
+          async checkpoint<T extends JsonValue | void>(
+            opts: CheckpointOptions<T>,
+          ) {
             const { key: checkpointKey, fn } = opts;
             const key = `v1.task.checkpoint.${step.id}.${checkpointKey}`;
 
