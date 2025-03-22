@@ -312,7 +312,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
     expect(mockCatalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
       entityRefs: ['group:default/some-owner'],
     });
-    expect(updateFilters).toHaveBeenLastCalledWith({
+    expect(updateFilters).toHaveBeenCalledWith({
       owners: new EntityOwnerFilter(['group:default/some-owner']),
     });
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
@@ -494,7 +494,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
+    expect(updateFilters).toHaveBeenCalledWith({
       owners: new EntityOwnerFilter(['group:default/some-owner']),
     });
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
