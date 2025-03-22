@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { UserNotificationSettingsCard } from './UserNotificationSettingsCard';
+export type { UserNotificationSettingsCardProps } from './UserNotificationSettingsCard';
