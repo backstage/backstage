@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-import { TokenManager } from '@backstage/backend-common';
-import {
-  AuthService,
-  DiscoveryService,
-  HttpAuthService,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
-import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
+import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { assertError, NotFoundError } from '@backstage/errors';
 import {
@@ -48,13 +42,10 @@ export function bindProviderRouters(
     baseUrl: string;
     config: Config;
     logger: LoggerService;
-    discovery: DiscoveryService;
     auth: AuthService;
-    httpAuth: HttpAuthService;
-    tokenManager?: TokenManager;
     tokenIssuer: TokenIssuer;
     ownershipResolver?: AuthOwnershipResolver;
-    catalogApi?: CatalogApi;
+    catalogApi: CatalogApi;
   },
 ) {
   const {
@@ -63,10 +54,7 @@ export function bindProviderRouters(
     baseUrl,
     config,
     logger,
-    discovery,
     auth,
-    httpAuth,
-    tokenManager,
     tokenIssuer,
     catalogApi,
     ownershipResolver,
@@ -94,13 +82,9 @@ export function bindProviderRouters(
           logger,
           resolverContext: CatalogAuthResolverContext.create({
             logger,
-            catalogApi:
-              catalogApi ?? new CatalogClient({ discoveryApi: discovery }),
+            catalogApi,
             tokenIssuer,
-            tokenManager,
-            discovery,
             auth,
-            httpAuth,
             ownershipResolver,
           }),
         });
