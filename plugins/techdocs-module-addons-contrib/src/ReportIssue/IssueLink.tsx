@@ -48,10 +48,7 @@ const getIcon = ({ type }: Repository) => {
 };
 
 const getName = ({ type }: Repository) => {
-  if (type === 'github') {
-    return 'Github';
-  }
-  return 'Gitlab';
+  return type.charAt(0).toLocaleUpperCase('en-US') + type.slice(1);
 };
 
 const getUrl = (repository: Repository, template: ReportIssueTemplate) => {
