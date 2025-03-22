@@ -49,6 +49,7 @@ export async function readMicrosoftGraphUsers(
     userExpand?: string;
     userFilter?: string;
     userSelect?: string[];
+    userPath?: string;
     loadUserPhotos?: boolean;
     transformer?: UserTransformer;
     logger: LoggerService;
@@ -64,6 +65,7 @@ export async function readMicrosoftGraphUsers(
       top: PAGE_SIZE,
     },
     options.queryMode,
+    options.userPath,
   );
 
   return {
@@ -87,6 +89,7 @@ export async function readMicrosoftGraphUsersInGroups(
     loadUserPhotos?: boolean;
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
+    userGroupMemberPath?: string;
     groupExpand?: string;
     transformer?: UserTransformer;
     logger: LoggerService;
@@ -108,6 +111,7 @@ export async function readMicrosoftGraphUsersInGroups(
       top: PAGE_SIZE,
     },
     options.queryMode,
+    options.userGroupMemberPath,
   )) {
     // Process all groups in parallel, otherwise it can take quite some time
     userGroupMemberPromises.push(
@@ -178,6 +182,7 @@ export async function readMicrosoftGraphGroups(
     groupFilter?: string;
     groupSearch?: string;
     groupSelect?: string[];
+    groupPath?: string;
     groupIncludeSubGroups?: boolean;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
@@ -213,6 +218,7 @@ export async function readMicrosoftGraphGroups(
       top: PAGE_SIZE,
     },
     options?.queryMode,
+    options?.groupPath,
   )) {
     // Process all groups in parallel, otherwise it can take quite some time
     promises.push(
@@ -396,13 +402,16 @@ export async function readMicrosoftGraphOrg(
     userExpand?: string;
     userFilter?: string;
     userSelect?: string[];
+    userPath?: string;
     loadUserPhotos?: boolean;
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
+    userGroupMemberPath?: string;
     groupExpand?: string;
     groupSearch?: string;
     groupFilter?: string;
     groupSelect?: string[];
+    groupPath?: string;
     groupIncludeSubGroups?: boolean;
     queryMode?: 'basic' | 'advanced';
     userTransformer?: UserTransformer;
@@ -413,7 +422,11 @@ export async function readMicrosoftGraphOrg(
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
   let users: UserEntity[] = [];
 
-  if (options.userGroupMemberFilter || options.userGroupMemberSearch) {
+  if (
+    options.userGroupMemberFilter ||
+    options.userGroupMemberSearch ||
+    options.userGroupMemberPath
+  ) {
     const { users: usersInGroups } = await readMicrosoftGraphUsersInGroups(
       client,
       {
@@ -423,6 +436,7 @@ export async function readMicrosoftGraphOrg(
         userSelect: options.userSelect,
         userGroupMemberFilter: options.userGroupMemberFilter,
         userGroupMemberSearch: options.userGroupMemberSearch,
+        userGroupMemberPath: options.userGroupMemberPath,
         loadUserPhotos: options.loadUserPhotos,
         transformer: options.userTransformer,
         logger: options.logger,
@@ -435,6 +449,7 @@ export async function readMicrosoftGraphOrg(
       userExpand: options.userExpand,
       userFilter: options.userFilter,
       userSelect: options.userSelect,
+      userPath: options.userPath,
       loadUserPhotos: options.loadUserPhotos,
       transformer: options.userTransformer,
       logger: options.logger,
@@ -448,6 +463,7 @@ export async function readMicrosoftGraphOrg(
       groupFilter: options.groupFilter,
       groupSearch: options.groupSearch,
       groupSelect: options.groupSelect,
+      groupPath: options.groupPath,
       groupIncludeSubGroups: options.groupIncludeSubGroups,
       groupTransformer: options.groupTransformer,
       organizationTransformer: options.organizationTransformer,
