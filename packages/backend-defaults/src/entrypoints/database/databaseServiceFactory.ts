@@ -20,6 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseManager } from './DatabaseManager';
+import { demoTransformer } from './transformers/demoTransformer';
 
 /**
  * Database access and management via `knex`.
@@ -41,6 +42,7 @@ export const databaseServiceFactory = createServiceFactory({
     rootLogger: coreServices.rootLogger,
   },
   async createRootContext({ config, rootLifecycle, rootLogger }) {
+    DatabaseManager.addConfigTransformer('pg', 'noop-demo', demoTransformer);
     return config.getOptional('backend.database')
       ? DatabaseManager.fromConfig(config, { rootLifecycle, rootLogger })
       : DatabaseManager.fromConfig(
