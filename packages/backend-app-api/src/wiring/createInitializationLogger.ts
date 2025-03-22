@@ -29,6 +29,12 @@ export function createInitializationLogger(
   onPluginStarted(pluginId: string): void;
   onPluginFailed(pluginId: string, error: Error): void;
   onPermittedPluginFailure(pluginId: string, error: Error): void;
+  onPluginModuleFailed(pluginId: string, moduleId: string, error: Error): void;
+  onPermittedPluginModuleFailure(
+    pluginId: string,
+    moduleId: string,
+    error: Error,
+  ): void;
   onAllStarted(): void;
 } {
   const logger = rootLogger?.child({ type: 'initialization' });
@@ -84,6 +90,26 @@ export function createInitializationLogger(
       starting.delete(pluginId);
       logger?.error(
         `Plugin '${pluginId}' threw an error during startup, but boot failure is permitted for this plugin so startup will continue.`,
+        error,
+      );
+    },
+    onPluginModuleFailed(pluginId: string, moduleId: string, error: Error) {
+      const status =
+        starting.size > 0
+          ? `, waiting for ${starting.size} other plugins to finish before shutting down the process`
+          : '';
+      logger?.error(
+        `Module ${moduleId} in Plugin '${pluginId}' threw an error during startup${status}.`,
+        error,
+      );
+    },
+    onPermittedPluginModuleFailure(
+      pluginId: string,
+      moduleId: string,
+      error: Error,
+    ) {
+      logger?.error(
+        `Module ${moduleId} in Plugin '${pluginId}' threw an error during startup, but boot failure is permitted for this plugin module so startup will continue.`,
         error,
       );
     },
