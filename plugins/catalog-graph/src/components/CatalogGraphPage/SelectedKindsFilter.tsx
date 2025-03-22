@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -27,6 +28,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import useAsync from 'react-use/esm/useAsync';
+import { catalogGraphTranslationRef } from '../../translation';
 
 /** @public */
 export type SelectedKindsFilterClassKey = 'formControl';
@@ -49,6 +51,7 @@ export const SelectedKindsFilter = ({ value, onChange }: Props) => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const catalogApi = useApi(catalogApiRef);
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
 
   const { error, value: kinds } = useAsync(async () => {
     return await catalogApi
@@ -59,11 +62,11 @@ export const SelectedKindsFilter = ({ value, onChange }: Props) => {
   useEffect(() => {
     if (error) {
       alertApi.post({
-        message: `Failed to load entity kinds`,
+        message: t('selectedKindsFilter.failAlertMessage'),
         severity: 'error',
       });
     }
-  }, [error, alertApi]);
+  }, [error, alertApi, t]);
 
   const normalizedKinds = useMemo(
     () => (kinds ? kinds.map(k => k.toLocaleLowerCase('en-US')) : kinds),
@@ -91,7 +94,9 @@ export const SelectedKindsFilter = ({ value, onChange }: Props) => {
 
   return (
     <Box pb={1} pt={1}>
-      <Typography variant="button">Kinds</Typography>
+      <Typography variant="button">
+        {t('selectedKindsFilter.selectLabel')}
+      </Typography>
       <Autocomplete
         className={classes.formControl}
         multiple

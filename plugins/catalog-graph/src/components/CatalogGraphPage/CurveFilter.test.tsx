@@ -18,18 +18,39 @@ import { render, waitFor, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { CurveFilter } from './CurveFilter';
+import { mockApis, MockErrorApi, TestApiProvider } from '@backstage/test-utils';
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { errorApiRef } from '@backstage/core-plugin-api';
 
 describe('<CurveFilter/>', () => {
   test('should display current curve label', () => {
     const onChange = jest.fn();
-    render(<CurveFilter value="curveMonotoneX" onChange={onChange} />);
+    render(
+      <TestApiProvider
+        apis={[
+          [translationApiRef, mockApis.translation()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <CurveFilter value="curveMonotoneX" onChange={onChange} />
+      </TestApiProvider>,
+    );
 
     expect(screen.getByText('Monotone X')).toBeInTheDocument();
   });
 
   test('should select an alternative curve factory', async () => {
     const onChange = jest.fn();
-    render(<CurveFilter value="curveStepBefore" onChange={onChange} />);
+    render(
+      <TestApiProvider
+        apis={[
+          [translationApiRef, mockApis.translation()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <CurveFilter value="curveStepBefore" onChange={onChange} />
+      </TestApiProvider>,
+    );
 
     expect(screen.getByText('Step Before')).toBeInTheDocument();
 

@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 import { Select, SelectedItems } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
 import React, { useCallback } from 'react';
+import { catalogGraphTranslationRef } from '../../translation';
 
 type Curve = 'curveStepBefore' | 'curveMonotoneX';
-const CURVE_DISPLAY_NAMES: Record<Curve, string> = {
-  curveMonotoneX: 'Monotone X',
-  curveStepBefore: 'Step Before',
-};
 
 export type Props = {
   value: Curve;
@@ -35,11 +33,17 @@ export const CurveFilter = ({ value, onChange }: Props) => {
     (v: SelectedItems) => onChange(v as Curve),
     [onChange],
   );
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
+
+  const CURVE_DISPLAY_NAMES: Record<Curve, string> = {
+    curveMonotoneX: t('curveFilter.displayName.curveMonotoneX'),
+    curveStepBefore: t('curveFilter.displayName.curveStepBefore'),
+  };
 
   return (
     <Box pb={1} pt={1}>
       <Select
-        label="Curve"
+        label={t('curveFilter.selectLabel')}
         selected={value}
         items={curves.map(v => ({
           label: CURVE_DISPLAY_NAMES[v],
