@@ -42,7 +42,7 @@ export const Title1: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <Flex>
+    <Flex direction="column" gap="4">
       <Heading variant="display">Display</Heading>
       <Heading variant="title1">Title 1</Heading>
       <Heading variant="title2">Title 2</Heading>
@@ -70,8 +70,7 @@ export const CustomTag: Story = {
 
 export const Playground: Story = {
   render: () => (
-    <Flex>
-      <Text>All variants</Text>
+    <Flex direction="column" gap="4">
       <Heading variant="display">Display</Heading>
       <Heading variant="title1">Title 1</Heading>
       <Heading variant="title2">Title 2</Heading>

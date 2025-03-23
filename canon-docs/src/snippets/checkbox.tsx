@@ -1,32 +1,22 @@
 'use client';
 
-import { Checkbox, Flex, Text } from '../../../packages/canon';
+import { useEffect, useState } from 'react';
+import { composeStories } from '@storybook/react';
+import * as CheckboxStories from '../../../packages/canon/src/components/Checkbox/Checkbox.stories';
 
-export const CheckboxPreview = () => {
-  return <Checkbox label="Accept terms and conditions" />;
-};
+export const CheckboxSnippet = ({ story }: { story: string }) => {
+  const stories = composeStories(CheckboxStories);
+  const [isReady, setIsReady] = useState(false);
 
-export const CheckboxAllVariants = () => {
-  return (
-    <Flex align="center">
-      <Checkbox />
-      <Checkbox checked />
-      <Checkbox label="Checkbox" />
-      <Checkbox label="Checkbox" checked />
-    </Flex>
-  );
-};
+  useEffect(() => {
+    setIsReady(true);
+  }, [story]);
 
-export const CheckboxPlayground = () => {
-  return (
-    <Flex direction="column">
-      <Text>All variants</Text>
-      <Flex align="center">
-        <Checkbox />
-        <Checkbox checked />
-        <Checkbox label="Checkbox" />
-        <Checkbox label="Checkbox" checked />
-      </Flex>
-    </Flex>
-  );
+  if (!isReady) return null;
+
+  if (story === 'Default') return <stories.Default />;
+  if (story === 'AllVariants') return <stories.AllVariants />;
+  if (story === 'Playground') return <stories.Playground />;
+
+  return null;
 };

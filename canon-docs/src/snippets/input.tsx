@@ -1,36 +1,21 @@
 'use client';
 
-import { Input, Grid } from '../../../packages/canon';
+import { useEffect, useState } from 'react';
+import { composeStories } from '@storybook/react';
+import * as InputStories from '../../../packages/canon/src/components/Input/Input.stories';
 
-export const InputPreview = () => {
-  return (
-    <div style={{ width: '300px' }}>
-      <Input placeholder="Enter your name" />
-    </div>
-  );
-};
+export const InputSnippet = ({ story }: { story: string }) => {
+  const stories = composeStories(InputStories);
+  const [isReady, setIsReady] = useState(false);
 
-export const InputSizes = () => {
-  return (
-    <Grid style={{ width: '300px' }}>
-      <Input size="sm" placeholder="Small" />
-      <Input size="md" placeholder="Medium" />
-    </Grid>
-  );
-};
+  useEffect(() => {
+    setIsReady(true);
+  }, [story]);
 
-export const InputError = () => {
-  return (
-    <div style={{ width: '300px' }}>
-      <Input required />
-    </div>
-  );
-};
+  if (!isReady) return null;
 
-export const InputPlayground = () => {
-  return (
-    <div style={{ maxWidth: '300px' }}>
-      <Input placeholder="Enter your name" />
-    </div>
-  );
+  if (story === 'Primary') return <stories.Primary />;
+  if (story === 'Sizes') return <stories.Sizes />;
+
+  return null;
 };

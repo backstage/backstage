@@ -130,4 +130,4 @@ export const icons: IconMap = {
   youtube: RiYoutubeLine,
   'zoom-in': RiZoomInLine,
   'zoom-out': RiZoomOutLine,
-};
+} as const;

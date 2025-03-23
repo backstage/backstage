@@ -1,57 +1,24 @@
 'use client';
 
-import { IconButton, Flex, ButtonProps, Text } from '../../../packages/canon';
+import { useEffect, useState } from 'react';
+import { composeStories } from '@storybook/react';
+import * as IconButtonStories from '../../../packages/canon/src/components/IconButton/IconButton.stories';
 
-export const IconButtonPreview = () => {
-  return (
-    <Flex align="center">
-      <IconButton icon="cloud" variant="primary" />
-      <IconButton icon="cloud" variant="secondary" />
-    </Flex>
-  );
-};
+export const IconButtonSnippet = ({ story }: { story: string }) => {
+  const stories = composeStories(IconButtonStories);
+  const [isReady, setIsReady] = useState(false);
 
-export const IconButtonSizes = () => {
-  return (
-    <Flex align="center">
-      <IconButton icon="cloud" size="medium" />
-      <IconButton icon="cloud" size="small" />
-    </Flex>
-  );
-};
+  useEffect(() => {
+    setIsReady(true);
+  }, [story]);
 
-export const IconButtonDisabled = () => {
-  return <IconButton icon="cloud" disabled />;
-};
+  if (!isReady) return null;
 
-export const IconButtonResponsive = () => {
-  return (
-    <IconButton
-      icon="cloud"
-      variant={{ initial: 'primary', lg: 'secondary' }}
-    />
-  );
-};
+  if (story === 'Variants') return <stories.Variants />;
+  if (story === 'Sizes') return <stories.Sizes />;
+  if (story === 'Disabled') return <stories.Disabled />;
+  if (story === 'Responsive') return <stories.Responsive />;
+  if (story === 'Playground') return <stories.Playground />;
 
-export const IconButtonPlayground = () => {
-  const variants: string[] = ['primary', 'secondary'];
-
-  return (
-    <Flex direction="column">
-      {variants.map(variant => (
-        <Flex direction="column" key={variant}>
-          <Text>{variant}</Text>
-          {['small', 'medium'].map(size => (
-            <Flex align="center" key={size}>
-              <IconButton
-                icon="cloud"
-                variant={variant as ButtonProps['variant']}
-                size={size as ButtonProps['size']}
-              />
-            </Flex>
-          ))}
-        </Flex>
-      ))}
-    </Flex>
-  );
+  return null;
 };

@@ -1,42 +1,24 @@
 'use client';
 
-import { Heading, Flex, Text } from '../../../packages/canon';
+import { useEffect, useState } from 'react';
+import { composeStories } from '@storybook/react';
+import * as HeadingStories from '../../../packages/canon/src/components/Heading/Heading.stories';
 
-export const HeadingPreview = () => {
-  return <Heading>Look mum, no hands!</Heading>;
-};
+export const HeadingSnippet = ({ story }: { story: string }) => {
+  const stories = composeStories(HeadingStories);
+  const [isReady, setIsReady] = useState(false);
 
-export const HeadingAllVariants = () => {
-  return (
-    <Flex direction="column">
-      <Heading variant="display">Display</Heading>
-      <Heading variant="title1">Title 1</Heading>
-      <Heading variant="title2">Title 2</Heading>
-      <Heading variant="title3">Title 3</Heading>
-      <Heading variant="title4">Title 4</Heading>
-    </Flex>
-  );
-};
+  useEffect(() => {
+    setIsReady(true);
+  }, [story]);
 
-export const HeadingResponsive = () => {
-  return (
-    <Flex direction="column">
-      <Heading variant={{ initial: 'title2', lg: 'title1' }}>
-        Responsive heading
-      </Heading>
-    </Flex>
-  );
-};
+  if (!isReady) return null;
 
-export const HeadingPlayground = () => {
-  return (
-    <Flex direction="column">
-      <Text>All variants</Text>
-      <Heading variant="display">Display</Heading>
-      <Heading variant="title1">Title 1</Heading>
-      <Heading variant="title2">Title 2</Heading>
-      <Heading variant="title3">Title 3</Heading>
-      <Heading variant="title4">Title 4</Heading>
-    </Flex>
-  );
+  if (story === 'Default') return <stories.Default />;
+  if (story === 'Title1') return <stories.Title1 />;
+  if (story === 'AllVariants') return <stories.AllVariants />;
+  if (story === 'Responsive') return <stories.Responsive />;
+  if (story === 'Playground') return <stories.Playground />;
+
+  return null;
 };

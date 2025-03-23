@@ -2,7 +2,7 @@ import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
-import { FieldPreview } from '@/snippets/field';
+import { FieldSnippet } from '@/snippets/field';
 import { BaseUI } from '@/components/HeadlessBanners/BaseUI';
 import {
   fieldRootPropDefs,
@@ -15,7 +15,12 @@ import {
 
 A wrapper around `Input` or `Select` component to add label, description and error messages..
 
-<Snippet align="center" py={4} preview={<FieldPreview />} code={`<Field />`} />
+<Snippet
+  align="center"
+  py={4}
+  preview={<FieldSnippet story="Default" />}
+  code={`<Field />`}
+/>
 
 <Tabs.Root>
   <Tabs.List>
@@ -85,7 +90,7 @@ Here's a simple input with a label and description.
   align="center"
   py={4}
   open
-  preview={<FieldPreview />}
+  preview={<FieldSnippet story="WithLabelAndDescription" />}
   code={`<Field>
     <Field.Label>Name</Field.Label>
     <Field.Description>Visible on your profile</Field.Description>

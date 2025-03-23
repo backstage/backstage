@@ -2,7 +2,7 @@ import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
-import { InputPreview, InputSizes } from '@/snippets/input';
+import { InputSnippet } from '@/snippets/input';
 import { BaseUI } from '@/components/HeadlessBanners/BaseUI';
 import { inputPropDefs } from './props';
 
@@ -13,7 +13,7 @@ A input component tfor your forms.
 <Snippet
   align="center"
   py={4}
-  preview={<InputPreview />}
+  preview={<InputSnippet story="Primary" />}
   code={`<Input label="Name" placeholder="Enter your name" />`}
 />
 
@@ -55,7 +55,7 @@ Here's a simple input with a label and description.
   align="center"
   py={4}
   open
-  preview={<InputSizes />}
+  preview={<InputSnippet story="Sizes" />}
   code={`<Grid>
     <Input size="sm" placeholder="Small" />
     <Input size="md" placeholder="Medium" />

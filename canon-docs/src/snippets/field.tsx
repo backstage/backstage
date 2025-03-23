@@ -1,23 +1,21 @@
 'use client';
 
-import { Input, Field } from '../../../packages/canon';
+import { useEffect, useState } from 'react';
+import { composeStories } from '@storybook/react';
+import * as FieldStories from '../../../packages/canon/src/components/Field/Field.stories';
 
-export const FieldPreview = () => {
-  return (
-    <div style={{ width: '300px' }}>
-      <Field.Root>
-        <Field.Label>Name</Field.Label>
-        <Input placeholder="Enter your name" />
-        <Field.Description>Visible on your profile</Field.Description>
-      </Field.Root>
-    </div>
-  );
-};
+export const FieldSnippet = ({ story }: { story: string }) => {
+  const stories = composeStories(FieldStories);
+  const [isReady, setIsReady] = useState(false);
 
-export const InputPlayground = () => {
-  return (
-    <div style={{ maxWidth: '300px' }}>
-      <Input placeholder="Enter your name" />
-    </div>
-  );
+  useEffect(() => {
+    setIsReady(true);
+  }, [story]);
+
+  if (!isReady) return null;
+
+  if (story === 'Default') return <stories.Default />;
+  if (story === 'WithLabelAndDescription')
+    return <stories.WithLabelAndDescription />;
+  return null;
 };
