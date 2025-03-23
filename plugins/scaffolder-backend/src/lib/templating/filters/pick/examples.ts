@@ -1,5 +1,7 @@
+import { TemplateFilterExample } from '@backstage/plugin-scaffolder-node/alpha';
+
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import fs from 'fs-extra';
-import { paths } from '../../lib/paths';
-
-export default async function clean() {
-  await fs.remove(paths.resolveTarget('dist'));
-  await fs.remove(paths.resolveTarget('dist-types'));
-  await fs.remove(paths.resolveTarget('coverage'));
-}
+export const examples: TemplateFilterExample[] = [
+  {
+    example: `\
+- id: log
+  name: Pick
+  action: debug:log
+  input:
+    message: \${{ parameters.owner | parseEntityRef | pick('name') }}`,
+    notes: `\
+- **Input**: \`{ kind: 'Group', namespace: 'default', name: 'techdocs'\` }
+- **Output**: \`techdocs\`
+`,
+  },
+];

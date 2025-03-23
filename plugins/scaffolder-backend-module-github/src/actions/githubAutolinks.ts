@@ -108,15 +108,20 @@ export function createGithubAutolinksAction(options: {
         }),
       );
 
-      await client.rest.repos.createAutolink({
-        owner,
-        repo,
-        key_prefix: keyPrefix,
-        url_template: urlTemplate,
-        is_alphanumeric: isAlphanumeric,
-      });
+      await ctx.checkpoint({
+        key: `create.auto.link.${owner}.${repo}`,
+        fn: async () => {
+          await client.rest.repos.createAutolink({
+            owner,
+            repo,
+            key_prefix: keyPrefix,
+            url_template: urlTemplate,
+            is_alphanumeric: isAlphanumeric,
+          });
 
-      ctx.logger.info(`Autolink reference created successfully`);
+          ctx.logger.info(`Autolink reference created successfully`);
+        },
+      });
     },
   });
 }

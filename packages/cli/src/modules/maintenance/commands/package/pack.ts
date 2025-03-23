@@ -17,11 +17,11 @@
 import {
   productionPack,
   revertProductionPack,
-} from '../modules/build/lib/packager/productionPack';
-import { paths } from '../lib/paths';
+} from '../../../../modules/build/lib/packager/productionPack';
+import { paths } from '../../../../lib/paths';
 import fs from 'fs-extra';
-import { publishPreflightCheck } from '../lib/publishing';
-import { createTypeDistProject } from '../lib/typeDistProject';
+import { publishPreflightCheck } from '../../../../lib/publishing';
+import { createTypeDistProject } from '../../../../lib/typeDistProject';
 
 export const pre = async () => {
   publishPreflightCheck({
