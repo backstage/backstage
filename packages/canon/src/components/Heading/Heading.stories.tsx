@@ -18,7 +18,6 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Heading } from './Heading';
 import { Flex } from '../Flex';
-import { Text } from '../Text';
 
 const meta = {
   title: 'Components/Heading',
