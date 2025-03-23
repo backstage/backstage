@@ -36,7 +36,7 @@
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "start": "yarn build:css:watch && yarn storybook",
+    "start": "concurrently \"yarn build:css:watch\" \"yarn storybook\"",
     "storybook": "storybook dev -p 6006",
     "test": "backstage-cli package test"
   },
@@ -60,6 +60,7 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "chalk": "^5.4.1",
+    "concurrently": "^9.1.2",
     "eslint-plugin-storybook": "^0.11.4",
     "glob": "^11.0.1",
     "globals": "^15.11.0",
