@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-import { Input } from '@base-ui-components/react/input';
+import type { PropDef, GetPropDefTypes } from '../../props/prop-def';
 
 /** @public */
-export interface InputProps extends Omit<Input.Props, 'size'> {
-  size?: 'sm' | 'md';
-}
+export const textFieldPropDefs = {
+  size: {
+    type: 'enum',
+    values: ['small', 'medium'],
+    className: 'canon-Button--size',
+    default: 'medium',
+    responsive: true,
+  },
+} satisfies {
+  size: PropDef<'small' | 'medium'>;
+};
+
+/** @public */
+export type TextFieldOwnProps = GetPropDefTypes<typeof textFieldPropDefs>;

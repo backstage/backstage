@@ -9605,6 +9605,36 @@
   height: 1.5rem;
 }
 
+.canon-FieldRoot {
+  font-family: var(--canon-font-regular);
+  flex-direction: column;
+  width: 100%;
+  display: flex;
+}
+
+.canon-FieldLabel {
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-primary);
+  margin-bottom: var(--canon-space-1_5);
+}
+
+.canon-FieldDescription {
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-secondary);
+  padding-top: var(--canon-space-1_5);
+  margin: 0;
+}
+
+.canon-FieldError {
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-danger);
+  padding-top: var(--canon-space-1_5);
+  margin: 0;
+}
+
 .canon-Input {
   border-radius: var(--canon-radius-3);
   border: 1px solid var(--canon-border);
@@ -9636,50 +9666,18 @@
   border-color: var(--canon-fg-danger);
 }
 
-.canon-Input--size-sm {
+.canon-Input[data-disabled] {
+  opacity: .5;
+  cursor: not-allowed;
+  border: 1px solid var(--canon-border-disabled);
+}
+
+.canon-Input--size-small {
   height: 2rem;
 }
 
-.canon-Input--size-md {
+.canon-Input--size-medium {
   height: 2.5rem;
-}
-
-.canon-FieldRoot {
-  font-family: var(--canon-font-regular);
-  flex-direction: column;
-  width: 100%;
-  display: flex;
-}
-
-.canon-FieldLabel {
-  font-size: var(--canon-font-size-2);
-  font-weight: var(--canon-font-weight-regular);
-  color: var(--canon-fg-primary);
-  margin-bottom: var(--canon-space-1_5);
-}
-
-.canon-FieldDescription {
-  font-size: var(--canon-font-size-2);
-  font-weight: var(--canon-font-weight-regular);
-  color: var(--canon-fg-secondary);
-  padding-top: var(--canon-space-1_5);
-  margin: 0;
-}
-
-.canon-FieldError {
-  font-size: var(--canon-font-size-2);
-  font-weight: var(--canon-font-weight-regular);
-  color: var(--canon-fg-danger);
-  padding-top: var(--canon-space-1_5);
-  margin: 0;
-}
-
-.canon-FieldValidity {
-  font-size: var(--canon-font-size-2);
-  font-weight: var(--canon-font-weight-regular);
-  color: var(--canon-fg-secondary);
-  padding-top: var(--canon-space-1_5);
-  margin: 0;
 }
 
 .canon-MenuTrigger {
