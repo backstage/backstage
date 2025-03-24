@@ -31,7 +31,7 @@ import { setupServer } from 'msw/node';
 import { toInternalBackstageCredentials } from './helpers';
 import { PluginTokenHandler } from './plugin/PluginTokenHandler';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
-import { AccessRestriptionsMap, TokenHandler } from './external/types';
+import { AccessRestrictionsMap, TokenHandler } from './external/types';
 import { Config } from '@backstage/config';
 // import { ExternalTokenHandler } from './external/ExternalTokenHandler';
 // import { TokenHandler } from './external/types';
@@ -512,7 +512,7 @@ describe('authServiceFactory', () => {
         async verifyToken(token: string): Promise<
           | {
               subject: string;
-              allAccessRestrictions?: AccessRestriptionsMap;
+              allAccessRestrictions?: AccessRestrictionsMap;
             }
           | undefined
         > {
