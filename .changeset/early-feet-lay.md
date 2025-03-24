@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-auth-backend-module-oidc-provider': minor
+'@backstage/plugin-auth-backend-module-oidc-provider': patch
 ---
 
 Added custom timeout setting for oidc provider
