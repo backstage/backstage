@@ -17,9 +17,10 @@
 export {
   authServiceFactory,
   pluginTokenHandlerDecoratorServiceRef,
-  externalTokenHandlerDecoratorServiceRef,
+  externalTokenHandlersServiceRef,
 } from './authServiceFactory';
 
-export type { ExternalTokenHandler } from './external/ExternalTokenHandler';
+export type { TokenHandler } from './external/types';
+export type { AccessRestrictionsMap } from './external/types';
 
 export type { PluginTokenHandler } from './plugin/PluginTokenHandler';
