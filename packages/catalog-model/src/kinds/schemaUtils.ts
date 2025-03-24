@@ -145,3 +145,77 @@ export type EntityValidator = {
         data?: never;
       };
 };
+
+export type AddRelationFn<
+  TResult,
+  TEntitySchema extends z.ZodType<{
+    kind?: string;
+    apiVersion?: string;
+    metadata?: any;
+    spec?: any;
+  }> = z.ZodType<{
+    kind?: string;
+    apiVersion?: string;
+    metadata?: any;
+    spec?: any;
+  }>,
+  TLocationSchema extends z.ZodType<{
+    type?: string;
+    target?: string;
+    presence?: 'optional' | 'required';
+  }> = z.ZodType<{
+    type?: string;
+    target?: string;
+    presence?: 'optional' | 'required';
+  }>,
+> = (
+  validator: RelationValidatorFn<TEntitySchema, TLocationSchema>,
+  relationFn: RelationMapFn<
+    z.infer<TEntitySchema>,
+    z.infer<TLocationSchema>,
+    TResult
+  >,
+) => void;
+
+export type RelationTuple<
+  TResult,
+  TEntitySchema extends z.ZodType<{
+    kind?: string;
+    apiVersion?: string;
+    metadata?: any;
+    spec?: any;
+  }> = z.ZodType<{
+    kind?: string;
+    apiVersion?: string;
+    metadata?: any;
+    spec?: any;
+  }>,
+  TLocationSchema extends z.ZodType<{
+    type?: string;
+    target?: string;
+    presence?: 'optional' | 'required';
+  }> = z.ZodType<{
+    type?: string;
+    target?: string;
+    presence?: 'optional' | 'required';
+  }>,
+> = [
+  validator: RelationValidatorFn<TEntitySchema, TLocationSchema>,
+  relationFn: RelationMapFn<
+    z.infer<TEntitySchema>,
+    z.infer<TLocationSchema>,
+    TResult
+  >,
+];
+
+export type RelationValidatorFn<TEntitySchema, TLocationSchema> = (
+  zImpl: typeof z,
+) => {
+  entity?: TEntitySchema;
+  location?: TLocationSchema;
+};
+
+export type RelationMapFn<TEntity, TLocation, TResult> = (
+  entity: TEntity,
+  location: TLocation,
+) => TResult;

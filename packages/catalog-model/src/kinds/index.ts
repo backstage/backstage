@@ -87,6 +87,10 @@ export {
 export {
   type EntitySchema,
   type EntityValidator,
+  type RelationValidatorFn,
+  type RelationMapFn,
+  type AddRelationFn,
+  type RelationTuple,
   createEntitySchema,
   schemasToParser,
 } from './schemaUtils';
