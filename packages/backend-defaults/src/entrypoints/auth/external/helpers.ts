@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { AccessRestriptionsMap } from './types';
+import { AccessRestrictionsMap } from './types';
 
 /**
  * Parses and returns the `accessRestrictions` configuration from an
@@ -25,12 +25,12 @@ import { AccessRestriptionsMap } from './types';
  */
 export function readAccessRestrictionsFromConfig(
   externalAccessEntryConfig: Config,
-): AccessRestriptionsMap | undefined {
+): AccessRestrictionsMap | undefined {
   const configs =
     externalAccessEntryConfig.getOptionalConfigArray('accessRestrictions') ??
     [];
 
-  const result: AccessRestriptionsMap = new Map();
+  const result: AccessRestrictionsMap = new Map();
   for (const config of configs) {
     const validKeys = ['plugin', 'permission', 'permissionAttribute'];
     for (const key of config.keys()) {

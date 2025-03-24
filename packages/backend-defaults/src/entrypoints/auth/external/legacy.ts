@@ -17,7 +17,7 @@
 import { Config } from '@backstage/config';
 import { base64url, decodeJwt, decodeProtectedHeader, jwtVerify } from 'jose';
 import { readAccessRestrictionsFromConfig } from './helpers';
-import { AccessRestriptionsMap, TokenHandler } from './types';
+import { AccessRestrictionsMap, TokenHandler } from './types';
 
 /**
  * Handles `type: legacy` access.
@@ -29,7 +29,7 @@ export class LegacyTokenHandler implements TokenHandler {
     key: Uint8Array;
     result: {
       subject: string;
-      allAccessRestrictions?: AccessRestriptionsMap;
+      allAccessRestrictions?: AccessRestrictionsMap;
     };
   }>();
 
@@ -52,7 +52,7 @@ export class LegacyTokenHandler implements TokenHandler {
   #doAdd(
     secret: string,
     subject: string,
-    allAccessRestrictions?: AccessRestriptionsMap,
+    allAccessRestrictions?: AccessRestrictionsMap,
   ) {
     if (!secret.match(/^\S+$/)) {
       throw new Error('Illegal secret, must be a valid base64 string');
