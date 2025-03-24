@@ -18,9 +18,9 @@ exports.up = async function up(knex) {
     table.string('topic', 255).nullable().after('origin');
   });
 
-  await knex.raw(
-    'ALTER TABLE user_settings DROP CONSTRAINT user_settings_unique_idx',
-  );
+  await knex.schema.table('user_settings', table => {
+    table.dropUnique(['user', 'channel', 'origin']);
+  });
 
   await knex.schema.alterTable('user_settings', table => {
     table.unique(['user', 'channel', 'origin', 'topic'], {
@@ -30,9 +30,9 @@ exports.up = async function up(knex) {
 };
 
 exports.down = async function down(knex) {
-  await knex.raw(
-    'ALTER TABLE user_settings DROP CONSTRAINT user_settings_unique_idx',
-  );
+  await knex.schema.table('user_settings', table => {
+    table.dropUnique(['user', 'channel', 'origin', 'topic']);
+  });
 
   await knex.schema.alterTable('user_settings', table => {
     table.dropColumn('topic');
