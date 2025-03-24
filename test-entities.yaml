@@ -1,0 +1,38 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: test-entity-extra-metadata
+  extra-key: value
+spec:
+  type: service
+  lifecycle: production
+  owner: team-a
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: test-entity-extra-metadata-but-ok
+  this-specific-property-is-allowed: value
+spec:
+  type: service
+  lifecycle: production
+  owner: team-a
+---
+apiVersion: backstage.io/v1alpha1
+kind: Foo
+metadata:
+  name: test-entity-of-custom-kind
+  this-specific-property-is-allowed: value
+spec:
+  lol: ok
+  ref: component:default/test-entity-extra-metadata-but-ok
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: test-component-with-custom-lifecycle
+spec:
+  type: service
+  lifecycle: borked
+  owner: team-a
