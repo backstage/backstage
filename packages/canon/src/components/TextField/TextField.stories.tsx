@@ -98,7 +98,8 @@ async function submitForm(value: string) {
   try {
     const url = new URL(value);
 
-    if (url.hostname.endsWith('example.com')) {
+    const allowedHosts = ['example.com', 'beta.example.com', 'www.example.com'];
+    if (!allowedHosts.includes(url.hostname)) {
       return { error: 'The example domain is not allowed' };
     }
   } catch {
