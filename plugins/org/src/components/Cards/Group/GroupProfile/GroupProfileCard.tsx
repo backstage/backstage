@@ -51,6 +51,7 @@ import CachedIcon from '@material-ui/icons/Cached';
 import EditIcon from '@material-ui/icons/Edit';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
+import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import { LinksGroup } from '../../Meta';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
@@ -202,6 +203,19 @@ export const GroupProfileCard = (props: {
                 secondary="Child Groups"
               />
             </ListItem>
+            {stringifyEntityRef(group) && (
+              <ListItem>
+                <ListItemIcon>
+                  <Tooltip title="Group ID">
+                    <PermIdentityIcon />
+                  </Tooltip>
+                </ListItemIcon>
+                <ListItemText
+                  primary={stringifyEntityRef(group)}
+                  secondary="Group ID"
+                />
+              </ListItem>
+            )}
             {props?.showLinks && <LinksGroup links={links} />}
           </List>
         </Grid>
