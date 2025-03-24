@@ -54,6 +54,7 @@ export class StaticTokenHandler implements TokenHandler {
     }
 
     this.#entries.set(token, { subject, allAccessRestrictions });
+    return this;
   }
 
   async verifyToken(token: string) {

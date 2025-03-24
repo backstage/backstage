@@ -40,6 +40,7 @@ export class LegacyTokenHandler implements TokenHandler {
       config.getString('options.subject'),
       allAccessRestrictions,
     );
+    return this;
   }
 
   // used only for the old backend.auth.keys array
