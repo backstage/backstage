@@ -38,6 +38,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import {
+  ChannelSetting,
   isNotificationsEnabledFor,
   NewNotificationSignal,
   Notification,
@@ -45,6 +46,7 @@ import {
   NotificationSettings,
   notificationSeverities,
   NotificationStatus,
+  OriginSetting,
 } from '@backstage/plugin-notifications-common';
 import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 import { getUsersForEntityRef } from './getUsersForEntityRef';
@@ -89,8 +91,55 @@ export async function createRouter(
     return info.userEntityRef;
   };
 
+  const getTopicSettings = (
+    topic: any,
+    existingOrigin: OriginSetting | undefined,
+    defaultEnabled: boolean,
+  ) => {
+    const existingTopic = existingOrigin?.topics?.find(
+      t => t.id === topic.topic,
+    );
+    return {
+      id: topic.topic,
+      enabled: existingTopic ? existingTopic.enabled : defaultEnabled,
+    };
+  };
+
+  const getOriginSettings = (
+    originId: string,
+    existingChannel: ChannelSetting | undefined,
+    topics: { origin: string; topic: string }[],
+  ) => {
+    const existingOrigin = existingChannel?.origins.find(
+      o => o.id === originId,
+    );
+    const defaultEnabled = existingOrigin ? existingOrigin.enabled : true;
+    return {
+      id: originId,
+      enabled: defaultEnabled,
+      topics: topics
+        .filter(t => t.origin === originId)
+        .map(t => getTopicSettings(t, existingOrigin, defaultEnabled)),
+    };
+  };
+
   const getNotificationChannels = () => {
     return [WEB_NOTIFICATION_CHANNEL, ...processors.map(p => p.getName())];
+  };
+
+  const getChannelSettings = (
+    channelId: string,
+    settings: NotificationSettings,
+    origins: string[],
+    topics: { origin: string; topic: string }[],
+  ) => {
+    const existingChannel = settings.channels.find(c => c.id === channelId);
+    return {
+      id: channelId,
+      origins: origins.map(originId =>
+        getOriginSettings(originId, existingChannel, topics),
+      ),
+    };
   };
 
   const getNotificationSettings = async (user: string) => {
@@ -99,42 +148,11 @@ export async function createRouter(
     const settings = await store.getNotificationSettings({ user });
     const channels = getNotificationChannels();
 
-    const response: NotificationSettings = {
-      channels: channels.map(channelId => {
-        return {
-          id: channelId,
-          origins: origins.map(originId => {
-            const existingChannel = settings.channels.find(
-              c => c.id === channelId,
-            );
-            const existingOrigin = existingChannel?.origins.find(
-              o => o.id === originId,
-            );
-            const defaultEnabled = existingOrigin
-              ? existingOrigin.enabled
-              : true;
-            return {
-              id: originId,
-              enabled: defaultEnabled,
-              topics: topics
-                .filter(t => t.origin === originId)
-                .map(t => {
-                  const existingTopic =
-                    existingOrigin?.topics &&
-                    existingOrigin.topics.find(topic => topic.id === t.topic);
-                  return {
-                    id: t.topic,
-                    enabled: existingTopic
-                      ? existingTopic.enabled
-                      : defaultEnabled,
-                  };
-                }),
-            };
-          }),
-        };
-      }),
+    return {
+      channels: channels.map(channelId =>
+        getChannelSettings(channelId, settings, origins, topics),
+      ),
     };
-    return response;
   };
 
   const isNotificationsEnabled = async (opts: {

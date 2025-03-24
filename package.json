@@ -33,7 +33,7 @@
     "build:plugins-report": "node ./scripts/build-plugins-report",
     "clean": "backstage-cli repo clean",
     "create-plugin": "echo \"use 'yarn new' instead\"",
-    "dev": "NODE_OPTIONS=--no-node-snapshot yarn workspaces foreach -A --include example-backend --include example-app --parallel --jobs unlimited -v -i run start",
+    "dev": "yarn workspaces foreach -A --include example-backend --include example-app --parallel --jobs unlimited -v -i run start",
     "dev:next": "yarn workspaces foreach -A --include example-backend --include example-app-next --parallel --jobs unlimited -v -i run start",
     "docker-build": "yarn tsc && yarn workspace example-backend build && yarn workspace example-backend build-image",
     "fix": "backstage-cli repo fix --publish",

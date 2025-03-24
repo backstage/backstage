@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   isNotificationsEnabledFor,
   NotificationSettings,
 } from '@backstage/plugin-notifications-common';
-import ChevronRight from '@material-ui/icons/ChevronRight';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import Table from '@material-ui/core/Table';
 import MuiTableCell from '@material-ui/core/TableCell';
 import { withStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
 import TableHead from '@material-ui/core/TableHead';
 import Typography from '@material-ui/core/Typography';
 import TableBody from '@material-ui/core/TableBody';
@@ -37,13 +39,6 @@ const TableCell = withStyles({
   },
 })(MuiTableCell);
 
-const CenterContentsTableCell = withStyles({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-})(MuiTableCell);
-
 const TopicTableRow = withStyles({
   root: {
     paddingLeft: '4px',
@@ -54,8 +49,22 @@ export const UserNotificationSettingsPanel = (props: {
   settings: NotificationSettings;
   onChange: (settings: NotificationSettings) => void;
   originNames?: Record<string, string>;
+  topicNames?: Record<string, string>;
 }) => {
   const { settings, onChange } = props;
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+
+  const handleRowToggle = (originId: string) => {
+    setExpandedRows(prevState => {
+      const newExpandedRows = new Set(prevState);
+      if (newExpandedRows.has(originId)) {
+        newExpandedRows.delete(originId);
+      } else {
+        newExpandedRows.add(originId);
+      }
+      return newExpandedRows;
+    });
+  };
   const handleChange = (
     channelId: string,
     originId: string,
@@ -104,12 +113,22 @@ export const UserNotificationSettingsPanel = (props: {
     };
     onChange(updatedSettings);
   };
+  const formatName = (
+    id: string,
+    nameMap: Record<string, string> | undefined,
+  ) => {
+    if (nameMap && id in nameMap) {
+      return nameMap[id];
+    }
+    return capitalize(id.replaceAll(/[-_:]/g, ' '));
+  };
 
   const formatOriginName = (originId: string) => {
-    if (props.originNames && originId in props.originNames) {
-      return props.originNames[originId];
-    }
-    return capitalize(originId.replaceAll(/[_:]/g, ' '));
+    return formatName(originId, props.originNames);
+  };
+
+  const formatTopicName = (topicId: string) => {
+    return formatName(topicId, props.topicNames);
   };
 
   if (settings.channels.length === 0) {
@@ -124,12 +143,15 @@ export const UserNotificationSettingsPanel = (props: {
     <Table>
       <TableHead>
         <TableRow>
-          <CenterContentsTableCell>
-            <Typography variant="subtitle1">Origin</Typography> <ChevronRight />{' '}
+          <TableCell />
+          <TableCell>
+            <Typography variant="subtitle1">Origin</Typography>
+          </TableCell>
+          <TableCell>
             <Typography variant="subtitle1">Topic</Typography>
-          </CenterContentsTableCell>
+          </TableCell>
           {settings.channels.map(channel => (
-            <TableCell>
+            <TableCell key={channel.id}>
               <Typography variant="subtitle1" align="center">
                 {channel.id}
               </Typography>
@@ -141,7 +163,29 @@ export const UserNotificationSettingsPanel = (props: {
         {settings.channels.map(channel =>
           channel.origins.flatMap(origin => [
             <TableRow key={`${channel.id}-${origin.id}`}>
+              <TableCell>
+                {origin.topics && origin.topics.length > 0 && (
+                  <Tooltip
+                    title={`Show Topics for the ${formatOriginName(
+                      origin.id,
+                    )} origin`}
+                  >
+                    <IconButton
+                      aria-label="expand row"
+                      size="small"
+                      onClick={() => handleRowToggle(origin.id)}
+                    >
+                      {expandedRows.has(origin.id) ? (
+                        <KeyboardArrowUpIcon />
+                      ) : (
+                        <KeyboardArrowDownIcon />
+                      )}
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </TableCell>
               <TableCell>{formatOriginName(origin.id)}</TableCell>
+              <TableCell>*</TableCell>
               {settings.channels.map(ch => (
                 <TableCell key={ch.id} align="center">
                   <Tooltip
@@ -171,44 +215,45 @@ export const UserNotificationSettingsPanel = (props: {
                 </TableCell>
               ))}
             </TableRow>,
-            ...(origin.topics?.map(topic => (
-              <TopicTableRow key={`${origin.id}-${topic.id}`}>
-                <CenterContentsTableCell>
-                  <ChevronRight />
-                  {topic.id}
-                </CenterContentsTableCell>
-                {settings.channels.map(ch => (
-                  <TableCell key={`${ch.id}-${topic.id}`} align="center">
-                    <Tooltip
-                      title={`Enable or disable ${channel.id.toLocaleLowerCase(
-                        'en-US',
-                      )} notifications for the ${
-                        topic.id
-                      } topic from ${formatOriginName(origin.id)}`}
-                    >
-                      <Switch
-                        checked={isNotificationsEnabledFor(
-                          settings,
-                          ch.id,
-                          origin.id,
-                          topic.id,
-                        )}
-                        onChange={(
-                          event: React.ChangeEvent<HTMLInputElement>,
-                        ) => {
-                          handleChange(
-                            ch.id,
-                            origin.id,
+            ...(expandedRows.has(origin.id)
+              ? origin.topics?.map(topic => (
+                  <TopicTableRow key={`${origin.id}-${topic.id}`}>
+                    <TableCell />
+                    <TableCell />
+                    <TableCell>{formatTopicName(topic.id)}</TableCell>
+                    {settings.channels.map(ch => (
+                      <TableCell key={`${ch.id}-${topic.id}`} align="center">
+                        <Tooltip
+                          title={`Enable or disable ${channel.id.toLocaleLowerCase(
+                            'en-US',
+                          )} notifications for the ${formatTopicName(
                             topic.id,
-                            event.target.checked,
-                          );
-                        }}
-                      />
-                    </Tooltip>
-                  </TableCell>
-                ))}
-              </TopicTableRow>
-            )) || []),
+                          )} topic from ${formatOriginName(origin.id)}`}
+                        >
+                          <Switch
+                            checked={isNotificationsEnabledFor(
+                              settings,
+                              ch.id,
+                              origin.id,
+                              topic.id,
+                            )}
+                            onChange={(
+                              event: React.ChangeEvent<HTMLInputElement>,
+                            ) => {
+                              handleChange(
+                                ch.id,
+                                origin.id,
+                                topic.id,
+                                event.target.checked,
+                              );
+                            }}
+                          />
+                        </Tooltip>
+                      </TableCell>
+                    ))}
+                  </TopicTableRow>
+                )) || []
+              : []),
           ]),
         )}
       </TableBody>

@@ -25,6 +25,7 @@ import { UserNotificationSettingsPanel } from './UserNotificationSettingsPanel';
 /** @public */
 export const UserNotificationSettingsCard = (props: {
   originNames?: Record<string, string>;
+  topicNames?: Record<string, string>;
 }) => {
   const [settings, setNotificationSettings] = React.useState<
     NotificationSettings | undefined
@@ -56,6 +57,7 @@ export const UserNotificationSettingsCard = (props: {
           settings={settings}
           onChange={onUpdate}
           originNames={props.originNames}
+          topicNames={props.topicNames}
         />
       )}
     </InfoCard>
