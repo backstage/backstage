@@ -5,8 +5,15 @@
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
+
+// @public (undocumented)
+export type AccessRestrictionsMap = Map<
+  string, // plugin ID
+  BackstagePrincipalAccessRestrictions
+>;
 
 // @public
 export const authServiceFactory: ServiceFactory<
@@ -16,22 +23,12 @@ export const authServiceFactory: ServiceFactory<
 >;
 
 // @public
-export interface ExternalTokenHandler {
-  // (undocumented)
-  verifyToken(token: string): Promise<
-    | {
-        subject: string;
-        accessRestrictions?: BackstagePrincipalAccessRestrictions;
-      }
-    | undefined
-  >;
-}
-
-// @public
-export const externalTokenHandlerDecoratorServiceRef: ServiceRef<
-  (defaultImplementation: ExternalTokenHandler) => ExternalTokenHandler,
+export const externalTokenHandlersServiceRef: ServiceRef<
+  {
+    [configKey: string]: (config: Config) => TokenHandler;
+  },
   'plugin',
-  'singleton'
+  'multiton'
 >;
 
 // @public
@@ -63,6 +60,20 @@ export const pluginTokenHandlerDecoratorServiceRef: ServiceRef<
   'plugin',
   'singleton'
 >;
+
+// @public
+export interface TokenHandler {
+  // (undocumented)
+  add?(options: Config): TokenHandler;
+  // (undocumented)
+  verifyToken(token: string): Promise<
+    | {
+        subject: string;
+        allAccessRestrictions?: AccessRestrictionsMap;
+      }
+    | undefined
+  >;
+}
 
 // (No @packageDocumentation comment for this package)
 ```
