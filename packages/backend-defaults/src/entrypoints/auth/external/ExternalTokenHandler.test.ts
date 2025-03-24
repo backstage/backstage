@@ -228,6 +228,7 @@ describe('ExternalTokenHandler', () => {
       add: jest.fn(),
       verifyToken: jest.fn(),
     };
+    const customHandlerCreator = jest.fn(() => customHandler);
 
     const handler = ExternalTokenHandler.create({
       ownPluginId: 'catalog',
@@ -253,10 +254,10 @@ describe('ExternalTokenHandler', () => {
           },
         },
       }),
-      externalTokenHandlers: [{ ['internal-custom']: customHandler }],
+      externalTokenHandlers: [{ ['internal-custom']: customHandlerCreator }],
     });
 
-    expect(customHandler.add).toHaveBeenCalledWith(
+    expect(customHandlerCreator).toHaveBeenCalledWith(
       expect.objectContaining({
         data: {
           type: 'internal-custom',
@@ -340,10 +341,10 @@ describe('ExternalTokenHandler', () => {
         }),
         externalTokenHandlers: [
           {
-            ['internal-custom']: {
+            ['internal-custom']: () => ({
               add: jest.fn(),
               verifyToken: jest.fn(),
-            },
+            }),
           },
         ],
       });

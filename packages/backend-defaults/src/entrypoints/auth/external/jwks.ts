@@ -68,6 +68,7 @@ export class JWKSHandler implements TokenHandler {
       url,
       allAccessRestrictions,
     });
+    return this;
   }
 
   async verifyToken(token: string) {
