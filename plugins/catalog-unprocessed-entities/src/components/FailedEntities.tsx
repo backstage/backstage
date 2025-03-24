@@ -118,8 +118,12 @@ export const FailedEntities = () => {
   const [, setSelectedSearchTerm] = useState<string>('');
   const unprocessedEntityApi = useApi(catalogUnprocessedEntitiesApiRef);
   const alertApi = useApi(alertApiRef);
-  const [selectedEntityId, setSelectedEntityId] = useState<string>('');
-  const [selectedEntityRef, setSelectedEntityRef] = useState<string>('');
+  const [selectedEntityId, setSelectedEntityId] = useState<string | undefined>(
+    undefined,
+  );
+  const [selectedEntityRef, setSelectedEntityRef] = useState<
+    string | undefined
+  >(undefined);
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
 
   if (loading) {
@@ -143,11 +147,13 @@ export const FailedEntities = () => {
 
   const cleanUpAfterRemoval = async () => {
     try {
-      await unprocessedEntityApi.delete(selectedEntityId);
-      alertApi.post({
-        message: `Entity ${selectedEntityRef} has been deleted`,
-        severity: 'success',
-      });
+      if (selectedEntityId) {
+        await unprocessedEntityApi.delete(selectedEntityId);
+        alertApi.post({
+          message: `Entity ${selectedEntityRef} has been deleted`,
+          severity: 'success',
+        });
+      }
     } catch (e) {
       alertApi.post({
         message: `Ran into an issue when deleting ${selectedEntityRef}. Please try again later.`,
