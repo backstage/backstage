@@ -138,9 +138,10 @@ describe('GerritIntegration', () => {
     });
   });
 
-  it('resolve edit URL', () => {
+  it('resolve Url when editUrl is disabled', () => {
     const integration = new GerritIntegration({
       host: 'gerrit-review.example.com',
+      disableEditUrl: true,
     } as any);
 
     // Resolve edit URLs is not applicable for gerrit. Return the input
@@ -158,8 +159,8 @@ describe('GerritIntegration', () => {
     const integration = new GerritIntegration({
       host: 'gerrit-review.example.com',
       baseUrl: 'https://gerrit-review.example.com',
-      enableEditUrl: true,
       gitilesBaseUrl: 'https://gerrit-review.example.com/gitiles',
+      disableEditUrl: false,
     } as any);
 
     expect(

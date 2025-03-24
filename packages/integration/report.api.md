@@ -392,7 +392,7 @@ export type GerritIntegrationConfig = {
   host: string;
   baseUrl?: string;
   cloneUrl?: string;
-  enableEditUrl?: boolean;
+  disableEditUrl?: boolean;
   gitilesBaseUrl: string;
   username?: string;
   password?: string;

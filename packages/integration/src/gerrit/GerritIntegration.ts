@@ -75,15 +75,16 @@ export class GerritIntegration implements ScmIntegration {
   }
 
   resolveEditUrl(url: string): string {
-    if (this.config.enableEditUrl) {
-      const parsed = parseGitilesUrlRef(this.config, url);
-      return buildGerritEditUrl(
-        this.config,
-        parsed.project,
-        parsed.ref,
-        parsed.path,
-      );
+    if (this.config.disableEditUrl) {
+      return url;
     }
-    return url;
+
+    const parsed = parseGitilesUrlRef(this.config, url);
+    return buildGerritEditUrl(
+      this.config,
+      parsed.project,
+      parsed.ref,
+      parsed.path,
+    );
   }
 }

@@ -45,9 +45,9 @@ export type GerritIntegrationConfig = {
   cloneUrl?: string;
 
   /**
-   * Activate the edit url feature available since Gerrit 3.9
+   * Disable the edit url feature for Gerrit <= 3.8.
    */
-  enableEditUrl?: boolean;
+  disableEditUrl?: boolean;
 
   /**
    * Base url for Gitiles. This is needed for creating a valid
@@ -80,7 +80,7 @@ export function readGerritIntegrationConfig(
   const host = config.getString('host');
   let baseUrl = config.getOptionalString('baseUrl');
   let cloneUrl = config.getOptionalString('cloneUrl');
-  const enableEditUrl = config.getOptionalBoolean('enableEditUrl');
+  const disableEditUrl = config.getOptionalBoolean('disableEditUrl');
   let gitilesBaseUrl = config.getString('gitilesBaseUrl');
   const username = config.getOptionalString('username');
   const password = config.getOptionalString('password')?.trim();
@@ -119,7 +119,7 @@ export function readGerritIntegrationConfig(
     host,
     baseUrl,
     cloneUrl,
-    enableEditUrl,
+    disableEditUrl,
     gitilesBaseUrl,
     username,
     password,
