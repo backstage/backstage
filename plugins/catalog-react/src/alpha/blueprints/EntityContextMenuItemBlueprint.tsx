@@ -52,14 +52,17 @@ export type EntityContextMenuItemParams =
   | FactoryHrefParams
   | FactoryDialogParams;
 
+/** @alpha */
 export type ContextMenuItemProps = {
   onClose: () => void;
 };
 
+/** @alpha */
 export type ContextMenuItemComponent = (
   props: ContextMenuItemProps,
 ) => React.JSX.Element;
 
+/** @alpha */
 export const contextMenuItemComponentDataRef =
   createExtensionDataRef<ContextMenuItemComponent>().with({
     id: 'catalog.contextMenuItemComponent',
