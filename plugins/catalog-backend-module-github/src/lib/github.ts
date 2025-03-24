@@ -670,10 +670,8 @@ export async function queryWithPaging<
         await sleep(Math.pow(2, attempts - 1) * 1000);
       } catch (error) {
         if (logger) {
-          logger.warn(
-            `caught an error of type ${typeof error} on attempt ${attempts}: ${JSON.stringify(
-              error,
-            )}`,
+          logger.debug(
+            `caught an error on attempt ${attempts}/${maxRetries})}`,
           );
         }
         if (

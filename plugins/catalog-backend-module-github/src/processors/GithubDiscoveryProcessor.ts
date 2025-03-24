@@ -104,9 +104,6 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     const { org, repoSearchPath, catalogPath, branch, host } = parseUrl(
       location.target,
     );
-    logger.debug(
-      `GithubDiscoveryProcessor readLocation ${catalogPath} ${location.target}`,
-    );
 
     // Building the org url here so that the github creds provider doesn't need to know
     // about how to handle the wild card which is special for this processor.
@@ -124,7 +121,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
 
     // Read out all of the raw data
     const startTimestamp = Date.now();
-    this.logger.info(`Reading GitHub repositories for ${catalogPath}`);
+    logger.info(`Reading GitHub repositories from ${location.target}`);
 
     const { repositories } = await getOrganizationRepositories(
       client,
@@ -154,7 +151,6 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
 
       const path = `/blob/${branchName}${catalogPath}`;
 
-      logger.debug(`emitting processingResult with target path ${path}`);
       emit(
         processingResult.location({
           type: 'url',
