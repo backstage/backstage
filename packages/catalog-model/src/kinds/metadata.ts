@@ -23,13 +23,14 @@ import { z } from 'zod';
 //   z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)]),
 // );
 
-export const defaultEntityMetadataSchema = z
+export const defaultEntityMetadataSchema: z.AnyZodObject = z
   .object({
     uid: z
       .string()
       .min(1)
       .describe('A globally unique ID for the entity.')
       .optional(),
+
     etag: z
       .string()
       .min(1)
@@ -42,6 +43,19 @@ export const defaultEntityMetadataSchema = z
       .string()
       .min(1)
       .describe('The namespace that the entity belongs to.')
+      .optional(),
+    title: z
+      .string()
+      .min(1)
+      .describe(
+        'A display name of the entity, to be presented in user interfaces instead of the name property, when available.',
+      )
+      .optional(),
+    description: z
+      .string()
+      .describe(
+        'A short (typically relatively few words, on one line) description of the entity.',
+      )
       .optional(),
     labels: z
       .record(z.string(), z.string())
