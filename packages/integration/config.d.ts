@@ -162,10 +162,10 @@ export interface Config {
        */
       cloneUrl?: string;
       /**
-       * Activate the edit url feature available since Gerrit 3.9
+       * Disable the edit url feature for Gerrit version less than 3.9.
        * @visibility frontend
        */
-      enableEditUrl?: boolean;
+      disableEditUrl?: boolean;
       /**
        * The username to use for authenticated requests.
        * @visibility secret

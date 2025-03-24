@@ -45,7 +45,7 @@ export type GerritIntegrationConfig = {
   cloneUrl?: string;
 
   /**
-   * Disable the edit url feature for Gerrit <= 3.8.
+   * Disable the edit url feature for Gerrit version less than 3.9.
    */
   disableEditUrl?: boolean;
 
