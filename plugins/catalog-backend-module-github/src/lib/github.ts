@@ -16,7 +16,6 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { GithubCredentialType } from '@backstage/integration';
-import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods';
 import { graphql } from '@octokit/graphql';
 import {
   defaultOrganizationTeamTransformer,
@@ -760,7 +759,7 @@ export const createOctokitClient = (args: {
   logger?: LoggerService;
 }): typeof octokit => {
   const { token, baseUrl, logger } = args;
-  const ThrottledOctokit = Octokit.plugin(restEndpointMethods, throttling);
+  const ThrottledOctokit = Octokit.plugin(throttling);
   const octokit = new ThrottledOctokit({
     auth: token,
     baseUrl,
@@ -816,17 +815,5 @@ export const createGraphqlClient = (args: {
   logger: LoggerService;
 }): typeof graphql => {
   const client = createOctokitClient(args).graphql;
-  return client;
-};
-
-/**
- * Creates a REST Client with Throttling
- */
-export const createRestClient = (args: {
-  token: string;
-  baseUrl: string;
-  logger?: LoggerService;
-}): typeof client => {
-  const client = createOctokitClient(args).rest;
   return client;
 };

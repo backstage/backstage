@@ -38,7 +38,6 @@ import {
   createGraphqlClient,
 } from './github';
 import { Octokit } from '@octokit/core';
-import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods';
 import { throttling } from '@octokit/plugin-throttling';
 
 jest.mock('@octokit/core', () => ({
@@ -728,10 +727,7 @@ describe('github', () => {
     });
     it('should return a graphql client with throttling', async () => {
       expect(client).toBeDefined();
-      expect(Octokit.plugin).toHaveBeenCalledWith(
-        restEndpointMethods,
-        throttling,
-      );
+      expect(Octokit.plugin).toHaveBeenCalledWith(throttling);
     });
 
     describe('onRateLimit', () => {
