@@ -119,6 +119,7 @@ import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultRefreshService } from './DefaultRefreshService';
 import { entitiesResponseToObjects } from './response';
 import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
+import { DefaultEntityModelProcessor } from '../processors/DefaultEntityModelProcessor';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -737,23 +738,25 @@ export class CatalogBuilder {
       }),
     ];
 
-    const builtinKindsEntityProcessor = new BuiltinKindsEntityProcessor(
-      config.getOptionalBoolean('catalog.useZodSchemas'),
-    );
-    builtinKindsEntityProcessor.addEntitySchema(...this.entitySchemas);
-    builtinKindsEntityProcessor.setDefaultEntityMetadataSchema(
-      this.defaultEntityMetadataSchema,
-    );
-    // If the user adds a processor named 'BuiltinKindsEntityProcessor',
-    //   skip inclusion of the catalog-backend version.
-    if (
-      !this.processors.some(
-        processor =>
-          processor.getProcessorName() ===
-          builtinKindsEntityProcessor.getProcessorName(),
-      )
-    ) {
-      processors.push(builtinKindsEntityProcessor);
+    if (config.getOptionalBoolean('catalog.useZodSchemas')) {
+      const defaultEntityModelProcessor = new DefaultEntityModelProcessor();
+      defaultEntityModelProcessor.addEntitySchema(...this.entitySchemas);
+      defaultEntityModelProcessor.setDefaultEntityMetadataSchema(
+        this.defaultEntityMetadataSchema,
+      );
+    } else {
+      const builtinKindsEntityProcessor = new BuiltinKindsEntityProcessor();
+      // If the user adds a processor named 'BuiltinKindsEntityProcessor',
+      //   skip inclusion of the catalog-backend version.
+      if (
+        !this.processors.some(
+          processor =>
+            processor.getProcessorName() ===
+            builtinKindsEntityProcessor.getProcessorName(),
+        )
+      ) {
+        processors.push(builtinKindsEntityProcessor);
+      }
     }
 
     // These are only added unless the user replaced them all

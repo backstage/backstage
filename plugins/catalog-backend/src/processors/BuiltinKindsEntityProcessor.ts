@@ -16,11 +16,16 @@
 
 import {
   ApiEntity,
+  apiEntityV1alpha1Validator,
   ComponentEntity,
+  componentEntityV1alpha1Validator,
   DomainEntity,
+  domainEntityV1alpha1Validator,
   Entity,
   getCompoundEntityRef,
   GroupEntity,
+  groupEntityV1alpha1Validator,
+  locationEntityV1alpha1Validator,
   parseEntityRef,
   RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
@@ -37,32 +42,18 @@ import {
   RELATION_PART_OF,
   RELATION_PROVIDES_API,
   ResourceEntity,
-  SystemEntity,
-  UserEntity,
-  EntitySchema,
-  EntityValidator,
-  schemasToParser,
-  apiEntityV1alpha1Validator,
-  componentEntityV1alpha1Validator,
   resourceEntityV1alpha1Validator,
-  groupEntityV1alpha1Validator,
-  locationEntityV1alpha1Validator,
-  userEntityV1alpha1Validator,
+  SystemEntity,
   systemEntityV1alpha1Validator,
-  domainEntityV1alpha1Validator,
-  EntityMetadataSchema,
-  AddRelationFn,
-  RelationTuple,
-  createFromZod,
+  UserEntity,
+  userEntityV1alpha1Validator,
 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-  CatalogProcessorResult,
   processingResult,
 } from '@backstage/plugin-catalog-node';
-import { defaultEntitySchemas } from './defaultEntitySchemas';
 
 /** @public */
 export class BuiltinKindsEntityProcessor implements CatalogProcessor {
@@ -77,23 +68,11 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     domainEntityV1alpha1Validator,
   ];
 
-  private customEntitySchemas: EntitySchema[] = [];
-  private defaultEntityMetadataSchema: EntityMetadataSchema | undefined;
-  private entitySchemaValidator: EntityValidator = this.createSchemaValidator();
-  private relations: RelationTuple<CatalogProcessorResult[]>[] = [];
-
-  constructor(readonly useZodSchemas = false) {}
-
   getProcessorName(): string {
     return 'BuiltinKindsEntityProcessor';
   }
 
   async validateEntityKind(entity: Entity): Promise<boolean> {
-    if (this.useZodSchemas) {
-      const result = this.entitySchemaValidator.safeParse(entity);
-      return result.success;
-    }
-
     for (const validator of this.validators) {
       const results = await validator.check(entity);
       if (results) {
@@ -106,32 +85,9 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
 
   async postProcessEntity(
     entity: Entity,
-    location: LocationSpec,
+    _location: LocationSpec,
     emit: CatalogProcessorEmit,
   ): Promise<Entity> {
-    if (this.useZodSchemas) {
-      createFromZod(z => {
-        for (const [validate, getRelations] of this.relations) {
-          const schemas = validate(z);
-
-          const entitySchema = schemas.entity ?? z.object({});
-          const locationSchema = schemas.location ?? z.object({});
-
-          if (
-            entitySchema.safeParse(entity).success &&
-            locationSchema.safeParse(location).success
-          ) {
-            const relations = getRelations(entity, location);
-            for (const relation of relations) {
-              emit(relation);
-            }
-          }
-        }
-      });
-
-      return entity;
-    }
-
     const selfRef = getCompoundEntityRef(entity);
 
     /*
@@ -357,57 +313,5 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     }
 
     return entity;
-  }
-
-  addEntitySchema(...schemas: EntitySchema[]) {
-    this.customEntitySchemas.push(...schemas);
-    this.entitySchemaValidator = this.createSchemaValidator();
-  }
-
-  setDefaultEntityMetadataSchema(schema: EntityMetadataSchema) {
-    this.defaultEntityMetadataSchema = schema;
-    this.entitySchemaValidator = this.createSchemaValidator();
-  }
-
-  addRelation: AddRelationFn<CatalogProcessorResult[]> = (
-    validator,
-    relationFn,
-  ) => {
-    this.relations.push([validator, relationFn]);
-  };
-
-  // function test<
-  // TEntitySchema extends z.ZodType<{
-  //   kind?: string;
-  //   apiVersion?: string;
-  //   metadata?: any;
-  //   spec?: any;
-  // }>,
-  // TLocationSchema extends z.ZodType<{
-  //   type?: string;
-  //   target?: string;
-  //   presence?: 'optional' | 'required';
-  // }>,
-  // >(
-  // fn: (zod: typeof z) => { entity?: TEntitySchema; location?: TLocationSchema },
-  // relationFn: (
-  //   entity: z.infer<TEntitySchema>,
-  //   location: z.infer<TLocationSchema>,
-  // ) => string[] /* CatalogProcessorResult[] */,
-  // ) {
-  // return fn(z);
-  // }
-
-  // test(zod => ({
-  // entity: zod.object({
-  //   kind: zod.enum(['backstage.io/v1alpha1', 'backstage.io/v1beta1']),
-  // }),
-  // }));
-
-  private createSchemaValidator() {
-    return schemasToParser(
-      [...Object.values(defaultEntitySchemas), ...this.customEntitySchemas],
-      this.defaultEntityMetadataSchema,
-    );
   }
 }
