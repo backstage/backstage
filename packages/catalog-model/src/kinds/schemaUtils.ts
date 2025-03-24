@@ -16,6 +16,7 @@
 
 import { Entity } from '../entity/Entity';
 import { z } from 'zod';
+import { defaultEntityMetadataSchema } from './metadata';
 
 export function createEntitySchema<
   TApiVersion extends string,
@@ -26,8 +27,8 @@ export function createEntitySchema<
   creatorFn: (zImpl: typeof z) => {
     kind: z.ZodLiteral<TKind>;
     apiVersion?: z.ZodType<TApiVersion>;
-    metadata?: z.ZodType<TMetadata>;
-    spec: z.ZodType<TSpec>;
+    metadata?: z.ZodObject<TMetadata>;
+    spec: z.ZodObject<TSpec>;
   },
 ): EntitySchema<TApiVersion, TKind, TMetadata, TSpec> {
   const options = creatorFn(z);
@@ -41,7 +42,9 @@ export function createEntitySchema<
         ])) as z.ZodType<TApiVersion>,
       kind: options.kind,
       spec: options.spec,
-      ...(options.metadata && { metadata: options.metadata }),
+      metadata:
+        options.metadata ??
+        (defaultEntityMetadataSchema as z.ZodObject<TMetadata>),
     })
     .strict();
 }
@@ -89,8 +92,8 @@ export type EntitySchema<
 > = z.ZodObject<{
   apiVersion: z.ZodType<TApiVersion>;
   kind: z.ZodLiteral<TKind>;
-  metadata?: z.ZodType<TMetadata>;
-  spec: z.ZodType<TSpec>;
+  metadata: z.ZodObject<TMetadata>;
+  spec: z.ZodObject<TSpec>;
 }>;
 
 // export type EntitySchema<
@@ -107,10 +110,10 @@ export type EntitySchema<
 
 export function schemasToParser(
   schemas: EntitySchema[],
-  customMetadataSchema: z.ZodObject<any, any> | undefined,
+  customMetadataSchema: z.AnyZodObject | undefined,
 ) {
   const entitySchemas = Array.from(
-    new Map(schemas.map(s => [s.shape.kind, s])).values(),
+    new Map(schemas.map(s => [s.shape.kind.value, s])).values(),
   ).map(schema =>
     customMetadataSchema
       ? schema.extend({
