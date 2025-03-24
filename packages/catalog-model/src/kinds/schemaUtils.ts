@@ -16,42 +16,18 @@
 
 import { Entity } from '../entity/Entity';
 import { z } from 'zod';
-import { defaultEntityMetadataSchema } from './metadata';
-
-// export function createEntitySchema<
-//   TApiVersion extends [string, ...string[]],
-//   TKind extends string,
-//   TMetadata extends z.ZodObject<any, any>,
-//   TSpec extends z.ZodObject<any, any>,
-// >(options: {
-//   kind: z.ZodLiteral<TKind>;
-//   apiVersion?: z.ZodEnum<TApiVersion>;
-//   metadata?: TMetadata;
-//   spec: TSpec;
-// }) {
-//   return z
-//     .object({
-//       apiVersion:
-//         options.apiVersion ??
-//         z.enum(['backstage.io/v1alpha1', 'backstage.io/v1beta1']),
-//       kind: options.kind,
-//       spec: options.spec,
-//       metadata: options.metadata ?? defaultEntityMetadataSchema,
-//     })
-//     .strict();
-// }
 
 export function createEntitySchema<
-  TApiVersion extends [string, ...string[]],
+  TApiVersion extends string,
   TKind extends string,
-  TMetadata extends z.ZodObject<any, any>,
-  TSpec extends z.ZodObject<any, any>,
+  TMetadata extends {},
+  TSpec extends {},
 >(
   creatorFn: (zImpl: typeof z) => {
     kind: z.ZodLiteral<TKind>;
-    apiVersion?: z.ZodEnum<TApiVersion>;
-    metadata?: TMetadata;
-    spec: TSpec;
+    apiVersion?: z.ZodType<TApiVersion>;
+    metadata?: z.ZodType<TMetadata>;
+    spec: z.ZodType<TSpec>;
   },
 ) {
   const options = creatorFn(z);
@@ -63,26 +39,63 @@ export function createEntitySchema<
         z.enum(['backstage.io/v1alpha1', 'backstage.io/v1beta1']),
       kind: options.kind,
       spec: options.spec,
-      metadata: options.metadata ?? defaultEntityMetadataSchema,
     })
     .strict();
 }
 
-export type EntitySchema = ReturnType<
-  typeof createEntitySchema<
-    [string, ...string[]],
-    string,
-    z.ZodObject<any, any>,
-    z.ZodObject<any, any>
-  >
->;
+// ALTERNATIVE APPROACH. creatorFn must return a z.object({}) of entity shape
+// ts complains if the object doesn't match but autocomplete is not so efficient as above
+
+// export function createEntitySchema<
+//   TApiVersion extends string,
+//   TKind extends string,
+//   TMetadata extends {},
+//   TSpec extends {},
+// >(
+//   creatorFn: (zImpl: typeof z) => z.ZodObject<{
+//     kind: z.ZodLiteral<TKind>;
+//     apiVersion?: z.ZodType<TApiVersion>;
+//     metadata?: z.ZodType<TMetadata>;
+//     spec: z.ZodType<TSpec>;
+//   }>,
+// ) {
+//   const options = creatorFn(z);
+
+//   return z
+//     .object({
+//       apiVersion: z.enum(['backstage.io/v1alpha1', 'backstage.io/v1beta1']),
+//       metadata: defaultEntityMetadataSchema,
+//     })
+//     .merge(options) as EntitySchema<TApiVersion, TKind, TMetadata, TSpec>;
+// }
+
+// export type EntitySchema = ReturnType<
+//   typeof createEntitySchema<
+//     [string, ...string[]],
+//     string,
+//     z.ZodObject<any, any>,
+//     z.ZodObject<any, any>
+//   >
+// >;
+
+export type EntitySchema<
+  TApiVersion extends string = string,
+  TKind extends string = string,
+  TMetadata extends {} = {},
+  TSpec extends {} = {},
+> = z.ZodObject<{
+  apiVersion: z.ZodType<TApiVersion>;
+  kind: z.ZodLiteral<TKind>;
+  metadata: z.ZodType<TMetadata>;
+  spec: z.ZodType<TSpec>;
+}>;
 
 export function schemasToParser(
   schemas: EntitySchema[],
   customMetadataSchema: z.ZodObject<any, any> | undefined,
 ) {
   const entitySchemas = Array.from(
-    new Map(schemas.map(s => [s.shape.kind.value, s])).values(),
+    new Map(schemas.map(s => [s.shape.kind, s])).values(),
   ).map(schema =>
     customMetadataSchema
       ? schema.extend({

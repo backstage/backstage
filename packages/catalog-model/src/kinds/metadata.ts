@@ -23,7 +23,7 @@ const jsonSchema: z.ZodType<Json> = z.lazy(() =>
   z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)]),
 );
 
-export const defaultEntityMetadataSchema: z.ZodObject<any, any> = z
+export const defaultEntityMetadataSchema = z
   .object({
     uid: z
       .string()
