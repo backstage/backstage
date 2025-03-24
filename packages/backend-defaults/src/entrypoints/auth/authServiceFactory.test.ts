@@ -22,7 +22,6 @@ import {
 import {
   authServiceFactory,
   externalTokenHandlersServiceRef,
-  // externalTokenHandlersServiceRef,
   pluginTokenHandlerDecoratorServiceRef,
 } from './authServiceFactory';
 import { base64url, decodeJwt } from 'jose';
@@ -34,7 +33,6 @@ import { PluginTokenHandler } from './plugin/PluginTokenHandler';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { AccessRestriptionsMap, TokenHandler } from './external/types';
 import { Config } from '@backstage/config';
-import { x } from 'tar';
 // import { ExternalTokenHandler } from './external/ExternalTokenHandler';
 // import { TokenHandler } from './external/types';
 
@@ -63,13 +61,6 @@ const mockDeps = [
               options: {
                 token: 'unlimited-static-token',
                 subject: 'unlimited-static-subject',
-              },
-            },
-            {
-              type: 'custom',
-              options: {
-                [`custom-config`]: 'custom-config',
-                foo: 'bar',
               },
             },
           ],
@@ -472,36 +463,84 @@ describe('authServiceFactory', () => {
     it('should allow custom logic to be injected into the plugin token handler', async () => {
       const customLogic = jest.fn();
       const customAddEntry = jest.fn();
+      const customConfig = jest.fn();
+      const deps = [
+        discoveryServiceFactory,
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              baseUrl: 'http://localhost',
+              auth: {
+                keys: [{ secret: 'abc' }],
+                externalAccess: [
+                  {
+                    type: 'static',
+                    options: {
+                      token: 'limited-static-token',
+                      subject: 'limited-static-subject',
+                    },
+                    accessRestrictions: [
+                      { plugin: 'catalog', permission: 'do.it' },
+                    ],
+                  },
+                  {
+                    type: 'static',
+                    options: {
+                      token: 'unlimited-static-token',
+                      subject: 'unlimited-static-subject',
+                    },
+                  },
+                  {
+                    type: 'custom',
+                    options: {
+                      [`custom-config`]: 'custom-config',
+                      foo: 'bar',
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        }),
+      ];
+
+      const customHandler = new (class CustomHandler implements TokenHandler {
+        add(options: Config): TokenHandler {
+          customAddEntry(options);
+          return this;
+        }
+        async verifyToken(token: string): Promise<
+          | {
+              subject: string;
+              allAccessRestrictions?: AccessRestriptionsMap;
+            }
+          | undefined
+        > {
+          customLogic(token);
+          return {
+            subject: 'foo',
+          };
+        }
+      })();
+
       const customPluginTokenHandler = createServiceFactory({
         service: externalTokenHandlersServiceRef,
         deps: {},
         async factory() {
           return {
-            custom: new (class CustomHandler implements TokenHandler {
-              add(options: Config): void {
-                customAddEntry(options);
-              }
-              async verifyToken(token: string): Promise<
-                | {
-                    subject: string;
-                    allAccessRestrictions?: AccessRestriptionsMap;
-                  }
-                | undefined
-              > {
-                customLogic(token);
-                return {
-                  subject: 'foo',
-                };
-              }
-            })(),
+            custom: (options: Config) => {
+              customConfig(options);
+              return customHandler.add(options);
+            },
           };
         },
       });
       const tester = ServiceFactoryTester.from(authServiceFactory, {
-        dependencies: [...mockDeps, customPluginTokenHandler],
+        dependencies: [...deps, customPluginTokenHandler],
       });
       const searchAuth = await tester.getSubject('search');
       await searchAuth.authenticate('custom-token');
+
       expect(customAddEntry).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
@@ -513,6 +552,16 @@ describe('authServiceFactory', () => {
         }),
       );
       expect(customLogic).toHaveBeenCalledWith('custom-token');
+      expect(customConfig).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            options: expect.objectContaining({
+              [`custom-config`]: 'custom-config',
+              foo: 'bar',
+            }),
+          }),
+        }),
+      );
     });
   });
 });

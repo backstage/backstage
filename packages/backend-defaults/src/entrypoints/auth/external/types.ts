@@ -23,7 +23,7 @@ export type AccessRestriptionsMap = Map<
 >;
 
 export interface TokenHandler {
-  add(options: Config): void;
+  add?(options: Config): TokenHandler;
   verifyToken(token: string): Promise<
     | {
         subject: string;
