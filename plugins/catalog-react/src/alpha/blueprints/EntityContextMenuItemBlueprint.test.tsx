@@ -22,24 +22,21 @@ describe('EntityContextMenuItemBlueprint', () => {
   const routeRef = createRouteRef();
   const data = [
     {
-      loader: async () => <li>Test!</li>,
-    },
-    {
-      title: 'Test',
+      useTitle: () => 'Test',
       href: '/somewhere',
       icon: <span>Test</span>,
     },
     {
-      title: 'Test',
-      useHref() {
+      useTitle: () => 'Test',
+      useHref: () => {
         const r = useRouteRef(routeRef) ?? (() => '/somewhere');
         return r();
       },
       icon: <span>Test</span>,
     },
     {
-      title: 'TestDialog',
-      dialogLoader: async () => () => <div>test dialog</div>,
+      useTitle: () => 'TestDialog',
+      useOnClick: () => () => true,
       icon: <span>Test</span>,
     },
   ];
