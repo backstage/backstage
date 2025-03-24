@@ -46,7 +46,10 @@ Adding plugins to your Backstage app is generally a simple process, and ideally 
    const routes = (
      <FlatRoutes>
        /* highlight-add-start */
-       <Route path="/tech-radar" element={<TechRadarPage />} />
+       <Route
+         path="/tech-radar"
+         element={<TechRadarPage width={1500} height={800} />}
+       />
        /* highlight-add-end */
      </FlatRoutes>
    );
