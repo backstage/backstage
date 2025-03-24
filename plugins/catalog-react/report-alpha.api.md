@@ -6,7 +6,6 @@
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { DialogApiDialog } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
@@ -87,6 +86,23 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'userListPicker.personalFilter.starredLabel': 'Starred';
   }
 >;
+
+// @alpha (undocumented)
+export type ContextMenuItemComponent = (
+  props: ContextMenuItemProps,
+) => React_2.JSX.Element;
+
+// @alpha (undocumented)
+export const contextMenuItemComponentDataRef: ConfigurableExtensionDataRef<
+  ContextMenuItemComponent,
+  'catalog.contextMenuItemComponent',
+  {}
+>;
+
+// @alpha (undocumented)
+export type ContextMenuItemProps = {
+  onClose: () => void;
+};
 
 // @alpha (undocumented)
 export function convertLegacyEntityCardExtension(
@@ -332,8 +348,8 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
   name: undefined;
   params: EntityContextMenuItemParams;
   output: ConfigurableExtensionDataRef<
-    React_2.JSX.Element,
-    'core.reactElement',
+    ContextMenuItemComponent,
+    'catalog.contextMenuItemComponent',
     {}
   >;
   inputs: {};
@@ -344,7 +360,6 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
 
 // @alpha (undocumented)
 export type EntityContextMenuItemParams =
-  | FactoryLoaderParams
   | FactoryHrefParams
   | FactoryDialogParams;
 
@@ -418,30 +433,26 @@ export type EntityPredicateValue =
 
 // @alpha (undocumented)
 export type FactoryDialogParams = {
-  dialogLoader: () => Promise<
-    ({ dialog }: { dialog: DialogApiDialog }) => JSX.Element
-  >;
-  title: string;
-  icon: JSX.Element;
+  useOnClick: () => React_2.MouseEventHandler<HTMLLIElement>;
+  useTitle: () => string;
+  icon: React_2.JSX.Element;
+  useIsDisabled?: () => boolean;
 };
 
 // @alpha (undocumented)
 export type FactoryHrefParams =
   | {
-      title: string;
-      icon: JSX.Element;
+      useTitle: () => string;
+      icon: React_2.JSX.Element;
       useHref: () => string;
+      useIsDisabled?: () => boolean;
     }
   | {
-      title: string;
-      icon: JSX.Element;
+      useTitle: () => string;
+      icon: React_2.JSX.Element;
       href: string;
+      useIsDisabled?: () => boolean;
     };
-
-// @alpha (undocumented)
-export type FactoryLoaderParams = {
-  loader: () => Promise<JSX.Element>;
-};
 
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;

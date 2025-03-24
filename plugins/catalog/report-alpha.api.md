@@ -7,10 +7,12 @@ import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { ContextMenuItemComponent } from '@backstage/plugin-catalog-react/alpha';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContextMenuItemParams } from '@backstage/plugin-catalog-react/alpha';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
@@ -859,6 +861,45 @@ const _default: FrontendPlugin<
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
+    'entity-context-menu-item:catalog/copy-entity-url': ExtensionDefinition<{
+      kind: 'entity-context-menu-item';
+      name: 'copy-entity-url';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        ContextMenuItemComponent,
+        'catalog.contextMenuItemComponent',
+        {}
+      >;
+      inputs: {};
+      params: EntityContextMenuItemParams;
+    }>;
+    'entity-context-menu-item:catalog/inspect-entity': ExtensionDefinition<{
+      kind: 'entity-context-menu-item';
+      name: 'inspect-entity';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        ContextMenuItemComponent,
+        'catalog.contextMenuItemComponent',
+        {}
+      >;
+      inputs: {};
+      params: EntityContextMenuItemParams;
+    }>;
+    'entity-context-menu-item:catalog/unregister-entity': ExtensionDefinition<{
+      kind: 'entity-context-menu-item';
+      name: 'unregister-entity';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        ContextMenuItemComponent,
+        'catalog.contextMenuItemComponent',
+        {}
+      >;
+      inputs: {};
+      params: EntityContextMenuItemParams;
+    }>;
     'nav-item:catalog': ExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
@@ -1004,8 +1045,12 @@ const _default: FrontendPlugin<
             optional: false;
           }
         >;
-        extraContextMenuItems: ExtensionInput<
-          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+        contextMenuItems: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            ContextMenuItemComponent,
+            'catalog.contextMenuItemComponent',
+            {}
+          >,
           {
             singleton: false;
             optional: false;
