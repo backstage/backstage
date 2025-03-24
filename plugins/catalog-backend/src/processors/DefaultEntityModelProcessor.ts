@@ -15,7 +15,6 @@
  */
 
 import {
-  AddRelationFn,
   createFromZod,
   Entity,
   EntityMetadataSchema,
@@ -35,8 +34,8 @@ import { defaultEntitySchemas } from './defaultEntitySchemas';
 export class DefaultEntityModelProcessor implements CatalogProcessor {
   private customEntitySchemas: EntitySchema[] = [];
   private defaultEntityMetadataSchema: EntityMetadataSchema | undefined;
-  private entitySchemaValidator: EntityValidator = this.createSchemaValidator();
   private relations: RelationTuple<CatalogProcessorResult[]>[] = [];
+  private entitySchemaValidator: EntityValidator = this.createSchemaValidator();
 
   getProcessorName() {
     return 'DefaultEntityModelProcessor';
@@ -83,12 +82,9 @@ export class DefaultEntityModelProcessor implements CatalogProcessor {
     this.entitySchemaValidator = this.createSchemaValidator();
   }
 
-  addRelation: AddRelationFn<CatalogProcessorResult[]> = (
-    validator,
-    relationFn,
-  ) => {
-    this.relations.push([validator, relationFn]);
-  };
+  addRelations(...relations: RelationTuple<CatalogProcessorResult[]>[]) {
+    this.relations.push(...relations);
+  }
 
   private createSchemaValidator() {
     return schemasToParser(
