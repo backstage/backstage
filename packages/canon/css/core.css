@@ -9158,6 +9158,11 @@
   --canon-ring: #1f5493;
   --canon-scrollbar: #a0a0a03b;
   --canon-scrollbar-thumb: #a0a0a0;
+
+  & a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 [data-theme="dark"] {
