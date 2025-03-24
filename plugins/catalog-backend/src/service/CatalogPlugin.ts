@@ -18,15 +18,18 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import {
-  defaultEntityMetadataSchema,
+  AddRelationFn,
   Entity,
+  EntityMetadataSchema,
   EntitySchema,
+  RelationTuple,
   Validators,
 } from '@backstage/catalog-model';
 import { ForwardedError } from '@backstage/errors';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
+  CatalogProcessorResult,
   EntityProvider,
   LocationAnalyzer,
   PlaceholderResolver,
@@ -158,7 +161,7 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
   }
 
   #entityDataParser?: CatalogProcessorParser;
-  #defaultEntityMetadataSchema = defaultEntityMetadataSchema;
+  #defaultEntityMetadataSchema: EntityMetadataSchema | undefined;
 
   setEntityDataParser(parser: CatalogProcessorParser): void {
     if (this.#entityDataParser) {
@@ -175,9 +178,7 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
     this.#entitySchemas = [...this.#entitySchemas, ...schemas];
   }
 
-  setDefaultEntityMetadataSchema(
-    schema: typeof defaultEntityMetadataSchema,
-  ): void {
+  setDefaultEntityMetadataSchema(schema: EntityMetadataSchema): void {
     this.#defaultEntityMetadataSchema = schema;
   }
 
@@ -191,6 +192,19 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
 
   get entityDataParser() {
     return this.#entityDataParser;
+  }
+
+  #relations: RelationTuple<CatalogProcessorResult[]>[] = [];
+
+  addRelation: AddRelationFn<CatalogProcessorResult[]> = (
+    validator,
+    relationFn,
+  ) => {
+    this.#relations.push([validator, relationFn]);
+  };
+
+  get relations() {
+    return this.#relations;
   }
 }
 
@@ -309,6 +323,14 @@ export const catalogPlugin = createBackendPlugin({
         }
         if (modelExtensions.entitySchemas) {
           builder.setEntitySchemas(modelExtensions.entitySchemas);
+        }
+        if (modelExtensions.defaultEntityMetadataSchema) {
+          builder.setDefaultEntityMetadataSchema(
+            modelExtensions.defaultEntityMetadataSchema,
+          );
+        }
+        if (modelExtensions.relations) {
+          builder.setRelations(modelExtensions.relations);
         }
 
         Object.entries(processingExtensions.placeholderResolvers).forEach(

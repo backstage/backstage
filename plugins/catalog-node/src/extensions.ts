@@ -16,8 +16,9 @@
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import {
-  defaultEntityMetadataSchema,
+  AddRelationFn,
   Entity,
+  EntityMetadataSchema,
   EntitySchema,
   Validators,
 } from '@backstage/catalog-model';
@@ -29,6 +30,7 @@ import {
   PlaceholderResolver,
   LocationAnalyzer,
   ScmLocationAnalyzer,
+  CatalogProcessorResult,
 } from '@backstage/plugin-catalog-node';
 import {
   Permission,
@@ -97,9 +99,12 @@ export interface CatalogModelExtensionPoint {
    */
   addEntitySchema(...schemas: EntitySchema[]): void;
 
-  setDefaultEntityMetadataSchema(
-    schema: typeof defaultEntityMetadataSchema,
-  ): void;
+  /**
+   * TODO(vinzscam)
+   */
+  addRelation: AddRelationFn<CatalogProcessorResult[]>;
+
+  setDefaultEntityMetadataSchema(schema: EntityMetadataSchema): void;
 }
 
 /**

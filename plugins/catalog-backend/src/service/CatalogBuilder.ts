@@ -22,12 +22,14 @@ import {
   defaultEntityMetadataSchema,
   DefaultNamespaceEntityPolicy,
   Entity,
+  EntityMetadataSchema,
   EntityPolicies,
   EntityPolicy,
   EntitySchema,
   FieldFormatEntityPolicy,
   makeValidator,
   NoForeignRootFieldsEntityPolicy,
+  RelationTuple,
   SchemaValidEntityPolicy,
   Validators,
 } from '@backstage/catalog-model';
@@ -57,6 +59,7 @@ import {
 import {
   CatalogProcessor,
   CatalogProcessorParser,
+  CatalogProcessorResult,
   EntitiesSearchFilter,
   EntityProvider,
   LocationAnalyzer,
@@ -197,7 +200,8 @@ export class CatalogBuilder {
   private legacySingleProcessorValidation = false;
   private eventBroker?: EventBroker | EventsService;
   private entitySchemas: EntitySchema[] = [];
-  private defaultEntityMetadataSchema = defaultEntityMetadataSchema;
+  private relations: RelationTuple<CatalogProcessorResult[]>[] = [];
+  private defaultEntityMetadataSchema: EntityMetadataSchema | undefined;
   /**
    * Creates a catalog builder.
    */
@@ -477,6 +481,13 @@ export class CatalogBuilder {
     return this;
   }
 
+  setRelations(
+    relations: RelationTuple<CatalogProcessorResult[]>[],
+  ): CatalogBuilder {
+    this.relations = relations;
+    return this;
+  }
+
   setDefaultEntityMetadataSchema(
     metadataSchema: typeof defaultEntityMetadataSchema,
   ) {
@@ -741,9 +752,13 @@ export class CatalogBuilder {
     if (config.getOptionalBoolean('catalog.useZodSchemas')) {
       const defaultEntityModelProcessor = new DefaultEntityModelProcessor();
       defaultEntityModelProcessor.addEntitySchema(...this.entitySchemas);
-      defaultEntityModelProcessor.setDefaultEntityMetadataSchema(
-        this.defaultEntityMetadataSchema,
-      );
+      if (this.defaultEntityMetadataSchema) {
+        defaultEntityModelProcessor.setDefaultEntityMetadataSchema(
+          this.defaultEntityMetadataSchema,
+        );
+      }
+      defaultEntityModelProcessor.addRelations(...this.relations);
+      processors.push(defaultEntityModelProcessor);
     } else {
       const builtinKindsEntityProcessor = new BuiltinKindsEntityProcessor();
       // If the user adds a processor named 'BuiltinKindsEntityProcessor',
