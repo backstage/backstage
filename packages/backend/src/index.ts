@@ -20,8 +20,16 @@ import {
   createBackendFeatureLoader,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { createEntitySchema } from '@backstage/plugin-catalog-node';
-import { apiKindSchema } from '@backstage/catalog-model';
+import {
+  createEntitySchema,
+  createFromZod,
+  defaultEntityMetadataSchema,
+  componentKindSchema,
+  parseEntityRef,
+  getCompoundEntityRef,
+  Entity,
+} from '@backstage/catalog-model';
+import { processingResult } from '@backstage/plugin-catalog-node';
 
 const backend = createBackend();
 
@@ -78,9 +86,63 @@ backend.add(
           catalogModel: catalogModelExtensionPoint,
         },
         async init({ catalogModel }) {
-          catalogModel.setEntitySchemas({
-            apiKindSchema: createEntitySchema(() => apiKindSchema.strict()),
-          });
+          /**
+           * extend the default metadata so that accepts an extra properties
+           * and NO additional properties
+           */
+          const strictMetadataSchema = createFromZod(z =>
+            defaultEntityMetadataSchema
+              .extend({
+                'this-specific-property-is-allowed': z.string().optional(),
+              })
+              .strict(),
+          );
+          catalogModel.setDefaultEntityMetadataSchema(strictMetadataSchema);
+
+          // override the default component kind with a custom one
+          // all components with lifecycle: experimental are now invalid
+          const customComponent = createFromZod(z =>
+            componentKindSchema.extend({
+              spec: componentKindSchema.shape.spec.extend({
+                lifecycle: z.enum(['production', 'borked']),
+              }),
+            }),
+          );
+          catalogModel.addEntitySchema(customComponent);
+
+          /**
+           * add a new kind
+           */
+          const fooEntity = createEntitySchema(z => ({
+            kind: z.literal('Foo'),
+            spec: z
+              .object({
+                lol: z.string().optional(),
+                ref: z.string(),
+              })
+              .strict(),
+          }));
+          catalogModel.addEntitySchema(fooEntity);
+          // bring an extra relationship for the new kind
+          catalogModel.addRelation(
+            _z => ({ entity: fooEntity }),
+            entity => {
+              const target = parseEntityRef(entity.spec.ref);
+              const source = getCompoundEntityRef(entity as Entity);
+              return [
+                processingResult.relation({
+                  source,
+                  target,
+                  type: 'randomBy',
+                }),
+                processingResult.relation({
+                  source: target,
+                  target: source,
+                  type: 'blablabla',
+                }),
+              ];
+            },
+          );
         },
       });
     },
