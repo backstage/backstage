@@ -159,6 +159,7 @@ const notificationSettings: NotificationSettings = {
         {
           id: 'plugin-test',
           enabled: true,
+          topics: [],
         },
         {
           id: 'abcd-origin',

@@ -307,7 +307,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       expect(notifications).toHaveLength(1);
     });
 
-    it('should not send to user entity if disabled in settings', async () => {
+    it('should not send to user entity if origin is disabled in settings', async () => {
       const client = await database.getClient();
       await client('user_settings').insert({
         user: 'user:default/mock',
@@ -502,7 +502,9 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
         channels: [
           {
             id: 'Web',
-            origins: [{ enabled: false, id: 'external:test-service' }],
+            origins: [
+              { enabled: false, id: 'external:test-service', topics: [] },
+            ],
           },
         ],
       });

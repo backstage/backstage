@@ -19,7 +19,7 @@ exports.up = async function up(knex) {
   });
 
   await knex.schema.table('user_settings', table => {
-    table.dropUnique('user_settings_unique_idx');
+    table.dropUnique([], 'user_settings_unique_idx');
   });
 
   await knex.schema.alterTable('user_settings', table => {
@@ -31,7 +31,7 @@ exports.up = async function up(knex) {
 
 exports.down = async function down(knex) {
   await knex.schema.table('user_settings', table => {
-    table.dropUnique('user_settings_unique_idx');
+    table.dropUnique([], 'user_settings_unique_idx');
   });
 
   await knex.schema.alterTable('user_settings', table => {

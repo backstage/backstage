@@ -6,6 +6,12 @@
 import { Config } from '@backstage/config';
 
 // @public (undocumented)
+export type ChannelSetting = {
+  id: string;
+  origins: OriginSetting[];
+};
+
+// @public (undocumented)
 export const getProcessorFiltersFromConfig: (
   config: Config,
 ) => NotificationProcessorFilters;
@@ -63,17 +69,7 @@ export type NotificationReadSignal = {
 
 // @public (undocumented)
 export type NotificationSettings = {
-  channels: {
-    id: string;
-    origins: {
-      id: string;
-      enabled: boolean;
-      topics?: {
-        id: string;
-        enabled: boolean;
-      }[];
-    }[];
-  }[];
+  channels: ChannelSetting[];
 };
 
 // @public
@@ -89,5 +85,18 @@ export type NotificationSignal = NewNotificationSignal | NotificationReadSignal;
 export type NotificationStatus = {
   unread: number;
   read: number;
+};
+
+// @public (undocumented)
+export type OriginSetting = {
+  id: string;
+  enabled: boolean;
+  topics?: TopicSetting[];
+};
+
+// @public (undocumented)
+export type TopicSetting = {
+  id: string;
+  enabled: boolean;
 };
 ```
