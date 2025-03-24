@@ -15,6 +15,7 @@
  */
 import type { TextFieldOwnProps } from './TextField.props';
 
+/** @public */
 export interface TextFieldProps
   extends Omit<React.ComponentPropsWithoutRef<'input'>, 'size'> {
   /**

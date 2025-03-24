@@ -15,3 +15,6 @@
  */
 
 export * from './TextField';
+export type { TextFieldProps } from './types';
+export { textFieldPropDefs } from './TextField.props';
+export type { TextFieldOwnProps } from './TextField.props';
