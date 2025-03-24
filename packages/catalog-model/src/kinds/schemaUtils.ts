@@ -19,9 +19,9 @@ import { z } from 'zod';
 
 export function createEntitySchema<
   TApiVersion extends string,
-  TKind extends string,
-  TMetadata extends {},
-  TSpec extends {},
+  TKind extends string = string,
+  TMetadata extends {} = {},
+  TSpec extends {} = {},
 >(
   creatorFn: (zImpl: typeof z) => {
     kind: z.ZodLiteral<TKind>;
@@ -29,16 +29,19 @@ export function createEntitySchema<
     metadata?: z.ZodType<TMetadata>;
     spec: z.ZodType<TSpec>;
   },
-) {
+): EntitySchema<TApiVersion, TKind, TMetadata, TSpec> {
   const options = creatorFn(z);
 
   return z
     .object({
-      apiVersion:
-        options.apiVersion ??
-        z.enum(['backstage.io/v1alpha1', 'backstage.io/v1beta1']),
+      apiVersion: (options.apiVersion ??
+        z.enum([
+          'backstage.io/v1alpha1',
+          'backstage.io/v1beta1',
+        ])) as z.ZodType<TApiVersion>,
       kind: options.kind,
       spec: options.spec,
+      ...(options.metadata && { metadata: options.metadata }),
     })
     .strict();
 }
@@ -86,9 +89,21 @@ export type EntitySchema<
 > = z.ZodObject<{
   apiVersion: z.ZodType<TApiVersion>;
   kind: z.ZodLiteral<TKind>;
-  metadata: z.ZodType<TMetadata>;
+  metadata?: z.ZodType<TMetadata>;
   spec: z.ZodType<TSpec>;
 }>;
+
+// export type EntitySchema<
+//   TApiVersion extends string = string,
+//   TKind extends string = string,
+//   TMetadata extends {} = {},
+//   TSpec extends {} = {},
+// > = z.ZodObject<{
+//   apiVersion: TApiVersion;
+//   kind: TKind extends string ? (string extends TKind ? never : TKind) : never;
+//   metadata?: TMetadata;
+//   spec: TSpec;
+// }>;
 
 export function schemasToParser(
   schemas: EntitySchema[],

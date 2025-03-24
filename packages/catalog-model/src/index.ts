@@ -26,5 +26,9 @@ export * from './kinds';
 export * from './location';
 export { createFromZod } from './schemaUtils';
 export type { CompoundEntityRef } from './types';
-export type { EntitySchema, EntityValidator } from './kinds';
+export type {
+  EntitySchema,
+  EntityValidator,
+  EntityMetadataSchema,
+} from './kinds';
 export * from './validation';

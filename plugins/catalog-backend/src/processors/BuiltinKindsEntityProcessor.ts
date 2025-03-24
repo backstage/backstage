@@ -42,7 +42,6 @@ import {
   EntitySchema,
   EntityValidator,
   schemasToParser,
-  defaultEntityMetadataSchema,
   apiEntityV1alpha1Validator,
   componentEntityV1alpha1Validator,
   resourceEntityV1alpha1Validator,
@@ -51,6 +50,7 @@ import {
   userEntityV1alpha1Validator,
   systemEntityV1alpha1Validator,
   domainEntityV1alpha1Validator,
+  EntityMetadataSchema,
 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
@@ -74,9 +74,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
   ];
 
   private customEntitySchemas: EntitySchema[] = [];
-  private defaultEntityMetadataSchema:
-    | typeof defaultEntityMetadataSchema
-    | undefined;
+  private defaultEntityMetadataSchema: EntityMetadataSchema | undefined;
   private entitySchemaValidator: EntityValidator = this.createSchemaValidator();
 
   constructor(readonly useZodSchemas = false) {}
@@ -338,7 +336,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     this.entitySchemaValidator = this.createSchemaValidator();
   }
 
-  setDefaultEntityMetadataSchema(schema: typeof defaultEntityMetadataSchema) {
+  setDefaultEntityMetadataSchema(schema: EntityMetadataSchema) {
     this.defaultEntityMetadataSchema = schema;
     this.entitySchemaValidator = this.createSchemaValidator();
   }

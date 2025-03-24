@@ -80,7 +80,10 @@ export type {
   UserEntityV1alpha1 as UserEntity,
   UserEntityV1alpha1,
 } from './UserEntityV1alpha1';
-export { defaultEntityMetadataSchema } from './metadata';
+export {
+  defaultEntityMetadataSchema,
+  type EntityMetadataSchema,
+} from './metadata';
 export {
   type EntitySchema,
   type EntityValidator,
