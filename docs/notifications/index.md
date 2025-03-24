@@ -160,7 +160,7 @@ Each notification processor will receive its own row in the settings page, where
 
 ## Additional info
 
-An example of a backend plugin sending notifications can be found in the [`@backstage/plugin-scaffolder-backend-module-notifications` repository](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-notifications).
+An example of a backend plugin sending notifications can be found in the [`@backstage/plugin-scaffolder-backend-module-notifications` package](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-notifications).
 
 Sources of the notifications and signals plugins:
 
