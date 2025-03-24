@@ -59,12 +59,6 @@ export const externalTokenHandlersServiceRef = createServiceRef<{
 }>({
   id: 'core.auth.externalTokenHandlers',
   multiton: true,
-  // defaultFactory: async service =>
-  //   createServiceFactory({
-  //     service,
-  //     deps: {},
-  //     factory: async () => {},
-  //   }),
 });
 
 /**

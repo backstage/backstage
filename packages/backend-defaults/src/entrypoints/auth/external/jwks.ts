@@ -20,7 +20,7 @@ import {
   readAccessRestrictionsFromConfig,
   readStringOrStringArrayFromConfig,
 } from './helpers';
-import { AccessRestriptionsMap, TokenHandler } from './types';
+import { AccessRestrictionsMap, TokenHandler } from './types';
 
 /**
  * Handles `type: jwks` access.
@@ -35,7 +35,7 @@ export class JWKSHandler implements TokenHandler {
     subjectPrefix?: string;
     url: URL;
     jwks: JWTVerifyGetKey;
-    allAccessRestrictions?: AccessRestriptionsMap;
+    allAccessRestrictions?: AccessRestrictionsMap;
   }> = [];
 
   add(config: Config) {

@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { readAccessRestrictionsFromConfig } from './helpers';
-import { AccessRestriptionsMap, TokenHandler } from './types';
+import { AccessRestrictionsMap, TokenHandler } from './types';
 
 const MIN_TOKEN_LENGTH = 8;
 
@@ -30,7 +30,7 @@ export class StaticTokenHandler implements TokenHandler {
     string,
     {
       subject: string;
-      allAccessRestrictions?: AccessRestriptionsMap;
+      allAccessRestrictions?: AccessRestrictionsMap;
     }
   >();
 

@@ -2,4 +2,4 @@
 '@backstage/backend-defaults': minor
 ---
 
-Add a new `externalTokenHandlerDecoratorServiceRef` to allow custom external token validations
+Add a new `externalTokenHandlersServiceRef` to allow custom external token validations
