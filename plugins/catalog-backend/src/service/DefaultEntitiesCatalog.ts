@@ -273,6 +273,24 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const sortField = cursor.orderFields.at(0);
 
+    if (sortField) {
+      const duplicateCheck = await this.database('search')
+        .select('entity_id', 'key', 'value')
+        .count('* as count')
+        .where('key', '=', sortField.field)
+        .groupBy('entity_id', 'key', 'value')
+        .having(this.database.raw('count(*) > 1'))
+        .limit(5);
+
+      if (duplicateCheck.length > 0) {
+        this.logger.warn(
+          `Found duplicate search entries for field ${
+            sortField.field
+          }: ${JSON.stringify(duplicateCheck)}`,
+        );
+      }
+    }
+
     // The first part of the query builder is a subquery that applies all of the
     // filtering.
     const dbQuery = this.database.with(
