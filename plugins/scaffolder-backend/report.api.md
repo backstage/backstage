@@ -74,7 +74,7 @@ import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { UpdateCheckpointOptions } from '@backstage/plugin-scaffolder-node';
+import { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 
@@ -658,7 +658,7 @@ export class TaskManager implements TaskContext_2 {
   // (undocumented)
   get spec(): TaskSpecV1beta3;
   // (undocumented)
-  updateCheckpoint?(options: UpdateCheckpointOptions): Promise<void>;
+  updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 }
 
 // @public @deprecated (undocumented)

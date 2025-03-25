@@ -33,7 +33,7 @@ export type ActionContext<
       workspacePath: string;
       input: TActionInput;
       checkpoint<T extends JsonValue | void>(
-        opts: CheckpointOptions<T>,
+        opts: CheckpointContext<T>,
       ): Promise<T>;
       output(
         name: keyof TActionOutput,
@@ -60,7 +60,7 @@ export type ActionContext<
       workspacePath: string;
       input: TActionInput;
       checkpoint<T extends JsonValue | void>(
-        opts: CheckpointOptions<T>,
+        opts: CheckpointContext<T>,
       ): Promise<T>;
       output(
         name: keyof TActionOutput,
@@ -97,29 +97,34 @@ export function addFiles(options: {
 }): Promise<void>;
 
 // @public
-export type CheckpointFailedState = {
-  status: Extract<CheckpointStatus, 'failed'>;
-  reason: string;
-};
-
-// @public
-export type CheckpointOptions<T extends JsonValue | void = JsonValue> = {
+export type CheckpointContext<T extends JsonValue | void = JsonValue> = {
   key: string;
   fn: () => Promise<T> | T;
 };
 
 // @public
-export type CheckpointState = {
-  [key: string]: CheckpointSuccessState | CheckpointFailedState;
+export type CheckpointFailedState = {
+  status: 'failed';
+  reason: string;
 };
+
+// @public
+export type CheckpointState = {
+  [key: string]: CheckpointStateValue;
+};
+
+// @public
+export type CheckpointStateValue =
+  | CheckpointSuccessState
+  | CheckpointFailedState;
 
 // @public
 export type CheckpointStatus = 'failed' | 'success';
 
 // @public
-export type CheckpointSuccessState = {
-  status: Extract<CheckpointStatus, 'success'>;
-  value: JsonValue;
+export type CheckpointSuccessState<T extends JsonValue = JsonValue> = {
+  status: 'success';
+  value: T;
 };
 
 // @public (undocumented)
@@ -499,7 +504,7 @@ export interface TaskContext {
   // (undocumented)
   taskId?: string;
   // (undocumented)
-  updateCheckpoint?(options: UpdateCheckpointOptions): Promise<void>;
+  updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 }
 
 // @public
@@ -589,7 +594,7 @@ export type TemplateGlobal =
   | JsonValue;
 
 // @public
-export type UpdateCheckpointOptions = {
+export type UpdateTaskCheckpointOptions = {
   key: string;
-} & CheckpointState[keyof CheckpointState];
+} & CheckpointStateValue;
 ```

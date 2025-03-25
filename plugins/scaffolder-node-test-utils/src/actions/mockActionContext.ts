@@ -23,7 +23,7 @@ import {
 import { JsonObject, JsonValue } from '@backstage/types';
 import {
   ActionContext,
-  CheckpointOptions,
+  CheckpointContext,
 } from '@backstage/plugin-scaffolder-node';
 import { loggerToWinstonLogger } from './loggerToWinstonLogger';
 
@@ -47,7 +47,7 @@ export const createMockActionContext = <
     createTemporaryDirectory: jest.fn(),
     input: {} as TActionInput,
     async checkpoint<T extends JsonValue | void>(
-      opts: CheckpointOptions<T>,
+      opts: CheckpointContext<T>,
     ): Promise<T> {
       return opts.fn();
     },
