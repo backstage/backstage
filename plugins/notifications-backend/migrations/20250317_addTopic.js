@@ -15,7 +15,7 @@
  */
 exports.up = async function up(knex) {
   await knex.schema.alterTable('user_settings', table => {
-    table.string('topic', 255).nullable().after('origin');
+    table.string('topic').nullable().after('origin');
   });
 
   await knex.schema.table('user_settings', table => {
@@ -23,7 +23,7 @@ exports.up = async function up(knex) {
   });
 
   await knex.schema.alterTable('user_settings', table => {
-    table.unique(['user', 'channel', 'origin', 'topic'], {
+    table.unique(['user(255)', 'channel(255)', 'origin(255)', 'topic(255)'], {
       indexName: 'user_settings_unique_idx',
     });
   });
