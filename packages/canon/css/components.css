@@ -584,7 +584,7 @@
   margin: .375rem 1rem;
 }
 
-a.canon-Link {
+.canon-Link {
   font-family: var(--canon-font-regular);
   color: var(--canon-fg-link);
   cursor: pointer;
@@ -602,31 +602,31 @@ a.canon-Link {
   }
 }
 
-a.canon-Link--variant-body {
+.canon-Link--variant-body {
   font-size: var(--canon-font-size-3);
   line-height: 140%;
 }
 
-a.canon-Link--variant-subtitle {
+.canon-Link--variant-subtitle {
   font-size: var(--canon-font-size-4);
   line-height: 140%;
 }
 
-a.canon-Link--variant-caption {
+.canon-Link--variant-caption {
   font-size: var(--canon-font-size-2);
   line-height: 140%;
 }
 
-a.canon-Link--variant-label {
+.canon-Link--variant-label {
   font-size: var(--canon-font-size-1);
   line-height: 140%;
 }
 
-a.canon-Link--weight-regular {
+.canon-Link--weight-regular {
   font-weight: var(--canon-font-weight-regular);
 }
 
-a.canon-Link--weight-bold {
+.canon-Link--weight-bold {
   font-weight: var(--canon-font-weight-bold);
 }
 
