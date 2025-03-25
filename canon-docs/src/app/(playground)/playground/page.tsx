@@ -5,10 +5,12 @@ import { Grid, Flex, Text } from '../../../../../packages/canon';
 import { screenSizes } from '@/utils/data';
 import { Frame } from '@/components/Frame';
 import { usePlayground } from '@/utils/playground-context';
-import { ButtonSnippet } from '@/snippets/button';
-import { CheckboxSnippet } from '@/snippets/checkbox';
-import { HeadingSnippet } from '@/snippets/heading';
-import { TextSnippet } from '@/snippets/text';
+import {
+  ButtonSnippet,
+  CheckboxSnippet,
+  HeadingSnippet,
+  TextSnippet,
+} from '@/snippets/stories-snippets';
 
 import styles from './styles.module.css';
 
