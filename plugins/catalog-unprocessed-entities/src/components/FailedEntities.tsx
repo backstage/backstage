@@ -34,6 +34,7 @@ import { EntityDialog } from './EntityDialog';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
 import useAsync from 'react-use/esm/useAsync';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { DeleteEntityConfirmationDialog } from './DeleteEntityConfirmationDialog';
 
 const useStyles = makeStyles((theme: Theme) => ({
   errorBox: {
@@ -117,6 +118,13 @@ export const FailedEntities = () => {
   const [, setSelectedSearchTerm] = useState<string>('');
   const unprocessedEntityApi = useApi(catalogUnprocessedEntitiesApiRef);
   const alertApi = useApi(alertApiRef);
+  const [selectedEntityId, setSelectedEntityId] = useState<string | undefined>(
+    undefined,
+  );
+  const [selectedEntityRef, setSelectedEntityRef] = useState<
+    string | undefined
+  >(undefined);
+  const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
 
   if (loading) {
     return <Progress />;
@@ -125,25 +133,34 @@ export const FailedEntities = () => {
     return <ErrorPanel error={error} />;
   }
 
-  const handleDelete = async ({
+  const handleDelete = ({
     entityId,
     entityRef,
   }: {
     entityId: string;
     entityRef: string;
   }) => {
+    setSelectedEntityId(entityId);
+    setSelectedEntityRef(entityRef);
+    setConfirmationDialogOpen(true);
+  };
+
+  const cleanUpAfterRemoval = async () => {
     try {
-      await unprocessedEntityApi.delete(entityId);
-      alertApi.post({
-        message: `Entity ${entityRef} has been deleted`,
-        severity: 'success',
-      });
+      if (selectedEntityId) {
+        await unprocessedEntityApi.delete(selectedEntityId);
+        alertApi.post({
+          message: `Entity ${selectedEntityRef} has been deleted`,
+          severity: 'success',
+        });
+      }
     } catch (e) {
       alertApi.post({
-        message: `Ran into an issue when deleting ${entityRef}. Please try again later.`,
+        message: `Ran into an issue when deleting ${selectedEntityRef}. Please try again later.`,
         severity: 'error',
       });
     }
+    setConfirmationDialogOpen(false);
   };
 
   const columns: TableColumn[] = [
@@ -213,8 +230,8 @@ export const FailedEntities = () => {
         return (
           <IconButton
             aria-label="delete"
-            onClick={async () =>
-              await handleDelete({
+            onClick={() =>
+              handleDelete({
                 entityId: entity_id,
                 entityRef: entity_ref,
               })
@@ -228,37 +245,46 @@ export const FailedEntities = () => {
   ];
 
   return (
-    <Table
-      options={{ pageSize: 20, search: true }}
-      columns={columns}
-      data={data?.entities ?? []}
-      emptyContent={
-        <Typography className={classes.successMessage}>
-          No failed entities found
-        </Typography>
-      }
-      onSearchChange={(searchTerm: string) => setSelectedSearchTerm(searchTerm)}
-      detailPanel={({ rowData }) => {
-        const errors = (rowData as UnprocessedEntity).errors;
-        return (
-          <>
-            {errors?.map((e, idx) => {
-              return (
-                <Box key={idx} className={classes.errorBox}>
-                  <Typography className={classes.errorTitle}>
-                    {e.name}
-                  </Typography>
-                  <MarkdownContent content={e.message} />
-                  <RenderErrorContext
-                    error={e}
-                    rowData={rowData as UnprocessedEntity}
-                  />
-                </Box>
-              );
-            })}
-          </>
-        );
-      }}
-    />
+    <>
+      <Table
+        options={{ pageSize: 20, search: true }}
+        columns={columns}
+        data={data?.entities ?? []}
+        emptyContent={
+          <Typography className={classes.successMessage}>
+            No failed entities found
+          </Typography>
+        }
+        onSearchChange={(searchTerm: string) =>
+          setSelectedSearchTerm(searchTerm)
+        }
+        detailPanel={({ rowData }) => {
+          const errors = (rowData as UnprocessedEntity).errors;
+          return (
+            <>
+              {errors?.map((e, idx) => {
+                return (
+                  <Box key={idx} className={classes.errorBox}>
+                    <Typography className={classes.errorTitle}>
+                      {e.name}
+                    </Typography>
+                    <MarkdownContent content={e.message} />
+                    <RenderErrorContext
+                      error={e}
+                      rowData={rowData as UnprocessedEntity}
+                    />
+                  </Box>
+                );
+              })}
+            </>
+          );
+        }}
+      />
+      <DeleteEntityConfirmationDialog
+        open={confirmationDialogOpen}
+        onClose={() => setConfirmationDialogOpen(false)}
+        onConfirm={cleanUpAfterRemoval}
+      />
+    </>
   );
 };
