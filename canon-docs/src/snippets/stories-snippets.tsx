@@ -13,6 +13,7 @@ import * as IconStories from '../../../packages/canon/src/components/Icon/Icon.s
 import * as InputStories from '../../../packages/canon/src/components/Input/Input.stories';
 import * as TextStories from '../../../packages/canon/src/components/Text/Text.stories';
 import * as FlexStories from '../../../packages/canon/src/components/Flex/Flex.stories';
+
 export const BoxSnippet = ({ story }: { story: keyof typeof BoxStories }) => {
   const stories = composeStories(BoxStories);
   const StoryComponent = stories[story as keyof typeof stories];
