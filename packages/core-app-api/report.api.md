@@ -21,7 +21,6 @@ import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
@@ -590,22 +589,6 @@ export type OAuth2CreateOptionsWithAuthConnector = {
   scopeTransform?: (scopes: string[]) => string[];
   defaultScopes?: string[];
   authConnector: AuthConnector<OAuth2Session>;
-};
-
-// @public (undocumented)
-export type OAuth2Response = {
-  providerInfo: {
-    accessToken: string;
-    idToken: string;
-    scope: string;
-    expiresInSeconds?: number;
-  };
-  profile: ProfileInfo;
-  backstageIdentity: {
-    token: string;
-    expiresInSeconds?: number;
-    identity: BackstageUserIdentity;
-  };
 };
 
 // @public

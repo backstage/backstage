@@ -21,9 +21,9 @@ import {
   AuthConnectorRefreshSessionOptions,
   openLoginPopup,
   OAuth2CreateOptionsWithAuthConnector,
-  OAuth2Response,
 } from '../../../../index';
 import { waitFor } from '@testing-library/react';
+import { BackstageUserIdentity, ProfileInfo } from '@backstage/core-plugin-api';
 
 const scopeTransform = (x: string[]) => x;
 
@@ -32,6 +32,27 @@ type Options = {
    * Function used to transform an auth response into the session type.
    */
   sessionTransform?(response: any): OAuth2Session | Promise<OAuth2Session>;
+};
+
+/**
+ * A replica of private `OAuth2Response` from OAuth2.ts.
+ * `OAuth2Response` represents raw OAuth2 response from the `auth-backend` plugin.
+ * If custom auth connector calls `auth-backend` plugin, it will have to transform `OAuth2Response` into
+ * `OAuth2Session`.
+ */
+type OAuth2Response = {
+  providerInfo: {
+    accessToken: string;
+    idToken: string;
+    scope: string;
+    expiresInSeconds?: number;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: {
+    token: string;
+    expiresInSeconds?: number;
+    identity: BackstageUserIdentity;
+  };
 };
 
 class CustomAuthConnector implements AuthConnector<OAuth2Session> {
