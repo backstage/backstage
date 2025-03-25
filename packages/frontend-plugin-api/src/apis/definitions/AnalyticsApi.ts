@@ -16,6 +16,7 @@
 
 import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
 import { AnalyticsContextValue } from '../../analytics/types';
+import type { AnalyticsBlueprint } from '../../blueprints/';
 
 /**
  * Represents an event worth tracking in an analytics system that could inform
@@ -103,6 +104,26 @@ export type AnalyticsTracker = {
 };
 
 /**
+ * Analytics implementations are used to track user behavior in a Backstage
+ * instance.
+ *
+ * @remarks
+ *
+ * To instrument your App or Plugin, retrieve an analytics tracker using the
+ * `useAnalytics()` hook. This will return a pre-configured `AnalyticsTracker`
+ * with relevant methods for instrumentation.
+ *
+ * @public
+ */
+export type AnalyticsImplementation = {
+  /**
+   * Primary event handler responsible for compiling and forwarding events to
+   * an analytics system.
+   */
+  captureEvent(event: AnalyticsEvent): void;
+};
+
+/**
  * The Analytics API is used to track user behavior in a Backstage instance.
  *
  * @remarks
@@ -112,6 +133,8 @@ export type AnalyticsTracker = {
  * with relevant methods for instrumentation.
  *
  * @public
+ * @deprecated This type is now deprecated and will be removed in an upcoming
+ *   release. Use the {@link AnalyticsImplementation} type instead.
  */
 export type AnalyticsApi = {
   /**
@@ -123,6 +146,11 @@ export type AnalyticsApi = {
 
 /**
  * The API reference of {@link AnalyticsApi}.
+ *
+ * @remarks
+ *
+ * To define a concrete Analytics Implementation, use {@link AnalyticsBlueprint}
+ * instead.
  *
  * @public
  */
