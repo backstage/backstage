@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-devtools-backend",
-  "version": "0.5.3",
+  "version": "0.5.4-next.0",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "devtools",

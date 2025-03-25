@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.8.1-next.0
+
+### Patch Changes
+
+- 497d47a: Document the internal built-in filters, and ensure that the types are validated when using `createTemplateFilter` and `createTemplateGlobalFunction` from the `zod` schema.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.10
+
 ## 0.8.0
 
 ### Minor Changes

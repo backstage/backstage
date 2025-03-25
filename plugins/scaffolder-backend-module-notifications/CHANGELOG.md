@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend-module-notifications
 
+## 0.1.9-next.0
+
+### Patch Changes
+
+- 25a7675: Made "notification:send" action idempotent
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.13
+
 ## 0.1.8
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-user-settings",
-  "version": "0.8.20",
+  "version": "0.8.21-next.0",
   "description": "A Backstage plugin that provides a settings page",
   "backstage": {
     "role": "frontend-plugin",
