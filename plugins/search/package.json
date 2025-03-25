@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search",
-  "version": "1.4.24",
+  "version": "1.4.25-next.0",
   "description": "The Backstage plugin that provides your backstage app with search",
   "backstage": {
     "role": "frontend-plugin",

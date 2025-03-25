@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.7.12-next.0
+
+### Patch Changes
+
+- 16648ef: Added `validateLocationsExist` to the config definition where it was missing.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.32.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-events-node@0.4.9
+
 ## 0.7.11
 
 ### Patch Changes

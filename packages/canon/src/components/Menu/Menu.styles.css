@@ -1,54 +1,17 @@
-.canon-MenuTrigger {
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  height: 2.5rem;
-  padding: 0 0.875rem;
-  margin: 0;
-  outline: 0;
-  border: 1px solid var(--color-gray-200);
-  border-radius: 0.375rem;
-  background-color: var(--color-gray-50);
-  font-family: inherit;
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1.5rem;
-  color: var(--color-gray-900);
-  user-select: none;
-
-  @media (hover: hover) {
-    &:hover {
-      background-color: var(--color-gray-100);
-    }
-  }
-
-  &:active {
-    background-color: var(--color-gray-100);
-  }
-
-  &[data-popup-open] {
-    background-color: var(--color-gray-100);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--color-blue);
-    outline-offset: -1px;
-  }
-}
-
 .canon-MenuPositioner {
   outline: 0;
 }
 
 .canon-MenuPopup {
-  box-sizing: border-box;
-  padding-block: 0.25rem;
+  padding: var(--canon-space-2);
   border-radius: 0.375rem;
-  background-color: var(--canon-bg-elevated);
-  color: var(--color-fg-primary);
+  background-color: var(--canon-bg-surface-1);
+  border: 1px solid var(--canon-border);
+  color: var(--canon-fg-primary);
+  outline: none;
+  overflow: hidden;
   transform-origin: var(--transform-origin);
+  max-width: 340px;
   transition: transform 150ms, opacity 150ms;
 
   &[data-starting-style],
@@ -56,44 +19,29 @@
     opacity: 0;
     transform: scale(0.9);
   }
-
-  @media (prefers-color-scheme: light) {
-    outline: 1px solid var(--color-gray-200);
-    box-shadow: 0px 10px 15px -3px var(--color-gray-200),
-      0px 4px 6px -4px var(--color-gray-200);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    outline: 1px solid var(--color-gray-300);
-    outline-offset: -1px;
-  }
 }
 
 .canon-MenuItem {
   outline: 0;
   cursor: default;
   user-select: none;
-  padding-block: 0.5rem;
-  padding-left: 1rem;
-  padding-right: 2rem;
   display: flex;
-  font-size: 0.875rem;
-  line-height: 1rem;
+  gap: var(--canon-space-2);
+  color: var(--canon-fg-primary);
+  text-decoration: none;
+  border-radius: var(--canon-radius-2);
+  padding: var(--canon-space-2) var(--canon-space-2);
+  padding-right: var(--canon-space-4);
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: none;
+  }
 
   &[data-highlighted] {
     z-index: 0;
     position: relative;
-    color: var(--color-gray-50);
-  }
-
-  &[data-highlighted]::before {
-    content: '';
-    z-index: -1;
-    position: absolute;
-    inset-block: 0;
-    inset-inline: 0.25rem;
-    border-radius: 0.25rem;
-    background-color: var(--color-gray-900);
+    background-color: var(--canon-bg-tint-hover);
   }
 }
 

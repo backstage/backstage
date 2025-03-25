@@ -67,6 +67,19 @@ export const CustomTag: Story = {
   },
 };
 
+export const WrappedInLink: Story = {
+  args: {
+    ...Default.args,
+  },
+  decorators: [
+    Story => (
+      <a href="/">
+        <Story />
+      </a>
+    ),
+  ],
+};
+
 export const Playground: Story = {
   render: () => (
     <Flex direction="column" gap="4">

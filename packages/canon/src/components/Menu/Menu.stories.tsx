@@ -17,6 +17,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Menu } from './Menu';
+import { Button } from '../Button';
 
 const meta = {
   title: 'Components/Menu',
@@ -30,9 +31,15 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <Menu.Trigger>Menu</Menu.Trigger>
+        <Menu.Trigger
+          render={props => (
+            <Button {...props} size="small">
+              Menu
+            </Button>
+          )}
+        />
         <Menu.Portal>
-          <Menu.Positioner>
+          <Menu.Positioner sideOffset={8} align="start">
             <Menu.Popup>
               <Menu.Item>Item 1</Menu.Item>
               <Menu.Item>Item 2</Menu.Item>
@@ -42,5 +49,12 @@ export const Default: Story = {
         </Menu.Portal>
       </>
     ),
+  },
+};
+
+export const Open: Story = {
+  args: {
+    ...Default.args,
+    open: true,
   },
 };

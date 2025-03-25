@@ -18,8 +18,13 @@
 @import './normalize.css';
 @import './utilities.css';
 
-/* Light theme tokens */
+/* Global reset */
+:where(a) {
+  color: inherit;
+  text-decoration: none;
+}
 
+/* Light theme tokens */
 :root {
   /* Font families */
   --canon-font-regular: system-ui;

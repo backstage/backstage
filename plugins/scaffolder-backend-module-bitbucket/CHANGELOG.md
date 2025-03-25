@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket
 
+## 0.3.9-next.0
+
+### Patch Changes
+
+- adfceee: Made "publish:bitbucket" action idempotent
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.8-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.8-next.0
+
 ## 0.3.8
 
 ### Patch Changes
