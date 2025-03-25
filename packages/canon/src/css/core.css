@@ -18,8 +18,13 @@
 @import './normalize.css';
 @import './utilities.css';
 
-/* Light theme tokens */
+/* Global reset */
+:where(a) {
+  color: inherit;
+  text-decoration: none;
+}
 
+/* Light theme tokens */
 :root {
   /* Font families */
   --canon-font-regular: system-ui;
@@ -113,12 +118,6 @@
   --canon-ring: #1f5493;
   --canon-scrollbar: #a0a0a03b;
   --canon-scrollbar-thumb: #a0a0a0;
-
-  /* Global reset */
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
 }
 
 /* Dark theme tokens */
