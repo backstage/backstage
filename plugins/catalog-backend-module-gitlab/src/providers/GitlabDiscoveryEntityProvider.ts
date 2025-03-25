@@ -61,7 +61,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   private readonly config: GitlabProviderConfig;
   private readonly integration: GitLabIntegration;
   private readonly logger: LoggerService;
-  private readonly scheduleFn: () => Promise<void>;
+  private readonly scheduleFn?: () => Promise<void>;
   private connection?: EntityProviderConnection;
   private readonly events?: EventsService;
   private readonly gitLabClient: GitLabClient;
@@ -75,15 +75,21 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       scheduler?: SchedulerService;
     },
   ): GitlabDiscoveryEntityProvider[] {
-    if (!options.schedule && !options.scheduler) {
-      throw new Error('Either schedule or scheduler must be provided.');
-    }
-
     const providerConfigs = readGitlabConfigs(config);
     const integrations = ScmIntegrations.fromConfig(config).gitlab;
     const providers: GitlabDiscoveryEntityProvider[] = [];
 
     providerConfigs.forEach(providerConfig => {
+      if (
+        !options.schedule &&
+        !options.scheduler &&
+        !providerConfig.disablePolling
+      ) {
+        throw new Error(
+          'Either schedule or scheduler must be provided when disable polling is set to false.',
+        );
+      }
+
       const integration = integrations.byHost(providerConfig.host);
       if (!integration) {
         throw new Error(
@@ -91,15 +97,28 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         );
       }
 
-      if (!options.schedule && !providerConfig.schedule) {
+      if (!options.events && providerConfig.disablePolling) {
         throw new Error(
-          `No schedule provided neither via code nor config for GitlabDiscoveryEntityProvider:${providerConfig.id}.`,
+          `Polling has been disabled but no event support has been added for GitlabDiscoveryEntityProvider:${providerConfig.id}.`,
         );
       }
 
-      const taskRunner =
-        options.schedule ??
-        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+      if (
+        !options.schedule &&
+        !providerConfig.schedule &&
+        !providerConfig.disablePolling
+      ) {
+        throw new Error(
+          `No schedule provided neither via code nor config for GitlabDiscoveryEntityProvider:${providerConfig.id} and disable polling is set to false.`,
+        );
+      }
+
+      const taskRunner = providerConfig.disablePolling
+        ? undefined
+        : options.schedule ??
+          options.scheduler!.createScheduledTaskRunner(
+            providerConfig.schedule!,
+          );
 
       providers.push(
         new GitlabDiscoveryEntityProvider({
@@ -124,14 +143,16 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     integration: GitLabIntegration;
     logger: LoggerService;
     events?: EventsService;
-    taskRunner: SchedulerServiceTaskRunner;
+    taskRunner?: SchedulerServiceTaskRunner;
   }) {
     this.config = options.config;
     this.integration = options.integration;
     this.logger = options.logger.child({
       target: this.getProviderName(),
     });
-    this.scheduleFn = this.createScheduleFn(options.taskRunner);
+    if (!this.config.disablePolling && options.taskRunner) {
+      this.scheduleFn = this.createScheduleFn(options.taskRunner);
+    }
     this.events = options.events;
     this.gitLabClient = new GitLabClient({
       config: this.integration.config,
@@ -145,7 +166,11 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
 
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
-    await this.scheduleFn();
+
+    // Scheduled function only exists if disable polling is set to false
+    if (this.scheduleFn) {
+      await this.scheduleFn();
+    }
 
     if (this.events) {
       await this.events.subscribe({
@@ -331,6 +356,21 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         this.config.branch ??
         event.project.default_branch ??
         this.config.fallbackBranch;
+
+      // If polling is disabled, add modified files as delta changes just in case the original add event was lost
+      if (this.config.disablePolling) {
+        const modifiedEntities = this.createLocationSpecCommitedFiles(
+          event.project,
+          modified,
+        );
+        await this.connection.applyMutation({
+          type: 'delta',
+          added: this.toDeferredEntities(
+            modifiedEntities.map(entity => entity.target),
+          ),
+          removed: [],
+        });
+      }
 
       // scheduling a refresh to both tree and blob (https://git-scm.com/book/en/v2/Git-Internals-Git-Objects)
       await this.connection.refresh({

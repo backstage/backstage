@@ -69,7 +69,9 @@ describe('GitlabDiscoveryEntityProvider - configuration', () => {
       GitlabDiscoveryEntityProvider.fromConfig(config, {
         logger,
       }),
-    ).toThrow('Either schedule or scheduler must be provided');
+    ).toThrow(
+      'Either schedule or scheduler must be provided when disable polling is set to false.',
+    );
   });
 
   it('should fail with scheduler but no schedule config', () => {
@@ -84,7 +86,7 @@ describe('GitlabDiscoveryEntityProvider - configuration', () => {
         scheduler,
       }),
     ).toThrow(
-      'No schedule provided neither via code nor config for GitlabDiscoveryEntityProvider:test-id',
+      'No schedule provided neither via code nor config for GitlabDiscoveryEntityProvider:test-id and disable polling is set to false.',
     );
   });
   it('should throw error when no matching GitLab integration config found', () => {
@@ -97,6 +99,37 @@ describe('GitlabDiscoveryEntityProvider - configuration', () => {
         schedule,
       });
     }).toThrow('No gitlab integration found that matches host example.com');
+  });
+  it('should throw error when no events support and disablePolling is true', () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader(
+      mock.config_single_integration_polling_disabled,
+    );
+
+    expect(() => {
+      GitlabDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+        schedule,
+      });
+    }).toThrow(
+      'Polling has been disabled but no event support has been added for GitlabDiscoveryEntityProvider:test-id.',
+    );
+  });
+
+  it('should instantiate provider with no scheduler, no schedule config and disablePolling true', () => {
+    const config = new ConfigReader(
+      mock.config_no_schedule_integration_polling_disabled,
+    );
+    const events = DefaultEventsService.create({ logger });
+    const providers = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      events,
+    });
+
+    expect(providers).toHaveLength(1);
+    expect(providers[0].getProviderName()).toEqual(
+      'GitlabDiscoveryEntityProvider:test-id',
+    );
   });
 
   it('should instantiate provider with single simple discovery config', () => {
@@ -475,6 +508,7 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
   });
+
   it('should apply delta mutations on added files from push event', async () => {
     const config = new ConfigReader(mock.config_single_integration);
 
@@ -528,7 +562,7 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
     });
   });
 
-  it('should call refresh on added files from push event', async () => {
+  it('should call refresh on modified files from push event', async () => {
     const config = new ConfigReader(mock.config_single_integration);
     const schedule = new PersistingTaskRunner();
     const events = DefaultEventsService.create({ logger });
@@ -557,5 +591,41 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
     });
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
   });
-  // EventSupportChange: stop add tests >>>
+
+  it('should call add and refresh on modified files from push event with polling disabled', async () => {
+    const config = new ConfigReader(
+      mock.config_single_integration_polling_disabled,
+    );
+    const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+      events,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    const url = `https://example.com/group1/test-repo1`;
+
+    await events.publish(mock.push_modif_event);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'delta',
+      added: mock.expected_modified_location_entities,
+      removed: [],
+    });
+    expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
+      keys: [
+        `url:${url}/-/tree/main/catalog-info.yaml`,
+        `url:${url}/-/blob/main/catalog-info.yaml`,
+      ],
+    });
+  });
 });
