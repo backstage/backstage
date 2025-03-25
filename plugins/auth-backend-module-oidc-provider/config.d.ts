@@ -32,7 +32,7 @@ export interface Config {
           tokenSignedResponseAlg?: string;
           additionalScopes?: string | string[];
           prompt?: string;
-          timeout?: HumanDuration;
+          timeout?: HumanDuration | string;
           signIn?: {
             resolvers: Array<
               | {
