@@ -42,6 +42,10 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const groupPattern = new RegExp(
     config.getOptionalString('groupPattern') ?? /[\s\S]*/,
   );
+  const groupPatterns: Array<RegExp> =
+    config
+      .getOptionalStringArray('groupPatterns')
+      ?.map(pattern => new RegExp(pattern)) ?? [];
   const orgEnabled: boolean = config.getOptionalBoolean('orgEnabled') ?? false;
   const allowInherited: boolean =
     config.getOptionalBoolean('allowInherited') ?? false;
@@ -81,6 +85,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     projectPattern,
     userPattern,
     groupPattern,
+    groupPatterns,
     schedule,
     orgEnabled,
     allowInherited,

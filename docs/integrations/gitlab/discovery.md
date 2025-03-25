@@ -151,6 +151,9 @@ catalog:
         skipForkedRepos: false # Optional. If the project is a fork, skip repository
         includeArchivedRepos: false # Optional. If project is archived, include repository
         group: example-group # Optional. Group and subgroup (if needed) to look for repositories. If not present the whole instance will be scanned
+        groupPatterns: # Optional. Filters for groups based on a list of patterns. Default, no filters.
+          - '^somegroup$'
+          - 'anothergroup'
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
         projectPattern: '[\s\S]*' # Optional. Filters found projects based on provided patter. Defaults to `[\s\S]*`, which means to not filter anything
         excludeRepos: [] # Optional. A list of project paths that should be excluded from discovery, e.g. group/subgroup/repo. Should not start or end with a slash.
