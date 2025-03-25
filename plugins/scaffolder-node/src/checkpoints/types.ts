@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { JsonValue } from '@backstage/types';
 
 /**
@@ -28,9 +27,9 @@ export type CheckpointStatus = 'failed' | 'success';
  *
  * @public
  */
-export type CheckpointSuccessState = {
-  status: Extract<CheckpointStatus, 'success'>;
-  value: JsonValue;
+export type CheckpointSuccessState<T extends JsonValue = JsonValue> = {
+  status: 'success';
+  value: T;
 };
 
 /**
@@ -39,9 +38,18 @@ export type CheckpointSuccessState = {
  * @public
  */
 export type CheckpointFailedState = {
-  status: Extract<CheckpointStatus, 'failed'>;
+  status: 'failed';
   reason: string;
 };
+
+/**
+ * Represents the union of all possible checkpoint state values.
+ *
+ * @public
+ */
+export type CheckpointStateValue =
+  | CheckpointSuccessState
+  | CheckpointFailedState;
 
 /**
  * A map of checkpoint keys to their states.
@@ -49,24 +57,15 @@ export type CheckpointFailedState = {
  * @public
  */
 export type CheckpointState = {
-  [key: string]: CheckpointSuccessState | CheckpointFailedState;
+  [key: string]: CheckpointStateValue;
 };
 
 /**
- * Options for updating a checkpoint in a task.
+ * Context for checkpoint function invocation.
  *
  * @public
  */
-export type UpdateCheckpointOptions = {
-  key: string;
-} & CheckpointState[keyof CheckpointState];
-
-/**
- * Options for checkpoint function invocation.
- *
- * @public
- */
-export type CheckpointOptions<T extends JsonValue | void = JsonValue> = {
+export type CheckpointContext<T extends JsonValue | void = JsonValue> = {
   /**
    * Unique key for the checkpoint
    */
