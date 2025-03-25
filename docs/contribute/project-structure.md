@@ -39,7 +39,7 @@ the code.
 - [`docs/`](https://github.com/backstage/backstage/tree/master/docs) - This is
   where we keep all of our documentation Markdown files. These end up on
   https://backstage.io/docs. Just keep in mind that changes to the
-  [`sidebars.js`](https://github.com/backstage/backstage/blob/master/microsite/sidebars.js)
+  [`sidebars.ts`](https://github.com/backstage/backstage/blob/master/microsite/sidebars.ts)
   file may be needed as sections are added/removed.
 
 - [`.editorconfig`](https://github.com/backstage/backstage/tree/master/.editorconfig) -

@@ -17,7 +17,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Input } from './Input';
-import { Inline } from '../Inline';
+import { Flex } from '../Flex';
 
 const meta = {
   title: 'Components/Input',
@@ -33,9 +33,9 @@ export const Primary: Story = {
 
 export const Sizes: Story = {
   render: () => (
-    <Inline>
+    <Flex>
       <Input size="sm" />
       <Input size="md" />
-    </Inline>
+    </Flex>
   ),
 };

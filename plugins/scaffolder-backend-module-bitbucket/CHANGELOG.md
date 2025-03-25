@@ -1,5 +1,109 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket
 
+## 0.3.9-next.0
+
+### Patch Changes
+
+- adfceee: Made "publish:bitbucket" action idempotent
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.8-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.8-next.0
+
+## 0.3.8
+
+### Patch Changes
+
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- Updated dependencies
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.7
+  - @backstage/plugin-scaffolder-node@0.8.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.7
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.3.8-next.2
+
+### Patch Changes
+
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.7-next.2
+  - @backstage/plugin-scaffolder-node@0.8.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.7-next.2
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.3.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.7.1-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.7-next.1
+
+## 0.3.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.7-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.7-next.0
+  - @backstage/plugin-scaffolder-node@0.7.1-next.0
+
+## 0.3.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-scaffolder-node@0.7.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.6
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.6
+
+## 0.3.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.7.0-next.2
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.6-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.6-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.3.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.6-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.6-next.1
+  - @backstage/plugin-scaffolder-node@0.7.0-next.1
+
 ## 0.3.7-next.0
 
 ### Patch Changes

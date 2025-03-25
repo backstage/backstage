@@ -101,7 +101,7 @@ export type ListAncestorsResult = {
 };
 
 export type ListParentsOptions = {
-  entityRef: string;
+  entityRefs: string[];
 };
 
 export type ListParentsResult = {
@@ -173,6 +173,11 @@ export interface ProviderDatabase {
     txOpaque: Transaction,
     options: RefreshByKeyOptions,
   ): Promise<void>;
+
+  /**
+   * List the names of all the entity providers that have references in the provider database.
+   */
+  listReferenceSourceKeys(txOpaque: Transaction): Promise<string[]>;
 }
 
 // TODO(Rugvip): This is only partial for now

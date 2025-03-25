@@ -1,3 +1,5 @@
+'use client';
+
 import { Input, Field } from '../../../packages/canon';
 
 export const FieldPreview = () => {

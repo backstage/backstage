@@ -39,7 +39,7 @@ export type RunBackendOptions = {
   /** Whether to forward the --inspect-brk flag to the node process */
   inspectBrkEnabled: boolean;
   /** Additional module to require via the --require flag to the node process */
-  require?: string;
+  require?: string | string[];
   /** An external linked workspace to override module resolution towards */
   linkedWorkspace?: string;
 };
@@ -107,7 +107,10 @@ export async function runBackend(options: RunBackendOptions) {
       optionArgs.push(inspect);
     }
     if (options.require) {
-      optionArgs.push(`--require=${options.require}`);
+      const requires = [options.require].flat();
+      for (const r of requires) {
+        optionArgs.push(`--require=${r}`);
+      }
     }
 
     const userArgs = process.argv

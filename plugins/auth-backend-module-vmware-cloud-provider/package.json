@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-vmware-cloud-provider",
-  "version": "0.4.4-next.0",
+  "version": "0.5.1",
   "description": "The vmware-cloud-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -47,6 +47,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
+    "@backstage/types": "workspace:^",
     "msw": "^2.0.8",
     "supertest": "^7.0.0"
   }

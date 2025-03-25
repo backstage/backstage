@@ -32,6 +32,7 @@ import {
   NotificationProcessorFilters,
 } from '@backstage/plugin-notifications-common';
 import {
+  createAzureTransport,
   createSendmailTransport,
   createSesTransport,
   createSmtpTransport,
@@ -117,6 +118,8 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       this.transporter = createSendmailTransport(this.transportConfig);
     } else if (transport === 'stream') {
       this.transporter = createStreamTransport();
+    } else if (transport === 'azure') {
+      this.transporter = createAzureTransport(this.transportConfig);
     } else {
       throw new Error(`Unsupported transport: ${transport}`);
     }

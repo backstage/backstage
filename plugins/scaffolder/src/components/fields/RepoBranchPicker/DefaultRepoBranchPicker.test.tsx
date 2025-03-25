@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import { DefaultRepoBranchPicker } from './DefaultRepoBranchPicker';
 
@@ -31,6 +31,23 @@ describe('DefaultRepoBranchPicker', () => {
 
     expect(getByRole('textbox')).toBeInTheDocument();
     expect(getByRole('textbox')).toHaveValue('main');
+  });
+
+  it('input field disabled', () => {
+    render(
+      <DefaultRepoBranchPicker
+        onChange={jest.fn()}
+        isDisabled
+        state={{ branch: 'main' }}
+        rawErrors={[]}
+      />,
+    );
+
+    const input = screen.getByRole('textbox');
+
+    // Expect input to be disabled
+    expect(input).toBeDisabled();
+    expect(input).toHaveValue('main');
   });
 
   it('calls onChange when the input field changes', () => {

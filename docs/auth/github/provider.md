@@ -10,7 +10,7 @@ provider that can authenticate users using GitHub or GitHub Enterprise OAuth.
 
 ## Create an OAuth App on GitHub
 
-To add GitHub authentication, you must create either a GitHub App, or an OAuth
+To add GitHub authentication, you must create either a GitHub App or an OAuth
 App from the GitHub
 [developer settings](https://github.com/settings/developers). The `Homepage URL`
 should point to Backstage's frontend, while the `Authorization callback URL`
@@ -49,6 +49,8 @@ auth:
         clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
         ## uncomment if using GitHub Enterprise
         # enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
+        ## uncomment to set lifespan of user session
+        # sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
         signIn:
           resolvers:
             # See https://backstage.io/docs/auth/github/provider#resolvers for more resolvers
@@ -57,15 +59,16 @@ auth:
 
 The GitHub provider is a structure with these configuration keys:
 
-- `clientId`: The client ID that you generated on GitHub, e.g.
+- `clientId`: The client ID that you generated on GitHub, e.g.,
   `b59241722e3c3b4816e2`
 - `clientSecret`: The client secret tied to the generated client ID.
 - `enterpriseInstanceUrl` (optional): The base URL for a GitHub Enterprise
-  instance, e.g. `https://ghe.<company>.com`. Only needed for GitHub Enterprise.
+  instance, e.g., `https://ghe.<company>.com`. Only needed for GitHub Enterprise.
 - `callbackUrl` (optional): The callback URL that GitHub will use when
-  initiating an OAuth flow, e.g.
+  initiating an OAuth flow, e.g.,
   `https://your-intermediate-service.com/handler`. Only needed if Backstage is
-  not the immediate receiver (e.g. one OAuth app for many backstage instances).
+  not the immediate receiver (e.g., one OAuth app for many backstage instances).
+- `sessionDuration` (optional): Lifespan of the user session.
 - `signIn`: The configuration for the sign-in process, including the **resolvers**
   that should be used to match the user from the auth provider with the user
   entity in the Backstage catalog (typically a single resolver is sufficient).
@@ -74,17 +77,17 @@ The GitHub provider is a structure with these configuration keys:
 
 This provider includes several resolvers out of the box that you can use:
 
-- `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found it will throw a `NotFoundError`.
-- `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
-- `usernameMatchingUserEntityName`: Matches the username from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
+- `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found, it will throw a `NotFoundError`.
+- `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found, it will throw a `NotFoundError`.
+- `usernameMatchingUserEntityName`: Matches the username from the auth provider with the User entity that has a matching `name`. If no match is found, it will throw a `NotFoundError`.
 
 :::note Note
 
-The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
+The resolvers will be tried in order but will only be skipped if they throw a `NotFoundError`.
 
 :::
 
-If these resolvers do not fit your needs you can build a custom resolver, this is covered in the [Building Custom Resolvers](../identity-resolver.md#building-custom-resolvers) section of the Sign-in Identities and Resolvers documentation.
+If these resolvers do not fit your needs, you can build a custom resolver; this is covered in the [Building Custom Resolvers](../identity-resolver.md#building-custom-resolvers) section of the Sign-in Identities and Resolvers documentation.
 
 ## Backend Installation
 

@@ -15,14 +15,14 @@
  */
 
 import { PassThrough } from 'stream';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   createMockDirectory,
   mockCredentials,
   mockServices,
 } from '@backstage/backend-test-utils';
-import { JsonObject } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
+import { loggerToWinstonLogger } from './loggerToWinstonLogger';
 
 /**
  * A utility method to create a mock action context for scaffolder actions.
@@ -43,7 +43,12 @@ export const createMockActionContext = <
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
     input: {} as TActionInput,
-    checkpoint: jest.fn(),
+    async checkpoint<T extends JsonValue | void>(opts: {
+      key: string;
+      fn: () => Promise<T> | T;
+    }): Promise<T> {
+      return opts.fn();
+    },
     getInitiatorCredentials: () => Promise.resolve(credentials),
     task: {
       id: 'mock-task-id',

@@ -14,23 +14,39 @@
  * limitations under the License.
  */
 import { IconNames } from '../Icon';
-import type { Breakpoint } from '../../types';
+import type { ButtonOwnProps } from './Button.props';
+
 /**
  * Properties for {@link Button}
  *
  * @public
  */
-export interface ButtonProps {
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-  variant?:
-    | 'primary'
-    | 'secondary'
-    | 'tertiary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
+export interface ButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
+  /**
+   * The size of the button
+   * @defaultValue 'medium'
+   */
+  size?: ButtonOwnProps['size'];
+
+  /**
+   * The visual variant of the button
+   * @defaultValue 'primary'
+   */
+  variant?: ButtonOwnProps['variant'];
+
+  /**
+   * The content of the button
+   */
   children: React.ReactNode;
-  className?: string;
-  disabled?: boolean;
+
+  /**
+   * Optional icon to display at the start of the button
+   */
   iconStart?: IconNames;
+
+  /**
+   * Optional icon to display at the end of the button
+   */
   iconEnd?: IconNames;
-  style?: React.CSSProperties;
 }

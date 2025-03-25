@@ -20,7 +20,7 @@ import { Box } from '../Box/Box';
 import { Container } from './Container';
 
 const meta = {
-  title: 'Components/Container',
+  title: 'Layout/Container',
   component: Container,
   argTypes: {
     children: {
@@ -37,7 +37,6 @@ type Story = StoryObj<typeof meta>;
 
 const DecorativeBox = () => (
   <Box
-    borderRadius="xs"
     style={{
       height: '64px',
       background: '#eaf2fd',

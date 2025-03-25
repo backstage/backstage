@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-node",
-  "version": "0.4.8-next.0",
+  "version": "0.4.9",
   "description": "The plugin-events-node module for @backstage/plugin-events-backend",
   "backstage": {
     "role": "node-library",
@@ -55,7 +55,11 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@types/content-type": "^1.1.8",
+    "@types/express": "^4.17.6",
+    "content-type": "^1.0.5",
     "cross-fetch": "^4.0.0",
+    "express": "^4.17.1",
     "uri-template": "^2.0.0"
   },
   "devDependencies": {

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use client';
-
 import React, { forwardRef } from 'react';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
@@ -29,6 +27,7 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
       children,
       variant = 'body',
       weight = 'regular',
+      color = 'primary',
       style,
       className,
       ...restProps
@@ -37,6 +36,7 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
     // Get the responsive values for the variant and weight
     const responsiveVariant = useResponsiveValue(variant);
     const responsiveWeight = useResponsiveValue(weight);
+    const responsiveColor = useResponsiveValue(color);
 
     return (
       <p
@@ -45,6 +45,7 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
           'canon-Text',
           responsiveVariant && `canon-Text--variant-${responsiveVariant}`,
           responsiveWeight && `canon-Text--weight-${responsiveWeight}`,
+          responsiveColor && `canon-Text--color-${responsiveColor}`,
           className,
         )}
         style={style}

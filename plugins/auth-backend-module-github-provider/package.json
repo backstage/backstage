@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-github-provider",
-  "version": "0.2.5-next.0",
+  "version": "0.3.1",
   "description": "The github-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -43,6 +43,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
+    "@backstage/types": "workspace:^",
     "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"

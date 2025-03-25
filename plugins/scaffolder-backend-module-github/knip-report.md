@@ -2,7 +2,7 @@
 
 ## Unlisted dependencies (1)
 
-| Name                           | Location               | Severity |
-| :----------------------------- | :--------------------- | :------- |
-| @octokit/core/dist-types/types | src/actions/helpers.ts | error    |
+| Name          | Location    | Severity |
+| :------------ | :---------- | :------- |
+| @octokit/core | src/util.ts | error    |
 

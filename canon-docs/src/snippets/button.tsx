@@ -1,59 +1,50 @@
 'use client';
 
-import {
-  Inline,
-  Button,
-  Stack,
-  ButtonProps,
-  Text,
-} from '../../../packages/canon';
+import { Button, Flex, ButtonProps, Text } from '../../../packages/canon';
 
 export const ButtonPreview = () => {
   return (
-    <Inline alignY="center">
+    <Flex align="center">
       <Button iconStart="cloud" variant="primary">
         Button
       </Button>
       <Button iconStart="cloud" variant="secondary">
         Button
       </Button>
-      <Button iconStart="cloud" variant="tertiary">
-        Button
-      </Button>
-    </Inline>
+    </Flex>
   );
 };
 
 export const ButtonSizes = () => {
   return (
-    <Inline alignY="center">
+    <Flex align="center">
       <Button size="medium">Medium</Button>
       <Button size="small">Small</Button>
-    </Inline>
+    </Flex>
   );
 };
 
 export const ButtonWithIcons = () => {
   return (
-    <Inline alignY="center">
+    <Flex align="center">
       <Button iconStart="cloud">Button</Button>
-      <Button iconEnd="chevronRight">Button</Button>
-      <Button iconStart="cloud" iconEnd="chevronRight">
+      <Button iconEnd="chevron-right">Button</Button>
+      <Button iconStart="cloud" iconEnd="chevron-right">
         Button
       </Button>
-    </Inline>
+    </Flex>
   );
 };
 
 export const ButtonFullWidth = () => {
   return (
-    <Stack style={{ width: '300px' }}>
+    <Flex direction="column" style={{ width: '300px' }}>
       <Button iconStart="cloud">Button</Button>
-      <Button iconEnd="chevronRight">Button</Button>
-      <Button iconStart="cloud" iconEnd="chevronRight">
+      <Button iconEnd="chevron-right">Button</Button>
+      <Button iconStart="cloud" iconEnd="chevron-right">
         Button
       </Button>
-    </Stack>
+    </Flex>
   );
 };
 
@@ -62,20 +53,23 @@ export const ButtonDisabled = () => {
 };
 
 export const ButtonResponsive = () => {
-  // TODO: Add responsive button
-  return null;
+  return (
+    <Button variant={{ initial: 'primary', lg: 'secondary' }}>
+      Responsive Button
+    </Button>
+  );
 };
 
 export const ButtonPlayground = () => {
   const variants: string[] = ['primary', 'secondary', 'tertiary'];
 
   return (
-    <Stack>
+    <Flex direction="column">
       {variants.map(variant => (
-        <Stack key={variant}>
+        <Flex direction="column" key={variant}>
           <Text>{variant}</Text>
           {['small', 'medium'].map(size => (
-            <Inline alignY="center" key={size}>
+            <Flex align="center" key={size}>
               <Button
                 iconStart="cloud"
                 variant={variant as ButtonProps['variant']}
@@ -84,7 +78,7 @@ export const ButtonPlayground = () => {
                 Button
               </Button>
               <Button
-                iconEnd="chevronRight"
+                iconEnd="chevron-right"
                 variant={variant as ButtonProps['variant']}
                 size={size as ButtonProps['size']}
               >
@@ -92,17 +86,17 @@ export const ButtonPlayground = () => {
               </Button>
               <Button
                 iconStart="cloud"
-                iconEnd="chevronRight"
+                iconEnd="chevron-right"
                 style={{ width: '200px' }}
                 variant={variant as ButtonProps['variant']}
                 size={size as ButtonProps['size']}
               >
                 Button
               </Button>
-            </Inline>
+            </Flex>
           ))}
-        </Stack>
+        </Flex>
       ))}
-    </Stack>
+    </Flex>
   );
 };

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-node",
-  "version": "0.7.0-next.0",
+  "version": "0.8.1-next.0",
   "description": "The plugin-scaffolder-node module for @backstage/plugin-scaffolder-backend",
   "backstage": {
     "role": "node-library",
@@ -26,7 +26,7 @@
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
+    "./alpha": "./src/alpha/index.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -34,7 +34,7 @@
   "typesVersions": {
     "*": {
       "alpha": [
-        "src/alpha.ts"
+        "src/alpha/index.ts"
       ],
       "package.json": [
         "package.json"
@@ -54,21 +54,22 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@isomorphic-git/pgp-plugin": "^0.0.7",
     "concat-stream": "^2.0.0",
     "fs-extra": "^11.2.0",
     "globby": "^11.0.0",
     "isomorphic-git": "^1.23.0",
-    "jsonschema": "^1.2.6",
+    "jsonschema": "^1.5.0",
     "p-limit": "^3.1.0",
     "tar": "^6.1.12",
     "winston": "^3.2.1",
+    "winston-transport": "^4.7.0",
     "zod": "^3.22.4",
     "zod-to-json-schema": "^3.20.4"
   },

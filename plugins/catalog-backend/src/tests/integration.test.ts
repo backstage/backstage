@@ -1166,4 +1166,151 @@ describe('Catalog Backend Integration', () => {
       'component:default/b': withOutputFields(entityB),
     });
   });
+
+  it('should be able to emit entities during processing with custom location keys', async () => {
+    const baseEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:.',
+          'backstage.io/managed-by-origin-location': 'url:.',
+        },
+      },
+    };
+    const entityA = merge({ metadata: { name: 'a' } }, baseEntity);
+    const entityB = merge({ metadata: { name: 'b' } }, baseEntity);
+    const entityBOverride = merge({ metadata: { override: true } }, entityB);
+
+    const processEntity = jest.fn(
+      async (
+        entity: Entity,
+        _location: LocationSpec,
+        _emit: CatalogProcessorEmit,
+      ) => entity,
+    );
+    const harness = await TestHarness.create({ processEntity });
+
+    processEntity.mockImplementation(async (entity, location, emit) => {
+      if (entity.metadata.name === entityA.metadata.name) {
+        emit(
+          processingResult.entity(location, entityB, {
+            locationKey: null,
+          }),
+        );
+      }
+      return entity;
+    });
+
+    // Start with just A, which outputs B via processing
+    await harness.setInputEntities([entityA]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(entityB),
+    });
+
+    // Now apply A and B', which should override B since it has a null location key
+    await harness.setInputEntities([
+      entityA,
+      { ...entityBOverride, locationKey: 'test' },
+    ]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(entityBOverride),
+    });
+  });
+
+  it('should resolve handle location key conflicts across processed and provided entities', async () => {
+    const baseEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:.',
+          'backstage.io/managed-by-origin-location': 'url:.',
+        },
+      },
+    };
+    const entityA = merge({ metadata: { name: 'a' } }, baseEntity);
+    const entityB = merge({ metadata: { name: 'b' } }, baseEntity);
+    const entityBOverride = merge({ metadata: { override: true } }, entityB);
+
+    const processEntity = jest.fn(
+      async (
+        entity: Entity,
+        _location: LocationSpec,
+        _emit: CatalogProcessorEmit,
+      ) => entity,
+    );
+    const harness = await TestHarness.create({ processEntity });
+
+    processEntity.mockImplementation(async (entity, location, emit) => {
+      if (entity.metadata.name === entityA.metadata.name) {
+        emit(
+          processingResult.entity(location, entityB, {
+            locationKey: 'my-key',
+          }),
+        );
+      }
+      return entity;
+    });
+
+    // Start with just A, which outputs B via processing
+    await harness.setInputEntities([entityA]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(entityB),
+    });
+
+    // Now apply A and B', but since B already has a different location key, B' should not be used
+    await harness.setInputEntities([entityA, entityBOverride]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(entityB),
+    });
+
+    // Stop emitting B from A
+    processEntity.mockImplementation(async e => e);
+
+    // Apply A and B', but since B still has a location key set it should remain, but now orphaned
+    await harness.setInputEntities([entityA, entityBOverride]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(
+        merge(entityB, {
+          metadata: { annotations: { 'backstage.io/orphan': 'true' } },
+        }),
+      ),
+    });
+
+    // Apply A and B' but this time with the matching location key, causing B' to override B
+    await harness.setInputEntities([
+      entityA,
+      { ...entityBOverride, locationKey: 'my-key' },
+    ]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+      'component:default/b': withOutputFields(entityBOverride),
+    });
+
+    // Finally, remove B', leaving just A
+    await harness.setInputEntities([entityA]);
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getOutputEntities()).resolves.toEqual({
+      'component:default/a': withOutputFields(entityA),
+    });
+  });
 });

@@ -16,7 +16,7 @@
 
 import yaml from 'yaml';
 import { useApi } from '@backstage/core-plugin-api';
-import { JsonObject } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import React, {
   createContext,
   ReactNode,
@@ -29,7 +29,9 @@ import React, {
 import {
   scaffolderApiRef,
   ScaffolderDryRunResponse,
+  useTemplateSecrets,
 } from '@backstage/plugin-scaffolder-react';
+import { useFormDecorators } from '../../hooks/useFormDecorators';
 
 const MAX_CONTENT_SIZE = 64 * 1024;
 const CHUNK_SIZE = 32 * 1024;
@@ -81,8 +83,9 @@ export function base64EncodeContent(content: string): string {
 }
 
 export function DryRunProvider(props: DryRunProviderProps) {
+  const decorators = useFormDecorators();
   const scaffolderApi = useApi(scaffolderApiRef);
-
+  const { secrets: contextSecrets } = useTemplateSecrets();
   const [state, setState] = useState<
     Pick<DryRun, 'results' | 'selectedResult'>
   >({
@@ -130,10 +133,16 @@ export function DryRunProvider(props: DryRunProviderProps) {
 
       const parsed = yaml.parse(options.templateContent);
 
+      const { formState: values, secrets } = await decorators.run({
+        formState: options.values as Record<string, JsonValue>,
+        secrets: contextSecrets,
+        manifest: parsed?.spec,
+      });
+
       const response = await scaffolderApi.dryRun({
         template: parsed,
-        values: options.values,
-        secrets: {},
+        values,
+        secrets,
         directoryContents: options.files.map(file => ({
           path: file.path,
           base64Content: base64EncodeContent(file.content),
@@ -150,7 +159,7 @@ export function DryRunProvider(props: DryRunProviderProps) {
         selectedResult: prevState.selectedResult ?? result,
       }));
     },
-    [scaffolderApi],
+    [scaffolderApi, decorators, contextSecrets],
   );
 
   const dryRun = useMemo(

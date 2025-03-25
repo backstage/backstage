@@ -26,7 +26,7 @@ import {
   useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { Content, ErrorPage, Progress } from '@backstage/core-components';
+import { Content, Progress } from '@backstage/core-components';
 
 import { TechDocsSearch } from '../../../search';
 import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
@@ -37,6 +37,7 @@ import {
   withTechDocsReaderProvider,
 } from '../TechDocsReaderProvider';
 import { TechDocsReaderPageContentAddons } from './TechDocsReaderPageContentAddons';
+import { useApp } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles({
   search: {
@@ -97,6 +98,8 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     const hash = window.location.hash;
     const isStyleLoading = useShadowDomStylesLoading(dom);
     const [hashElement] = useShadowRootElements([`[id="${hash.slice(1)}"]`]);
+    const app = useApp();
+    const { NotFoundErrorPage } = app.getComponents();
 
     useEffect(() => {
       if (isStyleLoading) return;
@@ -122,7 +125,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
 
     // No entity metadata = 404. Don't render content at all.
     if (entityMetadataLoading === false && !entityMetadata)
-      return <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />;
+      return <NotFoundErrorPage />;
 
     // Do not return content until dom is ready; instead, render a state
     // indicator, which handles progress and content errors on our behalf.

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-proxy-backend",
-  "version": "0.5.11-next.0",
+  "version": "0.6.0",
   "description": "A Backstage backend plugin that helps you set up proxy endpoints in the backend",
   "backstage": {
     "role": "backend-plugin",
@@ -24,16 +24,12 @@
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
-      "alpha": [
-        "src/alpha.ts"
-      ],
       "package.json": [
         "package.json"
       ]
@@ -53,21 +49,11 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/config": "workspace:^",
     "@backstage/plugin-proxy-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@types/express": "^4.17.6",
-    "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
-    "http-proxy-middleware": "^2.0.0",
-    "morgan": "^1.10.0",
-    "uuid": "^11.0.0",
-    "winston": "^3.2.1",
-    "yaml": "^2.0.0",
-    "yn": "^4.0.0",
-    "yup": "^1.0.0"
+    "http-proxy-middleware": "^2.0.0"
   },
   "devDependencies": {
     "@backstage/backend-app-api": "workspace:^",
@@ -76,8 +62,9 @@
     "@backstage/cli": "workspace:^",
     "@backstage/config-loader": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@types/express": "^4.17.6",
     "@types/http-proxy-middleware": "^1.0.0",
-    "@types/yup": "^0.32.0",
+    "express": "^4.17.1",
     "msw": "^2.0.0"
   },
   "configSchema": "config.d.ts"

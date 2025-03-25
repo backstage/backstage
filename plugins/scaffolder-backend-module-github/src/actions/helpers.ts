@@ -15,19 +15,12 @@
  */
 
 import { Config } from '@backstage/config';
-import { assertError, InputError, NotFoundError } from '@backstage/errors';
-import {
-  DefaultGithubCredentialsProvider,
-  GithubCredentialsProvider,
-  ScmIntegrationRegistry,
-} from '@backstage/integration';
-import { OctokitOptions } from '@octokit/core/dist-types/types';
+import { assertError, NotFoundError } from '@backstage/errors';
 import { Octokit } from 'octokit';
 
 import {
   getRepoSourceDirectory,
   initRepoAndPush,
-  parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 
 import Sodium from 'libsodium-wrappers';
@@ -36,73 +29,6 @@ import {
   entityRefToName,
 } from './gitHelpers';
 import { LoggerService } from '@backstage/backend-plugin-api';
-
-const DEFAULT_TIMEOUT_MS = 60_000;
-
-/**
- * Helper for generating octokit configuration options for given repoUrl.
- * If no token is provided, it will attempt to get a token from the credentials provider.
- * @public
- */
-export async function getOctokitOptions(options: {
-  integrations: ScmIntegrationRegistry;
-  credentialsProvider?: GithubCredentialsProvider;
-  token?: string;
-  repoUrl: string;
-}): Promise<OctokitOptions> {
-  const { integrations, credentialsProvider, repoUrl, token } = options;
-  const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
-
-  const requestOptions = {
-    // set timeout to 60 seconds
-    timeout: DEFAULT_TIMEOUT_MS,
-  };
-
-  if (!owner) {
-    throw new InputError(`No owner provided for repo ${repoUrl}`);
-  }
-
-  const integrationConfig = integrations.github.byHost(host)?.config;
-
-  if (!integrationConfig) {
-    throw new InputError(`No integration for host ${host}`);
-  }
-
-  // short circuit the `githubCredentialsProvider` if there is a token provided by the caller already
-  if (token) {
-    return {
-      auth: token,
-      baseUrl: integrationConfig.apiBaseUrl,
-      previews: ['nebula-preview'],
-      request: requestOptions,
-    };
-  }
-
-  const githubCredentialsProvider =
-    credentialsProvider ??
-    DefaultGithubCredentialsProvider.fromIntegrations(integrations);
-
-  // TODO(blam): Consider changing this API to take host and repo instead of repoUrl, as we end up parsing in this function
-  // and then parsing in the `getCredentials` function too the other side
-  const { token: credentialProviderToken } =
-    await githubCredentialsProvider.getCredentials({
-      url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
-        repo,
-      )}`,
-    });
-
-  if (!credentialProviderToken) {
-    throw new InputError(
-      `No token available for host: ${host}, with owner ${owner}, and repo ${repo}. Make sure GitHub auth is configured correctly. See https://backstage.io/docs/auth/github/provider for more details.`,
-    );
-  }
-
-  return {
-    auth: credentialProviderToken,
-    baseUrl: integrationConfig.apiBaseUrl,
-    previews: ['nebula-preview'],
-  };
-}
 
 export async function createGithubRepoWithCollaboratorsAndTopics(
   client: Octokit,

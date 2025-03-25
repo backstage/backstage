@@ -29,7 +29,7 @@ function createTransformer(config) {
     }
 
     // Skip transformation of .mjs files, they should only be used if ESM support is available
-    if (filePath.endsWith('.mjs')) {
+    if (jestOptions.supportsStaticESM && filePath.endsWith('.mjs')) {
       return { code: source };
     }
 

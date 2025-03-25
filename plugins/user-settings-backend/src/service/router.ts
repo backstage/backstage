@@ -14,60 +14,19 @@
  * limitations under the License.
  */
 
-import { AuthenticationError, InputError } from '@backstage/errors';
-import { IdentityApi } from '@backstage/plugin-auth-node';
+import { InputError } from '@backstage/errors';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
-import { DatabaseUserSettingsStore } from '../database/DatabaseUserSettingsStore';
 import { UserSettingsStore } from '../database/UserSettingsStore';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import { UserSettingsSignal } from '@backstage/plugin-user-settings-common';
-import {
-  DatabaseService,
-  HttpAuthService,
-} from '@backstage/backend-plugin-api';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 
-/**
- * @public
- */
-export interface RouterOptions {
-  database: DatabaseService;
-  identity: IdentityApi;
-  signals?: SignalsService;
-}
-
-/**
- * Create the user settings backend routes.
- *
- * @public
- */
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
-  const userSettingsStore = await DatabaseUserSettingsStore.create({
-    database: options.database,
-  });
-
-  return await createRouterInternal({
-    userSettingsStore,
-    identity: options.identity,
-    signals: options.signals,
-  });
-}
-
-export async function createRouterInternal(
-  options:
-    | {
-        identity: IdentityApi;
-        userSettingsStore: UserSettingsStore;
-        signals?: SignalsService;
-      }
-    | {
-        httpAuth: HttpAuthService;
-        userSettingsStore: UserSettingsStore;
-        signals?: SignalsService;
-      },
-): Promise<express.Router> {
+export async function createRouter(options: {
+  httpAuth: HttpAuthService;
+  userSettingsStore: UserSettingsStore;
+  signals: SignalsService;
+}): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
 
@@ -75,20 +34,10 @@ export async function createRouterInternal(
    * Helper method to extract the userEntityRef from the request.
    */
   const getUserEntityRef = async (req: Request): Promise<string> => {
-    if ('httpAuth' in options) {
-      const credentials = await options.httpAuth.credentials(req, {
-        allow: ['user'],
-      });
-      return credentials.principal.userEntityRef;
-    }
-
-    // throws an AuthenticationError in case the token exists but is invalid
-    const identity = await options.identity.getIdentity({ request: req });
-    if (!identity) {
-      throw new AuthenticationError(`Missing token in 'authorization' header`);
-    }
-
-    return identity.identity.userEntityRef;
+    const credentials = await options.httpAuth.credentials(req, {
+      allow: ['user'],
+    });
+    return credentials.principal.userEntityRef;
   };
 
   // get a single value

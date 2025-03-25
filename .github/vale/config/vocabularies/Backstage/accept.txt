@@ -14,6 +14,8 @@ allowlisted
 Anddddd
 Apdex
 api
+apis
+approvers
 asciidoc
 async
 Atlassian
@@ -72,6 +74,7 @@ config
 Config
 configmaps
 configs
+configurability
 conformant
 const
 cookiecutter
@@ -88,7 +91,7 @@ Datadog
 dataflow
 dayjs
 debounce
-Debounce
+debounces
 debuggability
 declaratively
 deduplicate
@@ -103,11 +106,14 @@ destructured
 destructuring
 Deutsche
 dev
+devcontainer
+devcontainers
 devops
 devs
 dequeue
 dequeueing
 dialogs
+disambiguator
 discoverability
 Discoverability
 dls
@@ -136,6 +142,7 @@ Expedia
 facto
 failover
 Fargate
+featureful
 Figma
 firehydrant
 FireHydrant
@@ -157,6 +164,7 @@ Gitiles
 gitlab
 GitLab
 globals
+globbing
 Gource
 Grafana
 graphql
@@ -189,9 +197,11 @@ Indal
 indexable
 ingestors
 inlined
+inlining
 inlinehilite
 integrator's
 interop
+interoperate
 iterable
 JaCoCo
 JavaScript
@@ -221,12 +231,14 @@ learnings
 Leasot
 lerna
 Lerna
+Levenshtein
 lightbox
 Lightsail
 limitranges
 LocalStack
 lockdown
 lockfile
+lockfiles
 lookbehind
 lowercased
 lunr
@@ -254,6 +266,7 @@ misconfiguration
 misconfigured
 mkdocs
 Mkdocs
+modularization
 monorepo
 Monorepo
 monorepos
@@ -273,6 +286,7 @@ neuro
 newrelic
 nginx
 nodegit
+nodejs
 nohoist
 nonces
 noop
@@ -325,9 +339,11 @@ PR
 pre
 prebaked
 preconfigured
+prefilled
 prepack
 Preprarer
 productional
+projectSlug
 Protobuf
 proxied
 proxying
@@ -339,7 +355,7 @@ pygments
 pymdownx
 rankdir
 readme
-Readme
+readmes
 readonly
 rebase
 rebasing
@@ -391,6 +407,7 @@ serializable
 Serverless
 shoutout
 SIG
+signoff
 SIGs
 siloed
 Sinon
@@ -425,6 +442,7 @@ subheaders
 subkey
 subpath
 subroutes
+substring
 subtree
 superfences
 Superfences
@@ -477,6 +495,7 @@ unregister
 unregistering
 unregistration
 unstarred
+untemplated
 untracked
 upsert
 upstreams
@@ -514,3 +533,4 @@ zoomable
 zsh
 scrollable
 severities
+intellij

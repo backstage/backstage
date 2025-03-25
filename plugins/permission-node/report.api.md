@@ -29,7 +29,6 @@ import { PermissionsServiceRequestOptions } from '@backstage/backend-plugin-api'
 import { PolicyDecision } from '@backstage/plugin-permission-common';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
-import { TokenManager } from '@backstage/backend-common';
 import { z } from 'zod';
 
 // @public
@@ -78,12 +77,33 @@ export type ConditionTransformer<TQuery> = (
 ) => PermissionCriteria<TQuery>;
 
 // @public
-export const createConditionAuthorizer: <TResource, TQuery>(
+export function createConditionAuthorizer<TResource>(
+  permissionRuleset: PermissionRuleset<TResource>,
+): (decision: PolicyDecision, resource: TResource | undefined) => boolean;
+
+// @public @deprecated (undocumented)
+export function createConditionAuthorizer<TResource, TQuery>(
   rules: PermissionRule<TResource, TQuery, string>[],
-) => (decision: PolicyDecision, resource: TResource | undefined) => boolean;
+): (decision: PolicyDecision, resource: TResource | undefined) => boolean;
 
 // @public
-export const createConditionExports: <
+export function createConditionExports<
+  TResourceType extends string,
+  TResource,
+  TRules extends Record<string, PermissionRule<TResource, any, TResourceType>>,
+>(options: {
+  resourceRef: PermissionResourceRef<TResource, any, TResourceType>;
+  rules: TRules;
+}): {
+  conditions: Conditions<TRules>;
+  createConditionalDecision: (
+    permission: ResourcePermission<TResourceType>,
+    conditions: PermissionCriteria<PermissionCondition<TResourceType>>,
+  ) => ConditionalPolicyDecision;
+};
+
+// @public @deprecated (undocumented)
+export function createConditionExports<
   TResourceType extends string,
   TResource,
   TRules extends Record<string, PermissionRule<TResource, any, TResourceType>>,
@@ -91,7 +111,7 @@ export const createConditionExports: <
   pluginId: string;
   resourceType: TResourceType;
   rules: TRules;
-}) => {
+}): {
   conditions: Conditions<TRules>;
   createConditionalDecision: (
     permission: ResourcePermission<TResourceType>,
@@ -108,14 +128,17 @@ export const createConditionFactory: <
 ) => (params: TParams) => PermissionCondition<TResourceType, TParams>;
 
 // @public
-export const createConditionTransformer: <
+export function createConditionTransformer<TQuery>(
+  permissionRuleset: PermissionRuleset<any, TQuery>,
+): ConditionTransformer<TQuery>;
+
+// @public @deprecated (undocumented)
+export function createConditionTransformer<
   TQuery,
   TRules extends PermissionRule<any, TQuery, string>[],
->(
-  permissionRules: [...TRules],
-) => ConditionTransformer<TQuery>;
+>(permissionRules: [...TRules]): ConditionTransformer<TQuery>;
 
-// @public
+// @public @deprecated
 export function createPermissionIntegrationRouter<
   TResourceType1 extends string,
   TResource1,
@@ -149,9 +172,12 @@ export function createPermissionIntegrationRouter<
       TResource
     >,
   ): void;
+  getPermissionRuleset<TResource, TQuery, TResourceType extends string>(
+    resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
+  ): PermissionRuleset<TResource, TQuery, TResourceType>;
 };
 
-// @public
+// @public @deprecated
 export type CreatePermissionIntegrationRouterResourceOptions<
   TResourceType extends string,
   TResource,
@@ -164,15 +190,51 @@ export type CreatePermissionIntegrationRouterResourceOptions<
   ) => Promise<Array<TResource | undefined>>;
 };
 
+// @public (undocumented)
+export function createPermissionResourceRef<TResource, TQuery>(): {
+  with<TPluginId extends string, TResourceType extends string>(options: {
+    pluginId: TPluginId;
+    resourceType: TResourceType;
+  }): PermissionResourceRef<TResource, TQuery, TResourceType, TPluginId>;
+};
+
 // @public
-export const createPermissionRule: <
+export function createPermissionRule<
+  TRef extends PermissionResourceRef,
+  TParams extends PermissionRuleParams = undefined,
+>(
+  rule: CreatePermissionRuleOptions<TRef, TParams>,
+): PermissionRule<
+  TRef['TResource'],
+  TRef['TQuery'],
+  TRef['resourceType'],
+  TParams
+>;
+
+// @public @deprecated
+export function createPermissionRule<
   TResource,
   TQuery,
   TResourceType extends string,
   TParams extends PermissionRuleParams = undefined,
 >(
   rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
-) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
+): PermissionRule<TResource, TQuery, TResourceType, TParams>;
+
+// @public (undocumented)
+export type CreatePermissionRuleOptions<
+  TRef extends PermissionResourceRef,
+  TParams extends PermissionRuleParams,
+> = TRef extends PermissionResourceRef<infer IResource, infer IQuery, any>
+  ? {
+      name: string;
+      description: string;
+      resourceRef: TRef;
+      paramsSchema?: z.ZodSchema<TParams>;
+      apply(resource: IResource, params: NoInfer_2<TParams>): boolean;
+      toQuery(params: NoInfer_2<TParams>): PermissionCriteria<IQuery>;
+    }
+  : never;
 
 // @public
 export const isAndCriteria: <T>(
@@ -189,7 +251,7 @@ export const isOrCriteria: <T>(
   criteria: PermissionCriteria<T>,
 ) => criteria is AnyOfCriteria<T>;
 
-// @public
+// @public @deprecated
 export const makeCreatePermissionRule: <
   TResource,
   TQuery,
@@ -204,7 +266,7 @@ export type MetadataResponse = MetadataResponse_2;
 // @public @deprecated
 export type MetadataResponseSerializedRule = MetadataResponseSerializedRule_2;
 
-// @public
+// @public @deprecated
 export type PermissionIntegrationRouterOptions<
   TResourceType1 extends string = string,
   TResource1 = any,
@@ -253,6 +315,20 @@ export interface PermissionPolicy {
   handle(request: PolicyQuery, user?: PolicyQueryUser): Promise<PolicyDecision>;
 }
 
+// @public (undocumented)
+export type PermissionResourceRef<
+  TResource = unknown,
+  TQuery = unknown,
+  TResourceType extends string = string,
+  TPluginId extends string = string,
+> = {
+  readonly $$type: '@backstage/PermissionResourceRef';
+  readonly pluginId: TPluginId;
+  readonly resourceType: TResourceType;
+  readonly TQuery: TQuery;
+  readonly TResource: TResource;
+};
+
 // @public
 export type PermissionRule<
   TResource,
@@ -266,6 +342,15 @@ export type PermissionRule<
   paramsSchema?: z.ZodSchema<TParams>;
   apply(resource: TResource, params: NoInfer_2<TParams>): boolean;
   toQuery(params: NoInfer_2<TParams>): PermissionCriteria<TQuery>;
+};
+
+// @public
+export type PermissionRuleset<
+  TResource = unknown,
+  TQuery = unknown,
+  TResourceType extends string = string,
+> = {
+  getRuleByName(name: string): PermissionRule<TResource, TQuery, TResourceType>;
 };
 
 // @public
@@ -299,8 +384,7 @@ export class ServerPermissionClient implements PermissionsService {
     config: Config,
     options: {
       discovery: DiscoveryService;
-      tokenManager?: TokenManager;
-      auth?: AuthService;
+      auth: AuthService;
     },
   ): ServerPermissionClient;
 }

@@ -42,6 +42,8 @@ auth:
       development:
         clientId: ${AUTH_GOOGLE_CLIENT_ID}
         clientSecret: ${AUTH_GOOGLE_CLIENT_SECRET}
+        ## uncomment to set lifespan of user session
+        # sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
         signIn:
           resolvers:
             # See https://backstage.io/docs/auth/google/provider#resolvers for more resolvers
@@ -53,6 +55,10 @@ The Google provider is a structure with two configuration keys:
 - `clientId`: The client ID that you generated, e.g.
   `10023341500512-beui241gjwwkrdkr2eh7dprewj2pp1q.apps.googleusercontent.com`
 - `clientSecret`: The client secret tied to the generated client ID.
+
+### Optional
+
+- `sessionDuration`: Lifespan of the user session.
 
 ### Resolvers
 

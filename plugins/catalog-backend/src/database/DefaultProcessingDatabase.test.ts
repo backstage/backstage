@@ -784,7 +784,7 @@ describe('DefaultProcessingDatabase', () => {
         });
 
         const result1 = await db.transaction(async tx =>
-          db.listParents(tx, { entityRef: 'component:default/foobar' }),
+          db.listParents(tx, { entityRefs: ['component:default/foobar'] }),
         );
         expect(result1.entityRefs).toEqual([
           'location:default/root-1',
@@ -792,12 +792,12 @@ describe('DefaultProcessingDatabase', () => {
         ]);
 
         const result2 = await db.transaction(async tx =>
-          db.listParents(tx, { entityRef: 'location:default/root-1' }),
+          db.listParents(tx, { entityRefs: ['location:default/root-1'] }),
         );
         expect(result2.entityRefs).toEqual(['location:default/root-2']);
 
         const result3 = await db.transaction(async tx =>
-          db.listParents(tx, { entityRef: 'location:default/root-2' }),
+          db.listParents(tx, { entityRefs: ['location:default/root-2'] }),
         );
         expect(result3.entityRefs).toEqual([]);
       },

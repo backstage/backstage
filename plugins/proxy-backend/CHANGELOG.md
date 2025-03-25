@@ -1,5 +1,73 @@
 # @backstage/plugin-proxy-backend
 
+## 0.6.0
+
+### Minor Changes
+
+- 2d8b0e4: **BREAKING**: Removed support for the old backend system.
+
+  As part of this change the plugin export from `/alpha` as been removed. If you are currently importing `@backstage/plugin-proxy-backend/alpha`, please update your import to `@backstage/plugin-proxy-backend`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-proxy-node@0.1.2
+
+## 0.6.0-next.1
+
+### Minor Changes
+
+- 2d8b0e4: **BREAKING**: Removed support for the old backend system.
+
+  As part of this change the plugin export from `/alpha` as been removed. If you are currently importing `@backstage/plugin-proxy-backend/alpha`, please update your import to `@backstage/plugin-proxy-backend`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-proxy-node@0.1.2-next.1
+
+## 0.5.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-proxy-node@0.1.2-next.0
+
+## 0.5.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-proxy-node@0.1.1
+
+## 0.5.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/plugin-proxy-node@0.1.1-next.2
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+
+## 0.5.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-proxy-node@0.1.1-next.1
+
 ## 0.5.11-next.0
 
 ### Patch Changes

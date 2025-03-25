@@ -420,4 +420,152 @@ describe.skip('GerritUrlReader', () => {
       expect(response.etag).toBe(sha);
     });
   });
+
+  describe('search', () => {
+    const responseBuffer = Buffer.from('Apache License');
+    const branchAPIUrl =
+      'https://gerrit.com/projects/app%2Fweb/branches/master';
+    const branchAPIresponse = fs.readFileSync(
+      path.resolve(__dirname, '__fixtures__/gerrit/branch-info-response.txt'),
+    );
+    const searchUrl =
+      'https://gerrit.com/gitiles/app/web/+/refs/heads/master/**/catalog-info.yaml';
+    const etag = '52432507a70b677b5674b019c9a46b2e9f29d0a1';
+    const treeRecursiveResponse = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        '__fixtures__/gerrit/tree-recursive-response.txt',
+      ),
+    );
+
+    beforeEach(async () => {
+      worker.use(
+        rest.get(
+          'https://gerrit.com/projects/app%2Fweb/branches/master/files/catalog-info.yaml/content',
+          (_, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.body(Buffer.from('Backstage manifest').toString('base64')),
+            );
+          },
+        ),
+      );
+      worker.use(
+        rest.get(
+          'https://gerrit.com/gitiles/app/web/\\+/refs/heads/master/',
+          (req, res, ctx) => {
+            if (
+              req.url.searchParams.has('format', 'JSON') &&
+              req.url.searchParams.has('recursive')
+            ) {
+              return res(
+                ctx.status(200),
+                ctx.set('Content-Type', 'application/json'),
+                ctx.set('content-disposition', 'attachment'),
+                ctx.body(treeRecursiveResponse),
+              );
+            }
+
+            return res(ctx.status(404));
+          },
+        ),
+      );
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return a single file when given an exact URL', async () => {
+      worker.use(
+        rest.get(
+          'https://gerrit.com/projects/web%2Fproject/branches/master/files/LICENSE/content',
+          (_, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.body(responseBuffer.toString('base64')),
+            );
+          },
+        ),
+      );
+
+      const data = await gerritProcessor.search(
+        'https://gerrit.com/web/project/+/refs/heads/master/LICENSE',
+      );
+      expect(data.etag).toBe('');
+      expect(data.files.length).toBe(1);
+      expect(data.files[0].url).toBe(
+        'https://gerrit.com/web/project/+/refs/heads/master/LICENSE',
+      );
+      expect((await data.files[0].content()).toString()).toEqual(
+        'Apache License',
+      );
+    });
+
+    it('should return empty list of files for not found files.', async () => {
+      worker.use(
+        rest.get(
+          'https://gerrit.com/projects/web%2Fproject/branches/master/files/LICENSE/content',
+          (_, res, ctx) => {
+            return res(ctx.status(404, 'File not found.'));
+          },
+        ),
+      );
+
+      const data = await gerritProcessor.search(
+        'https://gerrit.com/web/project/+/refs/heads/master/LICENSE',
+      );
+      expect(data.etag).toBe('');
+      expect(data.files.length).toBe(0);
+    });
+
+    it('reads the wanted files correctly using gitiles.', async () => {
+      worker.use(
+        rest.get(branchAPIUrl, (_, res, ctx) => {
+          return res(ctx.status(200), ctx.body(branchAPIresponse));
+        }),
+      );
+
+      const response = await gerritProcessor.search(searchUrl);
+
+      expect(response.etag).toBe(etag);
+
+      expect(response.files.length).toBe(3);
+
+      expect(response.files[0].url).toEqual(
+        'https://gerrit.com/gitiles/app/web/+/refs/heads/master/catalog-info.yaml',
+      );
+      expect(response.files[1].url).toEqual(
+        'https://gerrit.com/gitiles/app/web/+/refs/heads/master/microservices/petstore-api/catalog-info.yaml',
+      );
+      expect(response.files[2].url).toEqual(
+        'https://gerrit.com/gitiles/app/web/+/refs/heads/master/microservices/petstore-consumer/catalog-info.yaml',
+      );
+
+      const docsYaml = await response.files[0].content();
+      expect(docsYaml.toString()).toBe('Backstage manifest');
+    });
+
+    it('throws NotModifiedError for matching etags.', async () => {
+      worker.use(
+        rest.get(branchAPIUrl, (_, res, ctx) => {
+          return res(ctx.status(200), ctx.body(branchAPIresponse));
+        }),
+      );
+
+      await expect(gerritProcessor.search(searchUrl, { etag })).rejects.toThrow(
+        NotModifiedError,
+      );
+    });
+
+    it('should throw on failures while getting branch info.', async () => {
+      worker.use(
+        rest.get(branchAPIUrl, (_, res, ctx) => {
+          return res(ctx.status(500, 'Error'));
+        }),
+      );
+
+      await expect(gerritProcessor.search(searchUrl)).rejects.toThrow(Error);
+    });
+  });
 });

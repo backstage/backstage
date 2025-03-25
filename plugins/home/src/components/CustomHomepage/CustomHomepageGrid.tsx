@@ -349,7 +349,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
         compactType={props.compactType}
         style={props.style}
         allowOverlap={props.allowOverlap}
-        preventCollision={props.preventCollision}
+        preventCollision={props.preventCollision ?? true}
         draggableCancel=".overlayGridItem,.widgetSettingsDialog,.disabled"
         containerPadding={props.containerPadding}
         margin={props.containerMargin}

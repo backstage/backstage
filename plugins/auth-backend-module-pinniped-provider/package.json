@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-pinniped-provider",
-  "version": "0.2.5-next.0",
+  "version": "0.3.1",
   "description": "The pinniped-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -36,6 +36,7 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/types": "workspace:^",
     "luxon": "^3.4.3",
     "openid-client": "^5.4.3"
   },

@@ -1,5 +1,135 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0-next.0
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-node@0.1.18
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.3.0
+
+### Minor Changes
+
+- e202017: **BREAKING**: Removed support for the old backend system.
+
+  As part of this change the plugin export from `/alpha` as been removed. If you are currently importing `@backstage/plugin-user-settings-backend/alpha`, please update your import to `@backstage/plugin-user-settings-backend`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.2
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-node@0.1.18
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.3.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.2-next.2
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.6.1-next.1
+  - @backstage/plugin-signals-node@0.1.18-next.2
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.3.0-next.1
+
+### Minor Changes
+
+- e202017: **BREAKING**: Removed support for the old backend system.
+
+  As part of this change the plugin export from `/alpha` as been removed. If you are currently importing `@backstage/plugin-user-settings-backend/alpha`, please update your import to `@backstage/plugin-user-settings-backend`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1-next.1
+  - @backstage/backend-defaults@0.8.2-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-node@0.1.18-next.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.2.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.2-next.0
+  - @backstage/plugin-auth-node@0.6.1-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-signals-node@0.1.18-next.0
+
+## 0.2.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.0
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-auth-node@0.6.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-node@0.1.17
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.2.30-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.0-next.3
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/plugin-auth-node@0.6.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-node@0.1.17-next.2
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.2.30-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/plugin-auth-node@0.6.0-next.1
+  - @backstage/backend-defaults@0.8.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-node@0.1.17-next.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.2.30-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.0-next.1
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-signals-node@0.1.17-next.0
+  - @backstage/plugin-user-settings-common@0.0.1
+
 ## 0.2.30-next.0
 
 ### Patch Changes

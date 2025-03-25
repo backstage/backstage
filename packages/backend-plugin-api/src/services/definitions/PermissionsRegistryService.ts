@@ -15,7 +15,11 @@
  */
 
 import { Permission } from '@backstage/plugin-permission-common';
-import { PermissionRule } from '@backstage/plugin-permission-node';
+import {
+  PermissionResourceRef,
+  PermissionRule,
+  PermissionRuleset,
+} from '@backstage/plugin-permission-node';
 
 /**
  * Prevent use of type parameter from contributing to type inference.
@@ -33,11 +37,12 @@ type NoInfer<T> = T extends infer S ? S : never;
 export type PermissionsRegistryServiceAddResourceTypeOptions<
   TResourceType extends string,
   TResource,
+  TQuery,
 > = {
   /**
-   * The identifier for the resource type.
+   * The {@link @backstage/plugin-permission-node#PermissionResourceRef} that identifies the resource type.
    */
-  resourceType: TResourceType;
+  resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>;
 
   /**
    * Permissions that are available for this resource type.
@@ -47,7 +52,11 @@ export type PermissionsRegistryServiceAddResourceTypeOptions<
   /**
    * Permission rules that are available for this resource type.
    */
-  rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
+  rules: PermissionRule<
+    NoInfer<TResource>,
+    NoInfer<TQuery>,
+    NoInfer<TResourceType>
+  >[];
 
   /**
    * The function used to load associated resources based in the provided
@@ -59,7 +68,9 @@ export type PermissionsRegistryServiceAddResourceTypeOptions<
    * resolve conditional decisions except when requesting resources directly
    * from the plugin.
    */
-  getResources?(resourceRefs: string[]): Promise<Array<TResource | undefined>>;
+  getResources?(
+    resourceRefs: string[],
+  ): Promise<Array<NoInfer<TResource> | undefined>>;
 };
 
 /**
@@ -122,10 +133,22 @@ export interface PermissionsRegistryService {
    * called by the `permission-backend` when authorization conditions relating
    * to this plugin need to be evaluated.
    */
-  addResourceType<const TResourceType extends string, TResource>(
+  addResourceType<const TResourceType extends string, TResource, TQuery>(
     options: PermissionsRegistryServiceAddResourceTypeOptions<
       TResourceType,
-      TResource
+      TResource,
+      TQuery
     >,
   ): void;
+
+  /**
+   * Returns the set of registered rules for this resource.
+   *
+   * @remarks
+   *
+   * Primarily intended for use with {@link @backstage/plugin-permission-node#createConditionAuthorizer} and {@link @backstage/plugin-permission-node#createConditionTransformer}.
+   */
+  getPermissionRuleset<TResourceType extends string, TResource, TQuery>(
+    resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
+  ): PermissionRuleset<TResource, TQuery, TResourceType>;
 }

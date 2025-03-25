@@ -92,6 +92,19 @@ describe('API integration tests', () => {
         });
       },
     });
+  const startPermissionDeniedTestServer = async () => {
+    permissionsMock.authorize.mockResolvedValue([
+      { result: AuthorizeResult.DENY },
+    ]);
+    const { server } = await startTestBackend({
+      features: [
+        minimalValidConfigService,
+        permissionsMock.factory,
+        import('@backstage/plugin-kubernetes-backend'),
+      ],
+    });
+    return server;
+  };
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -305,6 +318,12 @@ describe('API integration tests', () => {
         items: [expect.objectContaining({ title: 'cluster-title' })],
       });
     });
+
+    it('returns 403 response when permission blocks endpoint', async () => {
+      app = await startPermissionDeniedTestServer();
+      const response = await request(app).get('/api/kubernetes/clusters');
+      expect(response.status).toEqual(403);
+    });
   });
 
   describe('post /services/:serviceId', () => {
@@ -504,6 +523,14 @@ describe('API integration tests', () => {
         }),
       );
     });
+
+    it('returns 403 response when permission blocks endpoint', async () => {
+      app = await startPermissionDeniedTestServer();
+      const response = await request(app).post(
+        '/api/kubernetes/services/test-service',
+      );
+      expect(response.status).toEqual(403);
+    });
   });
 
   describe('/proxy', () => {
@@ -571,18 +598,7 @@ metadata:
     });
 
     it('returns 403 response when permission blocks endpoint', async () => {
-      permissionsMock.authorize.mockResolvedValue([
-        { result: AuthorizeResult.DENY },
-      ]);
-
-      const { server } = await startTestBackend({
-        features: [
-          minimalValidConfigService,
-          permissionsMock.factory,
-          import('@backstage/plugin-kubernetes-backend'),
-        ],
-      });
-      app = server;
+      app = await startPermissionDeniedTestServer();
 
       const proxyEndpointRequest = request(app)
         .post('/api/kubernetes/proxy/api/v1/namespaces')
@@ -779,6 +795,8 @@ metadata:
     expect(response.body).toMatchObject({
       permissions: [
         { type: 'basic', name: 'kubernetes.proxy', attributes: {} },
+        { type: 'basic', name: 'kubernetes.resources.read', attributes: {} },
+        { type: 'basic', name: 'kubernetes.clusters.read', attributes: {} },
       ],
       rules: [],
     });

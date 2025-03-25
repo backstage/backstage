@@ -1,5 +1,45 @@
 # @backstage/config-loader
 
+## 1.10.0
+
+### Minor Changes
+
+- 2fd73aa: The include transforms applied during config loading will now only apply to the known keys `$file`, `$env`, and `$include`. Any other key that begins with a `# @backstage/config-loader will now be passed through as is.
+
+### Patch Changes
+
+- f422984: Added `@types/minimist` to `devDependencies`
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.10.0-next.0
+
+### Minor Changes
+
+- 2fd73aa: The include transforms applied during config loading will now only apply to the known keys `$file`, `$env`, and `$include`. Any other key that begins with a `# @backstage/config-loader will now be passed through as is.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.9.6
+
+### Patch Changes
+
+- f866b86: Internal refactor to use explicit `require` for lazy-loading dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 1.9.6-next.0
 
 ### Patch Changes

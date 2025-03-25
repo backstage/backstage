@@ -15,7 +15,7 @@
  */
 
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
-import { wrapServer } from '@backstage/backend-openapi-utils';
+import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import type { Location } from '@backstage/catalog-client';
 import {

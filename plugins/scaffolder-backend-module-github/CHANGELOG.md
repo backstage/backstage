@@ -1,5 +1,162 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.6.2-next.0
+
+### Patch Changes
+
+- 1af427a: Made "github:autolinks:create" action idempotent
+- 180ea6e: Made "github:branch-protection:create" action idempotent
+- 0be1a1e: Made "publish:github" action idempotent
+- a833f0f: Made "github:actions:dispatch" action idempotent
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.2
+  - @backstage/types@1.2.1
+
+## 0.6.1
+
+### Patch Changes
+
+- 11bc3e6: Made "github:pages:enable" action idempotent
+- 3f45e0f: Made "github:environment:create" action idempotent
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- 8c38687: Made "github:issues:label" action idempotent
+- 89948b2: Made "github:repo:push" action idempotent
+- 9391f58: Pass `undefined` to some parameters for `createOrUpdateEnvironment` as these values are not always supported in different plans of GitHub
+- 8182a59: Made "github:webhook" action idempotent
+- 8f9c54c: Made "github:repo:create" action idempotent
+- 0ae0c77: Made "publish:github:pull-request" action idempotent
+- Updated dependencies
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-scaffolder-node@0.8.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.6.1-next.2
+
+### Patch Changes
+
+- 9391f58: Pass `undefined` to some parameters for `createOrUpdateEnvironment` as these values are not always supported in different plans of GitHub
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.0-next.2
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.6.1-next.1
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.7.1-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-scaffolder-node@0.7.1-next.0
+
+## 0.6.0
+
+### Minor Changes
+
+- bb8302b: **BREAKING**: The `remoteUrl` output is no longer required, it can be empty only when using the new `createWhenEmpty` boolean flag.
+
+### Patch Changes
+
+- 5c187f9: **DEPRECATION**: The `getOctokitOptions` function signature with `repoUrl` option has been deprecated in favour of a function signature with individual `host`, `owner`, and `repo` parameters:
+
+  ```diff
+    const octokitOptions = await getOctokitOptions({
+      integrations,
+      credentialsProvider,
+      token,
+  -   repoUrl,
+  +   host,
+  +   owner,
+  +   repo,
+    });
+  ```
+
+- b98d511: clean up github action schemas
+- 5d469c9: Added support for autocompletion of GitHub branches in scaffolder
+- 8e67e4a: Added support for autocompletion to GithubRepoPicker component
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-scaffolder-node@0.7.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.6.0-next.2
+
+### Minor Changes
+
+- bb8302b: **BREAKING**: The `remoteUrl` output is no longer required, it can be empty only when using the new `createWhenEmpty` boolean flag.
+
+### Patch Changes
+
+- 5c187f9: **DEPRECATION**: The `getOctokitOptions` function signature with `repoUrl` option has been deprecated in favour of a function signature with individual `host`, `owner`, and `repo` parameters:
+
+  ```diff
+    const octokitOptions = await getOctokitOptions({
+      integrations,
+      credentialsProvider,
+      token,
+  -   repoUrl,
+  +   host,
+  +   owner,
+  +   repo,
+    });
+  ```
+
+- 5d469c9: Added support for autocompletion of GitHub branches in scaffolder
+- 8e67e4a: Added support for autocompletion to GithubRepoPicker component
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.7.0-next.2
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.5.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-scaffolder-node@0.7.0-next.1
+
 ## 0.5.6-next.0
 
 ### Patch Changes

@@ -1,0 +1,302 @@
+.cu-align-start {
+  align-items: start;
+}
+
+.cu-align-center {
+  align-items: center;
+}
+
+.cu-align-end {
+  align-items: end;
+}
+
+.cu-align-stretch {
+  align-items: stretch;
+}
+
+.cu-jc-start {
+  justify-content: start;
+}
+
+.cu-jc-center {
+  justify-content: center;
+}
+
+.cu-jc-end {
+  justify-content: end;
+}
+
+.cu-jc-between {
+  justify-content: space-between;
+}
+
+.cu-fd-row {
+  flex-direction: row;
+}
+
+.cu-fd-column {
+  flex-direction: column;
+}
+
+.cu-fd-row-reverse {
+  flex-direction: row-reverse;
+}
+
+.cu-fd-column-reverse {
+  flex-direction: column-reverse;
+}
+
+/* Breakpoint xs */
+@media (min-width: 640px) {
+  .xs\:cu-align-start {
+    align-items: start;
+  }
+
+  .xs\:cu-align-center {
+    align-items: center;
+  }
+
+  .xs\:cu-align-end {
+    align-items: end;
+  }
+
+  .xs\:cu-align-stretch {
+    align-items: stretch;
+  }
+
+  .xs\:cu-jc-start {
+    justify-content: start;
+  }
+
+  .xs\:cu-jc-center {
+    justify-content: center;
+  }
+
+  .xs\:cu-jc-end {
+    justify-content: end;
+  }
+
+  .xs\:cu-jc-between {
+    justify-content: space-between;
+  }
+
+  .xs\:cu-fd-row {
+    flex-direction: row;
+  }
+
+  .xs\:cu-fd-column {
+    flex-direction: column;
+  }
+
+  .xs\:cu-fd-row-reverse {
+    flex-direction: row-reverse;
+  }
+
+  .xs\:cu-fd-column-reverse {
+    flex-direction: column-reverse;
+  }
+}
+
+/* Breakpoint sm */
+@media (min-width: 768px) {
+  .sm\:cu-align-start {
+    align-items: start;
+  }
+
+  .sm\:cu-align-center {
+    align-items: center;
+  }
+
+  .sm\:cu-align-end {
+    align-items: end;
+  }
+
+  .sm\:cu-align-stretch {
+    align-items: stretch;
+  }
+
+  .sm\:cu-jc-start {
+    justify-content: start;
+  }
+
+  .sm\:cu-jc-center {
+    justify-content: center;
+  }
+
+  .sm\:cu-jc-end {
+    justify-content: end;
+  }
+
+  .sm\:cu-jc-between {
+    justify-content: space-between;
+  }
+
+  .sm\:cu-fd-row {
+    flex-direction: row;
+  }
+
+  .sm\:cu-fd-column {
+    flex-direction: column;
+  }
+
+  .sm\:cu-fd-row-reverse {
+    flex-direction: row-reverse;
+  }
+
+  .sm\:cu-fd-column-reverse {
+    flex-direction: column-reverse;
+  }
+}
+
+/* Breakpoint md */
+@media (min-width: 1024px) {
+  .md\:cu-align-start {
+    align-items: start;
+  }
+
+  .md\:cu-align-center {
+    align-items: center;
+  }
+
+  .md\:cu-align-end {
+    align-items: end;
+  }
+
+  .md\:cu-align-stretch {
+    align-items: stretch;
+  }
+
+  .md\:cu-jc-start {
+    justify-content: start;
+  }
+
+  .md\:cu-jc-center {
+    justify-content: center;
+  }
+
+  .md\:cu-jc-end {
+    justify-content: end;
+  }
+
+  .md\:cu-jc-between {
+    justify-content: space-between;
+  }
+
+  .md\:cu-fd-row {
+    flex-direction: row;
+  }
+
+  .md\:cu-fd-column {
+    flex-direction: column;
+  }
+
+  .md\:cu-fd-row-reverse {
+    flex-direction: row-reverse;
+  }
+
+  .md\:cu-fd-column-reverse {
+    flex-direction: column-reverse;
+  }
+}
+
+/* Breakpoint lg */
+@media (min-width: 1280px) {
+  .lg\:cu-align-start {
+    align-items: start;
+  }
+
+  .lg\:cu-align-center {
+    align-items: center;
+  }
+
+  .lg\:cu-align-end {
+    align-items: end;
+  }
+
+  .lg\:cu-align-stretch {
+    align-items: stretch;
+  }
+
+  .lg\:cu-jc-start {
+    justify-content: start;
+  }
+
+  .lg\:cu-jc-center {
+    justify-content: center;
+  }
+
+  .lg\:cu-jc-end {
+    justify-content: end;
+  }
+
+  .lg\:cu-jc-between {
+    justify-content: space-between;
+  }
+
+  .lg\:cu-fd-row {
+    flex-direction: row;
+  }
+
+  .lg\:cu-fd-column {
+    flex-direction: column;
+  }
+
+  .lg\:cu-fd-row-reverse {
+    flex-direction: row-reverse;
+  }
+
+  .lg\:cu-fd-column-reverse {
+    flex-direction: column-reverse;
+  }
+}
+
+/* Breakpoint xl */
+@media (min-width: 1536px) {
+  .xl\:cu-align-start {
+    align-items: start;
+  }
+
+  .xl\:cu-align-center {
+    align-items: center;
+  }
+
+  .xl\:cu-align-end {
+    align-items: end;
+  }
+
+  .xl\:cu-align-stretch {
+    align-items: stretch;
+  }
+
+  .xl\:cu-jc-start {
+    justify-content: start;
+  }
+
+  .xl\:cu-jc-center {
+    justify-content: center;
+  }
+
+  .xl\:cu-jc-end {
+    justify-content: end;
+  }
+
+  .xl\:cu-jc-between {
+    justify-content: space-between;
+  }
+
+  .xl\:cu-fd-row {
+    flex-direction: row;
+  }
+
+  .xl\:cu-fd-column {
+    flex-direction: column;
+  }
+
+  .xl\:cu-fd-row-reverse {
+    flex-direction: row-reverse;
+  }
+
+  .xl\:cu-fd-column-reverse {
+    flex-direction: column-reverse;
+  }
+}

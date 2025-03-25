@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-permission-node",
-  "version": "0.8.8-next.0",
+  "version": "0.9.0",
   "description": "Common permission and authorization utilities for backend plugins",
   "backstage": {
     "role": "node-library",
@@ -56,7 +56,6 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",

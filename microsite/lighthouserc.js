@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const sidebars = require('./sidebars');
+const { releases } = require('./releases');
 
 module.exports = {
   ci: {
@@ -39,9 +39,7 @@ module.exports = {
         /** Community */
         'http://localhost:3000/community',
         /** Releases */
-        ...sidebars.releases['Release Notes'].map(
-          path => `http://localhost:3000/docs/${path}`,
-        ),
+        ...releases.map(path => `http://localhost:3000/docs/releases/${path}`),
       ],
       settings: {
         onlyCategories: ['accessibility'],

@@ -151,19 +151,24 @@ export const createGitlabRepoPushAction = (options: {
         execute_filemode: file.executable,
       }));
 
-      let branchExists = false;
-      try {
-        await api.Branches.show(repoID, branchName);
-        branchExists = true;
-      } catch (e: any) {
-        if (e.response?.statusCode !== 404) {
-          throw new InputError(
-            `Failed to check status of branch '${branchName}'. Please make sure that branch already exists or Backstage has permissions to create one. ${getErrorMessage(
-              e,
-            )}`,
-          );
-        }
-      }
+      const branchExists = await ctx.checkpoint({
+        key: `branch.exists.${repoID}.${branchName}`,
+        fn: async () => {
+          try {
+            await api.Branches.show(repoID, branchName);
+            return true;
+          } catch (e: any) {
+            if (e.cause?.response?.status !== 404) {
+              throw new InputError(
+                `Failed to check status of branch '${branchName}'. Please make sure that branch already exists or Backstage has permissions to create one. ${getErrorMessage(
+                  e,
+                )}`,
+              );
+            }
+          }
+          return false;
+        },
+      });
 
       if (!branchExists) {
         // create a branch using the default branch as ref
@@ -181,15 +186,22 @@ export const createGitlabRepoPushAction = (options: {
       }
 
       try {
-        const commit = await api.Commits.create(
-          repoID,
-          branchName,
-          ctx.input.commitMessage,
-          actions,
-        );
+        const commitId = await ctx.checkpoint({
+          key: `commit.create.${repoID}.${branchName}`,
+          fn: async () => {
+            const commit = await api.Commits.create(
+              repoID,
+              branchName,
+              ctx.input.commitMessage,
+              actions,
+            );
+            return commit.id;
+          },
+        });
+
         ctx.output('projectid', repoID);
         ctx.output('projectPath', repoID);
-        ctx.output('commitHash', commit.id);
+        ctx.output('commitHash', commitId);
       } catch (e) {
         throw new InputError(
           `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${getErrorMessage(

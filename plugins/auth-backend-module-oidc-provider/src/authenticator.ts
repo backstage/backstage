@@ -32,14 +32,18 @@ import {
   PassportOAuthAuthenticatorHelper,
   PassportOAuthPrivateInfo,
 } from '@backstage/plugin-auth-node';
+import { durationToMilliseconds } from '@backstage/types';
+import { readDurationFromConfig } from '@backstage/config';
 
 const HTTP_OPTION_TIMEOUT = 10000;
-const httpOptionsProvider: CustomHttpOptionsProvider = (_url, options) => {
-  return {
-    ...options,
-    timeout: HTTP_OPTION_TIMEOUT,
+const createHttpOptionsProvider =
+  ({ timeout }: { timeout?: number }): CustomHttpOptionsProvider =>
+  (_url, options) => {
+    return {
+      ...options,
+      timeout: timeout ?? HTTP_OPTION_TIMEOUT,
+    };
   };
-};
 
 /**
  * authentication result for the OIDC which includes the token set and user
@@ -84,6 +88,15 @@ export const oidcAuthenticator = createOAuthAuthenticator({
         'The oidc provider no longer supports the "scope" configuration option. Please use the "additionalScopes" option instead.',
       );
     }
+
+    const timeoutMilliseconds = config.has('timeout')
+      ? durationToMilliseconds(
+          readDurationFromConfig(config, { key: 'timeout' }),
+        )
+      : undefined;
+    const httpOptionsProvider = createHttpOptionsProvider({
+      timeout: timeoutMilliseconds,
+    });
 
     Issuer[custom.http_options] = httpOptionsProvider;
     const promise = Issuer.discover(metadataUrl).then(issuer => {
@@ -135,7 +148,7 @@ export const oidcAuthenticator = createOAuthAuthenticator({
 
   async start(input, ctx) {
     const { initializedPrompt, promise } = ctx;
-    const { helper, strategy } = await promise;
+    const { helper } = await promise;
     const options: Record<string, string> = {
       scope: input.scope,
       state: input.state,
@@ -146,14 +159,8 @@ export const oidcAuthenticator = createOAuthAuthenticator({
       options.prompt = prompt;
     }
 
-    return new Promise((resolve, reject) => {
-      strategy.error = reject;
-
-      return helper
-        .start(input, {
-          ...options,
-        })
-        .then(resolve);
+    return helper.start(input, {
+      ...options,
     });
   },
 

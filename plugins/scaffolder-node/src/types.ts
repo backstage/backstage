@@ -17,7 +17,10 @@
 import { JsonValue } from '@backstage/types';
 
 /** @public */
-export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
+export type TemplateFilter = (
+  arg: JsonValue,
+  ...rest: JsonValue[]
+) => JsonValue | undefined;
 
 /** @public */
 export type TemplateGlobal =

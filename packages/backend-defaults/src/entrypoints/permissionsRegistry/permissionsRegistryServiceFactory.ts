@@ -15,10 +15,22 @@
  */
 
 import {
+  PermissionsRegistryService,
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import {
+  PermissionResourceRef,
+  createPermissionIntegrationRouter,
+} from '@backstage/plugin-permission-node';
+
+function assertRefPluginId(ref: PermissionResourceRef, pluginId: string) {
+  if (ref.pluginId !== pluginId) {
+    throw new Error(
+      `Resource type '${ref.resourceType}' belongs to plugin '${ref.pluginId}', but was used with plugin '${pluginId}'`,
+    );
+  }
+}
 
 /**
  * Permission system integration for registering resources and permissions.
@@ -34,9 +46,11 @@ export const permissionsRegistryServiceFactory = createServiceFactory({
   deps: {
     lifecycle: coreServices.lifecycle,
     httpRouter: coreServices.httpRouter,
+    pluginMetadata: coreServices.pluginMetadata,
   },
-  async factory({ httpRouter, lifecycle }) {
+  async factory({ httpRouter, lifecycle, pluginMetadata }) {
     const router = createPermissionIntegrationRouter();
+    const pluginId = pluginMetadata.getId();
 
     httpRouter.use(router);
 
@@ -52,7 +66,11 @@ export const permissionsRegistryServiceFactory = createServiceFactory({
             'Cannot add permission resource types after the plugin has started',
           );
         }
-        router.addResourceType(resource);
+        assertRefPluginId(resource.resourceRef, pluginId);
+        router.addResourceType({
+          ...resource,
+          resourceType: resource.resourceRef.resourceType,
+        });
       },
       addPermissions(permissions) {
         if (started) {
@@ -70,6 +88,10 @@ export const permissionsRegistryServiceFactory = createServiceFactory({
         }
         router.addPermissionRules(rules);
       },
-    };
+      getPermissionRuleset(resourceRef) {
+        assertRefPluginId(resourceRef, pluginId);
+        return router.getPermissionRuleset(resourceRef);
+      },
+    } satisfies PermissionsRegistryService;
   },
 });

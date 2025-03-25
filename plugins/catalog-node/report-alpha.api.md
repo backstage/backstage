@@ -12,6 +12,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { Permission } from '@backstage/plugin-permission-common';
+import { PermissionResourceRef } from '@backstage/plugin-permission-node';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PlaceholderResolver } from '@backstage/plugin-catalog-node';
@@ -33,6 +34,14 @@ export interface CatalogAnalysisExtensionPoint {
 
 // @alpha (undocumented)
 export const catalogAnalysisExtensionPoint: ExtensionPoint<CatalogAnalysisExtensionPoint>;
+
+// @alpha (undocumented)
+export const catalogEntityPermissionResourceRef: PermissionResourceRef<
+  Entity,
+  EntitiesSearchFilter,
+  'catalog-entity',
+  'catalog'
+>;
 
 // @alpha (undocumented)
 export interface CatalogLocationsExtensionPoint {

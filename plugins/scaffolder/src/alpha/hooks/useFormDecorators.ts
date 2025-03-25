@@ -16,7 +16,7 @@
 import { errorApiRef, useApi, useApiHolder } from '@backstage/core-plugin-api';
 import { formDecoratorsApiRef } from '../api/ref';
 import useAsync from 'react-use/esm/useAsync';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { ScaffolderFormDecoratorContext } from '@backstage/plugin-scaffolder-react/alpha';
 import { OpaqueFormDecorator } from '@internal/scaffolder';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
@@ -27,11 +27,7 @@ type BoundFieldDecorator = {
   decorator: (ctx: ScaffolderFormDecoratorContext) => Promise<void>;
 };
 
-export const useFormDecorators = ({
-  manifest,
-}: {
-  manifest?: TemplateParameterSchema;
-}) => {
+export const useFormDecorators = () => {
   const formDecoratorsApi = useApi(formDecoratorsApiRef);
   const errorApi = useApi(errorApiRef);
   const { value: decorators } = useAsync(
@@ -69,18 +65,20 @@ export const useFormDecorators = ({
     return decoratorsMap;
   }, [apiHolder, decorators, errorApi]);
 
-  return {
-    run: async (opts: {
+  const run = useCallback(
+    async (opts: {
       formState: Record<string, JsonValue>;
       secrets: Record<string, string>;
+      manifest?: TemplateParameterSchema;
     }) => {
       let formState: Record<string, JsonValue> = { ...opts.formState };
       let secrets: Record<string, string> = { ...opts.secrets };
 
-      if (manifest?.EXPERIMENTAL_formDecorators) {
+      const formDecorators = opts.manifest?.EXPERIMENTAL_formDecorators;
+      if (formDecorators) {
         // for each of the form decorators, go and call the decorator with the context
         await Promise.all(
-          manifest.EXPERIMENTAL_formDecorators.map(async decorator => {
+          formDecorators.map(async decorator => {
             const formDecorator = boundDecorators?.get(decorator.id);
             if (!formDecorator) {
               errorApi.post(
@@ -113,5 +111,13 @@ export const useFormDecorators = ({
 
       return { formState, secrets };
     },
-  };
+    [boundDecorators, errorApi],
+  );
+
+  return useMemo(
+    () => ({
+      run,
+    }),
+    [run],
+  );
 };

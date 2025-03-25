@@ -35,14 +35,6 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
 
-jest.mock('./git', () => ({
-  Git: {
-    fromAuth: () => ({
-      clone: jest.fn(() => Promise.resolve({})),
-    }),
-  },
-}));
-
 const giteaProcessor = new GiteaUrlReader(
   new GiteaIntegration(
     readGiteaConfig(
@@ -328,6 +320,72 @@ describe('GiteaUrlReader', () => {
           'https://gitea.com/owner/project/src/branch/branch3',
         ),
       ).rejects.toThrow(NotFoundError);
+    });
+  });
+
+  describe('search', () => {
+    const responseBuffer = Buffer.from('Apache License');
+    const giteaApiResponse = (content: any) => {
+      return JSON.stringify({
+        encoding: 'base64',
+        content: Buffer.from(content).toString('base64'),
+      });
+    };
+
+    it('should return a single file when given an exact URL', async () => {
+      worker.use(
+        rest.get(
+          'https://gitea.com/api/v1/repos/owner/project/contents/LICENSE',
+          (req, res, ctx) => {
+            // Test utils prefers matching URL directly but it is part of Gitea's API
+            if (req.url.searchParams.get('ref') === 'branch2') {
+              return res(
+                ctx.status(200),
+                ctx.body(giteaApiResponse(responseBuffer.toString())),
+              );
+            }
+
+            return res(ctx.status(500));
+          },
+        ),
+      );
+
+      const data = await giteaProcessor.search(
+        'https://gitea.com/owner/project/src/branch/branch2/LICENSE',
+      );
+      expect(data.etag).toBe('');
+      expect(data.files.length).toBe(1);
+      expect(data.files[0].url).toBe(
+        'https://gitea.com/owner/project/src/branch/branch2/LICENSE',
+      );
+      expect((await data.files[0].content()).toString()).toEqual(
+        'Apache License',
+      );
+    });
+
+    it('should return empty list of files for not found files.', async () => {
+      worker.use(
+        rest.get(
+          'https://gitea.com/api/v1/repos/owner/project/contents/LICENSE',
+          (_, res, ctx) => {
+            return res(ctx.status(404, 'File not found.'));
+          },
+        ),
+      );
+
+      const data = await giteaProcessor.search(
+        'https://gitea.com/owner/project/src/branch/branch2/LICENSE',
+      );
+      expect(data.etag).toBe('');
+      expect(data.files.length).toBe(0);
+    });
+
+    it('throws if given URL with wildcard', async () => {
+      await expect(
+        giteaProcessor.search(
+          'https://gitea.com/owner/project/src/branch/branch2/*.yaml',
+        ),
+      ).rejects.toThrow('Unsupported search pattern URL');
     });
   });
 });

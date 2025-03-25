@@ -1,9 +1,10 @@
 import { CodeBlock } from '@/components/CodeBlock';
 import { PropsTable } from '@/components/PropsTable';
-import { spacePropsList } from '@/utils/spaceProps';
 import { Tabs } from '@/components/Tabs';
 import { Snippet } from '@/components/Snippet';
 import { BoxPreview } from '@/snippets/box';
+import { boxPropDefs } from './props';
+import { spacingPropDefs } from '../../../../utils/propDefs';
 
 # Box
 
@@ -36,60 +37,13 @@ Box is the lowest-level component in Canon. It provides a consistent API for sty
 This is the Box component, our lowest-level component. Here are all the
 available properties.
 
-<PropsTable
-  data={{
-    alignItems: {
-      type: ['stretch', 'start', 'center', 'end'],
-      responsive: true,
-    },
-    border: {
-      type: ['none', 'base', 'error', 'warning', 'selected'],
-      responsive: true,
-    },
-    borderRadius: {
-      type: ['none', '2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl'],
-      responsive: true,
-    },
-    children: {
-      type: 'ReactNode',
-      responsive: false,
-    },
-    className: {
-      type: 'string',
-      responsive: false,
-    },
-    display: {
-      type: ['none', 'flex', 'block', 'inline'],
-      responsive: true,
-    },
-    flexDirection: {
-      type: ['row', 'column'],
-      responsive: true,
-    },
-    flexWrap: {
-      type: ['wrap', 'nowrap', 'wrap-reverse'],
-      responsive: true,
-    },
-    gap: {
-      type: ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'],
-      responsive: true,
-    },
-    justifyContent: {
-      type: ['stretch', 'start', 'center', 'end', 'around', 'between'],
-      responsive: true,
-    },
-    style: {
-      type: 'CSSProperties',
-      responsive: false,
-    },
-  }}
-/>
+<PropsTable data={boxPropDefs} />
 
 Padding and margin are used to create space around your component using our
 predefined spacing tokens. We would recommend to use padding over margin to
 avoid collapsing margins but both are available.
 
-<PropsTable data={spacePropsList} />
+<PropsTable data={spacingPropDefs} />
 
 ## Examples
 

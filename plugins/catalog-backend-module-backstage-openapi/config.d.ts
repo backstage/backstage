@@ -29,6 +29,11 @@ export interface Config {
          * Properties to override on the final entity object.
          */
         entityOverrides?: object;
+        /**
+         * The format of the definition.
+         * @defaultValue json
+         */
+        definitionFormat?: 'json' | 'yaml';
       };
     };
   };

@@ -21,6 +21,19 @@ import {
 } from '@backstage/backend-plugin-api';
 import { catalogServiceRef as _catalogServiceRef } from './catalogService';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
+import { createPermissionResourceRef } from '@backstage/plugin-permission-node';
+import { Entity } from '@backstage/catalog-model';
+import { EntitiesSearchFilter } from '@backstage/plugin-catalog-node';
+
+/** @alpha */
+export const catalogEntityPermissionResourceRef = createPermissionResourceRef<
+  Entity,
+  EntitiesSearchFilter
+>().with({
+  pluginId: 'catalog',
+  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+});
 
 /**
  * @alpha

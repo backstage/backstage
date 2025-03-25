@@ -22,6 +22,7 @@ import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';
 import { UrlReaderPredicateTuple } from './types';
 import packageinfo from '../../../../package.json';
 import { mockServices } from '@backstage/backend-test-utils';
+import { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
 
 const bucketGetFilesMock = jest.fn();
 class Bucket {
@@ -130,7 +131,7 @@ describe('GcsUrlReader', () => {
     });
 
     it('throws if search url does not end with *', async () => {
-      const glob = 'https://storage.cloud.google.com/bucket/no-asterisk';
+      const glob = 'https://storage.cloud.google.com/bucket/*no-asterisk';
       await expect(() => reader.search(glob)).rejects.toThrow(
         'GcsUrlReader only supports prefix-based searches',
       );
@@ -166,6 +167,23 @@ describe('GcsUrlReader', () => {
       expect(result.files[0].url).toEqual(
         'https://storage.cloud.google.com/bucket/path/some-prefix-1.txt',
       );
+    });
+
+    it('returns single file if there is no wildcard', async () => {
+      reader.readUrl = jest.fn().mockResolvedValue({
+        buffer: async () => Buffer.from('content'),
+        etag: 'etag',
+      } as UrlReaderServiceReadUrlResponse);
+      const data = await reader.search(
+        'https://storage.cloud.google.com/bucket/path/some-prefix-1.txt',
+      );
+      expect(reader.readUrl).toHaveBeenCalledTimes(1);
+      expect(data.etag).toBe('etag');
+      expect(data.files.length).toBe(1);
+      expect(data.files[0].url).toBe(
+        'https://storage.cloud.google.com/bucket/path/some-prefix-1.txt',
+      );
+      expect((await data.files[0].content()).toString()).toEqual('content');
     });
   });
 });

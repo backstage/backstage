@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
 import { createConditionExports } from '@backstage/plugin-permission-node';
 import { permissionRules } from './rules';
+import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
 
 const { conditions, createConditionalDecision } = createConditionExports({
-  pluginId: 'catalog',
-  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+  resourceRef: catalogEntityPermissionResourceRef,
   rules: permissionRules,
 });
 

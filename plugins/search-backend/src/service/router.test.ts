@@ -23,7 +23,7 @@ import {
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
-import { wrapServer } from '@backstage/backend-openapi-utils';
+import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
 import { Server } from 'http';
 import {
   mockCredentials,
@@ -278,6 +278,8 @@ describe('createRouter', () => {
           permissions: mockPermissionEvaluator,
           discovery,
           logger,
+          auth: mockServices.auth(),
+          httpAuth: mockServices.httpAuth(),
         });
         app = express().use(router);
       });

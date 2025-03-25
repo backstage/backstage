@@ -19,12 +19,12 @@ Commands:
   config:schema [options]
   repo [command]
   package [command]
-  migrate [command]
   versions:bump [options]
   versions:migrate [options]
+  migrate [command]
   build-workspace [options] <workspace-dir> [packages...]
-  create-github-app <github-org>
   info
+  create-github-app <github-org>
   help [command]
 ```
 
@@ -179,6 +179,7 @@ Usage: backstage-cli new [options]
 Options:
   --select <name>
   --option <name>=<value>
+  --skip-install
   --scope <scope>
   --npm-registry <URL>
   --baseVersion <version>
@@ -198,11 +199,11 @@ Options:
 Commands:
   start [options]
   build [options]
-  lint [options] [directories...]
   test
   clean
   prepack
   postpack
+  lint [options] [directories...]
   help [command]
 ```
 
@@ -271,7 +272,7 @@ Options:
   --check
   --inspect [host]
   --inspect-brk [host]
-  --require <path>
+  --require <path...>
   --link <path>
   -h, --help
 ```
@@ -400,11 +401,11 @@ Options:
 
 Commands:
   build [options]
+  test [options]
   lint [options]
   fix [options]
   clean
   list-deprecations [options]
-  test [options]
   help [command]
 ```
 
@@ -451,6 +452,7 @@ Options:
   --since <ref>
   --successCache
   --successCacheDir <path>
+  --max-warnings <number>
   --fix
   -h, --help
 ```

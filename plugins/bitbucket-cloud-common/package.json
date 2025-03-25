@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-bitbucket-cloud-common",
-  "version": "0.2.27",
+  "version": "0.2.28",
   "description": "Common functionalities for bitbucket-cloud plugins",
   "backstage": {
     "role": "common-library",

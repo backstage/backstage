@@ -38,13 +38,13 @@ export function generateExampleOutput(schema: Schema): unknown {
     return Object.fromEntries(
       Object.entries(schema.properties ?? {}).map(([key, value]) => [
         key,
-        generateExampleOutput(value),
+        generateExampleOutput(value as Schema),
       ]),
     );
   } else if (schema.type === 'array') {
     const [firstSchema] = [schema.items]?.flat();
     if (firstSchema) {
-      return [generateExampleOutput(firstSchema)];
+      return [generateExampleOutput(firstSchema as Schema)];
     }
     return [];
   } else if (schema.type === 'string') {

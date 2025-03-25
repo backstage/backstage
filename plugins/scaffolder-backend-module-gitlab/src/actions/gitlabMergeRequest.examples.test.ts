@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRootLogger } from '@backstage/backend-common';
+
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -23,9 +23,6 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { examples } from './gitlabMergeRequest.examples';
 import yaml from 'yaml';
 
-// Make sure root logger is initialized ahead of FS mock
-createRootLogger();
-
 const mockGitlabClient = {
   Namespaces: {
     show: jest.fn(),
@@ -34,7 +31,7 @@ const mockGitlabClient = {
     create: jest.fn(),
   },
   Commits: {
-    create: jest.fn(),
+    create: jest.fn(() => ({ id: 'mockId' })),
   },
   MergeRequests: {
     create: jest.fn(async (_: any) => {

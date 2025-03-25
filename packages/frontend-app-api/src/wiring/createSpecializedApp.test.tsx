@@ -26,10 +26,11 @@ import {
   createExtensionInput,
   useRouteRef,
   analyticsApiRef,
+  createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 import { screen, render } from '@testing-library/react';
 import { createSpecializedApp } from './createSpecializedApp';
-import { mockApis } from '@backstage/test-utils';
+import { mockApis, TestApiRegistry } from '@backstage/test-utils';
 import React from 'react';
 import {
   configApiRef,
@@ -37,7 +38,7 @@ import {
   featureFlagsApiRef,
 } from '@backstage/core-plugin-api';
 import { MemoryRouter } from 'react-router-dom';
-import { ApiProvider } from '@backstage/core-app-api';
+import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 
 describe('createSpecializedApp', () => {
   it('should render the root app', () => {
@@ -56,7 +57,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('Test')).toBeInTheDocument();
   });
@@ -91,7 +92,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('Test 2')).toBeInTheDocument();
   });
@@ -117,7 +118,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('Test foo')).toBeInTheDocument();
   });
@@ -163,9 +164,84 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('flags:test=a,test=b')).toBeInTheDocument();
+
+    expect(app.apis).toMatchInlineSnapshot(`
+      ApiResolver {
+        "apis": Map {
+          "core.featureflags" => {
+            "getRegisteredFlags": [Function],
+            "registerFlag": [Function],
+          },
+        },
+        "factories": ApiFactoryRegistry {
+          "factories": Map {
+            "core.featureflags" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.featureflags",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 10,
+            },
+            "core.app-tree" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.app-tree",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 100,
+            },
+            "core.config" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.config",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 100,
+            },
+            "core.route-resolution" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.route-resolution",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 100,
+            },
+            "core.identity" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.identity",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 100,
+            },
+          },
+        },
+      }
+    `);
   });
 
   it('should intitialize the APIs in the correct order to allow for overrides', () => {
@@ -232,15 +308,64 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(mockAnalyticsApi).toHaveBeenCalled();
+  });
+
+  it('should use provided apis', async () => {
+    const app = createSpecializedApp({
+      apis: TestApiRegistry.from([
+        configApiRef,
+        new ConfigReader({ anything: 'config' }),
+      ]),
+      features: [
+        createFrontendPlugin({
+          id: 'test',
+          extensions: [
+            createExtension({
+              attachTo: { id: 'root', input: 'app' },
+              output: [coreExtensionData.reactElement],
+              factory: ({ apis }) => [
+                coreExtensionData.reactElement(
+                  <div>
+                    providedApis:
+                    {apis.get(configApiRef)!.getString('anything')}
+                  </div>,
+                ),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
+
+    expect(screen.getByText('providedApis:config')).toBeInTheDocument();
+
+    expect(app.apis).toMatchInlineSnapshot(`
+      TestApiRegistry {
+        "apis": Map {
+          "core.config" => ConfigReader {
+            "context": "mock-config",
+            "data": {
+              "anything": "config",
+            },
+            "fallback": undefined,
+            "filteredKeys": undefined,
+            "notifiedFilteredKeys": Set {},
+            "prefix": "",
+          },
+        },
+      }
+    `);
   });
 
   it('should make the app structure available through the AppTreeApi', async () => {
     let appTreeApi: AppTreeApi | undefined = undefined;
 
-    createSpecializedApp({
+    const { tree } = createSpecializedApp({
       features: [
         createFrontendPlugin({
           id: 'test',
@@ -264,6 +389,55 @@ describe('createSpecializedApp', () => {
           <test out=[core.reactElement] />
         ]
       </root>"
+    `);
+
+    expect(tree).toMatchInlineSnapshot(`
+      {
+        "nodes": Map {
+          "test" => {
+            "attachments": undefined,
+            "id": "test",
+            "output": [
+              "core.reactElement",
+            ],
+          },
+          "root" => {
+            "attachments": {
+              "app": [
+                {
+                  "attachments": undefined,
+                  "id": "test",
+                  "output": [
+                    "core.reactElement",
+                  ],
+                },
+              ],
+            },
+            "id": "root",
+            "output": [
+              "core.reactElement",
+            ],
+          },
+        },
+        "orphans": [],
+        "root": {
+          "attachments": {
+            "app": [
+              {
+                "attachments": undefined,
+                "id": "test",
+                "output": [
+                  "core.reactElement",
+                ],
+              },
+            ],
+          },
+          "id": "root",
+          "output": [
+            "core.reactElement",
+          ],
+        },
+      }
     `);
   });
 
@@ -345,9 +519,156 @@ describe('createSpecializedApp', () => {
         bindRoutes({ bind }) {
           bind(pluginA.externalRoutes, { ext: pluginB.routes.root });
         },
-      }).createRoot(),
+      }).tree.root.instance!.getData(coreExtensionData.reactElement),
     );
 
     expect(screen.getByText('link: /test')).toBeInTheDocument();
+  });
+
+  it('should support multiple attachment points', async () => {
+    let appTreeApi: AppTreeApi | undefined = undefined;
+
+    createSpecializedApp({
+      features: [
+        createFrontendPlugin({
+          id: 'test',
+          extensions: [
+            createExtension({
+              name: 'root',
+              attachTo: { id: 'root', input: 'app' },
+              inputs: {
+                children: createExtensionInput([
+                  coreExtensionData.reactElement,
+                ]),
+              },
+              output: [coreExtensionData.reactElement],
+              factory: ({ apis }) => {
+                appTreeApi = apis.get(appTreeApiRef);
+                return [coreExtensionData.reactElement(<div />)];
+              },
+            }),
+            createExtension({
+              name: 'a',
+              attachTo: { id: 'test/root', input: 'children' },
+              inputs: {
+                children: createExtensionInput([
+                  coreExtensionData.reactElement,
+                ]),
+              },
+              output: [coreExtensionData.reactElement],
+              factory: () => [coreExtensionData.reactElement(<div />)],
+            }),
+            createExtension({
+              name: 'b',
+              attachTo: { id: 'test/root', input: 'children' },
+              inputs: {
+                children: createExtensionInput([
+                  coreExtensionData.reactElement,
+                ]),
+              },
+              output: [coreExtensionData.reactElement],
+              factory: () => [coreExtensionData.reactElement(<div />)],
+            }),
+            createExtension({
+              name: 'cloned',
+              attachTo: [
+                { id: 'test/a', input: 'children' },
+                { id: 'test/b', input: 'children' },
+              ],
+              output: [coreExtensionData.reactElement],
+              factory: () => [coreExtensionData.reactElement(<div />)],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    expect(String(appTreeApi!.getTree().tree.root)).toMatchInlineSnapshot(`
+      "<root out=[core.reactElement]>
+        app [
+          <test/root out=[core.reactElement]>
+            children [
+              <test/a out=[core.reactElement]>
+                children [
+                  <test/cloned out=[core.reactElement] />
+                ]
+              </test/a>
+              <test/b out=[core.reactElement]>
+                children [
+                  <test/cloned out=[core.reactElement] />
+                ]
+              </test/b>
+            ]
+          </test/root>
+        ]
+      </root>"
+    `);
+  });
+
+  it('should apply multiple middlewares in order', () => {
+    const textDataRef = createExtensionDataRef<string>().with({ id: 'text' });
+
+    const app = createSpecializedApp({
+      features: [
+        createFrontendPlugin({
+          id: 'test',
+          extensions: [
+            createExtension({
+              attachTo: { id: 'root', input: 'app' },
+              inputs: {
+                text: createExtensionInput([textDataRef], {
+                  singleton: true,
+                }),
+              },
+              output: [coreExtensionData.reactElement],
+              factory: ({ inputs }) => [
+                coreExtensionData.reactElement(
+                  <>{inputs.text.get(textDataRef)}</>,
+                ),
+              ],
+            }),
+            createExtension({
+              name: 'child',
+              attachTo: { id: 'test', input: 'text' },
+              config: {
+                schema: {
+                  text: z => z.string().default('test'),
+                },
+              },
+              output: [textDataRef],
+              factory: ({ config }) => [textDataRef(config.text)],
+            }),
+          ],
+        }),
+      ],
+      extensionFactoryMiddleware: [
+        function* middleware(originalFactory, { config }) {
+          const result = originalFactory({
+            config: config && { text: `1-${config.text}` },
+          });
+          yield* result;
+          const el = result.get(textDataRef);
+          if (el) {
+            yield textDataRef(`${el}-1`);
+          }
+        },
+        function* middleware(originalFactory, { config }) {
+          const result = originalFactory({
+            config: config && { text: `2-${config.text}` },
+          });
+          yield* result;
+          const el = result.get(textDataRef);
+          if (el) {
+            yield textDataRef(`${el}-2`);
+          }
+        },
+      ],
+    });
+
+    const root = app.tree.root.instance!.getData(
+      coreExtensionData.reactElement,
+    );
+
+    expect(render(root).container.textContent).toBe('1-2-test-1-2');
   });
 });

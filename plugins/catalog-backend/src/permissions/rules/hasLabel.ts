@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
+import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
+import { createPermissionRule } from '@backstage/plugin-permission-node';
 import { z } from 'zod';
-import { createCatalogPermissionRule } from './util';
 
 /**
  * A catalog {@link @backstage/plugin-permission-node#PermissionRule} which
  * filters for entities with a specified label in its metadata.
  * @alpha
  */
-export const hasLabel = createCatalogPermissionRule({
+export const hasLabel = createPermissionRule({
   name: 'HAS_LABEL',
   description: 'Allow entities with the specified label',
-  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+  resourceRef: catalogEntityPermissionResourceRef,
   paramsSchema: z.object({
     label: z.string().describe('Name of the label to match on'),
   }),

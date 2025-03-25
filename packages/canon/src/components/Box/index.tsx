@@ -15,3 +15,5 @@
  */
 export { Box } from './Box';
 export type * from './types';
+export type { BoxOwnProps } from './Box.props';
+export { boxPropDefs } from './Box.props';

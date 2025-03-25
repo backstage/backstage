@@ -18,12 +18,12 @@ import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import classnames from 'classnames';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 
-import { AnsiProcessor } from './AnsiProcessor';
+import { AnsiLine, AnsiProcessor } from './AnsiProcessor';
 import { LogLine } from './LogLine';
 import { LogViewerControls } from './LogViewerControls';
 import { HEADER_SIZE, useStyles } from './styles';
@@ -37,7 +37,9 @@ export interface RealLogViewerProps {
 
 export function RealLogViewer(props: RealLogViewerProps) {
   const classes = useStyles({ classes: props.classes });
-  const listRef = useRef<FixedSizeList | null>(null);
+  const [fixedListInstance, setFixedListInstance] = useState<FixedSizeList<
+    AnsiLine[]
+  > | null>(null);
 
   // The processor keeps state that optimizes appending to the text
   const processor = useMemo(() => new AnsiProcessor(), []);
@@ -48,10 +50,21 @@ export function RealLogViewer(props: RealLogViewerProps) {
   const location = useLocation();
 
   useEffect(() => {
-    if (search.resultLine !== undefined && listRef.current) {
-      listRef.current.scrollToItem(search.resultLine - 1, 'center');
+    if (fixedListInstance) {
+      fixedListInstance.scrollToItem(lines.length - 1, 'end');
     }
-  }, [search.resultLine]);
+  }, [fixedListInstance, lines]);
+
+  useEffect(() => {
+    if (!fixedListInstance) {
+      return;
+    }
+    if (search.resultLine) {
+      fixedListInstance.scrollToItem(search.resultLine - 1, 'center');
+    } else {
+      fixedListInstance.scrollToItem(lines.length - 1, 'end');
+    }
+  }, [fixedListInstance, search.resultLine, lines]);
 
   useEffect(() => {
     if (location.hash) {
@@ -76,7 +89,9 @@ export function RealLogViewer(props: RealLogViewerProps) {
             <LogViewerControls {...search} />
           </Box>
           <FixedSizeList
-            ref={listRef}
+            ref={(instance: FixedSizeList<AnsiLine[]>) => {
+              setFixedListInstance(instance);
+            }}
             className={classes.log}
             height={(height || 480) - HEADER_SIZE}
             width={width || 640}

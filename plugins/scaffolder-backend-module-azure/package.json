@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-azure",
-  "version": "0.2.6-next.0",
+  "version": "0.2.8-next.0",
   "description": "The azure module for @backstage/plugin-scaffolder-backend",
   "backstage": {
     "role": "backend-plugin-module",

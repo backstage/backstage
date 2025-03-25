@@ -25,7 +25,7 @@ import {
 import { emitterEventNames } from '@octokit/webhooks';
 import { assertError, InputError } from '@backstage/errors';
 import { Octokit } from 'octokit';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { examples } from './githubWebhook.examples';
 
 /**
@@ -63,7 +63,8 @@ export function createGithubWebhookAction(options: {
         properties: {
           repoUrl: {
             title: 'Repository Location',
-            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
+            description:
+              'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
             type: 'string',
           },
           webhookUrl: {
@@ -80,8 +81,9 @@ export function createGithubWebhookAction(options: {
           events: {
             title: 'Triggering Events',
             description:
-              'Determines what events the hook is triggered for. Default: push',
+              'Determines what events the hook is triggered for. Default: `[push]`',
             type: 'array',
+            default: ['push'],
             oneOf: [
               {
                 items: {
@@ -100,23 +102,30 @@ export function createGithubWebhookAction(options: {
           active: {
             title: 'Active',
             type: 'boolean',
-            description: `Determines if notifications are sent when the webhook is triggered. Default: true`,
+            default: true,
+            description:
+              'Determines if notifications are sent when the webhook is triggered. Default: `true`',
           },
           contentType: {
             title: 'Content Type',
             type: 'string',
             enum: ['form', 'json'],
-            description: `The media type used to serialize the payloads. The default is 'form'`,
+            default: 'form',
+            description:
+              'The media type used to serialize the payloads. The default is `form`',
           },
           insecureSsl: {
             title: 'Insecure SSL',
             type: 'boolean',
-            description: `Determines whether the SSL certificate of the host for url will be verified when delivering payloads. Default 'false'`,
+            default: false,
+            description:
+              'Determines whether the SSL certificate of the host for url will be verified when delivering payloads. Default `false`',
           },
           token: {
             title: 'Authentication Token',
             type: 'string',
-            description: 'The GITHUB_TOKEN to use for authorization to GitHub',
+            description:
+              'The `GITHUB_TOKEN` to use for authorization to GitHub',
           },
         },
       },
@@ -134,7 +143,7 @@ export function createGithubWebhookAction(options: {
       } = ctx.input;
 
       ctx.logger.info(`Creating webhook ${webhookUrl} for repo ${repoUrl}`);
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
@@ -144,7 +153,9 @@ export function createGithubWebhookAction(options: {
         await getOctokitOptions({
           integrations,
           credentialsProvider: githubCredentialsProvider,
-          repoUrl: repoUrl,
+          host,
+          owner,
+          repo,
           token: providedToken,
         }),
       );
@@ -157,18 +168,25 @@ export function createGithubWebhookAction(options: {
 
       try {
         const insecure_ssl = insecureSsl ? '1' : '0';
-        await client.rest.repos.createWebhook({
-          owner,
-          repo,
-          config: {
-            url: webhookUrl,
-            content_type: contentType,
-            secret: webhookSecret,
-            insecure_ssl,
+
+        await ctx.checkpoint({
+          key: `create.webhhook.${owner}.${repo}.${webhookUrl}`,
+          fn: async () => {
+            await client.rest.repos.createWebhook({
+              owner,
+              repo,
+              config: {
+                url: webhookUrl,
+                content_type: contentType,
+                secret: webhookSecret,
+                insecure_ssl,
+              },
+              events,
+              active,
+            });
           },
-          events,
-          active,
         });
+
         ctx.logger.info(`Webhook '${webhookUrl}' created successfully`);
       } catch (e) {
         assertError(e);

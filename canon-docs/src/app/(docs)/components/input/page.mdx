@@ -4,6 +4,7 @@ import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
 import { InputPreview, InputSizes } from '@/snippets/input';
 import { BaseUI } from '@/components/HeadlessBanners/BaseUI';
+import { inputPropDefs } from './props';
 
 # Input
 
@@ -42,22 +43,7 @@ A input component tfor your forms.
 
 <BaseUI href="https://base-ui.com/react/components/input" />
 
-<PropsTable
-  data={{
-    size: {
-      type: ['sm', 'md'],
-      responsive: false,
-    },
-    className: {
-      type: 'string',
-      responsive: false,
-    },
-    style: {
-      type: 'CSSProperties',
-      responsive: false,
-    },
-  }}
-/>
+<PropsTable data={inputPropDefs} />
 
 ## Examples
 

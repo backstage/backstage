@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import {
@@ -91,35 +91,48 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   });
 
   const { manifest } = useTemplateParameterSchema(templateRef);
-  const decorators = useFormDecorators({ manifest });
+  const decorators = useFormDecorators();
 
   const { value: editUrl } = useAsync(async () => {
     const data = await catalogApi.getEntityByRef(templateRef);
     return data?.metadata.annotations?.[ANNOTATION_EDIT_URL];
   }, [templateRef, catalogApi]);
 
-  const onCreate = async (initialValues: Record<string, JsonValue>) => {
-    if (isCreating) {
-      return;
-    }
+  const onCreate = useCallback(
+    async (initialValues: Record<string, JsonValue>) => {
+      if (isCreating) {
+        return;
+      }
 
-    setIsCreating(true);
+      setIsCreating(true);
 
-    const { formState: values, secrets } = await decorators.run({
-      formState: initialValues,
-      secrets: contextSecrets,
-    });
+      const { formState: values, secrets } = await decorators.run({
+        formState: initialValues,
+        secrets: contextSecrets,
+        manifest,
+      });
 
-    const { taskId } = await scaffolderApi.scaffold({
+      const { taskId } = await scaffolderApi.scaffold({
+        templateRef,
+        values,
+        secrets,
+      });
+
+      navigate(taskRoute({ taskId }));
+    },
+    [
+      contextSecrets,
+      decorators,
+      isCreating,
+      manifest,
+      navigate,
+      scaffolderApi,
+      taskRoute,
       templateRef,
-      values,
-      secrets,
-    });
+    ],
+  );
 
-    navigate(taskRoute({ taskId }));
-  };
-
-  const onError = () => <Navigate to={rootRef()} />;
+  const onError = useCallback(() => <Navigate to={rootRef()} />, [rootRef]);
 
   return (
     <AnalyticsContext attributes={{ entityRef: templateRef }}>

@@ -18,7 +18,7 @@ import React from 'react';
 import * as d3Zoom from 'd3-zoom';
 import * as d3Selection from 'd3-selection';
 import useTheme from '@material-ui/core/styles/useTheme';
-import dagre from 'dagre';
+import dagre from '@dagrejs/dagre';
 import debounce from 'lodash/debounce';
 import { DependencyGraphTypes as Types } from './types';
 import { Node } from './Node';

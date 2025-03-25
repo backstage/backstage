@@ -29,8 +29,9 @@ import globby from 'globby';
 import fs from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
 import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
-import { createDefaultFilters } from '../../../../lib/templating/filters';
+import { createDefaultFilters } from '../../../../lib/templating/filters/createDefaultFilters';
 import { examples } from './template.examples';
+import { convertFiltersToRecord } from '../../../../util/templating';
 
 /**
  * Downloads a skeleton, templates variables into file and directory names and content.
@@ -52,7 +53,9 @@ export function createFetchTemplateAction(options: {
     additionalTemplateGlobals,
   } = options;
 
-  const defaultTemplateFilters = createDefaultFilters({ integrations });
+  const defaultTemplateFilters = convertFiltersToRecord(
+    createDefaultFilters({ integrations }),
+  );
 
   return createTemplateAction<{
     url: string;
@@ -243,7 +246,7 @@ export function createFetchTemplateAction(options: {
         cookiecutterCompat: ctx.input.cookiecutterCompat,
         templateFilters: {
           ...defaultTemplateFilters,
-          ...additionalTemplateFilters,
+          ...(additionalTemplateFilters ?? {}),
         },
         templateGlobals: additionalTemplateGlobals,
         nunjucksConfigs: {

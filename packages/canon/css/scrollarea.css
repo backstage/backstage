@@ -1,0 +1,50 @@
+.canon-ScrollAreaRoot {
+  box-sizing: border-box;
+  width: 24rem;
+  max-width: calc(100vw - 8rem);
+  height: 8.5rem;
+}
+
+.canon-ScrollAreaViewport {
+  overscroll-behavior: contain;
+  height: 100%;
+}
+
+.canon-ScrollAreaContent {
+  padding-block: .75rem;
+  flex-direction: column;
+  gap: 1rem;
+  padding-left: 1rem;
+  padding-right: 1.5rem;
+  display: flex;
+}
+
+.canon-ScrollAreaScrollbar {
+  background-color: var(--canon-scrollbar);
+  opacity: 0;
+  border-radius: .375rem;
+  justify-content: center;
+  width: .25rem;
+  margin: .5rem;
+  transition: opacity .15s .3s;
+  display: flex;
+
+  &[data-hovering], &[data-scrolling] {
+    opacity: 1;
+    transition-duration: 75ms;
+    transition-delay: 0s;
+  }
+
+  &:before {
+    content: "";
+    width: 1.25rem;
+    height: 100%;
+    position: absolute;
+  }
+}
+
+.canon-ScrollAreaThumb {
+  border-radius: inherit;
+  background-color: var(--canon-scrollbar-thumb);
+  width: 100%;
+}

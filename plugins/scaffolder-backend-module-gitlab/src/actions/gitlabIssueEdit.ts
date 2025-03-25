@@ -18,13 +18,13 @@ import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import commonGitlabConfig, {
-  IssueType,
   IssueStateEvent,
+  IssueType,
 } from '../commonGitlabConfig';
 import { examples } from './gitlabIssueEdit.examples';
 import { z } from 'zod';
 import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
-import { IssueSchema, EditIssueOptions } from '@gitbeaker/rest';
+import { EditIssueOptions, IssueSchema } from '@gitbeaker/rest';
 import { getErrorMessage } from './helpers';
 
 const editIssueInputProperties = z.object({
@@ -181,17 +181,24 @@ export const editGitlabIssueAction = (options: {
 
         let isEpicScoped = false;
 
-        if (epicId) {
-          isEpicScoped = await checkEpicScope(api, projectId, epicId);
+        isEpicScoped = await ctx.checkpoint({
+          key: `issue.edit.is.scoped.${projectId}.${epicId}`,
+          fn: async () => {
+            if (epicId) {
+              const scoped = await checkEpicScope(api, projectId, epicId);
 
-          if (isEpicScoped) {
-            ctx.logger.info('Epic is within Project Scope');
-          } else {
-            ctx.logger.warn(
-              'Chosen epic is not within the Project Scope. The issue will be created without an associated epic.',
-            );
-          }
-        }
+              if (scoped) {
+                ctx.logger.info('Epic is within Project Scope');
+              } else {
+                ctx.logger.warn(
+                  'Chosen epic is not within the Project Scope. The issue will be created without an associated epic.',
+                );
+              }
+              return scoped;
+            }
+            return false;
+          },
+        });
 
         const mappedUpdatedAt = convertDate(
           String(updatedAt),
@@ -216,19 +223,34 @@ export const editGitlabIssueAction = (options: {
           weight,
         };
 
-        const response = (await api.Issues.edit(
-          projectId,
-          issueIid,
-          editIssueOptions,
-        )) as IssueSchema;
+        const editedIssue = await ctx.checkpoint({
+          key: `issue.edit.${projectId}.${issueIid}`,
+          fn: async () => {
+            const response = (await api.Issues.edit(
+              projectId,
+              issueIid,
+              editIssueOptions,
+            )) as IssueSchema;
 
-        ctx.output('issueId', response.id);
-        ctx.output('projectId', response.project_id);
-        ctx.output('issueUrl', response.web_url);
-        ctx.output('issueIid', response.iid);
-        ctx.output('title', response.title);
-        ctx.output('state', response.state);
-        ctx.output('updatedAt', response.updated_at);
+            return {
+              issueId: response.id,
+              issueUrl: response.web_url,
+              projectId: response.project_id,
+              issueIid: response.iid,
+              title: response.title,
+              state: response.state,
+              updatedAt: response.updated_at,
+            };
+          },
+        });
+
+        ctx.output('issueId', editedIssue.issueId);
+        ctx.output('projectId', editedIssue.projectId);
+        ctx.output('issueUrl', editedIssue.issueUrl);
+        ctx.output('issueIid', editedIssue.issueIid);
+        ctx.output('title', editedIssue.title);
+        ctx.output('state', editedIssue.state);
+        ctx.output('updatedAt', editedIssue.updatedAt);
       } catch (error: any) {
         if (error instanceof z.ZodError) {
           // Handling Zod validation errors

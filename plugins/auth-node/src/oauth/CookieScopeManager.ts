@@ -138,6 +138,7 @@ export class CookieScopeManager {
 
   async refresh(req: express.Request): Promise<{
     scope: string;
+    scopeAlreadyGranted?: boolean;
     commit(result: OAuthAuthenticatorResult<any>): Promise<string>;
   }> {
     const requestScope = splitScope(req.query.scope?.toString());
@@ -147,6 +148,9 @@ export class CookieScopeManager {
 
     return {
       scope,
+      scopeAlreadyGranted: this.cookieManager
+        ? hasScopeBeenGranted(grantedScope, scope)
+        : undefined,
       commit: async result => {
         if (this.cookieManager) {
           this.cookieManager.setGrantedScopes(
@@ -161,4 +165,17 @@ export class CookieScopeManager {
       },
     };
   }
+}
+
+function hasScopeBeenGranted(
+  grantedScope: Iterable<string>,
+  requestedScope: string,
+): boolean {
+  const granted = new Set(grantedScope);
+  for (const requested of splitScope(requestedScope)) {
+    if (!granted.has(requested)) {
+      return false;
+    }
+  }
+  return true;
 }

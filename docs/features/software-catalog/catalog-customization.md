@@ -17,7 +17,7 @@ Initial support for pagination of the `CatalogIndexPage` was added in v1.21.0 of
 
 ## Initially Selected Filter
 
-By default the initially selected filter defaults to Owned. If you are still building up your catalog this may show an empty list to start. If you would prefer this to show All as the default, here's how you can make that change:
+By default, the initially selected filter defaults to Owned. If you are still building up your catalog this may show an empty list to start. If you would prefer this to show All as the default, here's how you can make that change:
 
 ```tsx title="packages/app/src/App.tsx"
 <Route
@@ -30,7 +30,7 @@ Possible options are: owned, starred, or all
 
 ## Initially Selected Kind
 
-By default the initially selected Kind when viewing the Catalog is Component, but you may have reasons that you want this to be different. Let's say at your Organization they would like it to always default to Domain, here's how you would do that:
+By default, the initially selected Kind when viewing the Catalog is Component, but you may have reasons that you want this to be different. Let's say at your Organization they would like it to always default to Domain, here's how you would do that:
 
 ```tsx title="packages/app/src/App.tsx"
 <Route path="/catalog" element={<CatalogIndexPage initialKind="domain" />} />
@@ -70,9 +70,7 @@ The columns you see in the `CatalogIndexPage` were selected to be a good startin
 Suppose we want to add a new User Email column to the `User` kind in the Catalog. We can do this by overriding the `columns` that we pass into the `CatalogIndexPage` component in our `App.tsx`. First, we need to match the entity kind that we want to override, and then define the columns to show:
 
 ```tsx title="packages/app/src/App.tsx"
-{
-  /* highlight-add-start */
-}
+{/* prettier-ignore */ /* highlight-add-start */}
 const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
   if (entityListContext.filters.kind?.value === 'user') {
     return [
@@ -84,9 +82,7 @@ const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
 
   return CatalogTable.defaultColumnsFunc(entityListContext);
 };
-{
-  /* highlight-add-end */
-}
+{/* prettier-ignore */ /* highlight-add-end */}
 ```
 
 Then, we can implement the `createUserEmailColumn` function and add it to the list of columns. `field` is used to access the data from the entity, while `render` lets us customize how we display the data:
@@ -107,7 +103,6 @@ const createUserEmailColumn = (): TableColumn<CatalogTableRow> => ({
 
 const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
   if (entityListContext.filters.kind?.value === 'user') {
-    return [
     return [
       // Render existing columns
       ...CatalogTable.defaultColumnsFunc(entityListContext),
@@ -391,13 +386,9 @@ export const EntitySecurityTierPicker = () => {
 Now we can add the component to `CatalogIndexPage`:
 
 ```tsx title="packages/app/src/App.tsx"
-{
-  /* highlight-add-start */
-}
+{/* prettier-ignore */ /* highlight-add-start */}
 import { DefaultFilters } from '@backstage/plugin-catalog-react';
-{
-  /* highlight-add-end */
-}
+{/* prettier-ignore */ /* highlight-add-end */}
 
 const routes = (
   <FlatRoutes>
@@ -510,4 +501,202 @@ const routes = (
     {/* ... */}
   </FlatRoutes>
 );
+```
+
+## New Frontend System
+
+This section of the documentation explains how to create and configure catalog extensions in the [new frontend system](../../frontend-system/index.md).
+
+:::warning Warning
+
+This section is a work in progress.
+
+:::
+
+### Entity filters
+
+Many extensions that attach within the catalog entity pages accept a `filter` configuration. The purpose of the `filter` configuration is to select what entities the extension should be applied to or be present on. Many of these extension will have a default filter defined, but you can override it by providing your own. When defining filters in code you can use either a predicate function or a entity predicate query, while in configuration you can only use an entity predicate query.
+
+### Entity predicate queries
+
+The entity predicate syntax is a minimal JSON-based query language for filtering catalog entities. It is loosely inspired by the [MongoDB query syntax](https://www.mongodb.com/docs/manual/tutorial/query-documents/), behaving roughly the same way but with a different set of operators.
+
+The most simple entity predicate is an object expression with key-value mappings where the key is the full dot-separated path to the value in the entity, and the value is the value to do a case insensitive match against. Each entry in this object is evaluated separately, but all of them must match for the overall predicate to result in a match. For example, the following will match any component entities of the type `service`:
+
+```json
+{
+  "filter": {
+    "kind": "component",
+    "spec.type": "service"
+  }
+}
+```
+
+Or when utilizing YAML syntax:
+
+```yaml
+filter:
+  kind: component
+  spec.type: service
+```
+
+In addition to this basic syntax, entity predicates support logical operators that can be nested and applied around these object expressions. For example, the following will match all components entities that are of type `service` or `website`:
+
+```json
+{
+  "filter": {
+    "$all": [
+      {
+        "kind": "component"
+      },
+      {
+        "$any": [{ "spec.type": "service" }, { "spec.type": "website" }]
+      }
+    ]
+  }
+}
+```
+
+Or when utilizing YAML syntax:
+
+```yaml
+filter:
+  $all:
+    - kind: component
+    - $any:
+        - spec.type: service
+        - spec.type: website
+```
+
+Finally, entity predicates also support value operators that can be used in place of the values in the object expression. For example, the following is a simpler way to express the previous example:
+
+```json
+{
+  "filter": {
+    {
+      "kind": "component",
+      "spec.type": { "$in": ["service", "website"] }
+    },
+  }
+}
+```
+
+Or when utilizing YAML syntax:
+
+```yaml
+filter:
+  kind: component
+  spec.type:
+    $in: [service, website]
+```
+
+### Entity predicate logical operators
+
+The following section lists all logical operators for entity predicates.
+
+#### `$all`
+
+The `$all` operator has the following syntax:
+
+```json
+{ $all: [ { <expression1> }, { <expression2> }, ...] }
+```
+
+The `$all` operator evaluates to `true` if all expressions within the provided array evaluate to `true`. This includes an empty array, which means that `{ "$all": [] }` always evaluates to `true`.
+
+```yaml title="Example usage of $all"
+filter:
+  $all:
+    - kind: component
+    - $not:
+        spec.type: service
+```
+
+#### `$any`
+
+The `$any` operator has the following syntax:
+
+```json
+{ $any: [ { <expression1> }, { <expression2> }, ...] }
+```
+
+The `$any` operator evaluates to `true` if at least one of the expressions within the provided array evaluate to `true`. This includes an empty array, which means that `{ "$any": [] }` always evaluates to `false`.
+
+```yaml title="Example usage of $any"
+filter:
+  $any:
+    - kind: component
+    - metadata.annotations.github.com/project-slug: { $exists: true }
+```
+
+#### `$not`
+
+The `$not` operator has the following syntax:
+
+```json
+{ $not: { <expression> } }
+```
+
+The `$not` operator inverts the result of the provided express. If the expression evaluates to `true` then `$not` will evaluate to false, and the other way around.
+
+```yaml title="Example usage of $not"
+filter:
+  $not:
+    kind: template
+```
+
+### Entity predicate value operators
+
+The following section lists all value operators for entity predicates.
+
+#### `$exists`
+
+The `$exists` operator has the following syntax:
+
+```json
+{ field: { $exists: <boolean> } }
+```
+
+The `$exists` operator will evaluate to `true` if the existence of the value it matches against matches the provided boolean. That is `{ $exists: true }` will evaluate to `true` if and only if the value is defined, and `{ $exists: false }` will evaluate to `true` if and only if the value is not defined.
+
+```yaml title="Example usage of $exists"
+filter:
+  metadata.annotations.github.com/project-slug: { $exists: true }
+```
+
+#### `$in`
+
+The `$in` operator has the following syntax:
+
+```json
+{ field: { $in: [ <primitive1>, <primitive2>, ... ] } }
+```
+
+The `$in` operator will evaluate to `true` if the value it is matched against is exists within the array of primitives. The comparison is case insensitive and can only be done across primitive values. If the value matched against is an object or array, the operator will always evaluate to `false`.
+
+```yaml title="Example usage of $in"
+filter:
+  kind:
+    $in: [component, api]
+```
+
+#### `$contains`
+
+The `$contains` operator has the following syntax:
+
+```json
+{ field: { $contains: { <expression> } } }
+```
+
+The `$contains` operator will evaluate to `true` if the value it is matched against is an array, and at least one of the elements in the array fully matches the provided expression. If the value matched against is not an array, or if the array is empty, the operator will always evaluate to `false`.
+
+The expression used to match against the array can be any valid entity predicate expression, including logical operators and value operators.
+
+```yaml title="Example usage of $contains"
+filter:
+  relations:
+    $contains:
+      type: ownedBy
+      target:
+        $in: [group:default/admins, group:default/viewers]
 ```

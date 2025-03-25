@@ -40,7 +40,14 @@ export const auditorServiceFactory = createServiceFactory({
   factory({ logger, plugin, auth, httpAuth }) {
     const auditLogger = logger.child({ isAuditEvent: true });
     return DefaultAuditorService.create(
-      event => auditLogger.info(`${event.plugin}.${event.eventId}`, event),
+      event => {
+        const message = `${event.plugin}.${event.eventId}`;
+        if (event.severityLevel === 'low') {
+          auditLogger.debug(message, event);
+        } else {
+          auditLogger.info(message, event);
+        }
+      },
       { plugin, auth, httpAuth },
     );
   },

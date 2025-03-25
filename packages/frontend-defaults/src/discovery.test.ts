@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
-import { getAvailableFeatures } from './discovery';
+import {
+  createFrontendFeatureLoader,
+  createFrontendPlugin,
+} from '@backstage/frontend-plugin-api';
+import { discoverAvailableFeatures } from './discovery';
 import { ConfigReader } from '@backstage/config';
 
 const globalSpy = jest.fn();
@@ -27,18 +30,18 @@ const config = new ConfigReader({
   app: { experimental: { packages: 'all' } },
 });
 
-describe('getAvailableFeatures', () => {
+describe('discoverAvailableFeatures', () => {
   afterEach(jest.resetAllMocks);
 
   it('should discover nothing with undefined global', () => {
-    expect(getAvailableFeatures(config)).toEqual([]);
+    expect(discoverAvailableFeatures(config)).toEqual({ features: [] });
   });
 
   it('should discover nothing with empty global', () => {
     globalSpy.mockReturnValue({
       modules: [],
     });
-    expect(getAvailableFeatures(config)).toEqual([]);
+    expect(discoverAvailableFeatures(config)).toEqual({ features: [] });
   });
 
   it('should discover a plugin', () => {
@@ -46,24 +49,40 @@ describe('getAvailableFeatures', () => {
     globalSpy.mockReturnValue({
       modules: [{ default: testPlugin }],
     });
-    expect(getAvailableFeatures(config)).toEqual([testPlugin]);
+    expect(discoverAvailableFeatures(config)).toEqual({
+      features: [testPlugin],
+    });
+  });
+
+  it('should discover a frontend feature loader', () => {
+    const testLoader = createFrontendFeatureLoader({
+      loader() {
+        return [];
+      },
+    });
+    globalSpy.mockReturnValue({
+      modules: [{ default: testLoader }],
+    });
+    expect(discoverAvailableFeatures(config)).toEqual({
+      features: [testLoader],
+    });
   });
 
   it('should ignore garbage', () => {
     globalSpy.mockReturnValueOnce({ modules: [{ default: null }] });
-    expect(getAvailableFeatures(config)).toEqual([]);
+    expect(discoverAvailableFeatures(config)).toEqual({ features: [] });
     globalSpy.mockReturnValueOnce({ modules: [{ default: undefined }] });
-    expect(getAvailableFeatures(config)).toEqual([]);
+    expect(discoverAvailableFeatures(config)).toEqual({ features: [] });
     globalSpy.mockReturnValueOnce({ modules: [{ default: Symbol() }] });
-    expect(getAvailableFeatures(config)).toEqual([]);
+    expect(discoverAvailableFeatures(config)).toEqual({ features: [] });
     globalSpy.mockReturnValueOnce({ modules: [{ default: () => {} }] });
-    expect(getAvailableFeatures(config)).toEqual([]);
+    expect(discoverAvailableFeatures(config)).toEqual({ features: [] });
     globalSpy.mockReturnValueOnce({ modules: [{ default: 0 }] });
-    expect(getAvailableFeatures(config)).toEqual([]);
+    expect(discoverAvailableFeatures(config)).toEqual({ features: [] });
     globalSpy.mockReturnValueOnce({ modules: [{ default: false }] });
-    expect(getAvailableFeatures(config)).toEqual([]);
+    expect(discoverAvailableFeatures(config)).toEqual({ features: [] });
     globalSpy.mockReturnValueOnce({ modules: [{ default: true }] });
-    expect(getAvailableFeatures(config)).toEqual([]);
+    expect(discoverAvailableFeatures(config)).toEqual({ features: [] });
   });
 
   it('should discover multiple plugins', () => {
@@ -77,10 +96,8 @@ describe('getAvailableFeatures', () => {
         { default: test3Plugin },
       ],
     });
-    expect(getAvailableFeatures(config)).toEqual([
-      test1Plugin,
-      test2Plugin,
-      test3Plugin,
-    ]);
+    expect(discoverAvailableFeatures(config)).toEqual({
+      features: [test1Plugin, test2Plugin, test3Plugin],
+    });
   });
 });

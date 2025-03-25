@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  createLegacyAuthAdapters,
-  HostDiscovery,
-} from '@backstage/backend-common';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import {
   AuditorService,
   AuthService,
@@ -81,6 +78,8 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import {
   AutocompleteHandler,
+  CreatedTemplateFilter,
+  CreatedTemplateGlobal,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
@@ -110,6 +109,15 @@ import {
   parseStringsParam,
 } from './helpers';
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
+import {
+  convertFiltersToRecord,
+  convertGlobalsToRecord,
+  extractFilterMetadata,
+  extractGlobalFunctionMetadata,
+  extractGlobalValueMetadata,
+} from '../util/templating';
+import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
 
 /**
  *
@@ -161,7 +169,7 @@ export interface RouterOptions {
   database: DatabaseService;
   catalogClient: CatalogApi;
   scheduler?: SchedulerService;
-  actions?: TemplateAction<any, any>[];
+  actions?: TemplateAction<any, any, any>[];
   /**
    * @deprecated taskWorkers is deprecated in favor of concurrentTasksLimit option with a single TaskWorker
    * @defaultValue 1
@@ -173,8 +181,12 @@ export interface RouterOptions {
    */
   concurrentTasksLimit?: number;
   taskBroker?: TaskBroker;
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateFilters?:
+    | Record<string, TemplateFilter>
+    | CreatedTemplateFilter<any, any>[];
+  additionalTemplateGlobals?:
+    | Record<string, TemplateGlobal>
+    | CreatedTemplateGlobal[];
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
   permissionRules?: Array<
@@ -364,8 +376,21 @@ export async function createRouter(
 
   const actionRegistry = new TemplateActionRegistry();
 
+  const templateExtensions = {
+    additionalTemplateFilters: convertFiltersToRecord(
+      additionalTemplateFilters,
+    ),
+    additionalTemplateGlobals: convertGlobalsToRecord(
+      additionalTemplateGlobals,
+    ),
+  };
+
   const workers: TaskWorker[] = [];
   if (concurrentTasksLimit !== 0) {
+    const gracefulShutdown = config.getOptionalBoolean(
+      'scaffolder.EXPERIMENTAL_gracefulShutdown',
+    );
+
     for (let i = 0; i < (taskWorkers || 1); i++) {
       const worker = await TaskWorker.create({
         taskBroker,
@@ -374,10 +399,10 @@ export async function createRouter(
         logger,
         auditor,
         workingDirectory,
-        additionalTemplateFilters,
-        additionalTemplateGlobals,
         concurrentTasksLimit,
         permissions,
+        gracefulShutdown,
+        ...templateExtensions,
       });
       workers.push(worker);
     }
@@ -390,17 +415,16 @@ export async function createRouter(
         catalogClient,
         reader,
         config,
-        additionalTemplateFilters,
-        additionalTemplateGlobals,
         auth,
+        ...templateExtensions,
       });
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
 
   const launchWorkers = () => workers.forEach(worker => worker.start());
 
-  const shutdownWorkers = () => {
-    workers.forEach(worker => worker.stop());
+  const shutdownWorkers = async () => {
+    await Promise.allSettled(workers.map(worker => worker.stop()));
   };
 
   if (options.lifecycle) {
@@ -416,9 +440,8 @@ export async function createRouter(
     logger,
     auditor,
     workingDirectory,
-    additionalTemplateFilters,
-    additionalTemplateGlobals,
     permissions,
+    ...templateExtensions,
   });
 
   const templateRules: TemplatePermissionRuleInput[] = Object.values(
@@ -1091,6 +1114,18 @@ export async function createRouter(
       });
 
       res.status(200).json({ results });
+    })
+    .get('/v2/template-extensions', async (_req, res) => {
+      res.status(200).json({
+        filters: {
+          ...extractFilterMetadata(createDefaultFilters({ integrations })),
+          ...extractFilterMetadata(additionalTemplateFilters),
+        },
+        globals: {
+          functions: extractGlobalFunctionMetadata(additionalTemplateGlobals),
+          values: extractGlobalValueMetadata(additionalTemplateGlobals),
+        },
+      });
     });
 
   const app = express();

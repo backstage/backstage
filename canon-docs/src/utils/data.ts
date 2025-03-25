@@ -55,13 +55,8 @@ export const layoutComponents: Page[] = [
     status: 'alpha',
   },
   {
-    title: 'Inline',
-    slug: 'inline',
-    status: 'alpha',
-  },
-  {
-    title: 'Stack',
-    slug: 'stack',
+    title: 'Flex',
+    slug: 'flex',
     status: 'alpha',
   },
 ];
@@ -90,6 +85,11 @@ export const components: Page[] = [
   {
     title: 'Icon',
     slug: 'icon',
+    status: 'alpha',
+  },
+  {
+    title: 'IconButton',
+    slug: 'icon-button',
     status: 'alpha',
   },
   {

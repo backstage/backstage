@@ -130,16 +130,18 @@ import { TODO_LIST_RESOURCE_TYPE } from '@internal/plugin-todo-list-common';
 import { z } from 'zod';
 import { Todo, TodoFilter } from './todos';
 
-export const createTodoListPermissionRule = makeCreatePermissionRule<
+export const todoListPermissionResourceRef = createPermissionResourceRef<
   Todo,
-  TodoFilter,
-  typeof TODO_LIST_RESOURCE_TYPE
->();
+  TodoFilter
+>().with({
+  pluginId: 'todolist',
+  type: TODO_LIST_RESOURCE_TYPE,
+});
 
-export const isOwner = createTodoListPermissionRule({
+export const isOwner = createPermissionRule({
   name: 'IS_OWNER',
   description: 'Should allow only if the todo belongs to the user',
-  resourceType: TODO_LIST_RESOURCE_TYPE,
+  resourceType: todoListPermissionResourceRef,
   paramsSchema: z.object({
     userId: z.string().describe('User ID to match on the resource'),
   }),
@@ -157,11 +159,11 @@ export const isOwner = createTodoListPermissionRule({
 export const rules = { isOwner };
 ```
 
-`makeCreatePermissionRule` is a helper used to ensure that rules created for this plugin use consistent types for the resource and query.
+The `todoListPermissionResourceRef` is a utility that encapsulates the types and constants related to the resource type. It ensures that the resource and query types are consistent across all rules created for this resource.
 
 :::note Note
 
-To support custom rules defined by Backstage integrators, you must export `createTodoListPermissionRule` from the backend package and provide some way for custom rules to be passed in before the backend starts, likely via `extension point`.
+To support custom rules defined by Backstage integrators, you must export `todoListPermissionResourceRef` from the backend package, or a `*-node` package if you want to enable the creation of third-party modules.
 
 :::
 
@@ -186,14 +188,12 @@ import {
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
 import {
-  /* highlight-add-next-line */
-  TODO_LIST_RESOURCE_TYPE,
   todoListCreatePermission,
   todoListUpdatePermission,
 } from '@internal/plugin-todo-list-common';
 /* highlight-add-start */
 import { getTodo } from './todos';
-import { rules } from './rules';
+import { todoListPermissionResourceRef, rules } from './rules';
 /* highlight-add-end */
 
 // ...
@@ -206,7 +206,7 @@ permissionsRegistry.addPermissions([
 /* highlight-remove-end */
 /* highlight-add-start */
 permissionsRegistry.addResourceType({
-  resourceType: TODO_LIST_RESOURCE_TYPE,
+  resourceRef: todoListPermissionResourceRef,
   permissions: [todoListCreatePermission, todoListUpdatePermission],
   rules: Object.values(rules),
   getResources: async resourceRefs => {
@@ -225,11 +225,10 @@ Create a new `plugins/todo-list-backend/src/conditionExports.ts` file and add th
 ```typescript title="plugins/todo-list-backend/src/conditionExports.ts"
 import { TODO_LIST_RESOURCE_TYPE } from '@internal/plugin-todo-list-common';
 import { createConditionExports } from '@backstage/plugin-permission-node';
-import { rules } from './service/rules';
+import { todoListPermissionResourceRef, rules } from './service/rules';
 
 const { conditions, createConditionalDecision } = createConditionExports({
-  pluginId: 'todolist',
-  resourceType: TODO_LIST_RESOURCE_TYPE,
+  resourceRef: todoListPermissionResourceRef,
   rules,
 });
 

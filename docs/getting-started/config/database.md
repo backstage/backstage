@@ -168,5 +168,6 @@ We recommend you read [Setting up authentication](./authentication.md) next.
 If you want to read more about the database configuration, here are some helpful links:
 
 - [Configuring Plugin Databases](../../tutorials/configuring-plugin-databases.md#privileges)
+- [Manual Knex Rollback](../../tutorials/manual-knex-rollback.md)
 - [Read more about Knex](http://knexjs.org/), the database wrapper that we use.
 - [Install `pgAdmin` 4](https://www.pgadmin.org/), a helpful tool for querying your database.

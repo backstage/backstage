@@ -163,6 +163,17 @@ catalog:
   orphanStrategy: delete
 ```
 
+## Clean up entities from orphaned entity providers
+
+By default, if an entity provider which has provided entities to the catalog, is no longer configured, then the entities remain in the catalog until they are manually unregistered.
+
+To remove these entities automatically, you can use the following configuration.
+
+```yaml
+catalog:
+  orphanProviderStrategy: delete
+```
+
 ## Processing Interval
 
 The [processing loop](./life-of-an-entity.md#processing) is

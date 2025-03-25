@@ -45,6 +45,8 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
   const kinds = uiSchema['ui:options']?.kinds;
   const showCounts = uiSchema['ui:options']?.showCounts;
   const helperText = uiSchema['ui:options']?.helperText;
+  const isDisabled = uiSchema?.['ui:disabled'] ?? false;
+
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const { loading, value: existingTags } = useAsync(async () => {
@@ -101,6 +103,7 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
         freeSolo
         filterSelectedOptions
         onChange={setTags}
+        disabled={isDisabled}
         value={formData || []}
         inputValue={inputValue}
         loading={loading}
@@ -113,6 +116,7 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
           <TextField
             {...params}
             label={t('fields.entityTagsPicker.title')}
+            disabled={isDisabled}
             onChange={e => setInputValue(e.target.value)}
             error={inputError}
             helperText={helperText ?? t('fields.entityTagsPicker.description')}

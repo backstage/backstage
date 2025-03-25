@@ -1,6 +1,6 @@
 {
   "name": "@backstage/canon",
-  "version": "0.1.0-next.0",
+  "version": "0.2.1-next.0",
   "backstage": {
     "role": "web-library"
   },
@@ -19,22 +19,25 @@
     "directory": "packages/canon"
   },
   "license": "Apache-2.0",
-  "sideEffects": false,
+  "sideEffects": true,
   "main": "src/index.ts",
   "types": "src/index.ts",
   "files": [
-    "dist"
+    "dist",
+    "css"
   ],
   "scripts": {
     "build": "yarn build:app && yarn build:css",
+    "build-storybook": "storybook build",
     "build:app": "backstage-cli package build",
     "build:css": "node scripts/build-css.mjs",
-    "build-storybook": "storybook build",
+    "build:css:watch": "node scripts/build-css.mjs --watch",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "start": "storybook dev -p 6006",
+    "start": "concurrently \"yarn build:css:watch\" \"yarn storybook\"",
+    "storybook": "storybook dev -p 6006",
     "test": "backstage-cli package test"
   },
   "dependencies": {
@@ -44,21 +47,21 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@chromatic-com/storybook": "^3.2.2",
-    "@storybook/addon-essentials": "^8.5.0",
-    "@storybook/addon-interactions": "^8.5.0",
+    "@storybook/addon-essentials": "^8.6.4",
+    "@storybook/addon-interactions": "^8.6.4",
     "@storybook/addon-styling-webpack": "^1.0.1",
-    "@storybook/addon-themes": "^8.5.0",
-    "@storybook/addon-webpack5-compiler-swc": "^2.0.0",
-    "@storybook/blocks": "^8.5.0",
-    "@storybook/react": "^8.5.0",
-    "@storybook/react-webpack5": "^8.5.0",
-    "@storybook/test": "^8.5.0",
+    "@storybook/addon-themes": "^8.6.4",
+    "@storybook/addon-webpack5-compiler-swc": "^2.1.0",
+    "@storybook/blocks": "^8.6.4",
+    "@storybook/react": "^8.6.4",
+    "@storybook/react-webpack5": "^8.6.4",
+    "@storybook/test": "^8.6.4",
     "@testing-library/jest-dom": "^6.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "chalk": "^5.4.1",
-    "eslint-plugin-storybook": "^0.11.1",
+    "concurrently": "^9.1.2",
+    "eslint-plugin-storybook": "^0.11.4",
     "glob": "^11.0.1",
     "globals": "^15.11.0",
     "lightningcss": "^1.29.1",
@@ -66,13 +69,13 @@
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0",
-    "storybook": "^8.5.0"
+    "storybook": "^8.6.4"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.3.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {

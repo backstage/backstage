@@ -31,6 +31,7 @@ import { gitlabAuthenticator } from '@backstage/plugin-auth-backend-module-gitla
  * Auth provider integration for GitLab auth
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export const gitlab = createAuthProviderIntegration({
   create(options?: {

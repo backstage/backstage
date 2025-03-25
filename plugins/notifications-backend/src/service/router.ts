@@ -180,7 +180,7 @@ export async function createRouter(
   const processOptions = async (
     opts: NotificationSendOptions,
     origin: string,
-  ) => {
+  ): Promise<NotificationSendOptions> => {
     const filtered = await filterProcessors({ ...opts, origin, user: null });
     let ret = opts;
     for (const processor of filtered) {
@@ -470,8 +470,8 @@ export async function createRouter(
         },
         channel: 'notifications',
       });
-      postProcessNotification(ret, opts);
     }
+    postProcessNotification(ret, opts);
     return notification;
   };
 
@@ -553,8 +553,14 @@ export async function createRouter(
     let users = [];
 
     if (!recipients || !title) {
-      logger.error(`Invalid notification request received`);
-      throw new InputError(`Invalid notification request received`);
+      const missing = [
+        !title ? 'title' : null,
+        !recipients ? 'recipients' : null,
+      ].filter(Boolean);
+      const err = `Invalid notification request received: missing ${missing.join(
+        ', ',
+      )}`;
+      throw new InputError(err);
     }
 
     if (link) {
@@ -581,7 +587,7 @@ export async function createRouter(
         origin,
       );
       notifications.push(broadcast);
-    } else {
+    } else if (recipients.type === 'entity') {
       const entityRef = recipients.entityRef;
 
       try {
@@ -591,7 +597,6 @@ export async function createRouter(
           { auth, catalogClient: catalog },
         );
       } catch (e) {
-        logger.error(`Failed to resolve notification receivers: ${e}`);
         throw new InputError('Failed to resolve notification receivers', e);
       }
 
@@ -602,6 +607,10 @@ export async function createRouter(
         origin,
       );
       notifications.push(...userNotifications);
+    } else {
+      throw new InputError(
+        `Invalid recipients type, please use either 'broadcast' or 'entity'`,
+      );
     }
 
     res.json(notifications);

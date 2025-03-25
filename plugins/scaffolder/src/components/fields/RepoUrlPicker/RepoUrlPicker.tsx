@@ -77,7 +77,10 @@ export const RepoUrlPicker = (
     () => uiSchema?.['ui:options']?.allowedRepos ?? [],
     [uiSchema],
   );
-
+  const isDisabled = useMemo(
+    () => uiSchema?.['ui:disabled'] ?? false,
+    [uiSchema],
+  );
   const { owner, organization, project, repoName } = state;
 
   useEffect(() => {
@@ -179,6 +182,7 @@ export const RepoUrlPicker = (
         hosts={allowedHosts}
         onChange={host => setState(prevState => ({ ...prevState, host }))}
         rawErrors={rawErrors}
+        isDisabled={isDisabled}
       />
       {hostType === 'github' && (
         <GithubRepoPicker
@@ -186,6 +190,11 @@ export const RepoUrlPicker = (
           onChange={updateLocalState}
           rawErrors={rawErrors}
           state={state}
+          isDisabled={isDisabled}
+          accessToken={
+            uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
+            secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
+          }
         />
       )}
       {hostType === 'gitea' && (
@@ -194,6 +203,7 @@ export const RepoUrlPicker = (
           allowedRepos={allowedRepos}
           rawErrors={rawErrors}
           state={state}
+          isDisabled={isDisabled}
           onChange={updateLocalState}
         />
       )}
@@ -203,6 +213,7 @@ export const RepoUrlPicker = (
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
+          isDisabled={isDisabled}
           accessToken={
             uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
             secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
@@ -216,6 +227,7 @@ export const RepoUrlPicker = (
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
+          isDisabled={isDisabled}
           accessToken={
             uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
             secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
@@ -228,6 +240,7 @@ export const RepoUrlPicker = (
           allowedProject={allowedProjects}
           rawErrors={rawErrors}
           state={state}
+          isDisabled={isDisabled}
           onChange={updateLocalState}
         />
       )}
@@ -236,6 +249,7 @@ export const RepoUrlPicker = (
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
+          isDisabled={isDisabled}
         />
       )}
       <RepoUrlPickerRepoName
@@ -244,10 +258,10 @@ export const RepoUrlPicker = (
         onChange={repo =>
           setState(prevState => ({
             ...prevState,
-            repoName: repo.name,
-            id: repo.id || '',
+            repoName: repo.id || repo.name,
           }))
         }
+        isDisabled={isDisabled}
         rawErrors={rawErrors}
         availableRepos={state.availableRepos}
       />

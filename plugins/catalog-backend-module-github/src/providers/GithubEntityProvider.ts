@@ -158,12 +158,12 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       SingleInstanceGithubCredentialsProvider.create(integration.config);
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName(): string {
     return `github-provider:${this.config.id}`;
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
     await this.events?.subscribe({

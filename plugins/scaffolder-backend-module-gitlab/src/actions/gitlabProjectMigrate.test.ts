@@ -22,7 +22,9 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 
 const mockGitlabClient = {
   Migrations: {
-    create: jest.fn(),
+    create: jest.fn(() => ({
+      id: 0,
+    })),
   },
 };
 

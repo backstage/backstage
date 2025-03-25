@@ -1,5 +1,105 @@
 # @backstage/plugin-app
 
+## 0.1.7
+
+### Patch Changes
+
+- 583fc54: Fixed extra app elements not being rendered as part of apps without a sign-in page.
+- 0aa9d82: Added implementation of the new `DialogApi`.
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/integration-react@1.2.5
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+
+## 0.1.7-next.2
+
+### Patch Changes
+
+- 0aa9d82: Added implementation of the new `DialogApi`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/integration-react@1.2.5-next.0
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-react@0.4.31
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- 583fc54: Fixed extra app elements not being rendered as part of apps without a sign-in page.
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/integration-react@1.2.4
+  - @backstage/theme@0.6.4
+  - @backstage/plugin-permission-react@0.4.31
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+  - @backstage/integration-react@1.2.4
+
+## 0.1.6
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/integration-react@1.2.4
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-permission-react@0.4.31
+  - @backstage/theme@0.6.4
+
+## 0.1.6-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/plugin-permission-react@0.4.31-next.0
+
+## 0.1.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/plugin-permission-react@0.4.31-next.0
+
+## 0.1.6-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.1
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/plugin-permission-react@0.4.31-next.0
+  - @backstage/theme@0.6.4-next.0
+
 ## 0.1.6-next.0
 
 ### Patch Changes

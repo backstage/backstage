@@ -18,9 +18,13 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { useEffect } from 'react';
-import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import {
+  scaffolderApiRef,
+  SecretsContextProvider,
+} from '@backstage/plugin-scaffolder-react';
 import { DryRunProvider, useDryRun } from '../DryRunContext';
 import { DryRunResultsList } from './DryRunResultsList';
+import { formDecoratorsApiRef } from '../../../api';
 
 function DryRunRemote({ execute }: { execute?: number }) {
   const dryRun = useDryRun();
@@ -39,22 +43,35 @@ function DryRunRemote({ execute }: { execute?: number }) {
   return null;
 }
 
-const mockScaffolderApi = {
-  dryRun: async () => ({
-    directoryContents: [],
-    log: [],
-    output: {},
-    steps: [],
-  }),
-};
+const mockApis = [
+  [
+    scaffolderApiRef,
+    {
+      dryRun: async () => ({
+        directoryContents: [],
+        log: [],
+        output: {},
+        steps: [],
+      }),
+    },
+  ],
+  [
+    formDecoratorsApiRef,
+    {
+      getFormDecorators: async () => [],
+    },
+  ],
+] as const;
 
 describe('DryRunResultsList', () => {
   it('renders without exploding', async () => {
     const rendered = await renderInTestApp(
-      <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
-        <DryRunProvider>
-          <DryRunResultsList />
-        </DryRunProvider>
+      <TestApiProvider apis={mockApis}>
+        <SecretsContextProvider>
+          <DryRunProvider>
+            <DryRunResultsList />
+          </DryRunProvider>
+        </SecretsContextProvider>
       </TestApiProvider>,
     );
     expect(rendered.baseElement.querySelector('ul')).toBeEmptyDOMElement();
@@ -62,11 +79,13 @@ describe('DryRunResultsList', () => {
 
   it('adds new result items and deletes them', async () => {
     const { rerender } = await renderInTestApp(
-      <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
-        <DryRunProvider>
-          <DryRunRemote execute={1} />
-          <DryRunResultsList />
-        </DryRunProvider>
+      <TestApiProvider apis={mockApis}>
+        <SecretsContextProvider>
+          <DryRunProvider>
+            <DryRunRemote execute={1} />
+            <DryRunResultsList />
+          </DryRunProvider>
+        </SecretsContextProvider>
       </TestApiProvider>,
     );
 
@@ -75,11 +94,13 @@ describe('DryRunResultsList', () => {
 
     await act(async () => {
       rerender(
-        <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
-          <DryRunProvider>
-            <DryRunRemote execute={2} />
-            <DryRunResultsList />
-          </DryRunProvider>
+        <TestApiProvider apis={mockApis}>
+          <SecretsContextProvider>
+            <DryRunProvider>
+              <DryRunRemote execute={2} />
+              <DryRunResultsList />
+            </DryRunProvider>
+          </SecretsContextProvider>
         </TestApiProvider>,
       );
     });

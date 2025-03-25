@@ -19,11 +19,11 @@ import { SpaceProps } from '../../types';
 export interface ContainerProps {
   children?: React.ReactNode;
   className?: string;
-  marginY?: SpaceProps['marginY'];
-  marginBottom?: SpaceProps['marginBottom'];
-  marginTop?: SpaceProps['marginTop'];
-  paddingY?: SpaceProps['paddingY'];
-  paddingBottom?: SpaceProps['paddingBottom'];
-  paddingTop?: SpaceProps['paddingTop'];
+  my?: SpaceProps['my'];
+  mb?: SpaceProps['mb'];
+  mt?: SpaceProps['mt'];
+  py?: SpaceProps['py'];
+  pb?: SpaceProps['pb'];
+  pt?: SpaceProps['pt'];
   style?: React.CSSProperties;
 }

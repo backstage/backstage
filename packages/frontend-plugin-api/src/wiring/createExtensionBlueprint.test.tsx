@@ -28,8 +28,10 @@ import {
 import { createExtensionInput } from './createExtensionInput';
 import { RouteRef } from '../routing';
 import { ExtensionDefinition } from './createExtension';
-import { createExtensionDataContainer } from './createExtensionDataContainer';
-import { OpaqueExtensionDefinition } from '@internal/frontend';
+import {
+  createExtensionDataContainer,
+  OpaqueExtensionDefinition,
+} from '@internal/frontend';
 
 function unused(..._any: any[]) {}
 
@@ -87,7 +89,11 @@ describe('createExtensionBlueprint', () => {
   it('should allow creation of extension blueprints with a generator', () => {
     const TestExtensionBlueprint = createExtensionBlueprint({
       kind: 'test-extension',
-      attachTo: { id: 'test', input: 'default' },
+      // Try multiple attachment points for this one
+      attachTo: [
+        { id: 'test-1', input: 'default' },
+        { id: 'test-2', input: 'default' },
+      ],
       output: [coreExtensionData.reactElement],
       *factory(params: { text: string }) {
         yield coreExtensionData.reactElement(<h1>{params.text}</h1>);
@@ -103,10 +109,10 @@ describe('createExtensionBlueprint', () => {
 
     expect(extension).toEqual({
       $$type: '@backstage/ExtensionDefinition',
-      attachTo: {
-        id: 'test',
-        input: 'default',
-      },
+      attachTo: [
+        { id: 'test-1', input: 'default' },
+        { id: 'test-2', input: 'default' },
+      ],
       configSchema: undefined,
       disabled: false,
       inputs: {},

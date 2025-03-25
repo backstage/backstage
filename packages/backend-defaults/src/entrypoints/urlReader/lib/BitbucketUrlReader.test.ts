@@ -32,6 +32,7 @@ import { NotModifiedError } from '@backstage/errors';
 import { BitbucketUrlReader } from './BitbucketUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 import getRawBody from 'raw-body';
+import { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
 
 const logger = mockServices.logger.mock();
 
@@ -612,6 +613,23 @@ describe('BitbucketUrlReader', () => {
           { etag: '12ab34cd56ef' },
         ),
       ).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should work for exact URLs', async () => {
+      hostedBitbucketProcessor.readUrl = jest.fn().mockResolvedValue({
+        buffer: async () => Buffer.from('content'),
+        etag: 'etag',
+      } as UrlReaderServiceReadUrlResponse);
+
+      const result = await hostedBitbucketProcessor.search(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs/index.md?at=master',
+      );
+      expect(result.etag).toBe('etag');
+      expect(result.files.length).toBe(1);
+      expect(result.files[0].url).toBe(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs/index.md?at=master',
+      );
+      expect((await result.files[0].content()).toString()).toEqual('content');
     });
   });
 });

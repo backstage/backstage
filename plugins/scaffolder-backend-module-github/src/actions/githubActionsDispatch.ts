@@ -24,7 +24,7 @@ import {
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { examples } from './githubActionsDispatch.examples';
 
 /**
@@ -55,7 +55,8 @@ export function createGithubActionsDispatchAction(options: {
         properties: {
           repoUrl: {
             title: 'Repository Location',
-            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
+            description:
+              'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
             type: 'string',
           },
           workflowId: {
@@ -78,7 +79,8 @@ export function createGithubActionsDispatchAction(options: {
           token: {
             title: 'Authentication Token',
             type: 'string',
-            description: 'The GITHUB_TOKEN to use for authorization to GitHub',
+            description:
+              'The `GITHUB_TOKEN` to use for authorization to GitHub',
           },
         },
       },
@@ -96,7 +98,7 @@ export function createGithubActionsDispatchAction(options: {
         `Dispatching workflow ${workflowId} for repo ${repoUrl} on ${branchOrTagName}`,
       );
 
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
@@ -105,21 +107,28 @@ export function createGithubActionsDispatchAction(options: {
       const client = new Octokit(
         await getOctokitOptions({
           integrations,
-          repoUrl,
+          host,
+          owner,
+          repo,
           credentialsProvider: githubCredentialsProvider,
           token: providedToken,
         }),
       );
 
-      await client.rest.actions.createWorkflowDispatch({
-        owner,
-        repo,
-        workflow_id: workflowId,
-        ref: branchOrTagName,
-        inputs: workflowInputs,
-      });
+      await ctx.checkpoint({
+        key: `create.workflow.dispatch.${owner}.${repo}.${workflowId}`,
+        fn: async () => {
+          await client.rest.actions.createWorkflowDispatch({
+            owner,
+            repo,
+            workflow_id: workflowId,
+            ref: branchOrTagName,
+            inputs: workflowInputs,
+          });
 
-      ctx.logger.info(`Workflow ${workflowId} dispatched successfully`);
+          ctx.logger.info(`Workflow ${workflowId} dispatched successfully`);
+        },
+      });
     },
   });
 }

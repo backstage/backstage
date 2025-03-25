@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud",
-  "version": "0.2.6-next.0",
+  "version": "0.2.8-next.0",
   "description": "The Bitbucket Cloud module for @backstage/plugin-scaffolder-backend",
   "backstage": {
     "role": "backend-plugin-module",
@@ -48,6 +48,7 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-bitbucket-cloud-common": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
+    "bitbucket": "^2.12.0",
     "fs-extra": "^11.2.0",
     "yaml": "^2.0.0"
   },

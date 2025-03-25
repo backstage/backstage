@@ -40,7 +40,7 @@ import {
   SignInResolver,
 } from '../types';
 import { OAuthAuthenticator, OAuthAuthenticatorResult } from './types';
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { CookieScopeManager } from './CookieScopeManager';
 
 /** @public */
@@ -99,6 +99,9 @@ export function createOAuthRouteHandlers<TProfile>(
   const callbackUrl =
     config.getOptionalString('callbackUrl') ??
     `${baseUrl}/${providerId}/handler/frame`;
+  const sessionDuration = config.has('sessionDuration')
+    ? readDurationFromConfig(config, { key: 'sessionDuration' })
+    : undefined;
 
   const stateTransform = options.stateTransform ?? (state => ({ state }));
   const profileTransform =
@@ -110,6 +113,7 @@ export function createOAuthRouteHandlers<TProfile>(
     defaultAppOrigin,
     providerId,
     cookieConfigurer,
+    sessionDuration,
   });
 
   const scopeManager = CookieScopeManager.create({
@@ -311,7 +315,12 @@ export function createOAuthRouteHandlers<TProfile>(
         const scopeRefresh = await scopeManager.refresh(req);
 
         const result = await authenticator.refresh(
-          { req, scope: scopeRefresh.scope, refreshToken },
+          {
+            req,
+            scope: scopeRefresh.scope,
+            scopeAlreadyGranted: scopeRefresh.scopeAlreadyGranted,
+            refreshToken,
+          },
           authenticatorCtx,
         );
 

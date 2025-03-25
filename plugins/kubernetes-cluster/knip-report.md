@@ -10,10 +10,9 @@
 | lodash                  | package.json | error    |
 | luxon                   | package.json | error    |
 
-## Unused devDependencies (2)
+## Unused devDependencies (1)
 
-| Name                   | Location     | Severity |
-| :--------------------- | :----------- | :------- |
-| @testing-library/react | package.json | error    |
-| @testing-library/dom   | package.json | error    |
+| Name                 | Location     | Severity |
+| :------------------- | :----------- | :------- |
+| @testing-library/dom | package.json | error    |
 

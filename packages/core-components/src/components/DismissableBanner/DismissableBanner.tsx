@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useState, useEffect } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
 import useObservable from 'react-use/esm/useObservable';
 import classNames from 'classnames';
@@ -102,23 +102,17 @@ export const DismissableBanner = (props: Props) => {
   const classes = useStyles();
   const storageApi = useApi(storageApiRef);
   const notificationsStore = storageApi.forBucket('notifications');
-  const rawDismissedBanners =
-    notificationsStore.snapshot<string[]>('dismissedBanners').value ?? [];
-
-  const [dismissedBanners, setDismissedBanners] = useState(
-    new Set(rawDismissedBanners),
-  );
-
   const observedItems = useObservable(
     notificationsStore.observe$<string[]>('dismissedBanners'),
+    notificationsStore.snapshot<string[]>('dismissedBanners'),
   );
 
-  useEffect(() => {
-    if (observedItems?.value) {
-      const currentValue = observedItems?.value ?? [];
-      setDismissedBanners(new Set(currentValue));
-    }
-  }, [observedItems?.value]);
+  const dismissedBanners = useMemo(
+    () => new Set(observedItems.value ?? []),
+    [observedItems.value],
+  );
+
+  const loadingSettings = observedItems.presence === 'unknown';
 
   const handleClick = () => {
     notificationsStore.set('dismissedBanners', [...dismissedBanners, id]);
@@ -131,7 +125,7 @@ export const DismissableBanner = (props: Props) => {
           ? { vertical: 'bottom', horizontal: 'center' }
           : { vertical: 'top', horizontal: 'center' }
       }
-      open={!dismissedBanners.has(id)}
+      open={!loadingSettings && !dismissedBanners.has(id)}
       classes={{
         root: classNames(classes.root, !fixed && classes.topPosition),
       }}

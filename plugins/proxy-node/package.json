@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-proxy-node",
-  "version": "0.1.1-next.0",
+  "version": "0.1.2",
   "description": "The plugin-proxy-node module for @backstage/plugin-proxy-backend",
   "backstage": {
     "role": "node-library",

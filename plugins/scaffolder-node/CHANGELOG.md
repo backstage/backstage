@@ -1,5 +1,252 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.8.1-next.0
+
+### Patch Changes
+
+- 497d47a: Document the internal built-in filters, and ensure that the types are validated when using `createTemplateFilter` and `createTemplateGlobalFunction` from the `zod` schema.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 0.8.0
+
+### Minor Changes
+
+- 1a58846: **DEPRECATION**: We've deprecated the old way of defining actions using `createTemplateAction` with raw `JSONSchema` and type parameters, as well as using `zod` through an import. You can now use the new format to define `createTemplateActions` with `zod` provided by the framework. This change also removes support for `logStream` in the `context` as well as moving the `logger` to an instance of `LoggerService`.
+
+  Before:
+
+  ```ts
+  createTemplateAction<{ repoUrl: string }, { test: string }>({
+    id: 'test',
+    schema: {
+      input: {
+        type: 'object',
+        required: ['repoUrl'],
+        properties: {
+          repoUrl: { type: 'string' },
+        },
+      },
+      output: {
+        type: 'object',
+        required: ['test'],
+        properties: {
+          test: { type: 'string' },
+        },
+      },
+    },
+    handler: async ctx => {
+      ctx.logStream.write('blob');
+    },
+  });
+
+  // or
+
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: z.object({
+        repoUrl: z.string(),
+      }),
+      output: z.object({
+        test: z.string(),
+      }),
+    },
+    handler: async ctx => {
+      ctx.logStream.write('something');
+    },
+  });
+  ```
+
+  After:
+
+  ```ts
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: {
+        repoUrl: d => d.string(),
+      },
+      output: {
+        test: d => d.string(),
+      },
+    },
+    handler: async ctx => {
+      // you can just use ctx.logger.log('...'), or if you really need a log stream you can do this:
+      const logStream = new PassThrough();
+      logStream.on('data', chunk => {
+        ctx.logger.info(chunk.toString());
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- Updated dependencies
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-scaffolder-common@1.5.10
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.8.0-next.2
+
+### Minor Changes
+
+- 1a58846: **DEPRECATION**: We've deprecated the old way of defining actions using `createTemplateAction` with raw `JSONSchema` and type parameters, as well as using `zod` through an import. You can now use the new format to define `createTemplateActions` with `zod` provided by the framework. This change also removes support for `logStream` in the `context` as well as moving the `logger` to an instance of `LoggerService`.
+
+  Before:
+
+  ```ts
+  createTemplateAction<{ repoUrl: string }, { test: string }>({
+    id: 'test',
+    schema: {
+      input: {
+        type: 'object',
+        required: ['repoUrl'],
+        properties: {
+          repoUrl: { type: 'string' },
+        },
+      },
+      output: {
+        type: 'object',
+        required: ['test'],
+        properties: {
+          test: { type: 'string' },
+        },
+      },
+    },
+    handler: async ctx => {
+      ctx.logStream.write('blob');
+    },
+  });
+
+  // or
+
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: z.object({
+        repoUrl: z.string(),
+      }),
+      output: z.object({
+        test: z.string(),
+      }),
+    },
+    handler: async ctx => {
+      ctx.logStream.write('something');
+    },
+  });
+  ```
+
+  After:
+
+  ```ts
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: {
+        repoUrl: d => d.string(),
+      },
+      output: {
+        test: d => d.string(),
+      },
+    },
+    handler: async ctx => {
+      // you can just use ctx.logger.log('...'), or if you really need a log stream you can do this:
+      const logStream = new PassThrough();
+      logStream.on('data', chunk => {
+        ctx.logger.info(chunk.toString());
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- Updated dependencies
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.10-next.0
+
+## 0.7.1-next.1
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.5.10-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+
+## 0.7.0
+
+### Minor Changes
+
+- dc8dd4b: Added new `createTemplateFilter`, `createTemplateGlobalFunction`, `createTemplateGlobalValue` for template extensions.
+- a4aa244: This change introduces an optional `taskId` property to `TaskContext`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 0.7.0-next.2
+
+### Minor Changes
+
+- dc8dd4b: Added new `createTemplateFilter`, `createTemplateGlobalFunction`, `createTemplateGlobalValue` for template extensions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 0.7.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.9
+
 ## 0.7.0-next.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-rails",
-  "version": "0.5.6-next.0",
+  "version": "0.5.8-next.0",
   "description": "A module for the scaffolder backend that lets you template projects using Rails",
   "backstage": {
     "role": "backend-plugin-module",
@@ -43,7 +43,6 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",

@@ -6,8 +6,7 @@ import { Icon } from '@backstage/canon';
 import { usePlayground } from '@/utils/playground-context';
 
 const themes = [
-  { name: 'Backstage Default', value: 'default' },
-  { name: 'Backstage Legacy', value: 'legacy' },
+  { name: 'Backstage', value: 'default' },
   { name: 'Custom theme', value: 'custom' },
 ];
 
@@ -25,7 +24,7 @@ export const ThemeNameSelector = () => {
           placeholder="Select a theme"
         />
         <Select.Icon className={styles.SelectIcon}>
-          <Icon name="chevronDown" />
+          <Icon name="chevron-down" />
         </Select.Icon>
       </Select.Trigger>
       <Select.Portal>

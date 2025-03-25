@@ -17,15 +17,12 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Icon } from './Icon';
-import { CanonProvider } from '../../contexts/canon';
+import { IconProvider } from './provider';
 import { icons } from './icons';
 
 const meta = {
   title: 'Components/Icon',
   component: Icon,
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
     name: {
       control: 'select',
@@ -48,13 +45,13 @@ export const Default: Story = {
 
 export const WithCustomIcon: Story = {
   args: {
-    name: 'arrowDown',
+    name: 'arrow-down',
   },
   decorators: [
     Story => (
-      <CanonProvider overrides={{ arrowDown: () => <div>Custom Icon</div> }}>
+      <IconProvider overrides={{ 'arrow-down': () => <div>Custom Icon</div> }}>
         <Story />
-      </CanonProvider>
+      </IconProvider>
     ),
   ],
 };
