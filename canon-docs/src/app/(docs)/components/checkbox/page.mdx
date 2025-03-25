@@ -1,5 +1,5 @@
 import { PropsTable } from '@/components/PropsTable';
-import { CheckboxPreview, CheckboxAllVariants } from '@/snippets/checkbox';
+import { CheckboxSnippet } from '@/snippets/stories-snippets';
 import { Snippet } from '@/components/Snippet';
 import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
@@ -11,8 +11,9 @@ import { checkboxPropDefs } from './props';
 A checkbox component that can be used to trigger actions.
 
 <Snippet
+  align="center"
   py={4}
-  preview={<CheckboxPreview />}
+  preview={<CheckboxSnippet story="Default" />}
   code={`<Checkbox label="Accept terms and conditions" />`}
 />
 
@@ -55,7 +56,7 @@ Here's a view when checkboxes have different variants.
   align="center"
   py={4}
   open
-  preview={<CheckboxAllVariants />}
+  preview={<CheckboxSnippet story="AllVariants" />}
   code={`<Inline alignY="center">
     <Checkbox />
     <Checkbox checked />

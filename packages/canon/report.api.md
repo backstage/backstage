@@ -13,6 +13,7 @@ import { default as React_2 } from 'react';
 import * as React_3 from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
+import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
 import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
 
@@ -636,7 +637,7 @@ export interface IconContextProps {
 }
 
 // @public (undocumented)
-export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
+export type IconMap = Partial<Record<IconNames, RemixiconComponentType>>;
 
 // @public (undocumented)
 export type IconNames =
@@ -711,7 +712,7 @@ export interface IconProviderProps {
   // (undocumented)
   children?: ReactNode;
   // (undocumented)
-  overrides?: Partial<Record<IconNames, React.ComponentType>>;
+  overrides?: Partial<Record<IconNames, RemixiconComponentType>>;
 }
 
 // @public (undocumented)
