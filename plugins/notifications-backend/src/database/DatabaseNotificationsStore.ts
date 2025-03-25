@@ -24,6 +24,7 @@ import {
   TopicGetOptions,
 } from './NotificationsStore';
 import {
+  generateSettingsHash,
   Notification,
   NotificationSettings,
   notificationSeverities,
@@ -584,6 +585,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     settings: NotificationSettings;
   }): Promise<void> {
     const rows: {
+      settings_key_hash: string;
       user: string;
       channel: string;
       origin: string;
@@ -594,6 +596,12 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     options.settings.channels.forEach(channel => {
       channel.origins.forEach(origin => {
         rows.push({
+          settings_key_hash: generateSettingsHash(
+            options.user,
+            channel.id,
+            origin.id,
+            null,
+          ),
           user: options.user,
           channel: channel.id,
           origin: origin.id,
@@ -603,6 +611,12 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
         origin.topics?.forEach(topic => {
           rows.push({
+            settings_key_hash: generateSettingsHash(
+              options.user,
+              channel.id,
+              origin.id,
+              topic.id,
+            ),
             user: options.user,
             channel: channel.id,
             origin: origin.id,

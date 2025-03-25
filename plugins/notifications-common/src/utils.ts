@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { NotificationSettings } from './types';
+import crypto from 'crypto';
 
 /** @public */
 export const isNotificationsEnabledFor = (
@@ -39,4 +40,15 @@ export const isNotificationsEnabledFor = (
     return origin.enabled;
   }
   return topic.enabled;
+};
+
+/** @public */
+export const generateSettingsHash = (
+  user: string,
+  channel: string,
+  origin: string,
+  topic: string | null,
+): string => {
+  const rawKey = `${user}|${channel}|${origin}|${topic ?? ''}`;
+  return crypto.createHash('sha256').update(rawKey).digest('hex');
 };
