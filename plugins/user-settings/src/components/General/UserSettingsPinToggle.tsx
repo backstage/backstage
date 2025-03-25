@@ -20,16 +20,19 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Switch from '@material-ui/core/Switch';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useSidebarPinState } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
 /** @public */
 export const UserSettingsPinToggle = () => {
   const { isPinned, toggleSidebarPinState } = useSidebarPinState();
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   return (
     <ListItem>
       <ListItemText
-        primary="Pin Sidebar"
-        secondary="Prevent the sidebar from collapsing"
+        primary={t('pinToggle.title')}
+        secondary={t('pinToggle.description')}
       />
       <ListItemSecondaryAction>
         <Tooltip

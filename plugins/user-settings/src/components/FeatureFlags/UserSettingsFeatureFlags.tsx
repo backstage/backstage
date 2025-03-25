@@ -31,6 +31,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { InfoCard } from '@backstage/core-components';
 import ClearIcon from '@material-ui/icons/Clear';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
 export const sortFlags = (
   flags: FeatureFlag[],
@@ -59,6 +61,7 @@ export const UserSettingsFeatureFlags = () => {
 
   const [state, setState] = useState<Record<string, boolean>>(initialFlagState);
   const [filterInput, setFilterInput] = useState<string>('');
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   const toggleFlag = useCallback(
     (flagName: string) => {
@@ -96,9 +99,9 @@ export const UserSettingsFeatureFlags = () => {
   const Header = () => (
     <Grid container style={{ justifyContent: 'space-between' }}>
       <Grid item xs={6} md={8}>
-        <Typography variant="h5">Feature Flags</Typography>
+        <Typography variant="h5">{t('featureFlags.title')}</Typography>
         <Typography variant="subtitle1">
-          Please refresh the page when toggling feature flags
+          {t('featureFlags.description')}
         </Typography>
       </Grid>
       {featureFlags.length >= 10 && (
