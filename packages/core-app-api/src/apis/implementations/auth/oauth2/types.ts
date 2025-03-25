@@ -16,7 +16,6 @@
 
 import {
   BackstageIdentityResponse,
-  BackstageUserIdentity,
   ProfileInfo,
 } from '@backstage/core-plugin-api';
 import { OAuthApiCreateOptions } from '../types.ts';
@@ -37,24 +36,6 @@ export type OAuth2Session = {
   };
   profile: ProfileInfo;
   backstageIdentity?: BackstageIdentityResponse;
-};
-
-/**
- * @public
- */
-export type OAuth2Response = {
-  providerInfo: {
-    accessToken: string;
-    idToken: string;
-    scope: string;
-    expiresInSeconds?: number;
-  };
-  profile: ProfileInfo;
-  backstageIdentity: {
-    token: string;
-    expiresInSeconds?: number;
-    identity: BackstageUserIdentity;
-  };
 };
 
 /**
