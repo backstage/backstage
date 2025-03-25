@@ -2044,7 +2044,7 @@ __metadata:
     storybook: ^8.3.5
     typescript: ^5.5.3
     typescript-eslint: ^8.7.0
-    vite: ^5.4.8
+    vite: ^5.4.15
   languageName: unknown
   linkType: soft
 
@@ -4810,9 +4810,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^5.4.8":
-  version: 5.4.14
-  resolution: "vite@npm:5.4.14"
+"vite@npm:^5.4.15":
+  version: 5.4.15
+  resolution: "vite@npm:5.4.15"
   dependencies:
     esbuild: ^0.21.3
     fsevents: ~2.3.3
@@ -4849,7 +4849,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 7360661da0415809454ff8809b6666e868ffc3e5ccfbd5fc17425341546cdc3dd3d37c68fcd6ed7305252aaecd0d251ede3745b57aaebd00b8aececc30b6697b
+  checksum: 296463795fdc806e2650b9caae6409b630eb4acd4ef295121e7f700548a2ecb7d7805ad25a46d668be79dc78f1ea48319afd9a646afe934fb3371f8fe30e84be
   languageName: node
   linkType: hard
 
