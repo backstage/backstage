@@ -21,8 +21,10 @@ import {
   AuthRequestOptions,
   BackstageIdentityApi,
   BackstageIdentityResponse,
+  BackstageUserIdentity,
   OAuthApi,
   OpenIdConnectApi,
+  ProfileInfo,
   ProfileInfoApi,
   SessionApi,
   SessionState,
@@ -31,7 +33,6 @@ import { Observable } from '@backstage/types';
 import {
   OAuth2CreateOptions,
   OAuth2CreateOptionsWithAuthConnector,
-  OAuth2Response,
   OAuth2Session,
 } from './types';
 
@@ -39,6 +40,21 @@ const DEFAULT_PROVIDER = {
   id: 'oauth2',
   title: 'Your Identity Provider',
   icon: () => null,
+};
+
+export type OAuth2Response = {
+  providerInfo: {
+    accessToken: string;
+    idToken: string;
+    scope: string;
+    expiresInSeconds?: number;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: {
+    token: string;
+    expiresInSeconds?: number;
+    identity: BackstageUserIdentity;
+  };
 };
 
 /**
