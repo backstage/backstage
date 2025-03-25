@@ -310,6 +310,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     it('should not send to user entity if origin is disabled in settings', async () => {
       const client = await database.getClient();
       await client('user_settings').insert({
+        settings_key_hash: 'hash',
         user: 'user:default/mock',
         channel: 'Web',
         origin: 'external:test-service',
@@ -338,6 +339,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     it('should not send to user entity if topic is disabled in settings', async () => {
       const client = await database.getClient();
       await client('user_settings').insert({
+        settings_key_hash: 'hash',
         user: 'user:default/mock',
         channel: 'Web',
         origin: 'external:test-service',
@@ -368,12 +370,14 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     it('should send to user entity if origin is enabled, but topic is disabled in settings', async () => {
       const client = await database.getClient();
       await client('user_settings').insert({
+        settings_key_hash: 'hash',
         user: 'user:default/mock',
         channel: 'Web',
         origin: 'external:test-service',
         enabled: true,
       });
       await client('user_settings').insert({
+        settings_key_hash: 'hash1',
         user: 'user:default/mock',
         channel: 'Web',
         origin: 'external:test-service',
@@ -566,6 +570,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     it('should return user settings', async () => {
       const client = await database.getClient();
       await client('user_settings').insert({
+        settings_key_hash: 'hash',
         user: 'user:default/mock',
         channel: 'Web',
         origin: 'external:test-service',
