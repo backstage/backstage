@@ -621,7 +621,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
             channel: channel.id,
             origin: origin.id,
             topic: topic.id,
-            enabled: topic.enabled,
+            enabled: origin.enabled && topic.enabled,
           });
         });
       });
