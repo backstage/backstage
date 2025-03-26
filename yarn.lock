@@ -6800,9 +6800,9 @@ __metadata:
     "@slack/bolt": ^3.21.4
     "@slack/types": ^2.14.0
     "@slack/web-api": ^7.5.0
-    dataloader: 2.2.2
-    msw: ^2.2.14
-    p-throttle: 4.1.1
+    dataloader: ^2.0.0
+    msw: ^2.0.0
+    p-throttle: ^4.1.1
   languageName: unknown
   linkType: soft
 
@@ -26632,13 +26632,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dataloader@npm:2.2.2":
-  version: 2.2.2
-  resolution: "dataloader@npm:2.2.2"
-  checksum: 4dabd247089c29f194e94d5434d504f99156c5c214a03463c20f3f17f40398d7e179edee69a27c16e315519ac8739042a810090087ae26449a0e685156a02c65
-  languageName: node
-  linkType: hard
-
 "dataloader@npm:^2.0.0, dataloader@npm:^2.2.2":
   version: 2.2.3
   resolution: "dataloader@npm:2.2.3"
@@ -37257,7 +37250,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:^2.0.0, msw@npm:^2.0.8, msw@npm:^2.2.14":
+"msw@npm:^2.0.0, msw@npm:^2.0.8":
   version: 2.7.3
   resolution: "msw@npm:2.7.3"
   dependencies:
@@ -38773,7 +38766,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-throttle@npm:4.1.1, p-throttle@npm:^4.1.1":
+"p-throttle@npm:^4.1.1":
   version: 4.1.1
   resolution: "p-throttle@npm:4.1.1"
   checksum: fe8709f3c3b1da7c033479375c2c302e80c1a5d86449013afa7cd46d1dc210bc824a7e4a9d088e66d31987d00878c2b5491bb2fe76246d4d2fc9a1636f5f8298
