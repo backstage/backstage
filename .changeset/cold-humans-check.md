@@ -2,4 +2,4 @@
 '@backstage/plugin-user-settings': patch
 ---
 
-userSetting plugin support i18n
+plugin-user-settingsgs support i18n
