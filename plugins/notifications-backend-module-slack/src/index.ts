@@ -20,9 +20,5 @@
  * @packageDocumentation
  */
 
-export {
-  ANNOTATION_SLACK_CHANNEL_ID,
-  ANNOTATION_SLACK_CHANNEL_NAME,
-  ANNOTATION_SLACK_USER_ID,
-} from './lib';
+export { ANNOTATION_SLACK_BOT_NOTIFY } from './lib';
 export { notificationsModuleSlack as default } from './module';

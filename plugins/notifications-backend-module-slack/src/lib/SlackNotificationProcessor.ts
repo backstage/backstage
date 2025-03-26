@@ -33,11 +33,7 @@ import { Counter, metrics } from '@opentelemetry/api';
 import { ChatPostMessageArguments, WebClient } from '@slack/web-api';
 import DataLoader from 'dataloader';
 import pThrottle from 'p-throttle';
-import {
-  ANNOTATION_SLACK_CHANNEL_ID,
-  ANNOTATION_SLACK_CHANNEL_NAME,
-  ANNOTATION_SLACK_USER_ID,
-} from './constants';
+import { ANNOTATION_SLACK_BOT_NOTIFY } from './constants';
 import { toChatPostMessageArgs } from './util';
 
 export class SlackNotificationProcessor implements NotificationProcessor {
@@ -48,6 +44,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly sendNotifications;
   private readonly messagesSent: Counter;
   private readonly messagesFailed: Counter;
+  private readonly broadcastChannels?: string[];
 
   static fromConfig(
     config: Config,
@@ -57,6 +54,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       logger: LoggerService;
       catalog: CatalogApi;
       slack?: WebClient;
+      broadcastChannels?: string[];
     },
   ): SlackNotificationProcessor[] {
     const slackConfig =
@@ -64,8 +62,10 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     return slackConfig.map(c => {
       const token = c.getString('token');
       const slack = options.slack ?? new WebClient(token);
+      const broadcastChannels = c.getOptionalStringArray('broadcastChannels');
       return new SlackNotificationProcessor({
         slack,
+        broadcastChannels,
         ...options,
       });
     });
@@ -77,12 +77,14 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     discovery: DiscoveryService;
     logger: LoggerService;
     catalog: CatalogApi;
+    broadcastChannels?: string[];
   }) {
-    const { auth, catalog, logger, slack } = options;
+    const { auth, catalog, logger, slack, broadcastChannels } = options;
     this.logger = logger;
     this.catalog = catalog;
     this.auth = auth;
     this.slack = slack;
+    this.broadcastChannels = broadcastChannels;
 
     const meter = metrics.getMeter('default');
     this.messagesSent = meter.createCounter(
@@ -146,15 +148,14 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     await Promise.all(
       entityRefs.map(async entityRef => {
         const compoundEntityRef = parseEntityRef(entityRef);
-        // skip users as they are sent direct messages, but allow all other entity kinds
-        // to have a channel id annotation.
+        // skip users as they are sent direct messages
         if (compoundEntityRef.kind === 'user') {
           return;
         }
 
         let channel;
         try {
-          channel = await this.getChannelId(entityRef);
+          channel = await this.getSlackNotificationTarget(entityRef);
         } catch (error) {
           this.logger.error(
             `Failed to get Slack channel for entity: ${
@@ -197,31 +198,50 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     notification: Notification,
     options: NotificationSendOptions,
   ): Promise<void> {
-    if (options.recipients.type === 'broadcast' || !notification.user) {
+    const destinations: string[] = [];
+
+    // Handle broadcast case
+    if (notification.user === null) {
+      destinations.push(...(this.broadcastChannels ?? []));
+    } else if (options.recipients.type === 'entity') {
+      // Handle user-specific notification
+      const entityRefs = [options.recipients.entityRef].flat();
+      if (entityRefs.some(e => parseEntityRef(e).kind === 'group')) {
+        // We've already dispatched a slack channel message, so let's not send a DM.
+        return;
+      }
+
+      const destination = await this.getSlackNotificationTarget(
+        notification.user,
+      );
+
+      if (!destination) {
+        this.logger.error(
+          `No slack.com/bot-notify annotation found for user: ${notification.user}`,
+        );
+        return;
+      }
+
+      destinations.push(destination);
+    }
+
+    // If no destinations, nothing to do
+    if (destinations.length === 0) {
       return;
     }
 
-    const entityRefs = [options.recipients.entityRef].flat();
-    if (entityRefs.some(e => parseEntityRef(e).kind === 'group')) {
-      // We've already dispatched a slack channel message, so let's not send a DM.
-      return;
-    }
+    // Prepare outbound messages
+    const outbound = destinations.map(channel =>
+      toChatPostMessageArgs({ channel, payload: options.payload }),
+    );
 
-    const destination = await this.getSlackUserId(notification.user);
-    if (!destination) {
-      this.logger.error(`No email found for user entity: ${notification.user}`);
-      return;
-    }
-
-    const payload = toChatPostMessageArgs({
-      channel: destination,
-      payload: options.payload,
+    // Log debug info
+    outbound.forEach(payload => {
+      this.logger.debug(`Sending notification: ${JSON.stringify(payload)}`);
     });
 
-    this.logger.debug(`Sending DM notification: ${JSON.stringify(payload)}`);
-
-    // batch it up
-    await this.sendNotifications([payload]);
+    // Send notifications
+    await this.sendNotifications(outbound);
   }
 
   async getEntities(
@@ -235,11 +255,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     const response = await this.catalog.getEntitiesByRefs(
       {
         entityRefs: entityRefs.slice(),
-        fields: [
-          `metadata.annotations.${ANNOTATION_SLACK_CHANNEL_NAME}`,
-          `metadata.annotations.${ANNOTATION_SLACK_CHANNEL_ID}`,
-          `metadata.annotations.${ANNOTATION_SLACK_USER_ID}`,
-        ],
+        fields: [`metadata.annotations.${ANNOTATION_SLACK_BOT_NOTIFY}`],
       },
       {
         token,
@@ -249,16 +265,9 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     return response.items;
   }
 
-  async getSlackUserId(entityRef: string): Promise<string | undefined> {
-    const entityLoader = new DataLoader<string, Entity | undefined>(
-      entityRefs => this.getEntities(entityRefs),
-    );
-    const entity = await entityLoader.load(entityRef);
-
-    return entity?.metadata?.annotations?.[ANNOTATION_SLACK_USER_ID];
-  }
-
-  async getChannelId(entityRef: string): Promise<string | undefined> {
+  async getSlackNotificationTarget(
+    entityRef: string,
+  ): Promise<string | undefined> {
     const entityLoader = new DataLoader<string, Entity | undefined>(
       entityRefs => this.getEntities(entityRefs),
     );
@@ -269,10 +278,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       throw new NotFoundError(`Entity not found: ${entityRef}`);
     }
 
-    return (
-      entity?.metadata?.annotations?.[ANNOTATION_SLACK_CHANNEL_ID] ||
-      entity?.metadata?.annotations?.[ANNOTATION_SLACK_CHANNEL_NAME]
-    );
+    return entity?.metadata?.annotations?.[ANNOTATION_SLACK_BOT_NOTIFY];
   }
 
   async sendNotification(args: ChatPostMessageArguments): Promise<void> {

@@ -63,7 +63,7 @@ const DEFAULT_ENTITIES_RESPONSE = {
         name: 'mock',
         namespace: 'default',
         annotations: {
-          'slack.com/user-id': 'U12345678',
+          'slack.com/bot-notify': 'U12345678',
         },
       },
       spec: {
@@ -77,7 +77,7 @@ const DEFAULT_ENTITIES_RESPONSE = {
         name: 'mock',
         namespace: 'default',
         annotations: {
-          'slack.com/channel-id': 'C12345678',
+          'slack.com/bot-notify': 'C12345678',
         },
       },
     } as unknown as Entity,
@@ -136,17 +136,12 @@ describe('SlackNotificationProcessor', () => {
           blocks: [
             {
               type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: 'No description provided',
-              },
               accessory: {
                 type: 'button',
                 text: {
                   type: 'plain_text',
                   text: 'View More',
                 },
-                url: '',
                 action_id: 'button-action',
               },
             },
@@ -172,114 +167,205 @@ describe('SlackNotificationProcessor', () => {
     });
   });
 
-  it('should send a notification to a user', async () => {
-    const slack = new WebClient();
+  describe('when a user notification is sent directly', () => {
+    it('should send a notification to a user', async () => {
+      const slack = new WebClient();
 
-    const processor = SlackNotificationProcessor.fromConfig(config, {
-      auth,
-      discovery,
-      logger,
-      catalog: catalogServiceMock({
-        entities: DEFAULT_ENTITIES_RESPONSE.items,
-      }),
-      slack,
-    })[0];
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        discovery,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        slack,
+      })[0];
 
-    await processor.postProcess(
-      {
-        origin: 'plugin',
-        id: '1234',
-        user: 'user:default/mock',
-        created: new Date(),
-        payload: {
-          title: 'notification',
-          link: '/catalog/user/default/jane.doe',
-        },
-      },
-      {
-        recipients: { type: 'entity', entityRef: 'user:default/mock' },
-        payload: { title: 'notification' },
-      },
-    );
-
-    expect(slack.chat.postMessage).toHaveBeenCalledWith({
-      channel: 'U12345678',
-      text: 'notification',
-      attachments: [
+      await processor.postProcess(
         {
-          color: '#00A699',
-          blocks: [
-            {
-              type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: 'No description provided',
-              },
-              accessory: {
-                type: 'button',
-                text: {
-                  type: 'plain_text',
-                  text: 'View More',
-                },
-                url: '',
-                action_id: 'button-action',
-              },
-            },
-            {
-              type: 'context',
-              elements: [
-                {
-                  type: 'plain_text',
-                  text: 'Severity: normal',
-                  emoji: true,
-                },
-                {
-                  type: 'plain_text',
-                  text: 'Topic: N/A',
-                  emoji: true,
-                },
-              ],
-            },
-          ],
-          fallback: 'notification',
+          origin: 'plugin',
+          id: '1234',
+          user: 'user:default/mock',
+          created: new Date(),
+          payload: {
+            title: 'notification',
+            link: '/catalog/user/default/jane.doe',
+          },
         },
-      ],
+        {
+          recipients: { type: 'entity', entityRef: 'user:default/mock' },
+          payload: { title: 'notification' },
+        },
+      );
+
+      expect(slack.chat.postMessage).toHaveBeenCalledWith({
+        channel: 'U12345678',
+        text: 'notification',
+        attachments: [
+          {
+            color: '#00A699',
+            blocks: [
+              {
+                type: 'section',
+                accessory: {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'View More',
+                  },
+                  action_id: 'button-action',
+                },
+              },
+              {
+                type: 'context',
+                elements: [
+                  {
+                    type: 'plain_text',
+                    text: 'Severity: normal',
+                    emoji: true,
+                  },
+                  {
+                    type: 'plain_text',
+                    text: 'Topic: N/A',
+                    emoji: true,
+                  },
+                ],
+              },
+            ],
+            fallback: 'notification',
+          },
+        ],
+      });
     });
   });
-  it('should not send broadcast messages', async () => {
-    const slack = new WebClient();
 
-    const processor = SlackNotificationProcessor.fromConfig(config, {
-      auth,
-      discovery,
-      logger,
-      catalog: catalogServiceMock({
-        entities: DEFAULT_ENTITIES_RESPONSE.items,
-      }),
-      slack,
-    })[0];
+  describe('when a user notification is expanded from a group', () => {
+    it('should not send a notification', async () => {
+      const slack = new WebClient();
 
-    processor.processOptions({
-      recipients: { type: 'broadcast' },
-      payload: { title: 'notification' },
-    });
-    processor.postProcess(
-      {
-        origin: 'plugin',
-        id: '1234',
-        user: null,
-        created: new Date(),
-        payload: {
-          title: 'notification',
-          link: '/catalog/user/default/jane.doe',
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        discovery,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        slack,
+      })[0];
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: '1234',
+          user: 'user:default/mock',
+          created: new Date(),
+          payload: {
+            title: 'notification',
+            link: '/catalog/user/default/jane.doe',
+          },
         },
-      },
-      {
+        {
+          recipients: { type: 'entity', entityRef: 'group:default/group' },
+          payload: { title: 'notification' },
+        },
+      );
+
+      expect(slack.chat.postMessage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when broadcast channels are not configured', () => {
+    it('should not send broadcast messages', async () => {
+      const slack = new WebClient();
+
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        discovery,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        slack,
+      })[0];
+
+      await processor.processOptions({
         recipients: { type: 'broadcast' },
         payload: { title: 'notification' },
-      },
-    );
+      });
 
-    expect(slack.chat.postMessage).not.toHaveBeenCalled();
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: '1234',
+          user: null,
+          created: new Date(),
+          payload: {
+            title: 'notification',
+            link: '/catalog/user/default/jane.doe',
+          },
+        },
+        {
+          recipients: { type: 'broadcast' },
+          payload: { title: 'notification' },
+        },
+      );
+      expect(slack.chat.postMessage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when broadcast channels are configured', () => {
+    it('should send broadcast messages', async () => {
+      const slack = new WebClient();
+      const broadcastConfig = mockServices.rootConfig({
+        data: {
+          app: {
+            baseUrl: 'https://example.org',
+          },
+          notifications: {
+            processors: {
+              slack: [
+                {
+                  token: 'mock-token',
+                  broadcastChannels: ['C12345678', 'D12345678'],
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      const processor = SlackNotificationProcessor.fromConfig(broadcastConfig, {
+        auth,
+        discovery,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        slack,
+      })[0];
+
+      await processor.processOptions({
+        recipients: { type: 'broadcast' },
+        payload: { title: 'notification' },
+      });
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: '1234',
+          user: null,
+          created: new Date(),
+          payload: {
+            title: 'notification',
+            link: '/catalog/user/default/jane.doe',
+          },
+        },
+        {
+          recipients: { type: 'broadcast' },
+          payload: { title: 'notification' },
+        },
+      );
+      expect(slack.chat.postMessage).toHaveBeenCalledTimes(2);
+    });
   });
 });

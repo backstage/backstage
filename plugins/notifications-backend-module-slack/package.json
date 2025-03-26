@@ -46,8 +46,8 @@
     "@slack/bolt": "^3.21.4",
     "@slack/types": "^2.14.0",
     "@slack/web-api": "^7.5.0",
-    "dataloader": "2.2.2",
-    "p-throttle": "4.1.1"
+    "dataloader": "^2.0.0",
+    "p-throttle": "^4.1.1"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
@@ -55,7 +55,7 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@faker-js/faker": "^8.4.1",
-    "msw": "^2.2.14"
+    "msw": "^2.0.0"
   },
   "configSchema": "config.d.ts"
 }

@@ -16,18 +16,14 @@
 
 /**
  * @public
- * The annotation key for the entity's Slack user ID
+ * The annotation key for the entity's Slack ID. This can be
+ * any valid chat.postMessage destination including:
+ * - A user ID (U12345678)
+ * - A channel ID (C12345678)
+ * - A DM ID (D12345678)
+ * - A group ID (S12345678)
+ *
+ * It can also be a user's email address or a channel name,
+ * however IDs are preferred.
  */
-export const ANNOTATION_SLACK_USER_ID = 'slack.com/user-id';
-
-/**
- * @public
- * The annotation key for the entity's Slack channel name.
- */
-export const ANNOTATION_SLACK_CHANNEL_NAME = 'slack.com/channel-name';
-
-/**
- * @public
- * The annotation key for the entity's Slack channel ID.
- */
-export const ANNOTATION_SLACK_CHANNEL_ID = 'slack.com/channel-id';
+export const ANNOTATION_SLACK_BOT_NOTIFY = 'slack.com/bot-notify';

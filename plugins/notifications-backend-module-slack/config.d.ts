@@ -22,6 +22,12 @@ export interface Config {
          * @visibility secret
          */
         token?: string;
+        /**
+         * Broadcast notification receivers when receiver is set to config
+         * These can be Slack User IDs, Slack User Email addresses, Slack Channel
+         * Names, or Slack Channel IDs. Any valid identifier that chat.postMessage can accept.
+         */
+        broadcastChannels?: string[];
       }>;
     };
   };
