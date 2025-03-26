@@ -64,7 +64,9 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
   );
   const { filters, setFilters } = useSearch();
   const filterValue = useMemo(
-    () => filters[name] || (multiple ? [] : null),
+    () =>
+      (filters[name] as string | string[] | undefined) ||
+      (multiple ? [] : null),
     [filters, name, multiple],
   );
 
