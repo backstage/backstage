@@ -32,6 +32,8 @@ import {
   SearchResultListItemExtensions,
   SearchResultListItemExtensionsProps,
 } from '../../extensions';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchReactTranslationRef } from '../../translation';
 
 /**
  * Props for {@link SearchResultContext}
@@ -186,11 +188,12 @@ export type SearchResultProps = Pick<SearchResultStateProps, 'query'> &
  * @public
  */
 export const SearchResultComponent = (props: SearchResultProps) => {
+  const { t } = useTranslationRef(searchReactTranslationRef);
   const {
     query,
     children,
     noResultsComponent = (
-      <EmptyState missing="data" title="Sorry, no results were found" />
+      <EmptyState missing="data" title={t('noResultsDescription')} />
     ),
     ...rest
   } = props;
