@@ -145,6 +145,9 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         aria-labelledby="long-menu"
+        PaperProps={{
+          style: { minWidth: 200 },
+        }}
       >
         <MenuList autoFocusItem={Boolean(anchorEl)}>
           {extraItems}
@@ -184,8 +187,11 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
               </MenuItem>
             </>
           ) : (
-            contextMenuItems.map(ExtraMenuItem => (
-              <ExtraMenuItem onClose={onClose} />
+            contextMenuItems.map((ContextMenuItem, idx) => (
+              <ContextMenuItem
+                key={`context-menu-item-${idx}`}
+                onClose={onClose}
+              />
             ))
           )}
         </MenuList>
