@@ -95,9 +95,7 @@ export interface SearchFilterResultTypeBlueprintParams {
   value: string;
 }
 
-// Warning: (ae-missing-release-tag) "searchReactTranslationRef" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @alpha (undocumented)
 export const searchReactTranslationRef: TranslationRef<
   'search-react',
   {
