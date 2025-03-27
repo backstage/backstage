@@ -280,7 +280,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   /**
    * Deduplicate a list of projects based on their id.
    *
-   * @param projects a list of projects to be deduplicated
+   * @param projects - a list of projects to be deduplicated
    * @returns a list of projects with unique id
    */
   private deduplicateProjects(projects: GitLabProject[]): GitLabProject[] {
@@ -296,7 +296,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   /**
    * Retrieve a list of projects that match configuration.
    *
-   * @param group a full path of a GitLab group, can be empty
+   * @param group - a full path of a GitLab group, can be empty
    * @returns An array of project to be processed and the number of project scanned
    */
   private async GetProjectsToProcess(group: string) {
