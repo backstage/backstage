@@ -16,6 +16,9 @@
 
 import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 
+/**
+ * @alpha
+ */
 export const searchReactTranslationRef = createTranslationRef({
   id: 'search-react',
   messages: {
