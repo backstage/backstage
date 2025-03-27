@@ -605,15 +605,26 @@ describe('Entity page', () => {
     });
 
     it.each([
-      { useIsDisabled: () => true, href: '/somewhere' },
-      { useIsDisabled: () => false, href: '/somewhere' },
-      { useIsDisabled: () => true, useHref: () => '/somewhere' },
-      { useIsDisabled: () => false, useHref: () => '/somewhere' },
+      {
+        useProps: () => ({
+          title: 'Test Title',
+          href: '/somewhere',
+          disabled: true,
+          component: 'a',
+        }),
+      },
+      {
+        useProps: () => ({
+          title: 'Test Title',
+          href: '/somewhere',
+          disabled: false,
+          component: 'a',
+        }),
+      },
     ])('should render an href based context menu item', async params => {
       const menuItem = EntityContextMenuItemBlueprint.make({
         name: 'test-href',
         params: {
-          useTitle: () => 'Test Title',
           icon: <span>Test Icon</span>,
           ...params,
         },
@@ -645,6 +656,7 @@ describe('Entity page', () => {
           },
         },
       );
+      const { disabled } = params.useProps();
 
       await waitFor(async () => {
         await userEvent.click(screen.getByTestId('menu-button'));
@@ -652,21 +664,29 @@ describe('Entity page', () => {
         expect(screen.getByText('Test Icon')).toBeInTheDocument();
         const anchor = screen.getByText('Test Title').closest('a');
         expect(anchor).toHaveAttribute('href', '/somewhere');
-        expect(anchor).toHaveAttribute(
-          'aria-disabled',
-          params.useIsDisabled().toString(),
-        );
+        expect(anchor).toHaveAttribute('aria-disabled', disabled.toString());
       });
     });
 
     it.each([
-      { useIsDisabled: () => true, useOnClick: () => onClickMock },
-      { useIsDisabled: () => false, useOnClick: () => onClickMock },
-    ])('should render a useOnClick based context menu item', async params => {
+      {
+        useProps: () => ({
+          title: 'Test Title',
+          onClick: onClickMock,
+          disabled: true,
+        }),
+      },
+      {
+        useProps: () => ({
+          title: 'Test Title',
+          onClick: onClickMock,
+          disabled: false,
+        }),
+      },
+    ])('should render an onClick based context menu item', async params => {
       const menuItem = EntityContextMenuItemBlueprint.make({
-        name: 'test-href',
+        name: 'test-click',
         params: {
-          useTitle: () => 'Test Title',
           icon: <span>Test Icon</span>,
           ...params,
         },
@@ -674,7 +694,6 @@ describe('Entity page', () => {
       const tester = createExtensionTester(
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
       ).add(menuItem);
-      const disabled = params.useIsDisabled();
 
       renderInTestApp(
         <TestApiProvider
@@ -700,6 +719,7 @@ describe('Entity page', () => {
         },
       );
 
+      const { disabled } = params.useProps();
       await waitFor(async () => {
         await userEvent.click(screen.getByTestId('menu-button'));
         expect(screen.getByText('Test Title')).toBeInTheDocument();

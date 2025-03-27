@@ -43,11 +43,7 @@ export const copyEntityUrlContextMenuItem = EntityContextMenuItemBlueprint.make(
     name: 'copy-entity-url',
     params: {
       icon: <FileCopyTwoToneIcon fontSize="small" />,
-      useTitle: () => {
-        const { t } = useTranslationRef(catalogTranslationRef);
-        return t('entityContextMenu.copyURLMenuTitle');
-      },
-      useOnClick: () => {
+      useProps: () => {
         const [copyState, copyToClipboard] = useCopyToClipboard();
         const alertApi = useApi(alertApiRef);
         const { t } = useTranslationRef(catalogTranslationRef);
@@ -62,8 +58,11 @@ export const copyEntityUrlContextMenuItem = EntityContextMenuItemBlueprint.make(
           }
         }, [copyState, alertApi, t]);
 
-        return async () => {
-          copyToClipboard(window.location.toString());
+        return {
+          title: t('entityContextMenu.copyURLMenuTitle'),
+          onClick: async () => {
+            copyToClipboard(window.location.toString());
+          },
         };
       },
     },
@@ -75,15 +74,15 @@ export const inspectEntityContextMenuItem = EntityContextMenuItemBlueprint.make(
     name: 'inspect-entity',
     params: {
       icon: <BugReportIcon fontSize="small" />,
-      useTitle: () => {
-        const { t } = useTranslationRef(catalogTranslationRef);
-        return t('entityContextMenu.inspectMenuTitle');
-      },
-      useOnClick: () => {
+      useProps: () => {
         const [_, setSearchParams] = useSearchParams();
+        const { t } = useTranslationRef(catalogTranslationRef);
 
-        return () => {
-          setSearchParams('inspect');
+        return {
+          title: t('entityContextMenu.inspectMenuTitle'),
+          onClick: async () => {
+            setSearchParams('inspect');
+          },
         };
       },
     },
@@ -95,40 +94,37 @@ export const unregisterEntityContextMenuItem =
     name: 'unregister-entity',
     params: {
       icon: <CancelIcon fontSize="small" />,
-      useTitle: () => {
-        const { t } = useTranslationRef(catalogTranslationRef);
-        return t('entityContextMenu.unregisterMenuTitle');
-      },
-      useIsDisabled: () => {
-        const unregisterPermission = useEntityPermission(
-          catalogEntityDeletePermission,
-        );
-
-        return !unregisterPermission.allowed;
-      },
-      useOnClick: () => {
+      useProps: () => {
         const { entity } = useEntity();
         const dialogApi = useApi(dialogApiRef);
         const navigate = useNavigate();
         const catalogRoute = useRouteRef(rootRouteRef);
+        const { t } = useTranslationRef(catalogTranslationRef);
         const unregisterRedirectRoute = useRouteRef(unregisterRedirectRouteRef);
+        const unregisterPermission = useEntityPermission(
+          catalogEntityDeletePermission,
+        );
 
-        return async () => {
-          dialogApi.showModal(({ dialog }: { dialog: DialogApiDialog }) => (
-            <UnregisterEntityDialog
-              open
-              entity={entity}
-              onClose={() => dialog.close()}
-              onConfirm={() => {
-                dialog.close();
-                navigate(
-                  unregisterRedirectRoute
-                    ? unregisterRedirectRoute()
-                    : catalogRoute(),
-                );
-              }}
-            />
-          ));
+        return {
+          title: t('entityContextMenu.unregisterMenuTitle'),
+          disabled: !unregisterPermission.allowed,
+          onClick: async () => {
+            dialogApi.showModal(({ dialog }: { dialog: DialogApiDialog }) => (
+              <UnregisterEntityDialog
+                open
+                entity={entity}
+                onClose={() => dialog.close()}
+                onConfirm={() => {
+                  dialog.close();
+                  navigate(
+                    unregisterRedirectRoute
+                      ? unregisterRedirectRoute()
+                      : catalogRoute(),
+                  );
+                }}
+              />
+            ));
+          },
         };
       },
     },

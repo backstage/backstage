@@ -16,28 +16,24 @@
 
 import React from 'react';
 import { EntityContextMenuItemBlueprint } from './EntityContextMenuItemBlueprint';
-import { createRouteRef, useRouteRef } from '@backstage/frontend-plugin-api';
 
 describe('EntityContextMenuItemBlueprint', () => {
-  const routeRef = createRouteRef();
   const data = [
     {
-      useTitle: () => 'Test',
-      href: '/somewhere',
       icon: <span>Test</span>,
+      useProps: () => ({
+        title: 'Test',
+        href: '/somewhere',
+        component: 'a',
+        disabled: true,
+      }),
     },
     {
-      useTitle: () => 'Test',
-      useHref: () => {
-        const r = useRouteRef(routeRef) ?? (() => '/somewhere');
-        return r();
-      },
       icon: <span>Test</span>,
-    },
-    {
-      useTitle: () => 'TestDialog',
-      useOnClick: () => () => true,
-      icon: <span>Test</span>,
+      useProps: () => ({
+        title: 'Test',
+        onClick: async () => {},
+      }),
     },
   ];
 

@@ -11,6 +11,8 @@ import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
+import { MenuItemProps } from '@material-ui/core/MenuItem';
+import { default as React_2 } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -359,9 +361,12 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
 }>;
 
 // @alpha (undocumented)
-export type EntityContextMenuItemParams =
-  | FactoryHrefParams
-  | FactoryDialogParams;
+export type EntityContextMenuItemParams = {
+  useProps: () => Omit<MenuItemProps, 'onClick'> & {
+    onClick?: () => Promise<void>;
+  };
+  icon: React_2.JSX.Element;
+};
 
 // @alpha (undocumented)
 export const EntityHeaderBlueprint: ExtensionBlueprint<{
