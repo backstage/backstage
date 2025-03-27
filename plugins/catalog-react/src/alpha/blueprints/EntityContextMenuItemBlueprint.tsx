@@ -20,7 +20,7 @@ import {
   createExtensionDataRef,
   ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
-import MenuItem from '@material-ui/core/MenuItem';
+import MenuItem, { MenuItemProps } from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
@@ -48,9 +48,12 @@ export type FactoryDialogParams = {
 };
 
 /** @alpha */
-export type EntityContextMenuItemParams =
-  | FactoryHrefParams
-  | FactoryDialogParams;
+export type EntityContextMenuItemParams = {
+  useProps: () => Omit<MenuItemProps, 'onClick'> & {
+    onClick?: () => Promise<void>;
+  };
+  icon: React.JSX.Element;
+};
 
 /** @alpha */
 export type ContextMenuItemProps = {
@@ -75,36 +78,25 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
   output: [contextMenuItemComponentDataRef],
   *factory(params: EntityContextMenuItemParams, { node }) {
     const loader = async (): Promise<ContextMenuItemComponent> => {
-      if ('useOnClick' in params) {
-        return ({ onClose }) => {
-          const onClick = params.useOnClick();
-          const title = params.useTitle();
-          const disabled = params.useIsDisabled?.() ?? false;
+      return ({ onClose }) => {
+        const {
+          children,
+          button,
+          title,
+          onClick: onClickProp,
+          ...menuItemProps
+        } = params.useProps();
+        let onClick;
 
-          return (
-            <MenuItem
-              disabled={disabled}
-              onClick={e => {
-                onClose();
-                onClick(e);
-              }}
-            >
-              <ListItemIcon>{params.icon}</ListItemIcon>
-              <ListItemText primary={title} />
-            </MenuItem>
-          );
-        };
-      }
-
-      const useHref = 'useHref' in params ? params.useHref : () => params.href;
-
-      return () => {
-        const href = useHref();
-        const title = params.useTitle();
-        const disabled = params.useIsDisabled?.() ?? false;
+        if (onClickProp !== undefined) {
+          onClick = async () => {
+            await onClickProp();
+            onClose();
+          };
+        }
 
         return (
-          <MenuItem disabled={disabled} component="a" href={href}>
+          <MenuItem {...menuItemProps} onClick={onClick}>
             <ListItemIcon>{params.icon}</ListItemIcon>
             <ListItemText primary={title} />
           </MenuItem>
