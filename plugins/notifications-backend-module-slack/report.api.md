@@ -6,13 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @public
-export const ANNOTATION_SLACK_CHANNEL_ID = 'slack.com/channel-id';
-
-// @public
-export const ANNOTATION_SLACK_CHANNEL_NAME = 'slack.com/channel-name';
-
-// @public
-export const ANNOTATION_SLACK_USER_ID = 'slack.com/user-id';
+export const ANNOTATION_SLACK_BOT_NOTIFY = 'slack.com/bot-notify';
 
 // @public
 const notificationsModuleSlack: BackendFeature;
