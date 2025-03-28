@@ -235,7 +235,7 @@ jobs:
         run: rm -r docs/reference
 
       - name: clear OpenAPI reference
-        run: find . -name '*.api.mdx' -type f -delete
+        run: find ./docs -name '*.api.mdx' -type f -delete
 
       # Next docs
       - name: checkout master
