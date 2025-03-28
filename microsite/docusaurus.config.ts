@@ -123,6 +123,11 @@ const config: Config = {
         },
         blog: {
           path: 'blog',
+          // Gets rid of the following:
+          // Warning:  Some blog authors used in "2024-12-18-backstage-wrapped-2024.mdx" are not defined in "authors.yml":
+          // - {"name":"Patrik Oldsberg, Spotify & Ben Lambert, Spotify","key":null,"page":null}
+          // Note that we recommend to declare authors once in a "authors.yml" file and reference them by key in blog posts front matter to avoid author info duplication.
+          onInlineAuthors: 'ignore',
         },
         theme: {
           customCss: 'src/theme/customTheme.scss',
