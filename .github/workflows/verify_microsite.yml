@@ -233,6 +233,14 @@ jobs:
           name: stable-openapi-docs
           path: docs
 
+      - name: upload working dir
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: docs-status
+          path: docs/**
+          if-no-files-found: error
+          retention-days: 1
+
       - name: grab lastest releases docs
         run: |
           git fetch origin master --depth 1
@@ -245,9 +253,6 @@ jobs:
       - name: clear API reference
         run: rm -r docs/reference
 
-      - name: clear OpenAPI reference
-        run: find . -name '*.api.mdx' -type f -delete
-
       - name: build API reference
         run: yarn build:api-docs
 
@@ -256,8 +261,8 @@ jobs:
         with:
           clean: false
 
-      - name: Build MkDocs for TechDocs
-        run: mkdocs build --strict
+      # - name: Build MkDocs for TechDocs
+      #   run: mkdocs build --strict
 
       - name: download next reference
         uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
@@ -270,6 +275,14 @@ jobs:
         with:
           name: next-openapi-docs
           path: docs
+
+      - name: upload working dir2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: docs-status-2
+          path: docs/**
+          if-no-files-found: error
+          retention-days: 1
 
       - name: build microsite
         run: yarn build
