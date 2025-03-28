@@ -36,6 +36,9 @@ const useStyles = makeStyles<
     display: 'flex',
     justifyContent: 'space-between',
   },
+  detailIcon: {
+    color: ({ cardFontColor }) => cardFontColor,
+  },
 }));
 
 /**
@@ -67,7 +70,10 @@ export const CardHeader = (props: CardHeaderProps) => {
     <div className={styles.subtitleWrapper}>
       <div>{type}</div>
       <div>
-        <TemplateDetailButton template={props.template} />
+        <TemplateDetailButton
+          className={styles.detailIcon}
+          template={props.template}
+        />
         <FavoriteEntity
           entity={props.template}
           style={{ padding: 0, marginLeft: 6 }}

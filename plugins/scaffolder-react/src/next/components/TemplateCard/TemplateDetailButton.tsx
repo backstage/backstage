@@ -30,10 +30,12 @@ import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 export interface TemplateDetailButtonProps {
   template: Entity;
+  className?: string;
 }
 
 export const TemplateDetailButton = ({
   template,
+  className,
 }: TemplateDetailButtonProps) => {
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const { t } = useTranslationRef(scaffolderReactTranslationRef);
@@ -48,14 +50,13 @@ export const TemplateDetailButton = ({
         aria-label={t('cardHeader.detailBtnTitle')}
         id={`viewDetail-${entityRef}`}
         style={{ padding: 0 }}
-        color="inherit"
       >
         <Typography component="span">
           <Link
             to={catalogEntityRoute(entityRouteParams(template))}
             style={{ display: 'flex', alignItems: 'center' }}
           >
-            <TemplateIcon />
+            <TemplateIcon className={className} />
           </Link>
         </Typography>
       </IconButton>
