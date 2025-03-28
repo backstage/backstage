@@ -326,21 +326,10 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     const optRepoFilter = repoSlug ? ` repo:${repoSlug}` : '';
     const query = `"${catalogFilename}" path:${catalogPath}${optRepoFilter}`;
 
-    if (repoSlug) return this.processQuery(workspace, query);
+    const projectQuery = `${query}`;
+    const result = await this.processQuery(workspace, projectQuery);
 
-    const projects = this.client
-      .listProjectsByWorkspace(workspace)
-      .iterateResults();
-
-    let results: IngestionTarget[] = [];
-
-    for await (const project of projects) {
-      const projectQuery = `${query} project:${project.key}`;
-      const result = await this.processQuery(workspace, projectQuery);
-      results = results.concat(result);
-    }
-
-    return results;
+    return result;
   }
 
   private async processQuery(

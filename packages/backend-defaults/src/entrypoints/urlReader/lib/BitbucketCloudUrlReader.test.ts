@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { mockServices } from '@backstage/backend-test-utils';
 
 import { ConfigReader } from '@backstage/config';
 import {
@@ -38,6 +39,8 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
 
+const logger = mockServices.logger.mock();
+
 const reader = new BitbucketCloudUrlReader(
   new BitbucketCloudIntegration(
     readBitbucketCloudIntegrationConfig(
@@ -49,7 +52,7 @@ const reader = new BitbucketCloudUrlReader(
       }),
     ),
   ),
-  { treeResponseFactory },
+  { treeResponseFactory, logger },
 );
 
 describe('BitbucketCloudUrlReader', () => {
@@ -119,7 +122,6 @@ describe('BitbucketCloudUrlReader', () => {
       await expect(
         reader.readUrl(
           'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
-          { etag: 'matching-etag-value' },
         ),
       ).rejects.toThrow(NotModifiedError);
     });
@@ -143,7 +145,6 @@ describe('BitbucketCloudUrlReader', () => {
 
       const result = await reader.readUrl(
         'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
-        { etag: 'previous-etag-value' },
       );
       const buffer = await result.buffer();
       expect(buffer.toString()).toBe('foo');
@@ -193,7 +194,6 @@ describe('BitbucketCloudUrlReader', () => {
       await expect(
         reader.readUrl(
           'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
-          { lastModifiedAfter: new Date('1999 12 31 23:59:59 GMT') },
         ),
       ).rejects.toThrow(NotModifiedError);
     });
@@ -220,7 +220,6 @@ describe('BitbucketCloudUrlReader', () => {
 
       const result = await reader.readUrl(
         'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
-        { lastModifiedAfter: new Date('1999 12 31 23:59:59 GMT') },
       );
       const buffer = await result.buffer();
       expect(buffer.toString()).toBe('foo');

@@ -13,12 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import fs from 'fs-extra';
+import path from 'path';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import {
+  LoggerService,
   UrlReaderService,
   UrlReaderServiceReadTreeOptions,
   UrlReaderServiceReadTreeResponse,
-  UrlReaderServiceReadUrlOptions,
+  // UrlReaderServiceReadUrlOptions,
   UrlReaderServiceReadUrlResponse,
   UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
@@ -32,7 +38,7 @@ import {
   BitbucketCloudIntegration,
   getBitbucketCloudDefaultBranch,
   getBitbucketCloudDownloadUrl,
-  getBitbucketCloudFileFetchUrl,
+  //  getBitbucketCloudFileFetchUrl,
   getBitbucketCloudRequestOptions,
   ScmIntegrations,
 } from '@backstage/integration';
@@ -40,7 +46,9 @@ import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
-import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+// import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+
+const execAsync = promisify(exec);
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files from Bitbucket Cloud.
@@ -48,11 +56,12 @@ import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
  * @public
  */
 export class BitbucketCloudUrlReader implements UrlReaderService {
-  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
+  static factory: ReaderFactory = ({ config, logger, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
     return integrations.bitbucketCloud.list().map(integration => {
       const reader = new BitbucketCloudUrlReader(integration, {
         treeResponseFactory,
+        logger,
       });
       const predicate = (url: URL) => url.host === integration.config.host;
       return { reader, predicate };
@@ -61,7 +70,10 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
 
   constructor(
     private readonly integration: BitbucketCloudIntegration,
-    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+    private readonly deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+      logger: LoggerService;
+    },
   ) {
     const { host, username, appPassword } = integration.config;
 
@@ -77,54 +89,69 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     return response.buffer();
   }
 
-  async readUrl(
-    url: string,
-    options?: UrlReaderServiceReadUrlOptions,
-  ): Promise<UrlReaderServiceReadUrlResponse> {
-    const { etag, lastModifiedAfter, signal } = options ?? {};
-    const bitbucketUrl = getBitbucketCloudFileFetchUrl(
-      url,
-      this.integration.config,
-    );
-    const requestOptions = getBitbucketCloudRequestOptions(
-      this.integration.config,
+  async readUrl(url: string): Promise<UrlReaderServiceReadUrlResponse> {
+    const { username, appPassword, host } = this.integration.config;
+
+    if (!username || !appPassword) {
+      throw new Error(
+        `Missing credentials for Bitbucket Cloud integration. Ensure username and appPassword are configured.`,
+      );
+    }
+
+    const { owner, name: repoName, ref, filepath } = parseGitUrl(url);
+    const branch = ref || 'main';
+    const repoUrlLogging = `https://${host}/${owner}/${repoName}.git`;
+    const repoUrl = `https://${encodeURIComponent(
+      username,
+    )}:${encodeURIComponent(appPassword)}@${host}/${owner}/${repoName}.git`;
+    const tempDir = await fs.promises.mkdtemp(
+      join(tmpdir(), `${repoName}-${Date.now()}`),
     );
 
-    let response: Response;
     try {
-      response = await fetch(bitbucketUrl.toString(), {
-        headers: {
-          ...requestOptions.headers,
-          ...(etag && { 'If-None-Match': etag }),
-          ...(lastModifiedAfter && {
-            'If-Modified-Since': lastModifiedAfter.toUTCString(),
-          }),
-        },
-        // TODO(freben): The signal cast is there because pre-3.x versions of
-        // node-fetch have a very slightly deviating AbortSignal type signature.
-        // The difference does not affect us in practice however. The cast can be
-        // removed after we support ESM for CLI dependencies and migrate to
-        // version 3 of node-fetch.
-        // https://github.com/backstage/backstage/issues/8242
-        ...(signal && { signal: signal as any }),
-      });
-    } catch (e) {
-      throw new Error(`Unable to read ${url}, ${e}`);
-    }
+      // criar diretório temporário
+      this.deps.logger.info(`Creating temporary directory: ${tempDir}`);
+      await fs.promises.mkdir(tempDir, { recursive: true });
 
-    if (response.status === 304) {
-      throw new NotModifiedError();
-    }
+      // Clonar o repositório
+      this.deps.logger.info(
+        `Cloning repository: ${repoUrlLogging} (branch: ${branch}, dir: ${tempDir})`,
+      );
+      const { stderr, stdout } = await execAsync(
+        `git clone --branch ${branch} --depth 1 ${repoUrl} ${tempDir}`,
+      );
 
-    if (response.ok) {
-      return ReadUrlResponseFactory.fromResponse(response);
-    }
+      if (stderr) {
+        this.deps.logger.warn(`Git clone stderr: ${JSON.stringify(stderr)}`);
+        // throw new Error(`Failed to clone repository: ${stderr}`);
+      }
 
-    const message = `${url} could not be read as ${bitbucketUrl}, ${response.status} ${response.statusText}`;
-    if (response.status === 404) {
-      throw new NotFoundError(message);
+      if (stdout) {
+        this.deps.logger.info(`Git clone stdout: ${stdout}`);
+      }
+
+      // Caminho completo do arquivo no repositório clonado
+      const fullPath = path.join(tempDir, filepath || 'catalog-info.yaml');
+      this.deps.logger.info(`Reading file: ${fullPath}`);
+
+      if (!fs.existsSync(fullPath)) {
+        this.deps.logger.error(`File not found: ${fullPath}`);
+        throw new NotFoundError(`File not found: ${fullPath}`);
+      }
+
+      // Ler o conteúdo do arquivo
+      const fileContent = await fs.promises.readFile(fullPath);
+      return {
+        buffer: async () => fileContent,
+      };
+    } catch (error) {
+      this.deps.logger.error(`Error during git clone: ${error.message}`);
+      throw error;
+    } finally {
+      // Limpar o diretório temporário
+      this.deps.logger.info(`Removing temporary directory: ${tempDir}`);
+      await fs.promises.rm(tempDir, { recursive: true, force: true });
     }
-    throw new Error(message);
   }
 
   async readTree(
@@ -171,7 +198,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     // If it's a direct URL we use readUrl instead
     if (!filepath?.match(/[*?]/)) {
       try {
-        const data = await this.readUrl(url, options);
+        const data = await this.readUrl(url);
 
         return {
           files: [
@@ -205,7 +232,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
 
     const tree = await this.readTree(treeUrl, {
       etag: options?.etag,
-      filter: path => matcher.match(path),
+      filter: localPath => matcher.match(localPath),
     });
     const files = await tree.files();
 
