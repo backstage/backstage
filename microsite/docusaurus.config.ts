@@ -86,7 +86,7 @@ const config: Config = {
     repoUrl: 'https://github.com/backstage/backstage',
   },
   future: {
-    experimental_faster: true
+    experimental_faster: true,
   },
   onBrokenLinks: 'log',
   onBrokenMarkdownLinks: 'log',
@@ -155,23 +155,6 @@ const config: Config = {
       return removeHtmlComments(fileContent);
     },
     format: 'detect',
-  },
-  webpack: {
-    jsLoader: isServer => ({
-      loader: require.resolve('swc-loader'),
-      options: {
-        jsc: {
-          parser: {
-            syntax: 'typescript',
-            tsx: true,
-          },
-          target: 'es2017',
-        },
-        module: {
-          type: isServer ? 'commonjs' : 'es6',
-        },
-      },
-    }),
   },
   plugins: [
     'docusaurus-plugin-sass',
