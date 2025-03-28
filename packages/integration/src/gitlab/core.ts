@@ -20,6 +20,31 @@ import {
   GitLabIntegrationConfig,
 } from './config';
 
+// Cache for branch lists to avoid repeated API calls
+const branchCache = new Map();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+interface GitLabBranch {
+  name: string;
+  commit: {
+    id: string;
+    short_id: string;
+    title: string;
+    created_at: string;
+    parent_ids: string[];
+    message: string;
+    authored_date: string;
+    author_name: string;
+    author_email: string;
+    committed_date: string;
+    committer_name: string;
+    committer_email: string;
+  };
+  protected: boolean;
+  developers_can_push: boolean;
+  developers_can_merge: boolean;
+}
+
 /**
  * Given a URL pointing to a file on a provider, returns a URL that is suitable
  * for fetching the contents of the data.
@@ -42,7 +67,8 @@ export async function getGitLabFileFetchUrl(
   config: GitLabIntegrationConfig,
 ): Promise<string> {
   const projectID = await getProjectId(url, config);
-  return buildProjectUrl(url, projectID, config).toString();
+  const fetchUrl = (await buildProjectUrl(url, projectID, config)).toString();
+  return fetchUrl;
 }
 
 /**
@@ -74,33 +100,23 @@ export function getGitLabRequestOptions(
 // Converts
 // from: https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
 // to:   https://gitlab.com/api/v4/projects/projectId/repository/files/filepath?ref=branch
-export function buildProjectUrl(
+export async function buildProjectUrl(
   target: string,
   projectID: Number,
   config: GitLabIntegrationConfig,
-): URL {
+): Promise<URL> {
   try {
     const url = new URL(target);
-
-    const branchAndFilePath = url.pathname
-      .split('/blob/')
-      .slice(1)
-      .join('/blob/');
-    const [branch, ...filePath] = branchAndFilePath.split('/');
     const relativePath = getGitLabIntegrationRelativePath(config);
 
-    url.pathname = [
-      ...(relativePath ? [relativePath] : []),
-      'api/v4/projects',
-      projectID,
-      'repository/files',
-      encodeURIComponent(decodeURIComponent(filePath.join('/'))),
-      'raw',
-    ].join('/');
+    // Use resolveGitLabPath to get the correct branch and file path
+    const resolvedUrl = await resolveGitLabPath(url, {
+      projectID: Number(projectID),
+      relativePath,
+      token: config.token,
+    });
 
-    url.search = `?ref=${branch}`;
-
-    return url;
+    return resolvedUrl;
   } catch (e) {
     throw new Error(`Incorrect url: ${target}, ${e}`);
   }
@@ -157,4 +173,153 @@ export async function getProjectId(
   } catch (e) {
     throw new Error(`Could not get GitLab project ID for: ${target}, ${e}`);
   }
+}
+
+export async function resolveGitLabPath(
+  url: URL,
+  {
+    projectID,
+    relativePath = '',
+    token = null,
+    cacheTTL = CACHE_TTL,
+  }: {
+    projectID: number;
+    relativePath?: string;
+    token?: string | null;
+    cacheTTL?: number;
+  },
+) {
+  if (!url || !(url instanceof URL)) {
+    throw new TypeError('URL parameter must be a valid URL object');
+  }
+
+  if (!projectID) {
+    throw new TypeError('projectID is required');
+  }
+
+  // Get everything after '/blob/'
+  const blobParts = url.pathname.split('/blob/');
+  if (blobParts.length !== 2) {
+    throw new Error('Invalid GitLab URL format: missing /blob/ path segment');
+  }
+
+  const segments = blobParts[1].split('/');
+  if (segments.length < 2) {
+    throw new Error('Invalid GitLab URL format: missing branch or file path');
+  }
+
+  // Generate all possible branch name combinations
+  const possibleBranches = [];
+  for (let i = 1; i <= segments.length - 1; i++) {
+    possibleBranches.push(segments.slice(0, i).join('/'));
+  }
+
+  // Create a new URL for the branches API
+  const branchesUrl = new URL(url.origin);
+
+  branchesUrl.pathname = [
+    ...(relativePath ? [relativePath] : []),
+    'api/v4/projects',
+    projectID,
+    'repository/branches',
+  ].join('/');
+
+  // Try branches from longest to shortest match
+  const sortedBranches = [...possibleBranches].reverse();
+  let matchingBranch = null;
+
+  for (const branchToTry of sortedBranches) {
+    // Check cache first
+    const cacheKey = `${branchesUrl.toString()}_${token || ''}_${branchToTry}`;
+    const cachedData = branchCache.get(cacheKey);
+    let branch;
+
+    if (cachedData && Date.now() - cachedData.timestamp < cacheTTL) {
+      branch = cachedData.branch;
+      if (branch) {
+        matchingBranch = branch.name;
+        break;
+      }
+      continue;
+    }
+
+    try {
+      const headers = {
+        Accept: 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      };
+
+      const searchUrl = new URL(branchesUrl.toString());
+      searchUrl.searchParams.set('search', branchToTry);
+
+      const response = await fetch(searchUrl.toString(), {
+        headers,
+        signal: AbortSignal.timeout(10000), // 10 second timeout
+      });
+
+      if (response.status === 401) {
+        throw new Error('Unauthorized: Invalid or missing token');
+      }
+      if (response.status === 403) {
+        throw new Error('Forbidden: Insufficient permissions');
+      }
+      if (response.status === 429) {
+        throw new Error('Rate limit exceeded');
+      }
+      if (!response.ok) {
+        throw new Error(
+          `GitLab API error: ${response.status} ${response.statusText}`,
+        );
+      }
+
+      const branches = await response.json();
+      const exactMatch = branches.find(
+        (b: GitLabBranch) => b.name === branchToTry,
+      );
+
+      // Update cache
+      branchCache.set(cacheKey, {
+        branch: exactMatch || null,
+        timestamp: Date.now(),
+      });
+
+      if (exactMatch) {
+        matchingBranch = exactMatch.name;
+        break;
+      }
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        throw new Error('GitLab API request timed out');
+      }
+      throw error;
+    }
+  }
+
+  if (!matchingBranch) {
+    throw new Error('No matching branch found in repository');
+  }
+
+  // Everything after the branch name is the file path
+  const branchSegments = matchingBranch.split('/').length;
+  const filePathSegments = segments.slice(branchSegments);
+
+  if (filePathSegments.length === 0) {
+    throw new Error('No file path found after branch name');
+  }
+
+  // Create a new URL instance to avoid modifying the input
+  const resultUrl = new URL(url.origin);
+
+  // Update the URL for the file content
+  resultUrl.pathname = [
+    ...(relativePath ? [relativePath] : []),
+    'api/v4/projects',
+    projectID,
+    'repository/files',
+    encodeURIComponent(decodeURIComponent(filePathSegments.join('/'))),
+    'raw',
+  ].join('/');
+
+  resultUrl.search = `?ref=${encodeURIComponent(matchingBranch)}`;
+  return resultUrl;
 }
