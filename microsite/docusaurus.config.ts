@@ -85,6 +85,9 @@ const config: Config = {
     fossWebsite: 'https://spotify.github.io/',
     repoUrl: 'https://github.com/backstage/backstage',
   },
+  future: {
+    experimental_faster: true
+  },
   onBrokenLinks: 'log',
   onBrokenMarkdownLinks: 'log',
   presets: [

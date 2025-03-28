@@ -23,10 +23,10 @@
     "node-polyfill-webpack-plugin": "^3.0.0"
   },
   "dependencies": {
-    "@docusaurus/core": "^3.1.1",
-    "@docusaurus/plugin-client-redirects": "^3.1.1",
-    "@docusaurus/preset-classic": "^3.1.1",
-    "@docusaurus/types": "^3.1.1",
+    "@docusaurus/core": "^3.7.0",
+    "@docusaurus/plugin-client-redirects": "^3.7.0",
+    "@docusaurus/preset-classic": "^3.7.0",
+    "@docusaurus/types": "^3.7.0",
     "@mdx-js/react": "^3.0.0",
     "@swc/core": "^1.3.46",
     "clsx": "^2.0.0",
@@ -42,8 +42,8 @@
     "swc-loader": "^0.2.3"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^3.1.1",
-    "@docusaurus/tsconfig": "^3.1.1",
+    "@docusaurus/module-type-aliases": "^3.7.0",
+    "@docusaurus/tsconfig": "^3.7.0",
     "@types/luxon": "^3.0.0",
     "@types/webpack-env": "^1.18.0",
     "js-yaml": "^4.1.0",
