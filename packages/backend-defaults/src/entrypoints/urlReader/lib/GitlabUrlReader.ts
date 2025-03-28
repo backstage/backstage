@@ -37,9 +37,10 @@ import {
   getGitLabFileFetchUrl,
   getGitLabIntegrationRelativePath,
   getGitLabRequestOptions,
+  resolveGitLabPath,
 } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
-import { trimEnd, trimStart } from 'lodash';
+import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
@@ -129,48 +130,44 @@ export class GitlabUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadTreeOptions,
   ): Promise<UrlReaderServiceReadTreeResponse> {
     const { etag, signal, token } = options ?? {};
-    const { ref, full_name, filepath } = parseGitUrl(url);
+    const targetUrl = new URL(url);
 
-    let repoFullName = full_name;
-
-    const relativePath = getGitLabIntegrationRelativePath(
-      this.integration.config,
-    );
-
-    // Considering self hosted gitlab with relative
-    // assuming '/gitlab' is the relative path
-    // from: /gitlab/repo/project
-    // to: repo/project
-    if (relativePath) {
-      const rectifiedRelativePath = `${trimStart(relativePath, '/')}/`;
-      repoFullName = full_name.replace(rectifiedRelativePath, '');
-    }
-
-    // Use GitLab API to get the default branch
-    // encodeURIComponent is required for GitLab API
-    // https://docs.gitlab.com/ee/api/README.html#namespaced-path-encoding
-    const projectGitlabResponse = await fetch(
+    // Get the project ID first
+    const projectResponse = await fetch(
       new URL(
         `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
-          repoFullName,
+          targetUrl.pathname.split('/-/')[0].replace(/^\//, ''),
         )}`,
       ).toString(),
       getGitLabRequestOptions(this.integration.config, token),
     );
-    if (!projectGitlabResponse.ok) {
-      const msg = `Failed to read tree from ${url}, ${projectGitlabResponse.status} ${projectGitlabResponse.statusText}`;
-      if (projectGitlabResponse.status === 404) {
+
+    if (!projectResponse.ok) {
+      const msg = `Failed to read tree from ${url}, ${projectResponse.status} ${projectResponse.statusText}`;
+      if (projectResponse.status === 404) {
         throw new NotFoundError(msg);
       }
       throw new Error(msg);
     }
-    const projectGitlabResponseJson = await projectGitlabResponse.json();
 
-    // ref is an empty string if no branch is set in provided url to readTree.
-    const branch = ref || projectGitlabResponseJson.default_branch;
+    const projectData = await projectResponse.json();
+    const projectId = projectData.id;
+
+    // Use resolveGitLabPath to get the correct branch and file path
+    const resolvedUrl = await resolveGitLabPath(targetUrl, {
+      projectID: projectId,
+      relativePath: getGitLabIntegrationRelativePath(this.integration.config),
+      token: token ?? this.integration.config.token,
+    });
+
+    // Extract ref and filepath from the resolved URL
+    const ref = resolvedUrl.searchParams.get('ref') || '';
+    const filepath = resolvedUrl.pathname.split('/').slice(-2)[0]; // Get the file path from the URL
+
+    // Use GitLab API to get the default branch
+    const branch = ref || projectData.default_branch;
 
     // Fetch the latest commit that modifies the filepath in the provided or default branch
-    // to compare against the provided sha.
     const commitsReqParams = new URLSearchParams();
     commitsReqParams.set('ref_name', branch);
     if (!!filepath) {
@@ -179,7 +176,7 @@ export class GitlabUrlReader implements UrlReaderService {
     const commitsGitlabResponse = await fetch(
       new URL(
         `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
-          repoFullName,
+          projectId,
         )}/repository/commits?${commitsReqParams.toString()}`,
       ).toString(),
       {
@@ -214,7 +211,7 @@ export class GitlabUrlReader implements UrlReaderService {
     // https://docs.gitlab.com/ee/api/repositories.html#get-file-archive
     const archiveGitLabResponse = await fetch(
       `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
-        repoFullName,
+        projectId,
       )}/repository/archive?${archiveReqParams.toString()}`,
       {
         ...getGitLabRequestOptions(this.integration.config, token),
