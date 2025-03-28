@@ -130,6 +130,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     integration: BitbucketCloudIntegration,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
+      logger: LoggerService;
     },
   );
   // (undocumented)
@@ -142,10 +143,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadTreeOptions,
   ): Promise<UrlReaderServiceReadTreeResponse>;
   // (undocumented)
-  readUrl(
-    url: string,
-    options?: UrlReaderServiceReadUrlOptions,
-  ): Promise<UrlReaderServiceReadUrlResponse>;
+  readUrl(url: string): Promise<UrlReaderServiceReadUrlResponse>;
   // (undocumented)
   search(
     url: string,
