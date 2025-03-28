@@ -73,7 +73,7 @@ jobs:
         run: yarn build:api-docs
 
       - name: upload API reference
-        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: stable-reference
           path: docs/reference/
@@ -84,18 +84,17 @@ jobs:
         run: yarn install --immutable
         working-directory: microsite
 
-      # TODO: Enable after 1.37 is released
-      # - name: build OpenAPI API docs
-      #   working-directory: microsite
-      #   run: yarn docusaurus gen-api-docs all
+      - name: build OpenAPI API docs
+        working-directory: microsite
+        run: yarn docusaurus gen-api-docs all
 
-      # - name: upload OpenAPI API docs
-      #   uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
-      #   with:
-      #     name: stable-openapi-docs
-      #     path: docs/**/*.api.mdx
-      #     if-no-files-found: error
-      #     retention-days: 1
+      - name: upload OpenAPI API docs
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: stable-openapi-docs
+          path: docs/**/api/**/*
+          if-no-files-found: error
+          retention-days: 1
 
   next:
     runs-on: ubuntu-latest
@@ -130,7 +129,7 @@ jobs:
         run: yarn build:api-docs
 
       - name: upload API reference
-        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: next-reference
           path: docs/reference/
@@ -147,7 +146,7 @@ jobs:
         working-directory: storybook
 
       - name: storybook upload
-        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: storybook
           path: storybook/dist/
@@ -163,10 +162,10 @@ jobs:
         run: yarn docusaurus gen-api-docs all
 
       - name: upload OpenAPI API docs
-        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: next-openapi-docs
-          path: docs/**/*.api.mdx
+          path: docs/**/api/**/*
           if-no-files-found: error
           retention-days: 1
 
@@ -212,17 +211,16 @@ jobs:
         working-directory: microsite
 
       - name: download stable reference
-        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
         with:
           name: stable-reference
           path: docs/reference
 
-      # TODO: Enable after 1.37 is released
-      # - name: download stable OpenAPI API docs
-      #   uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
-      #   with:
-      #     name: stable-openapi-docs
-      #     path: docs/**/*.api.mdx
+      - name: download stable OpenAPI API docs
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        with:
+          name: stable-openapi-docs
+          path: docs
 
       - name: grab lastest releases docs
         run: |
@@ -237,7 +235,7 @@ jobs:
         run: rm -r docs/reference
 
       - name: clear OpenAPI reference
-        run: find . -name '*.api.mdx' -delete
+        run: find . -name '*.api.mdx' -type f -delete
 
       # Next docs
       - name: checkout master
@@ -250,22 +248,22 @@ jobs:
         working-directory: microsite
 
       - name: download next reference
-        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
         with:
           name: next-reference
           path: docs/reference
 
       - name: download next OpenAPI API docs
-        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
         with:
           name: next-openapi-docs
-          path: docs/**/*.api.mdx
+          path: docs
 
       - name: build microsite
         run: yarn build
         working-directory: microsite
 
-      - uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4
+      - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
         with:
           name: storybook
           path: microsite/build/storybook

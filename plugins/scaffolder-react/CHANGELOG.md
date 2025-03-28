@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.15.0-next.0
+
+### Minor Changes
+
+- 5890016: add api to retrieve template extensions info from scaffolder-backend
+
+### Patch Changes
+
+- 6ed42b7: Scaffolding - Template card - button to show template entity detail
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.16.1-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/plugin-scaffolder-common@1.5.10
+
 ## 1.14.6
 
 ### Patch Changes

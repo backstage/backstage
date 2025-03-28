@@ -38,7 +38,7 @@ export default createCliPlugin({
         );
         command.option(
           '--max-warnings <number>',
-          'Fail if more than this number of warnings. -1 allows warnings. (default: 0)',
+          'Fail if more than this number of warnings. -1 allows warnings. (default: -1)',
         );
         command.description('Lint a package');
         command.action(
@@ -75,6 +75,10 @@ export default createCliPlugin({
         command.option(
           '--since <ref>',
           'Only lint packages that changed since the specified ref',
+        );
+        command.option(
+          '--max-warnings <number>',
+          'Fail if more than this number of warnings. -1 allows warnings. (default: -1)',
         );
         command.description('Lint a repository');
         command.action(lazy(() => import('./commands/repo/lint'), 'command'));

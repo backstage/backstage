@@ -125,7 +125,7 @@ export const CustomTheme = () => {
                 className={styles.buttonClose}
                 onClick={() => setOpen(!open)}
               >
-                <Icon name={open ? 'chevronDown' : 'chevronUp'} />
+                <Icon name={open ? 'chevron-down' : 'chevron-up'} />
               </button>
             </div>
           </div>

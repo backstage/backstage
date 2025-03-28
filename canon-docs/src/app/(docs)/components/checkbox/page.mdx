@@ -1,17 +1,19 @@
 import { PropsTable } from '@/components/PropsTable';
-import { CheckboxPreview, CheckboxAllVariants } from '@/snippets/checkbox';
+import { CheckboxSnippet } from '@/snippets/stories-snippets';
 import { Snippet } from '@/components/Snippet';
 import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
 import { BaseUI } from '@/components/HeadlessBanners/BaseUI';
+import { checkboxPropDefs } from './props';
 
 # Checkbox
 
 A checkbox component that can be used to trigger actions.
 
 <Snippet
+  align="center"
   py={4}
-  preview={<CheckboxPreview />}
+  preview={<CheckboxSnippet story="Default" />}
   code={`<Checkbox label="Accept terms and conditions" />`}
 />
 
@@ -42,50 +44,7 @@ A checkbox component that can be used to trigger actions.
 
 <BaseUI href="https://base-ui.com/react/components/checkbox" />
 
-<PropsTable
-  data={{
-    label: {
-      type: 'string',
-      responsive: false,
-    },
-    defaultChecked: {
-      type: ['boolean', "'indeterminate'"],
-      responsive: false,
-    },
-    checked: {
-      type: ['boolean', "'indeterminate'"],
-      responsive: false,
-    },
-    onChange: {
-      type: "(checked: boolean | 'indeterminate') => void",
-      responsive: false,
-    },
-    disabled: {
-      type: 'boolean',
-      responsive: false,
-    },
-    required: {
-      type: 'boolean',
-      responsive: false,
-    },
-    name: {
-      type: 'string',
-      responsive: false,
-    },
-    value: {
-      type: 'string',
-      responsive: false,
-    },
-    className: {
-      type: 'string',
-      responsive: false,
-    },
-    style: {
-      type: 'CSSProperties',
-      responsive: false,
-    },
-  }}
-/>
+<PropsTable data={checkboxPropDefs} />
 
 ## Examples
 
@@ -97,7 +56,7 @@ Here's a view when checkboxes have different variants.
   align="center"
   py={4}
   open
-  preview={<CheckboxAllVariants />}
+  preview={<CheckboxSnippet story="AllVariants" />}
   code={`<Inline alignY="center">
     <Checkbox />
     <Checkbox checked />

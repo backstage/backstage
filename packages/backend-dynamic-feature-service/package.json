@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-dynamic-feature-service",
-  "version": "0.6.1",
+  "version": "0.6.2-next.0",
   "description": "Backstage dynamic feature service",
   "backstage": {
     "role": "node-library"

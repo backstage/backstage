@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-org",
-  "version": "0.6.37",
+  "version": "0.6.38-next.0",
   "description": "A Backstage plugin that helps you create entity pages for your organization",
   "backstage": {
     "role": "frontend-plugin",
