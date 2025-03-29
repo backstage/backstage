@@ -18,7 +18,6 @@ import React from 'react';
 import { compatWrapper } from '@backstage/core-compat-api';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { isKubernetesAvailable } from '../Router';
-import { isKind } from '@backstage/plugin-catalog';
 
 export const entityKubernetesContent = EntityContentBlueprint.make({
   name: 'kubernetes',
@@ -27,8 +26,6 @@ export const entityKubernetesContent = EntityContentBlueprint.make({
     defaultTitle: 'Kubernetes',
     defaultGroup: 'deployment',
     filter: entity => {
-      if (!isKind('Component')) return false;
-      if (!isKind('Resource')) return false;
       if (!isKubernetesAvailable(entity)) return false;
       return true;
     },
