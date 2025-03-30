@@ -31,6 +31,7 @@ import {
   EntityFacetsResponse,
   EntityOrder,
   EntityPagination,
+  EntityRelationsRequest,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
 } from '../catalog/types';
@@ -709,6 +710,65 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     return { facets };
+  }
+
+  async relations(
+    request: EntityRelationsRequest,
+  ): Promise<EntitiesBatchResponse> {
+    const getRelations = async (
+      entityRef: string,
+      relationsTypes: string[],
+    ) => {
+      return this.database<DbRelationsRow>('relations')
+        .where('source_entity_ref', '=', entityRef)
+        .whereIn('type', relationsTypes)
+        .select('target_entity_ref');
+    };
+
+    const fetchTransitiveRelations = async (
+      entityRef: string,
+      relationsTypes: string[],
+      visited: Set<string>,
+    ): Promise<Set<string>> => {
+      console.log(
+        `fetchTransitiveRelations: ${entityRef} ${relationsTypes.join(',')}`,
+      );
+      if (visited.has(entityRef)) {
+        return visited;
+      }
+      visited.add(entityRef);
+
+      const rows = await getRelations(entityRef, relationsTypes);
+      for (const row of rows) {
+        await fetchTransitiveRelations(
+          row.target_entity_ref,
+          relationsTypes,
+          visited,
+        );
+      }
+
+      return visited;
+    };
+
+    let visitedEntities: Set<string>;
+    if (request.transient) {
+      visitedEntities = await fetchTransitiveRelations(
+        request.entityRef,
+        request.relationsTypes,
+        new Set<string>(),
+      );
+    } else {
+      const rows = await getRelations(
+        request.entityRef,
+        request.relationsTypes,
+      );
+      visitedEntities = new Set(rows.map(row => row.target_entity_ref));
+    }
+
+    return await this.entitiesBatch({
+      entityRefs: [...visitedEntities],
+      credentials: request.credentials,
+    });
   }
 }
 

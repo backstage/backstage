@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1044,6 +1044,79 @@ export const spec = {
           },
           {
             $ref: '#/components/parameters/name',
+          },
+        ],
+      },
+    },
+    '/entities/by-name/{kind}/{namespace}/{name}/relations': {
+      get: {
+        operationId: 'GetEntityRelationsByName',
+        tags: ['Entity'],
+        description: 'Get the relations of an entity by its entity ref.',
+        responses: {
+          '200': {
+            description: 'Ok',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    items: {
+                      type: 'array',
+                      items: {
+                        $ref: '#/components/schemas/Entity',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
+        parameters: [
+          {
+            $ref: '#/components/parameters/kind',
+          },
+          {
+            $ref: '#/components/parameters/namespace',
+          },
+          {
+            $ref: '#/components/parameters/name',
+          },
+          {
+            name: 'relations',
+            in: 'query',
+            description: 'A list of relation types to filter by.',
+            required: false,
+            schema: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+            },
+            explode: false,
+            style: 'form',
+          },
+          {
+            name: 'transitive',
+            in: 'query',
+            description: 'Whether to include transitive relations.',
+            required: false,
+            schema: {
+              type: 'boolean',
+            },
           },
         ],
       },

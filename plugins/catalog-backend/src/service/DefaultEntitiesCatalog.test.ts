@@ -131,6 +131,25 @@ describe('DefaultEntitiesCatalog', () => {
     }
   }
 
+  async function addRelation({
+    id,
+    relation,
+    source,
+    target,
+  }: {
+    id: string;
+    relation: string;
+    source: string;
+    target: string;
+  }): Promise<void> {
+    await knex('relations').insert({
+      originating_entity_id: id,
+      type: relation,
+      source_entity_ref: source,
+      target_entity_ref: target,
+    });
+  }
+
   afterEach(() => {
     jest.resetAllMocks();
   });
@@ -2275,6 +2294,293 @@ describe('DefaultEntitiesCatalog', () => {
             missing: [],
           },
         });
+      },
+    );
+  });
+
+  describe('entity relations', () => {
+    it.each(databases.eachSupportedId())(
+      'can get transitive relations, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        const grandparent: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'grandparent' },
+          spec: {},
+        };
+        const parent: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'parent' },
+          spec: {},
+        };
+        const child: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'child' },
+          spec: {},
+        };
+
+        const grandparentId = await addEntity(grandparent, []);
+        const parentId = await addEntity(parent, []);
+        const childId = await addEntity(child, []);
+
+        await Promise.all([
+          addRelation({
+            id: grandparentId,
+            relation: 'parentOf',
+            source: stringifyEntityRef(grandparent),
+            target: stringifyEntityRef(parent),
+          }),
+          addRelation({
+            id: parentId,
+            relation: 'parentOf',
+            source: stringifyEntityRef(parent),
+            target: stringifyEntityRef(child),
+          }),
+          addRelation({
+            id: childId,
+            relation: 'childOf',
+            source: stringifyEntityRef(grandparent),
+            target: stringifyEntityRef(parent),
+          }),
+        ]);
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        const res = await catalog.relations({
+          entityRef: stringifyEntityRef(grandparent),
+          transient: true,
+          relationsTypes: ['parentOf'],
+          credentials: mockCredentials.none(),
+        });
+        const items = entitiesResponseToObjects(res.items);
+
+        expect(items.map(e => e && stringifyEntityRef(e))).toEqual([
+          'k:default/grandparent',
+          'k:default/parent',
+          'k:default/child',
+        ]);
+      },
+    );
+    it.each(databases.eachSupportedId())(
+      'can get transitive relations with multiple relations types, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        const grandparent: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'grandparent' },
+          spec: {},
+        };
+        const parent: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'parent' },
+          spec: {},
+        };
+        const child: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'child' },
+          spec: {},
+        };
+
+        const grandparentId = await addEntity(grandparent, []);
+        const parentId = await addEntity(parent, []);
+        const childId = await addEntity(child, []);
+
+        await Promise.all([
+          addRelation({
+            id: grandparentId,
+            relation: 'parentOf',
+            source: stringifyEntityRef(grandparent),
+            target: stringifyEntityRef(parent),
+          }),
+          addRelation({
+            id: parentId,
+            relation: 'otherParentOf',
+            source: stringifyEntityRef(parent),
+            target: stringifyEntityRef(child),
+          }),
+          addRelation({
+            id: childId,
+            relation: 'childOf',
+            source: stringifyEntityRef(grandparent),
+            target: stringifyEntityRef(parent),
+          }),
+        ]);
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        const res = await catalog.relations({
+          entityRef: stringifyEntityRef(grandparent),
+          transient: true,
+          relationsTypes: ['parentOf', 'otherParentOf'],
+          credentials: mockCredentials.none(),
+        });
+        const items = entitiesResponseToObjects(res.items);
+
+        expect(items.map(e => e && stringifyEntityRef(e))).toEqual([
+          'k:default/grandparent', // should always return the root entity? :pepe-think:
+          'k:default/parent',
+          'k:default/child',
+        ]);
+      },
+    );
+    it.each(databases.eachSupportedId())(
+      'should get only immediate relations if transitive is false, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        const grandparent: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'grandparent' },
+          spec: {},
+        };
+        const parent: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'parent' },
+          spec: {},
+        };
+        const child: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'child' },
+          spec: {},
+        };
+
+        const grandparentId = await addEntity(grandparent, []);
+        const parentId = await addEntity(parent, []);
+        const childId = await addEntity(child, []);
+
+        await Promise.all([
+          addRelation({
+            id: grandparentId,
+            relation: 'parentOf',
+            source: stringifyEntityRef(grandparent),
+            target: stringifyEntityRef(parent),
+          }),
+          addRelation({
+            id: parentId,
+            relation: 'parentOf',
+            source: stringifyEntityRef(parent),
+            target: stringifyEntityRef(child),
+          }),
+          addRelation({
+            id: childId,
+            relation: 'childOf',
+            source: stringifyEntityRef(grandparent),
+            target: stringifyEntityRef(parent),
+          }),
+        ]);
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        const res = await catalog.relations({
+          entityRef: stringifyEntityRef(grandparent),
+          transient: false,
+          relationsTypes: ['parentOf'],
+          credentials: mockCredentials.none(),
+        });
+        const items = entitiesResponseToObjects(res.items);
+
+        expect(items.map(e => e && stringifyEntityRef(e))).toEqual([
+          'k:default/parent', // should always return the root entity? :pepe-think:
+        ]);
+      },
+    );
+    it.each(databases.eachSupportedId())(
+      'should not get cyclic relations, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        const grandparent: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'grandparent' },
+          spec: {},
+        };
+        const parent: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'parent' },
+          spec: {},
+        };
+        const child: Entity = {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'child' },
+          spec: {},
+        };
+
+        const grandparentId = await addEntity(grandparent, []);
+        const parentId = await addEntity(parent, []);
+        const childId = await addEntity(child, []);
+
+        await Promise.all([
+          addRelation({
+            id: grandparentId,
+            relation: 'parentOf',
+            source: stringifyEntityRef(grandparent),
+            target: stringifyEntityRef(parent),
+          }),
+          addRelation({
+            id: parentId,
+            relation: 'parentOf',
+            source: stringifyEntityRef(parent),
+            target: stringifyEntityRef(child),
+          }),
+          addRelation({
+            id: childId,
+            relation: 'childOf',
+            source: stringifyEntityRef(grandparent),
+            target: stringifyEntityRef(parent),
+          }),
+          addRelation({
+            id: childId,
+            relation: 'parentOf',
+            source: stringifyEntityRef(child),
+            target: stringifyEntityRef(grandparent),
+          }),
+        ]);
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        const res = await catalog.relations({
+          entityRef: stringifyEntityRef(grandparent),
+          transient: true,
+          relationsTypes: ['parentOf'],
+          credentials: mockCredentials.none(),
+        });
+        const items = entitiesResponseToObjects(res.items);
+
+        expect(items.map(e => e && stringifyEntityRef(e))).toEqual([
+          'k:default/grandparent',
+          'k:default/parent',
+          'k:default/child',
+        ]);
       },
     );
   });
