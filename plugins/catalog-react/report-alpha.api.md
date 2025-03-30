@@ -110,6 +110,7 @@ export function convertLegacyEntityContentExtension(
 
 // @alpha
 export const defaultEntityContentGroups: {
+  overview: string;
   documentation: string;
   development: string;
   deployment: string;
