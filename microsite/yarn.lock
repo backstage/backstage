@@ -2066,7 +2066,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docusaurus/core@npm:3.7.0, @docusaurus/core@npm:^3.7.0-canary-6269":
+"@docusaurus/core@npm:3.7.0, @docusaurus/core@npm:^3.7.0":
   version: 3.7.0
   resolution: "@docusaurus/core@npm:3.7.0"
   dependencies:
@@ -2134,7 +2134,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docusaurus/faster@npm:^3.7.0-canary-6269":
+"@docusaurus/faster@npm:^3.7.0":
   version: 3.7.0
   resolution: "@docusaurus/faster@npm:3.7.0"
   dependencies:
@@ -2198,7 +2198,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docusaurus/module-type-aliases@npm:3.7.0, @docusaurus/module-type-aliases@npm:^3.7.0-canary-6269":
+"@docusaurus/module-type-aliases@npm:3.7.0, @docusaurus/module-type-aliases@npm:^3.7.0":
   version: 3.7.0
   resolution: "@docusaurus/module-type-aliases@npm:3.7.0"
   dependencies:
@@ -2216,7 +2216,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docusaurus/plugin-client-redirects@npm:^3.7.0-canary-6269":
+"@docusaurus/plugin-client-redirects@npm:^3.7.0":
   version: 3.7.0
   resolution: "@docusaurus/plugin-client-redirects@npm:3.7.0"
   dependencies:
@@ -2415,7 +2415,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docusaurus/preset-classic@npm:^3.7.0-canary-6269":
+"@docusaurus/preset-classic@npm:^3.7.0":
   version: 3.7.0
   resolution: "@docusaurus/preset-classic@npm:3.7.0"
   dependencies:
@@ -2538,14 +2538,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docusaurus/tsconfig@npm:^3.7.0-canary-6269":
+"@docusaurus/tsconfig@npm:^3.7.0":
   version: 3.7.0
   resolution: "@docusaurus/tsconfig@npm:3.7.0"
   checksum: 21742584fb3753c4fae80f92f9a8ad405653e3d8703aa2e195f043d5d93005703a55416cb4294e80b85d05c25cb4ccbc6e1dad8645b95a9b93df7219b62bab3c
   languageName: node
   linkType: hard
 
-"@docusaurus/types@npm:3.7.0, @docusaurus/types@npm:^3.7.0-canary-6269":
+"@docusaurus/types@npm:3.7.0, @docusaurus/types@npm:^3.7.0":
   version: 3.7.0
   resolution: "@docusaurus/types@npm:3.7.0"
   dependencies:
@@ -3138,82 +3138,82 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-arm64@npm:1.2.0-alpha.0":
-  version: 1.2.0-alpha.0
-  resolution: "@rspack/binding-darwin-arm64@npm:1.2.0-alpha.0"
+"@rspack/binding-darwin-arm64@npm:1.2.5":
+  version: 1.2.5
+  resolution: "@rspack/binding-darwin-arm64@npm:1.2.5"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-x64@npm:1.2.0-alpha.0":
-  version: 1.2.0-alpha.0
-  resolution: "@rspack/binding-darwin-x64@npm:1.2.0-alpha.0"
+"@rspack/binding-darwin-x64@npm:1.2.5":
+  version: 1.2.5
+  resolution: "@rspack/binding-darwin-x64@npm:1.2.5"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-gnu@npm:1.2.0-alpha.0":
-  version: 1.2.0-alpha.0
-  resolution: "@rspack/binding-linux-arm64-gnu@npm:1.2.0-alpha.0"
+"@rspack/binding-linux-arm64-gnu@npm:1.2.5":
+  version: 1.2.5
+  resolution: "@rspack/binding-linux-arm64-gnu@npm:1.2.5"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-musl@npm:1.2.0-alpha.0":
-  version: 1.2.0-alpha.0
-  resolution: "@rspack/binding-linux-arm64-musl@npm:1.2.0-alpha.0"
+"@rspack/binding-linux-arm64-musl@npm:1.2.5":
+  version: 1.2.5
+  resolution: "@rspack/binding-linux-arm64-musl@npm:1.2.5"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-gnu@npm:1.2.0-alpha.0":
-  version: 1.2.0-alpha.0
-  resolution: "@rspack/binding-linux-x64-gnu@npm:1.2.0-alpha.0"
+"@rspack/binding-linux-x64-gnu@npm:1.2.5":
+  version: 1.2.5
+  resolution: "@rspack/binding-linux-x64-gnu@npm:1.2.5"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-musl@npm:1.2.0-alpha.0":
-  version: 1.2.0-alpha.0
-  resolution: "@rspack/binding-linux-x64-musl@npm:1.2.0-alpha.0"
+"@rspack/binding-linux-x64-musl@npm:1.2.5":
+  version: 1.2.5
+  resolution: "@rspack/binding-linux-x64-musl@npm:1.2.5"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-arm64-msvc@npm:1.2.0-alpha.0":
-  version: 1.2.0-alpha.0
-  resolution: "@rspack/binding-win32-arm64-msvc@npm:1.2.0-alpha.0"
+"@rspack/binding-win32-arm64-msvc@npm:1.2.5":
+  version: 1.2.5
+  resolution: "@rspack/binding-win32-arm64-msvc@npm:1.2.5"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-ia32-msvc@npm:1.2.0-alpha.0":
-  version: 1.2.0-alpha.0
-  resolution: "@rspack/binding-win32-ia32-msvc@npm:1.2.0-alpha.0"
+"@rspack/binding-win32-ia32-msvc@npm:1.2.5":
+  version: 1.2.5
+  resolution: "@rspack/binding-win32-ia32-msvc@npm:1.2.5"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-x64-msvc@npm:1.2.0-alpha.0":
-  version: 1.2.0-alpha.0
-  resolution: "@rspack/binding-win32-x64-msvc@npm:1.2.0-alpha.0"
+"@rspack/binding-win32-x64-msvc@npm:1.2.5":
+  version: 1.2.5
+  resolution: "@rspack/binding-win32-x64-msvc@npm:1.2.5"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding@npm:1.2.0-alpha.0":
-  version: 1.2.0-alpha.0
-  resolution: "@rspack/binding@npm:1.2.0-alpha.0"
+"@rspack/binding@npm:1.2.5":
+  version: 1.2.5
+  resolution: "@rspack/binding@npm:1.2.5"
   dependencies:
-    "@rspack/binding-darwin-arm64": 1.2.0-alpha.0
-    "@rspack/binding-darwin-x64": 1.2.0-alpha.0
-    "@rspack/binding-linux-arm64-gnu": 1.2.0-alpha.0
-    "@rspack/binding-linux-arm64-musl": 1.2.0-alpha.0
-    "@rspack/binding-linux-x64-gnu": 1.2.0-alpha.0
-    "@rspack/binding-linux-x64-musl": 1.2.0-alpha.0
-    "@rspack/binding-win32-arm64-msvc": 1.2.0-alpha.0
-    "@rspack/binding-win32-ia32-msvc": 1.2.0-alpha.0
-    "@rspack/binding-win32-x64-msvc": 1.2.0-alpha.0
+    "@rspack/binding-darwin-arm64": 1.2.5
+    "@rspack/binding-darwin-x64": 1.2.5
+    "@rspack/binding-linux-arm64-gnu": 1.2.5
+    "@rspack/binding-linux-arm64-musl": 1.2.5
+    "@rspack/binding-linux-x64-gnu": 1.2.5
+    "@rspack/binding-linux-x64-musl": 1.2.5
+    "@rspack/binding-win32-arm64-msvc": 1.2.5
+    "@rspack/binding-win32-ia32-msvc": 1.2.5
+    "@rspack/binding-win32-x64-msvc": 1.2.5
   dependenciesMeta:
     "@rspack/binding-darwin-arm64":
       optional: true
@@ -3233,24 +3233,27 @@ __metadata:
       optional: true
     "@rspack/binding-win32-x64-msvc":
       optional: true
-  checksum: e408de1d6f7567171711accaa7a9aaa7e2783f2b19f80a9345977d9b176c78acaa9e0f34261f8af2ab76f2cb44ad2c3c08936a4a5b66f97caa629eebc699b050
+  checksum: 03d58977edb0f25f29cbf5174a50967089e6ab52a94b73c1751191d2f1d26b85e757ab1b321a75fc310d1d1d73794c8bd405f431e386b45bef9460784777c857
   languageName: node
   linkType: hard
 
-"@rspack/core@npm:1.2.0-alpha.0":
-  version: 1.2.0-alpha.0
-  resolution: "@rspack/core@npm:1.2.0-alpha.0"
+"@rspack/core@npm:1.2.5":
+  version: 1.2.5
+  resolution: "@rspack/core@npm:1.2.5"
   dependencies:
     "@module-federation/runtime-tools": 0.8.4
-    "@rspack/binding": 1.2.0-alpha.0
+    "@rspack/binding": 1.2.5
     "@rspack/lite-tapable": 1.0.1
     caniuse-lite: ^1.0.30001616
   peerDependencies:
+    "@rspack/tracing": ^1.x
     "@swc/helpers": ">=0.5.1"
   peerDependenciesMeta:
+    "@rspack/tracing":
+      optional: true
     "@swc/helpers":
       optional: true
-  checksum: 11763044861d9b095cf41a993bf2967b99a27fa8efbf2dc26e35e8dcea0534df610a2a68e606f378954545ab761b540965804f311fd665c709aa02bf3690b978
+  checksum: 32d98526408c1e8eed65d334b53ae7a6e24474dcec61dd0769da5aea0d5ebf43ed9bacb9c07241c95d356b33e092b6daf93795c207f8c7458b41760fa37f373f
   languageName: node
   linkType: hard
 
@@ -4871,13 +4874,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "backstage-microsite@workspace:."
   dependencies:
-    "@docusaurus/core": ^3.7.0-canary-6269
-    "@docusaurus/faster": ^3.7.0-canary-6269
-    "@docusaurus/module-type-aliases": ^3.7.0-canary-6269
-    "@docusaurus/plugin-client-redirects": ^3.7.0-canary-6269
-    "@docusaurus/preset-classic": ^3.7.0-canary-6269
-    "@docusaurus/tsconfig": ^3.7.0-canary-6269
-    "@docusaurus/types": ^3.7.0-canary-6269
+    "@docusaurus/core": ^3.7.0
+    "@docusaurus/faster": ^3.7.0
+    "@docusaurus/module-type-aliases": ^3.7.0
+    "@docusaurus/plugin-client-redirects": ^3.7.0
+    "@docusaurus/preset-classic": ^3.7.0
+    "@docusaurus/tsconfig": ^3.7.0
+    "@docusaurus/types": ^3.7.0
     "@mdx-js/react": ^3.0.0
     "@swc/core": ^1.3.46
     "@types/luxon": ^3.0.0
