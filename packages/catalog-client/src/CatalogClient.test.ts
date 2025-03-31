@@ -621,19 +621,21 @@ describe('CatalogClient', () => {
     });
 
     it('should return locations from correct endpoint', async () => {
-      const response = await client.getLocations({ token });
-      expect(response).toEqual([
-        {
-          id: '42',
-          type: 'url',
-          target: 'https://example.com',
-        },
-        {
-          id: '43',
-          type: 'url',
-          target: 'https://example.com',
-        },
-      ]);
+      const response = await client.getLocations({}, { token });
+      expect(response).toEqual({
+        items: [
+          {
+            id: '42',
+            type: 'url',
+            target: 'https://example.com',
+          },
+          {
+            id: '43',
+            type: 'url',
+            target: 'https://example.com',
+          },
+        ],
+      });
     });
 
     it('should return empty list with empty result', async () => {
@@ -643,8 +645,8 @@ describe('CatalogClient', () => {
         }),
       );
 
-      const response = await client.getLocations({ token });
-      expect(response).toEqual([]);
+      const response = await client.getLocations({}, { token });
+      expect(response).toEqual({ items: [] });
     });
 
     it('should forward token', async () => {
@@ -657,7 +659,7 @@ describe('CatalogClient', () => {
         }),
       );
 
-      await client.getLocations({ token });
+      await client.getLocations({}, { token });
     });
 
     it('should not forward token if omitted', async () => {

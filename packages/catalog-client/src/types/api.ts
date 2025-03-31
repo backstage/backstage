@@ -350,6 +350,15 @@ export type Location = {
 };
 
 /**
+ * The response type for {@link CatalogClient.getLocations}
+ *
+ * @public
+ */
+export interface GetLocationsResponse {
+  items: Location[];
+}
+
+/**
  * The request type for {@link CatalogClient.addLocation}.
  *
  * @public
@@ -593,9 +602,13 @@ export interface CatalogApi {
   /**
    * List locations
    *
+   * @param request - Request parameters
    * @param options - Additional options
    */
-  getLocations(options?: CatalogRequestOptions): Promise<Location[]>;
+  getLocations(
+    request?: {},
+    options?: CatalogRequestOptions,
+  ): Promise<GetLocationsResponse>;
 
   /**
    * Gets a registered location by its ID.

@@ -28,6 +28,7 @@ import {
   GetEntityAncestorsResponse,
   GetEntityFacetsRequest,
   GetEntityFacetsResponse,
+  GetLocationsResponse,
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
@@ -228,7 +229,7 @@ export class InMemoryCatalogClient implements CatalogApi {
     };
   }
 
-  async getLocations(): Promise<Location[]> {
+  async getLocations(_request?: {}): Promise<GetLocationsResponse> {
     throw new NotImplementedError('Method not implemented.');
   }
 
