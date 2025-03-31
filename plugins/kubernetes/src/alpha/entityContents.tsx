@@ -25,10 +25,7 @@ export const entityKubernetesContent = EntityContentBlueprint.make({
     defaultPath: '/kubernetes',
     defaultTitle: 'Kubernetes',
     defaultGroup: 'deployment',
-    filter: entity => {
-      if (!isKubernetesAvailable(entity)) return false;
-      return true;
-    },
+    filter: isKubernetesAvailable,
     loader: () =>
       import('./KubernetesContentPage').then(m =>
         compatWrapper(<m.KubernetesContentPage />),
