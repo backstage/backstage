@@ -87,7 +87,7 @@ const config: Config = {
   },
   future: {
     experimental_faster: {
-      rspackBundler: true,
+      rspackBundler: false,
       swcJsLoader: false,
       swcJsMinimizer: false,
       swcHtmlMinimizer: false,

@@ -20,7 +20,7 @@
   },
   "prettier": "@backstage/cli/config/prettier",
   "resolutions": {
-    "@rspack/core": "1.2.5",
+    "@rspack/core": "^1.3.0",
     "node-polyfill-webpack-plugin": "^3.0.0"
   },
   "dependencies": {
