@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { TextFieldOwnProps } from './TextField.props';
+
+import type { Breakpoint } from '../../types';
 
 /** @public */
 export interface TextFieldProps
@@ -27,7 +28,7 @@ export interface TextFieldProps
    * The size of the text field
    * @defaultValue 'medium'
    */
-  size?: TextFieldOwnProps['size'];
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 
   /**
    * The label of the text field

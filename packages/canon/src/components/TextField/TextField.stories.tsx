@@ -89,26 +89,6 @@ export const Responsive: Story = {
   },
 };
 
-async function submitForm(value: string) {
-  // Mimic a server response
-  await new Promise(resolve => {
-    setTimeout(resolve, 200);
-  });
-
-  try {
-    const url = new URL(value);
-
-    const allowedHosts = ['example.com', 'beta.example.com', 'www.example.com'];
-    if (!allowedHosts.includes(url.hostname)) {
-      return { error: 'The example domain is not allowed' };
-    }
-  } catch {
-    return { error: 'This is not a valid URL' };
-  }
-
-  return { success: true };
-}
-
 export const ShowErrorOnSubmit: Story = {
   args: {
     ...WithLabel.args,
@@ -116,30 +96,54 @@ export const ShowErrorOnSubmit: Story = {
     type: 'url',
     required: true,
     label: 'Homepage',
+    name: 'url',
   },
   decorators: [
     Story => {
       const [errors, setErrors] = useState({});
       const [loading, setLoading] = useState(false);
 
+      const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+
+        setLoading(true);
+
+        await new Promise(resolve => {
+          setTimeout(resolve, 200);
+        });
+
+        try {
+          const url = new URL(formData.get('url') as string);
+
+          const allowedHosts = [
+            'backstage.io',
+            'beta.backstage.io',
+            'www.backstage.io',
+          ];
+
+          if (!allowedHosts.includes(url.hostname)) {
+            setErrors({ url: 'The example domain is not allowed' });
+            setLoading(false);
+
+            return;
+          }
+
+          setErrors({});
+          setLoading(false);
+
+          return;
+        } catch {
+          setErrors({ url: 'This is not a valid URL' });
+          setLoading(false);
+        }
+      };
+
       return (
         <Form
           errors={errors}
-          onClearErrors={setErrors}
-          onSubmit={async event => {
-            event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const value = formData.get('url') as string;
-
-            setLoading(true);
-            const response = await submitForm(value);
-            const serverErrors = {
-              url: response.error,
-            };
-
-            setErrors(serverErrors);
-            setLoading(false);
-          }}
+          onClearErrors={() => setErrors({})}
+          onSubmit={handleSubmit}
         >
           <Story />
           <Button
@@ -161,7 +165,7 @@ export const ShowErrorOnSubmit: Story = {
       selector: 'input',
     });
 
-    await userEvent.type(input, 'https://example.com', {
+    await userEvent.type(input, 'https://backstage-fake-site.com', {
       delay: 20,
     });
 
