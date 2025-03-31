@@ -1,5 +1,23 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.6.2-next.0
+
+### Patch Changes
+
+- 1af427a: Made "github:autolinks:create" action idempotent
+- 180ea6e: Made "github:branch-protection:create" action idempotent
+- 0be1a1e: Made "publish:github" action idempotent
+- a833f0f: Made "github:actions:dispatch" action idempotent
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.2
+  - @backstage/types@1.2.1
+
 ## 0.6.1
 
 ### Patch Changes

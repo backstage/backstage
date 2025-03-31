@@ -2,13 +2,8 @@ import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
-import {
-  IconButtonPreview,
-  IconButtonSizes,
-  IconButtonDisabled,
-  IconButtonResponsive,
-} from '@/snippets/icon-button';
-import { iconButtonVariants } from '@/snippets/_snippets';
+import { IconButtonSnippet } from '@/snippets/stories-snippets';
+import { iconButtonVariants } from '@/snippets/code-snippets';
 import { iconButtonPropDefs } from './props';
 
 # Icon Button
@@ -18,11 +13,11 @@ A button component with a single icon that can be used to trigger actions.
 <Snippet
   align="center"
   py={4}
-  preview={<IconButtonPreview />}
+  preview={<IconButtonSnippet story="Variants" />}
   code={`<Flex align="center">
     <IconButton icon="cloud" variant="primary" />
     <IconButton icon="cloud" variant="secondary" />
-</Flex>`}
+  </Flex>`}
 />
 
 <Tabs.Root>
@@ -62,7 +57,7 @@ Here's a view when buttons have different variants.
   align="center"
   py={4}
   open
-  preview={<IconButtonPreview />}
+  preview={<IconButtonSnippet story="Variants" />}
   code={iconButtonVariants}
 />
 
@@ -74,7 +69,7 @@ Here's a view when buttons have different sizes.
   align="center"
   py={4}
   open
-  preview={<IconButtonSizes />}
+  preview={<IconButtonSnippet story="Sizes" />}
   code={`<Flex align="center">
     <IconButton icon="cloud" size="small" />
     <IconButton icon="cloud" size="medium" />
@@ -89,7 +84,7 @@ Here's a view when buttons are disabled.
   align="center"
   py={4}
   open
-  preview={<IconButtonDisabled />}
+  preview={<IconButtonSnippet story="Disabled" />}
   code={`<IconButton icon="cloud" disabled />`}
 />
 
@@ -97,10 +92,6 @@ Here's a view when buttons are disabled.
 
 Here's a view when buttons are responsive.
 
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<IconButtonResponsive />}
+<CodeBlock
   code={`<IconButton icon="cloud" variant={{ initial: 'primary', lg: 'secondary' }} />`}
 />

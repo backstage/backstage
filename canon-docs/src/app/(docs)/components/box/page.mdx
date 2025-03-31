@@ -2,7 +2,7 @@ import { CodeBlock } from '@/components/CodeBlock';
 import { PropsTable } from '@/components/PropsTable';
 import { Tabs } from '@/components/Tabs';
 import { Snippet } from '@/components/Snippet';
-import { BoxPreview } from '@/snippets/box';
+import { BoxSnippet } from '@/snippets/stories-snippets';
 import { boxPropDefs } from './props';
 import { spacingPropDefs } from '../../../../utils/propDefs';
 
@@ -12,7 +12,7 @@ Box is the lowest-level component in Canon. It provides a consistent API for sty
 
 <Snippet
   py={4}
-  preview={<BoxPreview />}
+  preview={<BoxSnippet story="Preview" />}
   code={`<Box>
     <DecorativeBox />
 </Box>`}

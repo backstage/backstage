@@ -15,6 +15,7 @@
  */
 
 import { ReactNode } from 'react';
+import type { RemixiconComponentType } from '@remixicon/react';
 
 /** @public */
 export type IconNames =
@@ -74,7 +75,7 @@ export type IconNames =
   | 'zoom-out';
 
 /** @public */
-export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
+export type IconMap = Partial<Record<IconNames, RemixiconComponentType>>;
 
 /** @public */
 export type IconProps = {
@@ -92,5 +93,5 @@ export interface IconContextProps {
 /** @public */
 export interface IconProviderProps {
   children?: ReactNode;
-  overrides?: Partial<Record<IconNames, React.ComponentType>>;
+  overrides?: Partial<Record<IconNames, RemixiconComponentType>>;
 }

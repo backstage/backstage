@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-cluster",
-  "version": "0.0.23",
+  "version": "0.0.24-next.0",
   "description": "A Backstage plugin that shows details of Kubernetes clusters",
   "backstage": {
     "role": "frontend-plugin",
