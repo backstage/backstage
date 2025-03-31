@@ -1031,27 +1031,13 @@ export const TextField: React_2.ForwardRefExoticComponent<
 >;
 
 // @public (undocumented)
-export type TextFieldOwnProps = GetPropDefTypes<typeof textFieldPropDefs>;
-
-// @public (undocumented)
-export const textFieldPropDefs: {
-  size: {
-    type: 'enum';
-    values: ('small' | 'medium')[];
-    className: string;
-    default: 'medium';
-    responsive: true;
-  };
-};
-
-// @public (undocumented)
 export interface TextFieldProps
   extends Omit<React.ComponentPropsWithoutRef<'input'>, 'size'> {
   className?: string;
   description?: string;
   label?: string;
   name: string;
-  size?: TextFieldOwnProps['size'];
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 
 // @public (undocumented)
