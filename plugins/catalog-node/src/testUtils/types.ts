@@ -27,6 +27,7 @@ import {
   GetEntityAncestorsResponse,
   GetEntityFacetsRequest,
   GetEntityFacetsResponse,
+  GetLocationsResponse,
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
@@ -91,8 +92,9 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
   ): Promise<GetEntityFacetsResponse>;
 
   getLocations(
+    request?: {},
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
-  ): Promise<Location[]>;
+  ): Promise<GetLocationsResponse>;
 
   getLocationById(
     id: string,

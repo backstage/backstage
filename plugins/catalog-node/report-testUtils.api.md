@@ -19,6 +19,7 @@ import { GetEntityAncestorsRequest } from '@backstage/catalog-client';
 import { GetEntityAncestorsResponse } from '@backstage/catalog-client';
 import { GetEntityFacetsRequest } from '@backstage/catalog-client';
 import { GetEntityFacetsResponse } from '@backstage/catalog-client';
+import { GetLocationsResponse } from '@backstage/catalog-client';
 import { Location as Location_2 } from '@backstage/catalog-client';
 import { QueryEntitiesRequest } from '@backstage/catalog-client';
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
@@ -75,8 +76,9 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
   ): Promise<Location_2 | undefined>;
   // (undocumented)
   getLocations(
+    request?: {},
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
-  ): Promise<Location_2[]>;
+  ): Promise<GetLocationsResponse>;
   // (undocumented)
   queryEntities(
     request?: QueryEntitiesRequest,

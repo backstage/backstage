@@ -35,6 +35,7 @@ import {
   GetEntityAncestorsResponse,
   GetEntityFacetsRequest,
   GetEntityFacetsResponse,
+  GetLocationsResponse,
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
@@ -96,7 +97,10 @@ export interface CatalogService {
     options: CatalogServiceRequestOptions,
   ): Promise<GetEntityFacetsResponse>;
 
-  getLocations(options: CatalogServiceRequestOptions): Promise<Location[]>;
+  getLocations(
+    request: {} | undefined,
+    options: CatalogServiceRequestOptions,
+  ): Promise<GetLocationsResponse>;
 
   getLocationById(
     id: string,
@@ -226,9 +230,13 @@ class DefaultCatalogService implements CatalogService {
   }
 
   async getLocations(
+    request: {} | undefined,
     options: CatalogServiceRequestOptions,
-  ): Promise<Location[]> {
-    return this.#catalogApi.getLocations(await this.#getOptions(options));
+  ): Promise<GetLocationsResponse> {
+    return this.#catalogApi.getLocations(
+      request,
+      await this.#getOptions(options),
+    );
   }
 
   async getLocationById(
