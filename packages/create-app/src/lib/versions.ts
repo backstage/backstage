@@ -90,6 +90,7 @@ import { version as pluginNotifications } from '../../../../plugins/notification
 import { version as pluginNotificationsBackend } from '../../../../plugins/notifications-backend/package.json';
 import { version as pluginSignals } from '../../../../plugins/signals/package.json';
 import { version as pluginSignalsBackend } from '../../../../plugins/signals-backend/package.json';
+import { version as pluginEventsBackend } from '../../../../plugins/events-backend/package.json';
 
 export const packageVersions = {
   root,
@@ -152,6 +153,7 @@ export const packageVersions = {
   '@backstage/plugin-search-backend-node': pluginSearchBackendNode,
   '@backstage/plugin-signals-backend': pluginSignalsBackend,
   '@backstage/plugin-signals': pluginSignals,
+  '@backstage/plugin-events-backend': pluginEventsBackend,
   '@backstage/plugin-techdocs': pluginTechdocs,
   '@backstage/plugin-techdocs-react': pluginTechdocsReact,
   '@backstage/plugin-techdocs-module-addons-contrib':

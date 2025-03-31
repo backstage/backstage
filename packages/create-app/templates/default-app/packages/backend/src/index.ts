@@ -55,5 +55,6 @@ backend.add(import('@backstage/plugin-kubernetes-backend'));
 // notifications and signals
 backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
+backend.add(import('@backstage/plugin-events-backend'));
 
 backend.start();

@@ -2,4 +2,4 @@
 '@backstage/create-app': minor
 ---
 
-The Notifications and Signals plugins are included in the `create-app` by default.
+The Notifications, Signals and Events plugins are included in the `create-app` by default.

@@ -100,6 +100,7 @@ jest.mock('./versions', () => ({
     '@backstage/plugin-search-react': '1.0.0',
     '@backstage/plugin-signals-backend': '1.0.0',
     '@backstage/plugin-signals': '1.0.0',
+    '@backstage/plugin-events-backend': '1.0.0',
     '@backstage/plugin-techdocs': '1.0.0',
     '@backstage/plugin-techdocs-react': '1.0.0',
     '@backstage/plugin-techdocs-module-addons-contrib': '1.0.0',
