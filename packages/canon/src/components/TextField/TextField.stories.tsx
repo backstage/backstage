@@ -19,8 +19,8 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { TextField } from './TextField';
 import { Form } from '@base-ui-components/react/form';
 import { Button } from '../Button';
-import { userEvent, waitFor, within, expect } from '@storybook/test';
 import { Flex } from '../Flex';
+import { waitFor, within, userEvent, expect } from '@storybook/test';
 
 const meta = {
   title: 'Components/TextField',
@@ -170,13 +170,13 @@ export const ShowErrorOnSubmit: Story = {
     });
 
     const submitButton = canvas.getByRole('button');
-
     await userEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(
-        canvas.getByText('The example domain is not allowed'),
-      ).toBeInTheDocument();
+      const errorMessage = canvas.queryByText(
+        'The example domain is not allowed',
+      );
+      expect(errorMessage).toBeTruthy();
     });
   },
 };

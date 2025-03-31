@@ -56,7 +56,6 @@
     "@storybook/react": "^8.6.8",
     "@storybook/react-webpack5": "^8.6.8",
     "@storybook/test": "^8.6.8",
-    "@testing-library/jest-dom": "^6.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "chalk": "^5.4.1",
