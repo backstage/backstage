@@ -1,5 +1,28 @@
 # @backstage/cli
 
+## 0.32.0-next.0
+
+### Minor Changes
+
+- c7254ae: Internal update to move the `clean`, `pre/postpack` and `fix` commands into their own separate module.
+
+### Patch Changes
+
+- 4ea76f7: Bump @module-federation/enhanced ^0.9.0 to fix GHSA-593f-38f6-jp5m
+- 87a5cb4: Fixed an issue causing the `repo lint` command to fail when the `--max-warnings` option was used.
+- d83f3f4: Resolved a problem where the `start` command did not correctly handle multiple `--require` flags, ensuring all specified modules are now properly loaded.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.0
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.2
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
 ## 0.31.0
 
 ### Minor Changes

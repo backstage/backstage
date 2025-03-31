@@ -647,7 +647,7 @@ export type GiteaIntegrationConfig = {
 export type GithubAppConfig = {
   appId: number;
   privateKey: string;
-  webhookSecret: string;
+  webhookSecret?: string;
   clientId: string;
   clientSecret: string;
   allowedInstallationOwners?: string[];

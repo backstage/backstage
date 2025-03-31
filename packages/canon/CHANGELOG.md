@@ -1,5 +1,13 @@
 # @backstage/canon
 
+## 0.2.1-next.0
+
+### Patch Changes
+
+- 6af7b16: Updated styles for the Menu component in Canon.
+- 513477f: Add global CSS reset for anchor tags.
+- 05a5003: Fix the Icon component when the name is not found to return null instead of an empty SVG.
+
 ## 0.2.0
 
 ### Minor Changes

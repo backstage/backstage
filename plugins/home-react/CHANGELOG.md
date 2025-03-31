@@ -1,5 +1,14 @@
 # @backstage/plugin-home-react
 
+## 0.1.25-next.0
+
+### Patch Changes
+
+- 2e4cb15: Fixes auto-hiding of content divider when title not specified
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+
 ## 0.1.24
 
 ### Patch Changes
