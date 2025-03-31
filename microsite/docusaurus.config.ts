@@ -306,11 +306,6 @@ const config: Config = {
     languageTabs: [
       {
         highlight: 'javascript',
-        language: 'nodejs',
-        logoClass: 'nodejs',
-      },
-      {
-        highlight: 'javascript',
         language: 'javascript',
         logoClass: 'javascript',
       },
