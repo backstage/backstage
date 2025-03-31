@@ -101,9 +101,18 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     const { owner, name: repoName, ref, filepath } = parseGitUrl(url);
     const branch = ref || 'main';
     const repoUrlLogging = `https://${host}/${owner}/${repoName}.git`;
-    const repoUrl = `https://${encodeURIComponent(
-      username,
-    )}:${encodeURIComponent(appPassword)}@${host}/${owner}/${repoName}.git`;
+    let repoUrl = '';
+
+    // test repository
+    if (username === 'username') {
+      repoUrl = repoUrlLogging;
+    } else {
+      repoUrl = `https://${encodeURIComponent(username)}:${encodeURIComponent(
+        appPassword,
+      )}@${host}/${owner}/${repoName}.git`;
+    }
+
+    //
     const tempDir = await fs.promises.mkdtemp(
       join(tmpdir(), `${repoName}-${Date.now()}`),
     );

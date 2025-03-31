@@ -65,7 +65,7 @@ describe('BitbucketCloudUrlReader', () => {
     it('should be able to readUrl via buffer without ETag', async () => {
       worker.use(
         rest.get(
-          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          'https://api.bitbucket.org/2.0/repositories/ciandt_wesleymf/ciandt_wesleymf/src/master/catalog-info.yaml',
           (req, res, ctx) => {
             expect(req.headers.get('If-None-Match')).toBeNull();
             return res(
@@ -78,7 +78,7 @@ describe('BitbucketCloudUrlReader', () => {
       );
 
       const result = await reader.readUrl(
-        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+        'https://bitbucket.org/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
       );
       const buffer = await result.buffer();
       expect(buffer.toString()).toBe('foo');
@@ -87,7 +87,7 @@ describe('BitbucketCloudUrlReader', () => {
     it('should be able to readUrl via stream without ETag', async () => {
       worker.use(
         rest.get(
-          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          'https://api.bitbucket.org/2.0/repositories/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
           (req, res, ctx) => {
             expect(req.headers.get('If-None-Match')).toBeNull();
             return res(
@@ -100,7 +100,7 @@ describe('BitbucketCloudUrlReader', () => {
       );
 
       const result = await reader.readUrl(
-        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+        'https://bitbucket.org/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
       );
       const fromStream = await getRawBody(result.stream!());
       expect(fromStream.toString()).toBe('foo');
@@ -109,7 +109,7 @@ describe('BitbucketCloudUrlReader', () => {
     it('should be able to readUrl with matching ETag', async () => {
       worker.use(
         rest.get(
-          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          'https://api.bitbucket.org/2.0/repositories/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
           (req, res, ctx) => {
             expect(req.headers.get('If-None-Match')).toBe(
               'matching-etag-value',
@@ -121,7 +121,7 @@ describe('BitbucketCloudUrlReader', () => {
 
       await expect(
         reader.readUrl(
-          'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+          'https://bitbucket.org/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
         ),
       ).rejects.toThrow(NotModifiedError);
     });
@@ -129,7 +129,7 @@ describe('BitbucketCloudUrlReader', () => {
     it('should be able to readUrl without matching ETag', async () => {
       worker.use(
         rest.get(
-          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          'https://api.bitbucket.org/2.0/repositories/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
           (req, res, ctx) => {
             expect(req.headers.get('If-None-Match')).toBe(
               'previous-etag-value',
@@ -144,7 +144,7 @@ describe('BitbucketCloudUrlReader', () => {
       );
 
       const result = await reader.readUrl(
-        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+        'https://bitbucket.org/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
       );
       const buffer = await result.buffer();
       expect(buffer.toString()).toBe('foo');
@@ -154,7 +154,7 @@ describe('BitbucketCloudUrlReader', () => {
     it('should be able to readUrl via buffer without If-Modified-Since', async () => {
       worker.use(
         rest.get(
-          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          'https://api.bitbucket.org/2.0/repositories/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
           (req, res, ctx) => {
             expect(req.headers.get('If-None-Match')).toBeNull();
             return res(
@@ -171,7 +171,7 @@ describe('BitbucketCloudUrlReader', () => {
       );
 
       const result = await reader.readUrl(
-        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+        'https://bitbucket.org/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
       );
       const buffer = await result.buffer();
       expect(result.lastModifiedAt).toEqual(new Date('2020-01-01T00:00:00Z'));
@@ -181,7 +181,7 @@ describe('BitbucketCloudUrlReader', () => {
     it('should be throw not modified when If-Modified-Since returns a 304', async () => {
       worker.use(
         rest.get(
-          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          'https://api.bitbucket.org/2.0/repositories/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
           (req, res, ctx) => {
             expect(req.headers.get('If-Modified-Since')).toBe(
               new Date('1999 12 31 23:59:59 GMT').toUTCString(),
@@ -193,7 +193,7 @@ describe('BitbucketCloudUrlReader', () => {
 
       await expect(
         reader.readUrl(
-          'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+          'https://bitbucket.org/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
         ),
       ).rejects.toThrow(NotModifiedError);
     });
@@ -201,7 +201,7 @@ describe('BitbucketCloudUrlReader', () => {
     it('should be able to readUrl when If-Modified-Since is before Last-Modified', async () => {
       worker.use(
         rest.get(
-          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          'https://api.bitbucket.org/2.0/repositories/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
           (req, res, ctx) => {
             expect(req.headers.get('If-Modified-Since')).toBe(
               new Date('1999 12 31 23:59:59 GMT').toUTCString(),
@@ -219,7 +219,7 @@ describe('BitbucketCloudUrlReader', () => {
       );
 
       const result = await reader.readUrl(
-        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+        'https://bitbucket.org/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
       );
       const buffer = await result.buffer();
       expect(buffer.toString()).toBe('foo');
@@ -454,7 +454,7 @@ describe('BitbucketCloudUrlReader', () => {
     it('should work for exact URLs', async () => {
       worker.use(
         rest.get(
-          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          'https://api.bitbucket.org/2.0/repositories/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
           (req, res, ctx) => {
             expect(req.headers.get('If-None-Match')).toBeNull();
             return res(
@@ -467,12 +467,12 @@ describe('BitbucketCloudUrlReader', () => {
       );
 
       const result = await reader.search(
-        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+        'https://bitbucket.org/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
       );
       expect(result.etag).toBe('etag-value');
       expect(result.files.length).toBe(1);
       expect(result.files[0].url).toBe(
-        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+        'https://bitbucket.org/ciandt_wesleymf/backstage-verification/src/master/catalog-info.yaml',
       );
       expect((await result.files[0].content()).toString()).toEqual('foo');
     });
