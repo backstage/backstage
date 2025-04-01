@@ -22,7 +22,7 @@ import { ConsumerConfig, ConsumerSubscribeTopics, KafkaConfig } from 'kafkajs';
 export interface KafkaConsumerConfig {
   backstageTopic: string;
   consumerConfig: ConsumerConfig;
-  consumerSubscribeConfig: ConsumerSubscribeTopics;
+  consumerSubscribeTopics: ConsumerSubscribeTopics;
 }
 
 /**
@@ -73,7 +73,7 @@ export const readConfig = (config: Config): KafkaEventSourceConfig => {
           maxBytes: topic.getOptionalNumber('kafka.maxBytes'),
           maxWaitTimeInMs: topic.getOptionalNumber('kafka.maxWaitTimeInMs'),
         },
-        consumerSubscribeConfig: {
+        consumerSubscribeTopics: {
           topics: topic.getStringArray('kafka.topics'),
         },
       };

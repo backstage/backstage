@@ -39,7 +39,7 @@ describe('KafkaConsumingEventPublisher', () => {
     consumerConfig: {
       groupId: 'test-group',
     },
-    consumerSubscribeConfig: {
+    consumerSubscribeTopics: {
       topics: ['test-topic'],
     },
     backstageTopic: 'backstage-topic',
@@ -72,7 +72,7 @@ describe('KafkaConsumingEventPublisher', () => {
 
     expect(mockConsumer.connect).toHaveBeenCalled();
     expect(mockConsumer.subscribe).toHaveBeenCalledWith(
-      kafkaConsumerConfig.consumerSubscribeConfig,
+      kafkaConsumerConfig.consumerSubscribeTopics,
     );
     expect(mockConsumer.run).toHaveBeenCalled();
   });
