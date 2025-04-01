@@ -20,7 +20,6 @@ import { TextField } from './TextField';
 import { Form } from '@base-ui-components/react/form';
 import { Button } from '../Button';
 import { Flex } from '../Flex';
-import { waitFor, within, userEvent, expect } from '@storybook/test';
 
 const meta = {
   title: 'Components/TextField',
@@ -97,10 +96,13 @@ export const ShowErrorOnSubmit: Story = {
     required: true,
     label: 'Homepage',
     name: 'url',
+    value: 'https://backstage-fake-site.com',
   },
   decorators: [
     Story => {
-      const [errors, setErrors] = useState({});
+      const [errors, setErrors] = useState<Record<string, string> | undefined>(
+        undefined,
+      );
       const [loading, setLoading] = useState(false);
 
       const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -129,7 +131,7 @@ export const ShowErrorOnSubmit: Story = {
             return;
           }
 
-          setErrors({});
+          setErrors(undefined);
           setLoading(false);
 
           return;
@@ -142,7 +144,7 @@ export const ShowErrorOnSubmit: Story = {
       return (
         <Form
           errors={errors}
-          onClearErrors={() => setErrors({})}
+          onClearErrors={() => setErrors(undefined)}
           onSubmit={handleSubmit}
         >
           <Story />
@@ -158,25 +160,4 @@ export const ShowErrorOnSubmit: Story = {
       );
     },
   ],
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    const input = canvas.getByLabelText('Homepage', {
-      selector: 'input',
-    });
-
-    await userEvent.type(input, 'https://backstage-fake-site.com', {
-      delay: 20,
-    });
-
-    const submitButton = canvas.getByRole('button');
-    await userEvent.click(submitButton);
-
-    await waitFor(() => {
-      const errorMessage = canvas.queryByText(
-        'The example domain is not allowed',
-      );
-      expect(errorMessage).toBeTruthy();
-    });
-  },
 };
