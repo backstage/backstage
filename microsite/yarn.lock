@@ -3246,7 +3246,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/core@npm:^1.3.1":
+"@rspack/core@npm:^1.3.0":
   version: 1.3.1
   resolution: "@rspack/core@npm:1.3.1"
   dependencies:
