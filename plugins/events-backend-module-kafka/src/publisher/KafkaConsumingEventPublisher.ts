@@ -29,7 +29,7 @@ type EventMetadata = EventParams['metadata'];
  */
 export class KafkaConsumingEventPublisher {
   private readonly kafkaConsumer: Consumer;
-  private readonly consumerSubscribeOptions: ConsumerSubscribeTopics;
+  private readonly consumerSubscribeTopics: ConsumerSubscribeTopics;
   private readonly backstageTopic: string;
   private readonly logger: LoggerService;
 
@@ -54,13 +54,13 @@ export class KafkaConsumingEventPublisher {
     config: KafkaConsumerConfig,
   ) {
     this.kafkaConsumer = kafkaClient.consumer(config.consumerConfig);
-    this.consumerSubscribeOptions = config.consumerSubscribeConfig;
+    this.consumerSubscribeTopics = config.consumerSubscribeTopics;
     this.backstageTopic = config.backstageTopic;
     const id = `events.kafka.publisher:${this.backstageTopic}`;
     this.logger = logger.child({
       class: KafkaConsumingEventPublisher.prototype.constructor.name,
       groupId: config.consumerConfig.groupId,
-      kafkaTopics: config.consumerSubscribeConfig.topics.toString(),
+      kafkaTopics: config.consumerSubscribeTopics.topics.toString(),
       backstageTopic: config.backstageTopic,
       taskId: id,
     });
@@ -71,7 +71,7 @@ export class KafkaConsumingEventPublisher {
       await this.kafkaConsumer.connect();
       this.logger.info('Kafka consumer connected');
 
-      await this.kafkaConsumer.subscribe(this.consumerSubscribeOptions);
+      await this.kafkaConsumer.subscribe(this.consumerSubscribeTopics);
 
       await this.kafkaConsumer.run({
         eachMessage: async ({ message }) => {

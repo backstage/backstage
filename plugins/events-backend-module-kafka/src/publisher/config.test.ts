@@ -71,7 +71,7 @@ describe('readConfig', () => {
       publisherConfigs.kafkaConsumerConfigs[0].consumerConfig.groupId,
     ).toEqual('my-group');
     expect(
-      publisherConfigs.kafkaConsumerConfigs[0].consumerSubscribeConfig.topics,
+      publisherConfigs.kafkaConsumerConfigs[0].consumerSubscribeTopics.topics,
     ).toEqual(['topic-A']);
   });
 
@@ -165,7 +165,7 @@ describe('readConfig', () => {
       publisherConfigs.kafkaConsumerConfigs[0].consumerConfig.groupId,
     ).toEqual('my-group');
     expect(
-      publisherConfigs.kafkaConsumerConfigs[0].consumerSubscribeConfig.topics,
+      publisherConfigs.kafkaConsumerConfigs[0].consumerSubscribeTopics.topics,
     ).toEqual(['topic-A']);
 
     expect(
