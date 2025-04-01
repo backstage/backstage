@@ -85,4 +85,9 @@ export interface SelectProps {
    * Callbak that is called when the select field is opened or closed
    */
   onOpenChange?: (open: boolean) => void;
+
+  /**
+   * The style of the select field
+   */
+  style?: React.CSSProperties;
 }

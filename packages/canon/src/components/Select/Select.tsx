@@ -21,11 +21,7 @@ import clsx from 'clsx';
 import './Select.styles.css';
 import { SelectProps } from './types';
 
-/**
- * Select component
- *
- * @public
- */
+/** @public */
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   (props, ref) => {
     const {
@@ -42,12 +38,14 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       size = 'medium',
       disabled = false,
       required = false,
+      style,
     } = props;
     return (
       <Field.Root
         className={clsx('canon-SelectFieldRoot', className)}
         disabled={disabled}
         name={name}
+        style={style}
       >
         {label && (
           <Field.Label className="canon-SelectFieldLabel">{label}</Field.Label>

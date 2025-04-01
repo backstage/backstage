@@ -18,11 +18,11 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Select } from './Select';
 import { Form } from '@base-ui-components/react/form';
 import { Button } from '../Button';
+import { Flex } from '../Flex';
 
 const meta = {
   title: 'Components/Select',
   component: Select,
-  decorators: [story => <div style={{ maxWidth: 400 }}>{story()}</div>],
 } satisfies Meta<typeof Select>;
 
 export default meta;
@@ -37,37 +37,57 @@ const fontOptions = [
 
 export const Default: Story = {
   args: {
+    options: fontOptions,
+    name: 'font',
+  },
+};
+
+export const Preview: Story = {
+  args: {
     label: 'Font Family',
     options: fontOptions,
     placeholder: 'Select a font',
     name: 'font',
+    style: { maxWidth: 260 },
   },
 };
 
 export const WithDescription: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
     description: 'Choose a font family for your document',
   },
 };
 
+export const Sizes: Story = {
+  args: {
+    ...Preview.args,
+  },
+  render: args => (
+    <Flex direction="row" gap="2" style={{ width: '100%', maxWidth: 540 }}>
+      <Select {...args} size="small" />
+      <Select {...args} size="medium" />
+    </Flex>
+  ),
+};
+
 export const Required: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
     required: true,
   },
 };
 
 export const Disabled: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
     disabled: true,
   },
 };
 
 export const DisabledOption: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
     options: [
       ...fontOptions,
       { value: 'comic-sans', label: 'Comic sans', disabled: true },
@@ -77,28 +97,28 @@ export const DisabledOption: Story = {
 
 export const NoLabel: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
     label: undefined,
   },
 };
 
 export const NoOptions: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
     options: undefined,
   },
 };
 
 export const Small: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
     size: 'small',
   },
 };
 
 export const WithValue: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
     value: 'mono',
     defaultValue: 'serif',
   },
@@ -106,7 +126,7 @@ export const WithValue: Story = {
 
 export const WithDefaultValue: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
     defaultValue: 'serif',
     options: fontOptions,
     name: 'font',
@@ -259,7 +279,7 @@ async function validateFont(value: string) {
 
 export const ShowErrorOnSubmit: Story = {
   args: {
-    ...Default.args,
+    ...Preview.args,
     label: 'Font Family (select Comic sans to see error)',
     options: [...fontOptions, { value: 'comic-sans', label: 'Comic sans' }],
     required: true,
