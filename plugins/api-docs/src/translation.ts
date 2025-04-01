@@ -16,6 +16,9 @@
 
 import { createTranslationRef } from '@backstage/frontend-plugin-api';
 
+/**
+ * @alpha
+ */
 export const apiDocsTranslationRef = createTranslationRef({
   id: 'api-docs',
   messages: {

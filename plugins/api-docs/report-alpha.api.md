@@ -20,9 +20,7 @@ import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
-// Warning: (ae-missing-release-tag) "apiDocsTranslationRef" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @alpha (undocumented)
 export const apiDocsTranslationRef: TranslationRef<
   'api-docs',
   {
