@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { default as feature } from './module';
-
-/** @alpha */
-const _feature = feature;
-export default _feature;
+/**
+ * The module "bitbucket-server" for the Backstage backend plugin "events-backend"
+ * adding an event router for Bitbucket Server.
+ *
+ * @packageDocumentation
+ */
+export { eventsModuleBitbucketServerEventRouter as default } from './service/eventsModuleBitbucketServerEventRouter';
