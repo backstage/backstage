@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.17.1-next.0
+
+### Patch Changes
+
+- 5d7bad4: Fixed the messaging in the `AlertDisplay` where it was claiming that there were older messages available rather than newer.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.4
+  - @backstage/version-bridge@1.0.11
+
 ## 0.17.0
 
 ### Minor Changes
