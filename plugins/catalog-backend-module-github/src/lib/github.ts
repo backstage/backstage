@@ -669,11 +669,7 @@ export async function queryWithPaging<
         }
         await sleep(Math.pow(2, attempts - 1) * 1000);
       } catch (error) {
-        if (logger) {
-          logger.debug(
-            `caught an error on attempt ${attempts}/${maxRetries})}`,
-          );
-        }
+        logger?.debug(`caught an error on attempt ${attempts}/${maxRetries})}`);
         if (
           !(error?.status === 502 || error?.status === 504) ||
           attempts === maxRetries
@@ -752,7 +748,7 @@ export const createReplaceEntitiesOperation =
  * Creates a Octokit Client with Throttling
  */
 export const createOctokitClient = (args: {
-  token: string;
+  token?: string;
   baseUrl: string;
   logger?: LoggerService;
 }): typeof octokit => {
@@ -763,36 +759,28 @@ export const createOctokitClient = (args: {
     baseUrl,
     throttle: {
       onRateLimit: (retryAfter, rateLimitData, _, retryCount) => {
-        if (logger) {
-          logger.warn(
-            `Request quota exhausted for request ${rateLimitData?.method} ${rateLimitData?.url}`,
-          );
-        }
+        logger?.warn(
+          `Request quota exhausted for request ${rateLimitData?.method} ${rateLimitData?.url}`,
+        );
 
         if (retryCount < 2) {
-          if (logger) {
-            logger.warn(
-              `Retrying after ${retryAfter} seconds for the ${retryCount} time due to Rate Limit!`,
-            );
-          }
+          logger?.warn(
+            `Retrying after ${retryAfter} seconds for the ${retryCount} time due to Rate Limit!`,
+          );
           return true;
         }
 
         return false;
       },
       onSecondaryRateLimit: (retryAfter, rateLimitData, _, retryCount) => {
-        if (logger) {
-          logger.warn(
-            `Secondary Rate Limit Exhausted for request ${rateLimitData?.method} ${rateLimitData?.url}`,
-          );
-        }
+        logger?.warn(
+          `Secondary Rate Limit Exhausted for request ${rateLimitData?.method} ${rateLimitData?.url}`,
+        );
 
         if (retryCount < 2) {
-          if (logger) {
-            logger.warn(
-              `Retrying after ${retryAfter} seconds for the ${retryCount} time due to Secondary Rate Limit!`,
-            );
-          }
+          logger?.warn(
+            `Retrying after ${retryAfter} seconds for the ${retryCount} time due to Secondary Rate Limit!`,
+          );
           return true;
         }
 
