@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { default as feature } from './module';
+import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @alpha */
-const _feature = feature;
-export default _feature;
+export const catalogImportTranslationRef = createTranslationRef({
+  id: 'catalog-import',
+  messages: {
+    pageTitle: 'Register an existing component',
+    importInfoCard: {
+      title: 'Register an existing component',
+    },
+  },
+});
