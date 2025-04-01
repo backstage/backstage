@@ -15,13 +15,13 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { FieldErrors } from 'react-hook-form';
 import { InfoCardVariants } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
+import { NestedValue } from 'react-hook-form';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmAuthApi } from '@backstage/integration-react';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SubmitHandler } from 'react-hook-form';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';
-import { UnpackNestedValue } from 'react-hook-form';
 import { UseFormProps } from 'react-hook-form';
 import { UseFormReturn } from 'react-hook-form';
 
@@ -360,6 +360,17 @@ export interface StepPrepareCreatePullRequestProps {
     },
   ) => React_2.ReactNode;
 }
+
+// @public @deprecated
+export type UnpackNestedValue<T> = T extends NestedValue<infer U>
+  ? U
+  : T extends Date | FileList | File | Blob
+  ? T
+  : T extends object
+  ? {
+      [K in keyof T]: UnpackNestedValue<T[K]>;
+    }
+  : T;
 
 // Warnings were encountered during analysis:
 //

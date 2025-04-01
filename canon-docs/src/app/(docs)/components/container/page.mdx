@@ -2,7 +2,7 @@ import { CodeBlock } from '@/components/CodeBlock';
 import { PropsTable } from '@/components/PropsTable';
 import { Tabs } from '@/components/Tabs';
 import { Snippet } from '@/components/Snippet';
-import { ContainerPreview } from '@/snippets/container';
+import { ContainerSnippet } from '@/snippets/stories-snippets';
 import { containerPropDefs } from './props';
 
 # Container
@@ -12,7 +12,7 @@ content on the page.
 
 <Snippet
   py={4}
-  preview={<ContainerPreview />}
+  preview={<ContainerSnippet story="Preview" />}
   code={`<Container>
     <DecorativeBox />
 </Container>`}
