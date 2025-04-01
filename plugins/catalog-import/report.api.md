@@ -24,7 +24,6 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SubmitHandler } from 'react-hook-form';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';
 import { TranslationFunction } from '@backstage/core-plugin-api/alpha';
-import { UnpackNestedValue } from 'react-hook-form';
 import { UseFormProps } from 'react-hook-form';
 import { UseFormReturn } from 'react-hook-form';
 
