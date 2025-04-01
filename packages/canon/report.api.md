@@ -979,6 +979,7 @@ export interface SelectProps {
   placeholder?: string;
   required?: boolean;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  style?: React.CSSProperties;
   value?: string;
 }
 
