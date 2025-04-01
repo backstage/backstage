@@ -23,10 +23,4 @@
  * @packageDocumentation
  */
 
-export { KafkaConsumerClient } from './publisher/KafkaConsumerClient';
-export { KafkaConsumingEventPublisher } from './publisher/KafkaConsumingEventPublisher';
 export { eventsModuleKafkaConsumingEventPublisher as default } from './service/eventsModuleKafkaConsumingEventPublisher';
-export type {
-  KafkaConsumerConfig,
-  KafkaEventSourceConfig,
-} from './publisher/config';

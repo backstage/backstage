@@ -4,62 +4,8 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
-import { ConsumerConfig } from 'kafkajs';
-import { ConsumerSubscribeTopics } from 'kafkajs';
-import { EventsService } from '@backstage/plugin-events-node';
-import { Kafka } from 'kafkajs';
-import { KafkaConfig } from 'kafkajs';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 // @public
 const eventsModuleKafkaConsumingEventPublisher: BackendFeature;
 export default eventsModuleKafkaConsumingEventPublisher;
-
-// @public
-export class KafkaConsumerClient {
-  // (undocumented)
-  static fromConfig(env: {
-    config: Config;
-    events: EventsService;
-    logger: LoggerService;
-  }): KafkaConsumerClient;
-  // (undocumented)
-  shutdown(): Promise<void>;
-  // (undocumented)
-  start(): Promise<void>;
-}
-
-// @public (undocumented)
-export interface KafkaConsumerConfig {
-  // (undocumented)
-  backstageTopic: string;
-  // (undocumented)
-  consumerConfig: ConsumerConfig;
-  // (undocumented)
-  consumerSubscribeConfig: ConsumerSubscribeTopics;
-}
-
-// @public
-export class KafkaConsumingEventPublisher {
-  // (undocumented)
-  static fromConfig(env: {
-    kafkaClient: Kafka;
-    config: KafkaConsumerConfig;
-    events: EventsService;
-    logger: LoggerService;
-  }): KafkaConsumingEventPublisher;
-  // (undocumented)
-  shutdown(): Promise<void>;
-  // (undocumented)
-  start(): Promise<void>;
-}
-
-// @public (undocumented)
-export interface KafkaEventSourceConfig {
-  // (undocumented)
-  kafkaConfig: KafkaConfig;
-  // (undocumented)
-  kafkaConsumerConfig: KafkaConsumerConfig[];
-}
 ```
