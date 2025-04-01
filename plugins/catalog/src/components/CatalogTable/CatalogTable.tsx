@@ -49,7 +49,6 @@ import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { FavoriteToggleIcon } from '@backstage/core-components';
-import { CatalogTableToolbar } from './CatalogTableToolbar';
 
 /**
  * Props for {@link CatalogTable}.
@@ -252,9 +251,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
       actions={actions}
       subtitle={subtitle}
       emptyContent={emptyContent}
-      components={{
-        Toolbar: CatalogTableToolbar,
-      }}
     />
   );
 };
