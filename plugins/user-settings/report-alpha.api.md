@@ -108,6 +108,7 @@ export const userSettingsTranslationRef: TranslationRef<
   {
     readonly 'featureFlags.title': 'Feature Flags';
     readonly 'featureFlags.description': 'Please refresh the page when toggling feature flags';
+    readonly 'featureFlags.filterTitle': 'Filter';
     readonly 'featureFlags.emptyFlags.title': 'No Feature Flags';
     readonly 'featureFlags.emptyFlags.action.title': 'An example for how to add a feature flag is highlighted below:';
     readonly 'featureFlags.emptyFlags.action.readMoreButtonTitle': 'Read More';
@@ -129,6 +130,8 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly 'signOutMenu.title': 'Sign Out';
     readonly 'pinToggle.title': 'Pin Sidebar';
     readonly 'pinToggle.description': 'Prevent the sidebar from collapsing';
+    readonly 'pinToggle.switchTitles.unpin': 'Unpin Sidebar';
+    readonly 'pinToggle.switchTitles.pin': 'Pin Sidebar';
     readonly 'identityCard.title': 'Backstage Identity';
     readonly 'identityCard.noIdentityTitle': 'No Backstage Identity';
     readonly 'identityCard.userEntity': 'User Entity';

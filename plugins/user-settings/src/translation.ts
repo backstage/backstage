@@ -42,6 +42,10 @@ export const userSettingsTranslationRef = createTranslationRef({
     pinToggle: {
       title: 'Pin Sidebar',
       description: 'Prevent the sidebar from collapsing',
+      switchTitles: {
+        unpin: 'Unpin Sidebar',
+        pin: 'Pin Sidebar',
+      },
     },
     identityCard: {
       title: 'Backstage Identity',
@@ -96,6 +100,7 @@ export const userSettingsTranslationRef = createTranslationRef({
           readMoreButtonTitle: 'Read More',
         },
       },
+      filterTitle: 'Filter',
       flagItem: {
         title: {
           disable: 'Disable',
@@ -107,7 +112,6 @@ export const userSettingsTranslationRef = createTranslationRef({
         },
       },
     },
-    general: {},
     settingsLayout: {
       title: 'Settings',
     },

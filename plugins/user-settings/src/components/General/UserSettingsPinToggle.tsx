@@ -38,7 +38,11 @@ export const UserSettingsPinToggle = () => {
         <Tooltip
           placement="top"
           arrow
-          title={`${isPinned ? 'Unpin' : 'Pin'} Sidebar`}
+          title={
+            isPinned
+              ? t('pinToggle.switchTitles.unpin')
+              : t('pinToggle.switchTitles.pin')
+          }
         >
           <Switch
             color="primary"

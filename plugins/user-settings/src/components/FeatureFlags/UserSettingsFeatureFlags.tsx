@@ -107,7 +107,7 @@ export const UserSettingsFeatureFlags = () => {
       {featureFlags.length >= 10 && (
         <Grid item xs={6} md={4}>
           <TextField
-            label="Filter"
+            label={t('featureFlags.filterTitle')}
             style={{ display: 'flex', justifyContent: 'flex-end' }}
             inputRef={ref => ref && ref.focus()}
             InputProps={{
