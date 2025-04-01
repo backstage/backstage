@@ -557,6 +557,7 @@ export async function createRouter(
       user,
       channel: WEB_NOTIFICATION_CHANNEL,
       origin: userNotification.origin,
+      topic: userNotification.payload.topic ?? null,
     });
 
     let ret = notification;
