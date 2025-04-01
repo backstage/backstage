@@ -40,9 +40,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     return (
       <Field.Root className={clsx('canon-FieldRoot', className)} name={name}>
         {label && (
-          <Field.Label className={clsx('canon-FieldLabel', className)}>
-            {label}
-          </Field.Label>
+          <Field.Label className="canon-FieldLabel">{label}</Field.Label>
         )}
         <Input
           ref={ref}
@@ -55,13 +53,11 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           {...rest}
         />
         {description && (
-          <Field.Description
-            className={clsx('canon-FieldDescription', className)}
-          >
+          <Field.Description className="canon-FieldDescription">
             {description}
           </Field.Description>
         )}
-        <Field.Error className={clsx('canon-FieldError', className)} />
+        <Field.Error className="canon-FieldError" />
       </Field.Root>
     );
   },
