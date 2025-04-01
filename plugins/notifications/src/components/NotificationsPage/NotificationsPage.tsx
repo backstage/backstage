@@ -25,14 +25,14 @@ import Grid from '@material-ui/core/Grid';
 import { ConfirmProvider } from 'material-ui-confirm';
 import { useSignal } from '@backstage/plugin-signals-react';
 
-import { NotificationsTable } from '../NotificationsTable';
-import { useNotificationsApi } from '../../hooks';
 import {
+  NotificationsTable,
   CreatedAfterOptions,
   NotificationsFilters,
   SortBy,
   SortByOptions,
-} from '../NotificationsFilters';
+} from '@backstage/plugin-notifications-react';
+import { useNotificationsApi } from '../../hooks';
 import {
   GetNotificationsOptions,
   GetNotificationsResponse,

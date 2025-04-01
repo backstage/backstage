@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { notificationsPlugin, NotificationsPage } from './plugin';
-export * from './api';
-export { useNotificationsApi } from './hooks';
-export * from './components';
-export * from './deprecated';
+
+// The index file in ./components/ is typically responsible for selecting
+// which components are public API and should be exported from the package.
+
+export * from './NotificationsTable';
+export * from './NotificationsFilters';

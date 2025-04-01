@@ -25,10 +25,12 @@ import Typography from '@material-ui/core/Typography';
 import { GetNotificationsOptions } from '../../api';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 
+/** @public */
 export type SortBy = Required<
   Pick<GetNotificationsOptions, 'sort' | 'sortOrder'>
 >;
 
+/** @public */
 export type NotificationsFiltersProps = {
   unreadOnly?: boolean;
   onUnreadOnlyChanged: (checked: boolean | undefined) => void;
@@ -47,6 +49,7 @@ export type NotificationsFiltersProps = {
 
 const ALL = '___all___';
 
+/** @public */
 export const CreatedAfterOptions: {
   [key: string]: { label: string; getDate: () => Date };
 } = {
@@ -64,6 +67,7 @@ export const CreatedAfterOptions: {
   },
 };
 
+/** @public */
 export const SortByOptions: {
   [key: string]: {
     label: string;
@@ -121,6 +125,7 @@ const AllSeverityOptions: { [key in NotificationSeverity]: string } = {
   low: 'Low',
 };
 
+/** @public */
 export const NotificationsFilters = ({
   sorting,
   onSortingChanged,

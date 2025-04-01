@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { notificationsPlugin, NotificationsPage } from './plugin';
-export * from './api';
-export { useNotificationsApi } from './hooks';
-export * from './components';
-export * from './deprecated';
+
+import {
+  NotificationsTable as ReactNotificationsTable,
+  NotificationsTableProps as ReactNotificationsTableProps,
+} from '@backstage/plugin-notifications-react';
+
+/**
+ * @public
+ * @deprecated Import from `@backstage/plugin-notifications-react` instead
+ */
+export const NotificationsTable = ReactNotificationsTable;
+
+/**
+ * @public
+ * @deprecated Import from `@backstage/plugin-notifications-react` instead
+ */
+export type NotificationsTableProps = ReactNotificationsTableProps;
