@@ -28,7 +28,5 @@ export {
   EntityContextMenuItemBlueprint,
   type ContextMenuItemProps,
   type ContextMenuItemComponent,
-  type FactoryHrefParams,
-  type FactoryDialogParams,
   type EntityContextMenuItemParams,
 } from './EntityContextMenuItemBlueprint';

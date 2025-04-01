@@ -436,29 +436,6 @@ export type EntityPredicateValue =
       $contains: EntityPredicateExpression;
     };
 
-// @alpha (undocumented)
-export type FactoryDialogParams = {
-  useOnClick: () => React_2.MouseEventHandler<HTMLLIElement>;
-  useTitle: () => string;
-  icon: React_2.JSX.Element;
-  useIsDisabled?: () => boolean;
-};
-
-// @alpha (undocumented)
-export type FactoryHrefParams =
-  | {
-      useTitle: () => string;
-      icon: React_2.JSX.Element;
-      useHref: () => string;
-      useIsDisabled?: () => boolean;
-    }
-  | {
-      useTitle: () => string;
-      icon: React_2.JSX.Element;
-      href: string;
-      useIsDisabled?: () => boolean;
-    };
-
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;
 

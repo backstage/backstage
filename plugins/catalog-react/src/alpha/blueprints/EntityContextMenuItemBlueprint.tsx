@@ -25,29 +25,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
 /** @alpha */
-export type FactoryHrefParams =
-  | {
-      useTitle: () => string;
-      icon: React.JSX.Element;
-      useHref: () => string;
-      useIsDisabled?: () => boolean;
-    }
-  | {
-      useTitle: () => string;
-      icon: React.JSX.Element;
-      href: string;
-      useIsDisabled?: () => boolean;
-    };
-
-/** @alpha */
-export type FactoryDialogParams = {
-  useOnClick: () => React.MouseEventHandler<HTMLLIElement>;
-  useTitle: () => string;
-  icon: React.JSX.Element;
-  useIsDisabled?: () => boolean;
-};
-
-/** @alpha */
 export type EntityContextMenuItemParams = {
   useProps: () => Omit<MenuItemProps, 'onClick'> & {
     onClick?: () => Promise<void>;
