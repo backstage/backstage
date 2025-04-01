@@ -295,29 +295,31 @@ export class AzureBlobStoragePublish implements PublisherBase {
       : lowerCaseEntityTriplet(entityTriplet);
 
     try {
-      const techdocsMetadataJson = await new Promise((resolve, reject) => {
-        const fileStreamChunks: Array<any> = [];
-        this.storageClient
-          .getContainerClient(this.containerName)
-          .getBlockBlobClient(`${entityRootDir}/techdocs_metadata.json`)
-          .download()
-          .then(res => {
-            const body = res.readableStreamBody;
-            if (!body) {
-              reject(new Error(`Unable to parse the response data`));
-              return;
-            }
-            body
-              .on('error', reject)
-              .on('data', chunk => {
-                fileStreamChunks.push(chunk);
-              })
-              .on('end', () => {
-                resolve(Buffer.concat(fileStreamChunks));
-              });
-          })
-          .catch(reject);
-      });
+      const techdocsMetadataJson = await new Promise<Buffer>(
+        (resolve, reject) => {
+          const fileStreamChunks: Array<any> = [];
+          this.storageClient
+            .getContainerClient(this.containerName)
+            .getBlockBlobClient(`${entityRootDir}/techdocs_metadata.json`)
+            .download()
+            .then(res => {
+              const body = res.readableStreamBody;
+              if (!body) {
+                reject(new Error(`Unable to parse the response data`));
+                return;
+              }
+              body
+                .on('error', reject)
+                .on('data', chunk => {
+                  fileStreamChunks.push(chunk);
+                })
+                .on('end', () => {
+                  resolve(Buffer.concat(fileStreamChunks));
+                });
+            })
+            .catch(reject);
+        },
+      );
 
       if (!techdocsMetadataJson) {
         throw new Error(
@@ -360,7 +362,6 @@ export class AzureBlobStoragePublish implements PublisherBase {
           if (!downloadRes.readableStreamBody) {
             throw new Error('Unable to parse the response data');
           }
-          // Set headers after confirming file exists and can be downloaded
           for (const [headerKey, headerValue] of Object.entries(
             responseHeaders,
           )) {
