@@ -54,7 +54,7 @@ export class KafkaConsumerClient {
       logCreator: LoggerServiceCreator(logger),
     });
 
-    this.consumers = config.kafkaConsumerConfig.map(consumerConfig =>
+    this.consumers = config.kafkaConsumerConfigs.map(consumerConfig =>
       KafkaConsumingEventPublisher.fromConfig({
         kafkaClient: this.kafka,
         config: consumerConfig,

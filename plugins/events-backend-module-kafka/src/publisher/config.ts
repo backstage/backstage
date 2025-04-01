@@ -30,7 +30,7 @@ export interface KafkaConsumerConfig {
  */
 export interface KafkaEventSourceConfig {
   kafkaConfig: KafkaConfig;
-  kafkaConsumerConfig: KafkaConsumerConfig[];
+  kafkaConsumerConfigs: KafkaConsumerConfig[];
 }
 
 const CONFIG_PREFIX_PUBLISHER =
@@ -55,7 +55,7 @@ export const readConfig = (config: Config): KafkaEventSourceConfig => {
   const sasl = kafkaConfig.getOptional('sasl') as KafkaConfig['sasl'];
   const retry = kafkaConfig.getOptional('retry') as KafkaConfig['retry'];
 
-  const kafkaConsumerConfig: KafkaConsumerConfig[] = kafkaConfig
+  const kafkaConsumerConfigs: KafkaConsumerConfig[] = kafkaConfig
     .getConfigArray('topics')
     .map(topic => {
       return {
@@ -91,6 +91,6 @@ export const readConfig = (config: Config): KafkaEventSourceConfig => {
       enforceRequestTimeout,
       retry,
     },
-    kafkaConsumerConfig,
+    kafkaConsumerConfigs,
   };
 };
