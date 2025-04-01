@@ -1,5 +1,12 @@
 # @backstage/canon
 
+## 0.2.1-next.1
+
+### Patch Changes
+
+- f7cb538: Internal refactor and fixes to the prop extraction logic for layout components.
+- 5e80f0b: Fix types on the Icon component.
+
 ## 0.2.1-next.0
 
 ### Patch Changes
