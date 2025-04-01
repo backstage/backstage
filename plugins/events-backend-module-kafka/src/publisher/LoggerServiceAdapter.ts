@@ -16,7 +16,7 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { LogEntry, logLevel } from 'kafkajs';
 
-export const LoggerServiceCreator =
+export const LoggerServiceAdapter =
   (loggerService: LoggerService) => (_level: logLevel) => {
     return (entry: LogEntry) => {
       const { namespace, level, log } = entry;
