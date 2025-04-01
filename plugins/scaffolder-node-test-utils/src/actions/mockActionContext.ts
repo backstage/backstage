@@ -53,6 +53,9 @@ export const createMockActionContext = <
     task: {
       id: 'mock-task-id',
     },
+    user: {
+      ref: credentials.principal.userEntityRef,
+    },
   };
 
   const createDefaultWorkspace = () => ({
@@ -74,6 +77,7 @@ export const createMockActionContext = <
     templateInfo,
     workspacePath,
     task,
+    user,
   } = options;
 
   return {
@@ -87,6 +91,7 @@ export const createMockActionContext = <
     ...(input && { input }),
     ...(secrets && { secrets }),
     ...(task && { task }),
+    ...(user && { user }),
     templateInfo,
   };
 };
