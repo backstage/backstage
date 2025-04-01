@@ -269,6 +269,9 @@ jobs:
           name: next-openapi-docs
           path: docs
 
+      - name: remove cache
+        run: rm -rf node_modules/.cache
+
       - name: build microsite
         run: yarn build
         working-directory: microsite

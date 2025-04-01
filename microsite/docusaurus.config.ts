@@ -86,14 +86,7 @@ const config: Config = {
     repoUrl: 'https://github.com/backstage/backstage',
   },
   future: {
-    experimental_faster: {
-      rspackBundler: false,
-      swcJsLoader: false,
-      swcJsMinimizer: false,
-      swcHtmlMinimizer: false,
-      lightningCssMinimizer: false,
-      mdxCrossCompilerCache: false,
-    },
+    experimental_faster: true,
   },
   onBrokenLinks: 'log',
   onBrokenMarkdownLinks: 'log',
