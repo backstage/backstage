@@ -13,6 +13,7 @@ import * as IconStories from '../../../packages/canon/src/components/Icon/Icon.s
 import * as InputStories from '../../../packages/canon/src/components/Input/Input.stories';
 import * as TextStories from '../../../packages/canon/src/components/Text/Text.stories';
 import * as FlexStories from '../../../packages/canon/src/components/Flex/Flex.stories';
+import * as SelectStories from '../../../packages/canon/src/components/Select/Select.stories';
 
 export const BoxSnippet = ({ story }: { story: keyof typeof BoxStories }) => {
   const stories = composeStories(BoxStories);
@@ -121,6 +122,17 @@ export const InputSnippet = ({
 
 export const TextSnippet = ({ story }: { story: keyof typeof TextStories }) => {
   const stories = composeStories(TextStories);
+  const StoryComponent = stories[story as keyof typeof stories];
+
+  return StoryComponent ? <StoryComponent /> : null;
+};
+
+export const SelectSnippet = ({
+  story,
+}: {
+  story: keyof typeof SelectStories;
+}) => {
+  const stories = composeStories(SelectStories);
   const StoryComponent = stories[story as keyof typeof stories];
 
   return StoryComponent ? <StoryComponent /> : null;
