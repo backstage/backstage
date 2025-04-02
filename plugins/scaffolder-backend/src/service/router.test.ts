@@ -786,13 +786,13 @@ describe.each([
           expect(headers['content-type']).toBe('text/event-stream');
           expect(responseDataFn).toHaveBeenCalledTimes(2);
           expect(responseDataFn).toHaveBeenCalledWith(`event: log
-  data: {"id":0,"taskId":"a-random-id","type":"log","createdAt":"","body":{"message":"My log message"}}
-  
-  `);
+data: {"id":0,"taskId":"a-random-id","type":"log","createdAt":"","body":{"message":"My log message"}}
+
+`);
           expect(responseDataFn).toHaveBeenCalledWith(`event: completion
-  data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Finished!"}}
-  
-  `);
+data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Finished!"}}
+
+`);
 
           expect(taskBroker.event$).toHaveBeenCalledTimes(1);
           expect(taskBroker.event$).toHaveBeenCalledWith({
@@ -1801,13 +1801,13 @@ describe.each([
           expect(headers['content-type']).toBe('text/event-stream');
           expect(responseDataFn).toHaveBeenCalledTimes(2);
           expect(responseDataFn).toHaveBeenCalledWith(`event: log
-  data: {"id":0,"taskId":"a-random-id","type":"log","createdAt":"","body":{"message":"My log message"}}
-  
-  `);
+data: {"id":0,"taskId":"a-random-id","type":"log","createdAt":"","body":{"message":"My log message"}}
+
+`);
           expect(responseDataFn).toHaveBeenCalledWith(`event: completion
-  data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Finished!"}}
-  
-  `);
+data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Finished!"}}
+
+`);
 
           expect(taskBroker.event$).toHaveBeenCalledTimes(1);
           expect(taskBroker.event$).toHaveBeenCalledWith({
