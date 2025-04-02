@@ -6,9 +6,7 @@
 import { Breakpoint as Breakpoint_2 } from '@backstage/canon';
 import { Context } from 'react';
 import type { CSSProperties } from 'react';
-import { Field as Field_2 } from '@base-ui-components/react/field';
 import { ForwardRefExoticComponent } from 'react';
-import { Input as Input_2 } from '@base-ui-components/react/input';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
 import { default as React_2 } from 'react';
 import * as React_3 from 'react';
@@ -245,36 +243,6 @@ export type EnumPropDef<T> = {
   values: readonly T[];
   default?: T;
   required?: boolean;
-};
-
-// @public (undocumented)
-export const Field: {
-  Root: React_2.ForwardRefExoticComponent<
-    Omit<Field_2.Root.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
-      React_2.RefAttributes<HTMLDivElement>
-  >;
-  Label: React_2.ForwardRefExoticComponent<
-    Omit<Field_2.Label.Props & React_2.RefAttributes<any>, 'ref'> &
-      React_2.RefAttributes<any>
-  >;
-  Description: React_2.ForwardRefExoticComponent<
-    Omit<
-      Field_2.Description.Props & React_2.RefAttributes<HTMLParagraphElement>,
-      'ref'
-    > &
-      React_2.RefAttributes<HTMLParagraphElement>
-  >;
-  Error: React_2.ForwardRefExoticComponent<
-    Omit<Field_2.Error.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
-      React_2.RefAttributes<HTMLDivElement>
-  >;
-  Validity: ({
-    children,
-    className,
-    ...props
-  }: React_2.ComponentPropsWithoutRef<typeof Field_2.Validity> & {
-    className?: string;
-  }) => React_2.JSX.Element;
 };
 
 // @public (undocumented)
@@ -720,17 +688,6 @@ export interface IconProviderProps {
 export const icons: IconMap;
 
 // @public (undocumented)
-export const Input: React_2.ForwardRefExoticComponent<
-  InputProps & React_2.RefAttributes<HTMLInputElement>
->;
-
-// @public (undocumented)
-export interface InputProps extends Omit<Input_2.Props, 'size'> {
-  // (undocumented)
-  size?: 'sm' | 'md';
-}
-
-// @public (undocumented)
 export type JustifyContent =
   | 'stretch'
   | 'start'
@@ -1095,6 +1052,21 @@ const Text_2: React_2.ForwardRefExoticComponent<
   TextProps & React_2.RefAttributes<HTMLParagraphElement>
 >;
 export { Text_2 as Text };
+
+// @public (undocumented)
+export const TextField: React_2.ForwardRefExoticComponent<
+  TextFieldProps & React_2.RefAttributes<HTMLInputElement>
+>;
+
+// @public (undocumented)
+export interface TextFieldProps
+  extends Omit<React.ComponentPropsWithoutRef<'input'>, 'size'> {
+  className?: string;
+  description?: string;
+  label?: string;
+  name: string;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+}
 
 // @public (undocumented)
 export interface TextProps {

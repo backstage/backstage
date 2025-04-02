@@ -16,7 +16,8 @@
 
 import React from 'react';
 import { Select as SelectPrimitive } from '@base-ui-components/react/select';
-import { Field, Icon } from '@backstage/canon';
+import { Field } from '@base-ui-components/react/field';
+import { Icon } from '../Icon';
 import clsx from 'clsx';
 import './Select.styles.css';
 import { SelectProps } from './types';

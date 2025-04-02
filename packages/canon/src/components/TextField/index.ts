@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export * from './Field';
+export * from './TextField';
+export type { TextFieldProps } from './types';
