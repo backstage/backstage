@@ -524,10 +524,18 @@ export interface EntityRefPresentationSnapshot {
 }
 
 // @public
-export function entityRouteParams(entity: Entity): {
+export function entityRouteParams(
+  entityOrRef: Entity | CompoundEntityRef | string,
+  options?: EntityRouteParamsOptions,
+): {
   readonly kind: string;
   readonly namespace: string;
   readonly name: string;
+};
+
+// @public
+export type EntityRouteParamsOptions = {
+  encodeParams?: boolean;
 };
 
 // @public
