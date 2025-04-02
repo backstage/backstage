@@ -1420,4 +1420,3 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
     });
   });
 });
-
