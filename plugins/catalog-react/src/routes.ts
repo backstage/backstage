@@ -43,11 +43,20 @@ export const entityRouteRef = getOrCreateGlobalSingleton(
 );
 
 /**
+ * Configurable options for `entityRouteParams`
+ * @public
+ */
+export type EntityRouteParamsOptions = {
+  encodeParams?: boolean;
+};
+
+/**
  * Utility function to get suitable route params for entityRoute, given an
  * @public
  */
 export function entityRouteParams(
   entityOrRef: Entity | CompoundEntityRef | string,
+  options?: EntityRouteParamsOptions,
 ) {
   let kind;
   let namespace;
@@ -70,6 +79,13 @@ export function entityRouteParams(
 
   kind = kind.toLocaleLowerCase('en-US');
   namespace = namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE;
+
+  const { encodeParams = false } = options || {};
+  if (encodeParams) {
+    kind = encodeURIComponent(kind);
+    namespace = encodeURIComponent(namespace);
+    name = encodeURIComponent(name);
+  }
 
   return {
     kind,

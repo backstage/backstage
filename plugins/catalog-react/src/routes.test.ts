@@ -77,4 +77,27 @@ describe('entityRouteParams', () => {
       expect(actualRouteParams).toEqual(expectedRouteParams);
     },
   );
+
+  it('should not encode route params by default', () => {
+    const actualRouteParams = entityRouteParams(
+      'Custom Entity:Test Namespace/Test Component',
+    );
+    expect(actualRouteParams).toEqual({
+      kind: 'custom entity',
+      name: 'Test Component',
+      namespace: 'test namespace',
+    });
+  });
+
+  it('should encode route params', () => {
+    const actualRouteParams = entityRouteParams(
+      'Custom Entity:Test Namespace/Test Component',
+      { encodeParams: true },
+    );
+    expect(actualRouteParams).toEqual({
+      kind: 'custom%20entity',
+      name: 'Test%20Component',
+      namespace: 'test%20namespace',
+    });
+  });
 });
