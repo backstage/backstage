@@ -49,51 +49,35 @@ export function useFacetsEntities({
   selectedEntityKind?: string;
 }) {
   const catalogApi = useApi(catalogApiRef);
-  const facetsPromise = useMemo<Promise<Entity[]>>(() => {
+  const facetsPromise = useMemo<Promise<Entity[]>>(async () => {
     if (!enabled) {
       return Promise.resolve([]);
     }
+    try {
+      const facetResponse = await catalogApi.getEntityFacets({
+        facets: ['relations.ownedBy'],
+        filter: selectedEntityKind ? { kind: [selectedEntityKind] } : undefined,
+      });
 
-    return (async (): Promise<Entity[]> => {
-      try {
-        if (selectedEntityKind) {
-          const facetResponseFiltered = await catalogApi.getEntityFacets({
-            facets: ['relations.ownedBy'],
-            filter: { kind: [selectedEntityKind] },
-          });
-
-          if (facetResponseFiltered.facets['relations.ownedBy'].length === 0) {
-            return [];
-          }
-        }
-
-        const facetResponse = await catalogApi.getEntityFacets({
-          facets: ['relations.ownedBy'],
-        });
-
-        return facetResponse.facets['relations.ownedBy']
-          .map(e => e.value)
-          .map(ref => {
-            const { kind, name, namespace } = parseEntityRef(ref);
-            return {
-              apiVersion: 'backstage.io/v1beta1',
-              kind,
-              metadata: { name, namespace },
-            };
-          })
-          .sort(
-            (a, b) =>
-              a.kind.localeCompare(b.kind, 'en-US') ||
-              a.metadata.namespace.localeCompare(
-                b.metadata.namespace,
-                'en-US',
-              ) ||
-              a.metadata.name.localeCompare(b.metadata.name, 'en-US'),
-          );
-      } catch (error) {
-        return [];
-      }
-    })();
+      return facetResponse.facets['relations.ownedBy']
+        .map(e => e.value)
+        .map(ref => {
+          const { kind, name, namespace } = parseEntityRef(ref);
+          return {
+            apiVersion: 'backstage.io/v1beta1',
+            kind,
+            metadata: { name, namespace },
+          };
+        })
+        .sort(
+          (a, b) =>
+            a.kind.localeCompare(b.kind, 'en-US') ||
+            a.metadata.namespace.localeCompare(b.metadata.namespace, 'en-US') ||
+            a.metadata.name.localeCompare(b.metadata.name, 'en-US'),
+        );
+    } catch (error) {
+      return [];
+    }
   }, [enabled, selectedEntityKind, catalogApi]);
 
   return useAsyncFn<
