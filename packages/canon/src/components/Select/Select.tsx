@@ -31,10 +31,10 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       description,
       value,
       defaultValue,
-      placeholder,
       onValueChange,
       onOpenChange,
       options,
+      placeholder = 'Select an option',
       size = 'medium',
       disabled = false,
       required = false,
@@ -65,9 +65,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
               `canon-SelectTrigger--size-${size}`,
             )}
           >
-            <SelectPrimitive.Value
-              placeholder={placeholder || 'Select an option'}
-            />
+            <SelectPrimitive.Value placeholder={placeholder} />
             <SelectPrimitive.Icon className="canon-SelectIcon">
               <Icon name="chevron-down" />
             </SelectPrimitive.Icon>

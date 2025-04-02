@@ -73,6 +73,7 @@ export interface SelectProps {
 
   /**
    * A placeholder text to show if nothing has been selected and there's no default value
+   * @defaultValue 'Select an option'
    */
   placeholder?: string;
 
