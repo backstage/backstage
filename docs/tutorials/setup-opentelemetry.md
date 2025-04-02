@@ -108,6 +108,7 @@ The following metrics are available:
 - `catalog.stitching.queue.delay`: The amount of delay between being scheduled for stitching, and the start of actually being stitched
 - `scaffolder.task.count`: Count of task runs
 - `scaffolder.task.duration`: Duration of a task run
+- `scaffolder.task.failure.count`: Count of failed task runs
 - `scaffolder.step.count`: Count of step runs
 - `scaffolder.step.duration`: Duration of a step runs
 - `backend_tasks.task.runs.count`: Total number of times a task has been run

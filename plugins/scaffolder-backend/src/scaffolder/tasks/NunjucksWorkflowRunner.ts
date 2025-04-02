@@ -599,6 +599,13 @@ function scaffoldingTracker() {
     unit: 'seconds',
   });
 
+  const taskFailureCount = meter.createCounter(
+    'scaffolder.task.failure.count',
+    {
+      description: 'Count of failed task runs',
+    },
+  );
+
   async function taskStart(task: TaskContext) {
     await task.emitLog(`Starting up task with ${task.spec.steps.length} steps`);
     const template = task.spec.templateInfo?.entityRef || '';
@@ -654,6 +661,7 @@ function scaffoldingTracker() {
       taskDuration.record(endTime(), {
         result: 'failed',
       });
+      taskFailureCount.add(1, { template, user });
     }
 
     async function markCancelled(step: TaskStep) {
