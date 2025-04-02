@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.8.2-next.1
+
+### Patch Changes
+
+- 003dc15: Updated the path field in the `gitlab:group:ensureExists` action to support also strings with multiple segments (e.g. `group/subgroup`)
+- Updated dependencies
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/plugin-scaffolder-node@0.8.1-next.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.8.2-next.0
 
 ### Patch Changes
