@@ -45,10 +45,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         <Input
           ref={ref}
           type={name}
-          className={clsx(
-            'canon-Input',
-            `canon-Input--size-${responsiveSize}`,
-          )}
+          className={clsx('canon-Input', `canon-Input--size-${responsiveSize}`)}
           {...rest}
         />
         {description && (
