@@ -37,6 +37,7 @@ import * as plugins from './plugins';
 import { configLoader } from './config';
 import { Root } from './components/Root';
 import { techDocsPage, TechDocsThemeToggle } from './components/TechDocsPage';
+import { Mermaid } from 'backstage-plugin-techdocs-addon-mermaid';
 
 const app = createApp({
   apis,
@@ -73,6 +74,7 @@ const routes = (
       {techDocsPage}
       <TechDocsAddons>
         <ThemeToggleAddon />
+        <Mermaid />
       </TechDocsAddons>
     </Route>
   </FlatRoutes>
