@@ -176,7 +176,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
         owners: undefined,
       });
     }
-  }, [availableOwners.length, updateFilters]);
+  }, [availableOwners, updateFilters]);
 
   if (
     ['user', 'group'].includes(
