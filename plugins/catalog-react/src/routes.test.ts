@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
+import {
+  DEFAULT_NAMESPACE,
+  Entity,
+  getCompoundEntityRef,
+} from '@backstage/catalog-model';
 import { entityRouteParams } from './routes';
 
 const entity: Entity = {
@@ -49,9 +53,21 @@ const expectedNamespacedEntityRouteParams = {
 describe('entityRouteParams', () => {
   it.each([
     ['Entity', entity, expectedEntityRouteParams],
+    ['ComponentRef', getCompoundEntityRef(entity), expectedEntityRouteParams],
+    ['string', 'component:Test-Component', expectedEntityRouteParams],
     [
       'namespaced Entity',
       namespacedEntity,
+      expectedNamespacedEntityRouteParams,
+    ],
+    [
+      'namespaced ComponentRef',
+      getCompoundEntityRef(namespacedEntity),
+      expectedNamespacedEntityRouteParams,
+    ],
+    [
+      'namespaced string',
+      'component:Test-Namespace/Test-Namespaced-Component',
       expectedNamespacedEntityRouteParams,
     ],
   ])(

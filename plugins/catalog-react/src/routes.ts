@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import {
+  Entity,
+  DEFAULT_NAMESPACE,
+  CompoundEntityRef,
+  parseEntityRef,
+} from '@backstage/catalog-model';
 import { createRouteRef } from '@backstage/core-plugin-api';
 import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
@@ -41,12 +46,34 @@ export const entityRouteRef = getOrCreateGlobalSingleton(
  * Utility function to get suitable route params for entityRoute, given an
  * @public
  */
-export function entityRouteParams(entity: Entity) {
+export function entityRouteParams(
+  entityOrRef: Entity | CompoundEntityRef | string,
+) {
+  let kind;
+  let namespace;
+  let name;
+
+  if (typeof entityOrRef === 'string') {
+    const parsed = parseEntityRef(entityOrRef);
+    kind = parsed.kind;
+    namespace = parsed.namespace;
+    name = parsed.name;
+  } else if ('metadata' in entityOrRef) {
+    kind = entityOrRef.kind;
+    namespace = entityOrRef.metadata.namespace;
+    name = entityOrRef.metadata.name;
+  } else {
+    kind = entityOrRef.kind;
+    namespace = entityOrRef.namespace;
+    name = entityOrRef.name;
+  }
+
+  kind = kind.toLocaleLowerCase('en-US');
+  namespace = namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE;
+
   return {
-    kind: entity.kind.toLocaleLowerCase('en-US'),
-    namespace:
-      entity.metadata.namespace?.toLocaleLowerCase('en-US') ??
-      DEFAULT_NAMESPACE,
-    name: entity.metadata.name,
+    kind,
+    namespace,
+    name,
   } as const;
 }
