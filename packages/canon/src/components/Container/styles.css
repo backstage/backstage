@@ -2,6 +2,7 @@
   max-width: 120rem;
   padding: 0 var(--canon-space-4);
   margin: 0 auto;
+  transition: padding 0.2s ease-in-out;
 }
 
 @media (min-width: 640px) {
