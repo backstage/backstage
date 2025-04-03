@@ -2044,7 +2044,7 @@ __metadata:
     storybook: "npm:^8.3.5"
     typescript: "npm:^5.5.3"
     typescript-eslint: "npm:^8.7.0"
-    vite: "npm:^5.4.8"
+    vite: "npm:^5.4.16"
   languageName: unknown
   linkType: soft
 
@@ -4810,9 +4810,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^5.4.8":
-  version: 5.4.15
-  resolution: "vite@npm:5.4.15"
+"vite@npm:^5.4.16":
+  version: 5.4.17
+  resolution: "vite@npm:5.4.17"
   dependencies:
     esbuild: "npm:^0.21.3"
     fsevents: "npm:~2.3.3"
@@ -4849,7 +4849,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10/ddc4e7b874ebc0dc5bff53568e7d90f6c622747912fdda7f4ce533e15293009aaabb677ca29b5f108b18c5d60c0c32a7c0156f802bc94df355ca36915a4ae293
+  checksum: 10/95b2f94d378305cf8a4fadb40f96da3e59593188733738c486252ecb67ac6439100a44ec9170b66fa319b4d61eea161800e610a0499e61bf110ae6e7e6f233f0
   languageName: node
   linkType: hard
 
