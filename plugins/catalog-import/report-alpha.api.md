@@ -10,6 +10,16 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+
+// @alpha (undocumented)
+export const catalogImportTranslationRef: TranslationRef<
+  'catalog-import',
+  {
+    readonly pageTitle: 'Register an existing component';
+    readonly 'importInfoCard.title': 'Register an existing component';
+  }
+>;
 
 // @alpha (undocumented)
 const _default: FrontendPlugin<
@@ -18,6 +28,21 @@ const _default: FrontendPlugin<
   },
   {},
   {
+    'api:catalog-import': ExtensionDefinition<{
+      kind: 'api';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
+    }>;
     'page:catalog-import': ExtensionDefinition<{
       kind: 'page';
       name: undefined;
@@ -45,22 +70,7 @@ const _default: FrontendPlugin<
       params: {
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-      };
-    }>;
-    'api:catalog-import': ExtensionDefinition<{
-      kind: 'api';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
-      inputs: {};
-      params: {
-        factory: AnyApiFactory;
+        routeRef?: RouteRef;
       };
     }>;
   }

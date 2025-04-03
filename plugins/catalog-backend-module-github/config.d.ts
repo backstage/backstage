@@ -72,6 +72,11 @@ export interface Config {
              */
             catalogPath?: string;
             /**
+             * (Optional) Whether to validate locations that exist before emitting them.
+             * Default: `false`.
+             */
+            validateLocationsExist?: boolean;
+            /**
              * (Optional) Filter configuration.
              */
             filters?: {

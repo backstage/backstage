@@ -24,11 +24,20 @@ import {
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
-import { starredEntitiesApiRef } from '@backstage/plugin-catalog-react';
+import {
+  entityRouteRef,
+  starredEntitiesApiRef,
+} from '@backstage/plugin-catalog-react';
 import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 import Observable from 'zen-observable';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+
+const mountedRoutes = {
+  mountedRoutes: {
+    '/catalog/:namespace/:kind/:name': entityRouteRef,
+  },
+};
 
 describe('CardHeader', () => {
   it('should select the correct theme from the theme provider from the header', async () => {
@@ -64,6 +73,7 @@ describe('CardHeader', () => {
           />
         </ThemeProvider>
       </TestApiProvider>,
+      mountedRoutes,
     );
 
     expect(mockTheme.getPageTheme).toHaveBeenCalledWith({ themeId: 'service' });
@@ -93,6 +103,7 @@ describe('CardHeader', () => {
           }}
         />
       </TestApiProvider>,
+      mountedRoutes,
     );
 
     expect(getByText('service')).toBeInTheDocument();
@@ -118,6 +129,7 @@ describe('CardHeader', () => {
       <TestApiProvider apis={[[starredEntitiesApiRef, starredEntitiesApi]]}>
         <CardHeader template={mockTemplate} />
       </TestApiProvider>,
+      mountedRoutes,
     );
 
     const favorite = getByRole('button', { name: 'Add to favorites' });
@@ -127,6 +139,38 @@ describe('CardHeader', () => {
     expect(starredEntitiesApi.toggleStarred).toHaveBeenCalledWith(
       stringifyEntityRef(mockTemplate),
     );
+  });
+
+  it('renders TemplateDetailButton with link to entity page', async () => {
+    const { getByTitle } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: mockApis.storage(),
+            }),
+          ],
+        ]}
+      >
+        <CardHeader
+          template={{
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            kind: 'Template',
+            metadata: { name: 'test-template', namespace: 'default' },
+            spec: {
+              steps: [],
+              type: 'service',
+            },
+          }}
+        />
+      </TestApiProvider>,
+      mountedRoutes,
+    );
+
+    const detailButton = getByTitle('Show template entity details');
+    const link = detailButton.querySelector('a');
+    expect(link).toBeInTheDocument();
   });
 
   it('should render the name of the entity', async () => {
@@ -153,6 +197,7 @@ describe('CardHeader', () => {
           }}
         />
       </TestApiProvider>,
+      mountedRoutes,
     );
 
     expect(getByText('bob')).toBeInTheDocument();
@@ -182,6 +227,7 @@ describe('CardHeader', () => {
           }}
         />
       </TestApiProvider>,
+      mountedRoutes,
     );
 
     expect(getByText('Iamtitle')).toBeInTheDocument();

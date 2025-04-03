@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { HumanDuration } from '@backstage/types';
 
 export interface Config {
@@ -33,6 +32,7 @@ export interface Config {
           tokenSignedResponseAlg?: string;
           additionalScopes?: string | string[];
           prompt?: string;
+          timeout?: HumanDuration | string;
           signIn?: {
             resolvers: Array<
               | {

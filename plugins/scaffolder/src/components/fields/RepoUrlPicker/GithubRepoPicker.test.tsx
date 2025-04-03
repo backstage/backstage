@@ -170,4 +170,38 @@ describe('GithubRepoPicker', () => {
       );
     });
   });
+
+  describe('GithubRepoPicker - isDisabled', () => {
+    it('disables all inputs when isDisabled is true', async () => {
+      const { getByLabelText } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GithubRepoPicker
+            onChange={jest.fn()}
+            rawErrors={[]}
+            state={{ repoName: 'repo' }}
+            isDisabled
+          />
+        </TestApiProvider>,
+      );
+
+      const ownerInput = getByLabelText(/owner/i);
+      expect(ownerInput).toBeDisabled();
+    });
+
+    it('does not disable inputs when isDisabled is false', async () => {
+      const { getByLabelText } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GithubRepoPicker
+            onChange={jest.fn()}
+            rawErrors={[]}
+            state={{ repoName: 'repo' }}
+            isDisabled={false}
+          />
+        </TestApiProvider>,
+      );
+
+      const ownerInput = getByLabelText(/owner/i);
+      expect(ownerInput).not.toBeDisabled();
+    });
+  });
 });

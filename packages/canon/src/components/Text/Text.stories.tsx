@@ -39,51 +39,49 @@ export const Default: Story = {
 };
 
 export const AllVariants: Story = {
-  render: () => (
-    <Flex gap="4">
-      <Text variant="subtitle" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
-      <Text variant="body" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
-      <Text variant="caption" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
-      <Text variant="label" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
+  args: {
+    ...Default.args,
+  },
+  render: args => (
+    <Flex gap="4" direction="column">
+      <Text variant="subtitle" {...args} />
+      <Text variant="body" {...args} />
+      <Text variant="caption" {...args} />
+      <Text variant="label" {...args} />
     </Flex>
   ),
 };
 
 export const AllWeights: Story = {
-  render: () => (
-    <Flex gap="4">
-      <Text weight="regular" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
-      <Text weight="bold" style={{ maxWidth: '600px' }}>
-        A man looks at a painting in a museum and says, “Brothers and sisters I
-        have none, but that man&apos;s father is my father&apos;s son.” Who is
-        in the painting?
-      </Text>
+  args: {
+    ...Default.args,
+  },
+  render: args => (
+    <Flex gap="4" direction="column">
+      <Text weight="regular" {...args} />
+      <Text weight="bold" {...args} />
+    </Flex>
+  ),
+};
+
+export const AllColors: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: args => (
+    <Flex gap="4" direction="column">
+      <Text color="primary" {...args} />
+      <Text color="secondary" {...args} />
+      <Text color="danger" {...args} />
+      <Text color="warning" {...args} />
+      <Text color="success" {...args} />
     </Flex>
   ),
 };
 
 export const Responsive: Story = {
   args: {
+    ...Default.args,
     variant: {
       xs: 'label',
       md: 'body',
@@ -91,9 +89,22 @@ export const Responsive: Story = {
   },
 };
 
+export const WrappedInLink: Story = {
+  args: {
+    ...Default.args,
+  },
+  decorators: [
+    Story => (
+      <a href="/">
+        <Story />
+      </a>
+    ),
+  ],
+};
+
 export const Playground: Story = {
   render: () => (
-    <Flex>
+    <Flex gap="4" direction="column">
       <Text>Subtitle</Text>
       <Text variant="subtitle" style={{ maxWidth: '600px' }}>
         A man looks at a painting in a museum and says, “Brothers and sisters I

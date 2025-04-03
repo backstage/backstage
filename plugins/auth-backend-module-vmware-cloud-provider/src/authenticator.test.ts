@@ -235,6 +235,7 @@ describe('vmwareCloudAuthenticator', () => {
         signInWithCatalogUser: jest.fn().mockResolvedValue({
           token: 'backstageToken',
         }),
+        resolveOwnershipEntityRefs: jest.fn(),
       };
 
       oAuthState = {
@@ -432,6 +433,7 @@ describe('vmwareCloudAuthenticator', () => {
         signInWithCatalogUser: jest.fn().mockResolvedValue({
           token: 'backstageToken',
         }),
+        resolveOwnershipEntityRefs: jest.fn(),
       };
 
       refreshRequest = {

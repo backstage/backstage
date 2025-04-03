@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import express from 'express';
+import type express from 'express';
 import Router from 'express-promise-router';
 import {
   createProxyMiddleware,
   fixRequestBody,
   RequestHandler,
 } from 'http-proxy-middleware';
-import { Logger } from 'winston';
 import http from 'http';
 import { JsonObject } from '@backstage/types';
 import {
   DiscoveryService,
   HttpRouterService,
+  LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { ProxyConfig } from '@backstage/plugin-proxy-node/alpha';
@@ -54,15 +53,13 @@ const safeForwardHeaders = [
 ];
 
 /**
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ * @internal
  */
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   config: RootConfigService;
   discovery: DiscoveryService;
-  skipInvalidProxies?: boolean;
-  reviveConsumedRequestBodies?: boolean;
+  httpRouterService: HttpRouterService;
   additionalEndpoints?: ProxyConfig;
 }
 
@@ -70,11 +67,11 @@ export interface RouterOptions {
 // given config.
 export function buildMiddleware(
   pathPrefix: string,
-  logger: Logger,
+  logger: LoggerService,
   route: string,
   config: string | ProxyConfig,
+  httpRouterService: HttpRouterService,
   reviveConsumedRequestBodies?: boolean,
-  httpRouterService?: HttpRouterService,
 ): RequestHandler {
   let fullConfig: ProxyConfig;
   let credentialsPolicy: string;
@@ -100,7 +97,7 @@ export function buildMiddleware(
   }
 
   if (credentialsPolicy === 'dangerously-allow-unauthenticated') {
-    httpRouterService?.addAuthPolicy({
+    httpRouterService.addAuthPolicy({
       path: route,
       allow: 'unauthenticated',
     });
@@ -154,7 +151,13 @@ export function buildMiddleware(
   }
 
   // Attach the logger to the proxy config
-  fullConfig.logProvider = () => logger;
+  fullConfig.logProvider = () => ({
+    log: logger.info.bind(logger),
+    debug: logger.debug.bind(logger),
+    info: logger.info.bind(logger),
+    warn: logger.warn.bind(logger),
+    error: logger.error.bind(logger),
+  });
   // http-proxy-middleware uses this log level to check if it should log the
   // requests that it proxies. Setting this to the most verbose log level
   // ensures that it always logs these requests. Our logger ends up deciding
@@ -229,7 +232,10 @@ export function buildMiddleware(
   return createProxyMiddleware(filter, fullConfig);
 }
 
-function readProxyConfig(config: Config, logger: Logger): JsonObject {
+function readProxyConfig(
+  config: RootConfigService,
+  logger: LoggerService,
+): JsonObject {
   const endpoints = config
     .getOptionalConfig('proxy.endpoints')
     ?.get<JsonObject>();
@@ -256,49 +262,16 @@ function readProxyConfig(config: Config, logger: Logger): JsonObject {
   return rootEndpoints;
 }
 
-/**
- * Creates a new
- * {@link https://expressjs.com/en/api.html#router | "express router"} that
- * proxies each target configured under the `proxy.endpoints` key of the config.
- *
- * @remarks
- *
- * Example configuration:
- *
- * ```yaml
- * proxy:
- *   endpoints:
- *      # Option 1: Simple URL String
- *     simple-example: http://simple.example.com:8080
- *     # Option 2: `http-proxy-middleware` compatible object
- *     '/larger-example/v1':
- *       target: http://larger.example.com:8080/svc.v1
- *       headers:
- *         Authorization: Bearer ${EXAMPLE_AUTH_TOKEN}
- * ```
- *
- * @see https://backstage.io/docs/plugins/proxying
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
- */
+/** @internal */
 export async function createRouter(
   options: RouterOptions,
-): Promise<express.Router> {
-  return createRouterInternal(options);
-}
-
-export async function createRouterInternal(
-  options: RouterOptions & { httpRouterService?: HttpRouterService },
 ): Promise<express.Router> {
   const router = Router();
   let currentRouter = Router();
 
   const skipInvalidProxies =
-    options.skipInvalidProxies ??
-    options.config.getOptionalBoolean('proxy.skipInvalidProxies') ??
-    false;
+    options.config.getOptionalBoolean('proxy.skipInvalidProxies') ?? false;
   const reviveConsumedRequestBodies =
-    options.reviveConsumedRequestBodies ??
     options.config.getOptionalBoolean('proxy.reviveConsumedRequestBodies') ??
     false;
   const proxyOptions = {
@@ -345,7 +318,7 @@ export async function createRouterInternal(
     });
   }
 
-  options.httpRouterService?.use(router);
+  options.httpRouterService.use(router);
   return router;
 }
 
@@ -353,12 +326,12 @@ function configureMiddlewares(
   options: {
     reviveConsumedRequestBodies: boolean;
     skipInvalidProxies: boolean;
-    logger: Logger;
+    logger: LoggerService;
   },
   router: express.Router,
   pathPrefix: string,
   proxyConfig: ProxyConfig,
-  httpRouterService?: HttpRouterService,
+  httpRouterService: HttpRouterService,
 ) {
   Object.entries(proxyConfig).forEach(([route, proxyRouteConfig]) => {
     try {
@@ -369,8 +342,8 @@ function configureMiddlewares(
           options.logger,
           route,
           proxyRouteConfig,
-          options.reviveConsumedRequestBodies,
           httpRouterService,
+          options.reviveConsumedRequestBodies,
         ),
       );
     } catch (e) {

@@ -4,32 +4,8 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
-import express from 'express';
-import { Logger } from 'winston';
-import { ProxyConfig } from '@backstage/plugin-proxy-node/alpha';
-import { RootConfigService } from '@backstage/backend-plugin-api';
-
-// @public @deprecated
-export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public
 const proxyPlugin: BackendFeature;
 export default proxyPlugin;
-
-// @public @deprecated (undocumented)
-export interface RouterOptions {
-  // (undocumented)
-  additionalEndpoints?: ProxyConfig;
-  // (undocumented)
-  config: RootConfigService;
-  // (undocumented)
-  discovery: DiscoveryService;
-  // (undocumented)
-  logger: Logger;
-  // (undocumented)
-  reviveConsumedRequestBodies?: boolean;
-  // (undocumented)
-  skipInvalidProxies?: boolean;
-}
 ```

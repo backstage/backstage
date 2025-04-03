@@ -58,7 +58,11 @@ export const createCacheMiddleware = ({
       encoding?: BufferEncoding | ErrorCallback,
       callback?: ErrorCallback,
     ) => {
-      chunks.push(Buffer.from(data));
+      // This cast is obviously weird, but it covers a type bug in @types/node
+      // which does not gracefully handle union types.
+      chunks.push(
+        typeof data === 'string' ? Buffer.from(data) : Buffer.from(data),
+      );
       if (typeof encoding === 'function') {
         return realWrite(data, encoding);
       }

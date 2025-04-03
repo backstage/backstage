@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import Popover from '@material-ui/core/Popover';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import { makeStyles } from '@material-ui/core/styles';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import Description from '@material-ui/icons/Description';
 import Edit from '@material-ui/icons/Edit';
 import List from '@material-ui/icons/List';
@@ -30,6 +31,8 @@ import React, { useState } from 'react';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { taskReadPermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { templateManagementPermission } from '@backstage/plugin-scaffolder-common/alpha';
+
+import { scaffolderReactTranslationRef } from '../../../translation';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -53,6 +56,7 @@ export type ScaffolderPageContextMenuProps = {
 export function ScaffolderPageContextMenu(
   props: ScaffolderPageContextMenuProps,
 ) {
+  const { t } = useTranslationRef(scaffolderReactTranslationRef);
   const { onEditorClicked, onActionsClicked, onTasksClicked, onCreateClicked } =
     props;
   const classes = useStyles();
@@ -87,7 +91,7 @@ export function ScaffolderPageContextMenu(
     <>
       <IconButton
         id="long-menu"
-        aria-label="more"
+        aria-label={t('scaffolderPageContextMenu.moreLabel')}
         aria-controls="long-menu"
         aria-expanded={!!anchorEl}
         aria-haspopup="true"
@@ -113,7 +117,9 @@ export function ScaffolderPageContextMenu(
               <ListItemIcon>
                 <CreateComponentIcon fontSize="small" />
               </ListItemIcon>
-              <ListItemText primary="Create" />
+              <ListItemText
+                primary={t('scaffolderPageContextMenu.createLabel')}
+              />
             </MenuItem>
           )}
           {onEditorClicked && canManageTemplates && (
@@ -121,7 +127,9 @@ export function ScaffolderPageContextMenu(
               <ListItemIcon>
                 <Edit fontSize="small" />
               </ListItemIcon>
-              <ListItemText primary="Manage Templates" />
+              <ListItemText
+                primary={t('scaffolderPageContextMenu.editorLabel')}
+              />
             </MenuItem>
           )}
           {onActionsClicked && (
@@ -129,7 +137,9 @@ export function ScaffolderPageContextMenu(
               <ListItemIcon>
                 <Description fontSize="small" />
               </ListItemIcon>
-              <ListItemText primary="Installed Actions" />
+              <ListItemText
+                primary={t('scaffolderPageContextMenu.actionsLabel')}
+              />
             </MenuItem>
           )}
           {onTasksClicked && canReadTasks && (
@@ -137,7 +147,9 @@ export function ScaffolderPageContextMenu(
               <ListItemIcon>
                 <List fontSize="small" />
               </ListItemIcon>
-              <ListItemText primary="Task List" />
+              <ListItemText
+                primary={t('scaffolderPageContextMenu.tasksLabel')}
+              />
             </MenuItem>
           )}
         </MenuList>

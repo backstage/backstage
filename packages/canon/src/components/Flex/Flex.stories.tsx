@@ -19,7 +19,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Flex } from './Flex';
 
 const meta = {
-  title: 'Components/Flex',
+  title: 'Layout/Flex',
   component: Flex,
   argTypes: {
     align: {
@@ -61,21 +61,33 @@ const DecorativeBox = () => {
 
 export const Default: Story = {
   args: {
-    children: [<DecorativeBox />, <DecorativeBox />, <DecorativeBox />],
+    children: (
+      <>
+        <DecorativeBox />, <DecorativeBox />, <DecorativeBox />
+      </>
+    ),
   },
 };
 
 export const ColumnDirection: Story = {
   args: {
     direction: 'column',
-    children: [<DecorativeBox />, <DecorativeBox />, <DecorativeBox />],
+    children: (
+      <>
+        <DecorativeBox />, <DecorativeBox />, <DecorativeBox />
+      </>
+    ),
   },
 };
 
 export const RowDirection: Story = {
   args: {
     direction: 'row',
-    children: [<DecorativeBox />, <DecorativeBox />, <DecorativeBox />],
+    children: (
+      <>
+        <DecorativeBox />, <DecorativeBox />, <DecorativeBox />
+      </>
+    ),
   },
 };
 

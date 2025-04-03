@@ -25,6 +25,7 @@
 import Router from 'express-promise-router';
 import {
   CacheManager,
+  createLegacyAuthAdapters,
   createServiceBuilder,
   DatabaseManager,
   getRootLogger,
@@ -37,20 +38,15 @@ import {
 import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
 import { metricsHandler, metricsInit } from './metrics';
-import auth from './plugins/auth';
+import authPlugin from './plugins/auth';
 import catalog from './plugins/catalog';
 import events from './plugins/events';
 import kubernetes from './plugins/kubernetes';
 import scaffolder from './plugins/scaffolder';
-import proxy from './plugins/proxy';
-import search from './plugins/search';
-import techdocs from './plugins/techdocs';
-import app from './plugins/app';
 import permission from './plugins/permission';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
-import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
 import { DefaultSignalsService } from '@backstage/plugin-signals-node';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
@@ -61,9 +57,14 @@ function makeCreateEnv(config: Config) {
   const reader = UrlReaders.default({ logger: root, config });
   const discovery = HostDiscovery.fromConfig(config);
   const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
-  const permissions = ServerPermissionClient.fromConfig(config, {
+  const { auth } = createLegacyAuthAdapters({
+    auth: undefined,
     discovery,
     tokenManager,
+  });
+  const permissions = ServerPermissionClient.fromConfig(config, {
+    discovery,
+    auth,
   });
   const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
   const cacheManager = CacheManager.fromConfig(config);
@@ -72,10 +73,7 @@ function makeCreateEnv(config: Config) {
   });
 
   const eventsService = DefaultEventsService.create({ logger: root, config });
-  const eventBroker = new DefaultEventBroker(
-    root.child({ type: 'plugin' }),
-    eventsService,
-  );
+
   const signalsService = DefaultSignalsService.create({
     events: eventsService,
   });
@@ -97,7 +95,6 @@ function makeCreateEnv(config: Config) {
       database,
       config,
       reader,
-      eventBroker,
       events: eventsService,
       discovery,
       tokenManager,
@@ -129,11 +126,7 @@ async function main() {
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
-  const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
-  const searchEnv = useHotMemoize(module, () => createEnv('search'));
-  const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
-  const appEnv = useHotMemoize(module, () => createEnv('app'));
   const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
   const eventsEnv = useHotMemoize(module, () => createEnv('events'));
 
@@ -141,11 +134,8 @@ async function main() {
   apiRouter.use('/catalog', await catalog(catalogEnv));
   apiRouter.use('/events', await events(eventsEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
-  apiRouter.use('/auth', await auth(authEnv));
-  apiRouter.use('/search', await search(searchEnv));
-  apiRouter.use('/techdocs', await techdocs(techdocsEnv));
+  apiRouter.use('/auth', await authPlugin(authEnv));
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
-  apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/permission', await permission(permissionEnv));
   apiRouter.use(notFoundHandler());
 
@@ -153,8 +143,7 @@ async function main() {
     .loadConfig(config)
     .addRouter('', await healthcheck(healthcheckEnv))
     .addRouter('', metricsHandler())
-    .addRouter('/api', apiRouter)
-    .addRouter('', await app(appEnv));
+    .addRouter('/api', apiRouter);
 
   await service.start().catch(err => {
     logger.error(err);

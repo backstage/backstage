@@ -20,6 +20,22 @@ import { fireEvent } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 
 describe('GiteaRepoPicker', () => {
+  it('disables input fields when isDisabled is true', async () => {
+    const { getAllByRole } = await renderInTestApp(
+      <GiteaRepoPicker
+        onChange={jest.fn()}
+        rawErrors={[]}
+        state={{}}
+        isDisabled
+      />,
+    );
+
+    const allInputs = getAllByRole('textbox');
+
+    allInputs.forEach(input => {
+      expect(input).toBeDisabled();
+    });
+  });
   describe('owner input field', () => {
     it('calls onChange when the owner input changes', async () => {
       const onChange = jest.fn();

@@ -30,6 +30,23 @@ describe('AzureRepoPicker', () => {
     expect(allInputs).toHaveLength(2);
   });
 
+  it('disables input fields when isDisabled is true', async () => {
+    const { getAllByRole } = await renderInTestApp(
+      <AzureRepoPicker
+        onChange={jest.fn()}
+        rawErrors={[]}
+        state={{}}
+        isDisabled
+      />,
+    );
+
+    const allInputs = getAllByRole('textbox');
+
+    allInputs.forEach(input => {
+      expect(input).toBeDisabled();
+    });
+  });
+
   describe('org field', () => {
     it('calls onChange when the organisation changes', async () => {
       const onChange = jest.fn();

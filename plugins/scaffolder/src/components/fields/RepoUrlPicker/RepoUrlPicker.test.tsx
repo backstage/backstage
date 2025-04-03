@@ -119,6 +119,36 @@ describe('RepoUrlPicker', () => {
       );
     });
 
+    it('should disable the picker when ui:disabled', async () => {
+      const onSubmit = jest.fn();
+      const { getAllByRole } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApi],
+            [scmAuthApiRef, {}],
+            [scaffolderApiRef, mockScaffolderApi],
+          ]}
+        >
+          <SecretsContextProvider>
+            <Form
+              validator={validator}
+              schema={{ type: 'string' }}
+              uiSchema={{ 'ui:field': 'RepoUrlPicker', 'ui:disabled': true }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+              }}
+              onSubmit={onSubmit}
+            />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      const [ownerInput, repoInput] = getAllByRole('textbox');
+
+      expect(ownerInput).toBeDisabled();
+      expect(repoInput).toBeDisabled();
+    });
+
     it('should render properly with allowedHosts', async () => {
       const { getByRole } = await renderInTestApp(
         <TestApiProvider

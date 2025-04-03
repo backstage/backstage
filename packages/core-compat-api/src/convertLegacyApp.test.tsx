@@ -21,6 +21,16 @@ import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 import React, { ReactNode } from 'react';
 import { Route } from 'react-router-dom';
 import { convertLegacyApp } from './convertLegacyApp';
+import {
+  createApiFactory,
+  createComponentExtension,
+  createPlugin,
+} from '@backstage/core-plugin-api';
+import { EntityLayout, EntitySwitch, isKind } from '@backstage/plugin-catalog';
+import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { default as catalogPlugin } from '@backstage/plugin-catalog/alpha';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const Root = ({ children }: { children: ReactNode }) => <>{children}</>;
 
@@ -114,7 +124,7 @@ describe('convertLegacyApp', () => {
         extensions: [
           {
             id: 'app/layout',
-            attachTo: { id: 'app', input: 'root' },
+            attachTo: { id: 'app/root', input: 'children' },
             disabled: false,
           },
           {
@@ -158,5 +168,154 @@ describe('convertLegacyApp', () => {
         id: 'puppetDb',
       }),
     ]);
+  });
+
+  it('should convert entity pages', async () => {
+    const fooPlugin = createPlugin({
+      id: 'foo',
+    });
+
+    const FooContent = fooPlugin.provide(
+      createComponentExtension({
+        name: 'FooContent',
+        component: { sync: () => <div>foo content</div> },
+      }),
+    );
+    const OtherFooContent = fooPlugin.provide(
+      createComponentExtension({
+        name: 'OtherFooContent',
+        component: { sync: () => <div>other foo content</div> },
+      }),
+    );
+
+    const simpleTestContent = (
+      <EntityLayout>
+        <EntityLayout.Route path="/" title="Overview">
+          <div>overview content</div>
+        </EntityLayout.Route>
+        <EntityLayout.Route path="/foo" title="Foo">
+          <FooContent />
+        </EntityLayout.Route>
+        <EntityLayout.Route path="/bar" title="Bar">
+          <div>bar content</div>
+        </EntityLayout.Route>
+      </EntityLayout>
+    );
+
+    const otherTestContent = (
+      <EntityLayout>
+        <EntityLayout.Route path="/" title="Overview">
+          <div>other overview content</div>
+        </EntityLayout.Route>
+        <EntityLayout.Route path="/foo" title="Foo">
+          <OtherFooContent />
+        </EntityLayout.Route>
+      </EntityLayout>
+    );
+
+    const entityPage = (
+      <EntitySwitch>
+        <EntitySwitch.Case if={isKind('test')}>
+          {simpleTestContent}
+        </EntitySwitch.Case>
+        <EntitySwitch.Case>{otherTestContent}</EntitySwitch.Case>
+      </EntitySwitch>
+    );
+
+    const converted = convertLegacyApp(
+      <FlatRoutes>
+        <Route path="/test" element={<div>test</div>} />
+      </FlatRoutes>,
+      { entityPage },
+    );
+
+    const catalogOverride = catalogPlugin.withOverrides({
+      extensions: [
+        catalogPlugin.getExtension('api:catalog').override({
+          params: {
+            factory: createApiFactory(
+              catalogApiRef,
+              catalogApiMock({
+                entities: [
+                  {
+                    apiVersion: 'backstage.io/v1alpha1',
+                    kind: 'test',
+                    metadata: {
+                      name: 'x',
+                    },
+                    spec: {},
+                  },
+                  {
+                    apiVersion: 'backstage.io/v1alpha1',
+                    kind: 'other',
+                    metadata: {
+                      name: 'x',
+                    },
+                    spec: {},
+                  },
+                ],
+              }),
+            ),
+          },
+        }),
+      ],
+    });
+
+    // Overview
+    const renderOverviewTest = await renderInTestApp(<div />, {
+      features: [catalogOverride, ...converted],
+      initialRouteEntries: ['/catalog/default/test/x'],
+    });
+    await expect(
+      renderOverviewTest.findByText('overview content'),
+    ).resolves.toBeInTheDocument();
+    renderOverviewTest.unmount();
+
+    const renderOverviewOther = await renderInTestApp(<div />, {
+      features: [catalogOverride, ...converted],
+      initialRouteEntries: ['/catalog/default/other/x'],
+    });
+    await expect(
+      renderOverviewOther.findByText('other overview content'),
+    ).resolves.toBeInTheDocument();
+    renderOverviewOther.unmount();
+
+    // Foo tab
+    const renderFooTest = await renderInTestApp(<div />, {
+      features: [catalogOverride, ...converted],
+      initialRouteEntries: ['/catalog/default/test/x/foo'],
+    });
+    await expect(
+      renderFooTest.findByText('foo content'),
+    ).resolves.toBeInTheDocument();
+    renderFooTest.unmount();
+
+    const renderFooOther = await renderInTestApp(<div />, {
+      features: [catalogOverride, ...converted],
+      initialRouteEntries: ['/catalog/default/other/x/foo'],
+    });
+    await expect(
+      renderFooOther.findByText('other foo content'),
+    ).resolves.toBeInTheDocument();
+    renderFooOther.unmount();
+
+    // Bar tab
+    const renderBarTest = await renderInTestApp(<div />, {
+      features: [catalogOverride, ...converted],
+      initialRouteEntries: ['/catalog/default/test/x/bar'],
+    });
+    await expect(
+      renderBarTest.findByText('bar content'),
+    ).resolves.toBeInTheDocument();
+    renderBarTest.unmount();
+
+    const renderBarOther = await renderInTestApp(<div />, {
+      features: [catalogOverride, ...converted],
+      initialRouteEntries: ['/catalog/default/other/x/bar'],
+    });
+    await expect(
+      renderBarOther.findByText('other overview content'),
+    ).resolves.toBeInTheDocument(); // /bar does not exist, fall back to rendering overview
+    renderBarOther.unmount();
   });
 });

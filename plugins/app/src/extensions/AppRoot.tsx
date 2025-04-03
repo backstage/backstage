@@ -249,6 +249,7 @@ export function AppRouter(props: AppRouterProps) {
 
     return (
       <RouterComponent>
+        {...extraElements}
         <RouteTracker routeObjects={routeObjects} />
         {children}
       </RouterComponent>

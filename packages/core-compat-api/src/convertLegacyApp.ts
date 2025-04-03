@@ -26,12 +26,12 @@ import {
   FrontendPlugin,
   coreExtensionData,
   createExtension,
-  ExtensionOverrides,
   createExtensionInput,
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 import { getComponentData } from '@backstage/core-plugin-api';
 import { collectLegacyRoutes } from './collectLegacyRoutes';
+import { compatWrapper } from './compatWrapper';
 
 function selectChildren(
   rootNode: ReactNode,
@@ -60,11 +60,34 @@ function selectChildren(
 }
 
 /** @public */
+export interface ConvertLegacyAppOptions {
+  /**
+   * By providing an entity page element here it will be split up and converted
+   * into individual extensions for the catalog plugin in the new frontend
+   * system.
+   *
+   * In order to use this option the entity page and other catalog extensions
+   * must be removed from the legacy app, and the catalog plugin for the new
+   * frontend system must be installed instead.
+   *
+   * In order for this conversion to work the entity page must be a plain React
+   * element tree without any component wrapping anywhere between the root
+   * element and the `EntityLayout.Route` elements.
+   *
+   * When enabling this conversion you are likely to encounter duplicate entity
+   * page content provided both via the old structure and the new plugins. Any
+   * duplicate content needs to be removed from the old structure.
+   */
+  entityPage?: React.JSX.Element;
+}
+
+/** @public */
 export function convertLegacyApp(
   rootElement: React.JSX.Element,
-): (FrontendPlugin | FrontendModule | ExtensionOverrides)[] {
+  options: ConvertLegacyAppOptions = {},
+): (FrontendPlugin | FrontendModule)[] {
   if (getComponentData(rootElement, 'core.type') === 'FlatRoutes') {
-    return collectLegacyRoutes(rootElement);
+    return collectLegacyRoutes(rootElement, options?.entityPage);
   }
 
   const appRouterEls = selectChildren(
@@ -106,7 +129,7 @@ export function convertLegacyApp(
 
   const CoreLayoutOverride = createExtension({
     name: 'layout',
-    attachTo: { id: 'app', input: 'root' },
+    attachTo: { id: 'app/root', input: 'children' },
     inputs: {
       content: createExtensionInput([coreExtensionData.reactElement], {
         singleton: true,
@@ -117,10 +140,12 @@ export function convertLegacyApp(
       // Clone the root element, this replaces the FlatRoutes declared in the app with out content input
       return [
         coreExtensionData.reactElement(
-          React.cloneElement(
-            rootEl,
-            undefined,
-            inputs.content.get(coreExtensionData.reactElement),
+          compatWrapper(
+            React.cloneElement(
+              rootEl,
+              undefined,
+              inputs.content.get(coreExtensionData.reactElement),
+            ),
           ),
         ),
       ];
@@ -134,7 +159,7 @@ export function convertLegacyApp(
     disabled: true,
   });
 
-  const collectedRoutes = collectLegacyRoutes(routesEl);
+  const collectedRoutes = collectLegacyRoutes(routesEl, options?.entityPage);
 
   return [
     ...collectedRoutes,

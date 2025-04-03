@@ -42,10 +42,7 @@ export default async (opts: ArgOptions) => {
   let pluginInfix: string | undefined = undefined;
   let packagePrefix: string | undefined = undefined;
   if (scope) {
-    const backstagePrefix = scope.startsWith('backstage') ? '' : 'backstage-';
-    packagePrefix = scope.includes('/')
-      ? `@${scope}${backstagePrefix}`
-      : `@${scope}/${backstagePrefix}`;
+    packagePrefix = scope.includes('/') ? `@${scope}` : `@${scope}/`;
     pluginInfix = scope.includes('backstage') ? 'plugin-' : 'backstage-plugin-';
   }
 

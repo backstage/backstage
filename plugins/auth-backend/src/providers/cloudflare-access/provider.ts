@@ -125,6 +125,7 @@ export type CloudflareAccessResult = {
  * Auth provider integration for Cloudflare Access auth
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export const cfAccess = createAuthProviderIntegration({
   create(options: {

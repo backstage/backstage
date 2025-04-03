@@ -38,6 +38,7 @@ import { AuthProviderFactory } from '@backstage/plugin-auth-node';
  * All built-in auth provider integrations.
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export const providers = Object.freeze({
   atlassian,
@@ -64,6 +65,7 @@ export const providers = Object.freeze({
  * All auth provider factories that are installed by default.
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export const defaultAuthProviderFactories: {
   [providerId: string]: AuthProviderFactory;

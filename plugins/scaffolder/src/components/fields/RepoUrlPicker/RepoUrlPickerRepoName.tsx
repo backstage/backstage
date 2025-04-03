@@ -29,8 +29,16 @@ export const RepoUrlPickerRepoName = (props: {
   onChange: (chosenRepo: AvailableRepositories) => void;
   rawErrors: string[];
   availableRepos?: AvailableRepositories[];
+  isDisabled?: boolean;
 }) => {
-  const { repoName, allowedRepos, onChange, rawErrors, availableRepos } = props;
+  const {
+    repoName,
+    allowedRepos,
+    onChange,
+    rawErrors,
+    availableRepos,
+    isDisabled,
+  } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   useEffect(() => {
@@ -63,7 +71,7 @@ export const RepoUrlPickerRepoName = (props: {
                 name: String(Array.isArray(selected) ? selected[0] : selected),
               })
             }
-            disabled={allowedRepos.length === 1}
+            disabled={isDisabled || allowedRepos.length === 1}
             selected={repoName}
             items={repoItems}
           />
@@ -86,6 +94,7 @@ export const RepoUrlPickerRepoName = (props: {
             )}
             freeSolo
             autoSelect
+            disabled={isDisabled}
           />
         )}
         <FormHelperText>

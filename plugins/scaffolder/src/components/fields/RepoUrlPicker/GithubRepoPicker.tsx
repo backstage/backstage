@@ -34,7 +34,14 @@ export const GithubRepoPicker = (
     accessToken?: string;
   }>,
 ) => {
-  const { allowedOwners = [], rawErrors, state, onChange, accessToken } = props;
+  const {
+    allowedOwners = [],
+    rawErrors,
+    state,
+    onChange,
+    accessToken,
+    isDisabled,
+  } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners.map(i => ({ label: i, value: i }))
@@ -110,7 +117,7 @@ export const GithubRepoPicker = (
               onChange={s =>
                 onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
               }
-              disabled={allowedOwners.length === 1}
+              disabled={isDisabled || allowedOwners.length === 1}
               selected={owner}
               items={ownerItems}
             />
@@ -126,10 +133,12 @@ export const GithubRepoPicker = (
               <TextField
                 {...params}
                 label={t('fields.githubRepoPicker.owner.inputTitle')}
+                disabled={isDisabled}
                 required
               />
             )}
             freeSolo
+            disabled={isDisabled}
             autoSelect
           />
         )}

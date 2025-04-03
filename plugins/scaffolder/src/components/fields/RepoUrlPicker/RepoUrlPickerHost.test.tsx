@@ -100,4 +100,31 @@ describe('RepoUrlPickerHostField', () => {
 
     expect(listbox.getAllByRole('option')).toHaveLength(2);
   });
+
+  it('disables the host select when isDisabled is true', async () => {
+    const mockOnChange = jest.fn();
+    const mockScaffolderApi = {
+      getIntegrationsList: jest.fn().mockResolvedValue({
+        integrations: [
+          { host: 'github.com', title: 'github.com', type: 'github' },
+          { host: 'gitlab.com', title: 'gitlab.com', type: 'gitlab' },
+        ],
+      }),
+    };
+
+    const { getByTestId } = await renderInTestApp(
+      <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
+        <RepoUrlPickerHost
+          hosts={['github.com', 'gitlab.com']}
+          onChange={mockOnChange}
+          rawErrors={[]}
+          isDisabled
+        />
+      </TestApiProvider>,
+    );
+
+    const selectElement = getByTestId('host-select').querySelector('select');
+
+    expect(selectElement).toBeDisabled();
+  });
 });

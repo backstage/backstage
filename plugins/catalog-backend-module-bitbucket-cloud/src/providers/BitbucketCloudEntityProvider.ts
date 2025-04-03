@@ -326,6 +326,8 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     const optRepoFilter = repoSlug ? ` repo:${repoSlug}` : '';
     const query = `"${catalogFilename}" path:${catalogPath}${optRepoFilter}`;
 
+    if (repoSlug) return this.processQuery(workspace, query);
+
     const projects = this.client
       .listProjectsByWorkspace(workspace)
       .iterateResults();

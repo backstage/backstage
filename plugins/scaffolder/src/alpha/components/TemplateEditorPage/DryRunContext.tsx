@@ -29,6 +29,7 @@ import React, {
 import {
   scaffolderApiRef,
   ScaffolderDryRunResponse,
+  useTemplateSecrets,
 } from '@backstage/plugin-scaffolder-react';
 import { useFormDecorators } from '../../hooks/useFormDecorators';
 
@@ -84,7 +85,7 @@ export function base64EncodeContent(content: string): string {
 export function DryRunProvider(props: DryRunProviderProps) {
   const decorators = useFormDecorators();
   const scaffolderApi = useApi(scaffolderApiRef);
-
+  const { secrets: contextSecrets } = useTemplateSecrets();
   const [state, setState] = useState<
     Pick<DryRun, 'results' | 'selectedResult'>
   >({
@@ -134,7 +135,7 @@ export function DryRunProvider(props: DryRunProviderProps) {
 
       const { formState: values, secrets } = await decorators.run({
         formState: options.values as Record<string, JsonValue>,
-        secrets: {},
+        secrets: contextSecrets,
         manifest: parsed?.spec,
       });
 
@@ -158,7 +159,7 @@ export function DryRunProvider(props: DryRunProviderProps) {
         selectedResult: prevState.selectedResult ?? result,
       }));
     },
-    [scaffolderApi, decorators],
+    [scaffolderApi, decorators, contextSecrets],
   );
 
   const dryRun = useMemo(

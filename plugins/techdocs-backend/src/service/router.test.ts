@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  PluginCacheManager,
-  loggerToWinstonLogger,
-} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   DocsBuildStrategy,
@@ -111,9 +107,7 @@ describe('createRouter', () => {
     publish: jest.fn(),
   };
   const discovery = mockServices.discovery.mock();
-  const cache: jest.Mocked<PluginCacheManager> = {
-    getClient: jest.fn(),
-  };
+
   const docsBuildStrategy: jest.Mocked<DocsBuildStrategy> = {
     shouldBuild: jest.fn(),
   };
@@ -122,18 +116,22 @@ describe('createRouter', () => {
     generators,
     publisher,
     config: new ConfigReader({}),
-    logger: loggerToWinstonLogger(mockServices.logger.mock()),
+    logger: mockServices.logger.mock(),
     discovery,
-    cache,
+    cache: mockServices.cache.mock(),
     docsBuildStrategy,
+    auth: mockServices.auth(),
+    httpAuth: mockServices.httpAuth(),
   };
   const recommendedOptions = {
     publisher,
     config: new ConfigReader({}),
-    logger: loggerToWinstonLogger(mockServices.logger.mock()),
+    logger: mockServices.logger.mock(),
     discovery,
-    cache,
+    cache: mockServices.cache.mock(),
     docsBuildStrategy,
+    auth: mockServices.auth(),
+    httpAuth: mockServices.httpAuth(),
   };
 
   beforeEach(() => {
