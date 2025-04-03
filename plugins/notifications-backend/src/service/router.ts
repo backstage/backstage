@@ -48,7 +48,9 @@ import {
 } from '@backstage/plugin-notifications-common';
 import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 import { getUsersForEntityRef } from './getUsersForEntityRef';
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
+import { durationToMilliseconds } from '@backstage/types';
+import pThrottle from 'p-throttle';
 
 /** @internal */
 export interface RouterOptions {
@@ -82,6 +84,19 @@ export async function createRouter(
   const WEB_NOTIFICATION_CHANNEL = 'Web';
   const store = await DatabaseNotificationsStore.create({ database });
   const frontendBaseUrl = config.getString('app.baseUrl');
+  const concurrencyLimit =
+    config.getOptionalNumber('notifications.concurrencyLimit') ?? 10;
+  const throttleInterval = config.has('notifications.throttleInterval')
+    ? durationToMilliseconds(
+        readDurationFromConfig(config, {
+          key: 'notifications.throttleInterval',
+        }),
+      )
+    : 50;
+  const throttle = pThrottle({
+    limit: concurrencyLimit,
+    interval: throttleInterval,
+  });
 
   const getUser = async (req: Request<unknown>) => {
     const credentials = await httpAuth.credentials(req, { allow: ['user'] });
@@ -475,66 +490,79 @@ export async function createRouter(
     return notification;
   };
 
+  const sendUserNotification = async (
+    baseNotification: Omit<Notification, 'user' | 'id'>,
+    user: string,
+    opts: NotificationSendOptions,
+    origin: string,
+    scope?: string,
+  ): Promise<Notification | undefined> => {
+    const userNotification = {
+      ...baseNotification,
+      id: uuid(),
+      user,
+    };
+    const notification = await preProcessNotification(userNotification, opts);
+
+    const enabled = await isNotificationsEnabled({
+      user,
+      channel: WEB_NOTIFICATION_CHANNEL,
+      origin: userNotification.origin,
+    });
+
+    let ret = notification;
+
+    if (!enabled) {
+      postProcessNotification(ret, opts);
+      return undefined;
+    }
+
+    let existingNotification;
+    if (scope) {
+      existingNotification = await store.getExistingScopeNotification({
+        user,
+        scope,
+        origin,
+      });
+    }
+
+    if (existingNotification) {
+      const restored = await store.restoreExistingNotification({
+        id: existingNotification.id,
+        notification,
+      });
+      ret = restored ?? notification;
+    } else {
+      await store.saveNotification(notification);
+    }
+
+    if (signals) {
+      await signals.publish<NewNotificationSignal>({
+        recipients: { type: 'user', entityRef: [user] },
+        message: {
+          action: 'new_notification',
+          notification_id: ret.id,
+        },
+        channel: 'notifications',
+      });
+    }
+    postProcessNotification(ret, opts);
+    return ret;
+  };
+
   const sendUserNotifications = async (
     baseNotification: Omit<Notification, 'user' | 'id'>,
     users: string[],
     opts: NotificationSendOptions,
     origin: string,
-  ) => {
-    const notifications = [];
+  ): Promise<Notification[]> => {
     const { scope } = opts.payload;
     const uniqueUsers = [...new Set(users)];
-    for (const user of uniqueUsers) {
-      const userNotification = {
-        ...baseNotification,
-        id: uuid(),
-        user,
-      };
-      const notification = await preProcessNotification(userNotification, opts);
-
-      const enabled = await isNotificationsEnabled({
-        user,
-        channel: WEB_NOTIFICATION_CHANNEL,
-        origin: userNotification.origin,
-      });
-
-      let ret = notification;
-      if (enabled) {
-        let existingNotification;
-        if (scope) {
-          existingNotification = await store.getExistingScopeNotification({
-            user,
-            scope,
-            origin,
-          });
-        }
-
-        if (existingNotification) {
-          const restored = await store.restoreExistingNotification({
-            id: existingNotification.id,
-            notification,
-          });
-          ret = restored ?? notification;
-        } else {
-          await store.saveNotification(notification);
-        }
-
-        notifications.push(ret);
-
-        if (signals) {
-          await signals.publish<NewNotificationSignal>({
-            recipients: { type: 'user', entityRef: [user] },
-            message: {
-              action: 'new_notification',
-              notification_id: ret.id,
-            },
-            channel: 'notifications',
-          });
-        }
-      }
-      postProcessNotification(ret, opts);
-    }
-    return notifications;
+    const throttled = throttle((user: string) =>
+      sendUserNotification(baseNotification, user, opts, origin, scope),
+    );
+    const sent = await Promise.all(uniqueUsers.map(user => throttled(user)));
+    return sent.filter(n => n !== undefined);
   };
 
   const createNotificationHandler = async (

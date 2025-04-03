@@ -241,36 +241,43 @@ export function createPublishGithubAction(options: {
       });
       const client = new Octokit(octokitOptions);
 
-      const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
-        client,
-        repo,
-        owner,
-        repoVisibility,
-        description,
-        homepage,
-        deleteBranchOnMerge,
-        allowMergeCommit,
-        allowSquashMerge,
-        squashMergeCommitTitle,
-        squashMergeCommitMessage,
-        allowRebaseMerge,
-        allowAutoMerge,
-        access,
-        collaborators,
-        hasProjects,
-        hasWiki,
-        hasIssues,
-        topics,
-        repoVariables,
-        secrets,
-        oidcCustomization,
-        customProperties,
-        subscribe,
-        ctx.logger,
-      );
+      const { remoteUrl, repoContentsUrl } = await ctx.checkpoint({
+        key: `create.github.repo.${owner}.${repo}`,
+        fn: async () => {
+          const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
+            client,
+            repo,
+            owner,
+            repoVisibility,
+            description,
+            homepage,
+            deleteBranchOnMerge,
+            allowMergeCommit,
+            allowSquashMerge,
+            squashMergeCommitTitle,
+            squashMergeCommitMessage,
+            allowRebaseMerge,
+            allowAutoMerge,
+            access,
+            collaborators,
+            hasProjects,
+            hasWiki,
+            hasIssues,
+            topics,
+            repoVariables,
+            secrets,
+            oidcCustomization,
+            customProperties,
+            subscribe,
+            ctx.logger,
+          );
 
-      const remoteUrl = newRepo.clone_url;
-      const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
+          return {
+            remoteUrl: newRepo.clone_url,
+            repoContentsUrl: `${newRepo.html_url}/blob/${defaultBranch}`,
+          };
+        },
+      });
 
       const commitResult = await initRepoPushAndProtect(
         remoteUrl,

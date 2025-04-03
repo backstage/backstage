@@ -89,6 +89,19 @@ export const Responsive: Story = {
   },
 };
 
+export const WrappedInLink: Story = {
+  args: {
+    ...Default.args,
+  },
+  decorators: [
+    Story => (
+      <a href="/">
+        <Story />
+      </a>
+    ),
+  ],
+};
+
 export const Playground: Story = {
   render: () => (
     <Flex gap="4" direction="column">

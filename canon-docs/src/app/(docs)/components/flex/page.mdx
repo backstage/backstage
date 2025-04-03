@@ -6,9 +6,9 @@ import {
   flexSimple,
   flexResponsive,
   flexAlign,
-} from '@/snippets/_snippets';
+} from '@/snippets/code-snippets';
 import { Snippet } from '@/components/Snippet';
-import { FlexPreview } from '@/snippets/flex';
+import { FlexSnippet } from '@/snippets/stories-snippets';
 import { flexPropDefs } from './props';
 import { spacingPropDefs } from '../../../../utils/propDefs';
 
@@ -21,7 +21,7 @@ columns. All values are responsive.
 <Snippet
   py={4}
   align="center"
-  preview={<FlexPreview />}
+  preview={<FlexSnippet story="Default" />}
   code={`<Flex>
     <DecorativeBox />
     <DecorativeBox />

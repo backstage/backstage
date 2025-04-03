@@ -13,6 +13,10 @@ export const overview: Page[] = [
     title: 'About',
     slug: 'about',
   },
+  {
+    title: 'Releases',
+    slug: 'releases',
+  },
 ];
 
 export const theme: Page[] = [
@@ -95,6 +99,11 @@ export const components: Page[] = [
   {
     title: 'Input',
     slug: 'input',
+    status: 'alpha',
+  },
+  {
+    title: 'Select',
+    slug: 'select',
     status: 'alpha',
   },
   {

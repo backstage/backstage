@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
 import { TechDocsAddonOptions } from './types';
-import { attachComponentData } from '@backstage/core-plugin-api';
+import {
+  attachComponentData,
+  getComponentData,
+} from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { getDataKeyByName, TECHDOCS_ADDONS_KEY } from './addons';
 import {
@@ -53,6 +57,19 @@ export const attachTechDocsAddonComponentData = <P>(
   techDocsAddon: ComponentType<P>,
   data: TechDocsAddonOptions,
 ) => {
-  attachComponentData(techDocsAddon, TECHDOCS_ADDONS_KEY, data);
-  attachComponentData(techDocsAddon, getDataKeyByName(data.name), true);
+  const element = React.createElement(techDocsAddon as ComponentType);
+
+  const isDataAttached = getComponentData<TechDocsAddonOptions>(
+    element,
+    TECHDOCS_ADDONS_KEY,
+  );
+  if (!isDataAttached) {
+    attachComponentData(techDocsAddon, TECHDOCS_ADDONS_KEY, data);
+  }
+
+  const dataKey = getDataKeyByName(data.name);
+  const isDataKeyAttached = getComponentData<boolean>(element, dataKey);
+  if (!isDataKeyAttached) {
+    attachComponentData(techDocsAddon, dataKey, true);
+  }
 };
