@@ -33,9 +33,6 @@ export const Default: Story = {
   args: {
     name: 'url',
     placeholder: 'Enter a URL',
-    style: {
-      maxWidth: '300px',
-    },
   },
 };
 
@@ -74,7 +71,7 @@ export const Sizes: Story = {
     description: 'Description',
   },
   render: args => (
-    <Flex direction="row" gap="4" style={{ width: '100%', maxWidth: '600px' }}>
+    <Flex direction="row" gap="4">
       <TextField {...args} size="small" />
       <TextField {...args} size="medium" />
     </Flex>
