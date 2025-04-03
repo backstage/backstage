@@ -61,4 +61,5 @@ backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(import('./instanceMetadata'));
 
+backend.add(import('@backstage/plugin-auth-backend-module-openshift-provider'));
 backend.start();
