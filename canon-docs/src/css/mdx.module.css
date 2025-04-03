@@ -27,6 +27,21 @@
   color: var(--secondary);
 }
 
-.p:first-of-type {
-  margin-bottom: 2rem;
+.ul {
+  margin: 0;
+  padding-left: 2rem;
+}
+
+.li {
+  color: var(--secondary);
+  margin-bottom: 0.5rem;
+}
+
+.a {
+  color: var(--link);
+  text-decoration: none;
+}
+
+.a:hover {
+  text-decoration: underline;
 }

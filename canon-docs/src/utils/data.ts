@@ -13,6 +13,10 @@ export const overview: Page[] = [
     title: 'About',
     slug: 'about',
   },
+  {
+    title: 'Releases',
+    slug: 'releases',
+  },
 ];
 
 export const theme: Page[] = [
