@@ -1,5 +1,5 @@
 .canon-Container {
-  max-width: 120rem;
+  max-width: min(120rem, 100%);
   padding: 0 1rem;
   margin: 0 auto;
 }
