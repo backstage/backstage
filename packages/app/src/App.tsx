@@ -65,14 +65,14 @@ import { AdvancedSettings } from './components/advancedSettings';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
 import { Navigate, Route } from 'react-router-dom';
-import { apis } from './apis';
+import { apis, kcOIDCAuthApiRef } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
 import { homePage } from './components/home/HomePage';
 import { Root } from './components/Root';
 import { DelayingComponentFieldExtension } from './components/scaffolder/customScaffolderExtensions';
 import { defaultPreviewTemplate } from './components/scaffolder/defaultPreviewTemplate';
 import { searchPage } from './components/search/SearchPage';
-import { providers } from './identityProviders';
+// import { providers } from './identityProviders';
 import { SignalsDisplay } from '@backstage/plugin-signals';
 import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { RequirePermission } from '@backstage/plugin-permission-react';
@@ -104,10 +104,22 @@ const app = createApp({
       return (
         <SignInPage
           {...props}
-          providers={['guest', 'custom', ...providers]}
-          title="Select a sign-in method"
-          align="center"
+          auto
+          providers={[
+            {
+              id: 'keycloak',
+              title: 'Keycloak',
+              message: 'Sign in using Keycloak',
+              apiRef: kcOIDCAuthApiRef,
+            },
+          ]}
         />
+        // <SignInPage
+        //   {...props}
+        //   providers={['guest', 'custom', ...providers]}
+        //   title="Select a sign-in method"
+        //   align="center"
+        // />
       );
     },
   },

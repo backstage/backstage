@@ -24,31 +24,39 @@ import {
 import { CookieAuthRedirect } from '@backstage/plugin-auth-react';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { providers } from '../src/identityProviders';
-import {
-  configApiRef,
-  createApiFactory,
-  discoveryApiRef,
-} from '@backstage/core-plugin-api';
-import { AuthProxyDiscoveryApi } from '../src/AuthProxyDiscoveryApi';
+// import { providers } from '../src/identityProviders';
+// import {
+//   configApiRef,
+//   createApiFactory,
+//   discoveryApiRef,
+// } from '@backstage/core-plugin-api';
+// import { AuthProxyDiscoveryApi } from '../src/AuthProxyDiscoveryApi';
 import '@backstage/canon/css/styles.css';
+import { apis, kcOIDCAuthApiRef } from './apis';
 
 const app = createApp({
-  apis: [
-    createApiFactory({
-      api: discoveryApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) => AuthProxyDiscoveryApi.fromConfig(configApi),
-    }),
-  ],
+  apis,
+  // apis: [
+  //   createApiFactory({
+  //     api: discoveryApiRef,
+  //     deps: { configApi: configApiRef },
+  //     factory: ({ configApi }) => AuthProxyDiscoveryApi.fromConfig(configApi),
+  //   }),
+  // ],
   components: {
     SignInPage: props => {
       return (
-        <SignInPage
+       <SignInPage
           {...props}
-          providers={['guest', 'custom', ...providers]}
-          title="Select a sign-in method"
-          align="center"
+          auto
+          providers={[
+            {
+              id: 'keycloak',
+              title: 'Keycloak',
+              message: 'Sign in using Keycloak',
+              apiRef: kcOIDCAuthApiRef,
+            },
+            ]}
         />
       );
     },
