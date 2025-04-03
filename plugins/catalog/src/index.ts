@@ -21,7 +21,6 @@
  */
 
 export * from './apis';
-
 export type {
   AboutCardProps,
   AboutContentProps,
