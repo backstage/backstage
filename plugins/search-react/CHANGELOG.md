@@ -1,5 +1,81 @@
 # @backstage/plugin-search-react
 
+## 1.8.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.8.7
+
+### Patch Changes
+
+- c37e480: Capture the number of search results in the search analytics event that correspond to the term entered.
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.8.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.8.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.8.7-next.0
+
+### Patch Changes
+
+- c37e480: Capture the number of search results in the search analytics event that correspond to the term entered.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+
+## 1.8.6
+
+### Patch Changes
+
+- 63e1012: Added new extension points to extend search filters `SearchFilterBlueprint` and `SearchFilterResultTypeBlueprint`
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/version-bridge@1.0.11
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-search-common@1.2.17
+
 ## 1.8.6-next.3
 
 ### Patch Changes

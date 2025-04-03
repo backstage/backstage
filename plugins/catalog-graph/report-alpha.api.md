@@ -8,6 +8,8 @@ import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Direction } from '@backstage/plugin-catalog-graph';
 import { Entity } from '@backstage/catalog-model';
+import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
+import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
@@ -42,14 +44,15 @@ const _default: FrontendPlugin<
         title: string | undefined;
         height: number | undefined;
       } & {
-        filter: string | undefined;
+        filter: EntityPredicate | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         height?: number | undefined;
         curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         direction?: Direction | undefined;
-        title?: string | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
+        title?: string | undefined;
         relations?: string[] | undefined;
         maxDepth?: number | undefined;
         kinds?: string[] | undefined;
@@ -57,7 +60,8 @@ const _default: FrontendPlugin<
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
       } & {
-        filter?: string | undefined;
+        filter?: EntityPredicate | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<
@@ -78,6 +82,13 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
           >;
       inputs: {
         [x: string]: ExtensionInput<
@@ -92,7 +103,8 @@ const _default: FrontendPlugin<
       name: 'relations';
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
       };
     }>;
     'page:catalog-graph': ExtensionDefinition<{
@@ -158,7 +170,7 @@ const _default: FrontendPlugin<
       params: {
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+        routeRef?: RouteRef;
       };
     }>;
   }

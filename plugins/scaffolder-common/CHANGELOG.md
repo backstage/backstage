@@ -1,5 +1,26 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.5.10
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- 321b93e: Add optional `lifecycle` property to the spec field of Template entities.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.5.10-next.0
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
 ## 1.5.9
 
 ### Patch Changes

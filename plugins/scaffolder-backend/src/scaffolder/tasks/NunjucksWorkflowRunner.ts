@@ -38,7 +38,6 @@ import { TemplateActionRegistry } from '../actions';
 import { generateExampleOutput, isTruthy } from './helper';
 import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import type {
   AuditorService,
   PermissionsService,
@@ -56,10 +55,12 @@ import {
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
-import { createDefaultFilters } from '../../lib/templating/filters';
+import { createDefaultFilters } from '../../lib/templating/filters/createDefaultFilters';
 import { scaffolderActionRules } from '../../service/rules';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
+import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
+import { convertFiltersToRecord } from '../../util/templating';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -151,9 +152,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
   private readonly defaultTemplateFilters: Record<string, TemplateFilter>;
 
   constructor(private readonly options: NunjucksWorkflowRunnerOptions) {
-    this.defaultTemplateFilters = createDefaultFilters({
-      integrations: this.options.integrations,
-    });
+    this.defaultTemplateFilters = convertFiltersToRecord(
+      createDefaultFilters({
+        integrations: this.options.integrations,
+      }),
+    );
   }
 
   private readonly tracker = scaffoldingTracker();

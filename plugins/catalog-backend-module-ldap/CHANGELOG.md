@@ -1,5 +1,71 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.11.3
+
+### Patch Changes
+
+- e43f41b: Fix `config.d.ts` for `ldapOrg` being incorrect. The documentation says a single
+  object or an array are accepted, but the definition only allows an object.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1
+
+## 0.11.3-next.2
+
+### Patch Changes
+
+- e43f41b: Fix `config.d.ts` for `ldapOrg` being incorrect. The documentation says a single
+  object or an array are accepted, but the definition only allows an object.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1-next.1
+
+## 0.11.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1-next.1
+
+## 0.11.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-catalog-node@1.16.1-next.0
+
+## 0.11.2
+
+### Patch Changes
+
+- eb80a1a: Minor doc string update
+- 636744a: Make `ldapOrg` config key optional
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-catalog-node@1.16.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+
 ## 0.11.2-next.3
 
 ### Patch Changes

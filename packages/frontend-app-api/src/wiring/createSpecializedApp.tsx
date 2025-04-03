@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import React, { JSX } from 'react';
 import { ConfigReader } from '@backstage/config';
 import {
   ApiBlueprint,
   AppTree,
   AppTreeApi,
   appTreeApiRef,
-  coreExtensionData,
   RouteRef,
   ExternalRouteRef,
   SubRouteRef,
@@ -32,6 +30,7 @@ import {
   createApiFactory,
   routeResolutionApiRef,
   AppNode,
+  ExtensionFactoryMiddleware,
 } from '@backstage/frontend-plugin-api';
 import {
   AnyApiFactory,
@@ -42,10 +41,16 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '@backstage/core-app-api';
-import { OpaqueFrontendPlugin } from '@internal/frontend';
+import {
+  createExtensionDataContainer,
+  OpaqueFrontendPlugin,
+} from '@internal/frontend';
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+import {
+  resolveExtensionDefinition,
+  toInternalExtension,
+} from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
 import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
 
@@ -187,6 +192,7 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
     return this.#routeObjects;
   }
 }
+
 /**
  * Creates an empty app without any default features. This is a low-level API is
  * intended for use in tests or specialized setups. Typically wou want to use
@@ -198,7 +204,11 @@ export function createSpecializedApp(options?: {
   features?: FrontendFeature[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-}): { createRoot(): JSX.Element } {
+  apis?: ApiHolder;
+  extensionFactoryMiddleware?:
+    | ExtensionFactoryMiddleware
+    | ExtensionFactoryMiddleware[];
+}): { apis: ApiHolder; tree: AppTree } {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []);
 
@@ -227,17 +237,19 @@ export function createSpecializedApp(options?: {
   );
 
   const appIdentityProxy = new AppIdentityProxy();
-  const apiHolder = createApiHolder({
-    factories,
-    staticFactories: [
-      createApiFactory(appTreeApiRef, appTreeApi),
-      createApiFactory(configApiRef, config),
-      createApiFactory(routeResolutionApiRef, routeResolutionApi),
-      createApiFactory(identityApiRef, appIdentityProxy),
-    ],
-  });
+  const apis =
+    options?.apis ??
+    createApiHolder({
+      factories,
+      staticFactories: [
+        createApiFactory(appTreeApiRef, appTreeApi),
+        createApiFactory(configApiRef, config),
+        createApiFactory(routeResolutionApiRef, routeResolutionApi),
+        createApiFactory(identityApiRef, appIdentityProxy),
+      ],
+    });
 
-  const featureFlagApi = apiHolder.get(featureFlagsApiRef);
+  const featureFlagApi = apis.get(featureFlagsApiRef);
   if (featureFlagApi) {
     for (const feature of features) {
       if (OpaqueFrontendPlugin.isType(feature)) {
@@ -260,22 +272,18 @@ export function createSpecializedApp(options?: {
   }
 
   // Now instantiate the entire tree, which will skip anything that's already been instantiated
-  instantiateAppNodeTree(tree.root, apiHolder);
+  instantiateAppNodeTree(
+    tree.root,
+    apis,
+    mergeExtensionFactoryMiddleware(options?.extensionFactoryMiddleware),
+  );
 
   const routeInfo = extractRouteInfoFromAppNode(tree.root);
 
   routeResolutionApi.initialize(routeInfo);
   appTreeApi.initialize(routeInfo);
 
-  const rootEl = tree.root.instance!.getData(coreExtensionData.reactElement);
-
-  const AppComponent = () => rootEl;
-
-  return {
-    createRoot() {
-      return <AppComponent />;
-    },
-  };
+  return { apis, tree };
 }
 
 function createApiFactories(options: { tree: AppTree }): AnyApiFactory[] {
@@ -313,4 +321,38 @@ function createApiHolder(options: {
   ApiResolver.validateFactories(factoryRegistry, factoryRegistry.getAllApis());
 
   return new ApiResolver(factoryRegistry);
+}
+
+function mergeExtensionFactoryMiddleware(
+  middlewares?: ExtensionFactoryMiddleware | ExtensionFactoryMiddleware[],
+): ExtensionFactoryMiddleware | undefined {
+  if (!middlewares) {
+    return undefined;
+  }
+  if (!Array.isArray(middlewares)) {
+    return middlewares;
+  }
+  if (middlewares.length <= 1) {
+    return middlewares[0];
+  }
+  return middlewares.reduce((prev, next) => {
+    if (!prev || !next) {
+      return prev ?? next;
+    }
+    return (orig, ctx) => {
+      const internalExt = toInternalExtension(ctx.node.spec.extension);
+      if (internalExt.version !== 'v2') {
+        return orig();
+      }
+      return next(ctxOverrides => {
+        return createExtensionDataContainer(
+          prev(orig, {
+            node: ctx.node,
+            apis: ctx.apis,
+            config: ctxOverrides?.config ?? ctx.config,
+          }),
+        );
+      }, ctx);
+    };
+  });
 }

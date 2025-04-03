@@ -33,6 +33,12 @@ import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { SWRConfig } from 'swr';
 
+const mountedRoutes = {
+  mountedRoutes: {
+    '/catalog/:namespace/:kind/:name': entityRouteRef,
+  },
+};
+
 describe('TemplateCard', () => {
   it('should render the card title', async () => {
     const mockTemplate: TemplateEntityV1beta3 = {
@@ -59,6 +65,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
+      mountedRoutes,
     );
 
     expect(getByText('bob')).toBeInTheDocument();
@@ -89,6 +96,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
+      mountedRoutes,
     );
 
     const description = getByText('hello');
@@ -121,6 +129,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
+      mountedRoutes,
     );
 
     expect(getByText('No description')).toBeInTheDocument();
@@ -151,6 +160,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
+      mountedRoutes,
     );
 
     expect(queryByTestId('template-card-separator')).toBeInTheDocument();
@@ -187,6 +197,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
+      mountedRoutes,
     );
 
     for (const tag of mockTemplate.metadata.tags!) {
@@ -227,11 +238,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:kind/:namespace/:name': entityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     expect(queryByTestId('template-card-separator')).toBeInTheDocument();
@@ -272,11 +279,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} additionalLinks={[]} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:kind/:namespace/:name': entityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     expect(queryByTestId('template-card-separator')).toBeInTheDocument();
@@ -321,11 +324,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} additionalLinks={[]} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:kind/:namespace/:name': entityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     expect(queryByTestId('template-card-separator')).not.toBeInTheDocument();
@@ -364,17 +363,13 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:kind/:namespace/:name': entityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     expect(getByRole('link', { name: /.*my-test-user$/ })).toBeInTheDocument();
     expect(getByRole('link', { name: /.*my-test-user$/ })).toHaveAttribute(
       'href',
-      '/catalog/group/default/my-test-user',
+      '/catalog/default/group/my-test-user',
     );
   });
 
@@ -404,11 +399,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} onSelected={mockOnSelected} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:kind/:namespace/:name': entityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     expect(getByRole('button', { name: 'Choose' })).toBeInTheDocument();
@@ -448,11 +439,7 @@ describe('TemplateCard', () => {
           <TemplateCard template={mockTemplate} onSelected={mockOnSelected} />
         </TestApiProvider>
       </SWRConfig>,
-      {
-        mountedRoutes: {
-          '/catalog/:kind/:namespace/:name': entityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     expect(queryByText('Choose')).toBeNull();

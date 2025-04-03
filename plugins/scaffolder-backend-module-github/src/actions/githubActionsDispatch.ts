@@ -55,7 +55,8 @@ export function createGithubActionsDispatchAction(options: {
         properties: {
           repoUrl: {
             title: 'Repository Location',
-            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
+            description:
+              'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
             type: 'string',
           },
           workflowId: {
@@ -78,7 +79,8 @@ export function createGithubActionsDispatchAction(options: {
           token: {
             title: 'Authentication Token',
             type: 'string',
-            description: 'The GITHUB_TOKEN to use for authorization to GitHub',
+            description:
+              'The `GITHUB_TOKEN` to use for authorization to GitHub',
           },
         },
       },
@@ -113,15 +115,20 @@ export function createGithubActionsDispatchAction(options: {
         }),
       );
 
-      await client.rest.actions.createWorkflowDispatch({
-        owner,
-        repo,
-        workflow_id: workflowId,
-        ref: branchOrTagName,
-        inputs: workflowInputs,
-      });
+      await ctx.checkpoint({
+        key: `create.workflow.dispatch.${owner}.${repo}.${workflowId}`,
+        fn: async () => {
+          await client.rest.actions.createWorkflowDispatch({
+            owner,
+            repo,
+            workflow_id: workflowId,
+            ref: branchOrTagName,
+            inputs: workflowInputs,
+          });
 
-      ctx.logger.info(`Workflow ${workflowId} dispatched successfully`);
+          ctx.logger.info(`Workflow ${workflowId} dispatched successfully`);
+        },
+      });
     },
   });
 }

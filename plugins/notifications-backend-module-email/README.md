@@ -2,7 +2,7 @@
 
 Adds support for sending Backstage notifications as emails to users.
 
-Supports sending emails using `SMTP`, `SES`, `sendmail`, or `stream` (for debugging purposes).
+Supports sending emails using `SMTP`, `SES`, `azure`, `sendmail`, or `stream` (for debugging purposes).
 
 ## Customizing email content
 
@@ -60,6 +60,12 @@ notifications:
       #   transport: 'ses'
       #   accessKeyId: 'my-access-key
       #   region: 'us-west-2'
+
+      # Azure Communication Service
+      # transportConfig:
+      #   transport: 'azure'
+      #   endpoint: 'https://my-endpoint.communication.azure.com'
+      #   accessKey: 'my-access-key'      Optional: if not provided, Managed Identity will be used
 
       # sendmail
       # transportConfig:

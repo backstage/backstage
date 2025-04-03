@@ -121,7 +121,7 @@ export type BitbucketServerOAuthResult = {
   refreshToken?: string;
 };
 
-// @public
+// @public @deprecated
 export class CatalogIdentityClient {
   constructor(options: {
     catalogApi: CatalogApi;
@@ -176,7 +176,7 @@ export type CloudflareAccessResult = {
 // @public @deprecated (undocumented)
 export type CookieConfigurer = CookieConfigurer_2;
 
-// @public
+// @public @deprecated
 export function createAuthProviderIntegration<
   TCreateOptions extends unknown[],
   TResolvers extends {
@@ -190,13 +190,13 @@ export function createAuthProviderIntegration<
   resolvers: Readonly<string extends keyof TResolvers ? never : TResolvers>;
 }>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function createOriginFilter(config: Config): (origin: string) => boolean;
 
 // @public @deprecated (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// @public
+// @public @deprecated
 export const defaultAuthProviderFactories: {
   [providerId: string]: AuthProviderFactory_2;
 };
@@ -216,10 +216,10 @@ export type GcpIapResult = GcpIapResult_2;
 // @public @deprecated
 export type GcpIapTokenInfo = GcpIapTokenInfo_2;
 
-// @public
+// @public @deprecated
 export function getDefaultOwnershipEntityRefs(entity: Entity): string[];
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type GithubOAuthResult = {
   fullProfile: Profile;
   params: {
@@ -361,23 +361,21 @@ export const prepareBackstageIdentityResponse: typeof prepareBackstageIdentityRe
 // @public @deprecated (undocumented)
 export type ProfileInfo = ProfileInfo_2;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type ProviderFactories = {
   [s: string]: AuthProviderFactory_2;
 };
 
-// @public
+// @public @deprecated
 export const providers: Readonly<{
   atlassian: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<OAuthResult> | undefined;
-            signIn?:
-              | {
-                  resolver: SignInResolver_2<OAuthResult>;
-                }
-              | undefined;
+            authHandler?: AuthHandler<OAuthResult>;
+            signIn?: {
+              resolver: SignInResolver_2<OAuthResult>;
+            };
           }
         | undefined,
     ) => AuthProviderFactory_2;
@@ -387,12 +385,10 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<OAuthResult> | undefined;
-            signIn?:
-              | {
-                  resolver: SignInResolver_2<OAuthResult>;
-                }
-              | undefined;
+            authHandler?: AuthHandler<OAuthResult>;
+            signIn?: {
+              resolver: SignInResolver_2<OAuthResult>;
+            };
           }
         | undefined,
     ) => AuthProviderFactory_2;
@@ -402,7 +398,7 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<AwsAlbResult_2> | undefined;
+            authHandler?: AuthHandler<AwsAlbResult_2>;
             signIn: {
               resolver: SignInResolver_2<AwsAlbResult_2>;
             };
@@ -415,12 +411,10 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<OAuthResult> | undefined;
-            signIn?:
-              | {
-                  resolver: SignInResolver_2<OAuthResult>;
-                }
-              | undefined;
+            authHandler?: AuthHandler<OAuthResult>;
+            signIn?: {
+              resolver: SignInResolver_2<OAuthResult>;
+            };
           }
         | undefined,
     ) => AuthProviderFactory_2;
@@ -433,12 +427,10 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<BitbucketServerOAuthResult> | undefined;
-            signIn?:
-              | {
-                  resolver: SignInResolver_2<BitbucketServerOAuthResult>;
-                }
-              | undefined;
+            authHandler?: AuthHandler<BitbucketServerOAuthResult>;
+            signIn?: {
+              resolver: SignInResolver_2<BitbucketServerOAuthResult>;
+            };
           }
         | undefined,
     ) => AuthProviderFactory_2;
@@ -448,19 +440,19 @@ export const providers: Readonly<{
   }>;
   cfAccess: Readonly<{
     create: (options: {
-      authHandler?: AuthHandler<CloudflareAccessResult> | undefined;
+      authHandler?: AuthHandler<CloudflareAccessResult>;
       signIn: {
         resolver: SignInResolver_2<CloudflareAccessResult>;
       };
-      cache?: CacheService | undefined;
+      cache?: CacheService;
     }) => AuthProviderFactory_2;
     resolvers: Readonly<cloudflareAccessSignInResolvers>;
   }>;
   gcpIap: Readonly<{
     create: (options: {
-      authHandler?: AuthHandler<GcpIapResult_2> | undefined;
+      authHandler?: AuthHandler<GcpIapResult>;
       signIn: {
-        resolver: SignInResolver_2<GcpIapResult_2>;
+        resolver: SignInResolver_2<GcpIapResult>;
       };
     }) => AuthProviderFactory_2;
     resolvers: never;
@@ -469,13 +461,11 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<GithubOAuthResult> | undefined;
-            signIn?:
-              | {
-                  resolver: SignInResolver_2<GithubOAuthResult>;
-                }
-              | undefined;
-            stateEncoder?: StateEncoder | undefined;
+            authHandler?: AuthHandler<GithubOAuthResult>;
+            signIn?: {
+              resolver: SignInResolver_2<GithubOAuthResult>;
+            };
+            stateEncoder?: StateEncoder;
           }
         | undefined,
     ) => AuthProviderFactory_2;
@@ -487,12 +477,10 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<OAuthResult> | undefined;
-            signIn?:
-              | {
-                  resolver: SignInResolver_2<OAuthResult>;
-                }
-              | undefined;
+            authHandler?: AuthHandler<OAuthResult>;
+            signIn?: {
+              resolver: SignInResolver_2<OAuthResult>;
+            };
           }
         | undefined,
     ) => AuthProviderFactory_2;
@@ -502,12 +490,10 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<OAuthResult> | undefined;
-            signIn?:
-              | {
-                  resolver: SignInResolver_2<OAuthResult>;
-                }
-              | undefined;
+            authHandler?: AuthHandler<OAuthResult>;
+            signIn?: {
+              resolver: SignInResolver_2<OAuthResult>;
+            };
           }
         | undefined,
     ) => AuthProviderFactory_2;
@@ -521,12 +507,10 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<OAuthResult> | undefined;
-            signIn?:
-              | {
-                  resolver: SignInResolver_2<OAuthResult>;
-                }
-              | undefined;
+            authHandler?: AuthHandler<OAuthResult>;
+            signIn?: {
+              resolver: SignInResolver_2<OAuthResult>;
+            };
           }
         | undefined,
     ) => AuthProviderFactory_2;
@@ -541,12 +525,10 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<OAuthResult> | undefined;
-            signIn?:
-              | {
-                  resolver: SignInResolver_2<OAuthResult>;
-                }
-              | undefined;
+            authHandler?: AuthHandler<OAuthResult>;
+            signIn?: {
+              resolver: SignInResolver_2<OAuthResult>;
+            };
           }
         | undefined,
     ) => AuthProviderFactory_2;
@@ -554,7 +536,7 @@ export const providers: Readonly<{
   }>;
   oauth2Proxy: Readonly<{
     create: (options: {
-      authHandler?: AuthHandler<OAuth2ProxyResult_2> | undefined;
+      authHandler?: AuthHandler<OAuth2ProxyResult_2>;
       signIn: {
         resolver: SignInResolver_2<OAuth2ProxyResult_2>;
       };
@@ -565,12 +547,10 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<OidcAuthResult_2> | undefined;
-            signIn?:
-              | {
-                  resolver: SignInResolver_2<OidcAuthResult_2>;
-                }
-              | undefined;
+            authHandler?: AuthHandler<OidcAuthResult_2>;
+            signIn?: {
+              resolver: SignInResolver_2<OidcAuthResult_2>;
+            };
           }
         | undefined,
     ) => AuthProviderFactory_2;
@@ -583,12 +563,10 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<OAuthResult> | undefined;
-            signIn?:
-              | {
-                  resolver: SignInResolver_2<OAuthResult>;
-                }
-              | undefined;
+            authHandler?: AuthHandler<OAuthResult>;
+            signIn?: {
+              resolver: SignInResolver_2<OAuthResult>;
+            };
           }
         | undefined,
     ) => AuthProviderFactory_2;
@@ -602,12 +580,10 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<OAuthResult> | undefined;
-            signIn?:
-              | {
-                  resolver: SignInResolver_2<OAuthResult>;
-                }
-              | undefined;
+            authHandler?: AuthHandler<OAuthResult>;
+            signIn?: {
+              resolver: SignInResolver_2<OAuthResult>;
+            };
           }
         | undefined,
     ) => AuthProviderFactory_2;
@@ -617,12 +593,10 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<SamlAuthResult> | undefined;
-            signIn?:
-              | {
-                  resolver: SignInResolver_2<SamlAuthResult>;
-                }
-              | undefined;
+            authHandler?: AuthHandler<SamlAuthResult>;
+            signIn?: {
+              resolver: SignInResolver_2<SamlAuthResult>;
+            };
           }
         | undefined,
     ) => AuthProviderFactory_2;
@@ -634,7 +608,7 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<AzureEasyAuthResult> | undefined;
+            authHandler?: AuthHandler<AzureEasyAuthResult>;
             signIn: {
               resolver: SignInResolver_2<AzureEasyAuthResult>;
             };
@@ -676,7 +650,7 @@ export interface RouterOptions {
   tokenManager?: TokenManager;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type SamlAuthResult = {
   fullProfile: any;
 };

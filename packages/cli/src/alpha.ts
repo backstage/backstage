@@ -24,6 +24,11 @@ import chalk from 'chalk';
     ),
   );
   const initializer = new CliInitializer();
+  initializer.add(import('./modules/info/alpha'));
   initializer.add(import('./modules/config/alpha'));
+  initializer.add(import('./modules/build/alpha'));
+  initializer.add(import('./modules/migrate/alpha'));
+  initializer.add(import('./modules/test/alpha'));
+  initializer.add(import('./modules/lint/alpha'));
   await initializer.run();
 })();

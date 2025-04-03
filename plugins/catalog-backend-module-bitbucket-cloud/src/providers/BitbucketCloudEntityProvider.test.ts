@@ -543,30 +543,10 @@ describe('BitbucketCloudEntityProvider', () => {
 
     server.use(
       rest.get(
-        `https://api.bitbucket.org/2.0/workspaces/test-ws/projects`,
-        (_req, res, ctx) => {
-          const response = {
-            values: [
-              {
-                key: 'TEST',
-              },
-              {
-                key: 'TEST2',
-              },
-            ],
-          };
-          return res(ctx.json(response));
-        },
-      ),
-      rest.get(
         `https://api.bitbucket.org/2.0/workspaces/test-ws/search/code`,
         (req, res, ctx) => {
           const query = req.url.searchParams.get('search_query');
-          if (
-            !query ||
-            !query.includes('repo:test-repo') ||
-            !query.includes('project:TEST')
-          ) {
+          if (!query || !query.includes('repo:test-repo')) {
             return res(ctx.json({ values: [] }));
           }
 
@@ -639,10 +619,6 @@ describe('BitbucketCloudEntityProvider', () => {
     await events.publish(repoPushEventParams);
 
     const addedEntities = [
-      {
-        entity: addedModule,
-        locationKey: 'bitbucketCloud-provider:myProvider',
-      },
       {
         entity: addedModule,
         locationKey: 'bitbucketCloud-provider:myProvider',

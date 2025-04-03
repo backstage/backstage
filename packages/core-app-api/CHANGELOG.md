@@ -1,5 +1,46 @@
 # @backstage/core-app-api
 
+## 1.16.0
+
+### Minor Changes
+
+- 9262001: The default auth injection middleware for the `FetchApi` will now also take configuration under `discovery.endpoints` into consideration when deciding whether to include credentials or not.
+- 12f8e01: The `discovery.endpoints` configuration no longer requires both `internal` and `external` target when using the object form, instead falling back to the default.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.16.0-next.0
+
+### Minor Changes
+
+- 9262001: The default auth injection middleware for the `FetchApi` will now also take configuration under `discovery.endpoints` into consideration when deciding whether to include credentials or not.
+- 12f8e01: The `discovery.endpoints` configuration no longer requires both `internal` and `external` target when using the object form, instead falling back to the default.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.15.5
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/version-bridge@1.0.11
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+
 ## 1.15.5-next.0
 
 ### Patch Changes

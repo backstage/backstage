@@ -12,12 +12,37 @@ app:
     # - apis.plugin.graphiql.browse.gitlab: true
     # - graphiql-endpoint:graphiql/gitlab: true
 
+    # Pages
+    - page:catalog/entity:
+        config:
+          groups:
+            # placing a tab at the beginning
+            - overview:
+                title: Overview
+            # example disabling a default group
+            # - development: false
+            # example overriding a default group title
+            - documentation:
+                title: Docs
+            - deployment:
+                title: Deployments
+            # example adding a new group
+            - custom:
+                title: Custom
+
     # Entity page cards
-    - entity-card:catalog/about
+    - entity-card:catalog/about:
+        config:
+          type: info
     - entity-card:catalog/labels
     - entity-card:catalog/links:
         config:
-          filter: kind:component has:links
+          filter:
+            kind: component
+            metadata.links:
+              $exists: true
+          # filter: kind:component has:links
+          type: info
     # - entity-card:linguist/languages
     - entity-card:catalog-graph/relations:
         config:
@@ -27,23 +52,32 @@ app:
     - entity-card:api-docs/provided-apis
     - entity-card:api-docs/providing-components
     - entity-card:api-docs/consuming-components
-
-    # - entity-card:azure-devops/readme
-    # Entity page content
-    - entity-content:api-docs/definition
-    - entity-content:api-docs/apis
-    - entity-content:techdocs
-    # - entity-content:azure-devops/pipelines
-    # - entity-content:azure-devops/pull-requests
-    # - entity-content:azure-devops/git-tags
-
     # Org Plugin
     - entity-card:org/group-profile
     - entity-card:org/members-list
     - entity-card:org/ownership
     - entity-card:org/user-profile
+    # - entity-card:azure-devops/readme
 
-    - entity-content:kubernetes/kubernetes
+    # Entity page contents
+    - entity-content:catalog/overview:
+        config:
+          group: overview
+    - entity-content:api-docs/definition
+    - entity-content:api-docs/apis:
+        config:
+          # example associating with a default group
+          group: documentation
+    - entity-content:techdocs:
+        config:
+          group: documentation
+    - entity-content:kubernetes/kubernetes:
+        config:
+          # example disassociating with a default group
+          group: false
+    # - entity-content:azure-devops/pipelines
+    # - entity-content:azure-devops/pull-requests
+    # - entity-content:azure-devops/git-tags
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({

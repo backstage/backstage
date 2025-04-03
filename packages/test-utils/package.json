@@ -1,6 +1,6 @@
 {
   "name": "@backstage/test-utils",
-  "version": "1.7.5-next.0",
+  "version": "1.7.6",
   "description": "Utilities to test Backstage plugins and apps.",
   "backstage": {
     "role": "web-library"
@@ -74,16 +74,12 @@
   },
   "peerDependencies": {
     "@testing-library/react": "^16.0.0",
-    "@types/jest": "*",
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",
     "react-router-dom": "^6.3.0"
   },
   "peerDependenciesMeta": {
-    "@types/jest": {
-      "optional": true
-    },
     "@types/react": {
       "optional": true
     }

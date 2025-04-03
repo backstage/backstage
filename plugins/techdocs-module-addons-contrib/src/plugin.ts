@@ -22,7 +22,7 @@ import {
 import { ExpandableNavigationAddon } from './ExpandableNavigation';
 import { ReportIssueAddon, ReportIssueProps } from './ReportIssue';
 import { TextSizeAddon } from './TextSize';
-import { LightBoxAddon } from './LigthBox';
+import { LightBoxAddon } from './LightBox';
 
 /**
  * The TechDocs addons contrib plugin

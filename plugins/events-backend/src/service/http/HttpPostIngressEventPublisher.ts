@@ -16,35 +16,18 @@
 
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { CustomErrorBase } from '@backstage/errors';
 import {
   EventsService,
+  HttpBodyParser,
   HttpPostIngressOptions,
   RequestValidator,
 } from '@backstage/plugin-events-node';
 import contentType from 'content-type';
 import express from 'express';
 import Router from 'express-promise-router';
+import { defaultHttpBodyParsers } from './body-parser';
 import { RequestValidationContextImpl } from './validation';
-
-class UnsupportedCharsetError extends CustomErrorBase {
-  name = 'UnsupportedCharsetError' as const;
-  statusCode = 415 as const;
-
-  constructor(charset: string) {
-    super(`Unsupported charset: ${charset}`);
-  }
-}
-
-class UnsupportedMediaTypeError extends CustomErrorBase {
-  name = 'UnsupportedMediaTypeError' as const;
-  statusCode = 415 as const;
-
-  constructor(mediaType?: string) {
-    super(`Unsupported media type: ${mediaType ?? 'unknown'}`);
-  }
-}
-
+import { UnsupportedMediaTypeError } from './errors';
 /**
  * Publishes events received from their origin (e.g., webhook events from an SCM system)
  * via HTTP POST endpoint and passes the request body as event payload to the registered subscribers.
@@ -57,6 +40,7 @@ export class HttpPostIngressEventPublisher {
     config: Config;
     events: EventsService;
     ingresses?: { [topic: string]: Omit<HttpPostIngressOptions, 'topic'> };
+    bodyParsers?: { [contentType: string]: HttpBodyParser };
     logger: LoggerService;
   }): HttpPostIngressEventPublisher {
     const topics =
@@ -71,7 +55,14 @@ export class HttpPostIngressEventPublisher {
       }
     });
 
-    return new HttpPostIngressEventPublisher(env.events, env.logger, ingresses);
+    const parsers = { ...defaultHttpBodyParsers, ...env.bodyParsers };
+
+    return new HttpPostIngressEventPublisher(
+      env.events,
+      env.logger,
+      ingresses,
+      parsers,
+    );
   }
 
   private constructor(
@@ -79,6 +70,9 @@ export class HttpPostIngressEventPublisher {
     private readonly logger: LoggerService,
     private readonly ingresses: {
       [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
+    },
+    private readonly bodyParsers: {
+      [contentType: string]: HttpBodyParser;
     },
   ) {}
 
@@ -90,7 +84,7 @@ export class HttpPostIngressEventPublisher {
     [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
   }): express.Router {
     const router = Router();
-    router.use(express.raw({ type: '*/*' }));
+    router.use(express.raw({ type: '*/*', limit: '5mb' }));
 
     Object.keys(ingresses).forEach(topic =>
       this.addRouteForTopic(router, topic, ingresses[topic].validator),
@@ -108,32 +102,18 @@ export class HttpPostIngressEventPublisher {
     const logger = this.logger;
 
     router.post(path, async (request, response) => {
-      const requestBody = request.body;
-      if (!Buffer.isBuffer(requestBody)) {
-        throw new Error(
-          `Failed to retrieve raw body from incoming event for topic ${topic}; not a buffer: ${typeof requestBody}`,
-        );
+      const requestContentType = contentType.parse(request);
+      const bodyParser = this.bodyParsers[requestContentType.type ?? ''];
+
+      if (!bodyParser) {
+        throw new UnsupportedMediaTypeError(requestContentType.type);
       }
 
-      const bodyBuffer: Buffer = requestBody;
-      const parsedContentType = contentType.parse(request);
-      if (
-        !parsedContentType.type ||
-        parsedContentType.type !== 'application/json'
-      ) {
-        throw new UnsupportedMediaTypeError(parsedContentType.type);
-      }
-
-      const encoding = parsedContentType.parameters.charset ?? 'utf-8';
-      if (!Buffer.isEncoding(encoding)) {
-        throw new UnsupportedCharsetError(encoding);
-      }
-
-      const bodyString = bodyBuffer.toString(encoding);
-      const bodyParsed =
-        parsedContentType.type === 'application/json'
-          ? JSON.parse(bodyString)
-          : bodyString;
+      const { bodyParsed, bodyBuffer, encoding } = await bodyParser(
+        request,
+        requestContentType,
+        topic,
+      );
 
       if (validator) {
         const requestDetails = {

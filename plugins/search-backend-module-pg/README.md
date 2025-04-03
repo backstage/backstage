@@ -17,7 +17,7 @@ for details on how to setup Postgres based search for your Backstage instance.
 
 ## Optional Configuration
 
-The following is an example of the optional configuration that can be applied when using Postgres as the search backend. Currently this is mostly for just the highlight feature:
+The following is an example of the optional configuration that can be applied when using Postgres as the search backend.
 
 ```yaml
 search:
@@ -30,6 +30,20 @@ search:
       highlightAll: false # If true the whole document will be used as the headline, ignoring the preceding three parameters. The default is false.
       maxFragments: 0 # Maximum number of text fragments to display. The default value of zero selects a non-fragment-based headline generation method. A value greater than zero selects fragment-based headline generation (see the linked documentation above for more details).
       fragmentDelimiter: ' ... ' # Delimiter string used to concatenate fragments. Defaults to " ... ".
+    normalization: 0 # Ranking functions use an integer bit mask to control document length impact on rank. The default value is 0
+```
+
+The Normalization option controls several behaviors. It is a bit mask. [Ranking Search Results](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-RANKING) has more details.
+
+Example with bit mask specifying more behaviours:
+
+- 2 divides the rank by the document length
+- 4 divides the rank by the mean harmonic distance between extents
+
+```yaml
+search:
+  pg:
+    normalization: 2 | 4
 ```
 
 **Note:** the highlight search term feature uses `ts_headline` which has been known to potentially impact performance. You only need this minimal config to disable it should you have issues:

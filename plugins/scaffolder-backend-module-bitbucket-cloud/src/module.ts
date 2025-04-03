@@ -21,6 +21,7 @@ import {
   scaffolderActionsExtensionPoint,
   scaffolderAutocompleteExtensionPoint,
 } from '@backstage/plugin-scaffolder-node/alpha';
+import { createBitbucketCloudBranchRestrictionAction } from './actions/bitbucketCloudBranchRestriction';
 import {
   createBitbucketPipelinesRunAction,
   createPublishBitbucketCloudAction,
@@ -52,6 +53,9 @@ export const bitbucketCloudModule = createBackendModule({
           createPublishBitbucketCloudPullRequestAction({
             integrations,
             config,
+          }),
+          createBitbucketCloudBranchRestrictionAction({
+            integrations,
           }),
         );
 

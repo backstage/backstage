@@ -53,7 +53,11 @@ export const createFilesystemDeleteAction = () => {
       }
 
       for (const file of ctx.input.files) {
-        const safeFilepath = resolveSafeChildPath(ctx.workspacePath, file);
+        // globby cannot handle backslash file separators
+        const safeFilepath = resolveSafeChildPath(
+          ctx.workspacePath,
+          file,
+        ).replace(/\\/g, '/');
         const resolvedPaths = await globby(safeFilepath, {
           cwd: ctx.workspacePath,
           absolute: true,

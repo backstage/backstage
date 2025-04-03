@@ -1,5 +1,11 @@
 # @backstage/version-bridge
 
+## 1.0.11
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+
 ## 1.0.11-next.0
 
 ### Patch Changes

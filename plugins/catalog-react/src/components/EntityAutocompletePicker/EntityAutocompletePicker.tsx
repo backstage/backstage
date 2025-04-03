@@ -29,6 +29,7 @@ import {
 import { EntityFilter } from '../../types';
 import { reduceBackendCatalogFilters } from '../../utils/filters';
 import { CatalogAutocomplete } from '../CatalogAutocomplete';
+import { isEqual } from 'lodash';
 
 /** @public */
 export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
@@ -52,6 +53,7 @@ export type EntityAutocompletePickerProps<
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
   filtersForAvailableValues?: Array<keyof T>;
+  hidden?: boolean;
 };
 
 /** @public */
@@ -82,6 +84,7 @@ export function EntityAutocompletePicker<
     InputProps,
     initialSelectedOptions = [],
     filtersForAvailableValues = ['kind'],
+    hidden,
   } = props;
   const classes = useStyles();
 
@@ -114,11 +117,13 @@ export function EntityAutocompletePicker<
     [queryParameter],
   );
 
+  const filteredOptions = (filters[name] as unknown as { values: string[] })
+    ?.values;
+
   const [selectedOptions, setSelectedOptions] = useState(
     queryParameters.length
       ? queryParameters
-      : (filters[name] as unknown as { values: string[] })?.values ??
-          initialSelectedOptions,
+      : filteredOptions ?? initialSelectedOptions,
   );
 
   // Set selected options on query parameter updates; this happens at initial page load and from
@@ -132,11 +137,25 @@ export function EntityAutocompletePicker<
   const availableOptions = Object.keys(availableValues ?? {});
   const shouldAddFilter = selectedOptions.length && availableOptions.length;
 
+  // Update filter value when selectedOptions change
   useEffect(() => {
     updateFilters({
       [name]: shouldAddFilter ? new Filter(selectedOptions) : undefined,
     } as Partial<T>);
   }, [name, shouldAddFilter, selectedOptions, Filter, updateFilters]);
+
+  // Update selected options when filter value changes
+  useEffect(() => {
+    if (!shouldAddFilter) return;
+
+    const newSelectedOptions = filteredOptions ?? [];
+
+    // Check value is actually different (not just a different reference) to prevent selectedOptions <> filters loop
+    if (!isEqual(newSelectedOptions, selectedOptions)) {
+      setSelectedOptions(newSelectedOptions);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Don't re-set filter value when selectedOptions changes
+  }, [filteredOptions]);
 
   const filter = filters[name];
   if (
@@ -146,7 +165,7 @@ export function EntityAutocompletePicker<
     return null;
   }
 
-  return (
+  return hidden ? null : (
     <Box className={classes.root} pb={1} pt={1}>
       <CatalogAutocomplete<string, true>
         multiple

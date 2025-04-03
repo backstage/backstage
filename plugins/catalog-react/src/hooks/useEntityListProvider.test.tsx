@@ -23,7 +23,7 @@ import {
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
-import { TestApiProvider, mockApis } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
 import React, { PropsWithChildren } from 'react';
@@ -593,6 +593,7 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: { kind: 'component' },
         limit,
+        offset: 0,
         orderFields,
         fullTextFilter: {
           term: '2',
@@ -620,6 +621,7 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
       filter: { kind: 'component' },
       limit,
+      offset: 0,
       orderFields,
     });
   });
@@ -746,6 +748,7 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
       expect(mockCatalogApi.queryEntities).toHaveBeenNthCalledWith(2, {
         filter: { kind: 'api', 'spec.type': ['service'] },
         limit,
+        offset: 0,
         orderFields,
       });
     });

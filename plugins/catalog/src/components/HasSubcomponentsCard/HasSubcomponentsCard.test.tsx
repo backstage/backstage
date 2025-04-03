@@ -117,4 +117,53 @@ describe('<HasSubcomponentsCard />', () => {
       expect(screen.getByText(/target-name/i)).toBeInTheDocument();
     });
   });
+
+  it('allows overriding the entity kind', async () => {
+    const entity: Entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'my-component',
+        namespace: 'my-namespace',
+      },
+      relations: [
+        {
+          targetRef: 'custom:my-namespace/target-name',
+          type: RELATION_HAS_PART,
+        },
+      ],
+    };
+
+    catalogApi.getEntitiesByRefs.mockResolvedValue({
+      items: [
+        {
+          apiVersion: 'v1',
+          kind: 'Custom',
+          metadata: {
+            name: 'target-name',
+            namespace: 'my-namespace',
+          },
+          spec: {},
+        },
+      ],
+    });
+
+    await renderInTestApp(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <HasSubcomponentsCard kind="Custom" />
+        </EntityProvider>
+      </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Has subcomponents')).toBeInTheDocument();
+      expect(screen.getByText(/target-name/i)).toBeInTheDocument();
+    });
+  });
 });

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/theme",
-  "version": "0.6.4-next.0",
+  "version": "0.6.4",
   "description": "material-ui theme for use with Backstage.",
   "backstage": {
     "role": "web-library"

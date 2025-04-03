@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-api-docs-module-protoc-gen-doc",
-  "version": "0.1.9-next.0",
+  "version": "0.1.9",
   "description": "Additional functionalities for the api-docs plugin that renders the output of the protoc-gen-doc",
   "backstage": {
     "role": "frontend-plugin-module",

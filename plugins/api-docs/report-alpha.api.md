@@ -7,7 +7,10 @@ import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
+import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
+import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
@@ -25,6 +28,421 @@ const _default: FrontendPlugin<
     registerApi: ExternalRouteRef<undefined>;
   },
   {
+    'api:api-docs/config': ExtensionDefinition<{
+      kind: 'api';
+      name: 'config';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
+    }>;
+    'entity-card:api-docs/consumed-apis': ExtensionDefinition<{
+      kind: 'entity-card';
+      name: 'consumed-apis';
+      config: {
+        filter: EntityPredicate | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:api-docs/consuming-components': ExtensionDefinition<{
+      kind: 'entity-card';
+      name: 'consuming-components';
+      config: {
+        filter: EntityPredicate | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:api-docs/definition': ExtensionDefinition<{
+      kind: 'entity-card';
+      name: 'definition';
+      config: {
+        filter: EntityPredicate | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:api-docs/has-apis': ExtensionDefinition<{
+      kind: 'entity-card';
+      name: 'has-apis';
+      config: {
+        filter: EntityPredicate | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:api-docs/provided-apis': ExtensionDefinition<{
+      kind: 'entity-card';
+      name: 'provided-apis';
+      config: {
+        filter: EntityPredicate | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:api-docs/providing-components': ExtensionDefinition<{
+      kind: 'entity-card';
+      name: 'providing-components';
+      config: {
+        filter: EntityPredicate | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-content:api-docs/apis': ExtensionDefinition<{
+      kind: 'entity-content';
+      name: 'apis';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+        filter: EntityPredicate | undefined;
+        group: string | false | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+        title?: string | undefined;
+        path?: string | undefined;
+        group?: string | false | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-content-title',
+            {}
+          >
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-content-group',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        defaultPath: string;
+        defaultTitle: string;
+        defaultGroup?: keyof defaultEntityContentGroups | (string & {});
+        routeRef?: RouteRef;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+      };
+    }>;
+    'entity-content:api-docs/definition': ExtensionDefinition<{
+      kind: 'entity-content';
+      name: 'definition';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+        filter: EntityPredicate | undefined;
+        group: string | false | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+        title?: string | undefined;
+        path?: string | undefined;
+        group?: string | false | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            React_2.JSX.Element,
+            'core.reactElement',
+            {}
+          >
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-content-title',
+            {}
+          >
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-content-group',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        defaultPath: string;
+        defaultTitle: string;
+        defaultGroup?: keyof defaultEntityContentGroups | (string & {});
+        routeRef?: RouteRef;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+      };
+    }>;
     'nav-item:api-docs': ExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
@@ -44,21 +462,6 @@ const _default: FrontendPlugin<
         title: string;
         icon: IconComponent;
         routeRef: RouteRef<undefined>;
-      };
-    }>;
-    'api:api-docs/config': ExtensionDefinition<{
-      kind: 'api';
-      name: 'config';
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
-      inputs: {};
-      params: {
-        factory: AnyApiFactory;
       };
     }>;
     'page:api-docs': ExtensionDefinition<{
@@ -100,327 +503,7 @@ const _default: FrontendPlugin<
       params: {
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-      };
-    }>;
-    'entity-card:api-docs/has-apis': ExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'has-apis';
-      config: {
-        filter: string | undefined;
-      };
-      configInput: {
-        filter?: string | undefined;
-      };
-      output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ConfigurableExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
-      };
-    }>;
-    'entity-card:api-docs/definition': ExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'definition';
-      config: {
-        filter: string | undefined;
-      };
-      configInput: {
-        filter?: string | undefined;
-      };
-      output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ConfigurableExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
-      };
-    }>;
-    'entity-card:api-docs/consumed-apis': ExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'consumed-apis';
-      config: {
-        filter: string | undefined;
-      };
-      configInput: {
-        filter?: string | undefined;
-      };
-      output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ConfigurableExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
-      };
-    }>;
-    'entity-card:api-docs/provided-apis': ExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'provided-apis';
-      config: {
-        filter: string | undefined;
-      };
-      configInput: {
-        filter?: string | undefined;
-      };
-      output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ConfigurableExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
-      };
-    }>;
-    'entity-card:api-docs/consuming-components': ExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'consuming-components';
-      config: {
-        filter: string | undefined;
-      };
-      configInput: {
-        filter?: string | undefined;
-      };
-      output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ConfigurableExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
-      };
-    }>;
-    'entity-card:api-docs/providing-components': ExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'providing-components';
-      config: {
-        filter: string | undefined;
-      };
-      configInput: {
-        filter?: string | undefined;
-      };
-      output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ConfigurableExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
-      };
-    }>;
-    'entity-content:api-docs/definition': ExtensionDefinition<{
-      kind: 'entity-content';
-      name: 'definition';
-      config: {
-        path: string | undefined;
-        title: string | undefined;
-        filter: string | undefined;
-      };
-      configInput: {
-        filter?: string | undefined;
-        title?: string | undefined;
-        path?: string | undefined;
-      };
-      output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
-            'core.routing.ref',
-            {
-              optional: true;
-            }
-          >
-        | ConfigurableExtensionDataRef<
-            string,
-            'catalog.entity-content-title',
-            {}
-          >
-        | ConfigurableExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ConfigurableExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        defaultPath: string;
-        defaultTitle: string;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
-      };
-    }>;
-    'entity-content:api-docs/apis': ExtensionDefinition<{
-      kind: 'entity-content';
-      name: 'apis';
-      config: {
-        path: string | undefined;
-        title: string | undefined;
-        filter: string | undefined;
-      };
-      configInput: {
-        filter?: string | undefined;
-        title?: string | undefined;
-        path?: string | undefined;
-      };
-      output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
-            'core.routing.ref',
-            {
-              optional: true;
-            }
-          >
-        | ConfigurableExtensionDataRef<
-            string,
-            'catalog.entity-content-title',
-            {}
-          >
-        | ConfigurableExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ConfigurableExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        defaultPath: string;
-        defaultTitle: string;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
+        routeRef?: RouteRef;
       };
     }>;
   }

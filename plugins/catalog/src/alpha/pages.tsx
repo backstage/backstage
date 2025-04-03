@@ -28,10 +28,15 @@ import {
   AsyncEntityProvider,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import {
+  EntityHeaderBlueprint,
+  EntityContentBlueprint,
+  defaultEntityContentGroups,
+} from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
+import { EntityHeader } from './components/EntityHeader';
 
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
@@ -55,6 +60,10 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
 export const catalogEntityPage = PageBlueprint.makeWithOverrides({
   name: 'entity',
   inputs: {
+    header: createExtensionInput(
+      [EntityHeaderBlueprint.dataRefs.element.optional()],
+      { singleton: true, optional: true },
+    ),
     contents: createExtensionInput([
       coreExtensionData.reactElement,
       coreExtensionData.routePath,
@@ -62,21 +71,75 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       EntityContentBlueprint.dataRefs.title,
       EntityContentBlueprint.dataRefs.filterFunction.optional(),
       EntityContentBlueprint.dataRefs.filterExpression.optional(),
+      EntityContentBlueprint.dataRefs.group.optional(),
     ]),
   },
-  factory(originalFactory, { inputs }) {
+  config: {
+    schema: {
+      groups: z =>
+        z
+          .array(z.record(z.string(), z.object({ title: z.string() })))
+          .optional(),
+    },
+  },
+  factory(originalFactory, { config, inputs }) {
     return originalFactory({
       defaultPath: '/catalog/:namespace/:kind/:name',
       routeRef: convertLegacyRouteRef(entityRouteRef),
       loader: async () => {
-        const { EntityLayout } = await import('../components/EntityLayout');
+        const { EntityLayout } = await import('./components/EntityLayout');
+
+        type Groups = Record<
+          string,
+          { title: string; items: Array<(typeof inputs.contents)[0]> }
+        >;
+
+        const header = inputs.header?.get(
+          EntityHeaderBlueprint.dataRefs.element,
+        ) ?? <EntityHeader />;
+
+        let groups = Object.entries(defaultEntityContentGroups).reduce<Groups>(
+          (rest, group) => {
+            const [groupId, groupValue] = group;
+            return {
+              ...rest,
+              [groupId]: { title: groupValue, items: [] },
+            };
+          },
+          {},
+        );
+
+        // config groups override default groups
+        if (config.groups) {
+          groups = config.groups.reduce<Groups>((rest, group) => {
+            const [groupId, groupValue] = Object.entries(group)[0];
+            return {
+              ...rest,
+              [groupId]: { title: groupValue.title, items: [] },
+            };
+          }, {});
+        }
+
+        for (const output of inputs.contents) {
+          const itemId = output.node.spec.id;
+          const itemTitle = output.get(EntityContentBlueprint.dataRefs.title);
+          const itemGroup = output.get(EntityContentBlueprint.dataRefs.group);
+          const group = itemGroup && groups[itemGroup];
+          if (!group) {
+            groups[itemId] = { title: itemTitle, items: [output] };
+            continue;
+          }
+          group.items.push(output);
+        }
+
         const Component = () => {
           return (
             <AsyncEntityProvider {...useEntityFromUrl()}>
-              <EntityLayout>
-                {inputs.contents.map(output => {
-                  return (
+              <EntityLayout header={header}>
+                {Object.values(groups).flatMap(({ title, items }) =>
+                  items.map(output => (
                     <EntityLayout.Route
+                      group={title}
                       key={output.get(coreExtensionData.routePath)}
                       path={output.get(coreExtensionData.routePath)}
                       title={output.get(EntityContentBlueprint.dataRefs.title)}
@@ -91,12 +154,13 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
                     >
                       {output.get(coreExtensionData.reactElement)}
                     </EntityLayout.Route>
-                  );
-                })}
+                  )),
+                )}
               </EntityLayout>
             </AsyncEntityProvider>
           );
         };
+
         return compatWrapper(<Component />);
       },
     });

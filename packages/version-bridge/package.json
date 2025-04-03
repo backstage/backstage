@@ -1,6 +1,6 @@
 {
   "name": "@backstage/version-bridge",
-  "version": "1.0.11-next.0",
+  "version": "1.0.11",
   "description": "Utilities used by @backstage packages to support multiple concurrent versions",
   "backstage": {
     "role": "web-library"

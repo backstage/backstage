@@ -37,6 +37,7 @@ import {
  * Auth provider integration for generic OpenID Connect auth
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export const oidc = createAuthProviderIntegration({
   create(options?: {

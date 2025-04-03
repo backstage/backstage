@@ -116,7 +116,7 @@ export interface Config {
              * The prefix of the target that this matches on, e.g.
              * "https://graph.microsoft.com/v1.0", with no trailing slash.
              */
-            target: string;
+            target?: string;
             /**
              * The auth authority used.
              *
@@ -231,7 +231,7 @@ export interface Config {
                * The prefix of the target that this matches on, e.g.
                * "https://graph.microsoft.com/v1.0", with no trailing slash.
                */
-              target: string;
+              target?: string;
               /**
                * The auth authority used.
                *

@@ -379,14 +379,19 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       // TODO(vinzscam): this is currently causing issues at page reload
       // where the state is not kept. Unfortunately we need to rethink
       // the way filters work in order to fix this.
-      setCursor(undefined);
+      if (paginationMode === 'cursor') {
+        setCursor(undefined);
+      } else if (paginationMode === 'offset') {
+        // Same thing with offset
+        setOffset(0);
+      }
       setRequestedFilters(prevFilters => {
         const newFilters =
           typeof update === 'function' ? update(prevFilters) : update;
         return { ...prevFilters, ...newFilters };
       });
     },
-    [],
+    [paginationMode],
   );
 
   const pageInfo = useMemo(() => {

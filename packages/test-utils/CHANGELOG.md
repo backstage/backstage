@@ -1,5 +1,47 @@
 # @backstage/test-utils
 
+## 1.7.6
+
+### Patch Changes
+
+- 37c6510: Moved `@types/jest` to `devDependencies`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/core-app-api@1.16.0
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/config@1.3.2
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.7.6-next.0
+
+### Patch Changes
+
+- 37c6510: Moved `@types/jest` to `devDependencies`.
+- Updated dependencies
+  - @backstage/core-app-api@1.16.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.31
+
+## 1.7.5
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-permission-react@0.4.31
+  - @backstage/core-app-api@1.15.5
+  - @backstage/theme@0.6.4
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
 ## 1.7.5-next.0
 
 ### Patch Changes

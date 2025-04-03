@@ -363,4 +363,77 @@ describe('performStitching', () => {
       );
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    'replaces existing stitch ticket %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+
+      await knex<DbRefreshStateRow>('refresh_state').insert([
+        {
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: JSON.stringify({}),
+          processed_entity: JSON.stringify({
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: {
+              name: 'n',
+              namespace: 'ns',
+            },
+            spec: {
+              k: 'v',
+            },
+          }),
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        },
+      ]);
+      await knex<DbFinalEntitiesRow>('final_entities').insert([
+        {
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          hash: '',
+          stitch_ticket: 'old-ticket',
+          final_entity: JSON.stringify({}),
+        },
+      ]);
+
+      await expect(
+        knex<DbFinalEntitiesRow>('final_entities').select([
+          'entity_id',
+          'stitch_ticket',
+        ]),
+      ).resolves.toEqual([
+        {
+          entity_id: 'my-id',
+          stitch_ticket: expect.stringContaining('old-ticket'),
+        },
+      ]);
+
+      const stitchLogger = mockServices.logger.mock();
+      await expect(
+        performStitching({
+          knex,
+          logger: stitchLogger,
+          strategy: { mode: 'immediate' },
+          entityRef: 'k:ns/n',
+        }),
+      ).resolves.toBe('changed');
+
+      await expect(
+        knex<DbFinalEntitiesRow>('final_entities').select([
+          'entity_id',
+          'stitch_ticket',
+        ]),
+      ).resolves.toEqual([
+        {
+          entity_id: 'my-id',
+          stitch_ticket: expect.not.stringContaining('old-ticket'),
+        },
+      ]);
+    },
+  );
 });

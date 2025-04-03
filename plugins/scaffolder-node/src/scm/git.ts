@@ -15,14 +15,16 @@
  */
 
 import git, {
-  ProgressCallback,
-  MergeResult,
-  ReadCommitResult,
   AuthCallback,
+  MergeResult,
+  ProgressCallback,
+  ReadCommitResult,
 } from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import fs from 'fs-extra';
 import { LoggerService } from '@backstage/backend-plugin-api';
+// @ts-ignore
+import { pgp } from '@isomorphic-git/pgp-plugin';
 
 function isAuthCallbackOptions(
   options: StaticAuthOptions | AuthCallbackOptions,
@@ -137,12 +139,21 @@ export class Git {
     message: string;
     author: { name: string; email: string };
     committer: { name: string; email: string };
+    signingKey?: string;
   }): Promise<string> {
-    const { dir, message, author, committer } = options;
+    const { dir, message, author, committer, signingKey } = options;
     this.config.logger?.info(
       `Committing file to repo {dir=${dir},message=${message}}`,
     );
-    return git.commit({ fs, dir, message, author, committer });
+    return git.commit({
+      fs,
+      dir,
+      message,
+      author,
+      committer,
+      signingKey,
+      onSign: signingKey ? pgp.sign : undefined,
+    });
   }
 
   /** https://isomorphic-git.org/docs/en/clone */
@@ -241,8 +252,9 @@ export class Git {
     ours?: string;
     author: { name: string; email: string };
     committer: { name: string; email: string };
+    signingKey?: string;
   }): Promise<MergeResult> {
-    const { dir, theirs, ours, author, committer } = options;
+    const { dir, theirs, ours, author, committer, signingKey } = options;
     this.config.logger?.info(
       `Merging branch '${theirs}' into '${ours}' for repository {dir=${dir}}`,
     );
@@ -255,6 +267,8 @@ export class Git {
       theirs,
       author,
       committer,
+      signingKey,
+      onSign: signingKey ? pgp.sign : undefined,
     });
   }
 

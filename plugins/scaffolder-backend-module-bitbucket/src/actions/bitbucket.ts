@@ -21,8 +21,8 @@ import {
 } from '@backstage/integration';
 import {
   createTemplateAction,
-  initRepoAndPush,
   getRepoSourceDirectory,
+  initRepoAndPush,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
@@ -220,6 +220,7 @@ export function createPublishBitbucketAction(options: {
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    signCommit?: boolean;
   }>({
     id: 'publish:bitbucket',
     description:
@@ -280,6 +281,11 @@ export function createPublishBitbucketAction(options: {
             type: 'string',
             description: `Sets the default author email for the commit.`,
           },
+          signCommit: {
+            title: 'Sign commit',
+            type: 'boolean',
+            description: 'Sign commit with configured PGP private key',
+          },
         },
       },
       output: {
@@ -313,6 +319,7 @@ export function createPublishBitbucketAction(options: {
         gitCommitMessage = 'initial commit',
         gitAuthorName,
         gitAuthorEmail,
+        signCommit,
       } = ctx.input;
 
       const { workspace, project, repo, host } = parseRepoUrl(
@@ -361,15 +368,19 @@ export function createPublishBitbucketAction(options: {
           ? createBitbucketCloudRepository
           : createBitbucketServerRepository;
 
-      const { remoteUrl, repoContentsUrl } = await createMethod({
-        authorization,
-        workspace: workspace || '',
-        project,
-        repo,
-        repoVisibility,
-        mainBranch: defaultBranch,
-        description,
-        apiBaseUrl,
+      const { remoteUrl, repoContentsUrl } = await ctx.checkpoint({
+        key: `create.repo.${host}.${repo}`,
+        fn: async () =>
+          createMethod({
+            authorization,
+            workspace: workspace || '',
+            project,
+            repo,
+            repoVisibility,
+            mainBranch: defaultBranch,
+            description,
+            apiBaseUrl,
+          }),
       });
 
       const gitAuthorInfo = {
@@ -380,6 +391,14 @@ export function createPublishBitbucketAction(options: {
           ? gitAuthorEmail
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
+      const signingKey =
+        integrationConfig.config.commitSigningKey ??
+        config.getOptionalString('scaffolder.defaultCommitSigningKey');
+      if (signCommit && !signingKey) {
+        throw new Error(
+          'Signing commits is enabled but no signing key is provided in the configuration',
+        );
+      }
 
       let auth;
 
@@ -399,23 +418,33 @@ export function createPublishBitbucketAction(options: {
         };
       }
 
-      const commitResult = await initRepoAndPush({
-        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
-        remoteUrl,
-        auth,
-        defaultBranch,
-        logger: ctx.logger,
-        commitMessage: gitCommitMessage
-          ? gitCommitMessage
-          : config.getOptionalString('scaffolder.defaultCommitMessage'),
-        gitAuthorInfo,
+      const commitHash = await ctx.checkpoint({
+        key: `init.repo.and.push${host}.${repo}`,
+        fn: async () => {
+          const commitResult = await initRepoAndPush({
+            dir: getRepoSourceDirectory(
+              ctx.workspacePath,
+              ctx.input.sourcePath,
+            ),
+            remoteUrl,
+            auth,
+            defaultBranch,
+            logger: ctx.logger,
+            commitMessage: gitCommitMessage
+              ? gitCommitMessage
+              : config.getOptionalString('scaffolder.defaultCommitMessage'),
+            gitAuthorInfo,
+            signingKey: signCommit ? signingKey : undefined,
+          });
+          return commitResult?.commitHash;
+        },
       });
 
       if (enableLFS && host !== 'bitbucket.org') {
         await performEnableLFS({ authorization, host, project, repo });
       }
 
-      ctx.output('commitHash', commitResult?.commitHash);
+      ctx.output('commitHash', commitHash);
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },

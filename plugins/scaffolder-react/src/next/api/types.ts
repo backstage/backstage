@@ -16,7 +16,10 @@
 
 import { FormFieldExtensionData } from '../blueprints';
 
-/** @alpha */
+/**
+ * @alpha
+ * @deprecated This API is no longer necessary and will be removed
+ */
 export interface ScaffolderFormFieldsApi {
   getFormFields(): Promise<FormFieldExtensionData[]>;
 }
