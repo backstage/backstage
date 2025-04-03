@@ -9309,9 +9309,21 @@
 }
 
 .canon-Container {
-  max-width: 75rem;
+  max-width: min(120rem, 100%);
   margin: 0 auto;
   padding: 0 1rem;
+}
+
+@media (width >= 640px) {
+  .canon-Container {
+    padding: 0 2rem;
+  }
+}
+
+@media (width >= 1024px) {
+  .canon-Container {
+    padding: 0 3rem;
+  }
 }
 
 .canon-Icon {
