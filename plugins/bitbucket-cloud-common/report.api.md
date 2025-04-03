@@ -106,8 +106,6 @@ export namespace Models {
     // (undocumented)
     links?: AccountLinks;
     // (undocumented)
-    username?: string;
-    // (undocumented)
     uuid?: string;
   }
   export interface AccountLinks {
@@ -124,6 +122,8 @@ export namespace Models {
   export interface BaseCommit extends ModelObject {
     // (undocumented)
     author?: Author;
+    // (undocumented)
+    committer?: Committer;
     // (undocumented)
     date?: string;
     // (undocumented)
@@ -163,6 +163,9 @@ export namespace Models {
     readonly MergeCommit: 'merge_commit';
     readonly Squash: 'squash';
     readonly FastForward: 'fast_forward';
+    readonly SquashFastForward: 'squash_fast_forward';
+    readonly RebaseFastForward: 'rebase_fast_forward';
+    readonly RebaseMerge: 'rebase_merge';
   };
   export type BranchMergeStrategiesEnum =
     (typeof BranchMergeStrategiesEnum)[keyof typeof BranchMergeStrategiesEnum];
@@ -195,6 +198,11 @@ export namespace Models {
   // (undocumented)
   export type CommitFileAttributesEnum =
     (typeof CommitFileAttributesEnum)[keyof typeof CommitFileAttributesEnum];
+  export interface Committer extends ModelObject {
+    raw?: string;
+    // (undocumented)
+    user?: Account;
+  }
   export interface Link {
     // (undocumented)
     href?: string;
@@ -416,6 +424,8 @@ export namespace Models {
   export interface Workspace extends ModelObject {
     // (undocumented)
     created_on?: string;
+    forking_mode?: WorkspaceForkingModeEnum;
+    is_privacy_enforced?: boolean;
     is_private?: boolean;
     // (undocumented)
     links?: WorkspaceLinks;
@@ -425,6 +435,12 @@ export namespace Models {
     updated_on?: string;
     uuid?: string;
   }
+  const WorkspaceForkingModeEnum: {
+    readonly AllowForks: 'allow_forks';
+    readonly InternalOnly: 'internal_only';
+  };
+  export type WorkspaceForkingModeEnum =
+    (typeof WorkspaceForkingModeEnum)[keyof typeof WorkspaceForkingModeEnum];
   // (undocumented)
   export interface WorkspaceLinks {
     // (undocumented)
