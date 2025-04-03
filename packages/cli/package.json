@@ -62,7 +62,7 @@
     "@octokit/graphql": "^5.0.0",
     "@octokit/graphql-schema": "^13.7.0",
     "@octokit/oauth-app": "^4.2.0",
-    "@octokit/request": "^6.0.0",
+    "@octokit/request": "^8.0.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "@rollup/plugin-commonjs": "^26.0.0",
     "@rollup/plugin-json": "^6.0.0",
