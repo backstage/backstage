@@ -1,5 +1,25 @@
 # @backstage/cli
 
+## 0.31.1
+
+### Patch Changes
+
+- 0faff9f: Update the `to do` plugin template to stop using the deprecated catalog alpha service reference.
+  If you start seeing the `should create TODO item with catalog information` test failing, you have two options to fix this:
+  Update the test to mock the legacy alpha catalog service, or migrate the `TODO` plugin backend to use the new catalog service reference.
+  We recommend the second option, see [this](https://github.com/backstage/backstage/pull/29450/files/267115d0436009443ca68ac84e7dcc646c9c938d#diff-47e01aeb12dd55fab9e697f810be21a8d08d39c37df1b078f6d0894f9bad5a1b) pull request for an example of how to do the migration.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.0
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.2
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
 ## 0.31.0
 
 ### Minor Changes
