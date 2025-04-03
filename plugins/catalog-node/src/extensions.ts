@@ -59,7 +59,7 @@ export interface CatalogProcessingExtensionPoint {
    * processing entities before they are persisted in the catalog.
    *
    * This function also can replace a Default processor if the provided processor
-   * matches the process name.
+   * matches the processor name.
    *
    * @param processors - One or more processors
    */
