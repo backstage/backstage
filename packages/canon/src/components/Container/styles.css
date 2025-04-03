@@ -1,5 +1,17 @@
 .canon-Container {
-  max-width: 75rem;
+  max-width: 120rem;
   padding: 0 1rem;
   margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .canon-Container {
+    padding: 0 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .canon-Container {
+    padding: 0 3rem;
+  }
 }
