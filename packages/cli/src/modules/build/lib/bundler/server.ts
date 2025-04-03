@@ -195,8 +195,10 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
           ? {
               type: 'https',
               options: {
-                cert: fullConfig.getString('app.https.certificate.cert'),
-                key: fullConfig.getString('app.https.certificate.key'),
+                cert: fullConfig.getOptionalString(
+                  'app.https.certificate.cert',
+                ),
+                key: fullConfig.getOptionalString('app.https.certificate.key'),
               },
             }
           : {},
