@@ -13,38 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export interface TablePaginationProps
+
+/** @public */
+export interface DataTablePaginationProps
   extends React.HTMLAttributes<HTMLDivElement> {
   /**
    * The current page index.
    */
-  pageIndex: number;
+  pageIndex?: number;
   /**
    * The current page size.
    */
-  pageSize: number;
+  pageSize?: number;
   /**
    * The total number of rows.
    */
-  totalRows: number;
+  totalRows?: number;
   /**
    * The function to call when the previous button is clicked.
    */
-  onClickPrevious: () => void;
+  onClickPrevious?: () => void;
   /**
    * The function to call when the next button is clicked.
    */
-  onClickNext: () => void;
+  onClickNext?: () => void;
   /**
    * Whether the previous button is disabled.
    */
-  canPrevious: boolean;
+  canPrevious?: boolean;
   /**
    * Whether the next button is disabled.
    */
-  canNext: boolean;
+  canNext?: boolean;
   /**
    * The function to call when the page size is changed.
    */
-  setPageSize: (pageSize: number) => void;
+  setPageSize?: (pageSize: number) => void;
 }

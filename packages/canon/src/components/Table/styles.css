@@ -2,13 +2,6 @@
   position: relative;
   overflow: auto;
   width: 100%;
-  background-color: var(--canon-bg-surface-1);
-  border-radius: var(--canon-radius-2);
-  padding-bottom: var(--canon-space-0_5);
-  padding-top: var(--canon-space-0_5);
-  font-size: var(--canon-font-size-3);
-  font-family: var(--canon-font-regular);
-  font-weight: var(--canon-font-weight-regular);
 
   table {
     width: 100%;
@@ -58,14 +51,4 @@
   background-color: var(--canon-bg);
   box-shadow: inset 0px 2px 0 0 var(--canon-bg-surface-1),
     inset 0px -2px 0 0 var(--canon-bg-surface-1);
-}
-
-.canon-TablePagination {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--canon-space-3);
-  background-color: var(--canon-bg-surface-1);
-  border-top: 1px solid var(--canon-border);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 
-export const DataTable = () => {
-  return <div>DataTable</div>;
-};
+import * as React from 'react';
+import clsx from 'clsx';
+import { DataTableRootProps } from './types';
+
+/** @public */
+const DataTableRoot = React.forwardRef<HTMLDivElement, DataTableRootProps>(
+  ({ className, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={clsx('canon-DataTable', className)}
+        {...props}
+      />
+    );
+  },
+);
+DataTableRoot.displayName = 'DataTableRoot';
+
+export { DataTableRoot };

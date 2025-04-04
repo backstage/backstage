@@ -14,13 +14,26 @@
  * limitations under the License.
  */
 
-import { DataTableRoot } from './Root/DataTableRoot';
-import { DataTablePagination } from './Pagination/DataTablePagination';
+import type { Meta, StoryObj } from '@storybook/react';
+import { DataTablePagination } from './DataTablePagination';
 
-export const DataTable = {
-  Root: DataTableRoot,
-  Pagination: DataTablePagination,
+const meta = {
+  title: 'Components/DataTable/Pagination',
+  component: DataTablePagination,
+} satisfies Meta<typeof DataTablePagination>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {
+    pageIndex: 0,
+    pageSize: 10,
+    totalRows: 100,
+    onClickPrevious: () => {},
+    onClickNext: () => {},
+    canPrevious: true,
+    canNext: true,
+    setPageSize: () => {},
+  },
 };
-
-export * from './Root/types';
-export * from './Pagination/types';
