@@ -44,4 +44,6 @@ export interface TextFieldProps
    * The name of the text field
    */
   name: string;
+
+  error?: string | null;
 }
