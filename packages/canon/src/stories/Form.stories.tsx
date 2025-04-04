@@ -34,7 +34,7 @@ type Inputs = {
   city: string;
 };
 
-export const Default: Story = {
+export const Uncontrolled: Story = {
   render: () => {
     const {
       register,
@@ -85,6 +85,104 @@ export const Default: Story = {
                   { value: 'new-york', label: 'New York' },
                 ]}
                 name={field.name}
+                onValueChange={field.onChange}
+                error={errors.city?.message}
+              />
+            );
+          }}
+        />
+        <Button type="submit">Submit</Button>
+      </form>
+    );
+  },
+};
+
+export const Controlled: Story = {
+  render: () => {
+    const {
+      register,
+      handleSubmit,
+      control,
+      formState: { errors },
+    } = useForm<Inputs>();
+
+    const [firstname, setFirstname] = React.useState('John');
+    const [lastname, setLastname] = React.useState('Doe');
+    const [city, setCity] = React.useState('london');
+
+    const onSubmit: SubmitHandler<Inputs> = data => {
+      console.log('data', data);
+      setFirstname(data.firstname);
+      setLastname(data.lastname);
+      setCity(data.city);
+    };
+
+    return (
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+          alignItems: 'flex-start',
+        }}
+      >
+        <Controller
+          name="firstname"
+          control={control}
+          defaultValue={firstname}
+          rules={{ required: 'First name is required' }}
+          render={({ field }) => {
+            return (
+              <TextField
+                label="First Name"
+                name={field.name}
+                value={firstname}
+                onChange={e => {
+                  field.onChange(e);
+                  setFirstname(e.target.value);
+                }}
+                error={errors.firstname?.message}
+              />
+            );
+          }}
+        />
+        <Controller
+          name="lastname"
+          control={control}
+          defaultValue={lastname}
+          rules={{ required: 'Last name is required' }}
+          render={({ field }) => {
+            return (
+              <TextField
+                label="Last Name"
+                name={field.name}
+                value={lastname}
+                onChange={e => {
+                  field.onChange(e);
+                  setLastname(e.target.value);
+                }}
+                error={errors.lastname?.message}
+              />
+            );
+          }}
+        />
+        <Controller
+          name="city"
+          control={control}
+          defaultValue={city}
+          rules={{ required: 'New city is required' }}
+          render={({ field }) => {
+            return (
+              <Select
+                label="New City"
+                options={[
+                  { value: 'london', label: 'London' },
+                  { value: 'paris', label: 'Paris' },
+                  { value: 'new-york', label: 'New York' },
+                ]}
+                name={field.name}
+                value={city}
                 onValueChange={field.onChange}
                 error={errors.city?.message}
               />
