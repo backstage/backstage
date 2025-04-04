@@ -16,19 +16,20 @@
 
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { TextField } from '../components/TextField';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { TextField } from '../components/TextField';
+import { Button } from '../components/Button';
 
 const meta = {
-  title: 'Global/Form',
+  title: 'Examples/Form',
 } satisfies Meta;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 type Inputs = {
-  example: string;
-  exampleRequired: string;
+  firstname: string;
+  lastname: string;
 };
 
 export const Default: Story = {
@@ -36,32 +37,38 @@ export const Default: Story = {
     const {
       register,
       handleSubmit,
-      watch,
       formState: { errors },
     } = useForm<Inputs>();
+
     const onSubmit: SubmitHandler<Inputs> = data => console.log(data);
 
-    console.log(watch('example')); // watch input value by passing the name of it
-
     return (
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {/* register your input into the hook by invoking the "register" function */}
-        <input defaultValue="test" {...register('example')} />
-
-        {/* include validation with required or other standard HTML validation rules */}
-        {/* <input {...register('exampleRequired', { required: true })} /> */}
-
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+          alignItems: 'flex-start',
+        }}
+      >
         <TextField
-          label="Example Required"
-          description="This is an example required field"
-          {...register('exampleRequired', { required: true })}
-          error={errors.exampleRequired?.message}
+          label="First Name"
+          {...register('firstname', {
+            required: 'First name is required',
+            maxLength: { value: 80, message: 'Max length is 80 characters' },
+          })}
+          error={errors.firstname?.message}
         />
-
-        {/* errors will return when field validation fails  */}
-        {errors.exampleRequired && <span>This field is required</span>}
-
-        <input type="submit" />
+        <TextField
+          label="Last Name"
+          {...register('lastname', {
+            required: 'Last name is required',
+            maxLength: { value: 100, message: 'Max length is 100 characters' },
+          })}
+          error={errors.lastname?.message}
+        />
+        <Button type="submit">Submit</Button>
       </form>
     );
   },

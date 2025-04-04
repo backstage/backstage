@@ -404,21 +404,21 @@
   height: 1.5rem;
 }
 
-.canon-FieldRoot {
+.canon-TextField {
   font-family: var(--canon-font-regular);
   flex-direction: column;
   width: 100%;
   display: flex;
 }
 
-.canon-FieldLabel {
+.canon-TextField--label {
   font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-primary);
   margin-bottom: var(--canon-space-1_5);
 }
 
-.canon-FieldDescription {
+.canon-TextField--description {
   font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-secondary);
@@ -426,7 +426,7 @@
   margin: 0;
 }
 
-.canon-FieldError {
+.canon-TextField--error {
   font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-danger);
@@ -434,7 +434,7 @@
   margin: 0;
 }
 
-.canon-Input {
+.canon-TextField--input {
   border-radius: var(--canon-radius-3);
   border: 1px solid var(--canon-border);
   padding: 0 var(--canon-space-4);
@@ -447,36 +447,43 @@
   transition: border-color .2s ease-in-out, outline-color .2s ease-in-out;
 }
 
-.canon-Input::placeholder {
+.canon-TextField--input::placeholder {
   color: var(--canon-fg-secondary);
 }
 
-.canon-Input:hover {
+.canon-TextField--input:hover {
   border-color: var(--canon-border-hover);
 }
 
-.canon-Input:focus-visible {
+.canon-TextField--input:focus-visible {
   outline-color: var(--canon-border-pressed);
   border-color: var(--canon-border-pressed);
   outline-width: 0;
 }
 
-.canon-Input[data-invalid] {
+.canon-TextField--input[data-invalid] {
   border-color: var(--canon-fg-danger);
 }
 
-.canon-Input[data-disabled] {
+.canon-TextField--input[data-disabled] {
   opacity: .5;
   cursor: not-allowed;
   border: 1px solid var(--canon-border-disabled);
 }
 
-.canon-Input--size-small {
+.canon-TextField--input-size-small {
   height: 2rem;
 }
 
-.canon-Input--size-medium {
+.canon-TextField--input-size-medium {
   height: 2.5rem;
+}
+
+.canon-TextField--required {
+  color: var(--canon-fg-secondary);
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  margin-left: var(--canon-space-1);
 }
 
 .canon-MenuPositioner {

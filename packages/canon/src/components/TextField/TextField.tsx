@@ -29,7 +29,6 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       size = 'medium',
       label,
       description,
-      name,
       error,
       required,
       ...rest
@@ -57,7 +56,6 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
         )}
         <Input
           id={inputId}
-          type={name}
           className={clsx('canon-TextField--input', {
             'canon-TextField--input-size-small': responsiveSize === 'small',
             'canon-TextField--input-size-medium': responsiveSize === 'medium',
