@@ -19,6 +19,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Link } from './Link';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
+import { Link as RouterLink, MemoryRouter } from 'react-router-dom';
 
 const meta = {
   title: 'Components/Link',
@@ -72,6 +73,23 @@ export const Responsive: Story = {
       md: 'body',
     },
   },
+};
+
+export const CustomRender: Story = {
+  render: () => {
+    return (
+      <Flex gap="4" direction="column" align="start">
+        <Link render={<RouterLink to="/catalog" />}>Go to Catalog</Link>
+      </Flex>
+    );
+  },
+  decorators: [
+    Story => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 };
 
 export const Playground: Story = {

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { CSSProperties, ReactNode, ComponentType } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import type { Breakpoint } from '../../types';
+import type { useRender } from '@base-ui-components/react/use-render';
 
 /** @public */
-export interface LinkProps
-  extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'to'> {
+export interface LinkProps extends useRender.ComponentProps<'a'> {
   children: ReactNode;
-  to: string;
+  to?: string;
   variant?:
     | 'subtitle'
     | 'body'
@@ -31,10 +31,4 @@ export interface LinkProps
   weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
   className?: string;
   style?: CSSProperties;
-  render?:
-    | ((props: Omit<LinkProps, 'render'>) => ReactNode)
-    | ComponentType<Omit<LinkProps, 'render'>>;
 }
-
-/** @public */
-export type LinkRenderProps = Omit<LinkProps, 'render'>;
