@@ -158,7 +158,10 @@ export function createGithubRepoPushAction(options: {
         repo,
       });
 
-      const client = new Octokit(octokitOptions);
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       const targetRepo = await client.rest.repos.get({ owner, repo });
 
