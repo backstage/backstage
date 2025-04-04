@@ -30,13 +30,6 @@ export const scaffolderTranslationRef = createTranslationRef({
             'There are no actions installed or there was an issue communicating with backend.',
         },
         searchFieldPlaceholder: 'Search for an action',
-        tableCell: {
-          name: 'Name',
-          title: 'Title',
-          description: 'Description',
-          type: 'Type',
-        },
-        noRowsDescription: 'No schema defined',
       },
       action: {
         input: 'Input',
@@ -191,6 +184,15 @@ export const scaffolderTranslationRef = createTranslationRef({
       stepper: {
         emptyText: 'There are no spec parameters in the template to preview.',
       },
+    },
+    renderSchema: {
+      tableCell: {
+        name: 'Name',
+        title: 'Title',
+        description: 'Description',
+        type: 'Type',
+      },
+      undefined: 'No schema defined',
     },
     templateTypePicker: {
       title: 'Categories',
