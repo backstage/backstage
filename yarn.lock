@@ -3800,7 +3800,6 @@ __metadata:
     mini-css-extract-plugin: "npm:^2.9.2"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    react-hook-form: "npm:^7.55.0"
     react-router-dom: "npm:^6.3.0"
     storybook: "npm:^8.6.8"
   peerDependencies:
@@ -41501,7 +41500,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:^7.12.2, react-hook-form@npm:^7.55.0":
+"react-hook-form@npm:^7.12.2":
   version: 7.55.0
   resolution: "react-hook-form@npm:7.55.0"
   peerDependencies:

@@ -1055,7 +1055,7 @@ export { Text_2 as Text };
 
 // @public (undocumented)
 export const TextField: React_2.ForwardRefExoticComponent<
-  TextFieldProps & React_2.RefAttributes<HTMLInputElement>
+  TextFieldProps & React_2.RefAttributes<HTMLDivElement>
 >;
 
 // @public (undocumented)
@@ -1063,6 +1063,7 @@ export interface TextFieldProps
   extends Omit<React.ComponentPropsWithoutRef<'input'>, 'size'> {
   className?: string;
   description?: string;
+  error?: string | null;
   label?: string;
   name: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;

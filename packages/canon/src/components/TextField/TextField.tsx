@@ -32,7 +32,6 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       name,
       error,
       required,
-      disabled,
       ...rest
     } = props;
 
@@ -40,31 +39,18 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
     const responsiveSize = useResponsiveValue(size);
 
     // Generate unique IDs for accessibility
-    const inputId = `textfield-${name}`;
-    const descriptionId = `${inputId}-description`;
-    const errorId = `${inputId}-error`;
+    const inputId = React.useId();
+    const descriptionId = React.useId();
+    const errorId = React.useId();
 
     return (
-      <div
-        className={clsx('canon-TextField', className)}
-        ref={ref}
-        role="group"
-        aria-labelledby={label ? inputId : undefined}
-        aria-describedby={clsx({
-          [descriptionId]: description,
-          [errorId]: error,
-        })}
-      >
+      <div className={clsx('canon-TextField', className)} ref={ref}>
         {label && (
-          <label
-            className="canon-TextField--label"
-            htmlFor={inputId}
-            id={inputId}
-          >
+          <label className="canon-TextField--label" htmlFor={inputId}>
             {label}
             {required && (
               <span aria-hidden="true" className="canon-TextField--required">
-                *
+                (Required)
               </span>
             )}
           </label>
@@ -76,7 +62,13 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
             'canon-TextField--input-size-small': responsiveSize === 'small',
             'canon-TextField--input-size-medium': responsiveSize === 'medium',
           })}
+          aria-labelledby={label ? inputId : undefined}
+          aria-describedby={clsx({
+            [descriptionId]: description,
+            [errorId]: error,
+          })}
           data-invalid={error}
+          required={required}
           {...rest}
         />
         {description && (
