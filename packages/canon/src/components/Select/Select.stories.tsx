@@ -95,24 +95,10 @@ export const DisabledOption: Story = {
   },
 };
 
-export const NoLabel: Story = {
-  args: {
-    ...Preview.args,
-    label: undefined,
-  },
-};
-
 export const NoOptions: Story = {
   args: {
     ...Preview.args,
     options: undefined,
-  },
-};
-
-export const Small: Story = {
-  args: {
-    ...Preview.args,
-    size: 'small',
   },
 };
 
@@ -263,65 +249,9 @@ export const WithManyOptions: Story = {
   },
 };
 
-async function validateFont(value: string) {
-  // Mimic a server response
-  await new Promise(resolve => {
-    setTimeout(resolve, 500);
-  });
-
-  const restrictedFonts = ['comic-sans'];
-  if (restrictedFonts.includes(value)) {
-    return { error: 'This font should not be allowed.' };
-  }
-
-  return { success: true };
-}
-
-export const ShowErrorOnSubmit: Story = {
+export const withErrorAndDescription: Story = {
   args: {
     ...Preview.args,
-    label: 'Font Family (select Comic sans to see error)',
-    options: [...fontOptions, { value: 'comic-sans', label: 'Comic sans' }],
-    required: true,
+    error: 'Invalid font family',
   },
-  decorators: [
-    Story => {
-      const [errors, setErrors] = useState({});
-      const [loading, setLoading] = useState(false);
-
-      return (
-        <Form
-          errors={errors}
-          onClearErrors={setErrors}
-          onSubmit={async event => {
-            event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const fontValue = formData.get('font') as string;
-
-            setLoading(true);
-            const response = await validateFont(fontValue);
-            if (response.error) {
-              setErrors({
-                font: response.error,
-              });
-            } else {
-              setErrors({});
-            }
-
-            setLoading(false);
-          }}
-        >
-          <Story />
-          <Button
-            type="submit"
-            disabled={loading}
-            size="small"
-            style={{ marginTop: '0.75rem' }}
-          >
-            Submit
-          </Button>
-        </Form>
-      );
-    },
-  ],
 };

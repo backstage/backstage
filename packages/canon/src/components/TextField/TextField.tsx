@@ -31,6 +31,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       description,
       error,
       required,
+      style,
       ...rest
     } = props;
 
@@ -43,7 +44,11 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
     const errorId = React.useId();
 
     return (
-      <div className={clsx('canon-TextField', className)} ref={ref}>
+      <div
+        className={clsx('canon-TextField', className)}
+        style={style}
+        ref={ref}
+      >
         {label && (
           <label className="canon-TextField--label" htmlFor={inputId}>
             {label}

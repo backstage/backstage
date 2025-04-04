@@ -16,9 +16,10 @@
 
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { TextField } from '../components/TextField';
 import { Button } from '../components/Button';
+import { Select } from '../components/Select';
 
 const meta = {
   title: 'Examples/Form',
@@ -30,6 +31,7 @@ type Story = StoryObj<typeof meta>;
 type Inputs = {
   firstname: string;
   lastname: string;
+  city: string;
 };
 
 export const Default: Story = {
@@ -37,6 +39,7 @@ export const Default: Story = {
     const {
       register,
       handleSubmit,
+      control,
       formState: { errors },
     } = useForm<Inputs>();
 
@@ -67,6 +70,26 @@ export const Default: Story = {
             maxLength: { value: 100, message: 'Max length is 100 characters' },
           })}
           error={errors.lastname?.message}
+        />
+        <Controller
+          name="city"
+          control={control}
+          rules={{ required: 'New city is required' }}
+          render={({ field }) => {
+            return (
+              <Select
+                label="New City"
+                options={[
+                  { value: 'london', label: 'London' },
+                  { value: 'paris', label: 'Paris' },
+                  { value: 'new-york', label: 'New York' },
+                ]}
+                name={field.name}
+                onValueChange={field.onChange}
+                error={errors.city?.message}
+              />
+            );
+          }}
         />
         <Button type="submit">Submit</Button>
       </form>

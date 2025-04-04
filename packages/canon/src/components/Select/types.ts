@@ -15,6 +15,7 @@
  */
 
 import { Breakpoint } from '@backstage/canon';
+import { ChangeEvent, FocusEvent } from 'react';
 
 /** @public */
 export interface SelectProps {
@@ -91,4 +92,19 @@ export interface SelectProps {
    * The style of the select field
    */
   style?: React.CSSProperties;
+
+  /**
+   * The error message of the select field
+   */
+  error?: string;
+
+  /**
+   * onChange handler for form integration
+   */
+  onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
+
+  /**
+   * onBlur handler for form integration
+   */
+  onBlur?: (event: FocusEvent<HTMLSelectElement>) => void;
 }
