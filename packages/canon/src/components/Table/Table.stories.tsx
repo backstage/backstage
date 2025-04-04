@@ -14,73 +14,34 @@
  * limitations under the License.
  */
 
-const invoices = [
-  {
-    invoice: 'INV001',
-    paymentStatus: 'Paid',
-    totalAmount: '$250.00',
-    paymentMethod: 'Credit Card',
-  },
-  {
-    invoice: 'INV002',
-    paymentStatus: 'Pending',
-    totalAmount: '$150.00',
-    paymentMethod: 'PayPal',
-  },
-  {
-    invoice: 'INV003',
-    paymentStatus: 'Unpaid',
-    totalAmount: '$350.00',
-    paymentMethod: 'Bank Transfer',
-  },
-  {
-    invoice: 'INV004',
-    paymentStatus: 'Paid',
-    totalAmount: '$450.00',
-    paymentMethod: 'Credit Card',
-  },
-  {
-    invoice: 'INV005',
-    paymentStatus: 'Paid',
-    totalAmount: '$550.00',
-    paymentMethod: 'PayPal',
-  },
-  {
-    invoice: 'INV006',
-    paymentStatus: 'Pending',
-    totalAmount: '$200.00',
-    paymentMethod: 'Bank Transfer',
-  },
-  {
-    invoice: 'INV007',
-    paymentStatus: 'Unpaid',
-    totalAmount: '$300.00',
-    paymentMethod: 'Credit Card',
-  },
-];
-
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
+import { Table } from '../Table';
+import { components } from './mocked-data/components';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../Table';
+  // ColumnFiltersState,
+  // SortingState,
+  // VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { columns } from './mocked-data/columns';
+import { TablePagination } from '../TablePagination';
 
 const meta = {
   title: 'Components/Table',
-  component: Table,
+  component: Table.Root,
   subcomponents: {
-    TableBody: TableBody as React.ComponentType<unknown>,
-    TableCell: TableCell as React.ComponentType<unknown>,
-    TableFooter: TableFooter as React.ComponentType<unknown>,
-    TableHead: TableHead as React.ComponentType<unknown>,
-    TableHeader: TableHeader as React.ComponentType<unknown>,
-    TableRow: TableRow as React.ComponentType<unknown>,
+    Body: Table.Body as React.ComponentType<unknown>,
+    Cell: Table.Cell as React.ComponentType<unknown>,
+    Pagination: TablePagination as React.ComponentType<unknown>,
+    Head: Table.Head as React.ComponentType<unknown>,
+    Header: Table.Header as React.ComponentType<unknown>,
+    Row: Table.Row as React.ComponentType<unknown>,
   },
 } satisfies Meta<typeof Table>;
 
@@ -88,32 +49,79 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[100px]">Invoice</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Method</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {invoices.map(invoice => (
-          <TableRow key={invoice.invoice}>
-            <TableCell className="font-medium">{invoice.invoice}</TableCell>
-            <TableCell>{invoice.paymentStatus}</TableCell>
-            <TableCell>{invoice.paymentMethod}</TableCell>
-            <TableCell className="text-right">{invoice.totalAmount}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell colSpan={3}>Total</TableCell>
-          <TableCell className="text-right">$2,500.00</TableCell>
-        </TableRow>
-      </TableFooter>
-    </Table>
-  ),
+  render: () => {
+    const table = useReactTable({
+      data: components,
+      columns,
+      // onSortingChange: setSorting,
+      // onColumnFiltersChange: setColumnFilters,
+      getCoreRowModel: getCoreRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      getFilteredRowModel: getFilteredRowModel(),
+      // onColumnVisibilityChange: setColumnVisibility,
+      // onRowSelectionChange: setRowSelection,
+      // state: {
+      //   sorting,
+      //   columnFilters,
+      //   columnVisibility,
+      //   rowSelection,
+      // },
+    });
+
+    return (
+      <Table.Root>
+        <Table.Header>
+          {table.getHeaderGroups().map(headerGroup => (
+            <Table.Row key={headerGroup.id}>
+              {headerGroup.headers.map(header => {
+                return (
+                  <Table.Head key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </Table.Head>
+                );
+              })}
+            </Table.Row>
+          ))}
+        </Table.Header>
+        <Table.Body>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map(row => (
+              <Table.Row
+                key={row.id}
+                data-state={row.getIsSelected() && 'selected'}
+              >
+                {row.getVisibleCells().map(cell => (
+                  <Table.Cell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </Table.Cell>
+                ))}
+              </Table.Row>
+            ))
+          ) : (
+            <Table.Row>
+              <Table.Cell colSpan={columns.length} className="h-24 text-center">
+                No results.
+              </Table.Cell>
+            </Table.Row>
+          )}
+        </Table.Body>
+        <TablePagination
+          pageIndex={table.getState().pagination.pageIndex}
+          pageSize={table.getState().pagination.pageSize}
+          totalRows={table.getRowCount()}
+          onClickPrevious={() => table.previousPage()}
+          onClickNext={() => table.nextPage()}
+          canPrevious={table.getCanPreviousPage()}
+          canNext={table.getCanNextPage()}
+          setPageSize={pageSize => table.setPageSize(pageSize)}
+        />
+      </Table.Root>
+    );
+  },
 };
