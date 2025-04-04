@@ -9300,6 +9300,34 @@
   height: 1.5rem;
 }
 
+.canon-DataTableRoot {
+  gap: var(--canon-space-3);
+  flex-direction: column;
+  display: flex;
+}
+
+.canon-TablePagination {
+  padding-top: var(--canon-space-3);
+  border-top: 1px solid var(--canon-border);
+  margin-top: var(--canon-space-3);
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+}
+
+.canon-TablePagination--left {
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+}
+
+.canon-TablePagination--right {
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--canon-space-2);
+  display: flex;
+}
+
 .canon-Flex {
   display: flex;
 }
@@ -9369,14 +9397,7 @@
 }
 
 .table {
-  background-color: var(--canon-bg-surface-1);
-  border-radius: var(--canon-radius-2);
   width: 100%;
-  padding-bottom: var(--canon-space-0_5);
-  padding-top: var(--canon-space-0_5);
-  font-size: var(--canon-font-size-3);
-  font-family: var(--canon-font-regular);
-  font-weight: var(--canon-font-weight-regular);
   position: relative;
   overflow: auto;
 

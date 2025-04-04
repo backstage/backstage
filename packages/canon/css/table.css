@@ -1,12 +1,5 @@
 .table {
-  background-color: var(--canon-bg-surface-1);
-  border-radius: var(--canon-radius-2);
   width: 100%;
-  padding-bottom: var(--canon-space-0_5);
-  padding-top: var(--canon-space-0_5);
-  font-size: var(--canon-font-size-3);
-  font-family: var(--canon-font-regular);
-  font-weight: var(--canon-font-weight-regular);
   position: relative;
   overflow: auto;
 

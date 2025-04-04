@@ -1,0 +1,21 @@
+.canon-TablePagination {
+  padding-top: var(--canon-space-3);
+  border-top: 1px solid var(--canon-border);
+  margin-top: var(--canon-space-3);
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+}
+
+.canon-TablePagination--left {
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+}
+
+.canon-TablePagination--right {
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--canon-space-2);
+  display: flex;
+}

@@ -17,20 +17,51 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Table } from '../Table';
-import { components } from './mocked-data/components';
-import {
-  // ColumnFiltersState,
-  // SortingState,
-  // VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { columns } from './mocked-data/columns';
-import { TablePagination } from '../TablePagination';
+
+const invoices = [
+  {
+    invoice: 'INV001',
+    paymentStatus: 'Paid',
+    totalAmount: '$250.00',
+    paymentMethod: 'Credit Card',
+  },
+  {
+    invoice: 'INV002',
+    paymentStatus: 'Pending',
+    totalAmount: '$150.00',
+    paymentMethod: 'PayPal',
+  },
+  {
+    invoice: 'INV003',
+    paymentStatus: 'Unpaid',
+    totalAmount: '$350.00',
+    paymentMethod: 'Bank Transfer',
+  },
+  {
+    invoice: 'INV004',
+    paymentStatus: 'Paid',
+    totalAmount: '$450.00',
+    paymentMethod: 'Credit Card',
+  },
+  {
+    invoice: 'INV005',
+    paymentStatus: 'Paid',
+    totalAmount: '$550.00',
+    paymentMethod: 'PayPal',
+  },
+  {
+    invoice: 'INV006',
+    paymentStatus: 'Pending',
+    totalAmount: '$200.00',
+    paymentMethod: 'Bank Transfer',
+  },
+  {
+    invoice: 'INV007',
+    paymentStatus: 'Unpaid',
+    totalAmount: '$300.00',
+    paymentMethod: 'Credit Card',
+  },
+];
 
 const meta = {
   title: 'Components/Table',
@@ -38,7 +69,6 @@ const meta = {
   subcomponents: {
     Body: Table.Body as React.ComponentType<unknown>,
     Cell: Table.Cell as React.ComponentType<unknown>,
-    Pagination: TablePagination as React.ComponentType<unknown>,
     Head: Table.Head as React.ComponentType<unknown>,
     Header: Table.Header as React.ComponentType<unknown>,
     Row: Table.Row as React.ComponentType<unknown>,
@@ -49,87 +79,28 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => {
-    const table = useReactTable({
-      data: components,
-      columns,
-      // onSortingChange: setSorting,
-      // onColumnFiltersChange: setColumnFilters,
-      getCoreRowModel: getCoreRowModel(),
-      getPaginationRowModel: getPaginationRowModel(),
-      getSortedRowModel: getSortedRowModel(),
-      getFilteredRowModel: getFilteredRowModel(),
-      // onColumnVisibilityChange: setColumnVisibility,
-      // onRowSelectionChange: setRowSelection,
-      // state: {
-      //   sorting,
-      //   columnFilters,
-      //   columnVisibility,
-      //   rowSelection,
-      // },
-    });
-
-    return (
-      <>
-        <Table.Root>
-          <Table.Header>
-            {table.getHeaderGroups().map(headerGroup => (
-              <Table.Row key={headerGroup.id}>
-                {headerGroup.headers.map(header => {
-                  return (
-                    <Table.Head key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </Table.Head>
-                  );
-                })}
-              </Table.Row>
-            ))}
-          </Table.Header>
-          <Table.Body>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map(row => (
-                <Table.Row
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map(cell => (
-                    <Table.Cell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </Table.Cell>
-                  ))}
-                </Table.Row>
-              ))
-            ) : (
-              <Table.Row>
-                <Table.Cell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </Table.Cell>
-              </Table.Row>
-            )}
-          </Table.Body>
-        </Table.Root>
-        <TablePagination
-          pageIndex={table.getState().pagination.pageIndex}
-          pageSize={table.getState().pagination.pageSize}
-          totalRows={table.getRowCount()}
-          onClickPrevious={() => table.previousPage()}
-          onClickNext={() => table.nextPage()}
-          canPrevious={table.getCanPreviousPage()}
-          canNext={table.getCanNextPage()}
-          setPageSize={pageSize => table.setPageSize(pageSize)}
-        />
-      </>
-    );
-  },
+  render: () => (
+    <Table.Root>
+      <Table.Header>
+        <Table.Row>
+          <Table.Head className="w-[100px]">Invoice</Table.Head>
+          <Table.Head>Status</Table.Head>
+          <Table.Head>Method</Table.Head>
+          <Table.Head className="text-right">Amount</Table.Head>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        {invoices.map(invoice => (
+          <Table.Row key={invoice.invoice}>
+            <Table.Cell className="font-medium">{invoice.invoice}</Table.Cell>
+            <Table.Cell>{invoice.paymentStatus}</Table.Cell>
+            <Table.Cell>{invoice.paymentMethod}</Table.Cell>
+            <Table.Cell className="text-right">
+              {invoice.totalAmount}
+            </Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table.Root>
+  ),
 };

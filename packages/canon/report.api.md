@@ -213,6 +213,33 @@ export interface ContainerProps {
   style?: React.CSSProperties;
 }
 
+// @public
+export const DataTable: {
+  Root: ForwardRefExoticComponent<
+    DataTableRootProps & RefAttributes<HTMLDivElement>
+  >;
+  Pagination: ForwardRefExoticComponent<
+    DataTablePaginationProps & RefAttributes<HTMLDivElement>
+  >;
+};
+
+// @public (undocumented)
+export interface DataTablePaginationProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  canNext?: boolean;
+  canPrevious?: boolean;
+  onClickNext?: () => void;
+  onClickPrevious?: () => void;
+  pageIndex?: number;
+  pageSize?: number;
+  setPageSize?: (pageSize: number) => void;
+  totalRows?: number;
+}
+
+// @public (undocumented)
+export interface DataTableRootProps
+  extends React.HTMLAttributes<HTMLDivElement> {}
+
 // @public (undocumented)
 export type Display = 'none' | 'flex' | 'block' | 'inline';
 
@@ -1005,47 +1032,37 @@ export type StylingPropDef = {
   parseValue?: (value: string) => string | undefined;
 };
 
-// @public (undocumented)
-export const Table: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableElement> &
-    React_3.RefAttributes<HTMLTableElement>
->;
-
-// @public (undocumented)
-export const TableBody: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableSectionElement> &
-    React_3.RefAttributes<HTMLTableSectionElement>
->;
-
-// @public (undocumented)
-export const TableCell: React_3.ForwardRefExoticComponent<
-  React_3.TdHTMLAttributes<HTMLTableCellElement> &
-    React_3.RefAttributes<HTMLTableCellElement>
->;
-
-// @public (undocumented)
-export const TableFooter: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableSectionElement> &
-    React_3.RefAttributes<HTMLTableSectionElement>
->;
-
-// @public (undocumented)
-export const TableHead: React_3.ForwardRefExoticComponent<
-  React_3.ThHTMLAttributes<HTMLTableCellElement> &
-    React_3.RefAttributes<HTMLTableCellElement>
->;
-
-// @public (undocumented)
-export const TableHeader: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableSectionElement> &
-    React_3.RefAttributes<HTMLTableSectionElement>
->;
-
-// @public (undocumented)
-export const TableRow: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableRowElement> &
-    React_3.RefAttributes<HTMLTableRowElement>
->;
+// @public
+export const Table: {
+  Root: React_3.ForwardRefExoticComponent<
+    React_3.HTMLAttributes<HTMLTableElement> &
+      React_3.RefAttributes<HTMLTableElement>
+  >;
+  Header: React_3.ForwardRefExoticComponent<
+    React_3.HTMLAttributes<HTMLTableSectionElement> &
+      React_3.RefAttributes<HTMLTableSectionElement>
+  >;
+  Body: React_3.ForwardRefExoticComponent<
+    React_3.HTMLAttributes<HTMLTableSectionElement> &
+      React_3.RefAttributes<HTMLTableSectionElement>
+  >;
+  Head: React_3.ForwardRefExoticComponent<
+    React_3.ThHTMLAttributes<HTMLTableCellElement> &
+      React_3.RefAttributes<HTMLTableCellElement>
+  >;
+  Row: React_3.ForwardRefExoticComponent<
+    React_3.HTMLAttributes<HTMLTableRowElement> &
+      React_3.RefAttributes<HTMLTableRowElement>
+  >;
+  Cell: React_3.ForwardRefExoticComponent<
+    React_3.TdHTMLAttributes<HTMLTableCellElement> &
+      React_3.RefAttributes<HTMLTableCellElement>
+  >;
+  Caption: React_3.ForwardRefExoticComponent<
+    React_3.HTMLAttributes<HTMLTableCaptionElement> &
+      React_3.RefAttributes<HTMLTableCaptionElement>
+  >;
+};
 
 // @public (undocumented)
 const Text_2: React_2.ForwardRefExoticComponent<

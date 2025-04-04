@@ -17,6 +17,10 @@
 import { DataTableRoot } from './Root/DataTableRoot';
 import { DataTablePagination } from './Pagination/DataTablePagination';
 
+/**
+ * DataTable component for displaying tabular data with pagination
+ * @public
+ */
 export const DataTable = {
   Root: DataTableRoot,
   Pagination: DataTablePagination,

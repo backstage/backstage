@@ -15,9 +15,9 @@
  */
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { Component } from './components';
-import { Checkbox } from '../../Checkbox';
-import { Text } from '../../Text';
+import { Component } from './mocked-components';
+import { Checkbox } from '../Checkbox';
+import { Text } from '../Text';
 
 export const columns: ColumnDef<Component>[] = [
   {
