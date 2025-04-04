@@ -1,5 +1,15 @@
 # @backstage/backend-app-api
 
+## 1.2.1
+
+### Patch Changes
+
+- f422984: Remove unused dependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 1.2.1-next.2
 
 ### Patch Changes

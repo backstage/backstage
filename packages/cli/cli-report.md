@@ -200,10 +200,10 @@ Commands:
   start [options]
   build [options]
   test
-  lint [options] [directories...]
   clean
   prepack
   postpack
+  lint [options] [directories...]
   help [command]
 ```
 
@@ -272,7 +272,7 @@ Options:
   --check
   --inspect [host]
   --inspect-brk [host]
-  --require <path>
+  --require <path...>
   --link <path>
   -h, --help
 ```
@@ -452,6 +452,7 @@ Options:
   --since <ref>
   --successCache
   --successCacheDir <path>
+  --max-warnings <number>
   --fix
   -h, --help
 ```

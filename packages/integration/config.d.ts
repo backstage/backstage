@@ -239,7 +239,7 @@ export interface Config {
          * The secret used for webhooks
          * @visibility secret
          */
-        webhookSecret: string;
+        webhookSecret?: string;
         /**
          * The client ID to use
          */

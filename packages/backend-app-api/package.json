@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-app-api",
-  "version": "1.2.1-next.2",
+  "version": "1.2.1",
   "description": "Core API used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^"
   },
   "devDependencies": {

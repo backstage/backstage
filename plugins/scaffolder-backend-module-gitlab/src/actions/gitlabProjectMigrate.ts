@@ -139,10 +139,16 @@ export const createGitlabProjectMigrateAction = (options: {
       };
 
       try {
-        const { id: migrationId } = await api.Migrations.create(
-          sourceConfig,
-          migrationEntity,
-        );
+        const migrationId = await ctx.checkpoint({
+          key: `create.migration.${sourceUrl}`,
+          fn: async () => {
+            const migrationStatus = await api.Migrations.create(
+              sourceConfig,
+              migrationEntity,
+            );
+            return migrationStatus.id;
+          },
+        });
 
         ctx.output(
           'importedRepoUrl',

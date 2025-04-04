@@ -239,6 +239,7 @@ export class ScmAuth implements ScmAuthApi {
       'pullrequest',
       'snippet',
       'issue',
+      'project',
     ];
     const repoWriteScopes = options?.scopeMapping?.repoWrite ?? [
       'pullrequest:write',

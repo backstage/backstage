@@ -1,5 +1,48 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.6.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/backend-defaults@0.9.0-next.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-events-node@0.4.9
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- a568cda: add filter for repos by membership and topics
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-events-node@0.4.9
+
+## 0.6.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.2
+  - @backstage/backend-defaults@0.8.2
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1
+
 ## 0.6.4-next.2
 
 ### Patch Changes

@@ -15,7 +15,7 @@
  */
 
 import { mockServices, TestCaches } from '@backstage/backend-test-utils';
-import KeyvRedis from '@keyv/redis';
+import KeyvRedis, { createCluster } from '@keyv/redis';
 import KeyvMemcache from '@keyv/memcache';
 import { CacheManager } from './CacheManager';
 
@@ -30,6 +30,7 @@ jest.mock('@keyv/redis', () => {
     ...Actual,
     __esModule: true,
     default: jest.fn((...args: any[]) => new DefaultConstructor(...args)),
+    createCluster: jest.fn(),
   };
 });
 jest.mock('@keyv/memcache', () => {
@@ -192,5 +193,130 @@ describe('CacheManager integration', () => {
         }),
       ),
     ).toThrow(/Invalid duration 'hello' in config/);
+  });
+});
+
+describe('CacheManager store options', () => {
+  it('uses default options when no store-specific config exists', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+      keyPrefixSeparator: ':',
+    });
+  });
+
+  it('defaults to non-clustered mode when cluster config is missing root nodes', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                cluster: {},
+              },
+            },
+          },
+        },
+      }),
+    );
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+      keyPrefixSeparator: ':',
+    });
+  });
+
+  it('uses cluster config when present', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                cluster: {
+                  rootNodes: [{ url: 'redis://localhost:6379' }],
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+    manager.forPlugin('p1');
+
+    expect(createCluster).toHaveBeenCalledWith({
+      rootNodes: [{ url: 'redis://localhost:6379' }],
+      defaults: undefined,
+    });
+  });
+
+  it('respects client config for non-clustered mode', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  keyPrefixSeparator: '!',
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+      keyPrefixSeparator: '!',
+    });
+  });
+
+  it('accepts client config for clustered mode', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  keyPrefixSeparator: '!',
+                },
+                cluster: {
+                  rootNodes: [{ url: 'redis://localhost:6379' }],
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(expect.anything(), {
+      keyPrefixSeparator: '!',
+    });
   });
 });

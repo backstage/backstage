@@ -347,6 +347,7 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'templateCategoryPicker.title': 'Categories';
     readonly 'templateCard.noDescription': 'No description';
     readonly 'templateCard.chooseButtonText': 'Choose';
+    readonly 'cardHeader.detailBtnTitle': 'Show template entity details';
     readonly 'templateOutputs.title': 'Text Output';
   }
 >;
