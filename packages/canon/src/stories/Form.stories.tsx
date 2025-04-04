@@ -100,7 +100,6 @@ export const Uncontrolled: Story = {
 export const Controlled: Story = {
   render: () => {
     const {
-      register,
       handleSubmit,
       control,
       formState: { errors },
