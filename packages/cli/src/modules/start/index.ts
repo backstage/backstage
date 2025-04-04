@@ -21,16 +21,19 @@ export function registerRepoCommands(command: Command) {
   command
     .command('start')
     .description('Starts packages in the repo for local development')
-    .action(
-      lazy(
-        async () => ({
-          command: () => {
-            throw new Error('Not implemented');
-          },
-        }),
-        'command',
-      ),
-    );
+    .argument(
+      '[packageName...]',
+      'Run the specified package instead of the defaults.',
+    )
+    .option(...configOption)
+    .option(
+      '--plugin <pluginId>',
+      'Start the dev entry-point for any matching plugin package in the repo',
+      (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
+      Array<string>(),
+    )
+    .option('--link <path>', 'Link an external workspace for module resolution')
+    .action(lazy(() => import('./commands/repo/start'), 'command'));
 }
 
 export function registerPackageCommands(command: Command) {

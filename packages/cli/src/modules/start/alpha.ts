@@ -57,8 +57,28 @@ export const buildPlugin = createCliPlugin({
     reg.addCommand({
       path: ['repo', 'start'],
       description: 'Starts packages in the repo for local development',
-      execute: async () => {
-        throw new Error('Not implemented');
+      execute: async ({ args }) => {
+        const command = new Command();
+
+        const defaultCommand = command
+          .argument(
+            '[...packageName]',
+            'Run the specified package instead of the defaults.',
+          )
+          .option(...configOption)
+          .option(
+            '--plugin <pluginId>',
+            'Start the dev entry-point for any matching plugin package in the repo',
+            (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
+            Array<string>(),
+          )
+          .option(
+            '--link <path>',
+            'Link an external workspace for module resolution',
+          )
+          .action(lazy(() => import('./commands/repo/start'), 'command'));
+
+        await defaultCommand.parseAsync(args, { from: 'user' });
       },
     });
   },
