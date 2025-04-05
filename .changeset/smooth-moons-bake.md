@@ -3,7 +3,7 @@
 '@backstage/create-app': minor
 ---
 
-**BREAKING** The `publish:github` scaffolder action defaults to initializing a branche named "main" instead of "master" when creating new repositories.
+**BREAKING** The `publish:github` scaffolder action now defaults to initializing with a branch named "main" instead of "master" when creating new repositories.
 
 If you or your organization have relied on all new github repositories having a default branch name of "master" you **must** set the `defaultBranch: 'master'` in your existing templates that feature the `publish:github` scaffolder action.
 
