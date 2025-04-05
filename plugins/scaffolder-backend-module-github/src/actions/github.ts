@@ -197,7 +197,7 @@ export function createPublishGithubAction(options: {
         requiredConversationResolution = false,
         requireLastPushApproval = false,
         repoVisibility = 'private',
-        defaultBranch = 'master',
+        defaultBranch = 'main',
         protectDefaultBranch = true,
         protectEnforceAdmins = true,
         deleteBranchOnMerge = false,
