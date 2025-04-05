@@ -42,6 +42,7 @@ import {
 } from '../modules/maintenance';
 import { removed } from '../lib/removed';
 import { registerCommands as registerNewCommands } from '../modules/new';
+import { registerCommands as registerCreateGithubAppCommands } from '../modules/create-github-app';
 
 export function registerRepoCommand(program: Command) {
   const command = program
@@ -75,7 +76,7 @@ export function registerCommands(program: Command) {
   registerBuildCommands(program);
   registerInfoCommands(program);
   registerNewCommands(program);
-
+  registerCreateGithubAppCommands(program);
   // Notifications for removed commands
 
   program

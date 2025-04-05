@@ -55,11 +55,6 @@ export function registerCommands(program: Command) {
     .action(lazy(() => import('./commands/new'), 'default'));
 
   program
-    .command('create-github-app <github-org>')
-    .description('Create new GitHub App in your organization.')
-    .action(lazy(() => import('./commands/create-github-app'), 'default'));
-
-  program
     .command('create')
     .allowUnknownOption(true)
     .action(removed("use 'backstage-cli new' instead"));

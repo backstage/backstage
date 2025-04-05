@@ -26,6 +26,7 @@ import chalk from 'chalk';
   );
   const initializer = new CliInitializer();
   initializer.add(import('./modules/new/alpha'));
+  initializer.add(import('./modules/create-github-app/alpha'));
   initializer.add(import('./modules/info/alpha'));
   initializer.add(import('./modules/config/alpha'));
   initializer.add(import('./modules/build/alpha'));
