@@ -17,15 +17,6 @@ Commands:
   config:docs [options]
   config:print [options]
   config:schema [options]
-  repo [command]
-  package [command]
-  versions:bump [options]
-  versions:migrate [options]
-  migrate [command]
-  build-workspace [options] <workspace-dir> [packages...]
-  info
-  create-github-app <github-org>
-  help [command]
   create-github-app <github-org>
   help [command]
   info
@@ -207,15 +198,7 @@ Options:
 
 Commands:
   build [options]
-<<<<<<< HEAD:packages/cli/cli-report.md
-  test
   clean
-  prepack
-  postpack
-  lint [options] [directories...]
-=======
-  clean
->>>>>>> e27a77cb9a9d1 (feat: allow multiple CLI reports for easier diff):packages/cli/cli-report.backstage-cli.md
   help [command]
   lint [options] [directories...]
   postpack
@@ -288,12 +271,8 @@ Options:
   --config <path>
   --inspect [host]
   --inspect-brk [host]
-<<<<<<< HEAD:packages/cli/cli-report.md
-  --require <path...>
-=======
->>>>>>> e27a77cb9a9d1 (feat: allow multiple CLI reports for easier diff):packages/cli/cli-report.backstage-cli.md
   --link <path>
-  --require <path>
+  --require <path...>
   --role <name>
   -h, --help
 ```
@@ -422,22 +401,12 @@ Options:
 
 Commands:
   build [options]
-<<<<<<< HEAD:packages/cli/cli-report.md
-  test [options]
-  lint [options]
-  fix [options]
-=======
->>>>>>> e27a77cb9a9d1 (feat: allow multiple CLI reports for easier diff):packages/cli/cli-report.backstage-cli.md
   clean
   fix [options]
   help [command]
   lint [options]
   list-deprecations [options]
-<<<<<<< HEAD:packages/cli/cli-report.md
-  help [command]
-=======
   test [options]
->>>>>>> e27a77cb9a9d1 (feat: allow multiple CLI reports for easier diff):packages/cli/cli-report.backstage-cli.md
 ```
 
 ### `backstage-cli repo build`
@@ -480,15 +449,11 @@ Usage: backstage-cli repo lint [options]
 Options:
   --fix
   --format <format>
+  --max-warnings <number>
   --output-file <path>
   --since <ref>
   --successCache
   --successCacheDir <path>
-<<<<<<< HEAD:packages/cli/cli-report.md
-  --max-warnings <number>
-  --fix
-=======
->>>>>>> e27a77cb9a9d1 (feat: allow multiple CLI reports for easier diff):packages/cli/cli-report.backstage-cli.md
   -h, --help
 ```
 

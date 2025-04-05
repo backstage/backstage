@@ -19,8 +19,12 @@ Commands:
   config:print
   config:schema
   help [command]
+  info
+  migrate [command]
   package [command]
   repo [command]
+  versions:bump
+  versions:migrate
 ```
 
 ### `backstage-cli-alpha build-workspace`
@@ -128,6 +132,78 @@ Options:
   --version
 ```
 
+### `backstage-cli-alpha info`
+
+```
+Usage: <none>
+
+Options:
+  --help
+  --version
+```
+
+### `backstage-cli-alpha migrate`
+
+```
+Usage: backstage-cli migrate [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  help [command]
+  package-exports
+  package-lint-configs
+  package-roles
+  package-scripts
+  react-router-deps
+```
+
+### `backstage-cli-alpha migrate package-exports`
+
+```
+Usage: program [options]
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli-alpha migrate package-lint-configs`
+
+```
+Usage: program [options]
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli-alpha migrate package-roles`
+
+```
+Usage: program [options]
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli-alpha migrate package-scripts`
+
+```
+Usage: program [options]
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli-alpha migrate react-router-deps`
+
+```
+Usage: program [options]
+
+Options:
+  -h, --help
+```
+
 ### `backstage-cli-alpha package`
 
 ```
@@ -139,6 +215,8 @@ Options:
 Commands:
   build
   help [command]
+  lint
+  test
 ```
 
 ### `backstage-cli-alpha package build`
@@ -155,6 +233,133 @@ Options:
   -h, --help
 ```
 
+### `backstage-cli-alpha package lint`
+
+```
+Usage: program [options] [directories...]
+
+Options:
+  --fix
+  --format <format>
+  --max-warnings <number>
+  --output-file <path>
+  -h, --help
+```
+
+### `backstage-cli-alpha package test`
+
+```
+Usage: backstage-cli-alpha [--config=<pathToConfigFile>] [TestPathPattern]
+
+Options:
+  --all
+  --automock
+  --cache
+  --cacheDirectory
+  --changedFilesWithAncestor
+  --changedSince
+  --ci
+  --clearCache
+  --clearMocks
+  --collectCoverage
+  --collectCoverageFrom
+  --color
+  --colors
+  --coverage
+  --coverageDirectory
+  --coveragePathIgnorePatterns
+  --coverageProvider
+  --coverageReporters
+  --coverageThreshold
+  --debug
+  --detectLeaks
+  --detectOpenHandles
+  --env
+  --errorOnDeprecated
+  --filter
+  --findRelatedTests
+  --forceExit
+  --globalSetup
+  --globalTeardown
+  --globals
+  --haste
+  --ignoreProjects
+  --init
+  --injectGlobals
+  --json
+  --lastCommit
+  --listTests
+  --logHeapUsage
+  --maxConcurrency
+  --moduleDirectories
+  --moduleFileExtensions
+  --moduleNameMapper
+  --modulePathIgnorePatterns
+  --modulePaths
+  --noStackTrace
+  --notify
+  --notifyMode
+  --openHandlesTimeout
+  --outputFile
+  --passWithNoTests
+  --preset
+  --prettierPath
+  --projects
+  --randomize
+  --reporters
+  --resetMocks
+  --resetModules
+  --resolver
+  --restoreMocks
+  --rootDir
+  --roots
+  --runTestsByPath
+  --runner
+  --seed
+  --selectProjects
+  --setupFiles
+  --setupFilesAfterEnv
+  --shard
+  --showConfig
+  --showSeed
+  --silent
+  --skipFilter
+  --snapshotSerializers
+  --testEnvironment
+  --testEnvironmentOptions
+  --testFailureExitCode
+  --testLocationInResults
+  --testMatch
+  --testPathIgnorePatterns
+  --testPathPattern
+  --testRegex
+  --testResultsProcessor
+  --testRunner
+  --testSequencer
+  --testTimeout
+  --transform
+  --transformIgnorePatterns
+  --unmockedModulePathPatterns
+  --useStderr
+  --verbose
+  --version
+  --watch
+  --watchAll
+  --watchPathIgnorePatterns
+  --watchman
+  --workerThreads
+  -b, --bail
+  -c, --config
+  -e, --expand
+  -f, --onlyFailures
+  -h, --help
+  -i, --runInBand
+  -o, --onlyChanged
+  -t, --testNamePattern
+  -u, --updateSnapshot
+  -w, --maxWorkers
+```
+
 ### `backstage-cli-alpha repo`
 
 ```
@@ -166,6 +371,8 @@ Options:
 Commands:
   build
   help [command]
+  lint
+  test
 ```
 
 ### `backstage-cli-alpha repo build`
@@ -177,5 +384,58 @@ Options:
   --all
   --minify
   --since <ref>
+  -h, --help
+```
+
+### `backstage-cli-alpha repo lint`
+
+```
+Usage: program [options]
+
+Options:
+  --fix
+  --format <format>
+  --max-warnings <number>
+  --output-file <path>
+  --since <ref>
+  --successCache
+  --successCacheDir <path>
+  -h, --help
+```
+
+### `backstage-cli-alpha repo test`
+
+```
+Usage: program [options]
+
+Options:
+  --jest-help
+  --since <ref>
+  --successCache
+  --successCacheDir <path>
+  -h, --help
+```
+
+### `backstage-cli-alpha versions:bump`
+
+```
+Usage: program [options]
+
+Options:
+  --pattern <glob>
+  --release <version|next|main>
+  --skip-install
+  --skip-migrate
+  -h, --help
+```
+
+### `backstage-cli-alpha versions:migrate`
+
+```
+Usage: program [options]
+
+Options:
+  --pattern <glob>
+  --skip-code-changes
   -h, --help
 ```
