@@ -26,6 +26,7 @@ import { BackstagePackageJson } from '@backstage/cli-node';
 interface StartAppOptions {
   verifyVersions?: boolean;
   entry: string;
+  targetDir?: string;
 
   checksEnabled: boolean;
   configPaths: string[];
@@ -41,6 +42,7 @@ export async function startFrontend(options: StartAppOptions) {
 
   const waitForExit = await serveBundle({
     entry: options.entry,
+    targetDir: options.targetDir,
     checksEnabled: options.checksEnabled,
     configPaths: options.configPaths,
     verifyVersions: options.verifyVersions,

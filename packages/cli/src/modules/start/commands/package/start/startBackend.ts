@@ -15,10 +15,12 @@
  */
 
 import fs from 'fs-extra';
+import { resolve as resolvePath } from 'path';
 import { paths } from '../../../../../lib/paths';
 import { runBackend } from '../../../../../lib/runner';
 
 interface StartBackendOptions {
+  targetDir: string;
   checksEnabled: boolean;
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
@@ -28,6 +30,7 @@ interface StartBackendOptions {
 
 export async function startBackend(options: StartBackendOptions) {
   const waitForExit = await runBackend({
+    targetDir: options.targetDir,
     entry: 'src/index',
     inspectEnabled: options.inspectEnabled,
     inspectBrkEnabled: options.inspectBrkEnabled,
@@ -40,7 +43,7 @@ export async function startBackend(options: StartBackendOptions) {
 
 export async function startBackendPlugin(options: StartBackendOptions) {
   const hasDevIndexEntry = await fs.pathExists(
-    paths.resolveTarget('dev', 'index.ts'),
+    resolvePath(options.targetDir ?? paths.targetDir, 'dev/index.ts'),
   );
   if (!hasDevIndexEntry) {
     console.warn(
@@ -50,6 +53,7 @@ export async function startBackendPlugin(options: StartBackendOptions) {
   }
 
   const waitForExit = await runBackend({
+    targetDir: options.targetDir,
     entry: 'dev/index',
     inspectEnabled: options.inspectEnabled,
     inspectBrkEnabled: options.inspectBrkEnabled,

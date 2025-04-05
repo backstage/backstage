@@ -21,6 +21,8 @@ import {
 } from '@backstage/cli-node';
 import { relative as relativePath } from 'path';
 import { paths } from '../../../../lib/paths';
+import { resolveLinkedWorkspace } from '../package/start/resolveLinkedWorkspace';
+import { startPackage } from '../package/start/startPackage';
 
 const ACCEPTED_PACKAGE_ROLES: Array<PackageRole | undefined> = [
   'frontend',
@@ -31,11 +33,28 @@ const ACCEPTED_PACKAGE_ROLES: Array<PackageRole | undefined> = [
 
 export async function command(
   packageNames: string[],
-  options: { plugin: string[]; config: string[] },
+  options: { plugin: string[]; config: string[]; link?: string },
 ) {
   const targetPackages = await findTargetPackages(packageNames, options.plugin);
   console.log(
     `Starting ${targetPackages.map(p => p.packageJson.name).join(', ')}`,
+  );
+
+  // Blocking
+  await Promise.all(
+    targetPackages.map(async pkg => {
+      const opts = { config: [], require: undefined };
+      return startPackage({
+        role: pkg.packageJson.backstage?.role!,
+        targetDir: pkg.dir,
+        configPaths: opts.config as string[],
+        checksEnabled: false,
+        linkedWorkspace: await resolveLinkedWorkspace(options.link),
+        inspectEnabled: false,
+        inspectBrkEnabled: false,
+        require: opts.require,
+      });
+    }),
   );
 }
 

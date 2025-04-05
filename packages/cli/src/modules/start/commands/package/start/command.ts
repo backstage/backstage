@@ -14,77 +14,21 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import { OptionValues } from 'commander';
-import { resolve as resolvePath } from 'node:path';
-import { PackageRole } from '@backstage/cli-node';
+import { startPackage } from './startPackage';
+import { resolveLinkedWorkspace } from './resolveLinkedWorkspace';
 import { findRoleFromCommand } from '../../../../../lib/role';
-import { startBackend, startBackendPlugin } from './startBackend';
-import { startFrontend } from './startFrontend';
-import { ForwardedError } from '@backstage/errors';
+import { paths } from '../../../../../lib/paths';
 
 export async function command(opts: OptionValues): Promise<void> {
-  const role = await findRoleFromCommand(opts);
-
-  if (opts.link) {
-    const dir = resolvePath(opts.link);
-    if (!fs.pathExistsSync(dir)) {
-      throw new Error(
-        `Invalid workspace link, directory does not exist: ${dir}`,
-      );
-    }
-    const pkgJson = await fs
-      .readJson(resolvePath(dir, 'package.json'))
-      .catch(error => {
-        throw new ForwardedError(
-          'Failed to read package.json in linked workspace',
-          error,
-        );
-      });
-
-    if (!pkgJson.workspaces) {
-      throw new Error(
-        `Invalid workspace link, directory is not a workspace: ${dir}`,
-      );
-    }
-  }
-
-  const options = {
+  await startPackage({
+    role: await findRoleFromCommand(opts),
+    targetDir: paths.targetDir,
     configPaths: opts.config as string[],
     checksEnabled: Boolean(opts.check),
-    linkedWorkspace: opts.link,
+    linkedWorkspace: await resolveLinkedWorkspace(opts.link),
     inspectEnabled: opts.inspect,
     inspectBrkEnabled: opts.inspectBrk,
     require: opts.require,
-  };
-
-  switch (role) {
-    case 'backend':
-      return startBackend(options);
-    case 'backend-plugin':
-    case 'backend-plugin-module':
-    case 'node-library':
-      return startBackendPlugin(options);
-    case 'frontend':
-      return startFrontend({
-        ...options,
-        entry: 'src/index',
-        verifyVersions: true,
-      });
-    case 'web-library':
-    case 'frontend-plugin':
-    case 'frontend-plugin-module':
-      return startFrontend({ entry: 'dev/index', ...options });
-    case 'frontend-dynamic-container' as PackageRole: // experimental
-      return startFrontend({
-        entry: 'src/index',
-        ...options,
-        skipOpenBrowser: true,
-        isModuleFederationRemote: true,
-      });
-    default:
-      throw new Error(
-        `Start command is not supported for package role '${role}'`,
-      );
-  }
+  });
 }

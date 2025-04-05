@@ -32,6 +32,8 @@ const loaderArgs = [
 ];
 
 export type RunBackendOptions = {
+  /** The directory to run the backend process in, defaults to cwd */
+  targetDir?: string;
   /** relative entry point path without extension, e.g. 'src/index' */
   entry: string;
   /** Whether to forward the --inspect flag to the node process */
@@ -122,6 +124,7 @@ export async function runBackend(options: RunBackendOptions) {
       [...loaderArgs, ...optionArgs, options.entry, ...userArgs],
       {
         stdio: ['ignore', 'inherit', 'inherit', 'ipc'],
+        cwd: options.targetDir,
         env: {
           ...process.env,
           BACKSTAGE_CLI_LINKED_WORKSPACE: options.linkedWorkspace,
