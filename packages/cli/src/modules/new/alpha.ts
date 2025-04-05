@@ -80,20 +80,5 @@ export default createCliPlugin({
         removed("use 'backstage-cli new' instead")();
       },
     });
-
-    reg.addCommand({
-      path: ['create-github-app'],
-      description: 'Create new GitHub App in your organization.',
-      execute: async ({ args }) => {
-        const command = new Command();
-        const defaultCommand = command
-          .argument('<github-org>')
-          .action(
-            lazy(() => import('./commands/create-github-app'), 'default'),
-          );
-
-        await defaultCommand.parseAsync(args, { from: 'user' });
-      },
-    });
   },
 });
