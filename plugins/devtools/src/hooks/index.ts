@@ -17,3 +17,4 @@
 export { useConfig } from './useConfig';
 export { useExternalDependencies } from './useExternalDependencies';
 export { useInfo } from './useInfo';
+export { useScheduler } from './useScheduler';

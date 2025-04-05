@@ -19,6 +19,7 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { DefaultSchedulerService } from './lib/DefaultSchedulerService';
+import Router from 'express-promise-router';
 
 /**
  * Scheduling of distributed background tasks.
@@ -35,8 +36,28 @@ export const schedulerServiceFactory = createServiceFactory({
     database: coreServices.database,
     logger: coreServices.logger,
     rootLifecycle: coreServices.rootLifecycle,
+    http: coreServices.httpRouter,
   },
-  async factory({ database, logger, rootLifecycle }) {
-    return DefaultSchedulerService.create({ database, logger, rootLifecycle });
+  async factory({ database, logger, rootLifecycle, http }) {
+    const schedulerService = DefaultSchedulerService.create({
+      database,
+      logger,
+      rootLifecycle,
+    });
+    const router = Router();
+    router.get('/.backstage/scheduler/v1/tasks', async (_, res) => {
+      res.json(await schedulerService.getScheduledTasks());
+    });
+    http.use(router);
+    schedulerService.scheduleTask({
+      id: 'test',
+      scope: 'local',
+      frequency: { minutes: 1 },
+      fn: async () => {
+        logger.info('Hello from the scheduler!');
+      },
+      timeout: { seconds: 10 },
+    });
+    return schedulerService;
   },
 });
