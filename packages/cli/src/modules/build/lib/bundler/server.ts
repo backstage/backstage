@@ -77,6 +77,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
   const cliConfig = await loadCliConfig({
     args: options.configPaths,
+    targetDir: options.targetDir,
     fromPackage: name,
     withFilteredKeys: true,
     watch(appConfigs) {

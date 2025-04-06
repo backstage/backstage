@@ -23,6 +23,7 @@ import { relative as relativePath } from 'path';
 import { paths } from '../../../../lib/paths';
 import { resolveLinkedWorkspace } from '../package/start/resolveLinkedWorkspace';
 import { startPackage } from '../package/start/startPackage';
+import { parseArgs } from 'util';
 
 const ACCEPTED_PACKAGE_ROLES: Array<PackageRole | undefined> = [
   'frontend',
@@ -40,19 +41,46 @@ export async function command(
     `Starting ${targetPackages.map(p => p.packageJson.name).join(', ')}`,
   );
 
-  // Blocking
+  // Each of these block until interrupt by user
   await Promise.all(
     targetPackages.map(async pkg => {
-      const opts = { config: [], require: undefined };
+      const startScript = pkg.packageJson.scripts?.start;
+      if (!startScript) {
+        console.log(
+          `No start script found for package ${pkg.packageJson.name}, skipping...`,
+        );
+        return undefined;
+      }
+
+      // Grab and parse --config and --require options from the start scripts, the rest are ignored
+      // TODO(Rugvip): Prolly switch over to completely different arg parsing to avoid this duplication
+      const { values: parsedOpts } = parseArgs({
+        args: startScript.split(' '),
+        strict: false,
+        options: {
+          config: {
+            type: 'string',
+            multiple: true,
+          },
+          require: {
+            type: 'string',
+          },
+        },
+      });
+      const parsedRequire =
+        typeof parsedOpts.require === 'string' ? parsedOpts.require : undefined;
+      const parsedConfig =
+        parsedOpts.config?.filter(c => typeof c === 'string') ?? [];
+
       return startPackage({
         role: pkg.packageJson.backstage?.role!,
         targetDir: pkg.dir,
-        configPaths: opts.config as string[],
+        configPaths: options.config.length > 0 ? options.config : parsedConfig,
         checksEnabled: false,
         linkedWorkspace: await resolveLinkedWorkspace(options.link),
         inspectEnabled: false,
         inspectBrkEnabled: false,
-        require: opts.require,
+        require: parsedRequire,
       });
     }),
   );

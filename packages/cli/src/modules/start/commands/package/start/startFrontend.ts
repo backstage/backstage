@@ -37,7 +37,7 @@ interface StartAppOptions {
 
 export async function startFrontend(options: StartAppOptions) {
   const packageJson = (await readJson(
-    paths.resolveTarget('package.json'),
+    resolvePath(options.targetDir ?? paths.targetDir, 'package.json'),
   )) as BackstagePackageJson;
 
   const waitForExit = await serveBundle({
