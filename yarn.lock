@@ -2976,13 +2976,12 @@ __metadata:
     "@rollup/plugin-json": "npm:^6.0.0"
     "@rollup/plugin-node-resolve": "npm:^15.0.0"
     "@rollup/plugin-yaml": "npm:^4.0.0"
-    "@rspack/core": "npm:^1.3.9"
-    "@rspack/dev-server": "npm:^1.1.1"
-    "@rspack/plugin-react-refresh": "npm:^1.4.2"
+    "@rspack/core": "npm:^1.4.11"
+    "@rspack/dev-server": "npm:^1.1.4"
+    "@rspack/plugin-react-refresh": "npm:^1.4.3"
     "@spotify/eslint-config-base": "npm:^15.0.0"
     "@spotify/eslint-config-react": "npm:^15.0.0"
     "@spotify/eslint-config-typescript": "npm:^15.0.0"
-    "@sucrase/webpack-loader": "npm:^2.0.0"
     "@swc/core": "npm:^1.3.46"
     "@swc/helpers": "npm:^0.5.0"
     "@swc/jest": "npm:^0.2.22"
@@ -3078,7 +3077,7 @@ __metadata:
     ts-morph: "npm:^24.0.0"
     undici: "npm:^7.2.3"
     util: "npm:^0.12.3"
-    webpack: "npm:^5.94.0"
+    webpack: "npm:~5.96.0"
     webpack-dev-server: "npm:^5.0.0"
     yaml: "npm:^2.0.0"
     yargs: "npm:^16.2.0"
@@ -3087,15 +3086,27 @@ __metadata:
     zod: "npm:^3.22.4"
     zod-validation-error: "npm:^3.4.0"
   peerDependencies:
-    "@rspack/core": ^1.2.8
-    "@rspack/dev-server": ^1.0.9
-    "@rspack/plugin-react-refresh": ^1.0.0
+    "@module-federation/enhanced": ^0.9.0
+    "@pmmmwh/react-refresh-webpack-plugin": ^0.5.7
+    esbuild-loader: ^4.0.0
+    mini-css-extract-plugin: ^2.4.2
+    terser-webpack-plugin: ^5.1.3
+    webpack: ~5.96.0
+    webpack-dev-server: ^5.0.0
   peerDependenciesMeta:
-    "@rspack/core":
+    "@module-federation/enhanced":
       optional: true
-    "@rspack/dev-server":
+    "@pmmmwh/react-refresh-webpack-plugin":
       optional: true
-    "@rspack/plugin-react-refresh":
+    esbuild-loader:
+      optional: true
+    mini-css-extract-plugin:
+      optional: true
+    terser-webpack-plugin:
+      optional: true
+    webpack:
+      optional: true
+    webpack-dev-server:
       optional: true
   bin:
     backstage-cli: bin/backstage-cli
@@ -16828,7 +16839,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/core@npm:^1.3.9":
+"@rspack/core@npm:^1.4.11":
   version: 1.4.11
   resolution: "@rspack/core@npm:1.4.11"
   dependencies:
@@ -16844,7 +16855,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/dev-server@npm:^1.1.1":
+"@rspack/dev-server@npm:^1.1.4":
   version: 1.1.4
   resolution: "@rspack/dev-server@npm:1.1.4"
   dependencies:
@@ -16866,7 +16877,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/plugin-react-refresh@npm:^1.4.2":
+"@rspack/plugin-react-refresh@npm:^1.4.3":
   version: 1.4.3
   resolution: "@rspack/plugin-react-refresh@npm:1.4.3"
   dependencies:
@@ -18864,17 +18875,6 @@ __metadata:
   peerDependencies:
     storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
   checksum: 10/c811d9dbb9eaaa680b922111fca126a2985f2238dfb01c1cd23184323eea12899dc9f079063ac42c5e63b0c83de326bd9cc17241e4060ff04e860c57a55fb8b9
-  languageName: node
-  linkType: hard
-
-"@sucrase/webpack-loader@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@sucrase/webpack-loader@npm:2.0.0"
-  dependencies:
-    loader-utils: "npm:^1.1.0"
-  peerDependencies:
-    sucrase: ^3
-  checksum: 10/16578991b1b888ac5bec5628bd24db9e21651bbbe30de076aece8787f115d8971ac87a20bc75446187c73c3185851ec2233d5b6f18c4a2dd53fbbb1ed4e488b4
   languageName: node
   linkType: hard
 
@@ -49465,7 +49465,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:5, webpack@npm:^5, webpack@npm:^5.94.0":
+"webpack@npm:5, webpack@npm:^5, webpack@npm:~5.96.0":
   version: 5.96.1
   resolution: "webpack@npm:5.96.1"
   dependencies:
