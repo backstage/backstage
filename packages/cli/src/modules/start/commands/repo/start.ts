@@ -37,53 +37,22 @@ export async function command(
   options: { plugin: string[]; config: string[]; link?: string },
 ) {
   const targetPackages = await findTargetPackages(packageNames, options.plugin);
+
+  const packageOptions = await resolvePackageOptions(targetPackages, options);
+
+  if (packageOptions.length === 0) {
+    console.log('No packages found to start');
+    return;
+  }
+
   console.log(
-    `Starting ${targetPackages.map(p => p.packageJson.name).join(', ')}`,
+    `Starting ${packageOptions
+      .map(({ pkg }) => pkg.packageJson.name)
+      .join(', ')}`,
   );
 
-  // Each of these block until interrupt by user
-  await Promise.all(
-    targetPackages.map(async pkg => {
-      const startScript = pkg.packageJson.scripts?.start;
-      if (!startScript) {
-        console.log(
-          `No start script found for package ${pkg.packageJson.name}, skipping...`,
-        );
-        return undefined;
-      }
-
-      // Grab and parse --config and --require options from the start scripts, the rest are ignored
-      // TODO(Rugvip): Prolly switch over to completely different arg parsing to avoid this duplication
-      const { values: parsedOpts } = parseArgs({
-        args: startScript.split(' '),
-        strict: false,
-        options: {
-          config: {
-            type: 'string',
-            multiple: true,
-          },
-          require: {
-            type: 'string',
-          },
-        },
-      });
-      const parsedRequire =
-        typeof parsedOpts.require === 'string' ? parsedOpts.require : undefined;
-      const parsedConfig =
-        parsedOpts.config?.filter(c => typeof c === 'string') ?? [];
-
-      return startPackage({
-        role: pkg.packageJson.backstage?.role!,
-        targetDir: pkg.dir,
-        configPaths: options.config.length > 0 ? options.config : parsedConfig,
-        checksEnabled: false,
-        linkedWorkspace: await resolveLinkedWorkspace(options.link),
-        inspectEnabled: false,
-        inspectBrkEnabled: false,
-        require: parsedRequire,
-      });
-    }),
-  );
+  // Each of these block until interrupted by user
+  await Promise.all(packageOptions.map(entry => startPackage(entry.options)));
 }
 
 async function findTargetPackages(packageNames: string[], pluginIds: string[]) {
@@ -159,4 +128,58 @@ async function findTargetPackages(packageNames: string[], pluginIds: string[]) {
     );
   }
   return targetPackages;
+}
+
+async function resolvePackageOptions(
+  targetPackages: BackstagePackage[],
+  options: { plugin: string[]; config: string[]; link?: string },
+) {
+  const linkedWorkspace = await resolveLinkedWorkspace(options.link);
+
+  return targetPackages.flatMap(pkg => {
+    const startScript = pkg.packageJson.scripts?.start;
+    if (!startScript) {
+      console.log(
+        `No start script found for package ${pkg.packageJson.name}, skipping...`,
+      );
+      return [];
+    }
+
+    // Grab and parse --config and --require options from the start scripts, the rest are ignored
+    // TODO(Rugvip): Prolly switch over to completely different arg parsing to avoid this duplication
+    const { values: parsedOpts } = parseArgs({
+      args: startScript.split(' '),
+      strict: false,
+      options: {
+        config: {
+          type: 'string',
+          multiple: true,
+        },
+        require: {
+          type: 'string',
+        },
+      },
+    });
+    const parsedRequire =
+      typeof parsedOpts.require === 'string' ? parsedOpts.require : undefined;
+    const parsedConfig =
+      parsedOpts.config?.filter(c => typeof c === 'string') ?? [];
+
+    return [
+      {
+        pkg,
+        options: {
+          role: pkg.packageJson.backstage?.role!,
+          targetDir: pkg.dir,
+          configPaths:
+            options.config.length > 0 ? options.config : parsedConfig,
+          checksEnabled: false,
+          linkedWorkspace,
+          inspectEnabled: false,
+          inspectBrkEnabled: false,
+          require: parsedRequire,
+        },
+      },
+    ];
+  });
 }
