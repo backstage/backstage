@@ -95,7 +95,7 @@ async function findTargetPackages(packageNames: string[], pluginIds: string[]) {
     return targetPackages;
   }
 
-  // If on package names are provided, default to expect a single frontend and/or backend package
+  // If no package names are provided, default to expect a single frontend and/or backend package
   for (const role of ['frontend', 'backend']) {
     const matchingPackages = packages.filter(
       pkg => pkg.packageJson.backstage?.role === role,
@@ -122,12 +122,31 @@ async function findTargetPackages(packageNames: string[], pluginIds: string[]) {
 
     targetPackages.push(...matchingPackages);
   }
-  if (targetPackages.length === 0) {
-    throw new Error(
-      `Unable to find any packages with role 'frontend' or 'backend'`,
-    );
+  if (targetPackages.length > 0) {
+    return targetPackages;
   }
-  return targetPackages;
+
+  // If no app or backend packages are found, fall back to expecting single plugin packages
+  for (const role of ['frontend-plugin', 'backend-plugin']) {
+    const matchingPackages = packages.filter(
+      pkg => pkg.packageJson.backstage?.role === role,
+    );
+    if (matchingPackages.length > 1) {
+      throw new Error(
+        `Found multiple packages with role '${role}', please choose which packages you want` +
+          `to run by passing the package names explicitly as arguments, for example ` +
+          `'yarn backstage-cli repo start my-plugin my-plugin-backend'.`,
+      );
+    }
+    targetPackages.push(...matchingPackages);
+  }
+  if (targetPackages.length > 0) {
+    return targetPackages;
+  }
+
+  throw new Error(
+    `Unable to find any packages with role 'frontend', 'backend', 'frontend-plugin', or 'backend-plugin'.`,
+  );
 }
 
 async function resolvePackageOptions(
