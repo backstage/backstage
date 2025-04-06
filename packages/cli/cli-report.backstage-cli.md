@@ -400,6 +400,7 @@ Options:
   -h, --help
 
 Commands:
+  start [options] [packageName...]
   build [options]
   clean
   fix [options]
@@ -464,6 +465,18 @@ Usage: backstage-cli repo list-deprecations [options]
 
 Options:
   --json
+  -h, --help
+```
+
+### `backstage-cli repo start`
+
+```
+Usage: backstage-cli repo start [options] [packageName...]
+
+Options:
+  --config <path>
+  --plugin <pluginId>
+  --link <path>
   -h, --help
 ```
 
