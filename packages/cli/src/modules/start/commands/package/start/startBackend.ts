@@ -22,8 +22,8 @@ import { runBackend } from '../../../../../lib/runner';
 interface StartBackendOptions {
   targetDir: string;
   checksEnabled: boolean;
-  inspectEnabled: boolean;
-  inspectBrkEnabled: boolean;
+  inspectEnabled?: boolean | string;
+  inspectBrkEnabled?: boolean | string;
   linkedWorkspace?: string;
   require?: string;
 }

@@ -37,9 +37,9 @@ export type RunBackendOptions = {
   /** relative entry point path without extension, e.g. 'src/index' */
   entry: string;
   /** Whether to forward the --inspect flag to the node process */
-  inspectEnabled: boolean;
+  inspectEnabled?: boolean | string;
   /** Whether to forward the --inspect-brk flag to the node process */
-  inspectBrkEnabled: boolean;
+  inspectBrkEnabled?: boolean | string;
   /** Additional module to require via the --require flag to the node process */
   require?: string | string[];
   /** An external linked workspace to override module resolution towards */

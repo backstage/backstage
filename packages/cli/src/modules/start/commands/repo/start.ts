@@ -32,10 +32,16 @@ const ACCEPTED_PACKAGE_ROLES: Array<PackageRole | undefined> = [
   'backend-plugin',
 ];
 
-export async function command(
-  packageNames: string[],
-  options: { plugin: string[]; config: string[]; link?: string },
-) {
+type CommandOptions = {
+  plugin: string[];
+  config: string[];
+  inspect?: boolean | string;
+  inspectBrk?: boolean | string;
+  require?: string;
+  link?: string;
+};
+
+export async function command(packageNames: string[], options: CommandOptions) {
   const targetPackages = await findTargetPackages(packageNames, options.plugin);
 
   const packageOptions = await resolvePackageOptions(targetPackages, options);
@@ -151,7 +157,7 @@ async function findTargetPackages(packageNames: string[], pluginIds: string[]) {
 
 async function resolvePackageOptions(
   targetPackages: BackstagePackage[],
-  options: { plugin: string[]; config: string[]; link?: string },
+  options: CommandOptions,
 ) {
   const linkedWorkspace = await resolveLinkedWorkspace(options.link);
 
@@ -194,9 +200,9 @@ async function resolvePackageOptions(
             options.config.length > 0 ? options.config : parsedConfig,
           checksEnabled: false,
           linkedWorkspace,
-          inspectEnabled: false,
-          inspectBrkEnabled: false,
-          require: parsedRequire,
+          inspectEnabled: options.inspect,
+          inspectBrkEnabled: options.inspectBrk,
+          require: options.require ?? parsedRequire,
         },
       },
     ];

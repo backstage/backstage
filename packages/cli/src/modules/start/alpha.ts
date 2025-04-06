@@ -19,8 +19,8 @@ import { createCliPlugin } from '../../wiring/factory';
 import { lazy } from '../../lib/lazy';
 import { configOption } from '../config';
 
-export const buildPlugin = createCliPlugin({
-  pluginId: 'build',
+export const startPlugin = createCliPlugin({
+  pluginId: 'start',
   init: async reg => {
     reg.addCommand({
       path: ['package', 'start'],
@@ -65,12 +65,24 @@ export const buildPlugin = createCliPlugin({
             '[...packageName]',
             'Run the specified package instead of the defaults.',
           )
-          .option(...configOption)
           .option(
             '--plugin <pluginId>',
             'Start the dev entry-point for any matching plugin package in the repo',
             (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
             Array<string>(),
+          )
+          .option(...configOption)
+          .option(
+            '--inspect [host]',
+            'Enable debugger in Node.js environments. Applies to backend package only',
+          )
+          .option(
+            '--inspect-brk [host]',
+            'Enable debugger in Node.js environments, breaking before code starts. Applies to backend package only',
+          )
+          .option(
+            '--require <path...>',
+            'Add a --require argument to the node process. Applies to backend package only',
           )
           .option(
             '--link <path>',
@@ -84,4 +96,4 @@ export const buildPlugin = createCliPlugin({
   },
 });
 
-export default buildPlugin;
+export default startPlugin;

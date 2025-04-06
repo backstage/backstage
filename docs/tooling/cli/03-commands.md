@@ -83,12 +83,15 @@ Usage: backstage-cli repo start [options] [packageName...]
 Starts packages in the repo for local development
 
 Arguments:
-  packageName          Run the specified package instead of the defaults.
+  packageName           Run the specified package instead of the defaults.
 
 Options:
-  --config <path>      Config files to load instead of app-config.yaml (default: [])
-  --plugin <pluginId>  Start the dev entry-point for any matching plugin package in the repo (default: [])
-  --link <path>        Link an external workspace for module resolution
+  --plugin <pluginId>   Start the dev entry-point for any matching plugin package in the repo (default: [])
+  --config <path>       Config files to load instead of app-config.yaml (default: [])
+  --inspect [host]      Enable debugger in Node.js environments. Applies to backend package only
+  --inspect-brk [host]  Enable debugger in Node.js environments, breaking before code starts. Applies to backend package only
+  --require <path...>   Add a --require argument to the node process. Applies to backend package only
+  --link <path>         Link an external workspace for module resolution
 ```
 
 ## repo build

@@ -474,8 +474,11 @@ Options:
 Usage: backstage-cli repo start [options] [packageName...]
 
 Options:
-  --config <path>
   --plugin <pluginId>
+  --config <path>
+  --inspect [host]
+  --inspect-brk [host]
+  --require <path...>
   --link <path>
   -h, --help
 ```
