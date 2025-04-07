@@ -15,6 +15,7 @@ import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
 import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
+import type { useRender } from '@base-ui-components/react/use-render';
 
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
@@ -695,6 +696,32 @@ export type JustifyContent =
   | 'end'
   | 'around'
   | 'between';
+
+// @public (undocumented)
+export const Link: React_2.ForwardRefExoticComponent<
+  Omit<LinkProps, 'ref'> & React_2.RefAttributes<HTMLElement>
+>;
+
+// @public (undocumented)
+export interface LinkProps extends useRender.ComponentProps<'a'> {
+  // (undocumented)
+  children: ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  style?: CSSProperties;
+  // (undocumented)
+  to?: string;
+  // (undocumented)
+  variant?:
+    | 'subtitle'
+    | 'body'
+    | 'caption'
+    | 'label'
+    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
+  // (undocumented)
+  weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
+}
 
 // @public (undocumented)
 export const marginPropDefs: (spacingValues: string[]) => {
