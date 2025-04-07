@@ -49,13 +49,13 @@ module.exports = {
           "CallExpression[arguments.length=0] > MemberExpression[property.name='toUpperCase']",
       },
       {
-        message: "Default React import not allowed.",
+        message: "React default imports are deprecated. Follow the x migration guide for details.",
         selector:
           "ImportDeclaration[source.value='react'][specifiers.0.type='ImportDefaultSpecifier']",
       },
       {
         message:
-          "Default React import not allowed. If you need a global type that collides with a React named export (such as `MouseEvent`), try using `globalThis.MouseHandler`.",
+          "React default imports are deprecated. Follow the x migration guide for details. If you need a global type that collides with a React named export (such as `MouseEvent`), try using `globalThis.MouseHandler`.",
         selector:
           "ImportDeclaration[source.value='react'] :matches(ImportDefaultSpecifier, ImportNamespaceSpecifier)",
       },
