@@ -4,8 +4,10 @@
 
 ```ts
 import { Breakpoint as Breakpoint_2 } from '@backstage/canon';
+import { ChangeEvent } from 'react';
 import { Context } from 'react';
 import type { CSSProperties } from 'react';
+import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
 import { default as React_2 } from 'react';
@@ -942,7 +944,7 @@ export const ScrollArea: {
 
 // @public (undocumented)
 export const Select: React_2.ForwardRefExoticComponent<
-  SelectProps & React_2.RefAttributes<HTMLSelectElement>
+  SelectProps & React_2.RefAttributes<HTMLDivElement>
 >;
 
 // @public (undocumented)
@@ -951,8 +953,11 @@ export interface SelectProps {
   defaultValue?: string;
   description?: string;
   disabled?: boolean;
+  error?: string;
   label?: string;
   name: string;
+  onBlur?: (event: FocusEvent_2<HTMLSelectElement>) => void;
+  onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
   onOpenChange?: (open: boolean) => void;
   onValueChange?: (value: string) => void;
   options?: Array<{
@@ -1082,7 +1087,7 @@ export { Text_2 as Text };
 
 // @public (undocumented)
 export const TextField: React_2.ForwardRefExoticComponent<
-  TextFieldProps & React_2.RefAttributes<HTMLInputElement>
+  TextFieldProps & React_2.RefAttributes<HTMLDivElement>
 >;
 
 // @public (undocumented)
@@ -1090,6 +1095,7 @@ export interface TextFieldProps
   extends Omit<React.ComponentPropsWithoutRef<'input'>, 'size'> {
   className?: string;
   description?: string;
+  error?: string | null;
   label?: string;
   name: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;

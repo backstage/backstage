@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { TextField } from './TextField';
-import { Form } from '@base-ui-components/react/form';
-import { Button } from '../Button';
 import { Flex } from '../Flex';
 
 const meta = {
@@ -60,6 +58,13 @@ export const WithDescription: Story = {
   },
 };
 
+export const Required: Story = {
+  args: {
+    ...WithLabel.args,
+    required: true,
+  },
+};
+
 export const Disabled: Story = {
   args: {
     ...WithLabel.args,
@@ -91,76 +96,17 @@ export const Responsive: Story = {
   },
 };
 
-export const ShowErrorOnSubmit: Story = {
+export const withError: Story = {
   args: {
     ...WithLabel.args,
-    pattern: 'https?://.*',
-    type: 'url',
-    required: true,
-    label: 'Homepage',
-    name: 'url',
-    value: 'https://backstage-fake-site.com',
+    error: 'Invalid URL',
   },
-  decorators: [
-    Story => {
-      const [errors, setErrors] = useState<Record<string, string> | undefined>(
-        undefined,
-      );
-      const [loading, setLoading] = useState(false);
+};
 
-      const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-
-        setLoading(true);
-
-        await new Promise(resolve => {
-          setTimeout(resolve, 200);
-        });
-
-        try {
-          const url = new URL(formData.get('url') as string);
-
-          const allowedHosts = [
-            'backstage.io',
-            'beta.backstage.io',
-            'www.backstage.io',
-          ];
-
-          if (!allowedHosts.includes(url.hostname)) {
-            setErrors({ url: 'The example domain is not allowed' });
-            setLoading(false);
-
-            return;
-          }
-
-          setErrors(undefined);
-          setLoading(false);
-
-          return;
-        } catch {
-          setErrors({ url: 'This is not a valid URL' });
-          setLoading(false);
-        }
-      };
-
-      return (
-        <Form
-          errors={errors}
-          onClearErrors={() => setErrors(undefined)}
-          onSubmit={handleSubmit}
-        >
-          <Story />
-          <Button
-            type="submit"
-            disabled={loading}
-            size="small"
-            style={{ marginTop: '0.75rem' }}
-          >
-            Submit
-          </Button>
-        </Form>
-      );
-    },
-  ],
+export const withErrorAndDescription: Story = {
+  args: {
+    ...WithLabel.args,
+    error: 'Invalid URL',
+    description: 'Description',
+  },
 };

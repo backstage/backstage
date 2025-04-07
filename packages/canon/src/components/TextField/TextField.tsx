@@ -15,7 +15,6 @@
  */
 
 import React, { forwardRef } from 'react';
-import { Field } from '@base-ui-components/react/field';
 import { Input } from '@base-ui-components/react/input';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
@@ -23,14 +22,15 @@ import clsx from 'clsx';
 import type { TextFieldProps } from './types';
 
 /** @public */
-export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
+export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
   (props: TextFieldProps, ref) => {
     const {
       className,
       size = 'medium',
       label,
       description,
-      name,
+      error,
+      required,
       style,
       ...rest
     } = props;
@@ -38,28 +38,53 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     // Get the responsive value for the variant
     const responsiveSize = useResponsiveValue(size);
 
+    // Generate unique IDs for accessibility
+    const inputId = React.useId();
+    const descriptionId = React.useId();
+    const errorId = React.useId();
+
     return (
-      <Field.Root
-        className={clsx('canon-FieldRoot', className)}
-        name={name}
+      <div
+        className={clsx('canon-TextField', className)}
         style={style}
+        ref={ref}
       >
         {label && (
-          <Field.Label className="canon-FieldLabel">{label}</Field.Label>
+          <label className="canon-TextField--label" htmlFor={inputId}>
+            {label}
+            {required && (
+              <span aria-hidden="true" className="canon-TextField--required">
+                (Required)
+              </span>
+            )}
+          </label>
         )}
         <Input
-          ref={ref}
-          type={name}
-          className={clsx('canon-Input', `canon-Input--size-${responsiveSize}`)}
+          id={inputId}
+          className={clsx('canon-TextField--input', {
+            'canon-TextField--input-size-small': responsiveSize === 'small',
+            'canon-TextField--input-size-medium': responsiveSize === 'medium',
+          })}
+          aria-labelledby={label ? inputId : undefined}
+          aria-describedby={clsx({
+            [descriptionId]: description,
+            [errorId]: error,
+          })}
+          data-invalid={error}
+          required={required}
           {...rest}
         />
         {description && (
-          <Field.Description className="canon-FieldDescription">
+          <p className="canon-TextField--description" id={descriptionId}>
             {description}
-          </Field.Description>
+          </p>
         )}
-        <Field.Error className="canon-FieldError" />
-      </Field.Root>
+        {error && (
+          <p className="canon-TextField--error" id={errorId} role="alert">
+            {error}
+          </p>
+        )}
+      </div>
     );
   },
 );
