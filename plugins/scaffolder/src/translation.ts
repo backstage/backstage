@@ -256,13 +256,15 @@ export const scaffolderTranslationRef = createTranslationRef({
           title: 'Load Template Directory',
           description:
             'Load a local template directory, allowing you to both edit and try executing your own template.',
-          unsupportedTooltip: 'Only supported in some Chromium-based browsers',
+          unsupportedTooltip:
+            'Only supported in some Chromium-based browsers with the page loaded over HTTPS',
         },
         createLocal: {
           title: 'Create New Template',
           description:
             'Create a local template directory, allowing you to both edit and try executing your own template.',
-          unsupportedTooltip: 'Only supported in some Chromium-based browsers',
+          unsupportedTooltip:
+            'Only supported in some Chromium-based browsers with the page loaded over HTTPS',
         },
         formEditor: {
           title: 'Template Form Playground',
