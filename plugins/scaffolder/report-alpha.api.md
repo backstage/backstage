@@ -396,10 +396,10 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorPage.templateEditorIntro.title': 'Get started by choosing one of the options below';
     readonly 'templateEditorPage.templateEditorIntro.loadLocal.title': 'Load Template Directory';
     readonly 'templateEditorPage.templateEditorIntro.loadLocal.description': 'Load a local template directory, allowing you to both edit and try executing your own template.';
-    readonly 'templateEditorPage.templateEditorIntro.loadLocal.unsupportedTooltip': 'Only supported in some Chromium-based browsers';
+    readonly 'templateEditorPage.templateEditorIntro.loadLocal.unsupportedTooltip': 'Only supported in some Chromium-based browsers with the page loaded over HTTPS';
     readonly 'templateEditorPage.templateEditorIntro.createLocal.title': 'Create New Template';
     readonly 'templateEditorPage.templateEditorIntro.createLocal.description': 'Create a local template directory, allowing you to both edit and try executing your own template.';
-    readonly 'templateEditorPage.templateEditorIntro.createLocal.unsupportedTooltip': 'Only supported in some Chromium-based browsers';
+    readonly 'templateEditorPage.templateEditorIntro.createLocal.unsupportedTooltip': 'Only supported in some Chromium-based browsers with the page loaded over HTTPS';
     readonly 'templateEditorPage.templateEditorIntro.formEditor.title': 'Template Form Playground';
     readonly 'templateEditorPage.templateEditorIntro.formEditor.description': 'Preview and edit a template form, either using a sample template or by loading a template from the catalog.';
     readonly 'templateEditorPage.templateEditorIntro.fieldExplorer.title': 'Custom Field Explorer';
