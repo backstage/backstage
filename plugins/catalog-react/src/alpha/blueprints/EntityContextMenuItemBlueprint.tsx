@@ -20,15 +20,26 @@ import {
   createExtensionDataRef,
   ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
-import MenuItem, { MenuItemProps } from '@material-ui/core/MenuItem';
+import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
 /** @alpha */
+export type UseProps = () =>
+  | {
+      title: React.ReactNode;
+      href: string;
+      disabled?: boolean;
+    }
+  | {
+      title: React.ReactNode;
+      onClick: () => void | Promise<void>;
+      disabled?: boolean;
+    };
+
+/** @alpha */
 export type EntityContextMenuItemParams = {
-  useProps: () => Omit<MenuItemProps, 'onClick'> & {
-    onClick?: () => Promise<void>;
-  };
+  useProps: UseProps;
   icon: React.JSX.Element;
 };
 
@@ -56,24 +67,22 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
   *factory(params: EntityContextMenuItemParams, { node }) {
     const loader = async (): Promise<ContextMenuItemComponent> => {
       return ({ onClose }) => {
-        const {
-          children,
-          button,
-          title,
-          onClick: onClickProp,
-          ...menuItemProps
-        } = params.useProps();
-        let onClick;
+        const { title, ...menuItemProps } = params.useProps();
+        let handleClick = undefined;
 
-        if (onClickProp !== undefined) {
-          onClick = async () => {
-            await onClickProp();
-            onClose();
+        if ('onClick' in menuItemProps) {
+          handleClick = () => {
+            const result = menuItemProps.onClick();
+            if (result instanceof Promise) {
+              result.then(onClose);
+            } else {
+              onClose();
+            }
           };
         }
 
         return (
-          <MenuItem {...menuItemProps} onClick={onClick}>
+          <MenuItem {...menuItemProps} onClick={handleClick}>
             <ListItemIcon>{params.icon}</ListItemIcon>
             <ListItemText primary={title} />
           </MenuItem>
