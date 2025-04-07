@@ -62,7 +62,7 @@ export const startPlugin = createCliPlugin({
 
         const defaultCommand = command
           .argument(
-            '[...packageName]',
+            '[...packageNameOrPath]',
             'Run the specified package instead of the defaults.',
           )
           .option(

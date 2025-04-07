@@ -400,13 +400,13 @@ Options:
   -h, --help
 
 Commands:
-  start [options] [packageName...]
   build [options]
   clean
   fix [options]
   help [command]
   lint [options]
   list-deprecations [options]
+  start [options] [packageNameOrPath...]
   test [options]
 ```
 
@@ -471,15 +471,15 @@ Options:
 ### `backstage-cli repo start`
 
 ```
-Usage: backstage-cli repo start [options] [packageName...]
+Usage: backstage-cli repo start [options] [packageNameOrPath...]
 
 Options:
-  --plugin <pluginId>
   --config <path>
   --inspect [host]
   --inspect-brk [host]
-  --require <path...>
   --link <path>
+  --plugin <pluginId>
+  --require <path...>
   -h, --help
 ```
 

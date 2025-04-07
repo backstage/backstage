@@ -41,8 +41,8 @@ type CommandOptions = {
   link?: string;
 };
 
-export async function command(packageNames: string[], options: CommandOptions) {
-  const targetPackages = await findTargetPackages(packageNames, options.plugin);
+export async function command(namesOrPaths: string[], options: CommandOptions) {
+  const targetPackages = await findTargetPackages(namesOrPaths, options.plugin);
 
   const packageOptions = await resolvePackageOptions(targetPackages, options);
 
@@ -61,7 +61,7 @@ export async function command(packageNames: string[], options: CommandOptions) {
   await Promise.all(packageOptions.map(entry => startPackage(entry.options)));
 }
 
-async function findTargetPackages(packageNames: string[], pluginIds: string[]) {
+async function findTargetPackages(namesOrPaths: string[], pluginIds: string[]) {
   const targetPackages = new Array<BackstagePackage>();
 
   const packages = await PackageGraph.listTargetPackages();
@@ -87,12 +87,18 @@ async function findTargetPackages(packageNames: string[], pluginIds: string[]) {
   }
 
   // Next check if explicit package names are provided, use them in that case.
-  for (const packageName of packageNames) {
-    const matchingPackage = packages.find(pkg => {
-      return packageName === pkg.packageJson.name;
-    });
+  for (const nameOrPath of namesOrPaths) {
+    let matchingPackage = packages.find(
+      pkg => nameOrPath === pkg.packageJson.name,
+    );
     if (!matchingPackage) {
-      throw new Error(`Unable to find package by name '${packageName}'`);
+      const absPath = paths.resolveTargetRoot(nameOrPath);
+      matchingPackage = packages.find(
+        pkg => relativePath(pkg.dir, absPath) === '',
+      );
+    }
+    if (!matchingPackage) {
+      throw new Error(`Unable to find package by name '${nameOrPath}'`);
     }
     targetPackages.push(matchingPackage);
   }

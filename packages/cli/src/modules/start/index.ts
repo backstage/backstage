@@ -22,7 +22,7 @@ export function registerRepoCommands(command: Command) {
     .command('start')
     .description('Starts packages in the repo for local development')
     .argument(
-      '[packageName...]',
+      '[packageNameOrPath...]',
       'Run the specified package instead of the defaults.',
     )
     .option(

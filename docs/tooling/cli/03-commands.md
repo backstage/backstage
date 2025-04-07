@@ -78,12 +78,12 @@ Any `--config` options in the `start` script in `package.json` of the selected p
 Any `--require` option in the `start` script in `package.json` of the selected backend package will be picked up and used.
 
 ```text
-Usage: backstage-cli repo start [options] [packageName...]
+Usage: backstage-cli repo start [options] [packageNameOrPath...]
 
 Starts packages in the repo for local development
 
 Arguments:
-  packageName           Run the specified package instead of the defaults.
+  packageNameOrPath     Run the specified packages instead of the defaults.
 
 Options:
   --plugin <pluginId>   Start the dev entry-point for any matching plugin package in the repo (default: [])
