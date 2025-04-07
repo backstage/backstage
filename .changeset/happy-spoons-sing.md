@@ -3,7 +3,7 @@
 '@backstage/plugin-catalog': minor
 ---
 
-**BREAKING**: `CatalogFilterBlueprint`, used in the new frontend system, is now exported under plugin-catalog-react instead of plugin-catalog.
+**BREAKING ALPHA**: `CatalogFilterBlueprint`, used in the new frontend system, is now exported under plugin-catalog-react instead of plugin-catalog.
 
 ```diff
 + import { CatalogFilterBlueprint } from '@backstage/plugin-catalog-react/alpha';
