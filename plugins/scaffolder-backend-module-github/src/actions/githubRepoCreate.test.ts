@@ -137,6 +137,11 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: undefined,
       visibility: 'private',
     });
 
@@ -159,6 +164,12 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      custom_properties: undefined,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: undefined,
       visibility: 'public',
     });
 
@@ -182,6 +193,10 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
       visibility: 'private',
     });
 
@@ -206,10 +221,13 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      custom_properties: undefined,
       visibility: 'private',
-      has_wiki: true,
-      has_projects: true,
-      has_issues: true,
+      has_wiki: undefined,
+      has_projects: undefined,
+      has_issues: undefined,
+      homepage: 'https://example.com',
     });
 
     await action.handler({
@@ -233,10 +251,12 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      custom_properties: undefined,
       visibility: 'private',
-      has_wiki: false,
-      has_projects: false,
-      has_issues: false,
+      has_wiki: undefined,
+      has_projects: undefined,
+      has_issues: undefined,
     });
 
     await action.handler({
@@ -262,11 +282,13 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      custom_properties: undefined,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: 'https://example.com',
       visibility: 'private',
-      custom_properties: {
-        foo: 'bar',
-        foo2: 'bar2',
-      },
     });
   });
 
@@ -293,6 +315,11 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: undefined,
     });
 
     await action.handler({
@@ -315,6 +342,11 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: undefined,
     });
 
     await action.handler({
@@ -338,6 +370,10 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
     });
 
     await action.handler({
@@ -362,9 +398,11 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      has_wiki: true,
-      has_projects: true,
-      has_issues: true,
+      allow_update_branch: false,
+      has_wiki: undefined,
+      has_projects: undefined,
+      has_issues: undefined,
+      homepage: 'https://example.com',
     });
 
     await action.handler({
@@ -389,9 +427,11 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      has_wiki: false,
-      has_projects: false,
-      has_issues: false,
+      allow_update_branch: false,
+      has_wiki: undefined,
+      has_projects: undefined,
+      has_issues: undefined,
+      homepage: 'https://example.com',
     });
 
     // Custom properties on user repos should be ignored
@@ -419,6 +459,11 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: 'https://example.com',
     });
   });
 
