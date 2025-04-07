@@ -31,6 +31,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       label,
       description,
       name,
+      style,
       ...rest
     } = props;
 
@@ -38,7 +39,11 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     const responsiveSize = useResponsiveValue(size);
 
     return (
-      <Field.Root className={clsx('canon-FieldRoot', className)} name={name}>
+      <Field.Root
+        className={clsx('canon-FieldRoot', className)}
+        name={name}
+        style={style}
+      >
         {label && (
           <Field.Label className="canon-FieldLabel">{label}</Field.Label>
         )}
