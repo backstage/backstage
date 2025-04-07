@@ -224,13 +224,13 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     const host = this.integration.host;
     const orgUrl = `https://${host}/${organization}`;
 
-    const { token } = await this.githubCredentialsProvider.getCredentials({
+    const { headers } = await this.githubCredentialsProvider.getCredentials({
       url: orgUrl,
     });
 
     return createGraphqlClient({
-      baseUrl: this.integration.apiBaseUrl!,
-      token: token!,
+      baseUrl: this.integration.apiBaseUrl,
+      headers,
       logger: this.logger,
     });
   }

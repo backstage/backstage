@@ -139,14 +139,14 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
       );
     }
 
-    const { token, type: tokenType } =
+    const { headers, type: tokenType } =
       await this.githubCredentialsProvider.getCredentials({
         url: orgUrl,
       });
 
     const client = createGraphqlClient({
-      token: token!,
-      baseUrl: gitHubConfig.apiBaseUrl!,
+      baseUrl: gitHubConfig.apiBaseUrl,
+      headers,
       logger: this.logger,
     });
 

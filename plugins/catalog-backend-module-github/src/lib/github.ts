@@ -664,6 +664,7 @@ export async function queryWithPaging<
           cursor,
         });
 
+        logger?.debug(`response: ${JSON.stringify(response)}`);
         if (response) {
           break;
         }
@@ -747,16 +748,12 @@ export const createReplaceEntitiesOperation =
 /**
  * Creates a Octokit Client with Throttling
  */
-export const createOctokitClient = (args: {
-  token?: string;
-  baseUrl: string;
+const createOctokitClient = (args: {
   logger?: LoggerService;
 }): typeof octokit => {
-  const { token, baseUrl, logger } = args;
+  const { logger } = args;
   const ThrottledOctokit = Octokit.plugin(throttling);
   const octokit = new ThrottledOctokit({
-    auth: token,
-    baseUrl,
     throttle: {
       onRateLimit: (retryAfter, rateLimitData, _, retryCount) => {
         logger?.warn(
@@ -796,10 +793,15 @@ export const createOctokitClient = (args: {
  * Creates a GraphQL Client with Throttling
  */
 export const createGraphqlClient = (args: {
-  token: string;
-  baseUrl: string;
+  headers:
+    | {
+        [name: string]: string;
+      }
+    | undefined;
+  baseUrl?: string;
   logger: LoggerService;
 }): typeof graphql => {
-  const client = createOctokitClient(args).graphql;
-  return client;
+  const { headers, baseUrl, logger } = args;
+  const client = createOctokitClient({ logger }).graphql;
+  return client.defaults({ baseUrl, headers });
 };

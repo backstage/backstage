@@ -109,13 +109,13 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     // about how to handle the wild card which is special for this processor.
     const orgUrl = `https://${host}/${org}`;
 
-    const { token } = await this.githubCredentialsProvider.getCredentials({
+    const { headers } = await this.githubCredentialsProvider.getCredentials({
       url: orgUrl,
     });
 
     const client = createGraphqlClient({
-      token: token!,
-      baseUrl: gitHubConfig.apiBaseUrl!,
+      baseUrl: gitHubConfig.apiBaseUrl,
+      headers,
       logger,
     });
 

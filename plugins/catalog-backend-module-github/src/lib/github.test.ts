@@ -700,7 +700,7 @@ describe('github', () => {
   });
 
   describe('createGraphqlClient', () => {
-    const token = '';
+    const headers = {};
 
     const baseUrl = 'https://api.github.com';
 
@@ -721,13 +721,20 @@ describe('github', () => {
       url: '/graphql',
     };
     const client = createGraphqlClient({
-      token,
+      headers,
       baseUrl,
       logger,
     });
     it('should return a graphql client with throttling', async () => {
       expect(client).toBeDefined();
       expect(Octokit.plugin).toHaveBeenCalledWith(throttling);
+    });
+
+    it('should return a graphql client with the correct options', async () => {
+      expect(graphqlDefaults).toHaveBeenCalledWith({
+        baseUrl,
+        headers,
+      });
     });
 
     describe('onRateLimit', () => {

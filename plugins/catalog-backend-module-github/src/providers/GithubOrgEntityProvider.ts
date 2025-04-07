@@ -218,13 +218,13 @@ export class GithubOrgEntityProvider implements EntityProvider {
     const logger = options?.logger ?? this.options.logger;
     const { markReadComplete } = trackProgress(logger);
 
-    const { token, type: tokenType } =
+    const { headers, type: tokenType } =
       await this.credentialsProvider.getCredentials({
         url: this.options.orgUrl,
       });
 
     const client = createGraphqlClient({
-      token: token!,
+      headers,
       baseUrl: this.options.gitHubConfig.apiBaseUrl!,
       logger,
     });
@@ -342,13 +342,13 @@ export class GithubOrgEntityProvider implements EntityProvider {
 
     const logger = this.options.logger;
     const teamSlug = event.team.slug;
-    const { token, type: tokenType } =
+    const { headers, type: tokenType } =
       await this.credentialsProvider.getCredentials({
         url: this.options.orgUrl,
       });
     const client = createGraphqlClient({
-      token: token!,
-      baseUrl: this.options.gitHubConfig.apiBaseUrl!,
+      baseUrl: this.options.gitHubConfig.apiBaseUrl,
+      headers,
       logger,
     });
 
@@ -435,13 +435,13 @@ export class GithubOrgEntityProvider implements EntityProvider {
     const logger = this.options.logger;
     const teamSlug = event.team.slug;
     const userLogin = event.member.login;
-    const { token, type: tokenType } =
+    const { headers, type: tokenType } =
       await this.credentialsProvider.getCredentials({
         url: this.options.orgUrl,
       });
     const client = createGraphqlClient({
-      token: token!,
-      baseUrl: this.options.gitHubConfig.apiBaseUrl!,
+      baseUrl: this.options.gitHubConfig.apiBaseUrl,
+      headers,
       logger,
     });
 
@@ -505,12 +505,12 @@ export class GithubOrgEntityProvider implements EntityProvider {
       this.options.teamTransformer || defaultOrganizationTeamTransformer;
     const { name, html_url: url, description, slug } = event.team;
     const org = event.organization.login;
-    const { token } = await this.credentialsProvider.getCredentials({
+    const { headers } = await this.credentialsProvider.getCredentials({
       url: this.options.orgUrl,
     });
     const client = createGraphqlClient({
-      token: token!,
-      baseUrl: this.options.gitHubConfig.apiBaseUrl!,
+      baseUrl: this.options.gitHubConfig.apiBaseUrl,
+      headers,
       logger,
     });
 
@@ -556,12 +556,12 @@ export class GithubOrgEntityProvider implements EntityProvider {
       this.options.userTransformer || defaultUserTransformer;
     const { name, avatar_url: avatarUrl, email, login } = event.membership.user;
     const org = event.organization.login;
-    const { token } = await this.credentialsProvider.getCredentials({
+    const { headers } = await this.credentialsProvider.getCredentials({
       url: this.options.orgUrl,
     });
     const client = createGraphqlClient({
-      token: token!,
-      baseUrl: this.options.gitHubConfig.apiBaseUrl!,
+      baseUrl: this.options.gitHubConfig.apiBaseUrl,
+      headers,
       logger,
     });
 
