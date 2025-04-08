@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useState, useMemo } from 'react';
 import Chip from '@material-ui/core/Chip';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, {
@@ -63,8 +63,12 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
     valuesDebounceMs,
   );
   const { filters, setFilters } = useSearch();
-  const filterValue =
-    (filters[name] as string | string[] | undefined) || (multiple ? [] : null);
+  const filterValue = useMemo(
+    () =>
+      (filters[name] as string | string[] | undefined) ||
+      (multiple ? [] : null),
+    [filters, name, multiple],
+  );
 
   // Set new filter values on input change.
   const handleChange = (
