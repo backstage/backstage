@@ -11,6 +11,7 @@ import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alph
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContextMenuItemParams } from '@backstage/plugin-catalog-react/alpha';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
@@ -859,6 +860,45 @@ const _default: FrontendPlugin<
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
+    'entity-context-menu-item:catalog/copy-entity-url': ExtensionDefinition<{
+      kind: 'entity-context-menu-item';
+      name: 'copy-entity-url';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {};
+      params: EntityContextMenuItemParams;
+    }>;
+    'entity-context-menu-item:catalog/inspect-entity': ExtensionDefinition<{
+      kind: 'entity-context-menu-item';
+      name: 'inspect-entity';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {};
+      params: EntityContextMenuItemParams;
+    }>;
+    'entity-context-menu-item:catalog/unregister-entity': ExtensionDefinition<{
+      kind: 'entity-context-menu-item';
+      name: 'unregister-entity';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {};
+      params: EntityContextMenuItemParams;
+    }>;
     'nav-item:catalog': ExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
@@ -999,6 +1039,13 @@ const _default: FrontendPlugin<
                 optional: true;
               }
             >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+        contextMenuItems: ExtensionInput<
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
           {
             singleton: false;
             optional: false;

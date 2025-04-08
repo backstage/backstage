@@ -13,17 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
-
-export const catalogSearchResultListItem = SearchResultListItemBlueprint.make({
-  params: {
-    predicate: result => result.type === 'software-catalog',
-    component: () =>
-      import('../components/CatalogSearchResultListItem').then(
-        m => m.CatalogSearchResultListItem,
-      ),
-  },
-});
-
-export default [catalogSearchResultListItem];
+export { EntityContextMenuProvider } from './EntityContextMenuContext';
