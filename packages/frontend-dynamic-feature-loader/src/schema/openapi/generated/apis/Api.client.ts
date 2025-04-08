@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import { FetchApi } from '../types/fetch';
 import crossFetch from 'cross-fetch';
 import { pluginId } from '../pluginId';
 import * as parser from 'uri-template';
+import { Remote } from '../models/Remote.model';
 
 /**
  * Wraps the Response type to convey a type on the json call.
@@ -40,14 +41,12 @@ export type TypedResponse<T> = Omit<Response, 'json'> & {
 export interface RequestOptions {
   token?: string;
 }
-
 /**
  * @public
  */
-export type GetManifests = {};
+export type GetRemotes = {};
 
 /**
- * no description
  * @public
  */
 export class DefaultApiClient {
@@ -63,16 +62,16 @@ export class DefaultApiClient {
   }
 
   /**
-   * Get the Module Federation manifest files of dynamic frontend plugins.
+   * Get the Module Federation remote definitions.
    */
-  public async getManifests(
+  public async getRemotes(
     // @ts-ignore
-    request: GetManifests,
+    request: GetRemotes,
     options?: RequestOptions,
-  ): Promise<TypedResponse<{ [key: string]: string }>> {
+  ): Promise<TypedResponse<Array<Remote>>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/manifests`;
+    const uriTemplate = `/remotes`;
 
     const uri = parser.parse(uriTemplate).expand({});
 

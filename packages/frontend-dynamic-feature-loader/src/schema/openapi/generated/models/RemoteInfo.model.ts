@@ -19,9 +19,42 @@
 // ******************************************************************
 
 /**
+ * Definition of a frontend plugin Module Federation remote served by the backend
  * @public
  */
-export interface ErrorRequest {
-  method: string;
-  url: string;
+export interface RemoteInfo {
+  /**
+   * Name of the module federation remote
+   */
+  name: string;
+  /**
+   * Remote entry, either the remote manifest file, or the remote entry Javascript file.
+   */
+  entry: string;
+  entryGlobalName?: string;
+  shareScope?: string;
+  type?: RemoteInfoTypeEnum;
 }
+
+/**
+ * @public
+ */
+export type RemoteInfoTypeEnum =
+  | 'var'
+  | 'module'
+  | 'assign'
+  | 'assign-properties'
+  | 'this'
+  | 'window'
+  | 'self'
+  | 'global'
+  | 'commonjs'
+  | 'commonjs2'
+  | 'commonjs-module'
+  | 'commonjs-static'
+  | 'amd'
+  | 'amd-require'
+  | 'umd'
+  | 'umd2'
+  | 'jsonp'
+  | 'system';

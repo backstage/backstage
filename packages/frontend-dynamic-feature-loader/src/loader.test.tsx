@@ -26,6 +26,7 @@ import { Module } from '@module-federation/sdk';
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { InternalFrontendFeatureLoader } from '../../frontend-plugin-api/src/wiring/createFrontendFeatureLoader';
+import { resetFederationGlobalInfo } from '@module-federation/runtime/core';
 
 const baseUrl = 'http://localhost:7007';
 
@@ -37,6 +38,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
       error: jest.spyOn(console, 'error').mockImplementation(() => {}),
       warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
       info: jest.spyOn(console, 'info').mockImplementation(() => {}),
+      debug: jest.spyOn(console, 'debug').mockImplementation(() => {}),
     },
     federation: {
       get: jest.fn((_: { name: string; id: string }): Module => ({})),
@@ -53,10 +55,6 @@ describe('dynamicFrontendFeaturesLoader', () => {
       plugins: [
         {
           name: 'load-entry-mock',
-          errorLoadRemote: args => {
-            // eslint-disable-next-line no-console
-            console.error(args);
-          },
           loadEntry: async args => {
             return {
               get: (id: string) => async () => {
@@ -103,14 +101,17 @@ describe('dynamicFrontendFeaturesLoader', () => {
     mocks.console.error.mockReset();
     mocks.console.warn.mockReset();
     mocks.console.info.mockReset();
+    mocks.console.debug.mockReset();
     mocks.federation.get.mockReset();
+    mocks.federation.onLoad.mockReset();
+    resetFederationGlobalInfo();
   });
 
   it('should return immediately if dynamic plugins are not enabled in config', async () => {
     let manifestsEndpointCalled = false;
     server.use(
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/manifests`,
+        `${baseUrl}/.backstage/dynamic-plugins/remotes`,
         (_, res, ctx) => {
           manifestsEndpointCalled = true;
           return res(ctx.json({}));
@@ -153,16 +154,23 @@ describe('dynamicFrontendFeaturesLoader', () => {
   it('should load a dynamic frontend plugin with the default exposed remote module', async () => {
     server.use(
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/manifests`,
+        `${baseUrl}/.backstage/dynamic-features/remotes`,
         (_, res, ctx) =>
           res(
-            ctx.json({
-              'test-plugin': `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/test-plugin/mf-manifest.json`,
-            }),
+            ctx.json([
+              {
+                packageName: 'plugin-test-dynamic',
+                exposedModules: ['.'],
+                remoteInfo: {
+                  name: 'test_plugin',
+                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
+                },
+              },
+            ]),
           ),
       ),
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/test-plugin/mf-manifest.json`,
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
         (_, res, ctx) =>
           res(
             ctx.json({
@@ -223,13 +231,16 @@ describe('dynamicFrontendFeaturesLoader', () => {
     ]);
     const infoCalls = mocks.console.info.mock.calls.flatMap(e => e[0]);
     expect(infoCalls).toEqual([
-      "Loading dynamic plugin 'test-plugin' from 'http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/test-plugin/mf-manifest.json'",
-      "Dynamic plugin remote module 'test-plugin' loaded from http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/test-plugin/mf-manifest.json",
+      "Remote module 'test_plugin' of dynamic plugin 'plugin-test-dynamic' loaded from http://localhost:7007/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json",
+    ]);
+    const debugCalls = mocks.console.debug.mock.calls.flatMap(e => e[0]);
+    expect(debugCalls).toEqual([
+      "Loading dynamic plugin 'plugin-test-dynamic' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json'",
     ]);
     expect(mocks.federation.get.mock.calls.flatMap(e => e[0])).toEqual([
       {
         id: '.',
-        name: 'test-plugin',
+        name: 'test_plugin',
       },
     ]);
   });
@@ -237,17 +248,31 @@ describe('dynamicFrontendFeaturesLoader', () => {
   it('should load several dynamic frontend plugins', async () => {
     server.use(
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/manifests`,
+        `${baseUrl}/.backstage/dynamic-features/remotes`,
         (_, res, ctx) =>
           res(
-            ctx.json({
-              'plugin-1': `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json`,
-              'plugin-2': `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json`,
-            }),
+            ctx.json([
+              {
+                packageName: 'plugin-1',
+                exposedModules: ['.'],
+                remoteInfo: {
+                  name: 'plugin_1',
+                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+                },
+              },
+              {
+                packageName: 'plugin-2',
+                exposedModules: ['.'],
+                remoteInfo: {
+                  name: 'plugin_2',
+                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+                },
+              },
+            ]),
           ),
       ),
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json`,
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
         (_, res, ctx) =>
           res(
             ctx.json({
@@ -265,7 +290,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
           ),
       ),
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json`,
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
         (_, res, ctx) =>
           res(
             ctx.json({
@@ -305,7 +330,6 @@ describe('dynamicFrontendFeaturesLoader', () => {
       config: mockApis.config({
         data: {
           app: {
-            packageName: 'app-2',
             experimental: {
               packages: {
                 include: [],
@@ -338,19 +362,22 @@ describe('dynamicFrontendFeaturesLoader', () => {
     ]);
     const infoCalls = mocks.console.info.mock.calls.flatMap(e => e[0]);
     expect(infoCalls).toEqual([
-      "Loading dynamic plugin 'plugin-1' from 'http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json'",
-      "Loading dynamic plugin 'plugin-2' from 'http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json'",
-      "Dynamic plugin remote module 'plugin-1' loaded from http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json",
-      "Dynamic plugin remote module 'plugin-2' loaded from http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json",
+      "Remote module 'plugin_1' of dynamic plugin 'plugin-1' loaded from http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json",
+      "Remote module 'plugin_2' of dynamic plugin 'plugin-2' loaded from http://localhost:7007/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json",
+    ]);
+    const debugCalls = mocks.console.debug.mock.calls.flatMap(e => e[0]);
+    expect(debugCalls).toEqual([
+      "Loading dynamic plugin 'plugin-1' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json'",
+      "Loading dynamic plugin 'plugin-2' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json'",
     ]);
     expect(mocks.federation.get.mock.calls.flatMap(e => e[0])).toEqual([
       {
         id: '.',
-        name: 'plugin-1',
+        name: 'plugin_1',
       },
       {
         id: '.',
-        name: 'plugin-2',
+        name: 'plugin_2',
       },
     ]);
   });
@@ -358,16 +385,23 @@ describe('dynamicFrontendFeaturesLoader', () => {
   it('should load a dynamic frontend plugin with several exposed remote modules', async () => {
     server.use(
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/manifests`,
+        `${baseUrl}/.backstage/dynamic-features/remotes`,
         (_, res, ctx) =>
           res(
-            ctx.json({
-              'test-plugin': `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/test-plugin/mf-manifest.json`,
-            }),
+            ctx.json([
+              {
+                packageName: 'plugin-test-dynamic',
+                exposedModules: ['.', 'alpha'],
+                remoteInfo: {
+                  name: 'test_plugin',
+                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
+                },
+              },
+            ]),
           ),
       ),
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/test-plugin/mf-manifest.json`,
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
         (_, res, ctx) =>
           res(
             ctx.json({
@@ -418,7 +452,6 @@ describe('dynamicFrontendFeaturesLoader', () => {
                 include: [],
               },
             },
-            packageName: 'app-3',
           },
           backend: {
             baseUrl,
@@ -446,18 +479,104 @@ describe('dynamicFrontendFeaturesLoader', () => {
     ]);
     const infoCalls = mocks.console.info.mock.calls.flatMap(e => e[0]);
     expect(infoCalls).toEqual([
-      "Loading dynamic plugin 'test-plugin' from 'http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/test-plugin/mf-manifest.json'",
-      "Dynamic plugin remote module 'test-plugin' loaded from http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/test-plugin/mf-manifest.json",
-      "Dynamic plugin remote module 'test-plugin/alpha' loaded from http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/test-plugin/mf-manifest.json",
+      "Remote module 'test_plugin' of dynamic plugin 'plugin-test-dynamic' loaded from http://localhost:7007/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json",
+      "Remote module 'test_plugin/alpha' of dynamic plugin 'plugin-test-dynamic' loaded from http://localhost:7007/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json",
+    ]);
+    const debugCalls = mocks.console.debug.mock.calls.flatMap(e => e[0]);
+    expect(debugCalls).toEqual([
+      "Loading dynamic plugin 'plugin-test-dynamic' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json'",
     ]);
     expect(mocks.federation.get.mock.calls.flatMap(e => e[0])).toEqual([
       {
         id: '.',
-        name: 'test-plugin',
+        name: 'test_plugin',
       },
       {
         id: './alpha',
-        name: 'test-plugin',
+        name: 'test_plugin',
+      },
+    ]);
+  });
+
+  it('should load a dynamic frontend plugin from Javascript remote entry', async () => {
+    mocks.federation.get.mockRestore();
+    mocks.federation.onLoad.mockRestore();
+    server.use(
+      rest.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes`,
+        (_, res, ctx) =>
+          res(
+            ctx.json([
+              {
+                packageName: 'plugin-test-dynamic',
+                exposedModules: ['.'],
+                remoteInfo: {
+                  name: 'test_plugin',
+                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/remoteEntry.js`,
+                  type: 'jsonp',
+                },
+              },
+            ]),
+          ),
+      ),
+      rest.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/remoteEntry.js`,
+        (_, res, ctx) => res(ctx.text('coucou :-)')),
+      ),
+    );
+
+    mocks.federation.get.mockReturnValueOnce({
+      default: createFrontendPlugin({
+        id: 'test-plugin',
+        extensions: [],
+      }),
+    });
+
+    const features = await (
+      dynamicFrontendFeaturesLoader({
+        ...getCommonOptions(),
+      }) as InternalFrontendFeatureLoader
+    ).loader({
+      config: mockApis.config({
+        data: {
+          app: {
+            experimental: {
+              packages: {
+                include: [],
+              },
+            },
+          },
+          backend: {
+            baseUrl,
+          },
+          dynamicPlugins: {},
+        },
+      }),
+    });
+
+    const errorCalls = mocks.console.error.mock.calls.flatMap(e => e[0]);
+    expect(errorCalls).toEqual([]);
+    const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
+    expect(warnCalls).toEqual([]);
+    expect(features).toMatchObject([
+      {
+        $$type: '@backstage/FrontendPlugin',
+        id: 'test-plugin',
+        version: 'v1',
+      },
+    ]);
+    const infoCalls = mocks.console.info.mock.calls.flatMap(e => e[0]);
+    expect(infoCalls).toEqual([
+      "Remote module 'test_plugin' of dynamic plugin 'plugin-test-dynamic' loaded from http://localhost:7007/.backstage/dynamic-features/remotes/plugin-test-dynamic/remoteEntry.js",
+    ]);
+    const debugCalls = mocks.console.debug.mock.calls.flatMap(e => e[0]);
+    expect(debugCalls).toEqual([
+      "Loading dynamic plugin 'plugin-test-dynamic' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-test-dynamic/remoteEntry.js'",
+    ]);
+    expect(mocks.federation.get.mock.calls.flatMap(e => e[0])).toEqual([
+      {
+        id: '.',
+        name: 'test_plugin',
       },
     ]);
   });
@@ -465,7 +584,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
   it('should warn and recover from a 404 error fetching module feredation configuration', async () => {
     server.use(
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/manifests`,
+        `${baseUrl}/.backstage/dynamic-features/remotes`,
         (_, res, ctx) => res(ctx.status(404, 'NOT FOUND')),
       ),
     );
@@ -511,59 +630,10 @@ describe('dynamicFrontendFeaturesLoader', () => {
     expect(mocks.federation.get.mock.calls.flatMap(e => e[0])).toEqual([]);
   });
 
-  it('should warn and recover from unexpected Json while fetching module feredation configuration', async () => {
-    server.use(
-      rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/manifests`,
-        (_, res, ctx) => res(ctx.json('A Json String')),
-      ),
-    );
-
-    mocks.federation.get.mockReturnValue({
-      default: createFrontendPlugin({
-        id: 'test-plugin',
-        extensions: [],
-      }),
-    });
-
-    const features = await (
-      dynamicFrontendFeaturesLoader({
-        ...getCommonOptions(),
-      }) as InternalFrontendFeatureLoader
-    ).loader({
-      config: mockApis.config({
-        data: {
-          app: {
-            experimental: {
-              packages: {
-                include: [],
-              },
-            },
-          },
-          backend: {
-            baseUrl,
-          },
-          dynamicPlugins: {},
-        },
-      }),
-    });
-
-    const errorCalls = mocks.console.error.mock.calls.flatMap(e => e[0]);
-    expect(errorCalls).toEqual([
-      `Failed fetching module federation configuration of dynamic frontend plugins: Error: Invalid Json content: should be a Json object`,
-    ]);
-    const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
-    expect(warnCalls).toEqual([]);
-    expect(features).toMatchObject([]);
-    const infoCalls = mocks.console.info.mock.calls.flatMap(e => e[0]);
-    expect(infoCalls).toEqual([]);
-    expect(mocks.federation.get.mock.calls.flatMap(e => e[0])).toEqual([]);
-  });
-
   it('should warn and recover from empty response while fetching module feredation configuration', async () => {
     server.use(
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/manifests`,
+        `${baseUrl}/.backstage/dynamic-features/remotes`,
         (_, res, ctx) => res(ctx.status(200)),
       ),
     );
@@ -599,7 +669,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
     const errorCalls = mocks.console.error.mock.calls.flatMap(e => e[0]);
     expect(errorCalls).toEqual([
-      `Failed fetching module federation configuration of dynamic frontend plugins: FetchError: invalid json response body at http://localhost:7007/api/core.dynamicplugins.frontendRemotes/manifests reason: Unexpected end of JSON input`,
+      `Failed fetching module federation configuration of dynamic frontend plugins: FetchError: invalid json response body at http://localhost:7007/.backstage/dynamic-features/remotes reason: Unexpected end of JSON input`,
     ]);
     const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
     expect(warnCalls).toEqual([]);
@@ -609,206 +679,34 @@ describe('dynamicFrontendFeaturesLoader', () => {
     expect(mocks.federation.get.mock.calls.flatMap(e => e[0])).toEqual([]);
   });
 
-  it('should warn on 404 error fetching module feredation manifest, but still load other remotes', async () => {
-    server.use(
-      rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/manifests`,
-        (_, res, ctx) =>
-          res(
-            ctx.json({
-              'plugin-1': `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json`,
-              'plugin-2': `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json`,
-            }),
-          ),
-      ),
-      rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json`,
-        (_, res, ctx) => res(ctx.json({}), ctx.status(404, 'NOT FOUND')),
-      ),
-      rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json`,
-        (_, res, ctx) =>
-          res(
-            ctx.json({
-              name: 'plugin_2',
-              ...manifestDummyData,
-              exposes: [
-                {
-                  id: 'plugin_2:.',
-                  name: '.',
-                  path: '.',
-                  ...manifestExposedRemoteDummyData,
-                },
-              ],
-            }),
-          ),
-      ),
-    );
-
-    mocks.federation.get.mockReturnValueOnce({
-      default: createFrontendPlugin({
-        id: 'plugin-2',
-        extensions: [],
-      }),
-    });
-
-    const features = await (
-      dynamicFrontendFeaturesLoader({
-        ...getCommonOptions(),
-      }) as InternalFrontendFeatureLoader
-    ).loader({
-      config: mockApis.config({
-        data: {
-          app: {
-            packageName: 'app-4',
-            experimental: {
-              packages: {
-                include: [],
-              },
-            },
-          },
-          backend: {
-            baseUrl,
-          },
-          dynamicPlugins: {},
-        },
-      }),
-    });
-
-    const errorCalls = mocks.console.error.mock.calls.flatMap(e => e[0]);
-    expect(errorCalls).toEqual([
-      "Failed fetching module federation manifest from 'http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json': Error: 404 - NOT FOUND",
-    ]);
-    const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
-    expect(warnCalls).toEqual([]);
-    expect(features).toMatchObject([
-      {
-        $$type: '@backstage/FrontendPlugin',
-        id: 'plugin-2',
-        version: 'v1',
-      },
-    ]);
-    const infoCalls = mocks.console.info.mock.calls.flatMap(e => e[0]);
-    expect(infoCalls).toEqual([
-      "Loading dynamic plugin 'plugin-1' from 'http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json'",
-      "Loading dynamic plugin 'plugin-2' from 'http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json'",
-      "Dynamic plugin remote module 'plugin-2' loaded from http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json",
-    ]);
-    expect(mocks.federation.get.mock.calls.flatMap(e => e[0])).toEqual([
-      {
-        id: '.',
-        name: 'plugin-2',
-      },
-    ]);
-  });
-
-  it('should warn on unexpected Json content while fetching module feredation manifest, but still load other remotes', async () => {
-    server.use(
-      rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/manifests`,
-        (_, res, ctx) =>
-          res(
-            ctx.json({
-              'plugin-1': `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json`,
-              'plugin-2': `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json`,
-            }),
-          ),
-      ),
-      rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json`,
-        (_, res, ctx) => res(ctx.json('A Json String')),
-      ),
-      rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json`,
-        (_, res, ctx) =>
-          res(
-            ctx.json({
-              name: 'plugin-2',
-              ...manifestDummyData,
-              exposes: [
-                {
-                  id: 'plugin-2:.',
-                  name: '.',
-                  path: '.',
-                  ...manifestExposedRemoteDummyData,
-                },
-              ],
-            }),
-          ),
-      ),
-    );
-
-    mocks.federation.get.mockReturnValueOnce({
-      default: createFrontendPlugin({
-        id: 'plugin-2',
-        extensions: [],
-      }),
-    });
-
-    const features = await (
-      dynamicFrontendFeaturesLoader({
-        ...getCommonOptions(),
-      }) as InternalFrontendFeatureLoader
-    ).loader({
-      config: mockApis.config({
-        data: {
-          app: {
-            packageName: 'app-5',
-            experimental: {
-              packages: {
-                include: [],
-              },
-            },
-          },
-          backend: {
-            baseUrl,
-          },
-          dynamicPlugins: {},
-        },
-      }),
-    });
-
-    const errorCalls = mocks.console.error.mock.calls.flatMap(e => e[0]);
-    expect(errorCalls).toEqual([
-      "Failed fetching module federation manifest from 'http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json': Error: Invalid Json content: should be a Json object",
-    ]);
-    const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
-    expect(warnCalls).toEqual([]);
-    expect(features).toMatchObject([
-      {
-        $$type: '@backstage/FrontendPlugin',
-        id: 'plugin-2',
-        version: 'v1',
-      },
-    ]);
-    const infoCalls = mocks.console.info.mock.calls.flatMap(e => e[0]);
-    expect(infoCalls).toEqual([
-      "Loading dynamic plugin 'plugin-1' from 'http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json'",
-      "Loading dynamic plugin 'plugin-2' from 'http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json'",
-      "Dynamic plugin remote module 'plugin-2' loaded from http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json",
-    ]);
-    expect(mocks.federation.get.mock.calls.flatMap(e => e[0])).toEqual([
-      {
-        id: '.',
-        name: 'plugin-2',
-      },
-    ]);
-  });
-
   it('should warn on empty module, but still load other remotes', async () => {
     server.use(
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/manifests`,
+        `${baseUrl}/.backstage/dynamic-features/remotes`,
         (_, res, ctx) =>
           res(
-            ctx.json({
-              'plugin-1': `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json`,
-              'plugin-2': `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json`,
-            }),
+            ctx.json([
+              {
+                packageName: 'plugin-1',
+                exposedModules: ['.'],
+                remoteInfo: {
+                  name: 'plugin_1',
+                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+                },
+              },
+              {
+                packageName: 'plugin-2',
+                exposedModules: ['.'],
+                remoteInfo: {
+                  name: 'plugin_2',
+                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+                },
+              },
+            ]),
           ),
       ),
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json`,
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
         (_, res, ctx) =>
           res(
             ctx.json({
@@ -826,7 +724,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
           ),
       ),
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json`,
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
         (_, res, ctx) =>
           res(
             ctx.json({
@@ -861,7 +759,6 @@ describe('dynamicFrontendFeaturesLoader', () => {
       config: mockApis.config({
         data: {
           app: {
-            packageName: 'app-6',
             experimental: {
               packages: {
                 include: [],
@@ -880,7 +777,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
     expect(errorCalls).toEqual([]);
     const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
     expect(warnCalls).toEqual([
-      "Skipping empty dynamic plugin remote module 'plugin-1'.",
+      "Skipping empty dynamic plugin remote module 'plugin_1'.",
     ]);
     expect(features).toMatchObject([
       {
@@ -891,36 +788,53 @@ describe('dynamicFrontendFeaturesLoader', () => {
     ]);
     const infoCalls = mocks.console.info.mock.calls.flatMap(e => e[0]);
     expect(infoCalls).toEqual([
-      "Loading dynamic plugin 'plugin-1' from 'http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json'",
-      "Loading dynamic plugin 'plugin-2' from 'http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json'",
-      "Dynamic plugin remote module 'plugin-2' loaded from http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json",
+      "Remote module 'plugin_2' of dynamic plugin 'plugin-2' loaded from http://localhost:7007/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json",
+    ]);
+    const debugCalls = mocks.console.debug.mock.calls.flatMap(e => e[0]);
+    expect(debugCalls).toEqual([
+      "Loading dynamic plugin 'plugin-1' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json'",
+      "Loading dynamic plugin 'plugin-2' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json'",
     ]);
     expect(mocks.federation.get.mock.calls.flatMap(e => e[0])).toEqual([
       {
         id: '.',
-        name: 'plugin-1',
+        name: 'plugin_1',
       },
       {
         id: '.',
-        name: 'plugin-2',
+        name: 'plugin_2',
       },
     ]);
   });
 
-  it('should warn on module without default export, but still load other remotes', async () => {
+  it('should skip module without default export, but still load other remotes', async () => {
     server.use(
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/manifests`,
+        `${baseUrl}/.backstage/dynamic-features/remotes`,
         (_, res, ctx) =>
           res(
-            ctx.json({
-              'plugin-1': `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json`,
-              'plugin-2': `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json`,
-            }),
+            ctx.json([
+              {
+                packageName: 'plugin-1',
+                exposedModules: ['.'],
+                remoteInfo: {
+                  name: 'plugin_1',
+                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+                },
+              },
+              {
+                packageName: 'plugin-2',
+                exposedModules: ['.'],
+                remoteInfo: {
+                  name: 'plugin_2',
+                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+                },
+              },
+            ]),
           ),
       ),
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json`,
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
         (_, res, ctx) =>
           res(
             ctx.json({
@@ -938,7 +852,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
           ),
       ),
       rest.get(
-        `${baseUrl}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json`,
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
         (_, res, ctx) =>
           res(
             ctx.json({
@@ -975,7 +889,6 @@ describe('dynamicFrontendFeaturesLoader', () => {
       config: mockApis.config({
         data: {
           app: {
-            packageName: 'app-7',
             experimental: {
               packages: {
                 include: [],
@@ -993,9 +906,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
     const errorCalls = mocks.console.error.mock.calls.flatMap(e => e[0]);
     expect(errorCalls).toEqual([]);
     const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
-    expect(warnCalls).toEqual([
-      "Skipping dynamic plugin remote module 'plugin-1' since it doesn't export a new 'FrontendFeature' as default export.",
-    ]);
+    expect(warnCalls).toEqual([]);
     expect(features).toMatchObject([
       {
         $$type: '@backstage/FrontendPlugin',
@@ -1005,19 +916,242 @@ describe('dynamicFrontendFeaturesLoader', () => {
     ]);
     const infoCalls = mocks.console.info.mock.calls.flatMap(e => e[0]);
     expect(infoCalls).toEqual([
-      "Loading dynamic plugin 'plugin-1' from 'http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json'",
-      "Loading dynamic plugin 'plugin-2' from 'http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json'",
-      "Dynamic plugin remote module 'plugin-1' loaded from http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-1/mf-manifest.json",
-      "Dynamic plugin remote module 'plugin-2' loaded from http://localhost:7007/api/core.dynamicplugins.frontendRemotes/remotes/plugin-2/mf-manifest.json",
+      "Remote module 'plugin_1' of dynamic plugin 'plugin-1' loaded from http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json",
+      "Remote module 'plugin_2' of dynamic plugin 'plugin-2' loaded from http://localhost:7007/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json",
+    ]);
+    const debugCalls = mocks.console.debug.mock.calls.flatMap(e => e[0]);
+    expect(debugCalls).toEqual([
+      "Loading dynamic plugin 'plugin-1' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json'",
+      "Loading dynamic plugin 'plugin-2' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json'",
+      "Skipping dynamic plugin remote module '[object Object]' since it doesn't export a new 'FrontendFeature' as default export.",
     ]);
     expect(mocks.federation.get.mock.calls.flatMap(e => e[0])).toEqual([
       {
         id: '.',
-        name: 'plugin-1',
+        name: 'plugin_1',
       },
       {
         id: '.',
-        name: 'plugin-2',
+        name: 'plugin_2',
+      },
+    ]);
+  });
+
+  it('should warn on 404 error fetching module feredation manifest, but still load other remotes', async () => {
+    server.use(
+      rest.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes`,
+        (_, res, ctx) =>
+          res(
+            ctx.json([
+              {
+                packageName: 'plugin-1',
+                exposedModules: ['.'],
+                remoteInfo: {
+                  name: 'plugin_1',
+                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+                },
+              },
+              {
+                packageName: 'plugin-2',
+                exposedModules: ['.'],
+                remoteInfo: {
+                  name: 'plugin_2',
+                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+                },
+              },
+            ]),
+          ),
+      ),
+      rest.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+        (_, res, ctx) => res(ctx.json({}), ctx.status(404, 'NOT FOUND')),
+      ),
+      rest.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+        (_, res, ctx) =>
+          res(
+            ctx.json({
+              name: 'plugin_2',
+              ...manifestDummyData,
+              exposes: [
+                {
+                  id: 'plugin_2:.',
+                  name: '.',
+                  path: '.',
+                  ...manifestExposedRemoteDummyData,
+                },
+              ],
+            }),
+          ),
+      ),
+    );
+
+    mocks.federation.get.mockReturnValueOnce({
+      default: createFrontendPlugin({
+        id: 'plugin-2',
+        extensions: [],
+      }),
+    });
+
+    const features = await (
+      dynamicFrontendFeaturesLoader({
+        ...getCommonOptions(),
+      }) as InternalFrontendFeatureLoader
+    ).loader({
+      config: mockApis.config({
+        data: {
+          app: {
+            experimental: {
+              packages: {
+                include: [],
+              },
+            },
+          },
+          backend: {
+            baseUrl,
+          },
+          dynamicPlugins: {},
+        },
+      }),
+    });
+
+    const errorCalls = mocks.console.error.mock.calls.flatMap(e => e[0]);
+    expect(errorCalls).toEqual([
+      "Failed loading remote module 'plugin_1' of dynamic plugin 'plugin-1': Error: [ Federation Runtime ]: [ Federation Runtime ]: [ Federation Runtime ]: http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json is not a federation manifest",
+    ]);
+    const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
+    expect(warnCalls).toEqual([]);
+    expect(features).toMatchObject([
+      {
+        $$type: '@backstage/FrontendPlugin',
+        id: 'plugin-2',
+        version: 'v1',
+      },
+    ]);
+    const infoCalls = mocks.console.info.mock.calls.flatMap(e => e[0]);
+    expect(infoCalls).toEqual([
+      "Remote module 'plugin_2' of dynamic plugin 'plugin-2' loaded from http://localhost:7007/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json",
+    ]);
+    const debugCalls = mocks.console.debug.mock.calls.flatMap(e => e[0]);
+    expect(debugCalls).toEqual([
+      "Loading dynamic plugin 'plugin-1' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json'",
+      "Loading dynamic plugin 'plugin-2' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json'",
+    ]);
+
+    expect(mocks.federation.get.mock.calls.flatMap(e => e[0])).toEqual([
+      {
+        id: '.',
+        name: 'plugin_2',
+      },
+    ]);
+  });
+
+  it('should warn on unexpected Json content while fetching module feredation manifest, but still load other remotes', async () => {
+    server.use(
+      rest.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes`,
+        (_, res, ctx) =>
+          res(
+            ctx.json([
+              {
+                packageName: 'plugin-1',
+                exposedModules: ['.'],
+                remoteInfo: {
+                  name: 'plugin_1',
+                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+                },
+              },
+              {
+                packageName: 'plugin-2',
+                exposedModules: ['.'],
+                remoteInfo: {
+                  name: 'plugin_2',
+                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+                },
+              },
+            ]),
+          ),
+      ),
+      rest.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+        (_, res, ctx) => res(ctx.json('A Json String')),
+      ),
+      rest.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+        (_, res, ctx) =>
+          res(
+            ctx.json({
+              name: 'plugin-2',
+              ...manifestDummyData,
+              exposes: [
+                {
+                  id: 'plugin-2:.',
+                  name: '.',
+                  path: '.',
+                  ...manifestExposedRemoteDummyData,
+                },
+              ],
+            }),
+          ),
+      ),
+    );
+
+    mocks.federation.get.mockReturnValueOnce({
+      default: createFrontendPlugin({
+        id: 'plugin-2',
+        extensions: [],
+      }),
+    });
+
+    const features = await (
+      dynamicFrontendFeaturesLoader({
+        ...getCommonOptions(),
+      }) as InternalFrontendFeatureLoader
+    ).loader({
+      config: mockApis.config({
+        data: {
+          app: {
+            experimental: {
+              packages: {
+                include: [],
+              },
+            },
+          },
+          backend: {
+            baseUrl,
+          },
+          dynamicPlugins: {},
+        },
+      }),
+    });
+
+    const errorCalls = mocks.console.error.mock.calls.flatMap(e => e[0]);
+    expect(errorCalls).toEqual([
+      "Failed loading remote module 'plugin_1' of dynamic plugin 'plugin-1': Error: [ Federation Runtime ]: [ Federation Runtime ]: [ Federation Runtime ]: http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json is not a federation manifest",
+    ]);
+    const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
+    expect(warnCalls).toEqual([]);
+    expect(features).toMatchObject([
+      {
+        $$type: '@backstage/FrontendPlugin',
+        id: 'plugin-2',
+        version: 'v1',
+      },
+    ]);
+    const infoCalls = mocks.console.info.mock.calls.flatMap(e => e[0]);
+    expect(infoCalls).toEqual([
+      "Remote module 'plugin_2' of dynamic plugin 'plugin-2' loaded from http://localhost:7007/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json",
+    ]);
+    const debugCalls = mocks.console.debug.mock.calls.flatMap(e => e[0]);
+    expect(debugCalls).toEqual([
+      "Loading dynamic plugin 'plugin-1' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json'",
+      "Loading dynamic plugin 'plugin-2' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json'",
+    ]);
+    expect(mocks.federation.get.mock.calls.flatMap(e => e[0])).toEqual([
+      {
+        id: '.',
+        name: 'plugin_2',
       },
     ]);
   });

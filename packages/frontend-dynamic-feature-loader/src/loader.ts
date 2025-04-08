@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-import { init, loadRemote } from '@module-federation/enhanced/runtime';
-import { Manifest, Module } from '@module-federation/sdk';
-import { DefaultApiClient } from './schema/openapi';
-import { FrontendHostDiscovery } from '@backstage/core-app-api';
+import {
+  FederationRuntimePlugin,
+  init,
+  loadRemote,
+} from '@module-federation/enhanced/runtime';
+import { Module } from '@module-federation/sdk';
+import { DefaultApiClient, Remote } from './schema/openapi';
 import {
   FrontendFeature,
   FrontendFeatureLoader,
   createFrontendFeatureLoader,
 } from '@backstage/frontend-plugin-api';
+import { ShareStrategy, UserOptions } from '@module-federation/runtime/types';
 
 /**
  *
@@ -32,7 +36,11 @@ export type DynamicFrontendFeaturesLoaderOptions = {
   /**
    * Additional module federation arguments for the Module Federation runtime initialization.
    */
-  moduleFederation: Omit<Parameters<typeof init>[0], 'name' | 'remotes'>;
+  moduleFederation: {
+    shared?: UserOptions['shared'];
+    shareStrategy?: ShareStrategy;
+    plugins?: Array<FederationRuntimePlugin>;
+  };
 };
 
 /**
@@ -60,14 +68,16 @@ export function dynamicFrontendFeaturesLoader(
         );
       }
 
+      const backendBaseUrl = config.getString('backend.baseUrl');
+
       const appPackageName =
         config.getOptionalString('app.packageName') ?? 'app';
-      let frontendPluginManifests: {
-        [key: string]: string;
-      };
+      let frontendPluginRemotes: Array<Remote>;
       try {
         const apiClient = new DefaultApiClient({
-          discoveryApi: FrontendHostDiscovery.fromConfig(config),
+          discoveryApi: {
+            getBaseUrl: async rootPath => `${backendBaseUrl}/${rootPath}`,
+          },
           fetchApi: {
             fetch(input) {
               return global.fetch(input);
@@ -75,14 +85,11 @@ export function dynamicFrontendFeaturesLoader(
           },
         });
 
-        const response = await apiClient.getManifests({});
+        const response = await apiClient.getRemotes({});
         if (!response.ok) {
           throw new Error(`${response.status} - ${response.statusText}`);
         }
-        frontendPluginManifests = await response.json();
-        if (typeof frontendPluginManifests !== 'object') {
-          throw new Error(`Invalid Json content: should be a Json object`);
-        }
+        frontendPluginRemotes = await response.json();
       } catch (err) {
         error(
           `Failed fetching module federation configuration of dynamic frontend plugins`,
@@ -98,12 +105,10 @@ export function dynamicFrontendFeaturesLoader(
             .replaceAll('@', '')
             .replaceAll('/', '__')
             .replaceAll('-', '_'),
-          remotes: Object.entries(frontendPluginManifests).map(
-            ([name, manifestLocation]) => ({
-              name: name,
-              entry: manifestLocation,
-            }),
-          ),
+          remotes: frontendPluginRemotes.map(remote => ({
+            alias: remote.packageName,
+            ...remote.remoteInfo,
+          })),
         });
       } catch (err) {
         error(`Failed initializing module federation`, err);
@@ -112,73 +117,52 @@ export function dynamicFrontendFeaturesLoader(
 
       const features = (
         await Promise.all(
-          Object.entries(frontendPluginManifests).map(
-            async ([name, manifestLocation]) => {
-              // eslint-disable-next-line no-console
-              console.info(
-                `Loading dynamic plugin '${name}' from '${manifestLocation}'`,
-              );
-              let manifest: Manifest;
-              try {
-                const response = await fetch(manifestLocation);
-                if (!response.ok) {
-                  throw new Error(
-                    `${response.status} - ${response.statusText}`,
-                  );
-                }
-                manifest = await response.json();
-                if (typeof manifest !== 'object') {
-                  throw new Error(
-                    `Invalid Json content: should be a Json object`,
-                  );
-                }
-              } catch (err) {
-                error(
-                  `Failed fetching module federation manifest from '${manifestLocation}'`,
-                  err,
-                );
-                return undefined;
-              }
+          frontendPluginRemotes.map(async remote => {
+            // eslint-disable-next-line no-console
+            console.debug(
+              `Loading dynamic plugin '${remote.packageName}' from '${remote.remoteInfo.entry}'`,
+            );
 
-              const moduleFeatures = await Promise.all(
-                manifest.exposes.map(async expose => {
-                  const remote =
-                    expose.name === '.' ? name : `${name}/${expose.name}`;
-                  let module: Module;
-                  try {
-                    module = await loadRemote<Module>(remote);
-                  } catch (err) {
-                    error(
-                      `Failed loading dynamic plugin remote module '${remote}'`,
-                      err,
-                    );
-                    return undefined;
-                  }
-                  if (!module) {
-                    // eslint-disable-next-line no-console
-                    console.warn(
-                      `Skipping empty dynamic plugin remote module '${remote}'.`,
-                    );
-                    return undefined;
-                  }
-                  // eslint-disable-next-line no-console
-                  console.info(
-                    `Dynamic plugin remote module '${remote}' loaded from ${manifestLocation}`,
+            const moduleFeatures = await Promise.all(
+              remote.exposedModules.map(async exposedModuleName => {
+                const remoteModuleName =
+                  exposedModuleName === '.'
+                    ? remote.remoteInfo.name
+                    : `${remote.remoteInfo.name}/${exposedModuleName}`;
+                let module: Module;
+                try {
+                  module = await loadRemote<Module>(remoteModuleName);
+                } catch (err) {
+                  error(
+                    `Failed loading remote module '${remoteModuleName}' of dynamic plugin '${remote.packageName}'`,
+                    err,
                   );
-                  const defaultEntry = module.default;
-                  if (!isFrontendPluginOrModule(defaultEntry)) {
-                    // eslint-disable-next-line no-console
-                    console.warn(
-                      `Skipping dynamic plugin remote module '${remote}' since it doesn't export a new 'FrontendFeature' as default export.`,
-                    );
-                    return undefined;
-                  }
-                  return defaultEntry;
-                }),
-              );
-              return moduleFeatures;
-            },
-          ),
+                  return undefined;
+                }
+                if (!module) {
+                  // eslint-disable-next-line no-console
+                  console.warn(
+                    `Skipping empty dynamic plugin remote module '${remoteModuleName}'.`,
+                  );
+                  return undefined;
+                }
+                // eslint-disable-next-line no-console
+                console.info(
+                  `Remote module '${remoteModuleName}' of dynamic plugin '${remote.packageName}' loaded from ${remote.remoteInfo.entry}`,
+                );
+                const defaultEntry = module.default;
+                if (!isLoadable(defaultEntry)) {
+                  // eslint-disable-next-line no-console
+                  console.debug(
+                    `Skipping dynamic plugin remote module '${remote}' since it doesn't export a new 'FrontendFeature' as default export.`,
+                  );
+                  return undefined;
+                }
+                return defaultEntry;
+              }),
+            );
+            return moduleFeatures;
+          }),
         )
       )
         .flat()
@@ -189,7 +173,7 @@ export function dynamicFrontendFeaturesLoader(
   });
 }
 
-function isFrontendPluginOrModule(obj: unknown): obj is FrontendFeature {
+function isLoadable(obj: unknown): obj is FrontendFeature {
   if (obj !== null && typeof obj === 'object' && '$$type' in obj) {
     return (
       obj.$$type === '@backstage/FrontendPlugin' ||
