@@ -70,6 +70,30 @@ export namespace Events {
     html: Models.Link;
   }
   // (undocumented)
+  export interface RepoChange<T> {
+    // (undocumented)
+    new: T;
+    // (undocumented)
+    old: T;
+  }
+  // (undocumented)
+  export interface RepoChanges {
+    // (undocumented)
+    description?: RepoChange<string>;
+    // (undocumented)
+    full_name?: RepoChange<string>;
+    // (undocumented)
+    language?: RepoChange<string>;
+    // (undocumented)
+    links?: RepoChange<
+      Pick<Models.RepositoryLinks, 'avatar' | 'html' | 'self'>
+    >;
+    // (undocumented)
+    name?: RepoChange<string>;
+    // (undocumented)
+    website?: RepoChange<string>;
+  }
+  // (undocumented)
   export interface RepoEvent {
     // (undocumented)
     actor: Models.Account;
@@ -87,6 +111,11 @@ export namespace Events {
   export interface RepoPushEvent extends RepoEvent {
     // (undocumented)
     push: RepoPush;
+  }
+  // (undocumented)
+  export interface RepoUpdatedEvent extends RepoEvent {
+    // (undocumented)
+    changes: RepoChanges;
   }
 }
 
