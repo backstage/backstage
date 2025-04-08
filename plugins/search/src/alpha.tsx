@@ -286,3 +286,6 @@ export default createFrontendPlugin({
     root: rootRouteRef,
   }),
 });
+
+/** @alpha */
+export { searchTranslationRef } from './translation';

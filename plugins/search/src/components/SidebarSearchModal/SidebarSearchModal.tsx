@@ -23,6 +23,8 @@ import {
   SearchModalProvider,
   useSearchModal,
 } from '../SearchModal';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchTranslationRef } from '../../translation';
 
 /**
  * Props for {@link SidebarSearchModal}.
@@ -39,13 +41,14 @@ export type SidebarSearchModalProps = Pick<
 const SidebarSearchModalContent = (props: SidebarSearchModalProps) => {
   const { state, toggleModal } = useSearchModal();
   const Icon = props.icon ? props.icon : SearchIcon;
+  const { t } = useTranslationRef(searchTranslationRef);
 
   return (
     <>
       <SidebarItem
         className="search-icon"
         icon={Icon}
-        text="Search"
+        text={t('sidebarSearchModal.title')}
         onClick={toggleModal}
       />
       <SearchModal
