@@ -9,7 +9,7 @@ The frontend feature loader provided in this package works hand-in-hand with the
 
 - To enable this loader, you should:
 
-  - Enable the backend dynamic features in your backend application, as explained in `packages/backend-dynamic-feature-service/README.md#how-it-works`
+  - Enable the backend dynamic features in your backend application, as explained in the [`backend-dynamic-feature-service` README.md file](../backend-dynamic-feature-service/README.md#how-it-works)
   - Add the frontend feature loader to the list of features when creating the frontend application:
 
     ```typescript

@@ -1,6 +1,6 @@
 ---
 '@backstage/backend-dynamic-feature-service': patch
-'@backstage/frontend-dynamic-feature-loader': patch
+'@backstage/frontend-dynamic-feature-loader': minor
 '@backstage/frontend-defaults': patch
 ---
 
