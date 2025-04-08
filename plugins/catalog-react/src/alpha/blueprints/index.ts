@@ -29,4 +29,5 @@ export {
   type ContextMenuItemProps,
   type ContextMenuItemComponent,
   type EntityContextMenuItemParams,
+  type UseProps,
 } from './EntityContextMenuItemBlueprint';

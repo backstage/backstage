@@ -11,7 +11,6 @@ import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
-import { MenuItemProps } from '@material-ui/core/MenuItem';
 import { default as React_2 } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
@@ -362,9 +361,7 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
 
 // @alpha (undocumented)
 export type EntityContextMenuItemParams = {
-  useProps: () => Omit<MenuItemProps, 'onClick'> & {
-    onClick?: () => Promise<void>;
-  };
+  useProps: UseProps;
   icon: React_2.JSX.Element;
 };
 
@@ -447,6 +444,19 @@ export function useEntityPermission(
   allowed: boolean;
   error?: Error;
 };
+
+// @alpha (undocumented)
+export type UseProps = () =>
+  | {
+      title: React_2.ReactNode;
+      href: string;
+      disabled?: boolean;
+    }
+  | {
+      title: React_2.ReactNode;
+      onClick: () => void | Promise<void>;
+      disabled?: boolean;
+    };
 
 // (No @packageDocumentation comment for this package)
 ```
