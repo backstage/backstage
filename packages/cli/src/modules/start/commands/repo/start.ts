@@ -61,7 +61,10 @@ export async function command(namesOrPaths: string[], options: CommandOptions) {
   await Promise.all(packageOptions.map(entry => startPackage(entry.options)));
 }
 
-async function findTargetPackages(namesOrPaths: string[], pluginIds: string[]) {
+export async function findTargetPackages(
+  namesOrPaths: string[],
+  pluginIds: string[],
+) {
   const targetPackages = new Array<BackstagePackage>();
 
   const packages = await PackageGraph.listTargetPackages();
@@ -75,7 +78,7 @@ async function findTargetPackages(namesOrPaths: string[], pluginIds: string[]) {
         ACCEPTED_PACKAGE_ROLES.includes(pkg.packageJson.backstage.role)
       );
     });
-    if (!matchingPackages) {
+    if (matchingPackages.length === 0) {
       throw new Error(
         `Unable to find any plugin packages with plugin ID '${pluginId}'. Make sure backstage.pluginId is set in your package.json files by running 'yarn fix --publish'.`,
       );
@@ -145,7 +148,7 @@ async function findTargetPackages(namesOrPaths: string[], pluginIds: string[]) {
     );
     if (matchingPackages.length > 1) {
       throw new Error(
-        `Found multiple packages with role '${role}', please choose which packages you want` +
+        `Found multiple packages with role '${role}', please choose which packages you want ` +
           `to run by passing the package names explicitly as arguments, for example ` +
           `'yarn backstage-cli repo start my-plugin my-plugin-backend'.`,
       );
