@@ -1,5 +1,21 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.5.6-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-kubernetes-common@0.9.4
+
 ## 0.5.6-next.0
 
 ### Patch Changes

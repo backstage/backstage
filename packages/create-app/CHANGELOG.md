@@ -1,5 +1,29 @@
 # @backstage/create-app
 
+## 0.6.1-next.2
+
+### Patch Changes
+
+- edabbd6: Updated the root `package.json` in the template to use the new `backstage-cli repo start` command.
+
+  The `yarn dev` command is now redundant and has been removed from the template. We recommend existing projects to add these or similar scripts to help redirect users:
+
+  ```json
+  {
+    "scripts": {
+      "dev": "echo \"Use 'yarn start' instead\"",
+      "start-backend": "echo \"Use 'yarn start backend' instead\""
+    }
+  }
+  ```
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.6.1-next.1
 
 ### Patch Changes
