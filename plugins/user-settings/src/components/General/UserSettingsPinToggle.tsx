@@ -49,7 +49,7 @@ export const UserSettingsPinToggle = () => {
             checked={isPinned}
             onChange={() => toggleSidebarPinState()}
             name="pin"
-            inputProps={{ 'aria-label': 'Pin Sidebar Switch' }}
+            inputProps={{ 'aria-label': t('pinToggle.ariaLabelTitle') }}
           />
         </Tooltip>
       </ListItemSecondaryAction>

@@ -51,7 +51,7 @@ export const UserSettingsMenu = () => {
     <>
       <IconButton
         data-testid="user-settings-menu"
-        aria-label="more"
+        aria-label={t('signOutMenu.moreIconTitle')}
         onClick={handleOpen}
       >
         <MoreVertIcon />

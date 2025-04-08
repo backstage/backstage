@@ -114,7 +114,7 @@ export const UserSettingsFeatureFlags = () => {
               ...(filterInput.length && {
                 endAdornment: (
                   <IconButton
-                    aria-label="Clear filter"
+                    aria-label={t('featureFlags.clearFilter')}
                     onClick={clearFilterInput}
                     edge="end"
                   >

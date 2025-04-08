@@ -38,6 +38,7 @@ export const userSettingsTranslationRef = createTranslationRef({
     },
     signOutMenu: {
       title: 'Sign Out',
+      moreIconTitle: 'More',
     },
     pinToggle: {
       title: 'Pin Sidebar',
@@ -46,6 +47,7 @@ export const userSettingsTranslationRef = createTranslationRef({
         unpin: 'Unpin Sidebar',
         pin: 'Pin Sidebar',
       },
+      ariaLabelTitle: 'Pin Sidebar Switch',
     },
     identityCard: {
       title: 'Backstage Identity',
@@ -101,6 +103,7 @@ export const userSettingsTranslationRef = createTranslationRef({
         },
       },
       filterTitle: 'Filter',
+      clearFilter: 'Clear filter',
       flagItem: {
         title: {
           disable: 'Disable',
