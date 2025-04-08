@@ -21,6 +21,7 @@ import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
+  AuthorizePermissionRequest,
   AuthorizeResult,
   EvaluatePermissionRequest,
   EvaluatePermissionRequestBatch,
@@ -29,6 +30,7 @@ import {
   IdentifiedPermissionMessage,
   isResourcePermission,
   PermissionAttributes,
+  PermissionMessageBatch,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -62,31 +64,46 @@ const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
     .optional(),
 });
 
-const permissionSchema = z.union([
-  z.object({
-    type: z.literal('basic'),
-    name: z.string(),
-    attributes: attributesSchema,
-  }),
-  z.object({
-    type: z.literal('resource'),
-    name: z.string(),
-    attributes: attributesSchema,
-    resourceType: z.string(),
-  }),
-]);
+const basicPermissionSchema = z.object({
+  type: z.literal('basic'),
+  name: z.string(),
+  attributes: attributesSchema,
+});
 
-const evaluatePermissionRequestSchema: z.ZodSchema<
-  IdentifiedPermissionMessage<EvaluatePermissionRequest>
+const resourcePermissionSchema = z.object({
+  type: z.literal('resource'),
+  name: z.string(),
+  attributes: attributesSchema,
+  resourceType: z.string(),
+});
+
+const authorizePermissionRequestBatchSchema: z.ZodSchema<
+  PermissionMessageBatch<AuthorizePermissionRequest>
 > = z.object({
-  id: z.string(),
-  resourceRef: z.string().optional(),
-  permission: permissionSchema,
+  items: z.array(
+    z.union([
+      z.object({
+        id: z.string(),
+        permission: basicPermissionSchema,
+      }),
+      z.object({
+        id: z.string(),
+        resourceRef: z.string(),
+        permission: resourcePermissionSchema,
+      }),
+    ]),
+  ),
 });
 
 const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionRequestBatch> =
   z.object({
-    items: z.array(evaluatePermissionRequestSchema),
+    items: z.array(
+      z.object({
+        id: z.string(),
+        resourceRef: z.string().optional(),
+        permission: resourcePermissionSchema,
+      }),
+    ),
   });
 
 /**
@@ -225,7 +242,30 @@ export async function createRouter(
         allow: ['user', 'none'],
       });
 
-      const parseResult = evaluatePermissionRequestBatchSchema.safeParse(
+      // TODO(vinzscam): make some magic
+      const isServicePrincipal = false;
+
+      if (isServicePrincipal) {
+        const parsedResult = evaluatePermissionRequestBatchSchema.safeParse(
+          req.body,
+        );
+
+        if (parsedResult.success) {
+          res.json({
+            items: await handleRequest(
+              parsedResult.data.items,
+              policy,
+              permissionIntegrationClient,
+              credentials,
+              auth,
+              userInfo,
+            ),
+          });
+          return;
+        }
+      }
+
+      const parseResult = authorizePermissionRequestBatchSchema.safeParse(
         req.body,
       );
 
