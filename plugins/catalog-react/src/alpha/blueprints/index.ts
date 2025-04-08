@@ -23,9 +23,7 @@ export { EntityHeaderBlueprint } from './EntityHeaderBlueprint';
 export { defaultEntityContentGroups } from './extensionData';
 export type { EntityCardType } from './extensionData';
 export {
-  contextMenuItemComponentDataRef,
   EntityContextMenuItemBlueprint,
-  type ContextMenuItemComponent,
   type EntityContextMenuItemParams,
   type UseProps,
 } from './EntityContextMenuItemBlueprint';

@@ -32,7 +32,6 @@ import {
   EntityHeaderBlueprint,
   EntityContentBlueprint,
   defaultEntityContentGroups,
-  contextMenuItemComponentDataRef,
 } from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
@@ -74,7 +73,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       EntityContentBlueprint.dataRefs.filterExpression.optional(),
       EntityContentBlueprint.dataRefs.group.optional(),
     ]),
-    contextMenuItems: createExtensionInput([contextMenuItemComponentDataRef]),
+    contextMenuItems: createExtensionInput([coreExtensionData.reactElement]),
   },
   config: {
     schema: {
@@ -92,7 +91,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
         const { EntityLayout } = await import('./components/EntityLayout');
 
         const menuItems = inputs.contextMenuItems.map(item =>
-          item.get(contextMenuItemComponentDataRef),
+          item.get(coreExtensionData.reactElement),
         );
 
         type Groups = Record<

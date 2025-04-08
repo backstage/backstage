@@ -35,7 +35,6 @@ import { useApi, alertApiRef } from '@backstage/core-plugin-api';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import type { ContextMenuItemComponent } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContextMenuProvider } from '@backstage/plugin-catalog-react';
 
 /** @public */
@@ -63,7 +62,7 @@ interface ExtraContextMenuItem {
 interface EntityContextMenuProps {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   UNSTABLE_contextMenuOptions?: UnregisterEntityOptions;
-  contextMenuItems?: ContextMenuItemComponent[];
+  contextMenuItems?: React.JSX.Element[];
   onUnregisterEntity: () => void;
   onInspectEntity: () => void;
 }
@@ -189,9 +188,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
             </>
           ) : (
             <EntityContextMenuProvider onMenuClose={onClose}>
-              {contextMenuItems.map((ContextMenuItem, idx) => (
-                <ContextMenuItem key={`context-menu-item-${idx}`} />
-              ))}
+              {contextMenuItems}
             </EntityContextMenuProvider>
           )}
         </MenuList>
