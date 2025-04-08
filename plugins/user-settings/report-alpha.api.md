@@ -153,6 +153,7 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly 'defaultSettingsPage.tabsTitle.authProviders': 'Authentication Providers';
     readonly 'defaultSettingsPage.tabsTitle.general': 'General';
     readonly 'settingsLayout.title': 'Settings';
+    readonly sideBarTitle: 'Settings';
   }
 >;
 

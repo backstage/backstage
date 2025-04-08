@@ -118,5 +118,6 @@ export const userSettingsTranslationRef = createTranslationRef({
     settingsLayout: {
       title: 'Settings',
     },
+    sideBarTitle: 'Settings',
   },
 });
