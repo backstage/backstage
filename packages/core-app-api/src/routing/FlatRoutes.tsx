@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { ReactNode, useMemo } from 'react';
+import { ReactNode } from 'react';
 import { useRoutes } from 'react-router-dom';
 import {
   attachComponentData,
   useApp,
   useElementFilter,
 } from '@backstage/core-plugin-api';
-import { isReactRouterBeta } from '../app/isReactRouterBeta';
 
 let warned = false;
 
@@ -54,7 +53,6 @@ export type FlatRoutesProps = {
 export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
   const app = useApp();
   const { NotFoundErrorPage } = app.getComponents();
-  const isBeta = useMemo(() => isReactRouterBeta(), []);
   const routes = useElementFilter(props.children, elements =>
     elements
       .getElements<{
@@ -71,8 +69,8 @@ export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
         }
         path = path?.replace(/\/\*$/, '') ?? '/';
 
-        let element = isBeta ? child : child.props.element;
-        if (!isBeta && !element) {
+        let element = child.props.element;
+        if (!element) {
           element = child;
           if (!warned && process.env.NODE_ENV !== 'test') {
             // eslint-disable-next-line no-console
