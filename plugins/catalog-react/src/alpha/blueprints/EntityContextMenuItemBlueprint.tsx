@@ -23,6 +23,7 @@ import {
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import { useEntityContextMenu } from '../../hooks/useEntityContextMenu';
 
 /** @alpha */
 export type UseProps = () =>
@@ -44,14 +45,7 @@ export type EntityContextMenuItemParams = {
 };
 
 /** @alpha */
-export type ContextMenuItemProps = {
-  onClose: () => void;
-};
-
-/** @alpha */
-export type ContextMenuItemComponent = (
-  props: ContextMenuItemProps,
-) => React.JSX.Element;
+export type ContextMenuItemComponent = (props: {}) => React.JSX.Element;
 
 /** @alpha */
 export const contextMenuItemComponentDataRef =
@@ -66,7 +60,8 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
   output: [contextMenuItemComponentDataRef],
   *factory(params: EntityContextMenuItemParams, { node }) {
     const loader = async (): Promise<ContextMenuItemComponent> => {
-      return ({ onClose }) => {
+      return () => {
+        const { onMenuClose } = useEntityContextMenu();
         const { title, ...menuItemProps } = params.useProps();
         let handleClick = undefined;
 
@@ -74,9 +69,9 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
           handleClick = () => {
             const result = menuItemProps.onClick();
             if (result && 'finally' in result) {
-              result.finally(onClose);
+              result.finally(onMenuClose);
             } else {
-              onClose();
+              onMenuClose();
             }
           };
         }
