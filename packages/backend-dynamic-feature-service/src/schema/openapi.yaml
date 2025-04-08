@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: core.dynamicplugins.frontendRemotes
+  title: .backstage/dynamic-features
   version: '1'
   description: The Backstage backend plugin that serves the frontend plugins module federation manifests and assets
   license:
@@ -15,13 +15,89 @@ components:
   parameters: {}
   requestBodies: {}
   responses:
+    RemotesResponse:
+      description: List of Module Federation Remotes exposed by the backend
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Remotes'
+
     ErrorResponse:
       description: An error response from the backend.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+
   schemas:
+    Remotes:
+      type: array
+      items:
+        $ref: '#/components/schemas/Remote'
+
+    Remote:
+      description: Definition of a frontend plugin Module Federation remote served by the backend
+      type: object
+      properties:
+        packageName:
+          description: Name of the package exposed through this Module Federation remote
+          type: string
+        remoteInfo:
+          $ref: '#/components/schemas/RemoteInfo'
+
+        exposedModules:
+          description: Names of modules exposed by this module federation remote
+          type: array
+          items:
+            type: string
+      required:
+        - packageName
+        - remoteInfo
+        - exposedModules
+
+    RemoteInfo:
+      description: Definition of a frontend plugin Module Federation remote served by the backend
+      externalDocs:
+        url: https://module-federation.io/guide/basic/runtime.html#init
+      type: object
+      properties:
+        name:
+          description: Name of the module federation remote
+          type: string
+        entry:
+          description: Remote entry, either the remote manifest file, or the remote entry Javascript file.
+          type: string
+        entryGlobalName:
+          type: string
+        shareScope:
+          type: string
+        type:
+          type: string
+          enum:
+            [
+              'var',
+              'module',
+              'assign',
+              'assign-properties',
+              'this',
+              'window',
+              'self',
+              'global',
+              'commonjs',
+              'commonjs2',
+              'commonjs-module',
+              'commonjs-static',
+              'amd',
+              'amd-require',
+              'umd',
+              'umd2',
+              'jsonp',
+              'system',
+            ]
+      required:
+        - 'name'
+        - 'entry'
+
     Error:
       type: object
       properties:
@@ -66,20 +142,13 @@ components:
       scheme: bearer
       bearerFormat: JWT
 paths:
-  /manifests:
+  /remotes:
     get:
-      operationId: GetManifests
-      description: Get the Module Federation manifest files of dynamic frontend plugins.
+      operationId: GetRemotes
+      description: Get the Module Federation remote definitions.
       responses:
         '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                properties: {}
-                additionalProperties:
-                  type: string
+          $ref: '#/components/responses/RemotesResponse'
         '400':
           $ref: '#/components/responses/ErrorResponse'
         default:

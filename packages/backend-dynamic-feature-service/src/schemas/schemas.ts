@@ -35,7 +35,6 @@ import {
   mergeConfigSchemas,
 } from '@backstage/config-loader';
 import { dynamicPluginsFeatureLoader } from '../features';
-import { PackageRoles } from '@backstage/cli-node';
 
 /**
  *
@@ -157,16 +156,8 @@ export const dynamicPluginsSchemasServiceFactory = Object.assign(
 async function gatherDynamicPluginsSchemas(
   packages: ScannedPluginPackage[],
   logger: LoggerService,
-  schemaLocator: (
-    pluginPackage: ScannedPluginPackage,
-  ) => string = pluginPackage =>
-    path.join(
-      'dist',
-      PackageRoles.getRoleInfo(pluginPackage.manifest.backstage.role)
-        .platform === 'node'
-        ? 'configSchema.json'
-        : '.config-schema.json',
-    ),
+  schemaLocator: (pluginPackage: ScannedPluginPackage) => string = () =>
+    path.join('dist', '.config-schema.json'),
 ): Promise<{ [context: string]: JsonObject }> {
   const allSchemas: { [context: string]: JsonObject } = {};
 

@@ -35,6 +35,10 @@ import * as url from 'url';
 import { MESSAGE } from 'triple-beam';
 import { overridePackagePathResolution } from '@backstage/backend-plugin-api/testUtils';
 import { ScannedPluginPackage } from '../scanner';
+import {
+  dynamicPluginsFrontendServiceRef,
+  FrontendRemoteResolverProvider,
+} from '../server/frontendRemotesServer';
 
 // these can get a bit slow in CI
 jest.setTimeout(60_000);
@@ -117,6 +121,9 @@ describe('dynamicPluginsFeatureLoader', () => {
             dynamicPlugins: {
               rootDirectory: dynamicPluginsRootDirectory,
             },
+            backend: {
+              baseUrl: `http://localhost:0`,
+            },
           },
         }),
         dynamicPluginsFeatureLoader({
@@ -160,6 +167,9 @@ describe('dynamicPluginsFeatureLoader', () => {
           data: {
             dynamicPlugins: {
               rootDirectory: dynamicPluginsRootDirectory,
+            },
+            backend: {
+              baseUrl: `http://localhost:0`,
             },
           },
         }),
@@ -211,6 +221,9 @@ Require stack:
             dynamicPlugins: {
               rootDirectory: dynamicPluginsRootDirectory,
             },
+            backend: {
+              baseUrl: `http://localhost:0`,
+            },
           },
         }),
         dynamicPluginsFeatureLoader({
@@ -250,6 +263,9 @@ Require stack:
               rootDirectory: dynamicPluginsRootDirectory,
             },
             customLogLabel: 'a very nice label',
+            backend: {
+              baseUrl: `http://localhost:0`,
+            },
           },
         }),
         dynamicPluginsFeatureLoader({
@@ -288,6 +304,9 @@ Require stack:
             },
             'test-backend': {
               secretValue: 'AVerySecretValue',
+            },
+            backend: {
+              baseUrl: `http://localhost:0`,
             },
           },
         }),
@@ -342,6 +361,9 @@ Require stack:
             'test-frontend': {
               frontendValue: 'AFrontendValue',
             },
+            backend: {
+              baseUrl: `http://localhost:0`,
+            },
           },
         }),
         dynamicPluginsFeatureLoader({
@@ -371,52 +393,6 @@ Require stack:
 </head>`);
   });
 
-  it('should access the module federation assets of the frontend plugin through the backend plugin', async () => {
-    const { server } = await startTestBackend({
-      features: [
-        mockServices.rootConfig.factory({
-          data: {
-            dynamicPlugins: {
-              rootDirectory: dynamicPluginsRootDirectory,
-            },
-          },
-        }),
-        dynamicPluginsFeatureLoader({
-          moduleLoader: logger =>
-            jestFreeTypescriptAwareModuleLoader({ logger }),
-        }),
-      ],
-    });
-
-    const list = await fetch(
-      `http://localhost:${server.port()}/api/core.dynamicplugins.frontendRemotes/manifests`,
-    );
-    expect(list.ok).toBe(true);
-    expect(await list.json()).toEqual({
-      'plugin-test-dynamic': `http://localhost:${server.port()}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-test-dynamic/mf-manifest.json`,
-    });
-
-    const manifest = await fetch(
-      `http://localhost:${server.port()}/api/core.dynamicplugins.frontendRemotes/remotes/plugin-test-dynamic/mf-manifest.json`,
-    );
-    expect(manifest.ok).toBe(true);
-    expect(await manifest.json()).toMatchObject({
-      exposes: [],
-      id: 'backstage__plugin_test',
-      name: 'backstage__plugin_test',
-      metaData: {
-        buildInfo: {
-          buildName: '@backstage/plugin-test',
-          buildVersion: '0.0.0',
-        },
-        globalName: 'backstage__plugin_test',
-        name: 'backstage__plugin_test',
-        pluginVersion: '0.0.0',
-        publicPath: 'auto',
-      },
-    });
-  });
-
   it('should load a backend plugin from the alpha package first', async () => {
     const dynamicPLuginsLister = new DynamicPluginLister();
     const mockedTransport = new MockedTransport();
@@ -430,6 +406,9 @@ Require stack:
           data: {
             dynamicPlugins: {
               rootDirectory: dynamicPluginsRootForAlpha,
+            },
+            backend: {
+              baseUrl: `http://localhost:0`,
             },
           },
         }),
@@ -483,6 +462,387 @@ Require stack:
         version: '0.0.0',
         main: '../dist/alpha.cjs.js',
       },
+    });
+  });
+
+  describe('module federation support', () => {
+    const createRemoteProviderPlugin = (
+      provider: FrontendRemoteResolverProvider,
+    ) =>
+      createBackendPlugin({
+        pluginId: 'test-remote-provider',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              frontendRemotes: dynamicPluginsFrontendServiceRef,
+            },
+            async init({ frontendRemotes }) {
+              frontendRemotes.setResolverProvider(provider);
+            },
+          });
+        },
+      });
+
+    it('should access the module federation assets of the frontend plugin through the backend plugin', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          mockServices.rootConfig.factory({
+            data: {
+              dynamicPlugins: {
+                rootDirectory: dynamicPluginsRootDirectory,
+              },
+              backend: {
+                baseUrl: `http://localhost:0`,
+              },
+            },
+          }),
+          dynamicPluginsFeatureLoader({
+            moduleLoader: logger =>
+              jestFreeTypescriptAwareModuleLoader({ logger }),
+          }),
+        ],
+      });
+
+      const list = await fetch(
+        `http://localhost:${server.port()}/.backstage/dynamic-features/remotes`,
+      );
+      expect(list.ok).toBe(true);
+      expect(await list.json()).toEqual([
+        {
+          packageName: 'plugin-test-dynamic',
+          exposedModules: ['.', 'alpha'],
+          remoteInfo: {
+            name: 'backstage__plugin_test',
+            entry:
+              'http://localhost:0/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json',
+          },
+        },
+      ]);
+
+      const manifest = await fetch(
+        `http://localhost:${server.port()}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
+      );
+      expect(manifest.ok).toBe(true);
+      expect(await manifest.json()).toMatchObject({
+        exposes: [{ name: '.' }, { name: 'alpha' }],
+        id: 'backstage__plugin_test',
+        name: 'backstage__plugin_test',
+        metaData: {
+          buildInfo: {
+            buildName: '@backstage/plugin-test',
+            buildVersion: '0.0.0',
+          },
+          globalName: 'backstage__plugin_test',
+          name: 'backstage__plugin_test',
+          pluginVersion: '0.0.0',
+          publicPath: 'auto',
+        },
+      });
+    });
+
+    it('should allow overriding the module federation assets folder, return the Javascript remote entry, the exposed modules and additional remote intry info fields', async () => {
+      const mockedTransport = new MockedTransport();
+      const { server } = await startTestBackend({
+        features: [
+          mockServices.rootConfig.factory({
+            data: {
+              dynamicPlugins: {
+                rootDirectory: dynamicPluginsRootDirectory,
+              },
+              backend: {
+                baseUrl: `http://localhost:0`,
+              },
+            },
+          }),
+          createRemoteProviderPlugin({
+            for: () => ({
+              assetsPathFromPackage: 'dist-alternate',
+              getRemoteEntryType: () => 'javascript',
+              getAdditionaRemoteInfo: manifest => ({
+                type: (manifest as any).metaData.remoteEntry.type,
+              }),
+              overrideExposedModules: exposedModules =>
+                exposedModules.filter(name => name !== 'alpha'),
+            }),
+          }),
+          dynamicPluginsFeatureLoader({
+            moduleLoader: logger =>
+              jestFreeTypescriptAwareModuleLoader({ logger }),
+            logger: () => ({
+              transports: [mockedTransport],
+              format: winston.format.simple(),
+            }),
+          }),
+        ],
+      });
+
+      const list = await fetch(
+        `http://localhost:${server.port()}/.backstage/dynamic-features/remotes`,
+      );
+      expect(list.ok).toBe(true);
+      expect(await list.json()).toEqual([
+        {
+          exposedModules: ['.'],
+          packageName: 'plugin-test-dynamic',
+          remoteInfo: {
+            entry:
+              'http://localhost:0/.backstage/dynamic-features/remotes/plugin-test-dynamic/remoteEntry.js',
+            name: 'backstage__plugin_test',
+            type: 'global',
+          },
+        },
+      ]);
+      expect(mockedTransport.logs).toContainEqual(
+        expect.stringMatching(
+          `Exposed dynamic frontend plugin 'plugin-test-dynamic' from '.*/dist-alternate' `,
+        ),
+      );
+    });
+
+    it('should allow customizing the module federation manifest when returning it as the remote entry', async () => {
+      const mockedTransport = new MockedTransport();
+      const { server } = await startTestBackend({
+        features: [
+          mockServices.rootConfig.factory({
+            data: {
+              dynamicPlugins: {
+                rootDirectory: dynamicPluginsRootDirectory,
+              },
+              backend: {
+                baseUrl: `http://localhost:0`,
+              },
+            },
+          }),
+          createRemoteProviderPlugin({
+            for: () => ({
+              customizeManifest(manifest) {
+                (manifest as any).metaData.publicPath =
+                  'https://some-cdn-url-where-module-federation-assets-are-mirrored';
+                return manifest;
+              },
+            }),
+          }),
+          dynamicPluginsFeatureLoader({
+            moduleLoader: logger =>
+              jestFreeTypescriptAwareModuleLoader({ logger }),
+            logger: () => ({
+              transports: [mockedTransport],
+              format: winston.format.simple(),
+            }),
+          }),
+        ],
+      });
+
+      const list = await fetch(
+        `http://localhost:${server.port()}/.backstage/dynamic-features/remotes`,
+      );
+      expect(list.ok).toBe(true);
+      expect(await list.json()).toEqual([
+        {
+          packageName: 'plugin-test-dynamic',
+          exposedModules: ['.', 'alpha'],
+          remoteInfo: {
+            name: 'backstage__plugin_test',
+            entry:
+              'http://localhost:0/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json',
+          },
+        },
+      ]);
+      const manifest = await fetch(
+        `http://localhost:${server.port()}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
+      );
+      expect(manifest.ok).toBe(true);
+      expect(await manifest.json()).toMatchObject({
+        exposes: [{ name: '.' }, { name: 'alpha' }],
+        id: 'backstage__plugin_test',
+        name: 'backstage__plugin_test',
+        metaData: {
+          buildInfo: {
+            buildName: '@backstage/plugin-test',
+            buildVersion: '0.0.0',
+          },
+          globalName: 'backstage__plugin_test',
+          name: 'backstage__plugin_test',
+          pluginVersion: '0.0.0',
+          publicPath:
+            'https://some-cdn-url-where-module-federation-assets-are-mirrored',
+        },
+      });
+
+      expect(mockedTransport.logs).toContainEqual(
+        expect.stringMatching(
+          `Exposed dynamic frontend plugin 'plugin-test-dynamic' from '.*/dist' `,
+        ),
+      );
+    });
+
+    it('should log an error and skip the plugin if the module federation manifest does not contain a valid name', async () => {
+      const mockedTransport = new MockedTransport();
+      const { server } = await startTestBackend({
+        features: [
+          mockServices.rootConfig.factory({
+            data: {
+              dynamicPlugins: {
+                rootDirectory: dynamicPluginsRootDirectory,
+              },
+              backend: {
+                baseUrl: `http://localhost:0`,
+              },
+            },
+          }),
+          createRemoteProviderPlugin({
+            for: () => ({
+              manifestFileName: 'mf-manifest-without-name.json',
+            }),
+          }),
+          dynamicPluginsFeatureLoader({
+            moduleLoader: logger =>
+              jestFreeTypescriptAwareModuleLoader({ logger }),
+            logger: () => ({
+              transports: [mockedTransport],
+              format: winston.format.simple(),
+            }),
+          }),
+        ],
+      });
+
+      const list = await fetch(
+        `http://localhost:${server.port()}/.backstage/dynamic-features/remotes`,
+      );
+      expect(list.ok).toBe(true);
+      expect(await list.json()).toEqual([]);
+      expect(mockedTransport.logs).toContainEqual(
+        expect.stringMatching(
+          "error: Error in manifest '.*' for plugin .*@.*: module name not found",
+        ),
+      );
+    });
+
+    it('should log an error and skip the plugin if a resolver provider triggers an error', async () => {
+      const mockedTransport = new MockedTransport();
+      const { server } = await startTestBackend({
+        features: [
+          mockServices.rootConfig.factory({
+            data: {
+              dynamicPlugins: {
+                rootDirectory: dynamicPluginsRootDirectory,
+              },
+              backend: {
+                baseUrl: `http://localhost:0`,
+              },
+            },
+          }),
+          createRemoteProviderPlugin({
+            for() {
+              throw new Error('Resolver provider error');
+            },
+          }),
+          dynamicPluginsFeatureLoader({
+            moduleLoader: logger =>
+              jestFreeTypescriptAwareModuleLoader({ logger }),
+            logger: () => ({
+              transports: [mockedTransport],
+              format: winston.format.simple(),
+            }),
+          }),
+        ],
+      });
+
+      const list = await fetch(
+        `http://localhost:${server.port()}/.backstage/dynamic-features/remotes`,
+      );
+      expect(list.ok).toBe(true);
+      expect(await list.json()).toEqual([]);
+      expect(mockedTransport.logs).toContainEqual(
+        expect.stringMatching(
+          "error: Unexpected error when exposing dynamic frontend plugin 'plugin-test-dynamic@0.0.0' Resolver provider error",
+        ),
+      );
+    });
+
+    it('should log an error and skip the plugin if the module federation manifest is not found', async () => {
+      const mockedTransport = new MockedTransport();
+      const { server } = await startTestBackend({
+        features: [
+          mockServices.rootConfig.factory({
+            data: {
+              dynamicPlugins: {
+                rootDirectory: dynamicPluginsRootDirectory,
+              },
+              backend: {
+                baseUrl: `http://localhost:0`,
+              },
+            },
+          }),
+          createRemoteProviderPlugin({
+            for: () => ({
+              manifestFileName: 'mf-manifest-not-found.json',
+            }),
+          }),
+          dynamicPluginsFeatureLoader({
+            moduleLoader: logger =>
+              jestFreeTypescriptAwareModuleLoader({ logger }),
+            logger: () => ({
+              transports: [mockedTransport],
+              format: winston.format.simple(),
+            }),
+          }),
+        ],
+      });
+
+      const list = await fetch(
+        `http://localhost:${server.port()}/.backstage/dynamic-features/remotes`,
+      );
+      expect(list.ok).toBe(true);
+      expect(await list.json()).toEqual([]);
+      expect(mockedTransport.logs).toContainEqual(
+        expect.stringMatching(
+          "error: Could not find manifest '.*/dist/mf-manifest-not-found.json' for frontend plugin plugin-test-dynamic@0.0.0",
+        ),
+      );
+    });
+
+    it('should log an error and skip the plugin if the module federation remote entry asset is not found', async () => {
+      const mockedTransport = new MockedTransport();
+      const { server } = await startTestBackend({
+        features: [
+          mockServices.rootConfig.factory({
+            data: {
+              dynamicPlugins: {
+                rootDirectory: dynamicPluginsRootDirectory,
+              },
+              backend: {
+                baseUrl: `http://localhost:0`,
+              },
+            },
+          }),
+          createRemoteProviderPlugin({
+            for: () => ({
+              manifestFileName: 'mf-manifest-with-wrong-remote-entry.json',
+              getRemoteEntryType: () => 'javascript',
+            }),
+          }),
+          dynamicPluginsFeatureLoader({
+            moduleLoader: logger =>
+              jestFreeTypescriptAwareModuleLoader({ logger }),
+            logger: () => ({
+              transports: [mockedTransport],
+              format: winston.format.simple(),
+            }),
+          }),
+        ],
+      });
+
+      const list = await fetch(
+        `http://localhost:${server.port()}/.backstage/dynamic-features/remotes`,
+      );
+      expect(list.ok).toBe(true);
+      expect(await list.json()).toEqual([]);
+      expect(mockedTransport.logs).toContainEqual(
+        expect.stringMatching(
+          "error: Could not find remote entry asset '.*/dist/remoteEntry-not-found.js' for frontend plugin plugin-test-dynamic@0.0.0",
+        ),
+      );
     });
   });
 });

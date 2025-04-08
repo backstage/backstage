@@ -32,7 +32,7 @@ import {
   dynamicPluginsRootLoggerServiceFactory,
   dynamicPluginsSchemasServiceFactory,
 } from '../schemas';
-import frontendRemotesServerPlugin from '../server';
+import { frontendRemotesServerService } from '../server/frontendRemotesServer';
 
 /**
  * @public
@@ -65,7 +65,7 @@ const dynamicPluginsFeatureLoaderWithOptions = (
         yield* [
           dynamicPluginsRootLoggerServiceFactory(rootLoggerOptions),
           dynamicPluginsFrontendSchemas,
-          frontendRemotesServerPlugin,
+          frontendRemotesServerService,
           dynamicPluginsFeatureDiscoveryLoader,
         ];
       }

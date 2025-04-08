@@ -13,4 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { frontendRemotesServerPlugin as default } from './plugin';
+export { dynamicPluginsFrontendServiceRef } from './frontendRemotesServer';
+
+export type {
+  DynamicPluginsFrontendRemotesService,
+  FrontendRemoteResolver,
+  FrontendRemoteResolverProvider,
+  AdditionalRemoteInfo,
+} from './frontendRemotesServer';
