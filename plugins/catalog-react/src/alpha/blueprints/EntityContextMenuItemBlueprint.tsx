@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode, JSX } from 'react';
 import {
   coreExtensionData,
   createExtensionBlueprint,
@@ -28,12 +28,12 @@ import { useEntityContextMenu } from '../../hooks/useEntityContextMenu';
 /** @alpha */
 export type UseProps = () =>
   | {
-      title: React.ReactNode;
+      title: ReactNode;
       href: string;
       disabled?: boolean;
     }
   | {
-      title: React.ReactNode;
+      title: ReactNode;
       onClick: () => void | Promise<void>;
       disabled?: boolean;
     };
@@ -41,7 +41,7 @@ export type UseProps = () =>
 /** @alpha */
 export type EntityContextMenuItemParams = {
   useProps: UseProps;
-  icon: React.JSX.Element;
+  icon: JSX.Element;
 };
 
 /** @alpha */

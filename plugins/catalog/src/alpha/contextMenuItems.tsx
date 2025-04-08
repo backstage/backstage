@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   EntityContextMenuItemBlueprint,
   useEntityPermission,
@@ -37,6 +36,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../routes';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
+import { useEffect } from 'react';
 
 export const copyEntityUrlContextMenuItem = EntityContextMenuItemBlueprint.make(
   {
@@ -48,7 +48,7 @@ export const copyEntityUrlContextMenuItem = EntityContextMenuItemBlueprint.make(
         const alertApi = useApi(alertApiRef);
         const { t } = useTranslationRef(catalogTranslationRef);
 
-        React.useEffect(() => {
+        useEffect(() => {
           if (!copyState.error && copyState.value) {
             alertApi.post({
               message: t('entityContextMenu.copiedMessage'),

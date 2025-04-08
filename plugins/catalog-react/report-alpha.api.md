@@ -11,7 +11,7 @@ import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
-import { default as React_2 } from 'react';
+import { ReactNode } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -331,11 +331,7 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
   kind: 'entity-context-menu-item';
   name: undefined;
   params: EntityContextMenuItemParams;
-  output: ConfigurableExtensionDataRef<
-    React_2.JSX.Element,
-    'core.reactElement',
-    {}
-  >;
+  output: ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
   inputs: {};
   config: {};
   configInput: {};
@@ -345,7 +341,7 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
 // @alpha (undocumented)
 export type EntityContextMenuItemParams = {
   useProps: UseProps;
-  icon: React_2.JSX.Element;
+  icon: JSX_2.Element;
 };
 
 // @alpha (undocumented)
@@ -431,12 +427,12 @@ export function useEntityPermission(
 // @alpha (undocumented)
 export type UseProps = () =>
   | {
-      title: React_2.ReactNode;
+      title: ReactNode;
       href: string;
       disabled?: boolean;
     }
   | {
-      title: React_2.ReactNode;
+      title: ReactNode;
       onClick: () => void | Promise<void>;
       disabled?: boolean;
     };

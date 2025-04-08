@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { ReactNode } from 'react';
 import { useEntityContextMenu } from './useEntityContextMenu';
 import { renderHook } from '@testing-library/react';
 import {
@@ -29,7 +29,7 @@ const Provider = ({
   children,
   onMenuClose,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   onMenuClose: () => void;
 }) => (
   <Context.Provider value={createVersionedValueMap({ 1: { onMenuClose } })}>

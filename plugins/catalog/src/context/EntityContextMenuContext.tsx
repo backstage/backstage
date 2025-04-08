@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import {
   createVersionedContext,
   createVersionedValueMap,
 } from '@backstage/version-bridge';
+import { ReactNode } from 'react';
 
 /** @internal */
 export type EntityContextMenuContextValue = {
@@ -30,7 +30,7 @@ const EntityContextMenuContext = createVersionedContext<{
 
 /** @internal */
 export interface EntityContextMenuProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
   onMenuClose: () => void;
 }
 
