@@ -8,8 +8,7 @@ import { AppTree } from '@backstage/frontend-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
-import { FrontendModule } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
+import { FrontendFeature as FrontendFeature_2 } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
@@ -40,6 +39,6 @@ export function createSpecializedApp(options?: {
   tree: AppTree;
 };
 
-// @public (undocumented)
-export type FrontendFeature = FrontendPlugin | FrontendModule;
+// @public @deprecated (undocumented)
+export type FrontendFeature = FrontendFeature_2;
 ```

@@ -1,5 +1,86 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.15.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/plugin-catalog-react@1.16.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.15.0-next.0
+
+### Minor Changes
+
+- 5890016: add api to retrieve template extensions info from scaffolder-backend
+
+### Patch Changes
+
+- 6ed42b7: Scaffolding - Template card - button to show template entity detail
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.16.1-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.14.6
+
+### Patch Changes
+
+- 4d26652: Fix field extension validation not working when field is in dependencies in an array field
+- b3b7c9c: Deprecated the alpha `ScaffolderFormFieldsApi` and `formFieldsApiRef` as these are being replaced with a different solution.
+- 48aab13: Add i18n support for scaffolder-react plugin
+- 3db64ba: Disable the submit button on creating
+- 34ea3f5: Updated dependency `flatted` to `3.3.3`.
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-catalog-react@1.16.0
+  - @backstage/plugin-scaffolder-common@1.5.10
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.14.6-next.2
+
+### Patch Changes
+
+- 48aab13: Add i18n support for scaffolder-react plugin
+- 3db64ba: Disable the submit button on creating
+- 34ea3f5: Updated dependency `flatted` to `3.3.3`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/plugin-catalog-react@1.16.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.31
+  - @backstage/plugin-scaffolder-common@1.5.10-next.0
+
 ## 1.14.6-next.1
 
 ### Patch Changes

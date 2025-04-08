@@ -1,5 +1,65 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.8.2-next.1
+
+### Patch Changes
+
+- 003dc15: Updated the path field in the `gitlab:group:ensureExists` action to support also strings with multiple segments (e.g. `group/subgroup`)
+- Updated dependencies
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/plugin-scaffolder-node@0.8.1-next.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.8.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.2
+
+## 0.8.1
+
+### Patch Changes
+
+- 0df33ea: fix: Creating a repository in a user namespace would always lead to an error
+- 984b283: Made "gitlab:pipeline:trigger" action idempotent
+- 225c733: Made gitlab:repo:push action idempotent.
+- a08cb20: Remove usages of `@backstage/backend-common`
+- ac58f84: Made gitlab:issue:edit action idempotent.
+- f6b51a8: Made "gitlab:projectDeployToken:create" action idempotent
+- a75e18f: Change the if statement in the catch block to match what the new version of Gitbeaker will return
+- 36af946: Made "gitlab:projectVariable:create" action idempotent
+- 1cea434: Made "gitlab:projectAccessToken:create" action idempotent
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- 83ae330: Made "gitlab:group:migrate" action idempotent
+- Updated dependencies
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-scaffolder-node@0.8.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.8.1-next.2
+
+### Patch Changes
+
+- 0df33ea: fix: Creating a repository in a user namespace would always lead to an error
+- ac58f84: Made gitlab:issue:edit action idempotent.
+- a75e18f: Change the if statement in the catch block to match what the new version of Gitbeaker will return
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.0-next.2
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.8.1-next.1
 
 ### Patch Changes

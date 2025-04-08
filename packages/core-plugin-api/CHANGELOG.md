@@ -1,5 +1,16 @@
 # @backstage/core-plugin-api
 
+## 1.10.5
+
+### Patch Changes
+
+- 327d21e: Failure to lazy load an extension will now always result in an error being thrown to be forwarded to error boundaries, rather than being rendered using the `BootErrorPage` app component.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 1.10.4
 
 ### Patch Changes

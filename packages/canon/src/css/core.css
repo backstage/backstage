@@ -18,8 +18,13 @@
 @import './normalize.css';
 @import './utilities.css';
 
-/* Light theme tokens */
+/* Global reset */
+:where(a) {
+  color: inherit;
+  text-decoration: none;
+}
 
+/* Light theme tokens */
 :root {
   /* Font families */
   --canon-font-regular: system-ui;
@@ -72,7 +77,8 @@
 
   /* Background Colors */
   --canon-bg: #f8f8f8;
-  --canon-bg-elevated: #fff;
+  --canon-bg-surface-1: #fff;
+  --canon-bg-surface-2: #ececec;
   --canon-bg-solid: #1f5493;
   --canon-bg-solid-hover: #163a66;
   --canon-bg-solid-pressed: #0f2b4e;
@@ -108,15 +114,18 @@
   --canon-border-warning: #e36d05;
   --canon-border-success: #53db83;
 
-  /* Ring Colors */
+  /* Special Colors */
   --canon-ring: #1f5493;
+  --canon-scrollbar: #a0a0a03b;
+  --canon-scrollbar-thumb: #a0a0a0;
 }
 
 /* Dark theme tokens */
 [data-theme='dark'] {
   /* Background Colors */
   --canon-bg: #000000;
-  --canon-bg-elevated: #191919;
+  --canon-bg-surface-1: #191919;
+  --canon-bg-surface-2: #242424;
   --canon-bg-solid: #9cc9ff;
   --canon-bg-solid-hover: #83b9fd;
   --canon-bg-solid-pressed: #83b9fd;
@@ -151,4 +160,9 @@
   --canon-border-danger: #f87a7a;
   --canon-border-warning: #e36d05;
   --canon-border-success: #53db83;
+
+  /* Special Colors */
+  --canon-ring: #1f5493;
+  --canon-scrollbar: #3636363a;
+  --canon-scrollbar-thumb: #575757;
 }

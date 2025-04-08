@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.6.8
+
+### Patch Changes
+
+- 612d1fd: Update `catalog.providers.microsoftGraphOrg.target` config def to be optional as this has a default value.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1
+
 ## 0.6.8-next.1
 
 ### Patch Changes

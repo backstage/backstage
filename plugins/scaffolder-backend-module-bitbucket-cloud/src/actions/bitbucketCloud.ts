@@ -224,15 +224,19 @@ export function createPublishBitbucketCloudAction(options: {
 
       const apiBaseUrl = integrationConfig.config.apiBaseUrl;
 
-      const { remoteUrl, repoContentsUrl } = await createRepository({
-        authorization,
-        workspace: workspace || '',
-        project,
-        repo,
-        repoVisibility,
-        mainBranch: defaultBranch,
-        description,
-        apiBaseUrl,
+      const { remoteUrl, repoContentsUrl } = await ctx.checkpoint({
+        key: `create.repo.${host}.${repo}`,
+        fn: async () =>
+          await createRepository({
+            authorization,
+            workspace: workspace || '',
+            project,
+            repo,
+            repoVisibility,
+            mainBranch: defaultBranch,
+            description,
+            apiBaseUrl,
+          }),
       });
 
       const gitAuthorInfo = {
@@ -272,20 +276,29 @@ export function createPublishBitbucketCloudAction(options: {
         );
       }
 
-      const commitResult = await initRepoAndPush({
-        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
-        remoteUrl,
-        auth,
-        defaultBranch,
-        logger: ctx.logger,
-        commitMessage:
-          gitCommitMessage ||
-          config.getOptionalString('scaffolder.defaultCommitMessage'),
-        gitAuthorInfo,
-        signingKey: signCommit ? signingKey : undefined,
+      const commitHash = await ctx.checkpoint({
+        key: `init.repo.and.push${host}.${repo}`,
+        fn: async () => {
+          const commitResult = await initRepoAndPush({
+            dir: getRepoSourceDirectory(
+              ctx.workspacePath,
+              ctx.input.sourcePath,
+            ),
+            remoteUrl,
+            auth,
+            defaultBranch,
+            logger: ctx.logger,
+            commitMessage:
+              gitCommitMessage ||
+              config.getOptionalString('scaffolder.defaultCommitMessage'),
+            gitAuthorInfo,
+            signingKey: signCommit ? signingKey : undefined,
+          });
+          return commitResult?.commitHash;
+        },
       });
 
-      ctx.output('commitHash', commitResult?.commitHash);
+      ctx.output('commitHash', commitHash);
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },

@@ -1,5 +1,43 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.23-next.0
+
+### Patch Changes
+
+- 9c12a76: Fixed rendering issues in `ReportIssue` addon for unsupported repository types and improved shadow DOM event handling. The addon now properly prevents initialization when encountering unsupported repository types and correctly handles selection events within the shadow DOM.
+- Updated dependencies
+  - @backstage/plugin-techdocs-react@1.2.16-next.0
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/integration-react@1.2.6-next.0
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/core-plugin-api@1.10.5
+
+## 1.1.22
+
+### Patch Changes
+
+- b5a8208: Added `TechDocsAddonsBlueprint` extension to allow adding of techdocs addons.
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/integration@1.16.2
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-techdocs-react@1.2.15
+  - @backstage/integration-react@1.2.5
+
+## 1.1.22-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/plugin-techdocs-react@1.2.15-next.2
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/integration-react@1.2.5-next.0
+
 ## 1.1.22-next.1
 
 ### Patch Changes
