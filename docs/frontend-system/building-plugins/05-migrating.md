@@ -85,7 +85,7 @@ The code above binds all the extensions to the plugin. _Important_: Make sure to
 
 Pages that were previously created using the `createRoutableExtension` extension function can be migrated to the new Frontend System using the `PageBlueprint` [extension blueprint](../architecture/23-extension-blueprints.md), exported by `@backstage/frontend-plugin-api`.
 
-In the new system plugins are responsible more information than they used to. For example, the plugin is now responsible for providing the path for the page, rather than it being part of the app code.
+In the new system plugins provide more information than they used to. For example, the plugin is now responsible for providing the path for the page, rather than it being part of the app code.
 
 For example, given the following page:
 
