@@ -19,7 +19,7 @@ import { TableColumn } from '@backstage/core-components';
 import { EntityTable } from '@backstage/plugin-catalog-react';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import ToggleButton from '@material-ui/lab/ToggleButton';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ApiTypeTitle } from '../ApiDefinitionCard';
 import { ApiDefinitionDialog } from '../ApiDefinitionDialog';
 

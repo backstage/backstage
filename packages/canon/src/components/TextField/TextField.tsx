@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { forwardRef } from 'react';
+import { useId, forwardRef } from 'react';
 import { Input } from '@base-ui-components/react/input';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
@@ -39,9 +39,9 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
     const responsiveSize = useResponsiveValue(size);
 
     // Generate unique IDs for accessibility
-    const inputId = React.useId();
-    const descriptionId = React.useId();
-    const errorId = React.useId();
+    const inputId = useId();
+    const descriptionId = useId();
+    const errorId = useId();
 
     return (
       <div

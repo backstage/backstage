@@ -20,7 +20,7 @@ import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import TextField from '@material-ui/core/TextField';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import { ReactNode } from 'react';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
 import { asInputRef } from '../helpers';
 import {
@@ -45,7 +45,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
 
   const configApi = mockApis.config();
 
-  const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+  const Wrapper = ({ children }: { children?: ReactNode }) => (
     <TestApiProvider
       apis={[
         [catalogImportApiRef, catalogImportApi],

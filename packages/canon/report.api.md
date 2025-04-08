@@ -7,15 +7,18 @@ import { Breakpoint as Breakpoint_2 } from '@backstage/canon';
 import { ChangeEvent } from 'react';
 import { Context } from 'react';
 import type { CSSProperties } from 'react';
+import { FC } from 'react';
 import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
+import { HTMLAttributes } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
-import { default as React_2 } from 'react';
-import * as React_3 from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
+import { TdHTMLAttributes } from 'react';
+import { ThHTMLAttributes } from 'react';
 import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
 import type { useRender } from '@base-ui-components/react/use-render';
 
@@ -122,8 +125,8 @@ export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export const breakpoints: Breakpoint[];
 
 // @public (undocumented)
-export const Button: React_2.ForwardRefExoticComponent<
-  ButtonProps & React_2.RefAttributes<HTMLButtonElement>
+export const Button: ForwardRefExoticComponent<
+  ButtonProps & RefAttributes<HTMLButtonElement>
 >;
 
 // @public (undocumented)
@@ -158,8 +161,8 @@ export interface ButtonProps
 }
 
 // @public (undocumented)
-export const Checkbox: React_2.ForwardRefExoticComponent<
-  CheckboxProps & React_2.RefAttributes<HTMLButtonElement>
+export const Checkbox: ForwardRefExoticComponent<
+  CheckboxProps & RefAttributes<HTMLButtonElement>
 >;
 
 // @public (undocumented)
@@ -328,8 +331,8 @@ export type GetPropDefType<Def> = Def extends BooleanPropDef
     : string
   : Def extends ReactNodePropDef
   ? Def extends ResponsivePropDef
-    ? Responsive<React_2.ReactNode>
-    : React_2.ReactNode
+    ? Responsive<ReactNode>
+    : ReactNode
   : Def extends EnumOrStringPropDef<infer Type>
   ? Def extends ResponsivePropDef<infer Type extends string>
     ? Responsive<string | Type>
@@ -507,8 +510,8 @@ export interface GridProps extends SpaceProps {
 }
 
 // @public (undocumented)
-export const Heading: React_2.ForwardRefExoticComponent<
-  HeadingProps & React_2.RefAttributes<HTMLHeadingElement>
+export const Heading: ForwardRefExoticComponent<
+  HeadingProps & RefAttributes<HTMLHeadingElement>
 >;
 
 // @public (undocumented)
@@ -563,11 +566,11 @@ export const heightPropDefs: {
 export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
 
 // @public (undocumented)
-export const Icon: (props: IconProps) => React_2.JSX.Element | null;
+export const Icon: (props: IconProps) => JSX_2.Element | null;
 
 // @public (undocumented)
-export const IconButton: React_2.ForwardRefExoticComponent<
-  IconButtonProps & React_2.RefAttributes<HTMLButtonElement>
+export const IconButton: ForwardRefExoticComponent<
+  IconButtonProps & RefAttributes<HTMLButtonElement>
 >;
 
 // @public (undocumented)
@@ -677,7 +680,7 @@ export type IconProps = {
 };
 
 // @public (undocumented)
-export const IconProvider: (props: IconProviderProps) => React_2.JSX.Element;
+export const IconProvider: (props: IconProviderProps) => JSX_2.Element;
 
 // @public (undocumented)
 export interface IconProviderProps {
@@ -700,8 +703,8 @@ export type JustifyContent =
   | 'between';
 
 // @public (undocumented)
-export const Link: React_2.ForwardRefExoticComponent<
-  Omit<LinkProps, 'ref'> & React_2.RefAttributes<HTMLElement>
+export const Link: ForwardRefExoticComponent<
+  Omit<LinkProps, 'ref'> & RefAttributes<HTMLElement>
 >;
 
 // @public (undocumented)
@@ -887,7 +890,7 @@ export type PropDef<T = any> = RegularPropDef<T> | ResponsivePropDef<T>;
 // @public (undocumented)
 export type ReactNodePropDef = {
   type: 'ReactNode';
-  default?: React_2.ReactNode;
+  default?: ReactNode;
   required?: boolean;
 };
 
@@ -912,39 +915,27 @@ export type ResponsivePropDef<T = any> = RegularPropDef<T> & {
 
 // @public (undocumented)
 export const ScrollArea: {
-  Root: React_2.ForwardRefExoticComponent<
-    Omit<
-      ScrollArea_2.Root.Props & React_2.RefAttributes<HTMLDivElement>,
-      'ref'
-    > &
-      React_2.RefAttributes<HTMLDivElement>
+  Root: ForwardRefExoticComponent<
+    Omit<ScrollArea_2.Root.Props & RefAttributes<HTMLDivElement>, 'ref'> &
+      RefAttributes<HTMLDivElement>
   >;
-  Viewport: React_2.ForwardRefExoticComponent<
-    Omit<
-      ScrollArea_2.Viewport.Props & React_2.RefAttributes<HTMLDivElement>,
-      'ref'
-    > &
-      React_2.RefAttributes<HTMLDivElement>
+  Viewport: ForwardRefExoticComponent<
+    Omit<ScrollArea_2.Viewport.Props & RefAttributes<HTMLDivElement>, 'ref'> &
+      RefAttributes<HTMLDivElement>
   >;
-  Scrollbar: React_2.ForwardRefExoticComponent<
-    Omit<
-      ScrollArea_2.Scrollbar.Props & React_2.RefAttributes<HTMLDivElement>,
-      'ref'
-    > &
-      React_2.RefAttributes<HTMLDivElement>
+  Scrollbar: ForwardRefExoticComponent<
+    Omit<ScrollArea_2.Scrollbar.Props & RefAttributes<HTMLDivElement>, 'ref'> &
+      RefAttributes<HTMLDivElement>
   >;
-  Thumb: React_2.ForwardRefExoticComponent<
-    Omit<
-      ScrollArea_2.Thumb.Props & React_2.RefAttributes<HTMLDivElement>,
-      'ref'
-    > &
-      React_2.RefAttributes<HTMLDivElement>
+  Thumb: ForwardRefExoticComponent<
+    Omit<ScrollArea_2.Thumb.Props & RefAttributes<HTMLDivElement>, 'ref'> &
+      RefAttributes<HTMLDivElement>
   >;
 };
 
 // @public (undocumented)
-export const Select: React_2.ForwardRefExoticComponent<
-  SelectProps & React_2.RefAttributes<HTMLDivElement>
+export const Select: ForwardRefExoticComponent<
+  SelectProps & RefAttributes<HTMLDivElement>
 >;
 
 // @public (undocumented)
@@ -1038,56 +1029,52 @@ export type StylingPropDef = {
 };
 
 // @public (undocumented)
-export const Table: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableElement> &
-    React_3.RefAttributes<HTMLTableElement>
+export const Table: ForwardRefExoticComponent<
+  HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>
 >;
 
 // @public (undocumented)
-export const TableBody: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableSectionElement> &
-    React_3.RefAttributes<HTMLTableSectionElement>
+export const TableBody: ForwardRefExoticComponent<
+  HTMLAttributes<HTMLTableSectionElement> &
+    RefAttributes<HTMLTableSectionElement>
 >;
 
 // @public (undocumented)
-export const TableCell: React_3.ForwardRefExoticComponent<
-  React_3.TdHTMLAttributes<HTMLTableCellElement> &
-    React_3.RefAttributes<HTMLTableCellElement>
+export const TableCell: ForwardRefExoticComponent<
+  TdHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
 >;
 
 // @public (undocumented)
-export const TableFooter: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableSectionElement> &
-    React_3.RefAttributes<HTMLTableSectionElement>
+export const TableFooter: ForwardRefExoticComponent<
+  HTMLAttributes<HTMLTableSectionElement> &
+    RefAttributes<HTMLTableSectionElement>
 >;
 
 // @public (undocumented)
-export const TableHead: React_3.ForwardRefExoticComponent<
-  React_3.ThHTMLAttributes<HTMLTableCellElement> &
-    React_3.RefAttributes<HTMLTableCellElement>
+export const TableHead: ForwardRefExoticComponent<
+  ThHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
 >;
 
 // @public (undocumented)
-export const TableHeader: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableSectionElement> &
-    React_3.RefAttributes<HTMLTableSectionElement>
+export const TableHeader: ForwardRefExoticComponent<
+  HTMLAttributes<HTMLTableSectionElement> &
+    RefAttributes<HTMLTableSectionElement>
 >;
 
 // @public (undocumented)
-export const TableRow: React_3.ForwardRefExoticComponent<
-  React_3.HTMLAttributes<HTMLTableRowElement> &
-    React_3.RefAttributes<HTMLTableRowElement>
+export const TableRow: ForwardRefExoticComponent<
+  HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>
 >;
 
 // @public (undocumented)
-const Text_2: React_2.ForwardRefExoticComponent<
-  TextProps & React_2.RefAttributes<HTMLParagraphElement>
+const Text_2: ForwardRefExoticComponent<
+  TextProps & RefAttributes<HTMLParagraphElement>
 >;
 export { Text_2 as Text };
 
 // @public (undocumented)
-export const TextField: React_2.ForwardRefExoticComponent<
-  TextFieldProps & React_2.RefAttributes<HTMLDivElement>
+export const TextField: ForwardRefExoticComponent<
+  TextFieldProps & RefAttributes<HTMLDivElement>
 >;
 
 // @public (undocumented)
@@ -1135,27 +1122,24 @@ export interface TextProps {
 
 // @public (undocumented)
 export const Tooltip: {
-  Provider: React_2.FC<Tooltip_2.Provider.Props>;
-  Root: React_2.FC<Tooltip_2.Root.Props>;
-  Trigger: React_2.ForwardRefExoticComponent<
-    Omit<Tooltip_2.Trigger.Props & React_2.RefAttributes<any>, 'ref'> &
-      React_2.RefAttributes<any>
+  Provider: FC<Tooltip_2.Provider.Props>;
+  Root: FC<Tooltip_2.Root.Props>;
+  Trigger: ForwardRefExoticComponent<
+    Omit<Tooltip_2.Trigger.Props & RefAttributes<any>, 'ref'> &
+      RefAttributes<any>
   >;
   Portal: typeof Tooltip_2.Portal;
-  Positioner: React_2.ForwardRefExoticComponent<
-    Omit<
-      Tooltip_2.Positioner.Props & React_2.RefAttributes<HTMLDivElement>,
-      'ref'
-    > &
-      React_2.RefAttributes<HTMLDivElement>
+  Positioner: ForwardRefExoticComponent<
+    Omit<Tooltip_2.Positioner.Props & RefAttributes<HTMLDivElement>, 'ref'> &
+      RefAttributes<HTMLDivElement>
   >;
-  Popup: React_2.ForwardRefExoticComponent<
-    Omit<Tooltip_2.Popup.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
-      React_2.RefAttributes<HTMLDivElement>
+  Popup: ForwardRefExoticComponent<
+    Omit<Tooltip_2.Popup.Props & RefAttributes<HTMLDivElement>, 'ref'> &
+      RefAttributes<HTMLDivElement>
   >;
-  Arrow: React_2.ForwardRefExoticComponent<
-    Omit<Tooltip_2.Arrow.Props & React_2.RefAttributes<HTMLDivElement>, 'ref'> &
-      React_2.RefAttributes<HTMLDivElement>
+  Arrow: ForwardRefExoticComponent<
+    Omit<Tooltip_2.Arrow.Props & RefAttributes<HTMLDivElement>, 'ref'> &
+      RefAttributes<HTMLDivElement>
   >;
 };
 

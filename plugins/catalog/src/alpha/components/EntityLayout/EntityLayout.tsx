@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentProps, ReactNode } from 'react';
+import { ComponentProps, ReactNode } from 'react';
 
 import Alert from '@material-ui/lab/Alert';
 

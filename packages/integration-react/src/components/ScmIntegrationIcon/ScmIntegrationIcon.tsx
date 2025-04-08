@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import CodeIcon from '@material-ui/icons/Code';
-import React from 'react';
 import { useApp } from '@backstage/core-plugin-api';
 
 /**

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import { PropsWithChildren, useContext } from 'react';
 import { renderHook } from '@testing-library/react';
 import {
   createVersionedContext,
@@ -30,7 +30,7 @@ describe('VersionedContext', () => {
     const Context = createVersionedContext<ContextType>('test-context-1');
 
     const rendered = renderHook(() => useContext(Context), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <Context.Provider
           value={createVersionedValueMap({ 1: '1v1', 2: '1v2' })}
         >
@@ -47,7 +47,7 @@ describe('VersionedContext', () => {
     const Context = createVersionedContext<ContextType>('test-context-2');
 
     const rendered = renderHook(() => useVersionedContext('test-context-2'), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <Context.Provider
           value={createVersionedValueMap({ 1: '2v1', 2: '2v2' })}
         >

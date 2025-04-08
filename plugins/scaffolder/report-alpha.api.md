@@ -6,6 +6,7 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
+import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
@@ -20,7 +21,6 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { PathParams } from '@backstage/core-plugin-api';
-import { default as React_2 } from 'react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
@@ -438,7 +438,7 @@ export const scaffolderTranslationRef: TranslationRef<
 
 // @alpha (undocumented)
 export type TemplateListPageProps = {
-  TemplateCardComponent?: React_2.ComponentType<{
+  TemplateCardComponent?: ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
   groups?: TemplateGroupFilter[];
@@ -459,7 +459,7 @@ export type TemplateListPageProps = {
 export type TemplateWizardPageProps = {
   customFieldExtensions: FieldExtensionOptions<any, any>[];
   components?: {
-    ReviewStepComponent?: React_2.ComponentType<ReviewStepProps>;
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
   };
   layouts?: LayoutOptions[];
   formProps?: FormProps_3;

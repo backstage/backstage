@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { forwardRef } from 'react';
 import { ScrollArea as ScrollAreaPrimitive } from '@base-ui-components/react/scroll-area';
 import clsx from 'clsx';
 
-const ScrollAreaRoot = React.forwardRef<
+const ScrollAreaRoot = forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
 >(({ className, ...props }, ref) => (
@@ -30,7 +30,7 @@ const ScrollAreaRoot = React.forwardRef<
 ));
 ScrollAreaRoot.displayName = ScrollAreaPrimitive.Root.displayName;
 
-const ScrollAreaViewport = React.forwardRef<
+const ScrollAreaViewport = forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Viewport>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Viewport>
 >(({ className, ...props }, ref) => (
@@ -42,7 +42,7 @@ const ScrollAreaViewport = React.forwardRef<
 ));
 ScrollAreaViewport.displayName = ScrollAreaPrimitive.Viewport.displayName;
 
-const ScrollAreaScrollbar = React.forwardRef<
+const ScrollAreaScrollbar = forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Scrollbar>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Scrollbar>
 >(({ className, ...props }, ref) => (
@@ -54,7 +54,7 @@ const ScrollAreaScrollbar = React.forwardRef<
 ));
 ScrollAreaScrollbar.displayName = ScrollAreaPrimitive.Scrollbar.displayName;
 
-const ScrollAreaThumb = React.forwardRef<
+const ScrollAreaThumb = forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Thumb>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Thumb>
 >(({ className, ...props }, ref) => (

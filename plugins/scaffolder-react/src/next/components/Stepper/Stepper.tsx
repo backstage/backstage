@@ -34,7 +34,7 @@ import { ErrorSchema } from '@rjsf/utils';
 import { customizeValidator } from '@rjsf/validator-ajv8';
 import ajvErrors from 'ajv-errors';
 import { merge } from 'lodash';
-import React, {
+import {
   ComponentType,
   useCallback,
   useMemo,
