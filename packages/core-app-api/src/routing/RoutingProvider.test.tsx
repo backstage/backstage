@@ -14,19 +14,118 @@
  * limitations under the License.
  */
 
-import {
-  default as React,
-  PropsWithChildren,
-  ReactElement,
-  Suspense,
-} from 'react';
+import { Suspense, PropsWithChildren, ReactElement } from 'react';
+import { MemoryRouter, Routes, Route, useOutlet } from 'react-router-dom';
 import { render } from '@testing-library/react';
-import type {
-  BackstagePlugin,
+import { renderHook } from '@testing-library/react';
+import { useVersionedContext } from '@backstage/version-bridge';
+import {
+  childDiscoverer,
+  routeElementDiscoverer,
+  traverseElementTree,
+} from '../extensions/traversal';
+import {
+  createPlugin,
+  useRouteRef,
+  createRoutableExtension,
+  createRouteRef,
+  createExternalRouteRef,
   RouteRef,
   ExternalRouteRef,
 } from '@backstage/core-plugin-api';
-import type { AnyRouteRef, RouteFunc } from './types';
+import { RoutingProvider } from './RoutingProvider';
+import { routingV2Collector } from './collectors';
+import { validateRouteParameters } from './validation';
+import { RouteResolver } from './RouteResolver';
+import { AnyRouteRef, RouteFunc } from './types';
+import { AppContextProvider } from '../app/AppContext';
+
+jest.mock('react-router', () => jest.requireActual('react-router'));
+jest.mock('react-router-dom', () => jest.requireActual('react-router-dom'));
+
+const MockComponent = ({ children }: PropsWithChildren<{}>) => (
+  <>
+    {children}
+    <section>{useOutlet()}</section>
+  </>
+);
+
+const plugin = createPlugin({ id: 'my-plugin' });
+
+const refPage1 = createRouteRef({ id: 'refPage1' });
+const refSource1 = createRouteRef({ id: 'refSource1' });
+const refPage2 = createRouteRef({ id: 'refPage2' });
+const refSource2 = createRouteRef({ id: 'refSource2' });
+const refPage3 = createRouteRef({ id: 'refPage3', params: ['x'] });
+const eRefA = createExternalRouteRef({ id: '1' });
+const eRefB = createExternalRouteRef({ id: '2' });
+const eRefC = createExternalRouteRef({ id: '3', params: ['y'] });
+const eRefD = createExternalRouteRef({ id: '4', optional: true });
+const eRefE = createExternalRouteRef({
+  id: '5',
+  optional: true,
+  params: ['z'],
+});
+
+const MockRouteSource = <T extends { [name in string]: string }>(props: {
+  path?: string;
+  name: string;
+  routeRef: AnyRouteRef;
+  params?: T;
+}) => {
+  try {
+    const routeFunc = useRouteRef(props.routeRef as any) as
+      | RouteFunc<any>
+      | undefined;
+    return (
+      <div>
+        Path at {props.name}: {routeFunc?.(props.params) ?? '<none>'}
+      </div>
+    );
+  } catch (ex) {
+    return (
+      <div>
+        Error at {props.name}, {String(ex)}
+      </div>
+    );
+  }
+};
+
+const ExtensionPage1 = plugin.provide(
+  createRoutableExtension({
+    name: 'ExtensionPage1',
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: refPage1,
+  }),
+);
+const ExtensionPage2 = plugin.provide(
+  createRoutableExtension({
+    name: 'ExtensionPage2',
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: refPage2,
+  }),
+);
+const ExtensionPage3 = plugin.provide(
+  createRoutableExtension({
+    name: 'ExtensionPage3',
+    component: () => Promise.resolve(MockComponent),
+    mountPoint: refPage3,
+  }),
+);
+const ExtensionSource1 = plugin.provide(
+  createRoutableExtension({
+    name: 'ExtensionSource1',
+    component: () => Promise.resolve(MockRouteSource),
+    mountPoint: refSource1,
+  }),
+);
+const ExtensionSource2 = plugin.provide(
+  createRoutableExtension({
+    name: 'ExtensionSource2',
+    component: () => Promise.resolve(MockRouteSource),
+    mountPoint: refSource2,
+  }),
+);
 
 const mockContext = {
   getComponents: () => ({ Progress: () => null } as any),
@@ -35,184 +134,33 @@ const mockContext = {
   getPlugins: jest.fn(),
 };
 
-describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
-  function requireDeps() {
-    return {
-      ...(require('./FlatRoutes') as typeof import('./FlatRoutes')),
-      ...(require('react-router-dom') as typeof import('react-router-dom')),
-      ...(require('./RoutingProvider') as typeof import('./RoutingProvider')),
-      ...(require('../extensions/traversal') as typeof import('../extensions/traversal')),
-      ...(require('./collectors') as typeof import('./collectors')),
-      ...(require('./validation') as typeof import('./validation')),
-      ...(require('./types') as typeof import('./types')),
-      ...(require('../app/AppContext') as typeof import('../app/AppContext')),
-      ...(require('@backstage/core-plugin-api') as typeof import('@backstage/core-plugin-api')),
-    };
-  }
-
-  const MockComponent = ({ children }: PropsWithChildren<{}>) => {
-    const { useOutlet } = requireDeps();
-    return (
-      <>
-        {children}
-        <section>{useOutlet()}</section>
-      </>
-    );
-  };
-
-  const MockRouteSource = <T extends { [name in string]: string }>(props: {
-    path?: string;
-    name: string;
-    routeRef: AnyRouteRef;
-    params?: T;
-  }) => {
-    const { useRouteRef } = requireDeps();
-    try {
-      const routeFunc = useRouteRef(props.routeRef as any) as
-        | RouteFunc<any>
-        | undefined;
-      return (
-        <div>
-          Path at {props.name}: {routeFunc?.(props.params) ?? '<none>'}
-        </div>
-      );
-    } catch (ex) {
-      return (
-        <div>
-          Error at {props.name}, {String(ex)}
-        </div>
-      );
-    }
-  };
-
-  let plugin: BackstagePlugin;
-  let refPage1: RouteRef;
-  let refSource1: RouteRef;
-  let refPage2: RouteRef;
-  let refSource2: RouteRef;
-  let refPage3: RouteRef<{ x: string }>;
-  let eRefA: ExternalRouteRef;
-  let eRefB: ExternalRouteRef;
-  let eRefC: ExternalRouteRef;
-  let eRefD: ExternalRouteRef;
-  let eRefE: ExternalRouteRef;
-
-  let ExtensionPage1: typeof MockComponent;
-  let ExtensionPage2: typeof MockComponent;
-  let ExtensionPage3: typeof MockComponent;
-  let ExtensionSource1: typeof MockRouteSource;
-  let ExtensionSource2: typeof MockRouteSource;
-
-  beforeAll(() => {
-    jest.doMock('react', () => React);
-    jest.doMock('react-router', () =>
-      rrVersion === 'beta'
-        ? jest.requireActual('react-router-beta')
-        : jest.requireActual('react-router-stable'),
-    );
-    jest.doMock('react-router-dom', () =>
-      rrVersion === 'beta'
-        ? jest.requireActual('react-router-dom-beta')
-        : jest.requireActual('react-router-dom-stable'),
-    );
-
-    const {
-      createRoutableExtension,
-      createExternalRouteRef,
-      createRouteRef,
-      createPlugin,
-    } = requireDeps();
-
-    plugin = createPlugin({ id: 'my-plugin' });
-    refPage1 = createRouteRef({ id: 'refPage1' });
-    refSource1 = createRouteRef({ id: 'refSource1' });
-    refPage2 = createRouteRef({ id: 'refPage2' });
-    refSource2 = createRouteRef({ id: 'refSource2' });
-    refPage3 = createRouteRef({ id: 'refPage3', params: ['x'] });
-    eRefA = createExternalRouteRef({ id: '1' });
-    eRefB = createExternalRouteRef({ id: '2' });
-    eRefC = createExternalRouteRef({ id: '3', params: ['y'] });
-    eRefD = createExternalRouteRef({ id: '4', optional: true });
-    eRefE = createExternalRouteRef({ id: '5', optional: true, params: ['z'] });
-
-    ExtensionPage1 = plugin.provide(
-      createRoutableExtension({
-        name: 'ExtensionPage1',
-        component: () => Promise.resolve(MockComponent),
-        mountPoint: refPage1,
-      }),
-    );
-    ExtensionPage2 = plugin.provide(
-      createRoutableExtension({
-        name: 'ExtensionPage2',
-        component: () => Promise.resolve(MockComponent),
-        mountPoint: refPage2,
-      }),
-    );
-    ExtensionPage3 = plugin.provide(
-      createRoutableExtension({
-        name: 'ExtensionPage3',
-        component: () => Promise.resolve(MockComponent),
-        mountPoint: refPage3,
-      }),
-    );
-    ExtensionSource1 = plugin.provide(
-      createRoutableExtension({
-        name: 'ExtensionSource1',
-        component: () => Promise.resolve(MockRouteSource),
-        mountPoint: refSource1,
-      }),
-    );
-    ExtensionSource2 = plugin.provide(
-      createRoutableExtension({
-        name: 'ExtensionSource2',
-        component: () => Promise.resolve(MockRouteSource),
-        mountPoint: refSource2,
-      }),
-    );
+function withRoutingProvider(
+  root: ReactElement,
+  routeBindings: [ExternalRouteRef, RouteRef][] = [],
+) {
+  const { routing } = traverseElementTree({
+    root,
+    discoverers: [childDiscoverer, routeElementDiscoverer],
+    collectors: {
+      routing: routingV2Collector,
+    },
   });
 
-  afterAll(() => {
-    jest.resetModules();
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
-  });
+  return (
+    <RoutingProvider
+      routePaths={routing.paths}
+      routeParents={routing.parents}
+      routeObjects={routing.objects}
+      routeBindings={new Map(routeBindings)}
+      basePath=""
+    >
+      {root}
+    </RoutingProvider>
+  );
+}
 
-  function withRoutingProvider(
-    root: ReactElement,
-    routeBindings: [ExternalRouteRef, RouteRef][] = [],
-  ) {
-    const {
-      traverseElementTree,
-      childDiscoverer,
-      routeElementDiscoverer,
-      routingV2Collector,
-      RoutingProvider,
-    } = requireDeps();
-    const { routing } = traverseElementTree({
-      root,
-      discoverers: [childDiscoverer, routeElementDiscoverer],
-      collectors: {
-        routing: routingV2Collector,
-      },
-    });
-
-    return (
-      <RoutingProvider
-        routePaths={routing.paths}
-        routeParents={routing.parents}
-        routeObjects={routing.objects}
-        routeBindings={new Map(routeBindings)}
-        basePath=""
-      >
-        {root}
-      </RoutingProvider>
-    );
-  }
-
+describe('discovery', () => {
   it('should handle simple routeRef path creation for routeRefs used in other parts of the app', async () => {
-    const { MemoryRouter, Routes, Route, AppContextProvider } = requireDeps();
     const root = (
       <AppContextProvider appContext={mockContext}>
         <MemoryRouter initialEntries={['/foo/bar']}>
@@ -254,8 +202,6 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
       ]),
     );
 
-    await new Promise(r => setTimeout(r, 500));
-
     await expect(
       rendered.findByText('Path at inside: /foo/bar'),
     ).resolves.toBeInTheDocument();
@@ -278,7 +224,6 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   });
 
   it('should handle routeRefs with parameters', async () => {
-    const { MemoryRouter, Routes, Route, AppContextProvider } = requireDeps();
     const root = (
       <AppContextProvider appContext={mockContext}>
         <MemoryRouter initialEntries={['/foo/bar/wat']}>
@@ -316,7 +261,6 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   });
 
   it('should handle relative routing within parameterized routePaths', async () => {
-    const { MemoryRouter, Routes, Route, AppContextProvider } = requireDeps();
     const root = (
       <AppContextProvider appContext={mockContext}>
         <MemoryRouter initialEntries={['/foo/blob/bar']}>
@@ -351,7 +295,6 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   });
 
   it('should throw errors for routing to other routeRefs with unsupported parameters', () => {
-    const { MemoryRouter, Routes, Route } = requireDeps();
     const root = (
       <MemoryRouter initialEntries={['/']}>
         <Routes>
@@ -388,16 +331,6 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   });
 
   it('should handle relative routing of parameterized routePaths with duplicate param names', () => {
-    const {
-      MemoryRouter,
-      Routes,
-      Route,
-      traverseElementTree,
-      childDiscoverer,
-      routeElementDiscoverer,
-      routingV2Collector,
-      validateRouteParameters,
-    } = requireDeps();
     const root = (
       <MemoryRouter>
         <Routes>
@@ -422,5 +355,56 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     expect(() =>
       validateRouteParameters(routing.paths, routing.parents),
     ).toThrow('Parameter :id is duplicated in path foo/:id/bar/:id');
+  });
+});
+
+describe('v1 consumer', () => {
+  function useMockRouteRefV1(
+    routeRef: AnyRouteRef,
+    location: string,
+  ): RouteFunc<any> | undefined {
+    const resolver = useVersionedContext<{
+      1: RouteResolver;
+    }>('routing-context')?.atVersion(1);
+    if (!resolver) {
+      throw new Error('no impl');
+    }
+    return resolver.resolve(routeRef, location);
+  }
+
+  it('should resolve routes', () => {
+    const routeRef1 = createRouteRef({ id: 'refPage1' });
+    const routeRef2 = createRouteRef({ id: 'refSource1' });
+    const routeRef3 = createRouteRef({ id: 'refPage2', params: ['x'] });
+
+    const renderedHook = renderHook(
+      ({ routeRef }) => useMockRouteRefV1(routeRef, '/'),
+      {
+        initialProps: {
+          routeRef: routeRef1 as AnyRouteRef,
+        },
+        wrapper: ({ children }) => (
+          <RoutingProvider
+            routePaths={
+              new Map<RouteRef<any>, string>([
+                [routeRef2, '/foo'],
+                [routeRef3, '/bar/:x'],
+              ])
+            }
+            routeParents={new Map()}
+            routeObjects={[]}
+            routeBindings={new Map()}
+            basePath="/base"
+            children={children}
+          />
+        ),
+      },
+    );
+
+    expect(renderedHook.result.current).toBe(undefined);
+    renderedHook.rerender({ routeRef: routeRef2 });
+    expect(renderedHook.result.current?.()).toBe('/base/foo');
+    renderedHook.rerender({ routeRef: routeRef3 });
+    expect(renderedHook.result.current?.({ x: 'my-x' })).toBe('/base/bar/my-x');
   });
 });

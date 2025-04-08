@@ -25,9 +25,7 @@ import {
   useApp,
 } from '@backstage/core-plugin-api';
 import { InternalAppContext } from './InternalAppContext';
-import { isReactRouterBeta } from './isReactRouterBeta';
 import { RouteTracker } from '../routing/RouteTracker';
-import { Route, Routes } from 'react-router-dom';
 import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
 
 /**
@@ -36,12 +34,6 @@ import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentit
  * The returned path does not have a trailing slash.
  */
 export function getBasePath(configApi: ConfigApi) {
-  if (!isReactRouterBeta()) {
-    // When using rr v6 stable the base path is handled through the
-    // basename prop on the router component instead.
-    return '';
-  }
-
   return readBasePath(configApi);
 }
 
@@ -108,7 +100,6 @@ export function AppRouter(props: AppRouterProps) {
 
   const configApi = useApi(configApiRef);
   const basePath = readBasePath(configApi);
-  const mountPath = `${basePath}/*`;
   const internalAppContext = useContext(InternalAppContext);
   if (!internalAppContext) {
     throw new Error('AppRouter must be rendered within the AppProvider');
@@ -140,37 +131,10 @@ export function AppRouter(props: AppRouterProps) {
       { signOutTargetUrl: basePath || '/' },
     );
 
-    if (isReactRouterBeta()) {
-      return (
-        <RouterComponent>
-          <RouteTracker routeObjects={routeObjects} />
-          <Routes>
-            <Route path={mountPath} element={<>{props.children}</>} />
-          </Routes>
-        </RouterComponent>
-      );
-    }
-
     return (
       <RouterComponent basename={basePath}>
         <RouteTracker routeObjects={routeObjects} />
         {props.children}
-      </RouterComponent>
-    );
-  }
-
-  if (isReactRouterBeta()) {
-    return (
-      <RouterComponent>
-        <RouteTracker routeObjects={routeObjects} />
-        <SignInPageWrapper
-          component={SignInPageComponent}
-          appIdentityProxy={appIdentityProxy}
-        >
-          <Routes>
-            <Route path={mountPath} element={<>{props.children}</>} />
-          </Routes>
-        </SignInPageWrapper>
       </RouterComponent>
     );
   }
