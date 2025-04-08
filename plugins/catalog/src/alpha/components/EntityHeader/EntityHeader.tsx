@@ -55,7 +55,6 @@ import {
 import { EntityLabels } from '../EntityLabels';
 import { EntityContextMenu } from '../../../components/EntityContextMenu';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../../routes';
-import { ContextMenuItemComponent } from '@backstage/plugin-catalog-react/alpha';
 
 function headerProps(
   paramKind: string | undefined,
@@ -179,7 +178,7 @@ export function EntityHeader(props: {
   UNSTABLE_contextMenuOptions?: {
     disableUnregister: boolean | 'visible' | 'hidden' | 'disable';
   };
-  contextMenuItems?: ContextMenuItemComponent[];
+  contextMenuItems?: React.JSX.Element[];
   /**
    * An array of relation types used to determine the parent entities in the hierarchy.
    * These relations are prioritized in the order provided, allowing for flexible

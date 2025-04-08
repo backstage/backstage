@@ -89,16 +89,6 @@ export const catalogReactTranslationRef: TranslationRef<
 >;
 
 // @alpha (undocumented)
-export type ContextMenuItemComponent = (props: {}) => React_2.JSX.Element;
-
-// @alpha (undocumented)
-export const contextMenuItemComponentDataRef: ConfigurableExtensionDataRef<
-  ContextMenuItemComponent,
-  'catalog.contextMenuItemComponent',
-  {}
->;
-
-// @alpha (undocumented)
 export function convertLegacyEntityCardExtension(
   LegacyExtension: ComponentType<{}>,
   overrides?: {
@@ -342,8 +332,8 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
   name: undefined;
   params: EntityContextMenuItemParams;
   output: ConfigurableExtensionDataRef<
-    ContextMenuItemComponent,
-    'catalog.contextMenuItemComponent',
+    React_2.JSX.Element,
+    'core.reactElement',
     {}
   >;
   inputs: {};

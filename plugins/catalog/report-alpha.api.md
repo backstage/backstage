@@ -7,7 +7,6 @@ import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ContextMenuItemComponent } from '@backstage/plugin-catalog-react/alpha';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
@@ -867,8 +866,8 @@ const _default: FrontendPlugin<
       config: {};
       configInput: {};
       output: ConfigurableExtensionDataRef<
-        ContextMenuItemComponent,
-        'catalog.contextMenuItemComponent',
+        JSX_2.Element,
+        'core.reactElement',
         {}
       >;
       inputs: {};
@@ -880,8 +879,8 @@ const _default: FrontendPlugin<
       config: {};
       configInput: {};
       output: ConfigurableExtensionDataRef<
-        ContextMenuItemComponent,
-        'catalog.contextMenuItemComponent',
+        JSX_2.Element,
+        'core.reactElement',
         {}
       >;
       inputs: {};
@@ -893,8 +892,8 @@ const _default: FrontendPlugin<
       config: {};
       configInput: {};
       output: ConfigurableExtensionDataRef<
-        ContextMenuItemComponent,
-        'catalog.contextMenuItemComponent',
+        JSX_2.Element,
+        'core.reactElement',
         {}
       >;
       inputs: {};
@@ -1046,11 +1045,7 @@ const _default: FrontendPlugin<
           }
         >;
         contextMenuItems: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            ContextMenuItemComponent,
-            'catalog.contextMenuItemComponent',
-            {}
-          >,
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
           {
             singleton: false;
             optional: false;

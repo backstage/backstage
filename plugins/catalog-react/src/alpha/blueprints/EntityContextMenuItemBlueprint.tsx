@@ -16,8 +16,8 @@
 
 import React from 'react';
 import {
+  coreExtensionData,
   createExtensionBlueprint,
-  createExtensionDataRef,
   ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -45,22 +45,13 @@ export type EntityContextMenuItemParams = {
 };
 
 /** @alpha */
-export type ContextMenuItemComponent = (props: {}) => React.JSX.Element;
-
-/** @alpha */
-export const contextMenuItemComponentDataRef =
-  createExtensionDataRef<ContextMenuItemComponent>().with({
-    id: 'catalog.contextMenuItemComponent',
-  });
-
-/** @alpha */
 export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
   kind: 'entity-context-menu-item',
   attachTo: { id: 'page:catalog/entity', input: 'contextMenuItems' },
-  output: [contextMenuItemComponentDataRef],
+  output: [coreExtensionData.reactElement],
   *factory(params: EntityContextMenuItemParams, { node }) {
-    const loader = async (): Promise<ContextMenuItemComponent> => {
-      return () => {
+    const loader = async () => {
+      const Component = () => {
         const { onMenuClose } = useEntityContextMenu();
         const { title, ...menuItemProps } = params.useProps();
         let handleClick = undefined;
@@ -83,10 +74,10 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
           </MenuItem>
         );
       };
+
+      return <Component />;
     };
 
-    yield contextMenuItemComponentDataRef(
-      ExtensionBoundary.lazyComponent(node, loader),
-    );
+    yield coreExtensionData.reactElement(ExtensionBoundary.lazy(node, loader));
   },
 });
