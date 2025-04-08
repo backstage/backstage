@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "@backstage/config": "workspace:^",
-    "@backstage/core-app-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@module-federation/enhanced": "^0.9.0",
     "@module-federation/runtime": "^0.9.0",

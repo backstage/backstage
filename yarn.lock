@@ -4736,7 +4736,6 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/core-app-api": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@module-federation/enhanced": "npm:^0.9.0"
