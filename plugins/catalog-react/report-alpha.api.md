@@ -75,9 +75,7 @@ export const catalogReactTranslationRef: TranslationRef<
 >;
 
 // @alpha (undocumented)
-export type ContextMenuItemComponent = (
-  props: ContextMenuItemProps,
-) => React_2.JSX.Element;
+export type ContextMenuItemComponent = (props: {}) => React_2.JSX.Element;
 
 // @alpha (undocumented)
 export const contextMenuItemComponentDataRef: ConfigurableExtensionDataRef<
@@ -85,11 +83,6 @@ export const contextMenuItemComponentDataRef: ConfigurableExtensionDataRef<
   'catalog.contextMenuItemComponent',
   {}
 >;
-
-// @alpha (undocumented)
-export type ContextMenuItemProps = {
-  onClose: () => void;
-};
 
 // @alpha (undocumented)
 export function convertLegacyEntityCardExtension(

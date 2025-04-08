@@ -36,6 +36,7 @@ import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import type { ContextMenuItemComponent } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContextMenuProvider } from '@backstage/plugin-catalog-react';
 
 /** @public */
 export type EntityContextMenuClassKey = 'button';
@@ -187,12 +188,11 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
               </MenuItem>
             </>
           ) : (
-            contextMenuItems.map((ContextMenuItem, idx) => (
-              <ContextMenuItem
-                key={`context-menu-item-${idx}`}
-                onClose={onClose}
-              />
-            ))
+            <EntityContextMenuProvider onMenuClose={onClose}>
+              {contextMenuItems.map((ContextMenuItem, idx) => (
+                <ContextMenuItem key={`context-menu-item-${idx}`} />
+              ))}
+            </EntityContextMenuProvider>
           )}
         </MenuList>
       </Popover>
