@@ -35,15 +35,6 @@ export type {
   EntityListProviderProps,
   PaginationMode,
 } from './useEntityListProvider';
-export type {
-  EntityContextMenuContextValue,
-  EntityContextMenuProviderProps,
-} from './useEntityContextMenu';
-export {
-  EntityContextMenuProvider,
-  useEntityContextMenu,
-} from './useEntityContextMenu';
-
 export { useEntityTypeFilter } from './useEntityTypeFilter';
 export { useRelatedEntities } from './useRelatedEntities';
 export { useStarredEntities } from './useStarredEntities';

@@ -13,45 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import {
-  createVersionedContext,
-  createVersionedValueMap,
-  useVersionedContext,
-} from '@backstage/version-bridge';
+import { useVersionedContext } from '@backstage/version-bridge';
 
-/** @public */
+/** @internal */
 export type EntityContextMenuContextValue = {
   onMenuClose: () => void;
 };
 
-const EntityContextMenuContext = createVersionedContext<{
-  1: EntityContextMenuContextValue;
-}>('entity-context-menu-context');
-
-/** @public */
-export interface EntityContextMenuProviderProps {
-  children: React.ReactNode;
-  onMenuClose: () => void;
-}
-
-/** @public */
-export const EntityContextMenuProvider = (
-  props: EntityContextMenuProviderProps,
-) => {
-  const { children, onMenuClose } = props;
-  const value = { onMenuClose };
-
-  return (
-    <EntityContextMenuContext.Provider
-      value={createVersionedValueMap({ 1: value })}
-    >
-      {children}
-    </EntityContextMenuContext.Provider>
-  );
-};
-
-/** @public */
+/** @internal */
 export function useEntityContextMenu() {
   const versionedHolder = useVersionedContext<{
     1: EntityContextMenuContextValue;
