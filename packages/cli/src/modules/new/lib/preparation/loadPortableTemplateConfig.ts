@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath, dirname, isAbsolute } from 'node:path';
-import { paths } from '../../paths';
+import { paths } from '../../../../lib/paths';
 import { defaultTemplates } from '../defaultTemplates';
 import {
   PortableTemplateConfig,

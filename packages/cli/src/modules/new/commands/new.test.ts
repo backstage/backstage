@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { createNewPackage } from '../../lib/new/createNewPackage';
+import { createNewPackage } from '../lib/createNewPackage';
 import { default as newCommand } from './new';
 
-jest.mock('../../lib/new/createNewPackage');
+jest.mock('../lib/createNewPackage');
 
 describe.each([
   [undefined, undefined, undefined],

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createNewPackage } from '../../lib/new/createNewPackage';
+import { createNewPackage } from '../lib/createNewPackage';
 
 type ArgOptions = {
   option: string[];

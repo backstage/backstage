@@ -12,7 +12,6 @@ Options:
   -h, --help
 
 Commands:
-  new [options]
   config:docs [options]
   config:print [options]
   config:check [options]
@@ -24,6 +23,7 @@ Commands:
   migrate [command]
   build-workspace [options] <workspace-dir> [packages...]
   info
+  new [options]
   create-github-app <github-org>
   help [command]
 ```
