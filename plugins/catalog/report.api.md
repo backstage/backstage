@@ -403,8 +403,6 @@ export interface EntityLayoutProps {
   // (undocumented)
   children?: ReactNode;
   // (undocumented)
-  extraMenuItems?: JSX.Element[];
-  // (undocumented)
   NotFoundComponent?: ReactNode;
   parentEntityRelations?: string[];
   // Warning: (ae-forgotten-export) The symbol "EntityContextMenuOptions" needs to be exported by the entry point index.d.ts

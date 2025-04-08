@@ -181,7 +181,6 @@ export interface EntityLayoutProps {
   UNSTABLE_contextMenuOptions?: EntityContextMenuOptions;
   children?: ReactNode;
   NotFoundComponent?: ReactNode;
-  extraMenuItems?: JSX.Element[];
   /**
    * An array of relation types used to determine the parent entities in the hierarchy.
    * These relations are prioritized in the order provided, allowing for flexible
