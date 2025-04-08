@@ -19,7 +19,7 @@ In the legacy frontend system a plugin was defined in its own `plugin.ts` file a
 
   export const myPlugin = createPlugin({
     id: 'my-plugin',
-    apis: [],
+    apis: [ ... ],
     routes: {
       ...
     },
@@ -34,12 +34,13 @@ The new `createFrontendPlugin` function doesn't accept apis anymore as apis are 
 
 ```ts title="my-plugin/src/alpha.ts"
   import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+  import { convertLegacyRouteRefs } from '@backstage/core-compat-api';
 
   export default createFrontendPlugin({
     id: 'my-plugin',
     // bind all the extensions to the plugin
     /* highlight-next-line */
-    extensions: [],
+    extensions: [/* APIs will go here, but don't worry about those yet */],
     // convert old route refs to the new system
     /* highlight-next-line */
     routes: convertLegacyRouteRefs({
@@ -79,6 +80,8 @@ The code above binds all the extensions to the plugin. _Important_: Make sure to
 
 Pages that were previously created using the `createRoutableExtension` extension function can be migrated to the new Frontend System using the `PageBlueprint` [extension blueprint](../architecture/23-extension-blueprints.md), exported by `@backstage/frontend-plugin-api`.
 
+In the new system plugins are responsible more information than they used to. For example, the plugin is now responsible for providing the path for the page, rather than it being part of the app code.
+
 For example, given the following page:
 
 ```ts
@@ -91,9 +94,16 @@ export const FooPage = fooPlugin.provide(
 );
 ```
 
-it can be migrated as the following:
+and the following instruction in the plugin README:
 
 ```tsx
+<Route path="/foo" element={<FooPage />} />
+```
+
+it can be migrated as the following, keeping in mind that you may need to switch from `.ts` to `.tsx` and import React:
+
+```tsx
+import React from 'react';
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
 import {
   compatWrapper,
@@ -102,15 +112,16 @@ import {
 
 const fooPage = PageBlueprint.make({
   params: {
+    // This is the path that was previously defined in the app code.
+    // It's labelled as the default one because it can be changed via configuration.
     defaultPath: '/foo',
-    // you can reuse the existing routeRef
-    // by wrapping into the convertLegacyRouteRef.
+    // You can reuse the existing routeRef by wrapping into the convertLegacyRouteRef.
     routeRef: convertLegacyRouteRef(rootRouteRef),
     // these inputs usually match the props required by the component.
-    loader: ({ inputs }) =>
+    loader: () =>
       import('./components/').then(m =>
-        // The compatWrapper utility allows you to use the existing
-        // legacy frontend utilities used internally by the components.
+        // The compatWrapper utility allows you to keep using @backstage/core-plugin-api in the
+        // implementation of the component and switch to @backstage/frontend-plugin-api later.
         compatWrapper(<m.FooPage />),
       ),
   },
