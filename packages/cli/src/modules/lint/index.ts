@@ -66,6 +66,10 @@ export function registerRepoCommands(command: Command) {
       '--max-warnings <number>',
       'Fail if more than this number of warnings. -1 allows warnings. (default: -1)',
     )
+    .option(
+      '--quiet',
+      'Report errors only. Rules marked as warnings are not logged out, unless max-warnings threshold is reached.',
+    )
     .option('--fix', 'Attempt to automatically fix violations')
     .action(lazy(() => import('./commands/repo/lint'), 'command'));
 }
