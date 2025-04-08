@@ -1,5 +1,20 @@
 # @backstage/frontend-defaults
 
+## 0.2.1-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/frontend-app-api@0.11.1-next.1
+  - @backstage/plugin-app@0.1.8-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.2.1-next.0
 
 ### Patch Changes

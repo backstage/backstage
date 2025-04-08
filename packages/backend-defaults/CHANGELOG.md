@@ -1,5 +1,25 @@
 # @backstage/backend-defaults
 
+## 0.9.0-next.2
+
+### Patch Changes
+
+- 175528c: Adds `backend.auditor.severityLogLevelMappings` to map severity levels to log levels.
+- Updated dependencies
+  - @backstage/backend-app-api@1.2.1
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/plugin-permission-node@0.9.0
+
 ## 0.9.0-next.1
 
 ### Patch Changes
