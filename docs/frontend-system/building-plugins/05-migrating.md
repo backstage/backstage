@@ -105,10 +105,9 @@ and the following instruction in the plugin README:
 <Route path="/foo" element={<FooPage />} />
 ```
 
-it can be migrated as the following, keeping in mind that you may need to switch from `.ts` to `.tsx` and import React:
+it can be migrated as the following, keeping in mind that you may need to switch from `.ts` to `.tsx`:
 
 ```tsx
-import React from 'react';
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
 import {
   compatWrapper,
