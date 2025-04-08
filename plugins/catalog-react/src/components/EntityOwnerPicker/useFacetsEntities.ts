@@ -16,7 +16,7 @@
 import { useApi } from '@backstage/core-plugin-api';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef } from '../../api';
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { Entity, parseEntityRef } from '@backstage/catalog-model';
 
 type FacetsCursor = {
@@ -41,40 +41,44 @@ type FacetsInitialRequest = {
  * hook, which is also used by EntityOwnerPicker.
  * In this mode, the EntityOwnerPicker won't show detailed information of the owners.
  */
-export function useFacetsEntities({ enabled }: { enabled: boolean }) {
+export function useFacetsEntities({
+  enabled,
+  selectedEntityKind,
+}: {
+  enabled: boolean;
+  selectedEntityKind?: string;
+}) {
   const catalogApi = useApi(catalogApiRef);
-
-  const [facetsPromise] = useState(async () => {
+  const facetsPromise = useMemo<Promise<Entity[]>>(async () => {
     if (!enabled) {
+      return Promise.resolve([]);
+    }
+    try {
+      const facetResponse = await catalogApi.getEntityFacets({
+        facets: ['relations.ownedBy'],
+        filter: selectedEntityKind ? { kind: [selectedEntityKind] } : undefined,
+      });
+
+      return facetResponse.facets['relations.ownedBy']
+        .map(e => e.value)
+        .map(ref => {
+          const { kind, name, namespace } = parseEntityRef(ref);
+          return {
+            apiVersion: 'backstage.io/v1beta1',
+            kind,
+            metadata: { name, namespace },
+          };
+        })
+        .sort(
+          (a, b) =>
+            a.kind.localeCompare(b.kind, 'en-US') ||
+            a.metadata.namespace.localeCompare(b.metadata.namespace, 'en-US') ||
+            a.metadata.name.localeCompare(b.metadata.name, 'en-US'),
+        );
+    } catch (error) {
       return [];
     }
-    const facet = 'relations.ownedBy';
-
-    return catalogApi
-      .getEntityFacets({ facets: [facet] })
-      .then(response =>
-        response.facets[facet]
-          .map(e => e.value)
-          .map(ref => {
-            const { kind, name, namespace } = parseEntityRef(ref);
-            return {
-              apiVersion: 'backstage.io/v1beta1',
-              kind,
-              metadata: { name, namespace },
-            };
-          })
-          .sort(
-            (a, b) =>
-              a.kind.localeCompare(b.kind, 'en-US') ||
-              a.metadata.namespace.localeCompare(
-                b.metadata.namespace,
-                'en-US',
-              ) ||
-              a.metadata.name.localeCompare(b.metadata.name, 'en-US'),
-          ),
-      )
-      .catch(() => []);
-  });
+  }, [enabled, selectedEntityKind, catalogApi]);
 
   return useAsyncFn<
     (
