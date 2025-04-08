@@ -16,15 +16,16 @@
 
 import { Command } from 'commander';
 import { lazy } from '../lib/lazy';
-import {
-  configOption,
-  registerCommands as registerConfigCommands,
-} from '../modules/config';
+import { registerCommands as registerConfigCommands } from '../modules/config';
 import {
   registerPackageCommands as registerPackageBuildCommands,
   registerRepoCommands as registerRepoBuildCommands,
   registerCommands as registerBuildCommands,
 } from '../modules/build';
+import {
+  registerPackageCommands as registerPackageStartCommands,
+  registerRepoCommands as registerRepoStartCommands,
+} from '../modules/start';
 import { registerCommands as registerInfoCommands } from '../modules/info';
 import { registerCommands as registerMigrateCommand } from '../modules/migrate';
 import {
@@ -45,6 +46,7 @@ export function registerRepoCommand(program: Command) {
     .command('repo [command]')
     .description('Command that run across an entire Backstage project');
 
+  registerRepoStartCommands(command);
   registerRepoBuildCommands(command);
   registerRepoTestCommands(command);
   registerRepoLintCommands(command);
@@ -56,24 +58,7 @@ export function registerScriptCommand(program: Command) {
     .command('package [command]')
     .description('Lifecycle scripts for individual packages');
 
-  command
-    .command('start')
-    .description('Start a package for local development')
-    .option(...configOption)
-    .option('--role <name>', 'Run the command with an explicit package role')
-    .option('--check', 'Enable type checking and linting if available')
-    .option('--inspect [host]', 'Enable debugger in Node.js environments')
-    .option(
-      '--inspect-brk [host]',
-      'Enable debugger in Node.js environments, breaking before code starts',
-    )
-    .option(
-      '--require <path...>',
-      'Add a --require argument to the node process',
-    )
-    .option('--link <path>', 'Link an external workspace for module resolution')
-    .action(lazy(() => import('./start'), 'command'));
-
+  registerPackageStartCommands(command);
   registerPackageBuildCommands(command);
   registerPackageTestCommands(command);
   registerMaintenancePackageCommands(command);

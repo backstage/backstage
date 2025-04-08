@@ -49,6 +49,7 @@ export type BundlingOptions = {
 };
 
 export type ServeOptions = BundlingPathsOptions & {
+  targetDir?: string;
   checksEnabled: boolean;
   configPaths: string[];
   verifyVersions?: boolean;

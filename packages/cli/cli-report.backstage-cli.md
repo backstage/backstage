@@ -406,6 +406,7 @@ Commands:
   help [command]
   lint [options]
   list-deprecations [options]
+  start [options] [packageNameOrPath...]
   test [options]
 ```
 
@@ -464,6 +465,21 @@ Usage: backstage-cli repo list-deprecations [options]
 
 Options:
   --json
+  -h, --help
+```
+
+### `backstage-cli repo start`
+
+```
+Usage: backstage-cli repo start [options] [packageNameOrPath...]
+
+Options:
+  --config <path>
+  --inspect [host]
+  --inspect-brk [host]
+  --link <path>
+  --plugin <pluginId>
+  --require <path...>
   -h, --help
 ```
 
