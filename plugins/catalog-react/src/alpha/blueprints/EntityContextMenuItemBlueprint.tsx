@@ -68,8 +68,8 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
         if ('onClick' in menuItemProps) {
           handleClick = () => {
             const result = menuItemProps.onClick();
-            if (result && 'finally' in result) {
-              result.finally(onMenuClose);
+            if (result && 'then' in result) {
+              result.then(onMenuClose, onMenuClose);
             } else {
               onMenuClose();
             }
