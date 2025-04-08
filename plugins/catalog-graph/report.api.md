@@ -44,8 +44,8 @@ export const catalogGraphPlugin: BackstagePlugin<
   {
     catalogEntity: ExternalRouteRef<
       {
-        kind: string;
         name: string;
+        kind: string;
         namespace: string;
       },
       true

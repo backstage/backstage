@@ -244,8 +244,8 @@ export const createFilesystemDeleteAction: () => TemplateAction_2<
 // @public
 export const createFilesystemReadDirAction: () => TemplateAction_2<
   {
-    paths: string[];
     recursive: boolean;
+    paths: string[];
   },
   {
     files: {

@@ -26,8 +26,8 @@ const _default: FrontendPlugin<
   {
     root: RouteRef<undefined>;
     docRoot: RouteRef<{
-      kind: string;
       name: string;
+      kind: string;
       namespace: string;
     }>;
     entityContent: RouteRef<undefined>;

@@ -24,8 +24,8 @@ const _default: FrontendPlugin<
   },
   {
     catalogEntity: ExternalRouteRef<{
-      kind: string;
       name: string;
+      kind: string;
       namespace: string;
     }>;
   },
@@ -45,15 +45,15 @@ const _default: FrontendPlugin<
         height: number | undefined;
       } & {
         filter: EntityPredicate | undefined;
-        type: 'info' | 'summary' | 'content' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
-        relations?: string[] | undefined;
-        title?: string | undefined;
         height?: number | undefined;
+        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         direction?: Direction | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
-        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
+        title?: string | undefined;
+        relations?: string[] | undefined;
         maxDepth?: number | undefined;
         kinds?: string[] | undefined;
         unidirectional?: boolean | undefined;
@@ -61,7 +61,7 @@ const _default: FrontendPlugin<
         relationPairs?: [string, string][] | undefined;
       } & {
         filter?: EntityPredicate | undefined;
-        type?: 'info' | 'summary' | 'content' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -122,10 +122,10 @@ const _default: FrontendPlugin<
         path: string | undefined;
       };
       configInput: {
-        relations?: string[] | undefined;
+        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         direction?: Direction | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
-        curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
+        relations?: string[] | undefined;
         rootEntityRefs?: string[] | undefined;
         maxDepth?: number | undefined;
         kinds?: string[] | undefined;

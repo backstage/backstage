@@ -24,11 +24,11 @@ const _default: FrontendPlugin<
       name: 'group-profile';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'info' | 'summary' | 'content' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'info' | 'summary' | 'content' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -65,11 +65,11 @@ const _default: FrontendPlugin<
       name: 'members-list';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'info' | 'summary' | 'content' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'info' | 'summary' | 'content' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -106,11 +106,11 @@ const _default: FrontendPlugin<
       name: 'ownership';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'info' | 'summary' | 'content' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'info' | 'summary' | 'content' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -147,11 +147,11 @@ const _default: FrontendPlugin<
       name: 'user-profile';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'info' | 'summary' | 'content' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'info' | 'summary' | 'content' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>

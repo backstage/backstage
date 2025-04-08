@@ -38,17 +38,17 @@ export const createGitlabIssueAction: (options: {
     title: string;
     repoUrl: string;
     projectId: number;
-    description?: string | undefined;
-    token?: string | undefined;
-    weight?: number | undefined;
     labels?: string | undefined;
-    createdAt?: string | undefined;
+    description?: string | undefined;
+    weight?: number | undefined;
+    token?: string | undefined;
     assignees?: number[] | undefined;
-    milestoneId?: number | undefined;
-    dueDate?: string | undefined;
+    createdAt?: string | undefined;
     confidential?: boolean | undefined;
-    discussionToResolve?: string | undefined;
+    milestoneId?: number | undefined;
     epicId?: number | undefined;
+    dueDate?: string | undefined;
+    discussionToResolve?: string | undefined;
     issueType?: IssueType | undefined;
     mergeRequestToResolveDiscussionsOf?: number | undefined;
   },
@@ -68,8 +68,8 @@ export const createGitlabProjectAccessTokenAction: (options: {
     repoUrl: string;
     projectId: string | number;
     name?: string | undefined;
-    scopes?: string[] | undefined;
     token?: string | undefined;
+    scopes?: string[] | undefined;
     expiresAt?: string | undefined;
     accessLevel?: number | undefined;
   },
@@ -88,8 +88,8 @@ export const createGitlabProjectDeployTokenAction: (options: {
     scopes: string[];
     repoUrl: string;
     projectId: string | number;
-    token?: string | undefined;
     username?: string | undefined;
+    token?: string | undefined;
   },
   {
     user: string;
@@ -108,8 +108,8 @@ export const createGitlabProjectVariableAction: (options: {
     repoUrl: string;
     projectId: string | number;
     variableType: string;
-    token?: string | undefined;
     raw?: boolean | undefined;
+    token?: string | undefined;
     masked?: boolean | undefined;
     environmentScope?: string | undefined;
     variableProtected?: boolean | undefined;
@@ -237,26 +237,26 @@ export const editGitlabIssueAction: (options: {
     repoUrl: string;
     projectId: number;
     issueIid: number;
-    description?: string | undefined;
     title?: string | undefined;
-    token?: string | undefined;
-    weight?: number | undefined;
     labels?: string | undefined;
-    addLabels?: string | undefined;
+    description?: string | undefined;
+    weight?: number | undefined;
+    token?: string | undefined;
     assignees?: number[] | undefined;
-    milestoneId?: number | undefined;
-    dueDate?: string | undefined;
-    stateEvent?: IssueStateEvent | undefined;
+    addLabels?: string | undefined;
     confidential?: boolean | undefined;
-    updatedAt?: string | undefined;
-    epicId?: number | undefined;
-    issueType?: IssueType | undefined;
-    discussionLocked?: boolean | undefined;
+    milestoneId?: number | undefined;
     removeLabels?: string | undefined;
+    stateEvent?: IssueStateEvent | undefined;
+    discussionLocked?: boolean | undefined;
+    epicId?: number | undefined;
+    dueDate?: string | undefined;
+    updatedAt?: string | undefined;
+    issueType?: IssueType | undefined;
   },
   {
-    title: string;
     state: string;
+    title: string;
     projectId: number;
     updatedAt: string;
     issueUrl: string;

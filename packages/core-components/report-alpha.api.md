@@ -10,16 +10,16 @@ export const coreComponentsTranslationRef: TranslationRef<
   'core-components',
   {
     readonly 'table.filter.title': 'Filters';
-    readonly 'table.filter.clearAll': 'Clear all';
     readonly 'table.filter.placeholder': 'All results';
+    readonly 'table.filter.clearAll': 'Clear all';
     readonly 'table.body.emptyDataSourceMessage': 'No records to display';
+    readonly 'table.toolbar.search': 'Filter';
     readonly 'table.pagination.firstTooltip': 'First Page';
     readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
     readonly 'table.pagination.labelRowsSelect': 'rows';
     readonly 'table.pagination.lastTooltip': 'Last Page';
     readonly 'table.pagination.nextTooltip': 'Next Page';
     readonly 'table.pagination.previousTooltip': 'Previous Page';
-    readonly 'table.toolbar.search': 'Filter';
     readonly 'signIn.title': 'Sign In';
     readonly 'signIn.loginFailed': 'Login failed';
     readonly 'signIn.customProvider.title': 'Custom User';
@@ -29,12 +29,12 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'signIn.customProvider.continue': 'Continue';
     readonly 'signIn.customProvider.idToken': 'ID Token (optional)';
     readonly 'signIn.guestProvider.title': 'Guest';
-    readonly 'signIn.guestProvider.subtitle': 'Enter as a Guest User.\n You will not have a verified identity, meaning some features might be unavailable.';
     readonly 'signIn.guestProvider.enter': 'Enter';
+    readonly 'signIn.guestProvider.subtitle': 'Enter as a Guest User.\n You will not have a verified identity, meaning some features might be unavailable.';
     readonly skipToContent: 'Skip to content';
     readonly 'copyTextButton.tooltipText': 'Text copied to clipboard';
-    readonly 'simpleStepper.reset': 'Reset';
     readonly 'simpleStepper.finish': 'Finish';
+    readonly 'simpleStepper.reset': 'Reset';
     readonly 'simpleStepper.next': 'Next';
     readonly 'simpleStepper.skip': 'Skip';
     readonly 'simpleStepper.back': 'Back';
@@ -53,8 +53,8 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'oauthRequestDialog.authRedirectTitle': 'This will trigger a http redirect to OAuth Login.';
     readonly 'oauthRequestDialog.login': 'Log in';
     readonly 'oauthRequestDialog.rejectAll': 'Reject All';
-    readonly 'supportButton.close': 'Close';
     readonly 'supportButton.title': 'Support';
+    readonly 'supportButton.close': 'Close';
     readonly 'alertDisplay.message_one': '({{ count }} newer message)';
     readonly 'alertDisplay.message_other': '({{ count }} newer messages)';
     readonly 'autoLogout.stillTherePrompt.title': 'Logging out due to inactivity';

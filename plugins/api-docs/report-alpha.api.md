@@ -48,11 +48,11 @@ const _default: FrontendPlugin<
       name: 'consumed-apis';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'info' | 'summary' | 'content' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'info' | 'summary' | 'content' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -89,11 +89,11 @@ const _default: FrontendPlugin<
       name: 'consuming-components';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'info' | 'summary' | 'content' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'info' | 'summary' | 'content' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -130,11 +130,11 @@ const _default: FrontendPlugin<
       name: 'definition';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'info' | 'summary' | 'content' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'info' | 'summary' | 'content' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -171,11 +171,11 @@ const _default: FrontendPlugin<
       name: 'has-apis';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'info' | 'summary' | 'content' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'info' | 'summary' | 'content' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -212,11 +212,11 @@ const _default: FrontendPlugin<
       name: 'provided-apis';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'info' | 'summary' | 'content' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'info' | 'summary' | 'content' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -253,11 +253,11 @@ const _default: FrontendPlugin<
       name: 'providing-components';
       config: {
         filter: EntityPredicate | undefined;
-        type: 'info' | 'summary' | 'content' | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         filter?: EntityPredicate | undefined;
-        type?: 'info' | 'summary' | 'content' | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
         | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>

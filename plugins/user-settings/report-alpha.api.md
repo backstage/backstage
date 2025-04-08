@@ -106,15 +106,15 @@ export const settingsNavItem: ExtensionDefinition<{
 export const userSettingsTranslationRef: TranslationRef<
   'user-settings',
   {
-    readonly 'languageToggle.description': 'Change the language';
     readonly 'languageToggle.select': 'Select language {{language}}';
     readonly 'languageToggle.title': 'Language';
-    readonly 'themeToggle.description': 'Change the theme mode';
+    readonly 'languageToggle.description': 'Change the language';
     readonly 'themeToggle.select': 'Select theme {{theme}}';
     readonly 'themeToggle.title': 'Theme';
-    readonly 'themeToggle.names.light': 'Light';
-    readonly 'themeToggle.names.dark': 'Dark';
+    readonly 'themeToggle.description': 'Change the theme mode';
     readonly 'themeToggle.names.auto': 'Auto';
+    readonly 'themeToggle.names.dark': 'Dark';
+    readonly 'themeToggle.names.light': 'Light';
     readonly 'themeToggle.selectAuto': 'Select Auto Theme';
   }
 >;
