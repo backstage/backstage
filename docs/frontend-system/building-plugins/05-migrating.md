@@ -120,7 +120,7 @@ const fooPage = PageBlueprint.make({
     // This is the path that was previously defined in the app code.
     // It's labelled as the default one because it can be changed via configuration.
     defaultPath: '/foo',
-    // You can reuse the existing routeRef by wrapping into the convertLegacyRouteRef.
+    // You can reuse the existing routeRef by wrapping it with convertLegacyRouteRef.
     routeRef: convertLegacyRouteRef(rootRouteRef),
     // these inputs usually match the props required by the component.
     loader: () =>
