@@ -38,7 +38,7 @@ export const userSettingsTranslationRef = createTranslationRef({
     },
     signOutMenu: {
       title: 'Sign Out',
-      moreIconTitle: 'More',
+      moreIconTitle: 'more',
     },
     pinToggle: {
       title: 'Pin Sidebar',

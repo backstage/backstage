@@ -129,7 +129,7 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly 'themeToggle.names.light': 'Light';
     readonly 'themeToggle.selectAuto': 'Select Auto Theme';
     readonly 'signOutMenu.title': 'Sign Out';
-    readonly 'signOutMenu.moreIconTitle': 'More';
+    readonly 'signOutMenu.moreIconTitle': 'more';
     readonly 'pinToggle.title': 'Pin Sidebar';
     readonly 'pinToggle.description': 'Prevent the sidebar from collapsing';
     readonly 'pinToggle.ariaLabelTitle': 'Pin Sidebar Switch';
