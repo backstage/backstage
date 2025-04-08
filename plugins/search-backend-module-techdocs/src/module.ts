@@ -25,15 +25,13 @@ import {
   createExtensionPoint,
   readSchedulerServiceTaskScheduleDefinitionFromConfig,
 } from '@backstage/backend-plugin-api';
-import { EntityFilterQuery } from '@backstage/catalog-client';
-import { Entity } from '@backstage/catalog-model';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
-import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-import { DefaultTechDocsCollatorFactory } from './collators/DefaultTechDocsCollatorFactory';
 import {
+  DefaultTechDocsCollatorFactory,
   TechDocsCollatorDocumentTransformer,
   TechDocsCollatorEntityTransformer,
-} from './collators';
+} from '@backstage/plugin-search-backend-module-techdocs';
+import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 
 /** @public */
 export interface TechDocsCollatorEntityTransformerExtensionPoint {
@@ -53,24 +51,6 @@ export const techdocsCollatorEntityTransformerExtensionPoint =
     id: 'search.techdocsCollator.transformer',
   });
 
-/** @public */
-export interface TechDocsCollatorEntityFilterExtensionPoint {
-  setEntityFilterFunction(
-    filterFunction: (entities: Entity[]) => Entity[],
-  ): void;
-  setCustomCatalogApiFilters(apiFilters: EntityFilterQuery): void;
-}
-
-/**
- * Extension point used to filter the entities that the collator will use.
- *
- * @public
- */
-export const techDocsCollatorEntityFilterExtensionPoint =
-  createExtensionPoint<TechDocsCollatorEntityFilterExtensionPoint>({
-    id: 'search.techdocsCollator.entityFilter',
-  });
-
 /**
  * @public
  * Search backend module for the TechDocs index.
@@ -81,8 +61,6 @@ export default createBackendModule({
   register(env) {
     let entityTransformer: TechDocsCollatorEntityTransformer | undefined;
     let documentTransformer: TechDocsCollatorDocumentTransformer | undefined;
-    let entityFilterFunction: ((e: Entity[]) => Entity[]) | undefined;
-    let customCatalogApiFilters: EntityFilterQuery | undefined;
 
     env.registerExtensionPoint(
       techdocsCollatorEntityTransformerExtensionPoint,
@@ -106,30 +84,12 @@ export default createBackendModule({
       },
     );
 
-    env.registerExtensionPoint(techDocsCollatorEntityFilterExtensionPoint, {
-      setEntityFilterFunction(newEntityFilterFunction) {
-        if (entityFilterFunction) {
-          throw new Error(
-            'TechDocs entity filter functions may only be set once',
-          );
-        }
-        entityFilterFunction = newEntityFilterFunction;
-      },
-      setCustomCatalogApiFilters(newCatalogApiFilters) {
-        if (customCatalogApiFilters) {
-          throw new Error(
-            'TechDocs catalog entity filters may only be set once',
-          );
-        }
-        customCatalogApiFilters = newCatalogApiFilters;
-      },
-    });
-
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
         logger: coreServices.logger,
         auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
         discovery: coreServices.discovery,
         scheduler: coreServices.scheduler,
         catalog: catalogServiceRef,
@@ -139,6 +99,7 @@ export default createBackendModule({
         config,
         logger,
         auth,
+        httpAuth,
         discovery,
         scheduler,
         catalog,
@@ -161,12 +122,11 @@ export default createBackendModule({
           factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
             discovery,
             auth,
+            httpAuth,
             logger,
             catalogClient: catalog,
             entityTransformer,
             documentTransformer,
-            customCatalogApiFilters,
-            entityFilterFunction,
           }),
         });
       },

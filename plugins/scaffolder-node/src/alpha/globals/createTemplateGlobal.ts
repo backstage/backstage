@@ -18,9 +18,9 @@ import { z } from 'zod';
 import {
   CreatedTemplateGlobalFunction,
   CreatedTemplateGlobalValue,
-  TemplateGlobalFunctionExample,
+  TemplateGlobalFunctionSchema,
 } from './types';
-import { ZodFunctionSchema } from '../types';
+import { JsonValue } from '@backstage/types';
 
 /**
  * This function is used to create new template global values in type-safe manner.
@@ -39,12 +39,10 @@ export const createTemplateGlobalValue = (
  * @alpha
  */
 export const createTemplateGlobalFunction = <
-  TFunctionArgs extends [z.ZodTypeAny, ...z.ZodTypeAny[]],
-  TReturnType extends z.ZodTypeAny,
->(options: {
-  id: string;
-  description?: string;
-  examples?: TemplateGlobalFunctionExample[];
-  schema?: ZodFunctionSchema<TFunctionArgs, TReturnType>;
-  fn: (...args: z.infer<z.ZodTuple<TFunctionArgs>>) => z.infer<TReturnType>;
-}): CreatedTemplateGlobalFunction<TFunctionArgs, TReturnType> => options;
+  TSchema extends TemplateGlobalFunctionSchema<any, any> | undefined,
+  TFilterSchema extends TSchema extends TemplateGlobalFunctionSchema<any, any>
+    ? z.infer<ReturnType<TSchema>>
+    : (...args: JsonValue[]) => JsonValue | undefined,
+>(
+  fn: CreatedTemplateGlobalFunction<TSchema, TFilterSchema>,
+): CreatedTemplateGlobalFunction<any, any> => fn;

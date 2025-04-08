@@ -120,8 +120,6 @@ export type GitlabProviderConfig = {
   includeArchivedRepos?: boolean;
   excludeRepos?: string[];
   includeUsersWithoutSeat?: boolean;
-  membership?: boolean;
-  topics?: string;
 };
 
 // @public

@@ -21,7 +21,6 @@ export {
 export {
   buildGerritGitilesArchiveUrl,
   buildGerritGitilesArchiveUrlFromLocation,
-  getGitilesAuthenticationUrl,
   getGerritBranchApiUrl,
   getGerritCloneRepoUrl,
   getGerritFileContentsApiUrl,

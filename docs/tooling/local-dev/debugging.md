@@ -19,7 +19,7 @@ Changing the level can be done by setting the `LOG_LEVEL` environment variable.
 For example, to turn on debug logs when running the app locally, you can run:
 
 ```shell
-LOG_LEVEL=debug yarn start
+LOG_LEVEL=debug yarn dev
 ```
 
 The resulting log should now have more information available for debugging:

@@ -168,25 +168,18 @@ export function createGithubWebhookAction(options: {
 
       try {
         const insecure_ssl = insecureSsl ? '1' : '0';
-
-        await ctx.checkpoint({
-          key: `create.webhhook.${owner}.${repo}.${webhookUrl}`,
-          fn: async () => {
-            await client.rest.repos.createWebhook({
-              owner,
-              repo,
-              config: {
-                url: webhookUrl,
-                content_type: contentType,
-                secret: webhookSecret,
-                insecure_ssl,
-              },
-              events,
-              active,
-            });
+        await client.rest.repos.createWebhook({
+          owner,
+          repo,
+          config: {
+            url: webhookUrl,
+            content_type: contentType,
+            secret: webhookSecret,
+            insecure_ssl,
           },
+          events,
+          active,
         });
-
         ctx.logger.info(`Webhook '${webhookUrl}' created successfully`);
       } catch (e) {
         assertError(e);

@@ -1,6 +1,6 @@
 # Knip report
 
-## Unused dependencies (27)
+## Unused dependencies (26)
 
 | Name                         | Location     | Severity |
 | :--------------------------- | :----------- | :------- |
@@ -16,7 +16,6 @@
 | terser-webpack-plugin        | package.json | error    |
 | eslint-plugin-react          | package.json | error    |
 | @octokit/oauth-app           | package.json | error    |
-| @types/webpack-env           | package.json | error    |
 | @svgr/plugin-svgo            | package.json | error    |
 | @octokit/graphql             | package.json | error    |
 | @svgr/plugin-jsx             | package.json | error    |
@@ -61,10 +60,10 @@
 
 ## Unlisted dependencies (4)
 
-| Name      | Location                                           | Severity |
-| :-------- | :------------------------------------------------- | :------- |
-| react-dom | src/modules/build/lib/bundler/hasReactDomClient.ts | error    |
-| react-dom | src/modules/build/lib/bundler/config.ts            | error    |
-| react     | src/modules/build/lib/bundler/config.ts            | error    |
-| react     | src/modules/build/lib/bundler/server.ts            | error    |
+| Name      | Location                             | Severity |
+| :-------- | :----------------------------------- | :------- |
+| react-dom | src/lib/bundler/hasReactDomClient.ts | error    |
+| react-dom | src/lib/bundler/config.ts            | error    |
+| react     | src/lib/bundler/config.ts            | error    |
+| react     | src/lib/bundler/server.ts            | error    |
 

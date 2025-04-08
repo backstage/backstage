@@ -201,7 +201,6 @@ export function createConditionAuthorizer<TResource, TQuery>(
  * for a particular resource type.
  *
  * @public
- * @deprecated {@link createPermissionIntegrationRouter} is deprecated
  */
 export type CreatePermissionIntegrationRouterResourceOptions<
   TResourceType extends string,
@@ -224,7 +223,6 @@ export type CreatePermissionIntegrationRouterResourceOptions<
  * permissions and rules from multiple resource types.
  *
  * @public
- * @deprecated {@link createPermissionIntegrationRouter} is deprecated
  */
 export type PermissionIntegrationRouterOptions<
   TResourceType1 extends string = string,
@@ -412,7 +410,6 @@ class PermissionIntegrationMetadataStore {
  * need to be evaluated.
  *
  * @public
- * @deprecated use `PermissionRegistryService` instead, see {@link https://backstage.io/docs/backend-system/core-services/permissions-registry#migrating-from-createpermissionintegrationrouter | the migration section in the service docs} for more details.
  */
 export function createPermissionIntegrationRouter<
   TResourceType1 extends string,

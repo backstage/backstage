@@ -12,8 +12,8 @@ Options:
   -h, --help
 
 Commands:
-  help [command]
   run [options]
+  help [command]
 ```
 
 ### `e2e-test run`

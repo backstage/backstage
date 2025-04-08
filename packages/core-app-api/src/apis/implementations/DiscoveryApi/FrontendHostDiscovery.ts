@@ -54,11 +54,8 @@ export class FrontendHostDiscovery implements DiscoveryApi {
       ?.flatMap(e => {
         const target =
           typeof e.get('target') === 'object'
-            ? e.getOptionalString('target.external')
+            ? e.getString('target.external')
             : e.getString('target');
-        if (!target) {
-          return [];
-        }
         const discovery = UrlPatternDiscovery.compile(target);
         return e
           .getStringArray('plugins')

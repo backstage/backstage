@@ -15,11 +15,10 @@
  */
 
 import React from 'react';
-import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
+import { Theme, makeStyles, useTheme } from '@material-ui/core/styles';
 import { ItemCardHeader } from '@backstage/core-components';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { FavoriteEntity } from '@backstage/plugin-catalog-react';
-import { TemplateDetailButton } from './TemplateDetailButton.tsx';
 
 const useStyles = makeStyles<
   Theme,
@@ -67,11 +66,7 @@ export const CardHeader = (props: CardHeaderProps) => {
     <div className={styles.subtitleWrapper}>
       <div>{type}</div>
       <div>
-        <TemplateDetailButton template={props.template} />
-        <FavoriteEntity
-          entity={props.template}
-          style={{ padding: 0, marginLeft: 6 }}
-        />
+        <FavoriteEntity entity={props.template} style={{ padding: 0 }} />
       </div>
     </div>
   );

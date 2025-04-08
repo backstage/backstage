@@ -17,7 +17,6 @@
 import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 import {
   catalogApiRef,
-  entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
@@ -30,13 +29,6 @@ import {
 import React from 'react';
 import { rootRouteRef } from '../../../routes';
 import { TemplateListPage } from './TemplateListPage';
-
-const mountedRoutes = {
-  mountedRoutes: {
-    '/': rootRouteRef,
-    '/catalog/:namespace/:kind/:name': entityRouteRef,
-  },
-};
 
 describe('TemplateListPage', () => {
   const mockCatalogApi = catalogApiMock({
@@ -68,7 +60,7 @@ describe('TemplateListPage', () => {
       >
         <TemplateListPage />
       </TestApiProvider>,
-      mountedRoutes,
+      { mountedRoutes: { '/': rootRouteRef } },
     );
 
     expect(getByPlaceholderText('Search')).toBeInTheDocument();
@@ -90,7 +82,7 @@ describe('TemplateListPage', () => {
       >
         <TemplateListPage />
       </TestApiProvider>,
-      mountedRoutes,
+      { mountedRoutes: { '/': rootRouteRef } },
     );
 
     expect(getByRole('menuitem', { name: /All/ })).toBeInTheDocument();
@@ -113,7 +105,7 @@ describe('TemplateListPage', () => {
       >
         <TemplateListPage />
       </TestApiProvider>,
-      mountedRoutes,
+      { mountedRoutes: { '/': rootRouteRef } },
     );
 
     expect(getByText('Categories')).toBeInTheDocument();
@@ -135,7 +127,7 @@ describe('TemplateListPage', () => {
       >
         <TemplateListPage />
       </TestApiProvider>,
-      mountedRoutes,
+      { mountedRoutes: { '/': rootRouteRef } },
     );
 
     expect(getByText('Owner')).toBeInTheDocument();
@@ -158,7 +150,6 @@ describe('TemplateListPage', () => {
       >
         <TemplateListPage />
       </TestApiProvider>,
-      mountedRoutes,
     );
 
     expect(getByText('Tags')).toBeInTheDocument();
@@ -181,7 +172,7 @@ describe('TemplateListPage', () => {
         >
           <TemplateListPage />
         </TestApiProvider>,
-        mountedRoutes,
+        { mountedRoutes: { '/': rootRouteRef } },
       );
       expect(queryByTestId('menu-button')).toBeInTheDocument();
     });
@@ -208,7 +199,7 @@ describe('TemplateListPage', () => {
             }}
           />
         </TestApiProvider>,
-        mountedRoutes,
+        { mountedRoutes: { '/': rootRouteRef } },
       );
       expect(queryByTestId('menu-button')).not.toBeInTheDocument();
     });

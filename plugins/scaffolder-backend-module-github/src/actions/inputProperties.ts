@@ -111,12 +111,6 @@ const allowSquashMerge = {
   default: true,
   description: 'Allow squash merges. The default value is `true`',
 };
-const allowUpdateBranch = {
-  title: 'Allow Update Branch',
-  type: 'boolean',
-  default: false,
-  description: 'Allow branch to be updated. The default value is `false`',
-};
 const squashMergeCommitTitle = {
   title: 'Default squash merge commit title',
   enum: ['PR_TITLE', 'COMMIT_OR_PR_TITLE'],
@@ -370,7 +364,6 @@ export { allowSquashMerge };
 export { squashMergeCommitTitle };
 export { squashMergeCommitMessage };
 export { allowAutoMerge };
-export { allowUpdateBranch };
 export { collaborators };
 export { defaultBranch };
 export { deleteBranchOnMerge };

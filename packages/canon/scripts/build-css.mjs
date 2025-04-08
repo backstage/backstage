@@ -31,7 +31,6 @@ const componentsDir = 'src/components';
 const cssFiles = [
   { path: `${cssDir}/core.css`, newName: 'core.css' },
   { path: `${cssDir}/components.css`, newName: 'components.css' },
-  { path: `${cssDir}/styles.css`, newName: 'styles.css' },
 ];
 
 // Components files
@@ -58,50 +57,23 @@ if (!fs.existsSync(distDir)) {
   fs.mkdirSync(distDir, { recursive: true });
 }
 
-// Add watch mode support
-const args = process.argv.slice(2);
-const watchMode = args.includes('--watch');
-
-async function buildCSS(logs = true) {
-  // Bundle and transform files
-  cssFiles.forEach(file => {
-    let { code: bundleCode } = bundle({
-      filename: file.path,
-    });
-
-    let { code } = transform({
-      filename: `${distDir}/${file.newName}`,
-      code: bundleCode,
-    });
-
-    fs.writeFileSync(`${distDir}/${file.newName}`, code);
-
-    if (logs) {
-      console.log(chalk.blue('CSS bundled: ') + file.newName);
-    }
+// Bundle and transform files
+cssFiles.forEach(file => {
+  let { code: bundleCode } = bundle({
+    filename: file.path,
   });
 
-  if (logs) {
-    console.log(chalk.green('CSS files bundled successfully!'));
-  }
-}
-
-if (watchMode) {
-  // Watch both directories for changes
-  [cssDir, componentsDir].forEach(dir => {
-    fs.watch(dir, { recursive: true }, (eventType, filename) => {
-      if (filename?.endsWith('.css')) {
-        console.log(
-          chalk.yellow(`Changes detected in ${filename}, rebuilding...`),
-        );
-        buildCSS(false).catch(console.error);
-      }
-    });
+  let { code, map } = transform({
+    filename: `${distDir}/${file.newName}`,
+    code: bundleCode,
+    minify: true,
+    sourceMap: true,
   });
 
-  // Initial build
-  buildCSS().catch(console.error);
-  console.log(chalk.yellow('Watching for CSS changes...'));
-} else {
-  buildCSS().catch(console.error);
-}
+  fs.writeFileSync(`${distDir}/${file.newName}`, code);
+  fs.writeFileSync(`${distDir}/${file.newName}.map`, map);
+
+  console.log(chalk.blue('CSS bundled: ') + file.newName);
+});
+
+console.log(chalk.green('CSS files bundled successfully!'));

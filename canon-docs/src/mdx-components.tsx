@@ -17,15 +17,12 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     p: ({ children }) => <p className={styles.p}>{children as ReactNode}</p>,
     a: ({ children, href }) => (
-      <a href={href} className={styles.a}>
+      <a href={href} style={{ color: 'var(--primary)' }}>
         {children as ReactNode}
       </a>
     ),
-    ul: ({ children }) => (
-      <ul className={styles.ul}>{children as ReactNode}</ul>
-    ),
     li: ({ children }) => (
-      <li className={styles.li}>{children as ReactNode}</li>
+      <li style={{ marginBottom: '0.5rem' }}>{children as ReactNode}</li>
     ),
     pre: ({ children }) => {
       const codeContent = React.isValidElement(children)

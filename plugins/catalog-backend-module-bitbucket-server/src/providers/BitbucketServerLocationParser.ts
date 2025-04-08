@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { locationSpecToLocationEntity } from '@backstage/plugin-catalog-node';
+import {
+  LocationSpec,
+  locationSpecToLocationEntity,
+} from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { BitbucketServerClient } from '../lib';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * A custom callback that reacts to finding a location by yielding entities.

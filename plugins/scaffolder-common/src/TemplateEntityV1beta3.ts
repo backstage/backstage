@@ -80,10 +80,6 @@ export interface TemplateEntityV1beta3 extends Entity {
      * The owner entityRef of the TemplateEntity
      */
     owner?: string;
-    /**
-     * Specifies the lifecycle phase of the TemplateEntity
-     */
-    lifecycle?: string;
   };
 }
 

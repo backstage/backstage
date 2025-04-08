@@ -85,8 +85,8 @@ export const WithIcons: Story = {
   render: args => (
     <Flex align="center">
       <Button {...args} iconStart="cloud" />
-      <Button {...args} iconEnd="chevron-right" />
-      <Button {...args} iconStart="cloud" iconEnd="chevron-right" />
+      <Button {...args} iconEnd="chevronRight" />
+      <Button {...args} iconStart="cloud" iconEnd="chevronRight" />
     </Flex>
   ),
 };
@@ -98,8 +98,8 @@ export const FullWidth: Story = {
   render: args => (
     <Flex direction="column" gap="4" style={{ width: '300px' }}>
       <Button {...args} iconStart="cloud" />
-      <Button {...args} iconEnd="chevron-right" />
-      <Button {...args} iconStart="cloud" iconEnd="chevron-right" />
+      <Button {...args} iconEnd="chevronRight" />
+      <Button {...args} iconStart="cloud" iconEnd="chevronRight" />
     </Flex>
   ),
 };
@@ -158,7 +158,7 @@ export const Playground: Story = {
                 Button
               </Button>
               <Button
-                iconEnd="chevron-right"
+                iconEnd="chevronRight"
                 variant={variant as ButtonProps['variant']}
                 size={size as ButtonProps['size']}
               >
@@ -166,7 +166,7 @@ export const Playground: Story = {
               </Button>
               <Button
                 iconStart="cloud"
-                iconEnd="chevron-right"
+                iconEnd="chevronRight"
                 style={{ width: '200px' }}
                 variant={variant as ButtonProps['variant']}
                 size={size as ButtonProps['size']}
@@ -189,7 +189,7 @@ export const Playground: Story = {
                 Button
               </Button>
               <Button
-                iconEnd="chevron-right"
+                iconEnd="chevronRight"
                 variant={variant as ButtonProps['variant']}
                 size={size as ButtonProps['size']}
                 disabled

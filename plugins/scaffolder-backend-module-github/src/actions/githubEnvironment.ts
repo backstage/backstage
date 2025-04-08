@@ -194,16 +194,9 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
       });
 
       const client = new Octokit(octokitOptions);
-
-      const repositoryId = await ctx.checkpoint({
-        key: `get.repo.${owner}.${repo}`,
-        fn: async () => {
-          const repository = await client.rest.repos.get({
-            owner: owner,
-            repo: repo,
-          });
-          return repository.data.id;
-        },
+      const repository = await client.rest.repos.get({
+        owner: owner,
+        repo: repo,
       });
 
       // convert reviewers from catalog entity to Github user or team
@@ -226,39 +219,25 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
         for (const reviewerEntityRef of reviewersEntityRefs) {
           if (reviewerEntityRef?.kind === 'User') {
             try {
-              const userId = await ctx.checkpoint({
-                key: `get.user.${reviewerEntityRef.metadata.name}`,
-                fn: async () => {
-                  const user = await client.rest.users.getByUsername({
-                    username: reviewerEntityRef.metadata.name,
-                  });
-                  return user.data.id;
-                },
+              const user = await client.rest.users.getByUsername({
+                username: reviewerEntityRef.metadata.name,
               });
-
               githubReviewers.push({
                 type: 'User',
-                id: userId,
+                id: user.data.id,
               });
             } catch (error) {
               ctx.logger.error('User not found:', error);
             }
           } else if (reviewerEntityRef?.kind === 'Group') {
             try {
-              const teamId = await ctx.checkpoint({
-                key: `get.team.${reviewerEntityRef.metadata.name}`,
-                fn: async () => {
-                  const team = await client.rest.teams.getByName({
-                    org: owner,
-                    team_slug: reviewerEntityRef.metadata.name,
-                  });
-                  return team.data.id;
-                },
+              const team = await client.rest.teams.getByName({
+                org: owner,
+                team_slug: reviewerEntityRef.metadata.name,
               });
-
               githubReviewers.push({
                 type: 'Team',
-                id: teamId,
+                id: team.data.id,
               });
             } catch (error) {
               ctx.logger.error('Team not found:', error);
@@ -267,92 +246,63 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
         }
       }
 
-      await ctx.checkpoint({
-        key: `create.or.update.environment.${owner}.${repo}.${name}`,
-        fn: async () => {
-          await client.rest.repos.createOrUpdateEnvironment({
-            owner: owner,
-            repo: repo,
-            environment_name: name,
-            deployment_branch_policy: deploymentBranchPolicy ?? undefined,
-            wait_timer: waitTimer ?? undefined,
-            prevent_self_review: preventSelfReview ?? undefined,
-            reviewers: githubReviewers.length ? githubReviewers : undefined,
-          });
-        },
+      await client.rest.repos.createOrUpdateEnvironment({
+        owner: owner,
+        repo: repo,
+        environment_name: name,
+        deployment_branch_policy: deploymentBranchPolicy ?? undefined,
+        wait_timer: waitTimer ?? undefined,
+        prevent_self_review: preventSelfReview ?? undefined,
+        reviewers: githubReviewers.length ? githubReviewers : undefined,
       });
 
       if (customBranchPolicyNames) {
         for (const item of customBranchPolicyNames) {
-          await ctx.checkpoint({
-            key: `create.deployment.branch.policy.branch.${owner}.${repo}.${name}.${item}`,
-            fn: async () => {
-              await client.rest.repos.createDeploymentBranchPolicy({
-                owner: owner,
-                repo: repo,
-                type: 'branch',
-                environment_name: name,
-                name: item,
-              });
-            },
+          await client.rest.repos.createDeploymentBranchPolicy({
+            owner: owner,
+            repo: repo,
+            type: 'branch',
+            environment_name: name,
+            name: item,
           });
         }
       }
 
       if (customTagPolicyNames) {
         for (const item of customTagPolicyNames) {
-          await ctx.checkpoint({
-            key: `create.deployment.branch.policy.tag.${owner}.${repo}.${name}.${item}`,
-            fn: async () => {
-              await client.rest.repos.createDeploymentBranchPolicy({
-                owner: owner,
-                repo: repo,
-                type: 'tag',
-                environment_name: name,
-                name: item,
-              });
-            },
+          await client.rest.repos.createDeploymentBranchPolicy({
+            owner: owner,
+            repo: repo,
+            type: 'tag',
+            environment_name: name,
+            name: item,
           });
         }
       }
 
       for (const [key, value] of Object.entries(environmentVariables ?? {})) {
-        await ctx.checkpoint({
-          key: `create.env.variable.${owner}.${repo}.${name}.${key}`,
-          fn: async () => {
-            await client.rest.actions.createEnvironmentVariable({
-              repository_id: repositoryId,
-              owner: owner,
-              repo: repo,
-              environment_name: name,
-              name: key,
-              value,
-            });
-          },
+        await client.rest.actions.createEnvironmentVariable({
+          repository_id: repository.data.id,
+          owner: owner,
+          repo: repo,
+          environment_name: name,
+          name: key,
+          value,
         });
       }
 
       if (secrets) {
-        const { publicKey, publicKeyId } = await ctx.checkpoint({
-          key: `get.env.public.key.${owner}.${repo}.${name}`,
-          fn: async () => {
-            const publicKeyResponse =
-              await client.rest.actions.getEnvironmentPublicKey({
-                repository_id: repositoryId,
-                owner: owner,
-                repo: repo,
-                environment_name: name,
-              });
-            return {
-              publicKey: publicKeyResponse.data.key,
-              publicKeyId: publicKeyResponse.data.key_id,
-            };
-          },
-        });
+        const publicKeyResponse =
+          await client.rest.actions.getEnvironmentPublicKey({
+            repository_id: repository.data.id,
+            owner: owner,
+            repo: repo,
+            environment_name: name,
+          });
 
         await Sodium.ready;
         const binaryKey = Sodium.from_base64(
-          publicKey,
+          publicKeyResponse.data.key,
           Sodium.base64_variants.ORIGINAL,
         );
         for (const [key, value] of Object.entries(secrets)) {
@@ -366,19 +316,14 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
             Sodium.base64_variants.ORIGINAL,
           );
 
-          await ctx.checkpoint({
-            key: `create.or.update.env.secret.${owner}.${repo}.${name}.${key}`,
-            fn: async () => {
-              await client.rest.actions.createOrUpdateEnvironmentSecret({
-                repository_id: repositoryId,
-                owner: owner,
-                repo: repo,
-                environment_name: name,
-                secret_name: key,
-                encrypted_value: encryptedBase64Secret,
-                key_id: publicKeyId,
-              });
-            },
+          await client.rest.actions.createOrUpdateEnvironmentSecret({
+            repository_id: repository.data.id,
+            owner: owner,
+            repo: repo,
+            environment_name: name,
+            secret_name: key,
+            encrypted_value: encryptedBase64Secret,
+            key_id: publicKeyResponse.data.key_id,
           });
         }
       }

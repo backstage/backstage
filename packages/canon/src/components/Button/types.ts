@@ -21,32 +21,13 @@ import type { ButtonOwnProps } from './Button.props';
  *
  * @public
  */
-export interface ButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  /**
-   * The size of the button
-   * @defaultValue 'medium'
-   */
+export interface ButtonProps {
   size?: ButtonOwnProps['size'];
-
-  /**
-   * The visual variant of the button
-   * @defaultValue 'primary'
-   */
   variant?: ButtonOwnProps['variant'];
-
-  /**
-   * The content of the button
-   */
   children: React.ReactNode;
-
-  /**
-   * Optional icon to display at the start of the button
-   */
+  className?: string;
+  disabled?: boolean;
   iconStart?: IconNames;
-
-  /**
-   * Optional icon to display at the end of the button
-   */
   iconEnd?: IconNames;
+  style?: React.CSSProperties;
 }

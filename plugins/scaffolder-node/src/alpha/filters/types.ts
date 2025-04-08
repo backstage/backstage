@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 import { z } from 'zod';
-import { ZodFunctionSchema } from '../types';
+import { TemplateFilter } from '../../types';
+import { JsonValue } from '@backstage/types';
 
 export type { TemplateFilter } from '../../types';
+
+/** @alpha */
+export type TemplateFilterSchema<
+  Args extends z.ZodTuple<
+    | [z.ZodType<JsonValue>]
+    | [z.ZodType<JsonValue>, ...(z.ZodType<JsonValue> | z.ZodUnknown)[]],
+    z.ZodType<JsonValue> | z.ZodUnknown | null
+  >,
+  Result extends z.ZodType<JsonValue> | z.ZodUndefined,
+> = (zod: typeof z) => z.ZodFunction<Args, Result>;
 
 /** @alpha */
 export type TemplateFilterExample = {
@@ -27,12 +38,23 @@ export type TemplateFilterExample = {
 
 /** @alpha */
 export type CreatedTemplateFilter<
-  TFunctionArgs extends [z.ZodTypeAny, ...z.ZodTypeAny[]],
-  TReturnType extends z.ZodTypeAny,
+  TSchema extends
+    | TemplateFilterSchema<any, any>
+    | undefined
+    | unknown = unknown,
+  TFilterSchema extends TSchema extends TemplateFilterSchema<any, any>
+    ? z.infer<ReturnType<TSchema>>
+    : TSchema extends unknown
+    ? unknown
+    : TemplateFilter = TSchema extends TemplateFilterSchema<any, any>
+    ? z.infer<ReturnType<TSchema>>
+    : TSchema extends unknown
+    ? unknown
+    : TemplateFilter,
 > = {
   id: string;
   description?: string;
   examples?: TemplateFilterExample[];
-  schema?: ZodFunctionSchema<TFunctionArgs, TReturnType>;
-  filter: (...args: z.infer<z.ZodTuple<TFunctionArgs>>) => z.infer<TReturnType>;
+  schema?: TSchema;
+  filter: TFilterSchema;
 };

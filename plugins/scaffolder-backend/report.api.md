@@ -529,7 +529,7 @@ export interface RouterOptions {
   // (undocumented)
   additionalTemplateFilters?:
     | Record<string, TemplateFilter_2>
-    | CreatedTemplateFilter<any, any>[];
+    | CreatedTemplateFilter[];
   // (undocumented)
   additionalTemplateGlobals?:
     | Record<string, TemplateGlobal_2>

@@ -567,11 +567,6 @@ export function getGitHubRequestOptions(
 };
 
 // @public
-export function getGitilesAuthenticationUrl(
-  config: GerritIntegrationConfig,
-): string;
-
-// @public
 export function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,
@@ -647,7 +642,7 @@ export type GiteaIntegrationConfig = {
 export type GithubAppConfig = {
   appId: number;
   privateKey: string;
-  webhookSecret?: string;
+  webhookSecret: string;
   clientId: string;
   clientSecret: string;
   allowedInstallationOwners?: string[];

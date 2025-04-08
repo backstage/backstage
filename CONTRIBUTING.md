@@ -68,7 +68,7 @@ yarn tsc      # does a first run of type generation and checks
 Open a terminal window and start the web app by using the following command from the project root. Make sure you have run the above mentioned commands first.
 
 ```bash
-yarn start
+yarn dev
 ```
 
 This is going to start two things, the frontend (:3000) and the backend (:7007).

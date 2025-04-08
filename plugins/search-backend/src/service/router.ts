@@ -16,6 +16,7 @@
 
 import express from 'express';
 import { z } from 'zod';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
@@ -38,6 +39,7 @@ import {
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 
 const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
   const jsonValueSchema: z.ZodSchema<JsonValue> = z.lazy(() =>
@@ -55,7 +57,8 @@ const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
 });
 
 /**
- * @internal
+ * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export type RouterOptions = {
   engine: SearchEngine;
@@ -64,8 +67,9 @@ export type RouterOptions = {
   permissions: PermissionEvaluator | PermissionAuthorizer;
   config: Config;
   logger: LoggerService;
-  auth: AuthService;
-  httpAuth: HttpAuthService;
+  // TODO: Make "auth" and "httpAuth" required once we remove the usage of "tokenManager"
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 };
 
 const defaultMaxPageLimit = 100;
@@ -73,7 +77,8 @@ const defaultMaxTermLength = 100;
 const allowedLocationProtocols = ['http:', 'https:'];
 
 /**
- * @internal
+ * @public
+ * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export async function createRouter(
   options: RouterOptions,
@@ -85,9 +90,14 @@ export async function createRouter(
     permissions,
     config,
     logger,
-    auth,
-    httpAuth,
+    discovery = HostDiscovery.fromConfig(config),
   } = options;
+
+  // TODO: stop using this adapter when the "tokenManager" is removed
+  const { auth, httpAuth } = createLegacyAuthAdapters({
+    ...options,
+    discovery,
+  });
 
   const maxPageLimit =
     config.getOptionalNumber('search.maxPageLimit') ?? defaultMaxPageLimit;

@@ -113,11 +113,7 @@ import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 import {
   convertFiltersToRecord,
   convertGlobalsToRecord,
-  extractFilterMetadata,
-  extractGlobalFunctionMetadata,
-  extractGlobalValueMetadata,
 } from '../util/templating';
-import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
 
 /**
  *
@@ -183,7 +179,7 @@ export interface RouterOptions {
   taskBroker?: TaskBroker;
   additionalTemplateFilters?:
     | Record<string, TemplateFilter>
-    | CreatedTemplateFilter<any, any>[];
+    | CreatedTemplateFilter[];
   additionalTemplateGlobals?:
     | Record<string, TemplateGlobal>
     | CreatedTemplateGlobal[];
@@ -375,7 +371,6 @@ export async function createRouter(
   }
 
   const actionRegistry = new TemplateActionRegistry();
-
   const templateExtensions = {
     additionalTemplateFilters: convertFiltersToRecord(
       additionalTemplateFilters,
@@ -1114,18 +1109,6 @@ export async function createRouter(
       });
 
       res.status(200).json({ results });
-    })
-    .get('/v2/template-extensions', async (_req, res) => {
-      res.status(200).json({
-        filters: {
-          ...extractFilterMetadata(createDefaultFilters({ integrations })),
-          ...extractFilterMetadata(additionalTemplateFilters),
-        },
-        globals: {
-          functions: extractGlobalFunctionMetadata(additionalTemplateGlobals),
-          values: extractGlobalValueMetadata(additionalTemplateGlobals),
-        },
-      });
     });
 
   const app = express();

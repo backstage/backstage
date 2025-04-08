@@ -61,33 +61,21 @@ const DecorativeBox = () => {
 
 export const Default: Story = {
   args: {
-    children: (
-      <>
-        <DecorativeBox />, <DecorativeBox />, <DecorativeBox />
-      </>
-    ),
+    children: [<DecorativeBox />, <DecorativeBox />, <DecorativeBox />],
   },
 };
 
 export const ColumnDirection: Story = {
   args: {
     direction: 'column',
-    children: (
-      <>
-        <DecorativeBox />, <DecorativeBox />, <DecorativeBox />
-      </>
-    ),
+    children: [<DecorativeBox />, <DecorativeBox />, <DecorativeBox />],
   },
 };
 
 export const RowDirection: Story = {
   args: {
     direction: 'row',
-    children: (
-      <>
-        <DecorativeBox />, <DecorativeBox />, <DecorativeBox />
-      </>
-    ),
+    children: [<DecorativeBox />, <DecorativeBox />, <DecorativeBox />],
   },
 };
 

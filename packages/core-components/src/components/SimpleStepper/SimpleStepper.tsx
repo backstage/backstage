@@ -32,7 +32,6 @@ type InternalState = {
 };
 
 const noop = () => {};
-
 export const VerticalStepperContext = React.createContext<InternalState>({
   stepperLength: 0,
   stepIndex: 0,
@@ -51,17 +50,7 @@ export interface StepperProps {
 export function SimpleStepper(props: PropsWithChildren<StepperProps>) {
   const { children, elevated, onStepChange, activeStep = 0 } = props;
   const [stepIndex, setStepIndex] = useState<number>(activeStep);
-  /*
-  Recreates the stepHistory array based on the activeStep
-  to make sure the handleBack function of the Footer works when activeStep is higher than 0
-  */
-  const inOrderRecreatedStepHistory = Array.from(
-    { length: activeStep + 1 },
-    (_, i) => i,
-  );
-  const [stepHistory, setStepHistory] = useState<number[]>(
-    inOrderRecreatedStepHistory,
-  );
+  const [stepHistory, setStepHistory] = useState<number[]>([0]);
 
   useEffect(() => {
     setStepIndex(activeStep);

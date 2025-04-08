@@ -21,16 +21,12 @@
  */
 
 export { default } from './module';
-
 export { BitbucketServerClient } from './lib';
-
 export type {
   BitbucketServerProject,
   BitbucketServerRepository,
   BitbucketServerPagedResponse,
   BitbucketServerListOptions,
-  BitbucketServerDefaultBranch,
 } from './lib';
-
 export { BitbucketServerEntityProvider } from './providers';
 export type { BitbucketServerLocationParser } from './providers';

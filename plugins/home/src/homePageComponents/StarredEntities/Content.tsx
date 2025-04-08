@@ -73,14 +73,7 @@ export const Content = ({
     return (
       await catalogApi.getEntitiesByRefs({
         entityRefs: [...starredEntities],
-        fields: [
-          'kind',
-          'metadata.namespace',
-          'metadata.name',
-          'spec.type',
-          'metadata.title',
-          'spec.profile.displayName',
-        ],
+        fields: ['kind', 'metadata.namespace', 'metadata.name', 'spec.type'],
       })
     ).items.filter((e): e is Entity => !!e);
   }, [catalogApi, starredEntities]);

@@ -134,7 +134,6 @@ export type TestAppOptions = {
   config?: JsonObject;
   extensions?: ExtensionDefinition<any>[];
   features?: FrontendFeature[];
-  initialRouteEntries?: string[];
 };
 
 export { withLogCollector };

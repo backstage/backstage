@@ -204,17 +204,7 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                           className={classes.filter}
                           label="Kind"
                           name="kind"
-                          values={[
-                            'API',
-                            'Component',
-                            'Domain',
-                            'Group',
-                            'Location',
-                            'Resource',
-                            'System',
-                            'Template',
-                            'User',
-                          ]}
+                          values={['Component', 'Template']}
                         />
                         <SearchFilter.Checkbox
                           className={classes.filter}

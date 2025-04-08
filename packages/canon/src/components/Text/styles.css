@@ -48,23 +48,3 @@
 .canon-Text--weight-bold {
   font-weight: var(--canon-font-weight-bold);
 }
-
-.canon-Text--color-primary {
-  color: var(--canon-fg-primary);
-}
-
-.canon-Text--color-secondary {
-  color: var(--canon-fg-secondary);
-}
-
-.canon-Text--color-danger {
-  color: var(--canon-fg-danger);
-}
-
-.canon-Text--color-warning {
-  color: var(--canon-fg-warning);
-}
-
-.canon-Text--color-success {
-  color: var(--canon-fg-success);
-}

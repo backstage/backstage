@@ -20,9 +20,6 @@ export type {
   BitbucketServerListOptions,
 } from './BitbucketServerClient';
 export type {
-  BitbucketServerDefaultBranch,
   BitbucketServerRepository,
-  BitbucketServerEvents,
   BitbucketServerProject,
 } from './types';
-// export * from './types';

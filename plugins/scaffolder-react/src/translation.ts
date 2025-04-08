@@ -44,9 +44,6 @@ export const scaffolderReactTranslationRef = createTranslationRef({
       noDescription: 'No description',
       chooseButtonText: 'Choose',
     },
-    cardHeader: {
-      detailBtnTitle: 'Show template entity details',
-    },
     templateOutputs: {
       title: 'Text Output',
     },

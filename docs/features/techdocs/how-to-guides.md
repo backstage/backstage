@@ -92,11 +92,10 @@ the source code hosting provider. Notice that instead of the `dir:` prefix, the
 
 Note, just as it's possible to specify a subdirectory with the `dir:` prefix,
 you can also provide a path to a non-root directory inside the repository which
-contains the `mkdocs.yml` file and `docs/` directory. It is important that it is
-suffixed with a '/' in order for relative path resolution to work consistently.
+contains the `mkdocs.yml` file and `docs/` directory.
 
 e.g.
-`url:https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend/examples/documented-component/`
+`url:https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend/examples/documented-component`
 
 ### Why is URL Reader faster than a git clone?
 

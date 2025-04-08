@@ -33,13 +33,7 @@ export function compatWrapper(element: ReactNode): React_2.JSX.Element;
 // @public (undocumented)
 export function convertLegacyApp(
   rootElement: React_2.JSX.Element,
-  options?: ConvertLegacyAppOptions,
 ): (FrontendPlugin | FrontendModule)[];
-
-// @public (undocumented)
-export interface ConvertLegacyAppOptions {
-  entityPage?: React_2.JSX.Element;
-}
 
 // @public (undocumented)
 export function convertLegacyAppOptions(options?: {

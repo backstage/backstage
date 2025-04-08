@@ -16,20 +16,6 @@ import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
-// @alpha
-export const CatalogFilterBlueprint: ExtensionBlueprint<{
-  kind: 'catalog-filter';
-  name: undefined;
-  params: {
-    loader: () => Promise<JSX.Element>;
-  };
-  output: ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: never;
-}>;
-
 // @alpha (undocumented)
 export const catalogReactTranslationRef: TranslationRef<
   'catalog-react',
@@ -113,7 +99,6 @@ export const defaultEntityContentGroups: {
   documentation: string;
   development: string;
   deployment: string;
-  operation: string;
   observability: string;
 };
 

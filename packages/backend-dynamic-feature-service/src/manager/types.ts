@@ -16,6 +16,7 @@
 
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
+import { PluginCacheManager, TokenManager } from '@backstage/backend-common';
 import { Router } from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -37,6 +38,7 @@ import { PackagePlatform, PackageRole } from '@backstage/cli-node';
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { IndexBuilder } from '@backstage/plugin-search-backend-node';
+import { EventsBackend } from '@backstage/plugin-events-backend';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { ScannedPluginPackage } from '../scanner';
 
@@ -54,10 +56,12 @@ import { ScannedPluginPackage } from '../scanner';
  */
 export type LegacyPluginEnvironment = {
   logger: Logger;
+  cache: PluginCacheManager;
   database: DatabaseService;
   config: Config;
   reader: UrlReaderService;
   discovery: DiscoveryService;
+  tokenManager: TokenManager;
   permissions: PermissionEvaluator;
   scheduler: SchedulerService;
   identity: IdentityApi;
@@ -165,7 +169,10 @@ export interface LegacyBackendPluginInstaller {
     schedule: SchedulerServiceTaskRunner,
     env: LegacyPluginEnvironment,
   ): void;
-  events?(env: LegacyPluginEnvironment): HttpPostIngressOptions[];
+  events?(
+    eventsBackend: EventsBackend,
+    env: LegacyPluginEnvironment,
+  ): HttpPostIngressOptions[];
   permissions?: {
     policy?: PermissionPolicy;
   };

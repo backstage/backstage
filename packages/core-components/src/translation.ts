@@ -106,8 +106,8 @@ export const coreComponentsTranslationRef = createTranslationRef({
       },
     },
     alertDisplay: {
-      message_one: '({{ count }} newer message)',
-      message_other: '({{ count }} newer messages)',
+      message_one: '({{ count }} older message)',
+      message_other: '({{ count }} older messages)',
     },
     autoLogout: {
       stillTherePrompt: {

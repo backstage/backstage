@@ -15,7 +15,7 @@
  */
 import { JsonValue } from '@backstage/types';
 import { z } from 'zod';
-import { ZodFunctionSchema } from '../types';
+import { TemplateGlobal } from '../../types';
 
 export type { TemplateGlobal } from '../../types';
 
@@ -27,6 +27,15 @@ export type CreatedTemplateGlobalValue<T extends JsonValue = JsonValue> = {
 };
 
 /** @alpha */
+export type TemplateGlobalFunctionSchema<
+  Args extends z.ZodTuple<
+    [] | [z.ZodType<JsonValue>, ...(z.ZodType<JsonValue> | z.ZodUnknown)[]],
+    z.ZodType<JsonValue> | z.ZodUnknown | null
+  >,
+  Result extends z.ZodType<JsonValue> | z.ZodUndefined,
+> = (zod: typeof z) => z.ZodFunction<Args, Result>;
+
+/** @alpha */
 export type TemplateGlobalFunctionExample = {
   description?: string;
   example: string;
@@ -35,17 +44,31 @@ export type TemplateGlobalFunctionExample = {
 
 /** @alpha */
 export type CreatedTemplateGlobalFunction<
-  TFunctionArgs extends [z.ZodTypeAny, ...z.ZodTypeAny[]],
-  TReturnType extends z.ZodTypeAny,
+  TSchema extends
+    | TemplateGlobalFunctionSchema<any, any>
+    | undefined
+    | unknown = unknown,
+  TFilterSchema extends TSchema extends TemplateGlobalFunctionSchema<any, any>
+    ? z.infer<ReturnType<TSchema>>
+    : TSchema extends unknown
+    ? unknown
+    : Exclude<
+        TemplateGlobal,
+        JsonValue
+      > = TSchema extends TemplateGlobalFunctionSchema<any, any>
+    ? z.infer<ReturnType<TSchema>>
+    : TSchema extends unknown
+    ? unknown
+    : Exclude<TemplateGlobal, JsonValue>,
 > = {
   id: string;
   description?: string;
   examples?: TemplateGlobalFunctionExample[];
-  schema?: ZodFunctionSchema<TFunctionArgs, TReturnType>;
-  fn: (...args: z.infer<z.ZodTuple<TFunctionArgs>>) => z.infer<TReturnType>;
+  schema?: TSchema;
+  fn: TFilterSchema;
 };
 
 /** @alpha */
 export type CreatedTemplateGlobal =
   | CreatedTemplateGlobalValue
-  | CreatedTemplateGlobalFunction<any, any>;
+  | CreatedTemplateGlobalFunction<unknown, unknown>;

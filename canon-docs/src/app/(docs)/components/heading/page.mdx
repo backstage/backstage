@@ -1,9 +1,12 @@
 import { PropsTable } from '@/components/PropsTable';
-import { HeadingSnippet } from '@/snippets/stories-snippets';
+import {
+  HeadingPreview,
+  HeadingAllVariants,
+  HeadingResponsive,
+} from '@/snippets/heading';
 import { Snippet } from '@/components/Snippet';
 import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
-import { headingPropDefs } from './props';
 
 # Heading
 
@@ -11,7 +14,7 @@ Headings are used to structure the content of your page.
 
 <Snippet
   py={4}
-  preview={<HeadingSnippet story="Title1" />}
+  preview={<HeadingPreview />}
   code={`<Heading variant="title1">Hello World!</Heading>`}
 />
 
@@ -40,7 +43,26 @@ Headings are used to structure the content of your page.
 
 ## API reference
 
-<PropsTable data={headingPropDefs} />
+<PropsTable
+  data={{
+    variant: {
+      type: ['display', 'title1', 'title2', 'title3', 'title4', 'title5'],
+      responsive: true,
+    },
+    children: {
+      type: 'ReactNode',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
 
 ## Examples
 
@@ -52,7 +74,7 @@ appearance of the heading.
 <Snippet
   py={2}
   open
-  preview={<HeadingSnippet story="AllVariants" />}
+  preview={<HeadingAllVariants />}
   code={`<Flex direction="column" gap="4">
     <Heading variant="display">Display</Heading>
     <Heading variant="title1">Title 1</Heading>
@@ -67,7 +89,10 @@ appearance of the heading.
 You can also use the `variant` prop to change the appearance of the text based
 on the screen size.
 
-<CodeBlock
+<Snippet
+  py={4}
+  open
+  preview={<HeadingResponsive />}
   code={`<Heading variant={{ initial: 'title2', lg: 'title1' }}>
     Responsive heading
   </Heading>`}

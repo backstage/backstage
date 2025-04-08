@@ -155,7 +155,7 @@ export default async (opts: OptionValues): Promise<void> => {
     }
     Task.log(
       `  Run the app: ${chalk.cyan(
-        `cd ${opts.path ?? answers.name} && yarn start`,
+        `cd ${opts.path ?? answers.name} && yarn dev`,
       )}`,
     );
     Task.log(

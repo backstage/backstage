@@ -45,11 +45,11 @@ export const Default: Story = {
 
 export const WithCustomIcon: Story = {
   args: {
-    name: 'arrow-down',
+    name: 'arrowDown',
   },
   decorators: [
     Story => (
-      <IconProvider overrides={{ 'arrow-down': () => <div>Custom Icon</div> }}>
+      <IconProvider overrides={{ arrowDown: () => <div>Custom Icon</div> }}>
         <Story />
       </IconProvider>
     ),

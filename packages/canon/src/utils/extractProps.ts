@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-type BasePropDef = {
-  type: string;
-  values?: readonly unknown[];
-  default?: unknown;
-  required?: boolean;
-  className?: string;
-  responsive?: true;
-  customProperties?: string[];
-};
-
 export function extractProps(
   props: {
     className?: string;
@@ -32,53 +22,45 @@ export function extractProps(
     as?: keyof JSX.IntrinsicElements;
     [key: string]: any;
   },
-  propDefs: { [name in string]: BasePropDef },
+  propDefs: { [key: string]: any },
 ) {
   let className: string[] = (props.className || '').split(' ');
   let style: React.CSSProperties = { ...props.style };
+  const hasProp = (key: string) => props.hasOwnProperty(key);
 
   for (const key in propDefs) {
-    const propDef = propDefs[key];
-
     // Check if the prop is present or has a default value
-    if (!Object.hasOwn(props, key) && !propDef.hasOwnProperty('default')) {
+    if (!hasProp(key) && !propDefs[key].hasOwnProperty('default')) {
       continue; // Skip processing if neither is present
     }
 
-    const value = Object.hasOwn(props, key)
-      ? (props[key] as unknown)
-      : propDefs[key].default;
-    const propDefsValues = propDef.values;
-    const propDefsCustomProperties = propDef.customProperties;
-    const propDefsClassName = propDef.className;
-    const isResponsive = propDef.responsive;
+    const value = hasProp(key) ? props[key] : propDefs[key].default;
+    const propDefsValues = propDefs[key].values;
+    const propDefsCustomProperties = propDefs[key].customProperties;
+    const propDefsClassName = propDefs[key].className;
+    const isResponsive = propDefs[key].responsive;
 
-    const handleValue = (val: unknown, prefix: string = '') => {
+    const handleValue = (val: string, prefix: string = '') => {
       // Skip adding class name if the key is "as"
       if (key === 'as') return;
 
-      if (propDefsValues?.includes(val)) {
+      if (propDefsValues.includes(val)) {
         className.push(`${prefix}${propDefsClassName}-${val}`);
       } else {
-        if (propDefsCustomProperties) {
-          for (const customProperty of propDefsCustomProperties) {
-            const customPropertyKey =
-              isResponsive && prefix
-                ? `${customProperty}-${prefix.slice(0, -1)}`
-                : customProperty;
-            style[customPropertyKey as keyof typeof style] = val as any;
-          }
-        }
+        const customPropertyKey =
+          isResponsive && prefix
+            ? `${propDefsCustomProperties}-${prefix.slice(0, -1)}`
+            : propDefsCustomProperties;
+        (style as any)[customPropertyKey] = val;
         className.push(`${prefix}${propDefsClassName}`);
       }
     };
 
-    if (isResponsive && typeof value === 'object' && value !== null) {
-      const breakpointValues = value as { [key: string]: unknown };
+    if (isResponsive && typeof value === 'object') {
       // Handle responsive object values
-      for (const breakpoint in breakpointValues) {
+      for (const breakpoint in value) {
         const prefix = breakpoint === 'initial' ? '' : `${breakpoint}:`;
-        handleValue(breakpointValues[breakpoint], prefix);
+        handleValue(value[breakpoint], prefix);
       }
     } else {
       handleValue(value);

@@ -1,7 +1,7 @@
 ---
 id: threat-model
 title: Backstage Threat Model
-sidebar_label: Security & Threat Model
+sidebar_label: Security & Thread Model
 description: A document describing the threat model for Backstage.
 ---
 

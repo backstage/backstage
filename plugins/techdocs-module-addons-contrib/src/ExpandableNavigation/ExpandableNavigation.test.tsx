@@ -20,7 +20,6 @@ import React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react';
 
 import { ExpandableNavigation } from '../plugin';
-import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 
 const mockNavWithSublevels = (
   <div data-md-component="navigation">
@@ -85,21 +84,11 @@ const mockNavWithoutSublevels = (
 );
 
 describe('ExpandableNavigation', () => {
-  const entityPresentationApiMock = {
-    forEntity: jest.fn(),
-  };
-  entityPresentationApiMock.forEntity.mockReturnValue({
-    snapshot: {
-      primaryTitle: 'Test Entity',
-    },
-  });
-
   it('renders without exploding', async () => {
     const { getByRole } = await TechDocsAddonTester.buildAddonsInTechDocs([
       <ExpandableNavigation />,
     ])
       .withDom(mockNavWithSublevels)
-      .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
       .renderWithEffects();
 
     expect(getByRole('button', { name: 'expand-nav' })).toBeInTheDocument();
@@ -111,7 +100,6 @@ describe('ExpandableNavigation', () => {
         <ExpandableNavigation />,
       ])
         .withDom(mockNavWithSublevels)
-        .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
         .renderWithEffects();
 
     const toggles =
@@ -149,7 +137,6 @@ describe('ExpandableNavigation', () => {
       <ExpandableNavigation />,
     ])
       .withDom(mockNavWithoutSublevels)
-      .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
       .renderWithEffects();
 
     expect(

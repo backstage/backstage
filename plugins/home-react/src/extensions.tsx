@@ -152,8 +152,7 @@ function CardExtension<T>(props: CardExtensionComponentProps<T>) {
   }
 
   const cardProps = {
-    divider: !!title,
-    ...(title && { title }),
+    ...(title && { title, divider: !!title }),
     ...(Settings && !isCustomizable
       ? {
           action: (

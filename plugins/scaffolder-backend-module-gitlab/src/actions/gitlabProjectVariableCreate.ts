@@ -88,17 +88,12 @@ export const createGitlabProjectVariableAction = (options: {
 
       const api = getClient({ host, integrations, token });
 
-      await ctx.checkpoint({
-        key: `create.project.variables.${projectId}.${key}.${value}`,
-        fn: async () => {
-          await api.ProjectVariables.create(projectId, key, value, {
-            variableType: variableType as VariableType,
-            protected: variableProtected,
-            masked,
-            raw,
-            environmentScope,
-          });
-        },
+      await api.ProjectVariables.create(projectId, key, value, {
+        variableType: variableType as VariableType,
+        protected: variableProtected,
+        masked,
+        raw,
+        environmentScope,
       });
     },
   });

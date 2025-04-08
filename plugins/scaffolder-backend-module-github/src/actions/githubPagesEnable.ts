@@ -118,21 +118,16 @@ export function createGithubPagesEnableAction(options: {
         `Attempting to enable GitHub Pages for ${owner}/${repo} with "${buildType}" build type, on source branch "${sourceBranch}" and source path "${sourcePath}"`,
       );
 
-      await ctx.checkpoint({
-        key: `enabled.github.pages.${owner}.${repo}`,
-        fn: async () => {
-          await client.request('POST /repos/{owner}/{repo}/pages', {
-            owner: owner,
-            repo: repo,
-            build_type: buildType,
-            source: {
-              branch: sourceBranch,
-              path: sourcePath,
-            },
-            headers: {
-              'X-GitHub-Api-Version': '2022-11-28',
-            },
-          });
+      await client.request('POST /repos/{owner}/{repo}/pages', {
+        owner: owner,
+        repo: repo,
+        build_type: buildType,
+        source: {
+          branch: sourceBranch,
+          path: sourcePath,
+        },
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28',
         },
       });
 

@@ -16,7 +16,6 @@
 
 import ReactDOM from 'react-dom/client';
 import { createPublicSignInApp } from '@backstage/frontend-defaults';
-import '@backstage/canon/css/styles.css';
 
 const app = createPublicSignInApp();
 

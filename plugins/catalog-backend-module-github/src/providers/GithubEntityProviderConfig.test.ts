@@ -311,24 +311,4 @@ describe('readProviderConfigs', () => {
 
     expect(() => readProviderConfigs(config)).toThrow();
   });
-
-  it('throws an error when filters.branch contains a slash', () => {
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          github: {
-            invalidBranchUser: {
-              organization: 'test-org',
-              catalogPath: '/*/catalog-info.yaml',
-              filters: {
-                branch: 'test/a',
-              },
-            },
-          },
-        },
-      },
-    });
-
-    expect(() => readProviderConfigs(config)).toThrow();
-  });
 });

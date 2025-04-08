@@ -1,9 +1,8 @@
 import { PropsTable } from '@/components/PropsTable';
-import { IconSnippet } from '@/snippets/stories-snippets';
+import { IconPreview } from '@/snippets/icon';
 import { Snippet } from '@/components/Snippet';
 import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
-import { iconPropDefs } from './props';
 
 # Icon
 
@@ -12,7 +11,7 @@ Icons are used to represent an action or a state.
 <Snippet
   py={4}
   align="center"
-  preview={<IconSnippet story="Default" />}
+  preview={<IconPreview />}
   code={`<Icon name="heart" />`}
 />
 
@@ -41,4 +40,23 @@ Icons are used to represent an action or a state.
 
 ## API reference
 
-<PropsTable data={iconPropDefs} />
+<PropsTable
+  data={{
+    name: {
+      type: 'icon',
+      responsive: false,
+    },
+    size: {
+      type: 'number',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>

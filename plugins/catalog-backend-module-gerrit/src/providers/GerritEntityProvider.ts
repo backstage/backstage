@@ -15,13 +15,13 @@
  */
 
 import { Config } from '@backstage/config';
-import { InputError, ResponseError } from '@backstage/errors';
+import { InputError } from '@backstage/errors';
 import {
   EntityProvider,
   EntityProviderConnection,
+  LocationSpec,
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
-import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   GerritIntegration,
   getGerritProjectsApiUrl,
@@ -30,7 +30,6 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import * as uuid from 'uuid';
-import pLimit from 'p-limit';
 
 import { readGerritConfigs } from './config';
 import { GerritProjectQueryResult, GerritProviderConfig } from './types';
@@ -164,15 +163,11 @@ export class GerritEntityProvider implements EntityProvider {
       );
     }
     const gerritProjectsResponse = (await parseGerritJsonResponse(
-      response,
+      response as any,
     )) as GerritProjectQueryResult;
     const projects = Object.keys(gerritProjectsResponse);
 
-    const limit = pLimit(5);
-    const locations = await Promise.all(
-      projects.map(project => limit(() => this.createLocationSpec(project))),
-    );
-
+    const locations = projects.map(project => this.createLocationSpec(project));
     await this.connection.applyMutation({
       type: 'full',
       entities: locations.map(location => ({
@@ -183,44 +178,10 @@ export class GerritEntityProvider implements EntityProvider {
     logger.info(`Found ${locations.length} locations.`);
   }
 
-  private async createLocationSpec(project: string): Promise<LocationSpec> {
-    // If a branch has been configured, we can use it directly
-    if (this.config.branch) {
-      return {
-        type: 'url',
-        target: `${this.integration.config.gitilesBaseUrl}/${project}/+/refs/heads/${this.config.branch}/${this.config.catalogPath}`,
-        presence: 'optional',
-      };
-    }
-
-    // Else we call Gerrit API to know on which branch HEAD is pointing to
-    let response: Response;
-    const baseProjectApiUrl = getGerritProjectsApiUrl(this.integration.config);
-    const projectGetHeadUrl = `${baseProjectApiUrl}${encodeURIComponent(
-      project,
-    )}/HEAD`;
-
-    try {
-      response = await fetch(projectGetHeadUrl, {
-        method: 'GET',
-        ...getGerritRequestOptions(this.integration.config),
-      });
-    } catch (e) {
-      throw new Error(`Failed to get project's HEAD for ${project}, ${e}`);
-    }
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-
-    // Gerrit responds with something like `refs/heads/master`
-    const projectHeadResponse = (await parseGerritJsonResponse(
-      response,
-    )) as string;
-
+  private createLocationSpec(project: string): LocationSpec {
     return {
       type: 'url',
-      target: `${this.integration.config.gitilesBaseUrl}/${project}/+/${projectHeadResponse}/${this.config.catalogPath}`,
+      target: `${this.integration.config.gitilesBaseUrl}/${project}/+/refs/heads/${this.config.branch}/catalog-info.yaml`,
       presence: 'optional',
     };
   }

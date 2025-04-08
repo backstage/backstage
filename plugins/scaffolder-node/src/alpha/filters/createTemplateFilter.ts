@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ZodFunctionSchema } from '../types';
-import { CreatedTemplateFilter, TemplateFilterExample } from './types';
+import { JsonValue } from '@backstage/types';
+import { CreatedTemplateFilter, TemplateFilterSchema } from './types';
 import { z } from 'zod';
 
 /**
@@ -23,12 +23,10 @@ import { z } from 'zod';
  * @alpha
  */
 export const createTemplateFilter = <
-  TFunctionArgs extends [z.ZodTypeAny, ...z.ZodTypeAny[]],
-  TReturnType extends z.ZodTypeAny,
->(options: {
-  id: string;
-  description?: string;
-  examples?: TemplateFilterExample[];
-  schema?: ZodFunctionSchema<TFunctionArgs, TReturnType>;
-  filter: (...args: z.infer<z.ZodTuple<TFunctionArgs>>) => z.infer<TReturnType>;
-}): CreatedTemplateFilter<TFunctionArgs, TReturnType> => options;
+  TSchema extends TemplateFilterSchema<any, any> | undefined,
+  TFunctionSchema extends TSchema extends TemplateFilterSchema<any, any>
+    ? z.infer<ReturnType<TSchema>>
+    : (arg: JsonValue, ...rest: JsonValue[]) => JsonValue | undefined,
+>(
+  filter: CreatedTemplateFilter<TSchema, TFunctionSchema>,
+): CreatedTemplateFilter<unknown, unknown> => filter;

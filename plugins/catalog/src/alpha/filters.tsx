@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { CatalogFilterBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { CatalogFilterBlueprint } from './blueprints';
 
 const catalogTagCatalogFilter = CatalogFilterBlueprint.make({
   name: 'tag',

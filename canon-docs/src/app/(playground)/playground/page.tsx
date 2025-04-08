@@ -5,12 +5,10 @@ import { Grid, Flex, Text } from '../../../../../packages/canon';
 import { screenSizes } from '@/utils/data';
 import { Frame } from '@/components/Frame';
 import { usePlayground } from '@/utils/playground-context';
-import {
-  ButtonSnippet,
-  CheckboxSnippet,
-  HeadingSnippet,
-  TextSnippet,
-} from '@/snippets/stories-snippets';
+import { ButtonPlayground } from '@/snippets/button';
+import { CheckboxPlayground } from '@/snippets/checkbox';
+import { HeadingPlayground } from '@/snippets/heading';
+import { TextPlayground } from '@/snippets/text';
 
 import styles from './styles.module.css';
 
@@ -57,19 +55,16 @@ const Content = () => {
   return (
     <Flex direction="column" gap="4">
       {selectedComponents.find(c => c === 'button') && (
-        <Line content={<ButtonSnippet story="Playground" />} title="Button" />
+        <Line content={<ButtonPlayground />} title="Button" />
       )}
       {selectedComponents.find(c => c === 'checkbox') && (
-        <Line
-          content={<CheckboxSnippet story="Playground" />}
-          title="Checkbox"
-        />
+        <Line content={<CheckboxPlayground />} title="Checkbox" />
       )}
       {selectedComponents.find(c => c === 'heading') && (
-        <Line content={<HeadingSnippet story="Playground" />} title="Heading" />
+        <Line content={<HeadingPlayground />} title="Heading" />
       )}
       {selectedComponents.find(c => c === 'text') && (
-        <Line content={<TextSnippet story="Playground" />} title="Text" />
+        <Line content={<TextPlayground />} title="Text" />
       )}
       {/* {selectedComponents.find(c => c === 'input') && (
         <Line content={<InputPlayground />} title="Input" />

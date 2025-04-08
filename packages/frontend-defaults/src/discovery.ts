@@ -15,11 +15,7 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import {
-  FrontendFeature,
-  FrontendFeatureLoader,
-} from '@backstage/frontend-plugin-api';
-import { isBackstageFeatureLoader } from './resolution';
+import { FrontendFeature } from '@backstage/frontend-app-api';
 
 interface DiscoveryGlobal {
   modules: Array<{ name: string; export?: string; default: unknown }>;
@@ -60,7 +56,7 @@ function readPackageDetectionConfig(config: Config) {
  * @public
  */
 export function discoverAvailableFeatures(config: Config): {
-  features: (FrontendFeature | FrontendFeatureLoader)[];
+  features: FrontendFeature[];
 } {
   const discovered = (
     window as { '__@backstage/discovered__'?: DiscoveryGlobal }
@@ -84,7 +80,7 @@ export function discoverAvailableFeatures(config: Config): {
           return true;
         })
         .map(m => m.default)
-        .filter(isFeatureOrLoader) ?? [],
+        .filter(isBackstageFeature) ?? [],
   };
 }
 
@@ -96,10 +92,4 @@ function isBackstageFeature(obj: unknown): obj is FrontendFeature {
     );
   }
   return false;
-}
-
-function isFeatureOrLoader(
-  obj: unknown,
-): obj is FrontendFeature | FrontendFeatureLoader {
-  return isBackstageFeature(obj) || isBackstageFeatureLoader(obj);
 }

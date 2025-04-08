@@ -35,7 +35,6 @@ import {
   resolveSafeChildPath,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { JsonValue } from '@backstage/types';
 
 export type Encoding = 'utf-8' | 'base64';
 
@@ -426,33 +425,18 @@ export const createPublishGithubPullRequestAction = (
         if (targetBranchName) {
           createOptions.base = targetBranchName;
         }
+        const response = await client.createPullRequest(createOptions);
 
-        const pr = await ctx.checkpoint({
-          key: `create.pr.${owner}.${repo}.${branchName}`,
-          fn: async () => {
-            const response = await client.createPullRequest(createOptions);
-            if (!response) {
-              return null;
-            }
-
-            return {
-              base: response?.data.base,
-              html_url: response?.data.html_url,
-              number: response?.data.number,
-            };
-          },
-        });
-
-        if (createWhenEmpty === false && !pr) {
+        if (createWhenEmpty === false && !response) {
           ctx.logger.info('No changes to commit, pull request was not created');
           return;
         }
 
-        if (!pr) {
+        if (!response) {
           throw new GithubResponseError('null response from Github');
         }
 
-        const pullRequestNumber = pr.number;
+        const pullRequestNumber = response.data.number;
         if (reviewers || teamReviewers) {
           const pullRequest = { owner, repo, number: pullRequestNumber };
           await requestReviewersOnPullRequest(
@@ -461,13 +445,12 @@ export const createPublishGithubPullRequestAction = (
             teamReviewers,
             client,
             ctx.logger,
-            ctx.checkpoint,
           );
         }
 
-        const targetBranch = pr.base.ref;
+        const targetBranch = response.data.base.ref;
         ctx.output('targetBranchName', targetBranch);
-        ctx.output('remoteUrl', pr.html_url);
+        ctx.output('remoteUrl', response.data.html_url);
         ctx.output('pullRequestNumber', pullRequestNumber);
       } catch (e) {
         throw new GithubResponseError('Pull request creation failed', e);
@@ -481,33 +464,20 @@ export const createPublishGithubPullRequestAction = (
     teamReviewers: string[] | undefined,
     client: Octokit,
     logger: LoggerService,
-    checkpoint: <T extends JsonValue | void>(opts: {
-      key: string;
-      fn: () => Promise<T> | T;
-    }) => Promise<T>,
   ) {
     try {
-      await checkpoint({
-        key: `request.reviewers.${pr.owner}.${pr.repo}.${pr.number}`,
-        fn: async () => {
-          const result = await client.rest.pulls.requestReviewers({
-            owner: pr.owner,
-            repo: pr.repo,
-            pull_number: pr.number,
-            reviewers,
-            team_reviewers: teamReviewers
-              ? [...new Set(teamReviewers)]
-              : undefined,
-          });
-
-          const addedUsers = result.data.requested_reviewers?.join(', ') ?? '';
-          const addedTeams = result.data.requested_teams?.join(', ') ?? '';
-
-          logger.info(
-            `Added users [${addedUsers}] and teams [${addedTeams}] as reviewers to Pull request ${pr.number}`,
-          );
-        },
+      const result = await client.rest.pulls.requestReviewers({
+        owner: pr.owner,
+        repo: pr.repo,
+        pull_number: pr.number,
+        reviewers,
+        team_reviewers: teamReviewers ? [...new Set(teamReviewers)] : undefined,
       });
+      const addedUsers = result.data.requested_reviewers?.join(', ') ?? '';
+      const addedTeams = result.data.requested_teams?.join(', ') ?? '';
+      logger.info(
+        `Added users [${addedUsers}] and teams [${addedTeams}] as reviewers to Pull request ${pr.number}`,
+      );
     } catch (e) {
       logger.error(
         `Failure when adding reviewers to Pull request ${pr.number}`,

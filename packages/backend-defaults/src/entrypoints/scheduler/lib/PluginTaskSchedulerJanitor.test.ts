@@ -39,8 +39,8 @@ describe('PluginTaskSchedulerJanitor', () => {
   const databases = TestDatabases.create({
     ids: [
       /* 'MYSQL_8' not supported yet */
-      'POSTGRES_17',
-      'POSTGRES_13',
+      'POSTGRES_16',
+      'POSTGRES_12',
       'SQLITE_3',
       'MYSQL_8',
     ],

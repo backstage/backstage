@@ -1,0 +1,176 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { Tabs } from '@/components/Tabs';
+import { CodeBlock } from '@/components/CodeBlock';
+import { FieldPreview } from '@/snippets/field';
+import { BaseUI } from '@/components/HeadlessBanners/BaseUI';
+
+# Field
+
+A wrapper around `Input` or `Select` component to add label, description and error messages..
+
+<Snippet align="center" py={4} preview={<FieldPreview />} code={`<Field />`} />
+
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Tab>Usage</Tabs.Tab>
+    <Tabs.Tab>Theming</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel>
+    <CodeBlock
+      code={`import { Field } from '@backstage/canon';
+
+<Field.Root>
+    <Field.Label>Name</Field.Label>
+    <Input placeholder="Enter your name" />
+    <Field.Description>Visible on your profile</Field.Description>
+    <Field.Error />
+</Field.Root>`}
+    />
+  </Tabs.Panel>
+  <Tabs.Panel>
+    We recommend starting with our [global tokens](/theme/theming) to customize the library and align it with
+    your brand. For additional flexibility, you can use the provided class names for each element listed below.
+    <CodeBlock
+      code={`<Field.Root className='canon-FieldRoot'>
+    <Field.Label className='canon-FieldLabel' />
+    <Field.Description className='canon-FieldDescription' />
+    <Field.Error className='canon-FieldError' />
+</Field.Root>`}
+    />
+  </Tabs.Panel>
+</Tabs.Root>
+
+## API reference
+
+<BaseUI href="https://base-ui.com/react/components/field" />
+
+### Field.Root
+
+Groups all parts of the field. Renders a `<div>` element.
+
+<PropsTable
+  data={{
+    name: {
+      type: 'string',
+      responsive: false,
+    },
+    disabled: {
+      type: 'boolean',
+      responsive: false,
+    },
+    invalid: {
+      type: 'boolean',
+      responsive: false,
+    },
+    validate: {
+      type: '(value) => string | string[] | null | Promise',
+      responsive: false,
+    },
+    validationMode: {
+      type: ['onBlur', 'onChange'],
+      responsive: false,
+    },
+    validationDebounceTime: {
+      type: 'number',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+### Field.Label
+
+An accessible label that is automatically associated with the field control. Renders a `<label>` element.
+
+<PropsTable
+  data={{
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+### Field.Description
+
+A paragraph with additional information about the field. Renders a `<p>` element.
+
+<PropsTable
+  data={{
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+### Field.Error
+
+An error message displayed if the field control fails validation. Renders a `<div>` element.
+
+<PropsTable
+  data={{
+    match: {
+      type: [
+        'badInput',
+        'customError',
+        'patternMismatch',
+        'rangeOverflow',
+        'rangeUnderflow',
+        'stepMismatch',
+        'tooLong',
+        'tooShort',
+        'typeMismatch',
+        'valid',
+        'valueMissing',
+      ],
+      responsive: false,
+    },
+    forceShow: {
+      type: 'boolean',
+      responsive: false,
+    },
+    className: {
+      type: 'string',
+      responsive: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      responsive: false,
+    },
+  }}
+/>
+
+## Examples
+
+### With Label and Description
+
+Here's a simple input with a label and description.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<FieldPreview />}
+  code={`<Field>
+    <Field.Label>Name</Field.Label>
+    <Field.Description>Visible on your profile</Field.Description>
+    <Input placeholder="Enter your name" />
+  </Field>`}
+/>

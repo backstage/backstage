@@ -17,7 +17,6 @@
 import React from 'react';
 import { compatWrapper } from '@backstage/core-compat-api';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
-import { isKubernetesAvailable } from '../Router';
 
 export const entityKubernetesContent = EntityContentBlueprint.make({
   name: 'kubernetes',
@@ -25,7 +24,7 @@ export const entityKubernetesContent = EntityContentBlueprint.make({
     defaultPath: '/kubernetes',
     defaultTitle: 'Kubernetes',
     defaultGroup: 'deployment',
-    filter: isKubernetesAvailable,
+    filter: 'kind:component,resource',
     loader: () =>
       import('./KubernetesContentPage').then(m =>
         compatWrapper(<m.KubernetesContentPage />),

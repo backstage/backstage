@@ -15,67 +15,32 @@
  */
 
 import { ReactNode } from 'react';
-import type { RemixiconComponentType } from '@remixicon/react';
 
 /** @public */
 export type IconNames =
-  | 'account-circle'
-  | 'alert'
-  | 'arrow-down'
-  | 'arrow-down-circle'
-  | 'caret-down'
-  | 'caret-left'
-  | 'caret-right'
-  | 'caret-up'
-  | 'arrow-left'
-  | 'arrow-left-circle'
-  | 'arrow-left-down'
-  | 'arrow-left-up'
-  | 'arrow-right'
-  | 'arrow-right-circle'
-  | 'arrow-right-down'
-  | 'arrow-right-up'
-  | 'arrow-up'
-  | 'arrow-up-circle'
-  | 'braces'
-  | 'brackets'
-  | 'bug'
+  | 'arrowDown'
+  | 'arrowLeft'
+  | 'arrowRight'
+  | 'arrowUp'
+  | 'arrowDownCircle'
+  | 'arrowLeftCircle'
+  | 'arrowRightCircle'
+  | 'arrowUpCircle'
   | 'check'
-  | 'check-double'
-  | 'chevron-down'
-  | 'chevron-left'
-  | 'chevron-right'
-  | 'chevron-up'
+  | 'chevronDown'
+  | 'chevronLeft'
+  | 'chevronRight'
+  | 'chevronUp'
   | 'cloud'
-  | 'code'
-  | 'discord'
-  | 'download'
-  | 'external-link'
-  | 'eye'
-  | 'eye-off'
-  | 'filter'
-  | 'flower'
-  | 'github'
-  | 'git-repository'
-  | 'group'
+  | 'externalLink'
   | 'heart'
   | 'moon'
   | 'plus'
-  | 'sidebar-fold'
-  | 'sidebar-unfold'
-  | 'sparkling'
-  | 'star'
   | 'sun'
-  | 'terminal'
-  | 'trash'
-  | 'upload'
-  | 'user'
-  | 'youtube'
-  | 'zoom-in'
-  | 'zoom-out';
+  | 'trash';
 
 /** @public */
-export type IconMap = Partial<Record<IconNames, RemixiconComponentType>>;
+export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
 
 /** @public */
 export type IconProps = {
@@ -93,5 +58,5 @@ export interface IconContextProps {
 /** @public */
 export interface IconProviderProps {
   children?: ReactNode;
-  overrides?: Partial<Record<IconNames, RemixiconComponentType>>;
+  overrides?: Partial<Record<IconNames, React.ComponentType>>;
 }

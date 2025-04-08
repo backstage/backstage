@@ -1,49 +1,5 @@
 # @backstage/plugin-scaffolder-backend-module-gcp
 
-## 0.2.8-next.1
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/integration@1.16.3-next.0
-  - @backstage/plugin-scaffolder-node@0.8.1-next.1
-  - @backstage/backend-plugin-api@1.2.1
-  - @backstage/config@1.3.2
-  - @backstage/errors@1.2.7
-
-## 0.2.8-next.0
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/plugin-scaffolder-node@0.8.1-next.0
-  - @backstage/backend-plugin-api@1.2.1
-  - @backstage/config@1.3.2
-  - @backstage/errors@1.2.7
-  - @backstage/integration@1.16.2
-
-## 0.2.7
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/integration@1.16.2
-  - @backstage/plugin-scaffolder-node@0.8.0
-  - @backstage/backend-plugin-api@1.2.1
-  - @backstage/config@1.3.2
-  - @backstage/errors@1.2.7
-
-## 0.2.7-next.2
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/plugin-scaffolder-node@0.8.0-next.2
-  - @backstage/integration@1.16.2-next.0
-  - @backstage/backend-plugin-api@1.2.1-next.1
-  - @backstage/config@1.3.2
-  - @backstage/errors@1.2.7
-
 ## 0.2.7-next.1
 
 ### Patch Changes

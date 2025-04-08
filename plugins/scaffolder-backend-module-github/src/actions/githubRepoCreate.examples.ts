@@ -991,19 +991,4 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
-  {
-    description: 'Allow branch updates.',
-    example: yaml.stringify({
-      steps: [
-        {
-          action: 'github:repo:create',
-          name: 'Create a new GitHub repository allowing branch updates',
-          input: {
-            repoUrl: 'github.com?repo=repo&owner=owner',
-            allowUpdateBranch: true,
-          },
-        },
-      ],
-    }),
-  },
 ];

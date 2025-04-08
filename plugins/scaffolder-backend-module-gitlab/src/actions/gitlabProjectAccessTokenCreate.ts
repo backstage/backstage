@@ -104,27 +104,21 @@ export const createGitlabProjectAccessTokenAction = (options: {
         });
       }
 
-      const projectAccessToken = await ctx.checkpoint({
-        key: `project.access.token.${projectId}.${name}`,
-        fn: async () => {
-          const response = await api.ProjectAccessTokens.create(
-            projectId,
-            name,
-            scopes as AccessTokenScopes[],
-            expiresAt || DateTime.now().plus({ days: 365 }).toISODate()!,
-            {
-              accessLevel,
-            },
-          );
-          return response.token;
+      const response = await api.ProjectAccessTokens.create(
+        projectId,
+        name,
+        scopes as AccessTokenScopes[],
+        expiresAt || DateTime.now().plus({ days: 365 }).toISODate()!,
+        {
+          accessLevel,
         },
-      });
+      );
 
-      if (!projectAccessToken) {
+      if (!response.token) {
         throw new Error('Could not create project access token');
       }
 
-      ctx.output('access_token', projectAccessToken);
+      ctx.output('access_token', response.token);
     },
   });
 };

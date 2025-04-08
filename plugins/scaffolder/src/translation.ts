@@ -30,6 +30,13 @@ export const scaffolderTranslationRef = createTranslationRef({
             'There are no actions installed or there was an issue communicating with backend.',
         },
         searchFieldPlaceholder: 'Search for an action',
+        tableCell: {
+          name: 'Name',
+          title: 'Title',
+          description: 'Description',
+          type: 'Type',
+        },
+        noRowsDescription: 'No schema defined',
       },
       action: {
         input: 'Input',
@@ -185,15 +192,6 @@ export const scaffolderTranslationRef = createTranslationRef({
         emptyText: 'There are no spec parameters in the template to preview.',
       },
     },
-    renderSchema: {
-      tableCell: {
-        name: 'Name',
-        title: 'Title',
-        description: 'Description',
-        type: 'Type',
-      },
-      undefined: 'No schema defined',
-    },
     templateTypePicker: {
       title: 'Categories',
     },
@@ -256,15 +254,13 @@ export const scaffolderTranslationRef = createTranslationRef({
           title: 'Load Template Directory',
           description:
             'Load a local template directory, allowing you to both edit and try executing your own template.',
-          unsupportedTooltip:
-            'Only supported in some Chromium-based browsers with the page loaded over HTTPS',
+          unsupportedTooltip: 'Only supported in some Chromium-based browsers',
         },
         createLocal: {
           title: 'Create New Template',
           description:
             'Create a local template directory, allowing you to both edit and try executing your own template.',
-          unsupportedTooltip:
-            'Only supported in some Chromium-based browsers with the page loaded over HTTPS',
+          unsupportedTooltip: 'Only supported in some Chromium-based browsers',
         },
         formEditor: {
           title: 'Template Form Playground',

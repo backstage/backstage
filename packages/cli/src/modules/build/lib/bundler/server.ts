@@ -17,7 +17,6 @@
 import { AppConfig } from '@backstage/config';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
 import openBrowser from 'react-dev-utils/openBrowser';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
@@ -51,9 +50,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
   checkReactVersion();
 
-  const { name } = await fs.readJson(
-    resolvePath(options.targetDir ?? libPaths.targetDir, 'package.json'),
-  );
+  const { name } = await fs.readJson(libPaths.resolveTarget('package.json'));
 
   let webpackServer: WebpackDevServer | undefined = undefined;
 
@@ -77,7 +74,6 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
   const cliConfig = await loadCliConfig({
     args: options.configPaths,
-    targetDir: options.targetDir,
     fromPackage: name,
     withFilteredKeys: true,
     watch(appConfigs) {
@@ -199,10 +195,8 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
           ? {
               type: 'https',
               options: {
-                cert: fullConfig.getOptionalString(
-                  'app.https.certificate.cert',
-                ),
-                key: fullConfig.getOptionalString('app.https.certificate.key'),
+                cert: fullConfig.getString('app.https.certificate.cert'),
+                key: fullConfig.getString('app.https.certificate.key'),
               },
             }
           : {},

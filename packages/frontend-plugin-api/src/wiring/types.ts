@@ -23,8 +23,6 @@ import {
   ExtensionDataValue,
 } from './createExtensionDataRef';
 import { ApiHolder, AppNode } from '../apis';
-import { FrontendModule } from './createFrontendModule';
-import { FrontendPlugin } from './createFrontendPlugin';
 
 /**
  * Feature flag configuration.
@@ -82,6 +80,3 @@ export type ExtensionFactoryMiddleware = (
     config?: JsonObject;
   },
 ) => Iterable<ExtensionDataValue<any, any>>;
-
-/** @public  */
-export type FrontendFeature = FrontendPlugin | FrontendModule;

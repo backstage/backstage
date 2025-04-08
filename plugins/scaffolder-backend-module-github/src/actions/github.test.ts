@@ -189,12 +189,6 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      allow_update_branch: false,
-      custom_properties: undefined,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
       visibility: 'private',
     });
 
@@ -217,12 +211,6 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      allow_update_branch: false,
-      custom_properties: undefined,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
       visibility: 'public',
     });
 
@@ -246,7 +234,6 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      allow_update_branch: false,
       visibility: 'private',
     });
 
@@ -271,13 +258,10 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      allow_update_branch: false,
-      customElements: undefined,
       visibility: 'private',
-      has_wiki: undefined,
-      has_projects: undefined,
-      has_issues: undefined,
-      homepage: 'https://example.com',
+      has_wiki: true,
+      has_projects: true,
+      has_issues: true,
     });
 
     await action.handler({
@@ -301,13 +285,10 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      allow_update_branch: false,
-      custom_properties: undefined,
       visibility: 'private',
-      has_wiki: undefined,
-      has_projects: undefined,
-      has_issues: undefined,
-      homepage: 'https://example.com',
+      has_wiki: false,
+      has_projects: false,
+      has_issues: false,
     });
 
     await action.handler({
@@ -333,13 +314,11 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      allow_update_branch: false,
-      custom_properties: undefined,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: 'https://example.com',
       visibility: 'private',
+      custom_properties: {
+        foo: 'bar',
+        foo2: 'bar2',
+      },
     });
   });
 
@@ -366,11 +345,6 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      allow_update_branch: false,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
     });
 
     await action.handler({
@@ -393,11 +367,6 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      allow_update_branch: false,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: undefined,
     });
 
     await action.handler({
@@ -421,10 +390,6 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      allow_update_branch: false,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
     });
 
     await action.handler({
@@ -449,10 +414,9 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      allow_update_branch: false,
-      has_wiki: undefined,
-      has_projects: undefined,
-      has_issues: undefined,
+      has_wiki: true,
+      has_projects: true,
+      has_issues: true,
     });
 
     await action.handler({
@@ -477,11 +441,9 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      allow_update_branch: false,
-      has_wiki: undefined,
-      has_projects: undefined,
-      has_issues: undefined,
-      homepage: 'https://example.com',
+      has_wiki: false,
+      has_projects: false,
+      has_issues: false,
     });
 
     // Custom properties on user repos should be ignored
@@ -509,11 +471,6 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      allow_update_branch: false,
-      has_issues: undefined,
-      has_projects: undefined,
-      has_wiki: undefined,
-      homepage: 'https://example.com',
     });
   });
 

@@ -82,7 +82,7 @@ export const scaffolderPlugin = createBackendPlugin({
       },
     });
 
-    const additionalTemplateFilters: CreatedTemplateFilter<any, any>[] = [];
+    const additionalTemplateFilters: CreatedTemplateFilter[] = [];
     const additionalTemplateGlobals: CreatedTemplateGlobal[] = [];
 
     env.registerExtensionPoint(scaffolderTemplatingExtensionPoint, {

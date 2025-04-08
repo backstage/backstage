@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+export { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory';
+
+export type { TechDocsCollatorFactoryOptions } from './DefaultTechDocsCollatorFactory';
+
 export { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
 
 export type { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';

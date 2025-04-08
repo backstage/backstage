@@ -13,8 +13,8 @@ Options:
 
 Commands:
   apply <codemod> [target-dirs...]
-  help [command]
   list
+  help [command]
 ```
 
 ### `backstage-codemods apply`

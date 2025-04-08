@@ -40,15 +40,9 @@ export interface Config {
           query: string;
           /**
            * (Optional) Branch.
-           * The branch where the provider will try to find entities. Uses the default branch where HEAD points to.
+           * The branch where the provider will try to find entities. Defaults to "master".
            */
           branch?: string;
-          /**
-           * (Optional) Path where the catalog YAML manifest file is expected in the repository.
-           * Can contain glob patterns supported by minimatch.
-           * Defaults to "catalog-info.yaml".
-           */
-          catalogPath?: string;
           /**
            * (Optional) TaskScheduleDefinition for the discovery.
            */

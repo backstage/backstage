@@ -30,8 +30,6 @@ import {
   createFrontendPlugin,
   ApiBlueprint,
   PageBlueprint,
-  FrontendModule,
-  createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 import React, { Children, ReactNode, isValidElement } from 'react';
 import { Route, Routes } from 'react-router-dom';
@@ -40,8 +38,6 @@ import {
   convertLegacyRouteRefs,
 } from './convertLegacyRouteRef';
 import { compatWrapper } from './compatWrapper';
-import { collectEntityPageContents } from './collectEntityPageContents';
-import { normalizeRoutePath } from './normalizeRoutePath';
 
 /*
 
@@ -106,7 +102,7 @@ function makeRoutingShimExtension(options: {
   });
 }
 
-export function visitRouteChildren(options: {
+function visitRouteChildren(options: {
   children: ReactNode;
   parentExtensionId: string;
   context: {
@@ -161,10 +157,7 @@ export function visitRouteChildren(options: {
 /** @internal */
 export function collectLegacyRoutes(
   flatRoutesElement: JSX.Element,
-  entityPage?: JSX.Element,
-): (FrontendPlugin | FrontendModule)[] {
-  const output = new Array<FrontendPlugin | FrontendModule>();
-
+): FrontendPlugin[] {
   const pluginExtensions = new Map<
     LegacyBackstagePlugin,
     ExtensionDefinition[]
@@ -237,7 +230,7 @@ export function collectLegacyRoutes(
           factory(originalFactory, { inputs: _inputs }) {
             // todo(blam): why do we not use the inputs here?
             return originalFactory({
-              defaultPath: normalizeRoutePath(path),
+              defaultPath: path[0] === '/' ? path.slice(1) : path,
               routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
               loader: async () =>
                 compatWrapper(
@@ -269,59 +262,20 @@ export function collectLegacyRoutes(
     },
   );
 
-  if (entityPage) {
-    collectEntityPageContents(entityPage, {
-      discoverExtension(extension, plugin) {
-        if (!plugin || plugin.getId() === 'catalog') {
-          getPluginExtensions(orphanRoutesPlugin).push(extension);
-        } else {
-          getPluginExtensions(plugin).push(extension);
-        }
-      },
-    });
-
-    const extensions = new Array<ExtensionDefinition>();
-    visitRouteChildren({
-      children: entityPage,
-      parentExtensionId: `page:catalog/entity`,
-      context: {
-        pluginId: 'catalog',
-        extensions,
-        getUniqueName,
-        discoverPlugin(plugin) {
-          if (plugin.getId() !== 'catalog') {
-            getPluginExtensions(plugin);
-          }
-        },
-      },
-    });
-
-    output.push(
-      createFrontendModule({
-        pluginId: 'catalog',
-        extensions,
-      }),
-    );
-  }
-
-  for (const [plugin, extensions] of pluginExtensions) {
-    output.push(
-      createFrontendPlugin({
-        id: plugin.getId(),
-        extensions: [
-          ...extensions,
-          ...Array.from(plugin.getApis()).map(factory =>
-            ApiBlueprint.make({
-              name: factory.api.id,
-              params: { factory },
-            }),
-          ),
-        ],
-        routes: convertLegacyRouteRefs(plugin.routes ?? {}),
-        externalRoutes: convertLegacyRouteRefs(plugin.externalRoutes ?? {}),
-      }),
-    );
-  }
-
-  return output;
+  return Array.from(pluginExtensions).map(([plugin, extensions]) =>
+    createFrontendPlugin({
+      id: plugin.getId(),
+      extensions: [
+        ...extensions,
+        ...Array.from(plugin.getApis()).map(factory =>
+          ApiBlueprint.make({
+            name: factory.api.id,
+            params: { factory },
+          }),
+        ),
+      ],
+      routes: convertLegacyRouteRefs(plugin.routes ?? {}),
+      externalRoutes: convertLegacyRouteRefs(plugin.externalRoutes ?? {}),
+    }),
+  );
 }

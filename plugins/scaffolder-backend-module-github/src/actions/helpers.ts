@@ -44,7 +44,6 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   squashMergeCommitMessage: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK' | undefined,
   allowRebaseMerge: boolean,
   allowAutoMerge: boolean,
-  allowUpdateBranch: boolean,
   access: string | undefined,
   collaborators:
     | (
@@ -104,7 +103,6 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           squash_merge_commit_message: squashMergeCommitMessage,
           allow_rebase_merge: allowRebaseMerge,
           allow_auto_merge: allowAutoMerge,
-          allow_update_branch: allowUpdateBranch,
           homepage: homepage,
           has_projects: hasProjects,
           has_wiki: hasWiki,
@@ -123,7 +121,6 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           squash_merge_commit_message: squashMergeCommitMessage,
           allow_rebase_merge: allowRebaseMerge,
           allow_auto_merge: allowAutoMerge,
-          allow_update_branch: allowUpdateBranch,
           homepage: homepage,
           has_projects: hasProjects,
           has_wiki: hasWiki,

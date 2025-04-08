@@ -92,7 +92,7 @@ describe('<AlertDisplay />', () => {
         </TestApiProvider>,
       );
 
-      expect(screen.getByText('(2 newer messages)')).toBeInTheDocument();
+      expect(screen.getByText('(2 older messages)')).toBeInTheDocument();
     });
   });
 
@@ -189,19 +189,19 @@ describe('<AlertDisplay />', () => {
         jest.advanceTimersByTime(1000);
       });
       expect(queryByText('transient message one')).toBeInTheDocument();
-      expect(queryByText('(1 newer message)')).toBeInTheDocument();
+      expect(queryByText('(1 older message)')).toBeInTheDocument();
       act(() => {
         jest.advanceTimersByTime(1000);
       });
       expect(queryByText('transient message one')).toBeInTheDocument();
-      expect(queryByText('(2 newer messages)')).toBeInTheDocument();
+      expect(queryByText('(2 older messages)')).toBeInTheDocument();
 
       // Validate removing messages
       act(() => {
         jest.advanceTimersByTime(5000);
       });
       expect(queryByText('transient message two')).toBeInTheDocument();
-      expect(queryByText('(1 newer message)')).toBeInTheDocument();
+      expect(queryByText('(1 older message)')).toBeInTheDocument();
 
       act(() => {
         jest.advanceTimersByTime(5000);
@@ -231,12 +231,12 @@ describe('<AlertDisplay />', () => {
       // 1s in, message 1 still shown, message 2 added in background
       act(() => jest.advanceTimersByTime(1000));
       expect(queryByText('transient message one')).toBeInTheDocument();
-      expect(queryByText('(1 newer message)')).toBeInTheDocument();
+      expect(queryByText('(1 older message)')).toBeInTheDocument();
 
       // 2s in, message 2 now shown, message 3 added
       act(() => jest.advanceTimersByTime(1000));
       expect(queryByText('transient message two')).toBeInTheDocument();
-      expect(queryByText('(1 newer message)')).toBeInTheDocument();
+      expect(queryByText('(1 older message)')).toBeInTheDocument();
 
       // 3.5s in, message 3 now shown
       act(() => jest.advanceTimersByTime(1500));
@@ -264,7 +264,7 @@ describe('<AlertDisplay />', () => {
       // 1s in, message 1 still shown, message 2 added in background
       act(() => jest.advanceTimersByTime(1000));
       expect(queryByText('transient message one')).toBeInTheDocument();
-      expect(queryByText('(1 newer message)')).toBeInTheDocument();
+      expect(queryByText('(1 older message)')).toBeInTheDocument();
 
       // manually remove message 1
       fireEvent.click(screen.getByTestId('error-button-close'));
@@ -273,7 +273,7 @@ describe('<AlertDisplay />', () => {
       // 2s in, message 2 now shown, message 3 added
       act(() => jest.advanceTimersByTime(1000));
       expect(queryByText('transient message two')).toBeInTheDocument();
-      expect(queryByText('(1 newer message)')).toBeInTheDocument();
+      expect(queryByText('(1 older message)')).toBeInTheDocument();
 
       // 3s in, message 3 now shown
       act(() => jest.advanceTimersByTime(1500));
@@ -330,19 +330,19 @@ describe('<AlertDisplay />', () => {
         jest.advanceTimersByTime(1000);
       });
       expect(queryByText('transient message one')).toBeInTheDocument();
-      expect(queryByText('(1 newer message)')).toBeInTheDocument();
+      expect(queryByText('(1 older message)')).toBeInTheDocument();
       act(() => {
         jest.advanceTimersByTime(1000);
       });
       expect(queryByText('transient message one')).toBeInTheDocument();
-      expect(queryByText('(2 newer messages)')).toBeInTheDocument();
+      expect(queryByText('(2 older messages)')).toBeInTheDocument();
 
       // Validate removing messages
       act(() => {
         jest.advanceTimersByTime(5000);
       });
       expect(queryByText('permanent message')).toBeInTheDocument();
-      expect(queryByText('(1 newer message)')).toBeInTheDocument();
+      expect(queryByText('(1 older message)')).toBeInTheDocument();
 
       fireEvent.click(screen.getByTestId('error-button-close'));
       expect(queryByText('transient message three')).toBeInTheDocument();

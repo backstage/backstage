@@ -29,6 +29,7 @@ import { PermissionsServiceRequestOptions } from '@backstage/backend-plugin-api'
 import { PolicyDecision } from '@backstage/plugin-permission-common';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
+import { TokenManager } from '@backstage/backend-common';
 import { z } from 'zod';
 
 // @public
@@ -138,7 +139,7 @@ export function createConditionTransformer<
   TRules extends PermissionRule<any, TQuery, string>[],
 >(permissionRules: [...TRules]): ConditionTransformer<TQuery>;
 
-// @public @deprecated
+// @public
 export function createPermissionIntegrationRouter<
   TResourceType1 extends string,
   TResource1,
@@ -177,7 +178,7 @@ export function createPermissionIntegrationRouter<
   ): PermissionRuleset<TResource, TQuery, TResourceType>;
 };
 
-// @public @deprecated
+// @public
 export type CreatePermissionIntegrationRouterResourceOptions<
   TResourceType extends string,
   TResource,
@@ -266,7 +267,7 @@ export type MetadataResponse = MetadataResponse_2;
 // @public @deprecated
 export type MetadataResponseSerializedRule = MetadataResponseSerializedRule_2;
 
-// @public @deprecated
+// @public
 export type PermissionIntegrationRouterOptions<
   TResourceType1 extends string = string,
   TResource1 = any,
@@ -384,7 +385,8 @@ export class ServerPermissionClient implements PermissionsService {
     config: Config,
     options: {
       discovery: DiscoveryService;
-      auth: AuthService;
+      tokenManager?: TokenManager;
+      auth?: AuthService;
     },
   ): ServerPermissionClient;
 }

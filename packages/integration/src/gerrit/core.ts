@@ -292,7 +292,6 @@ export function getAuthenticationPrefix(
  * be used.
  *
  * @param config - A Gerrit provider config.
- * @public
  */
 export function getGitilesAuthenticationUrl(
   config: GerritIntegrationConfig,

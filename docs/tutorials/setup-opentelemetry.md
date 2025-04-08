@@ -62,7 +62,7 @@ For local development, you can add the required flag in your `packages/backend/p
   ...
 ```
 
-You can now start your Backstage instance as usual, using `yarn start`.
+You can now start your Backstage instance as usual, using `yarn dev`.
 
 ## Production Setup
 

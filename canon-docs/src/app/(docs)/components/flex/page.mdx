@@ -1,4 +1,5 @@
 import { PropsTable } from '@/components/PropsTable';
+import { spacePropsList } from '@/utils/spaceProps';
 import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
 import {
@@ -6,11 +7,9 @@ import {
   flexSimple,
   flexResponsive,
   flexAlign,
-} from '@/snippets/code-snippets';
+} from '@/snippets/_snippets';
 import { Snippet } from '@/components/Snippet';
-import { FlexSnippet } from '@/snippets/stories-snippets';
-import { flexPropDefs } from './props';
-import { spacingPropDefs } from '../../../../utils/propDefs';
+import { FlexPreview } from '@/snippets/flex';
 
 # Flex
 
@@ -21,7 +20,7 @@ columns. All values are responsive.
 <Snippet
   py={4}
   align="center"
-  preview={<FlexSnippet story="Default" />}
+  preview={<FlexPreview />}
   code={`<Flex>
     <DecorativeBox />
     <DecorativeBox />
@@ -45,11 +44,30 @@ columns. All values are responsive.
 
 ## API reference
 
-<PropsTable data={flexPropDefs} />
+<PropsTable
+  data={{
+    align: {
+      type: ['start', 'center', 'end'],
+      responsive: true,
+    },
+    children: {
+      type: 'ReactNode',
+      required: false,
+    },
+    className: {
+      type: 'string',
+      required: false,
+    },
+    style: {
+      type: 'CSSProperties',
+      required: false,
+    },
+  }}
+/>
 
 The grid component also accepts all the spacing props from the Box component.
 
-<PropsTable data={spacingPropDefs} />
+<PropsTable data={spacePropsList} />
 
 ## Common questions
 

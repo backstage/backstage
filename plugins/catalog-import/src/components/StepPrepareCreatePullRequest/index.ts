@@ -23,7 +23,4 @@ export type { PreviewCatalogInfoComponentProps } from './PreviewCatalogInfoCompo
 export { PreviewPullRequestComponent } from './PreviewPullRequestComponent';
 export type { PreviewPullRequestComponentProps } from './PreviewPullRequestComponent';
 export { StepPrepareCreatePullRequest } from './StepPrepareCreatePullRequest';
-export type {
-  StepPrepareCreatePullRequestProps,
-  UnpackNestedValue,
-} from './StepPrepareCreatePullRequest';
+export type { StepPrepareCreatePullRequestProps } from './StepPrepareCreatePullRequest';

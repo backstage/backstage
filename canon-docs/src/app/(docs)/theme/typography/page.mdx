@@ -1,4 +1,5 @@
-import { HeadingSnippet, TextSnippet } from '@/snippets/stories-snippets';
+import { HeadingAllVariants } from '@/snippets/heading';
+import { TextAllVariants } from '@/snippets/text';
 import { Snippet } from '@/components/Snippet';
 
 # Typography
@@ -19,7 +20,7 @@ component](?path=/docs/components-heading--docs).
 <Snippet
   py={2}
   open
-  preview={<HeadingSnippet story="AllVariants" />}
+  preview={<HeadingAllVariants />}
   code={`<Flex direction="column" gap="4">
     <Heading variant="display">Display</Heading>
     <Heading variant="title1">Title 1</Heading>
@@ -39,7 +40,7 @@ page.
 
 <Snippet
   open
-  preview={<TextSnippet story="AllVariants" />}
+  preview={<TextAllVariants />}
   code={`<Flex direction="column" gap="4">
     <Text variant="subtitle" style={{ maxWidth: '600px' }}>
       A man looks at a painting in a museum and says, “Brothers and sisters I

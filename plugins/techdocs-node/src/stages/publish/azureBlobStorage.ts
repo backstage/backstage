@@ -286,6 +286,32 @@ export class AzureBlobStoragePublish implements PublisherBase {
     return { objects };
   }
 
+  private download(containerName: string, blobPath: string): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      const fileStreamChunks: Array<any> = [];
+      this.storageClient
+        .getContainerClient(containerName)
+        .getBlockBlobClient(blobPath)
+        .download()
+        .then(res => {
+          const body = res.readableStreamBody;
+          if (!body) {
+            reject(new Error(`Unable to parse the response data`));
+            return;
+          }
+          body
+            .on('error', reject)
+            .on('data', chunk => {
+              fileStreamChunks.push(chunk);
+            })
+            .on('end', () => {
+              resolve(Buffer.concat(fileStreamChunks));
+            });
+        })
+        .catch(reject);
+    });
+  }
+
   async fetchTechDocsMetadata(
     entityName: CompoundEntityRef,
   ): Promise<TechDocsMetadata> {
@@ -295,32 +321,10 @@ export class AzureBlobStoragePublish implements PublisherBase {
       : lowerCaseEntityTriplet(entityTriplet);
 
     try {
-      const techdocsMetadataJson = await new Promise<Buffer>(
-        (resolve, reject) => {
-          const fileStreamChunks: Array<any> = [];
-          this.storageClient
-            .getContainerClient(this.containerName)
-            .getBlockBlobClient(`${entityRootDir}/techdocs_metadata.json`)
-            .download()
-            .then(res => {
-              const body = res.readableStreamBody;
-              if (!body) {
-                reject(new Error(`Unable to parse the response data`));
-                return;
-              }
-              body
-                .on('error', reject)
-                .on('data', chunk => {
-                  fileStreamChunks.push(chunk);
-                })
-                .on('end', () => {
-                  resolve(Buffer.concat(fileStreamChunks));
-                });
-            })
-            .catch(reject);
-        },
+      const techdocsMetadataJson = await this.download(
+        this.containerName,
+        `${entityRootDir}/techdocs_metadata.json`,
       );
-
       if (!techdocsMetadataJson) {
         throw new Error(
           `Unable to parse the techdocs metadata file ${entityRootDir}/techdocs_metadata.json.`,
@@ -352,32 +356,21 @@ export class AzureBlobStoragePublish implements PublisherBase {
       const fileExtension = platformPath.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
-      const blobClient = this.storageClient
-        .getContainerClient(this.containerName)
-        .getBlockBlobClient(filePath);
-
-      blobClient
-        .download()
-        .then(downloadRes => {
-          if (!downloadRes.readableStreamBody) {
-            throw new Error('Unable to parse the response data');
-          }
+      this.download(this.containerName, filePath)
+        .then(fileContent => {
+          // Inject response headers
           for (const [headerKey, headerValue] of Object.entries(
             responseHeaders,
           )) {
             res.setHeader(headerKey, headerValue);
           }
-          downloadRes.readableStreamBody.pipe(res);
+          res.send(fileContent);
         })
         .catch(e => {
           this.logger.warn(
             `TechDocs Azure router failed to serve content from container ${this.containerName} at path ${filePath}: ${e.message}`,
           );
-          if (!res.headersSent) {
-            res.status(404).send('File Not Found');
-          } else {
-            res.destroy();
-          }
+          res.status(404).send('File Not Found');
         });
     };
   }

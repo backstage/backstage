@@ -104,12 +104,6 @@ function readProviderConfig(
     );
   }
 
-  if (branchPattern?.includes('/')) {
-    throw new Error(
-      'Error while processing GitHub provider config. Slash characters (/) are not allowed in filters.branch',
-    );
-  }
-
   const schedule = config.has('schedule')
     ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
         config.getConfig('schedule'),

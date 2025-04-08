@@ -15,7 +15,7 @@
  */
 
 /** @public */
-type BitbucketServerRepository = {
+export type BitbucketServerRepository = {
   project: {
     key: string;
   };
@@ -28,55 +28,9 @@ type BitbucketServerRepository = {
     }[]
   >;
   archived: boolean;
-  defaultBranch: string;
 };
 
 /** @public */
-type BitbucketServerProject = {
+export type BitbucketServerProject = {
   key: string;
-};
-
-/** @public */
-type BitbucketServerDefaultBranch = {
-  id: string;
-  displayId: string;
-  type: string;
-  latestCommit: string;
-  latestChangeset: string;
-  isDefault: boolean;
-};
-
-namespace BitbucketServerEvents {
-  interface Event {
-    eventKey: string;
-  }
-
-  export interface RefsChangedEvent extends Event {
-    date: string;
-    actor: Actor;
-    repository: Repository;
-    changes: Change[];
-    commits: undefined;
-    ToCommit: undefined;
-  }
-  type Actor = {
-    name?: string;
-    id: number;
-  };
-  type Change = {
-    ref: { id: string; displayId: string; type: string };
-  };
-  type Repository = {
-    slug: string;
-    id: number;
-    name: string;
-    project: BitbucketServerProject;
-  };
-}
-
-export type {
-  BitbucketServerDefaultBranch,
-  BitbucketServerProject,
-  BitbucketServerEvents,
-  BitbucketServerRepository,
 };

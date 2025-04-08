@@ -174,49 +174,37 @@ export function createPublishAzureAction(options: {
       const webApi = new WebApi(url, authHandler);
       const client = await webApi.getGitApi();
       const createOptions: GitRepositoryCreateOptions = { name: repo };
-
-      const { remoteUrl, repositoryId, repoContentsUrl } = await ctx.checkpoint(
-        {
-          key: `create.repo.${repo}`,
-          fn: async () => {
-            const returnedRepo = await client.createRepository(
-              createOptions,
-              project,
-            );
-
-            if (!returnedRepo) {
-              throw new InputError(
-                `Unable to create the repository with Organization ${organization}, Project ${project} and Repo ${repo}.
-          Please make sure that both the Org and Project are typed corrected and exist.`,
-              );
-            }
-
-            if (!returnedRepo.remoteUrl) {
-              throw new InputError(
-                'No remote URL returned from create repository for Azure',
-              );
-            }
-
-            if (!returnedRepo.id) {
-              throw new InputError(
-                'No Id returned from create repository for Azure',
-              );
-            }
-
-            if (!returnedRepo.webUrl) {
-              throw new InputError(
-                'No web URL returned from create repository for Azure',
-              );
-            }
-
-            return {
-              remoteUrl: returnedRepo.remoteUrl,
-              repositoryId: returnedRepo.id,
-              repoContentsUrl: returnedRepo.webUrl,
-            };
-          },
-        },
+      const returnedRepo = await client.createRepository(
+        createOptions,
+        project,
       );
+
+      if (!returnedRepo) {
+        throw new InputError(
+          `Unable to create the repository with Organization ${organization}, Project ${project} and Repo ${repo}.
+          Please make sure that both the Org and Project are typed corrected and exist.`,
+        );
+      }
+      const remoteUrl = returnedRepo.remoteUrl;
+
+      if (!remoteUrl) {
+        throw new InputError(
+          'No remote URL returned from create repository for Azure',
+        );
+      }
+      const repositoryId = returnedRepo.id;
+
+      if (!repositoryId) {
+        throw new InputError('No Id returned from create repository for Azure');
+      }
+
+      const repoContentsUrl = returnedRepo.webUrl;
+
+      if (!repoContentsUrl) {
+        throw new InputError(
+          'No web URL returned from create repository for Azure',
+        );
+      }
 
       const gitAuthorInfo = {
         name: gitAuthorName
@@ -241,30 +229,20 @@ export function createPublishAzureAction(options: {
         );
       }
 
-      const commitHash = await ctx.checkpoint({
-        key: `init.repo.and.push.${remoteUrl}`,
-        fn: async () => {
-          const commitResult = await initRepoAndPush({
-            dir: getRepoSourceDirectory(
-              ctx.workspacePath,
-              ctx.input.sourcePath,
-            ),
-            remoteUrl,
-            defaultBranch,
-            auth: auth,
-            logger: ctx.logger,
-            commitMessage: gitCommitMessage
-              ? gitCommitMessage
-              : config.getOptionalString('scaffolder.defaultCommitMessage'),
-            gitAuthorInfo,
-            signingKey: signCommit ? signingKey : undefined,
-          });
-
-          return commitResult?.commitHash;
-        },
+      const commitResult = await initRepoAndPush({
+        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
+        remoteUrl,
+        defaultBranch,
+        auth: auth,
+        logger: ctx.logger,
+        commitMessage: gitCommitMessage
+          ? gitCommitMessage
+          : config.getOptionalString('scaffolder.defaultCommitMessage'),
+        gitAuthorInfo,
+        signingKey: signCommit ? signingKey : undefined,
       });
 
-      ctx.output('commitHash', commitHash);
+      ctx.output('commitHash', commitResult?.commitHash);
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
       ctx.output('repositoryId', repositoryId);

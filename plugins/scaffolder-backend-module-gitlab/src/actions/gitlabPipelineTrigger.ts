@@ -62,8 +62,7 @@ export const createTriggerGitlabPipelineAction = (options: {
       output: pipelineOutputProperties,
     },
     async handler(ctx) {
-      let pipelineTriggerToken: string | undefined = undefined;
-      let pipelineTriggerId: number | undefined = undefined;
+      let pipelineTokenResponse: PipelineTriggerTokenSchema | null = null;
 
       const { repoUrl, projectId, tokenDescription, token, branch, variables } =
         commonGitlabConfig.merge(pipelineInputProperties).parse(ctx.input);
@@ -72,28 +71,18 @@ export const createTriggerGitlabPipelineAction = (options: {
       const api = getClient({ host, integrations, token });
 
       try {
-        ({ pipelineTriggerToken, pipelineTriggerId } = await ctx.checkpoint({
-          key: `create.pipeline.token.${projectId}`,
-          fn: async () => {
-            const res = (await api.PipelineTriggerTokens.create(
-              projectId,
-              tokenDescription,
-            )) as PipelineTriggerTokenSchema;
-            return {
-              pipelineTriggerToken: res.token,
-              pipelineTriggerId: res.id,
-            };
-          },
-        }));
+        // Create a pipeline token
+        pipelineTokenResponse = (await api.PipelineTriggerTokens.create(
+          projectId,
+          tokenDescription,
+        )) as PipelineTriggerTokenSchema;
 
-        if (!pipelineTriggerToken) {
-          ctx.logger.error(
-            `Failed to create pipeline token for project ${projectId}.`,
-          );
+        if (!pipelineTokenResponse.token) {
+          ctx.logger.error('Failed to create pipeline token.');
           return;
         }
         ctx.logger.info(
-          `Pipeline token id ${pipelineTriggerId} created for project ${projectId}.`,
+          `Pipeline token id ${pipelineTokenResponse.id} created.`,
         );
 
         // Use the pipeline token to trigger the pipeline in the project
@@ -101,20 +90,16 @@ export const createTriggerGitlabPipelineAction = (options: {
           (await api.PipelineTriggerTokens.trigger(
             projectId,
             branch,
-            pipelineTriggerToken,
+            pipelineTokenResponse.token,
             { variables },
           )) as ExpandedPipelineSchema;
 
         if (!pipelineTriggerResponse.id) {
-          ctx.logger.error(
-            `Failed to trigger pipeline for project ${projectId}.`,
-          );
+          ctx.logger.error('Failed to trigger pipeline.');
           return;
         }
 
-        ctx.logger.info(
-          `Pipeline id ${pipelineTriggerResponse.id} for project ${projectId} triggered.`,
-        );
+        ctx.logger.info(`Pipeline id ${pipelineTriggerResponse.id} triggered.`);
 
         ctx.output('pipelineUrl', pipelineTriggerResponse.web_url);
       } catch (error: any) {
@@ -130,26 +115,18 @@ export const createTriggerGitlabPipelineAction = (options: {
         );
       } finally {
         // Delete the pipeline token if it was created
-        if (pipelineTriggerId) {
+        if (pipelineTokenResponse && pipelineTokenResponse.id) {
           try {
-            await ctx.checkpoint({
-              key: `create.delete.token.${projectId}`,
-              fn: async () => {
-                if (pipelineTriggerId) {
-                  // to make the current version of TypeScript happy
-                  await api.PipelineTriggerTokens.remove(
-                    projectId,
-                    pipelineTriggerId,
-                  );
-                }
-              },
-            });
+            await api.PipelineTriggerTokens.remove(
+              projectId,
+              pipelineTokenResponse.id,
+            );
             ctx.logger.info(
-              `Deleted pipeline with token id ${pipelineTriggerId}.`,
+              `Deleted pipeline token ${pipelineTokenResponse.id}.`,
             );
           } catch (error: any) {
             ctx.logger.error(
-              `Failed to delete pipeline with token id ${pipelineTriggerId}.`,
+              `Failed to delete pipeline token id ${pipelineTokenResponse.id}.`,
             );
           }
         }

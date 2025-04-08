@@ -35,7 +35,7 @@ export const BaseUI = ({ href }: BaseUIProps) => {
         {href && (
           <a className={styles.button} href={href} target="_blank">
             Discover more
-            <Icon name="external-link" />
+            <Icon name="externalLink" />
           </a>
         )}
       </div>
