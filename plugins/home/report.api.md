@@ -194,7 +194,7 @@ export const QuickStartCard: (
 // @public
 export type QuickStartCardProps = {
   modalTitle?: string | JSX_3.Element;
-  docsLinkTitle?: string;
+  docsLinkTitle?: string | React.JSX.Element;
   docsLink?: string;
   video?: JSX_3.Element;
   image: JSX_3.Element;
