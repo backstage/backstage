@@ -12,6 +12,12 @@ The main concept is that routes, components, apis are now extensions. You can us
 
 ## Migrating the plugin
 
+:::note Note
+
+Unless you are migrating a plugin that is only used within your own project, we recommend all plugins to keep support for the old system intact. The code added in these examples should be added to a new `src/alpha.tsx` entry point of your plugin.
+
+:::
+
 In the legacy frontend system a plugin was defined in its own `plugin.ts` file as following:
 
 ```ts title="my-plugin/src/plugin.ts"
@@ -29,10 +35,9 @@ In the legacy frontend system a plugin was defined in its own `plugin.ts` file a
   });
 ```
 
-In order to migrate the actual definition of the plugin you need to recreate the plugin using the new `createFrontendPlugin` utility exported by `@backstage/frontend-plugin-api`.
-The new `createFrontendPlugin` function doesn't accept apis anymore as apis are now extensions.
+In order to migrate the actual definition of the plugin you need to recreate the plugin using the new `createFrontendPlugin` utility exported by `@backstage/frontend-plugin-api`. The new `createFrontendPlugin` function doesn't accept apis anymore as apis are now extensions.
 
-```ts title="my-plugin/src/alpha.ts"
+```ts title="my-plugin/src/alpha.tsx"
   import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
   import { convertLegacyRouteRefs } from '@backstage/core-compat-api';
 
@@ -53,20 +58,20 @@ The new `createFrontendPlugin` function doesn't accept apis anymore as apis are 
   });
 ```
 
-The code above binds all the extensions to the plugin. _Important_: Make sure to export the plugin as default export of your package as a separate entrypoint, preferably `/alpha`, as suggested by the code snippet above. Make sure `src/alpha.ts` is exported in your `package.json`:
+The code above binds all the extensions to the plugin. _Important_: Make sure to export the plugin as default export of your package as a separate entrypoint, preferably `/alpha`, as suggested by the code snippet above. Make sure `src/alpha.tsx` is exported in your `package.json`:
 
 ```ts title="my-plugin/package.json"
   "exports": {
     ".": "./src/index.ts",
     /* highlight-add-next-line */
-    "./alpha": "./src/alpha.ts",
+    "./alpha": "./src/alpha.tsx",
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
       /* highlight-add-start */
       "alpha": [
-        "src/alpha.ts"
+        "src/alpha.tsx"
       ],
       /* highlight-add-end */
       "package.json": [
@@ -130,7 +135,7 @@ const fooPage = PageBlueprint.make({
 
 Then add the `fooPage` extension to the plugin:
 
-```ts title="my-plugin/src/alpha.ts"
+```ts title="my-plugin/src/alpha.tsx"
   import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
   export default createFrontendPlugin({
@@ -221,7 +226,7 @@ const exampleWorkApi = ApiBlueprint.make({
 
 Finally, let's add the `exampleWorkApi` extension to the plugin:
 
-```ts title="my-plugin/src/alpha.ts"
+```ts title="my-plugin/src/alpha.tsx"
   import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
   export default createFrontendPlugin({
