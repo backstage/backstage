@@ -130,9 +130,9 @@ const _default: FrontendPlugin<
         direction?: Direction | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         relations?: string[] | undefined;
-        rootEntityRefs?: string[] | undefined;
         maxDepth?: number | undefined;
         kinds?: string[] | undefined;
+        rootEntityRefs?: string[] | undefined;
         unidirectional?: boolean | undefined;
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;

@@ -244,24 +244,6 @@ export type EntityAutocompletePickerProps<
   hidden?: boolean;
 };
 
-// @public (undocumented)
-export type EntityContextMenuContextValue = {
-  onMenuClose: () => void;
-};
-
-// @public (undocumented)
-export const EntityContextMenuProvider: (
-  props: EntityContextMenuProviderProps,
-) => React_2.JSX.Element;
-
-// @public (undocumented)
-export interface EntityContextMenuProviderProps {
-  // (undocumented)
-  children: React_2.ReactNode;
-  // (undocumented)
-  onMenuClose: () => void;
-}
-
 // @public
 export const EntityDisplayName: (props: EntityDisplayNameProps) => JSX.Element;
 
@@ -802,9 +784,6 @@ export function useAsyncEntity<
 export function useEntity<TEntity extends Entity = Entity>(): {
   entity: TEntity;
 };
-
-// @public (undocumented)
-export function useEntityContextMenu(): EntityContextMenuContextValue;
 
 // @public
 export function useEntityList<

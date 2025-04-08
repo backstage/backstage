@@ -35,7 +35,7 @@ import { useApi, alertApiRef } from '@backstage/core-plugin-api';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { EntityContextMenuProvider } from '@backstage/plugin-catalog-react';
+import { EntityContextMenuProvider } from '../../context';
 
 /** @public */
 export type EntityContextMenuClassKey = 'button';
