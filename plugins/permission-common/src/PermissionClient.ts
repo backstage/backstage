@@ -29,9 +29,10 @@ import {
   AuthorizePermissionRequest,
   AuthorizePermissionResponse,
   QueryPermissionResponse,
+  IdentifiedPermissionMessage,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
-import { AuthorizeRequestOptions } from './types/permission';
+import { AuthorizeRequestOptions, Permission } from './types/permission';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -108,11 +109,17 @@ export type PermissionClientRequestOptions = {
 export class PermissionClient implements PermissionEvaluator {
   private readonly enabled: boolean;
   private readonly discovery: DiscoveryApi;
+  private readonly enableBatchedRequests: boolean;
 
   constructor(options: { discovery: DiscoveryApi; config: Config }) {
     this.discovery = options.discovery;
     this.enabled =
       options.config.getOptionalBoolean('permission.enabled') ?? false;
+
+    this.enableBatchedRequests =
+      options.config.getOptionalBoolean(
+        'permission.EXPERIMENTAL_enableBatchedRequests',
+      ) ?? false;
   }
 
   /**
@@ -122,6 +129,10 @@ export class PermissionClient implements PermissionEvaluator {
     requests: AuthorizePermissionRequest[],
     options?: PermissionClientRequestOptions,
   ): Promise<AuthorizePermissionResponse[]> {
+    if (this.enableBatchedRequests) {
+      return this.makeBatchedRequest(requests, options);
+    }
+
     return this.makeRequest(
       requests,
       authorizePermissionResponseSchema,
@@ -183,7 +194,71 @@ export class PermissionClient implements PermissionEvaluator {
     return request.items.map(query => responsesById[query.id]);
   }
 
+  private async makeBatchedRequest(
+    queries: AuthorizePermissionRequest[],
+    options?: AuthorizeRequestOptions,
+  ) {
+    if (!this.enabled) {
+      return queries.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
+    }
+
+    const request: Record<string, BatchedAuthorizePermissionRequest> = {};
+
+    for (const query of queries) {
+      const { permission, resourceRef } = query;
+
+      request[permission.name] ||= {
+        permission,
+        resourceRefs: [],
+        id: uuid.v4(),
+      };
+
+      if (resourceRef) {
+        request[permission.name].resourceRefs.push(resourceRef);
+      }
+    }
+
+    const rawRequest = { items: Object.values(request) };
+    const permissionApi = await this.discovery.getBaseUrl('permission');
+    const response = await fetch(`${permissionApi}/authorize`, {
+      method: 'POST',
+      body: JSON.stringify(rawRequest),
+      headers: {
+        ...this.getAuthorizationHeader(options?.token),
+        'content-type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    const responseBody = await response.json();
+
+    const parsedResponse = responseSchema(
+      z.object({
+        result: z.array(
+          z.literal(AuthorizeResult.ALLOW).or(z.literal(AuthorizeResult.DENY)),
+        ),
+      }),
+      new Set(rawRequest.items.map(({ id }) => id)),
+    ).parse(responseBody);
+
+    return queries.map(query => {
+      const { id } = request[query.permission.name];
+
+      const item = parsedResponse.items.find(i => i.id === id)!;
+      return {
+        result: query.resourceRef ? item.result.shift()! : item.result[0],
+      };
+    });
+  }
+
   private getAuthorizationHeader(token?: string): Record<string, string> {
     return token ? { Authorization: `Bearer ${token}` } : {};
   }
 }
+
+export type BatchedAuthorizePermissionRequest = IdentifiedPermissionMessage<{
+  permission: Permission;
+  resourceRefs: string[];
+}>;
