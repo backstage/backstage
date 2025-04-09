@@ -74,7 +74,7 @@ There's additional options that you can pass to configure the root HTTP Router s
 You can configure the root HTTP Router service by passing the options to the `createBackend` function.
 
 ```ts
-import { rootHttpRouterServiceFactory } from '@backstage/backend-app-api';
+import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { RequestHandler } from 'express';
 import morgan from 'morgan';
 
@@ -144,7 +144,7 @@ The root HTTP Router service also allows for configuration of the underlying Nod
 A `applyDefaults` helper is also made available to use the default app/router configuration while still enabling custom server configuration
 
 ```ts
-import { rootHttpRouterServiceFactory } from '@backstage/backend-app-api';
+import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 
 const backend = createBackend();
 
