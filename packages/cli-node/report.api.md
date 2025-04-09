@@ -5,6 +5,7 @@
 ```ts
 import { JsonValue } from '@backstage/types';
 import { Package } from '@manypkg/get-packages';
+import { SpawnOptions } from 'child_process';
 
 // @public
 export type BackstagePackage = {
@@ -86,6 +87,9 @@ export interface BackstagePackageJson {
 }
 
 // @public
+export function detectPackageManager(): Promise<PackageManager>;
+
+// @public
 export class GitUtils {
   static listChangedFiles(ref: string): Promise<string[]>;
   static readFileAtRef(path: string, ref: string): Promise<string>;
@@ -95,12 +99,12 @@ export class GitUtils {
 export function isMonoRepo(): Promise<boolean>;
 
 // @public
-export class Lockfile {
+export interface Lockfile {
   createSimplifiedDependencyGraph(): Map<string, Set<string>>;
   diff(otherLockfile: Lockfile): LockfileDiff;
+  get(name: string): LockfileEntry[] | undefined;
   getDependencyTreeHash(startName: string): string;
-  static load(path: string): Promise<Lockfile>;
-  static parse(content: string): Lockfile;
+  keys(): IterableIterator<string>;
 }
 
 // @public
@@ -115,6 +119,15 @@ export type LockfileDiffEntry = {
   name: string;
   range: string;
 };
+
+// @public
+export type LockfileEntry = {
+  range: string;
+  version: string;
+};
+
+// @public
+export type LogFunc = (data: Buffer) => void;
 
 // @public
 export const packageFeatureType: readonly [
@@ -156,6 +169,31 @@ export type PackageGraphNode = {
 };
 
 // @public
+export type PackageInfo = {
+  name: string;
+  'dist-tags': Record<string, string>;
+  versions: string[];
+  time: {
+    [version: string]: string;
+  };
+};
+
+// @public
+export interface PackageManager {
+  fetchPackageInfo(name: string): Promise<PackageInfo>;
+  getMonorepoPackages(): Promise<string[]>;
+  loadLockfile(): Promise<Lockfile>;
+  lockfileName(): string;
+  name(): string;
+  pack(output: string, packageDir: string): Promise<void>;
+  parseLockfile(contents: string): Promise<Lockfile>;
+  run(args: string[], options?: SpawnOptionsPartialEnv): Promise<void>;
+  supportsBackstageVersionProtocol(): Promise<boolean>;
+  toString(): string;
+  version(): string;
+}
+
+// @public
 export type PackageOutputType = 'bundle' | 'types' | 'esm' | 'cjs';
 
 // @public
@@ -190,4 +228,11 @@ export class PackageRoles {
   static getRoleFromPackage(pkgJson: unknown): PackageRole | undefined;
   static getRoleInfo(role: string): PackageRoleInfo;
 }
+
+// @public
+export type SpawnOptionsPartialEnv = Omit<SpawnOptions, 'env'> & {
+  env?: Partial<NodeJS.ProcessEnv>;
+  stdoutLogFunc?: LogFunc;
+  stderrLogFunc?: LogFunc;
+};
 ```
