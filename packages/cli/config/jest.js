@@ -19,6 +19,7 @@ const path = require('path');
 const crypto = require('crypto');
 const glob = require('util').promisify(require('glob'));
 const { version } = require('../package.json');
+const { detectPackageManager } = require('@backstage/cli-node');
 const paths = require('@backstage/cli-common').findPaths(process.cwd());
 
 const SRC_EXTS = ['ts', 'js', 'tsx', 'jsx', 'mts', 'cts', 'mjs', 'cjs'];
@@ -328,8 +329,8 @@ async function getRootConfig() {
     rejectFrontendNetworkRequests,
   };
 
-  const workspacePatterns =
-    rootPkgJson.workspaces && rootPkgJson.workspaces.packages;
+  const pacman = await detectPackageManager();
+  const workspacePatterns = await pacman.getMonorepoPackages();
 
   // Check if we're running within a specific monorepo package. In that case just get the single project config.
   if (!workspacePatterns || paths.targetRoot !== paths.targetDir) {

@@ -54,6 +54,7 @@ jest.mock('ora', () => ({
     return {
       start: () => ({
         succeed: () => {},
+        fail: () => {},
       }),
     };
   },
@@ -73,13 +74,6 @@ jest.mock('@backstage/cli-common', () => ({
 }));
 
 const mockFetchPackageInfo = jest.fn();
-jest.mock('../../../../lib/versioning/packages', () => {
-  const actual = jest.requireActual('../../../../lib/versioning/packages');
-  return {
-    ...actual,
-    fetchPackageInfo: (name: string) => mockFetchPackageInfo(name),
-  };
-});
 
 const REGISTRY_VERSIONS: { [name: string]: string } = {
   '@backstage/core': '1.0.6',
@@ -170,6 +164,7 @@ jest.mock('@backstage/cli-node', () => {
     ...actual,
     detectPackageManager: () => {
       return {
+        name: () => 'mock',
         fetchPackageInfo: mockFetchPackageInfo,
         run: mockRun,
         loadLockfile: mockLoadLockfile,
@@ -264,7 +259,7 @@ describe('bump', () => {
       'bumping @backstage/core in a to ^1.0.6',
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/theme in b to ^2.0.0',
-      'Running yarn install to install new versions',
+      'Running mock install to install new versions',
       'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 2.0.0',
@@ -277,6 +272,7 @@ describe('bump', () => {
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/theme');
 
     expect(mockRun).toHaveBeenCalledTimes(1);
+    expect(mockRun).toHaveBeenCalledWith(['install'], expect.any(Object));
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -355,7 +351,7 @@ describe('bump', () => {
       'bumping @backstage/core in a to ^1.0.6',
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/theme in b to ^2.0.0',
-      'Skipping yarn install',
+      'Skipping mock install',
       'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 2.0.0',
@@ -453,7 +449,7 @@ describe('bump', () => {
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/core in a to ^1.0.6',
       'Your project is now at version 0.0.1, which has been written to backstage.json',
-      'Running yarn install to install new versions',
+      'Running mock install to install new versions',
       'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 5.0.0',
@@ -465,6 +461,7 @@ describe('bump', () => {
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
 
     expect(mockRun).toHaveBeenCalledTimes(1);
+    expect(mockRun).toHaveBeenCalledWith(['install'], expect.any(Object));
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -554,7 +551,7 @@ describe('bump', () => {
       'bumping @backstage/core in a to ^1.0.6',
       'Updating yarn plugin to v0.0.1...',
       'Your project is now at version 0.0.1, which has been written to backstage.json',
-      'Running yarn install to install new versions',
+      'Running mock install to install new versions',
       'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 5.0.0',
@@ -638,7 +635,6 @@ describe('bump', () => {
       'Using default pattern glob @backstage/*',
     ]);
 
-    expect(mockRun).not.toHaveBeenCalled();
     expect(mockRun).not.toHaveBeenCalled();
 
     const packageA = await fs.readJson(
@@ -746,7 +742,7 @@ describe('bump', () => {
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/core in a to ^1.0.6',
       'Your project is now at version 1.0.0, which has been written to backstage.json',
-      'Running yarn install to install new versions',
+      'Running mock install to install new versions',
       'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 5.0.0',
@@ -864,7 +860,7 @@ describe('bump', () => {
       'bumping @backstage-extra/custom-two in b to ^2.0.0',
       'bumping @backstage/theme in b to ^2.0.0',
       'Skipping backstage.json update as custom pattern is used',
-      'Running yarn install to install new versions',
+      'Running mock install to install new versions',
       'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage-extra/custom-two : 1.0.0 ~> 2.0.0',
@@ -878,6 +874,7 @@ describe('bump', () => {
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/theme');
 
     expect(mockRun).toHaveBeenCalledTimes(1);
+    expect(mockRun).toHaveBeenCalledWith(['install'], expect.any(Object));
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -959,7 +956,6 @@ describe('bump', () => {
       'All Backstage packages are up to date!',
     ]);
 
-    expect(mockRun).not.toHaveBeenCalled();
     expect(mockRun).not.toHaveBeenCalled();
 
     const packageA = await fs.readJson(

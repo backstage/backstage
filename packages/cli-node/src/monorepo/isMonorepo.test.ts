@@ -15,38 +15,22 @@
  */
 
 import { isMonoRepo } from './isMonoRepo';
-import { createMockDirectory } from '@backstage/backend-test-utils';
 
-const mockDir = createMockDirectory();
+const mockGetMonorepoPackages = jest.fn();
 
-jest.mock('../util', () => ({
-  paths: { resolveTargetRoot: (...args: string[]) => mockDir.resolve(...args) },
+jest.mock('../pacman', () => ({
+  detectPackageManager: () => ({
+    getMonorepoPackages: mockGetMonorepoPackages,
+  }),
 }));
 
 describe('isMonoRepo', () => {
-  it('should detect a monorepo', async () => {
-    mockDir.setContent({
-      'package.json': JSON.stringify({
-        name: 'foo',
-        workspaces: {
-          packages: ['packages/*'],
-        },
-      }),
-    });
-    await expect(isMonoRepo()).resolves.toBe(true);
-  });
+  it.each([
+    { given: [], expected: false },
+    { given: ['packages/*'], expected: true },
+  ])('should reuse pacman.getMonorepoPackages', async ({ given, expected }) => {
+    mockGetMonorepoPackages.mockReturnValue(given);
 
-  it('should detect a non- monorepo', async () => {
-    mockDir.setContent({
-      'package.json': JSON.stringify({
-        name: 'foo',
-      }),
-    });
-    await expect(isMonoRepo()).resolves.toBe(false);
-  });
-
-  it('should return false if package.json is missing', async () => {
-    mockDir.setContent({});
-    await expect(isMonoRepo()).resolves.toBe(false);
+    await expect(isMonoRepo()).resolves.toBe(expected);
   });
 });

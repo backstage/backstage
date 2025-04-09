@@ -19671,6 +19671,7 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-techdocs-node": "workspace:^"
     "@types/commander": "npm:^2.12.2"

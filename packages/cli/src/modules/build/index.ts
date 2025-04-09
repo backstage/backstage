@@ -76,7 +76,7 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--alwaysPack',
-      'Force workspace output to be a result of running `yarn pack` on each package (warning: very slow)',
+      'Force workspace output to be a result of running the `pack` command of the package manager on each package (warning: very slow)',
     )
     .description('Builds a temporary dist workspace from the provided packages')
     .action(lazy(() => import('./commands/buildWorkspace'), 'default'));

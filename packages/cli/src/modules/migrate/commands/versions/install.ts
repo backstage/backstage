@@ -15,19 +15,20 @@
  */
 import ora from 'ora';
 import chalk from 'chalk';
-import { detectPackageManager } from '@backstage/cli-node';
+import { PackageManager } from '@backstage/cli-node';
 
-export async function runYarnInstall() {
+export async function runInstall(packageManager: PackageManager) {
   const spinner = ora({
-    prefixText: `Running ${chalk.blue('yarn install')} to install new versions`,
+    prefixText: `Running ${chalk.blue(
+      `${packageManager.name()} install`,
+    )} to install new versions`,
     spinner: 'arc',
     color: 'green',
   }).start();
 
   const installOutput = new Array<Buffer>();
-  const pacman = await detectPackageManager();
   try {
-    await pacman.run(['install'], {
+    await packageManager.run(['install'], {
       env: {
         FORCE_COLOR: 'true',
         // We filter out all of the npm_* environment variables that are added when

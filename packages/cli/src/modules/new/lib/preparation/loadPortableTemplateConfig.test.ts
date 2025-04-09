@@ -21,6 +21,10 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { TEMPLATE_FILE_NAME } from '../types';
 import { basename } from 'node:path';
 
+jest.mock('@backstage/cli-node', () => ({
+  detectPackageManager: jest.fn().mockReturnValue({ version: '4.0.0' }),
+}));
+
 describe('loadPortableTemplateConfig', () => {
   const mockDir = createMockDirectory();
 
@@ -55,6 +59,7 @@ describe('loadPortableTemplateConfig', () => {
         packagePath: mockDir.resolve('package.json'),
       }),
     ).resolves.toEqual({
+      pacman: { version: '4.0.0' },
       isUsingDefaultTemplates: false,
       templatePointers: [
         {
@@ -78,6 +83,7 @@ describe('loadPortableTemplateConfig', () => {
         },
       }),
     ).resolves.toEqual({
+      pacman: { version: '4.0.0' },
       isUsingDefaultTemplates: false,
       templatePointers: [
         {
@@ -132,6 +138,7 @@ describe('loadPortableTemplateConfig', () => {
         packagePath: mockDir.resolve('package.json'),
       }),
     ).resolves.toEqual({
+      pacman: { version: '4.0.0' },
       isUsingDefaultTemplates: false,
       templatePointers: [
         {
@@ -185,6 +192,7 @@ describe('loadPortableTemplateConfig', () => {
         packagePath: mockDir.resolve('package.json'),
       }),
     ).resolves.toEqual({
+      pacman: { version: '4.0.0' },
       isUsingDefaultTemplates: true,
       templatePointers: defaultTemplates.map(t => ({
         name: basename(t),
@@ -310,6 +318,7 @@ describe('loadPortableTemplateConfig', () => {
         packagePath: mockDir.resolve('package.json'),
       }),
     ).resolves.toEqual({
+      pacman: { version: '4.0.0' },
       isUsingDefaultTemplates: true,
       templatePointers: expect.any(Array),
       license: 'Apache-2.0',
@@ -327,6 +336,7 @@ describe('loadPortableTemplateConfig', () => {
         },
       }),
     ).resolves.toEqual({
+      pacman: { version: '4.0.0' },
       isUsingDefaultTemplates: true,
       templatePointers: expect.any(Array),
       license: 'nope',

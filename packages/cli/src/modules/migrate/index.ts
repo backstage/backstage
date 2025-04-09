@@ -29,7 +29,7 @@ export function registerCommands(program: Command) {
       'Bump to a specific Backstage release line or version',
       'main',
     )
-    .option('--skip-install', 'Skips yarn install step')
+    .option('--skip-install', 'Skips the install step of the package manager')
     .option('--skip-migrate', 'Skips migration of any moved packages')
     .description('Bump Backstage packages to the latest versions')
     .action(lazy(() => import('./commands/versions/bump'), 'default'));

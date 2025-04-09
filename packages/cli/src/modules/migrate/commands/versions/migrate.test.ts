@@ -47,7 +47,7 @@ jest.mock('@backstage/cli-common', () => ({
 
 jest.mock('./install', () => {
   return {
-    runYarnInstall: jest.fn(),
+    runInstall: jest.fn(),
   };
 });
 
@@ -134,7 +134,7 @@ describe('versions:migrate', () => {
       'Could not find package.json for @backstage/theme@^1.0.0 in b (dependencies)',
     ]);
 
-    expect(run.runYarnInstall).toHaveBeenCalledTimes(1);
+    expect(run.runInstall).toHaveBeenCalledTimes(1);
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -224,7 +224,7 @@ describe('versions:migrate', () => {
       await migrate({});
     });
 
-    expect(run.runYarnInstall).toHaveBeenCalledTimes(1);
+    expect(run.runInstall).toHaveBeenCalledTimes(1);
 
     const indexA = await fs.readFile(
       mockDir.resolve('packages/a/src/index.ts'),
@@ -304,7 +304,7 @@ describe('versions:migrate', () => {
       await migrate({});
     });
 
-    expect(run.runYarnInstall).toHaveBeenCalledTimes(1);
+    expect(run.runInstall).toHaveBeenCalledTimes(1);
 
     const indexA = await fs.readFile(
       mockDir.resolve('packages/a/src/index.ts'),

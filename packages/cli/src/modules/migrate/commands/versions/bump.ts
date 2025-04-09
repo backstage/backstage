@@ -32,7 +32,7 @@ import {
   ReleaseManifest,
 } from '@backstage/release-manifests';
 import { migrateMovedPackages } from './migrate';
-import { runYarnInstall } from './install';
+import { runInstall } from './install';
 import { detectPackageManager, PackageInfo } from '@backstage/cli-node';
 
 function maybeBootstrapProxy() {
@@ -198,7 +198,7 @@ export default async (opts: OptionValues) => {
 
               // backstage:^ are written to the lockfile as
               // backstage:<backstage-version>, so that updates to
-              // backstage.json can be detected during yarn install. In order to
+              // backstage.json can be detected during package manager install. In order to
               // locate the corresponding lockfile entry for "backstage:^"
               // versions, we need to perform the same transformation.
               const oldLockfileRange = await asLockfileVersion(oldRange);
@@ -255,11 +255,11 @@ export default async (opts: OptionValues) => {
     }
 
     if (!opts.skipInstall) {
-      await runYarnInstall();
+      await runInstall(pacman);
     } else {
       console.log();
 
-      console.log(chalk.yellow(`Skipping yarn install`));
+      console.log(chalk.yellow(`Skipping ${pacman.name()} install`));
     }
 
     if (!opts.skipMigrate) {
@@ -270,7 +270,7 @@ export default async (opts: OptionValues) => {
       });
 
       if (changed && !opts.skipInstall) {
-        await runYarnInstall();
+        await runInstall(pacman);
       }
     }
 

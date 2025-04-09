@@ -14,63 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  SpawnOptions,
-  spawn,
-  ChildProcess,
-  execFile as execFileCb,
-} from 'child_process';
+import { execFile as execFileCb } from 'child_process';
 import { ExitCodeError } from './errors';
 import { promisify } from 'util';
 import { assertError, ForwardedError } from '@backstage/errors';
 
 export const execFile = promisify(execFileCb);
-
-type LogFunc = (data: Buffer) => void;
-
-type SpawnOptionsPartialEnv = Omit<SpawnOptions, 'env'> & {
-  env?: Partial<NodeJS.ProcessEnv>;
-  // Pipe stdout to this log function
-  stdoutLogFunc?: LogFunc;
-  // Pipe stderr to this log function
-  stderrLogFunc?: LogFunc;
-};
-
-// Runs a child command, returning a promise that is only resolved if the child exits with code 0.
-export async function run(
-  name: string,
-  args: string[] = [],
-  options: SpawnOptionsPartialEnv = {},
-) {
-  const { stdoutLogFunc, stderrLogFunc } = options;
-  const env: NodeJS.ProcessEnv = {
-    ...process.env,
-    FORCE_COLOR: 'true',
-    ...(options.env ?? {}),
-  };
-
-  const stdio = [
-    'inherit',
-    stdoutLogFunc ? 'pipe' : 'inherit',
-    stderrLogFunc ? 'pipe' : 'inherit',
-  ] as ('inherit' | 'pipe')[];
-
-  const child = spawn(name, args, {
-    stdio,
-    shell: true,
-    ...options,
-    env,
-  });
-
-  if (stdoutLogFunc && child.stdout) {
-    child.stdout.on('data', stdoutLogFunc);
-  }
-  if (stderrLogFunc && child.stderr) {
-    child.stderr.on('data', stderrLogFunc);
-  }
-
-  await waitForExit(child, name);
-}
 
 export async function runPlain(cmd: string, ...args: string[]) {
   try {
@@ -95,27 +44,4 @@ export async function runCheck(cmd: string, ...args: string[]) {
   } catch (error) {
     return false;
   }
-}
-
-export async function waitForExit(
-  child: ChildProcess & { exitCode: number | null },
-  name?: string,
-): Promise<void> {
-  if (typeof child.exitCode === 'number') {
-    if (child.exitCode) {
-      throw new ExitCodeError(child.exitCode, name);
-    }
-    return;
-  }
-
-  await new Promise<void>((resolve, reject) => {
-    child.once('error', error => reject(error));
-    child.once('exit', code => {
-      if (code) {
-        reject(new ExitCodeError(code, name));
-      } else {
-        resolve();
-      }
-    });
-  });
 }

@@ -39,7 +39,7 @@ export default async () => {
 
     console.log(`OS:   ${os.type} ${os.release} - ${os.platform}/${os.arch}`);
     console.log(`node: ${process.version}`);
-    console.log(`yarn: ${pacman.version()}`);
+    console.log(`${pacman.name()}: ${pacman.version()}`);
     console.log(`cli:  ${cliVersion} (${isLocal ? 'local' : 'installed'})`);
     console.log(`backstage:  ${backstageVersion}`);
     console.log();

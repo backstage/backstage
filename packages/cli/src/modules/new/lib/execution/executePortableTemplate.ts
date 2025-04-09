@@ -35,7 +35,7 @@ type ExecuteNewTemplateOptions = {
 export async function executePortableTemplate(
   options: ExecuteNewTemplateOptions,
 ) {
-  const { template, input } = options;
+  const { template, input, config } = options;
 
   let modified = false;
   try {
@@ -54,11 +54,11 @@ export async function executePortableTemplate(
     }
 
     if (!options.skipInstall) {
-      await Task.forCommand('yarn install', {
+      await Task.forCommand(`${config.pacman.name()} install`, {
         cwd: targetDir,
         optional: true,
       });
-      await Task.forCommand('yarn lint --fix', {
+      await Task.forCommand(`${config.pacman.name()} lint --fix`, {
         cwd: targetDir,
         optional: true,
       });
