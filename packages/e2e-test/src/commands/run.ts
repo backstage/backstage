@@ -72,8 +72,6 @@ export async function run(opts: OptionValues) {
     env: { ...process.env, CI: undefined },
   });
 
-  await switchToReact17(appDir);
-
   print(`Running 'yarn install' to install React 17`);
   await runPlain(['yarn', 'install'], { cwd: appDir });
 
@@ -410,37 +408,6 @@ async function createPlugin(options: {
   } finally {
     child.kill();
   }
-}
-
-/**
- * Switch the entire project to use React 17
- */
-async function switchToReact17(appDir: string) {
-  const rootPkg = await fs.readJson(resolvePath(appDir, 'package.json'));
-  rootPkg.resolutions = {
-    ...(rootPkg.resolutions || {}),
-    react: '^17.0.0',
-    'react-dom': '^17.0.0',
-    '@types/react': '^17.0.0',
-    '@types/react-dom': '^17.0.0',
-    'swagger-ui-react/react': '17.0.2',
-    'swagger-ui-react/react-dom': '17.0.2',
-    'swagger-ui-react/react-redux': '^8',
-  };
-  await fs.writeJson(resolvePath(appDir, 'package.json'), rootPkg, {
-    spaces: 2,
-  });
-
-  await fs.writeFile(
-    resolvePath(appDir, 'packages/app/src/index.tsx'),
-    `import '@backstage/cli/asset-types';
-import ReactDOM from 'react-dom';
-import App from './App';
-
-ReactDOM.render(<App />, document.getElementById('root'));
-`,
-    'utf8',
-  );
 }
 
 /** Drops PG databases */
