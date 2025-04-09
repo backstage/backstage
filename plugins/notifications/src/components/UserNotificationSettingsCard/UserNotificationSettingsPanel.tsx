@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { NotificationSettings } from '@backstage/plugin-notifications-common';
 import Table from '@material-ui/core/Table';
 import MuiTableCell from '@material-ui/core/TableCell';

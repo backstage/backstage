@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { createContext, useState useContext, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import { ErrorPanel, InfoCard, Progress } from '@backstage/core-components';
 import { useNotificationsApi } from '../../hooks';
 import { NotificationSettings } from '@backstage/plugin-notifications-common';
