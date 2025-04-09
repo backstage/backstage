@@ -42,19 +42,19 @@ Backstage is a CNCF Incubation project after graduating from Sandbox. Read the a
 
 <img src="https://backstage.io/img/cncf-white.svg" alt="CNCF logo" width="400" />
 
-## Benefits
+## Benefits:
 
 - For _engineering managers_, it allows you to maintain standards and best
-  practices across the organization, and can help you manage your whole tech
+  practices across the organization, and help you manage your whole tech
   ecosystem, from migrations to test certification.
 
 - For _end users_ (developers), it makes it fast and simple to build software
   components in a standardized way, and it provides a central place to manage
   all projects and documentation.
 
-- For _platform engineers_, it enables extensibility and scalability by letting
-  you easily integrate new tools and services (via plugins), as well as
-  extending the functionality of existing ones.
+- For _platform engineers_, it enables extensibility and scalability by allowing
+  easy integration of new tools and services (via plugins), and extending
+  the functionality of existing ones.
 
 - For _everyone_, it’s a single, consistent experience that ties all your
   infrastructure tooling, resources, standards, owners, contributors, and
