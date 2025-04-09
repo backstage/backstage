@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Children, isValidElement } from 'react';
+import { Children, isValidElement } from 'react';
 import {
   childDiscoverer,
   createCollector,

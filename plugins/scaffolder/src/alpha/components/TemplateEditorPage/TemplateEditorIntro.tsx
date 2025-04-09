@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { MouseEventHandler } from 'react';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
@@ -88,7 +88,7 @@ function ActionCard(props: {
   title: string;
   description: string;
   Icon: typeof SvgIcon;
-  action?: React.MouseEventHandler;
+  action?: MouseEventHandler;
   requireLoad?: boolean;
 }) {
   const supportsLoad = props.requireLoad

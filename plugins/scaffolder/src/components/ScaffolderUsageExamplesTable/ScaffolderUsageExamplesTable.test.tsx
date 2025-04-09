@@ -16,7 +16,6 @@
 import { ScaffolderUsageExample } from '@backstage/plugin-scaffolder-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { within } from '@testing-library/react';
-import React from 'react';
 import { ScaffolderUsageExamplesTable } from './ScaffolderUsageExamplesTable';
 
 describe('examples', () => {

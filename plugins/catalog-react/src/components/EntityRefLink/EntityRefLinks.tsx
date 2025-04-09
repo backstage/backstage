@@ -18,7 +18,7 @@ import {
   CompoundEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import React from 'react';
+import { Fragment } from 'react';
 import { EntityRefLink } from './EntityRefLink';
 import { LinkProps } from '@backstage/core-components';
 
@@ -55,10 +55,10 @@ export function EntityRefLinks<
         const entityRefString =
           typeof r === 'string' ? r : stringifyEntityRef(r);
         return (
-          <React.Fragment key={`${i}.${entityRefString}`}>
+          <Fragment key={`${i}.${entityRefString}`}>
             {i > 0 && ', '}
             <EntityRefLink {...linkProps} entityRef={r} hideIcon={hideIcons} />
-          </React.Fragment>
+          </Fragment>
         );
       })}
     </>

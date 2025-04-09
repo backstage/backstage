@@ -23,7 +23,6 @@ import {
   renderHook,
 } from '@testing-library/react';
 import { mockApis, TestApiProvider } from '@backstage/test-utils';
-import React from 'react';
 import {
   SearchContextProvider,
   useSearch,

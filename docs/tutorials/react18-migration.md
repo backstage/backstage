@@ -50,7 +50,6 @@ To switch a project to React 18, there are generally three changes that need to 
 
 ```tsx title="packages/app/src/index.tsx"
 import '@backstage/cli/asset-types';
-import React from 'react';
 // highlight-remove-next-line
 import ReactDOM from 'react-dom';
 // highlight-add-next-line

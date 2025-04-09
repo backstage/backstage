@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ComponentType } from 'react';
 import {
   ApiBlueprint,
   coreComponentRefs,
@@ -41,7 +41,7 @@ import { toLegacyPlugin } from './compatWrapper/BackwardsCompatProvider';
 import { compatWrapper } from './compatWrapper';
 
 function componentCompatWrapper<TProps extends {}>(
-  Component: React.ComponentType<TProps>,
+  Component: ComponentType<TProps>,
 ) {
   return (props: TProps) => compatWrapper(<Component {...props} />);
 }

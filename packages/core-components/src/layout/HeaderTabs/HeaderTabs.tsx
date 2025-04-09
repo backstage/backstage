@@ -17,7 +17,13 @@ import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import TabUI, { TabProps } from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
-import React, { useCallback, useEffect, useState } from 'react';
+import {
+  ElementType,
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 
 // TODO(blam): Remove this implementation when the Tabs are ready
 // This is just a temporary solution to implementing tabs for now
@@ -60,7 +66,7 @@ const useStyles = makeStyles(
 export type Tab = {
   id: string;
   label: string;
-  tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
+  tabProps?: TabProps<ElementType, { component?: ElementType }>;
 };
 
 type HeaderTabsProps = {
@@ -81,7 +87,7 @@ export function HeaderTabs(props: HeaderTabsProps) {
   const styles = useStyles();
 
   const handleChange = useCallback(
-    (_: React.ChangeEvent<{}>, index: number) => {
+    (_: ChangeEvent<{}>, index: number) => {
       if (selectedIndex === undefined) {
         setSelectedTab(index);
       }

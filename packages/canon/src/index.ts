@@ -42,6 +42,7 @@ export * from './components/TextField';
 export * from './components/Tooltip';
 export * from './components/Menu';
 export * from './components/ScrollArea';
+export * from './components/Link';
 export * from './components/Select';
 
 // Types

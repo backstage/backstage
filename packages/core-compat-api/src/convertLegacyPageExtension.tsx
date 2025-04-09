@@ -25,7 +25,6 @@ import {
 import kebabCase from 'lodash/kebabCase';
 import { convertLegacyRouteRef } from './convertLegacyRouteRef';
 import { ComponentType } from 'react';
-import React from 'react';
 import { compatWrapper } from './compatWrapper';
 
 /** @public */

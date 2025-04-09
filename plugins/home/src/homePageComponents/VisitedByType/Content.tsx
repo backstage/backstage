@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { createFilterByQueryParamFromConfig } from '../../api/config';
 import { VisitedByType } from './VisitedByType';
 import { Visit, visitsApiRef } from '../../api';

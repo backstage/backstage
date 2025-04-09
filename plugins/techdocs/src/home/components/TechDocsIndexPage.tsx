@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { FC } from 'react';
 import { useOutlet } from 'react-router-dom';
 import {
   TableColumn,
@@ -41,8 +41,8 @@ export type TechDocsIndexPageProps = {
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   pagination?: EntityListPagination;
   options?: TableOptions<DocsTableRow>;
-  PageWrapper?: React.FC;
-  CustomHeader?: React.FC;
+  PageWrapper?: FC;
+  CustomHeader?: FC;
 };
 
 export const TechDocsIndexPage = (props: TechDocsIndexPageProps) => {

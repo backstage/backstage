@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import { Table, TableProps } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
 import { CatalogTableToolbar } from './CatalogTableToolbar';

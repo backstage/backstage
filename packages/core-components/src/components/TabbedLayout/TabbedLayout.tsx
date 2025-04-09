@@ -15,7 +15,8 @@
  */
 
 import { attachComponentData } from '@backstage/core-plugin-api';
-import React, {
+import {
+  ElementType,
   Children,
   Fragment,
   isValidElement,
@@ -29,7 +30,7 @@ type SubRoute = {
   path: string;
   title: string;
   children: JSX.Element;
-  tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
+  tabProps?: TabProps<ElementType, { component?: ElementType }>;
 };
 
 const Route: (props: SubRoute) => null = () => null;

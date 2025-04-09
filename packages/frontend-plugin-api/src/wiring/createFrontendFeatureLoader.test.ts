@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { createElement } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createApp } from '../../../frontend-defaults/src/createApp';
 import { screen } from '@testing-library/react';
@@ -104,7 +104,7 @@ describe('createFrontendFeatureLoader', () => {
                 factory({ inputs }) {
                   return [
                     coreExtensionData.reactElement(
-                      React.createElement('span', {}, [
+                      createElement('span', {}, [
                         `Names: ${inputs.names
                           .map(n => n.get(nameExtensionDataRef))
                           .join(', ')}`,
@@ -234,7 +234,7 @@ describe('createFrontendFeatureLoader', () => {
                   factory({ inputs }) {
                     return [
                       coreExtensionData.reactElement(
-                        React.createElement('span', {}, [
+                        createElement('span', {}, [
                           `Names: ${inputs.names
                             .map(n => n.get(nameExtensionDataRef))
                             .join(', ')}`,
@@ -288,7 +288,7 @@ describe('createFrontendFeatureLoader', () => {
                   factory() {
                     return [
                       coreExtensionData.reactElement(
-                        React.createElement('span', {}, [`My Content`]),
+                        createElement('span', {}, [`My Content`]),
                       ),
                     ];
                   },
@@ -421,7 +421,7 @@ describe('createFrontendFeatureLoader', () => {
           factory() {
             return [
               coreExtensionData.reactElement(
-                React.createElement('span', {}, [`My Content`]),
+                createElement('span', {}, [`My Content`]),
               ),
             ];
           },

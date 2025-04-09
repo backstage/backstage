@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from 'react';
+import { ComponentType, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { useApp, useRouteRef } from '@backstage/core-plugin-api';
@@ -63,7 +63,7 @@ import { scaffolderTranslationRef } from '../../../translation';
  * @alpha
  */
 export type TemplateListPageProps = {
-  TemplateCardComponent?: React.ComponentType<{
+  TemplateCardComponent?: ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
   groups?: TemplateGroupFilter[];

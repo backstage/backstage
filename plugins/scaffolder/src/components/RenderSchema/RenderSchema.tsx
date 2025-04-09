@@ -45,7 +45,7 @@ import {
   JSONSchema7Definition,
   JSONSchema7Type,
 } from 'json-schema';
-import React from 'react';
+import { FC, JSX, cloneElement, Fragment } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
 import { SchemaRenderContext, SchemaRenderStrategy } from './types';
 
@@ -275,7 +275,7 @@ const typeColumn = {
   },
 } as Column;
 
-export const RenderEnum: React.FC<{
+export const RenderEnum: FC<{
   e: JSONSchema7Type[];
   classes: ClassNameMap;
   [key: string]: any;
@@ -290,7 +290,7 @@ export const RenderEnum: React.FC<{
   return (
     <List {...props}>
       {e.map((v, i) => {
-        let inner: React.JSX.Element = (
+        let inner: JSX.Element = (
           <Typography
             data-testid={`enum_el${i}`}
             className={classNames(classes.code)}
@@ -401,7 +401,7 @@ export const RenderSchema = ({
                     const id = generateId(el, context);
                     const info = inspectSchema(el.schema);
                     return (
-                      <React.Fragment key={id}>
+                      <Fragment key={id}>
                         <TableRow data-testid={`${strategy}-row_${id}`}>
                           {columns!.map(col => (
                             <TableCell
@@ -449,7 +449,7 @@ export const RenderSchema = ({
                                     )}
                                     {info.hasEnum && (
                                       <>
-                                        {React.cloneElement(
+                                        {cloneElement(
                                           context.headings[0],
                                           {},
                                           'Valid values:',
@@ -466,7 +466,7 @@ export const RenderSchema = ({
                               </TableCell>
                             </TableRow>
                           )}
-                      </React.Fragment>
+                      </Fragment>
                     );
                   })}
                 </TableBody>
@@ -474,8 +474,8 @@ export const RenderSchema = ({
             </TableContainer>
           )}
           {Object.keys(subschemas).map(sk => (
-            <React.Fragment key={sk}>
-              {React.cloneElement(context.headings[0], {}, sk)}
+            <Fragment key={sk}>
+              {cloneElement(context.headings[0], {}, sk)}
               {subschemas[sk].map((sub, index) => (
                 <RenderSchema
                   key={index}
@@ -489,7 +489,7 @@ export const RenderSchema = ({
                   }}
                 />
               ))}
-            </React.Fragment>
+            </Fragment>
           ))}
         </>
       );

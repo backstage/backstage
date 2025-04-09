@@ -18,7 +18,6 @@ import { useTheme } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { Line } from 'rc-progress';
-import React from 'react';
 
 import { GaugePropsGetColor, getProgressColor } from './Gauge';
 

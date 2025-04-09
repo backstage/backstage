@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.6.2-next.2
+
+### Patch Changes
+
+- 411c879: Add support to github:repo:create to allow branch updates
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-node@0.8.1-next.1
+
 ## 0.6.2-next.1
 
 ### Patch Changes

@@ -17,7 +17,7 @@
 jest.mock('./useUnregisterEntityDialogState');
 
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import { ReactNode } from 'react';
 import { UnregisterEntityDialog } from './UnregisterEntityDialog';
 import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
@@ -55,7 +55,7 @@ describe('UnregisterEntityDialog', () => {
     spec: {},
   };
 
-  const Wrapper = (props: { children?: React.ReactNode }) => (
+  const Wrapper = (props: { children?: ReactNode }) => (
     <TestApiProvider
       apis={[
         [catalogApiRef, catalogApiMock()],

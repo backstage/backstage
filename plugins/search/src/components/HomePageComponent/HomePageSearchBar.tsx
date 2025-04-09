@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   SearchBarBase,

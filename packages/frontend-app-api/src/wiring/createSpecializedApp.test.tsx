@@ -31,7 +31,6 @@ import {
 import { screen, render } from '@testing-library/react';
 import { createSpecializedApp } from './createSpecializedApp';
 import { mockApis, TestApiRegistry } from '@backstage/test-utils';
-import React from 'react';
 import {
   configApiRef,
   createApiFactory,
@@ -39,6 +38,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { MemoryRouter } from 'react-router-dom';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
+import { Fragment } from 'react';
 
 describe('createSpecializedApp', () => {
   it('should render the root app', () => {
@@ -464,9 +464,9 @@ describe('createSpecializedApp', () => {
                 <ApiProvider apis={apis}>
                   <MemoryRouter>
                     {inputs.children.map(i => (
-                      <React.Fragment key={i.node.spec.id}>
+                      <Fragment key={i.node.spec.id}>
                         {i.get(coreExtensionData.reactElement)}
-                      </React.Fragment>
+                      </Fragment>
                     ))}
                   </MemoryRouter>
                 </ApiProvider>,

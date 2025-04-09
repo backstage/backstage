@@ -45,7 +45,6 @@ import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
 import { LinksGroup } from '../../Meta';
 import PersonIcon from '@material-ui/icons/Person';
-import React from 'react';
 
 const CardTitle = (props: { title?: string }) =>
   props.title ? (
