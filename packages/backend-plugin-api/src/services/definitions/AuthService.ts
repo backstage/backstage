@@ -35,6 +35,8 @@ export type BackstageUserPrincipal = {
    * The entity ref of the user entity that this principal represents.
    */
   userEntityRef: string;
+
+  via?: BackstageServicePrincipal;
 };
 
 /**

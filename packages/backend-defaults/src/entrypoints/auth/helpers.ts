@@ -51,6 +51,7 @@ export function createCredentialsWithUserPrincipal(
   sub: string,
   token: string,
   expiresAt?: Date,
+  viaSubject?: string,
 ): InternalBackstageCredentials<BackstageUserPrincipal> {
   return Object.defineProperty(
     {
@@ -60,6 +61,7 @@ export function createCredentialsWithUserPrincipal(
       principal: {
         type: 'user',
         userEntityRef: sub,
+        ...(viaSubject && { via: { type: 'service', subject: viaSubject } }),
       },
     },
     'token',
