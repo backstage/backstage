@@ -33,7 +33,6 @@ import {
   scmAuthApiRef,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import React from 'react';
 import { CatalogImportClient, catalogImportApiRef } from './api';
 import { rootRouteRef } from './plugin';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';

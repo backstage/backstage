@@ -21,7 +21,6 @@ import {
   useEntity,
 } from '@backstage/plugin-catalog-react';
 import Alert from '@material-ui/lab/Alert';
-import React from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import Box from '@material-ui/core/Box';
 import { ResponseErrorPanel } from '@backstage/core-components';

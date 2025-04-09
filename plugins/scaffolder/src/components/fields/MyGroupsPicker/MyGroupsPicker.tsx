@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { ChangeEvent, useEffect } from 'react';
 import {
   errorApiRef,
   identityApiRef,
@@ -93,7 +93,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
     return { catalogEntities: items, entityRefToPresentation };
   });
 
-  const updateChange = (_: React.ChangeEvent<{}>, value: Entity | null) => {
+  const updateChange = (_: ChangeEvent<{}>, value: Entity | null) => {
     onChange(value ? stringifyEntityRef(value) : '');
   };
 

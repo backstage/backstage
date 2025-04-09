@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy as reactLazy } from 'react';
+import { lazy as reactLazy } from 'react';
 import {
   coreExtensionData,
   createExtensionInput,

@@ -15,7 +15,7 @@
  */
 
 import Typography from '@material-ui/core/Typography';
-import React, { ComponentClass, Component, ErrorInfo } from 'react';
+import { PropsWithChildren, ComponentClass, Component, ErrorInfo } from 'react';
 import { LinkButton } from '../../components/LinkButton';
 import { ErrorPanel } from '../../components/ErrorPanel';
 import { coreComponentsTranslationRef } from '../../translation';
@@ -27,7 +27,7 @@ type SlackChannel = {
 };
 
 /** @public */
-export type ErrorBoundaryProps = React.PropsWithChildren<{
+export type ErrorBoundaryProps = PropsWithChildren<{
   slackChannel?: string | SlackChannel;
   onError?: (error: Error, errorInfo: string) => null;
 }>;

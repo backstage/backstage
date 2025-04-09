@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { coreExtensionData } from './coreExtensionData';
 import { createExtensionBlueprint } from './createExtensionBlueprint';
 import {

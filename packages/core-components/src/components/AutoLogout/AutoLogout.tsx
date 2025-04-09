@@ -21,7 +21,7 @@ import {
   identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   EventsType,
   IIdleTimer,

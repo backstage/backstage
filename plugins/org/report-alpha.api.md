@@ -10,7 +10,7 @@ import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react';
 
 // @alpha (undocumented)
 const _default: FrontendPlugin<
@@ -31,11 +31,7 @@ const _default: FrontendPlugin<
         type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
@@ -76,11 +72,7 @@ const _default: FrontendPlugin<
         type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
@@ -121,11 +113,7 @@ const _default: FrontendPlugin<
         type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
@@ -166,11 +154,7 @@ const _default: FrontendPlugin<
         type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',

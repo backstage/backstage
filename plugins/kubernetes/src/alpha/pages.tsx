@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'; // Add this line to import React
-
-import { PageBlueprint } from '@backstage/frontend-plugin-api';
+import { PageBlueprint } from '@backstage/frontend-plugin-api'; // Add this line to import React
 import {
   compatWrapper,
   convertLegacyRouteRef,

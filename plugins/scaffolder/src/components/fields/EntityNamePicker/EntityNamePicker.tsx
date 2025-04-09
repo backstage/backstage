@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { EntityNamePickerProps } from './schema';
 import TextField from '@material-ui/core/TextField';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';

@@ -18,7 +18,7 @@ import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import classnames from 'classnames';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';

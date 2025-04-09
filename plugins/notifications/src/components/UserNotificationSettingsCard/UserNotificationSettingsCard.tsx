@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useState useContext, useEffect } from 'react';
 import { ErrorPanel, InfoCard, Progress } from '@backstage/core-components';
 import { useNotificationsApi } from '../../hooks';
 import { NotificationSettings } from '@backstage/plugin-notifications-common';
@@ -83,7 +83,7 @@ export const UserNotificationSettingsCard = (props: {
   originNames?: Record<string, string>;
   topicNames?: Record<string, string>;
 }) => {
-  const [settings, setNotificationSettings] = React.useState<
+  const [settings, setNotificationSettings] = useState<
     NotificationSettings | undefined
   >(undefined);
 

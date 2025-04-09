@@ -103,10 +103,10 @@ Now lets test end to end that the permissions framework is setup and configured 
      enabled: true
    ```
 
-2. Now run `yarn dev`, Backstage should load up in your browser
+2. Now run `yarn start`, Backstage should load up in your browser
 3. You should see that you have entities in your Catalog, pretty simple
 4. Let's change this line in our Test Permission Policy `return { result: AuthorizeResult.ALLOW };` to be `return { result: AuthorizeResult.DENY };`
-5. Run `yarn dev` once again, Backstage should load up in your browser
+5. Run `yarn start` once again, Backstage should load up in your browser
 6. This time you should not see any entities in your Catalog, if you do then something went wrong along the way and you'll need to review the steps above
 7. Revert the change we made in step 4 so that the line looks like this: `return { result: AuthorizeResult.ALLOW };`
 

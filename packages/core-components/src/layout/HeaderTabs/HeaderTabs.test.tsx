@@ -17,7 +17,7 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import Badge from '@material-ui/core/Badge';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import { PropsWithChildren, forwardRef } from 'react';
 import { HeaderTabs } from './HeaderTabs';
 import userEvent from '@testing-library/user-event';
 
@@ -56,8 +56,8 @@ describe('<HeaderTabs />', () => {
       },
     }));
 
-    const TextualBadge = React.forwardRef<HTMLSpanElement>(
-      (props: React.PropsWithChildren<{}>, ref) => (
+    const TextualBadge = forwardRef<HTMLSpanElement>(
+      (props: PropsWithChildren<{}>, ref) => (
         <Badge
           classes={useStyles()}
           overlap="rectangular"
