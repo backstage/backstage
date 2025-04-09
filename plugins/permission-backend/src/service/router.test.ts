@@ -596,7 +596,7 @@ describe('createRouter', () => {
         expect(mockApplyConditions).toHaveBeenCalledWith(
           'plugin-1',
           mockCredentials.user('user:default/spiderman', {
-            actor: 'some-service',
+            actor: { subject: 'some-service' },
           }),
           [
             expect.objectContaining({
@@ -611,7 +611,7 @@ describe('createRouter', () => {
         expect(mockApplyConditions).toHaveBeenCalledWith(
           'plugin-2',
           mockCredentials.user('user:default/spiderman', {
-            actor: 'some-service',
+            actor: { subject: 'some-service' },
           }),
           [
             expect.objectContaining({
@@ -729,7 +729,7 @@ describe('createRouter', () => {
 
       function userTokenIssuedByService() {
         return mockCredentials.user.token('user:default/spiderman', {
-          actor: 'some-service',
+          actor: { subject: 'some-service' },
         });
       }
     });
