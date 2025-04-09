@@ -21,13 +21,12 @@ import { InputError } from '@backstage/errors';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
-  EvaluatePermissionRequest,
-  EvaluatePermissionRequestBatch,
   EvaluatePermissionResponse,
-  EvaluatePermissionResponseBatch,
   IdentifiedPermissionMessage,
   isResourcePermission,
   PermissionAttributes,
+  PermissionMessageBatch,
+  PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -74,25 +73,30 @@ const resourcePermissionSchema = z.object({
   resourceType: z.string(),
 });
 
-const evaluatePermissionRequestSchema: z.ZodSchema<
-  IdentifiedPermissionMessage<EvaluatePermissionRequest>
-> = z.union([
+const evaluatePermissionRequestSchema = z.union([
   z.object({
     id: z.string(),
     resourceRef: z.undefined().optional(),
+    resourceRefs: z.undefined().optional(),
     permission: basicPermissionSchema,
   }),
   z.object({
     id: z.string(),
     resourceRef: z.string().optional(),
+    resourceRefs: z.undefined().optional(),
+    permission: resourcePermissionSchema,
+  }),
+  z.object({
+    id: z.string(),
+    resourceRef: z.undefined().optional(),
+    resourceRefs: z.array(z.string()),
     permission: resourcePermissionSchema,
   }),
 ]);
 
-const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionRequestBatch> =
-  z.object({
-    items: z.array(evaluatePermissionRequestSchema),
-  });
+const evaluatePermissionRequestBatchSchema = z.object({
+  items: z.array(evaluatePermissionRequestSchema),
+});
 
 /**
  * Options required when constructing a new {@link express#Router} using
@@ -112,7 +116,7 @@ export interface RouterOptions {
 }
 
 const handleRequest = async (
-  requests: IdentifiedPermissionMessage<EvaluatePermissionRequest>[],
+  requests: z.infer<typeof evaluatePermissionRequestBatchSchema>['items'],
   policy: PermissionPolicy,
   permissionIntegrationClient: PermissionIntegrationClient,
   credentials: BackstageCredentials<
@@ -120,7 +124,11 @@ const handleRequest = async (
   >,
   auth: AuthService,
   userInfo: UserInfoService,
-): Promise<IdentifiedPermissionMessage<EvaluatePermissionResponse>[]> => {
+): Promise<
+  IdentifiedPermissionMessage<
+    EvaluatePermissionResponse | BulkDefinitivePolicyDecision
+  >[]
+> => {
   const applyConditionsLoaderFor = memoize((pluginId: string) => {
     return new DataLoader<
       ApplyConditionsRequestEntry,
@@ -150,40 +158,59 @@ const handleRequest = async (
   }
 
   return Promise.all(
-    requests.map(({ id, resourceRef, ...request }) =>
-      policy.handle(request, user).then(decision => {
-        if (decision.result !== AuthorizeResult.CONDITIONAL) {
-          return {
-            id,
+    requests.map(request =>
+      policy
+        .handle({ permission: request.permission }, user)
+        .then(async decision => {
+          if (decision.result !== AuthorizeResult.CONDITIONAL) {
+            return {
+              id: request.id,
+              ...decision,
+            };
+          }
+
+          if (!isResourcePermission(request.permission)) {
+            throw new Error(
+              `Conditional decision returned from permission policy for non-resource permission ${request.permission.name}`,
+            );
+          }
+
+          if (decision.resourceType !== request.permission.resourceType) {
+            throw new Error(
+              `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
+            );
+          }
+
+          if (request.resourceRefs) {
+            const results = await Promise.all(
+              request.resourceRefs.map(resourceRef =>
+                applyConditionsLoaderFor(decision.pluginId).load({
+                  id: request.id,
+                  resourceRef,
+                  ...decision,
+                }),
+              ),
+            );
+
+            return {
+              id: request.id,
+              result: results.map(({ result }) => result),
+            };
+          }
+
+          if (!request.resourceRef) {
+            return {
+              id: request.id,
+              ...decision,
+            };
+          }
+
+          return applyConditionsLoaderFor(decision.pluginId).load({
+            id: request.id,
+            resourceRef: request.resourceRef,
             ...decision,
-          };
-        }
-
-        if (!isResourcePermission(request.permission)) {
-          throw new Error(
-            `Conditional decision returned from permission policy for non-resource permission ${request.permission.name}`,
-          );
-        }
-
-        if (decision.resourceType !== request.permission.resourceType) {
-          throw new Error(
-            `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
-          );
-        }
-
-        if (!resourceRef) {
-          return {
-            id,
-            ...decision,
-          };
-        }
-
-        return applyConditionsLoaderFor(decision.pluginId).load({
-          id,
-          resourceRef,
-          ...decision,
-        });
-      }),
+          });
+        }),
     ),
   );
 };
@@ -226,8 +253,10 @@ export async function createRouter(
   router.post(
     '/authorize',
     async (
-      req: Request<EvaluatePermissionRequestBatch>,
-      res: Response<EvaluatePermissionResponseBatch>,
+      req: Request,
+      res: Response<
+        PermissionMessageBatch<PolicyDecision | BulkDefinitivePolicyDecision>
+      >,
     ) => {
       const credentials = await httpAuth.credentials(req, {
         allow: ['user', 'none'],
@@ -274,3 +303,10 @@ export async function createRouter(
 
   return router;
 }
+
+/**
+ * @internal
+ */
+type BulkDefinitivePolicyDecision = {
+  result: Array<AuthorizeResult.ALLOW | AuthorizeResult.DENY>;
+};
