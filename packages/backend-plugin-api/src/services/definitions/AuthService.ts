@@ -45,7 +45,7 @@ export type BackstageUserPrincipal = {
    * of a user. It provides context about the intermediary service that
    * facilitated the authentication.
    */
-  issuedBy?: BackstageServicePrincipal;
+  actor?: BackstageServicePrincipal;
 };
 
 /**
