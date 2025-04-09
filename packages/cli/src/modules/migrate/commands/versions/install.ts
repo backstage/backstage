@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import ora from 'ora';
 import chalk from 'chalk';
-import { run } from '../../../lib/run';
+import { detectPackageManager } from '@backstage/cli-node';
 
 export async function runYarnInstall() {
   const spinner = ora({
@@ -26,8 +25,9 @@ export async function runYarnInstall() {
   }).start();
 
   const installOutput = new Array<Buffer>();
+  const pacman = await detectPackageManager();
   try {
-    await run('yarn', ['install'], {
+    await pacman.run(['install'], {
       env: {
         FORCE_COLOR: 'true',
         // We filter out all of the npm_* environment variables that are added when

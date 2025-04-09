@@ -30,7 +30,7 @@ import { getPackages } from '@manypkg/get-packages';
 import ping from 'ping';
 import os from 'os';
 import fs from 'fs-extra';
-import { Lockfile } from '../util/Lockfile';
+import { detectPackageManager } from '@backstage/cli-node';
 import { memoize } from 'lodash';
 import { assertError } from '@backstage/errors';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -223,8 +223,8 @@ export class DevToolsBackendApi {
       backstageJson = JSON.parse(buffer.toString());
     }
 
-    const lockfilePath = paths.resolveTargetRoot('yarn.lock');
-    const lockfile = await Lockfile.load(lockfilePath);
+    const pacman = await detectPackageManager();
+    const lockfile = await pacman.loadLockfile();
 
     const prefixes = ['@backstage', '@internal'].concat(
       this.config.getOptionalStringArray('devTools.info.packagePrefixes') ?? [],

@@ -17,7 +17,7 @@ import {
   MockDirectory,
   createMockDirectory,
 } from '@backstage/backend-test-utils';
-import * as run from '../../../../lib/run';
+import * as run from './install';
 import migrate from './migrate';
 import { withLogCollector } from '@backstage/test-utils';
 import fs from 'fs-extra';
@@ -45,9 +45,9 @@ jest.mock('@backstage/cli-common', () => ({
   }),
 }));
 
-jest.mock('../../../../lib/run', () => {
+jest.mock('./install', () => {
   return {
-    run: jest.fn(),
+    runYarnInstall: jest.fn(),
   };
 });
 
@@ -116,8 +116,6 @@ describe('versions:migrate', () => {
       },
     });
 
-    jest.spyOn(run, 'run').mockResolvedValue(undefined);
-
     const { warn, log: logs } = await withLogCollector(async () => {
       await migrate({});
     });
@@ -136,12 +134,7 @@ describe('versions:migrate', () => {
       'Could not find package.json for @backstage/theme@^1.0.0 in b (dependencies)',
     ]);
 
-    expect(run.run).toHaveBeenCalledTimes(1);
-    expect(run.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
-      expect.any(Object),
-    );
+    expect(run.runYarnInstall).toHaveBeenCalledTimes(1);
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -227,18 +220,11 @@ describe('versions:migrate', () => {
       },
     });
 
-    jest.spyOn(run, 'run').mockResolvedValue(undefined);
-
     await withLogCollector(async () => {
       await migrate({});
     });
 
-    expect(run.run).toHaveBeenCalledTimes(1);
-    expect(run.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
-      expect.any(Object),
-    );
+    expect(run.runYarnInstall).toHaveBeenCalledTimes(1);
 
     const indexA = await fs.readFile(
       mockDir.resolve('packages/a/src/index.ts'),
@@ -314,18 +300,11 @@ describe('versions:migrate', () => {
       },
     });
 
-    jest.spyOn(run, 'run').mockResolvedValue(undefined);
-
     await withLogCollector(async () => {
       await migrate({});
     });
 
-    expect(run.run).toHaveBeenCalledTimes(1);
-    expect(run.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
-      expect.any(Object),
-    );
+    expect(run.runYarnInstall).toHaveBeenCalledTimes(1);
 
     const indexA = await fs.readFile(
       mockDir.resolve('packages/a/src/index.ts'),

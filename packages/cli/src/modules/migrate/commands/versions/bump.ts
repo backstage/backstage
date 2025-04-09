@@ -20,17 +20,10 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import semver from 'semver';
 import { OptionValues } from 'commander';
-import yaml from 'yaml';
-import z from 'zod';
 import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
 import { paths } from '../../../../lib/paths';
-import {
-  mapDependencies,
-  fetchPackageInfo,
-  Lockfile,
-  YarnInfoInspectData,
-} from '../../../../lib/versioning';
+import { mapDependencies } from '../../../../lib/versioning';
 import { BACKSTAGE_JSON } from '@backstage/cli-common';
 import { runParallelWorkers } from '../../../../lib/parallel';
 import {
@@ -39,8 +32,8 @@ import {
   ReleaseManifest,
 } from '@backstage/release-manifests';
 import { migrateMovedPackages } from './migrate';
-import { runYarnInstall } from '../../lib/utils';
-import { run } from '../../../../lib/run';
+import { runYarnInstall } from './install';
+import { detectPackageManager, PackageInfo } from '@backstage/cli-node';
 
 function maybeBootstrapProxy() {
   // see https://www.npmjs.com/package/global-agent
@@ -79,9 +72,10 @@ type PkgVersionInfo = {
 };
 
 export default async (opts: OptionValues) => {
-  const lockfilePath = paths.resolveTargetRoot('yarn.lock');
-  const lockfile = await Lockfile.load(lockfilePath);
-  const hasYarnPlugin = await getHasYarnPlugin();
+  const pacman = await detectPackageManager();
+  const lockfile = await pacman.loadLockfile();
+  const supportsBackstageVersionProtocol =
+    await pacman.supportsBackstageVersionProtocol();
 
   let pattern = opts.pattern;
 
@@ -122,17 +116,18 @@ export default async (opts: OptionValues) => {
     }
     findTargetVersion = createVersionFinder({
       releaseLine: opts.releaseLine,
+      packageInfoFetcher: pacman.fetchPackageInfo,
       releaseManifest,
     });
   }
 
-  if (hasYarnPlugin) {
+  if (supportsBackstageVersionProtocol) {
     console.log();
     console.log(
       `Updating yarn plugin to v${releaseManifest.releaseVersion}...`,
     );
     console.log();
-    await run('yarn', [
+    await pacman.run([
       'plugin',
       'import',
       `https://versions.backstage.io/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`,
@@ -209,7 +204,7 @@ export default async (opts: OptionValues) => {
               const oldLockfileRange = await asLockfileVersion(oldRange);
 
               const useBackstageRange =
-                hasYarnPlugin &&
+                supportsBackstageVersionProtocol &&
                 // Only use backstage:^ versions if the package is present in
                 // the manifest for the release we're bumping to.
                 releaseManifest.packages.find(
@@ -249,7 +244,7 @@ export default async (opts: OptionValues) => {
     if (pattern === DEFAULT_PATTERN_GLOB) {
       await bumpBackstageJsonVersion(
         releaseManifest.releaseVersion,
-        hasYarnPlugin,
+        supportsBackstageVersionProtocol,
       );
     } else {
       console.log(
@@ -314,7 +309,7 @@ export default async (opts: OptionValues) => {
       console.log();
     }
 
-    if (hasYarnPlugin) {
+    if (supportsBackstageVersionProtocol) {
       console.log();
       console.log(
         chalk.blue(
@@ -353,12 +348,12 @@ export function createStrictVersionFinder(options: {
 
 export function createVersionFinder(options: {
   releaseLine?: string;
-  packageInfoFetcher?: () => Promise<YarnInfoInspectData>;
+  packageInfoFetcher: (name: string) => Promise<PackageInfo>;
   releaseManifest?: ReleaseManifest;
 }) {
   const {
     releaseLine = 'latest',
-    packageInfoFetcher = fetchPackageInfo,
+    packageInfoFetcher,
     releaseManifest,
   } = options;
   // The main release line is just an alias for latest
@@ -487,43 +482,4 @@ async function asLockfileVersion(version: string) {
   }
 
   return version;
-}
-
-const yarnRcSchema = z.object({
-  plugins: z
-    .array(
-      z.object({
-        path: z.string(),
-      }),
-    )
-    .optional(),
-});
-
-async function getHasYarnPlugin() {
-  const yarnRcPath = paths.resolveTargetRoot('.yarnrc.yml');
-  const yarnRcContent = await fs.readFile(yarnRcPath, 'utf-8').catch(e => {
-    if (e.code === 'ENOENT') {
-      // gracefully continue in case the file doesn't exist
-      return '';
-    }
-    throw e;
-  });
-
-  if (!yarnRcContent) {
-    return false;
-  }
-
-  const parseResult = yarnRcSchema.safeParse(yaml.parse(yarnRcContent));
-
-  if (!parseResult.success) {
-    throw new Error(
-      `Unexpected content in .yarnrc.yml: ${parseResult.error.toString()}`,
-    );
-  }
-
-  const yarnRc = parseResult.data;
-
-  return yarnRc.plugins?.some(
-    plugin => plugin.path === '.yarn/plugins/@yarnpkg/plugin-backstage.cjs',
-  );
 }
