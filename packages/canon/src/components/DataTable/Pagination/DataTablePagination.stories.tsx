@@ -16,6 +16,15 @@
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { DataTablePagination } from './DataTablePagination';
+import {
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { components, Component } from '../mocked-components';
+import { columns } from '../mocked-columns';
 
 const meta = {
   title: 'Components/DataTable/Pagination',
@@ -26,14 +35,16 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    pageIndex: 0,
-    pageSize: 10,
-    totalRows: 100,
-    onClickPrevious: () => {},
-    onClickNext: () => {},
-    canPrevious: true,
-    canNext: true,
-    setPageSize: () => {},
+  render: () => {
+    const table = useReactTable<Component>({
+      data: components,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      getFilteredRowModel: getFilteredRowModel(),
+    });
+
+    return <DataTablePagination table={table} />;
   },
 };

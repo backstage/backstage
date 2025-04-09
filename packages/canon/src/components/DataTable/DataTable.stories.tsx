@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Table } from '../Table';
 import { DataTable } from '.';
-import { components } from './mocked-components';
+import { components, Component } from './mocked-components';
 import { columns } from './mocked-columns';
 import {
   flexRender,
@@ -38,7 +37,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => {
-    const table = useReactTable({
+    const table = useReactTable<Component>({
       data: components,
       columns,
       getCoreRowModel: getCoreRowModel(),
@@ -97,16 +96,7 @@ export const Default: Story = {
             )}
           </Table.Body>
         </Table.Root>
-        <DataTable.Pagination
-          pageIndex={table.getState().pagination.pageIndex}
-          pageSize={table.getState().pagination.pageSize}
-          totalRows={table.getRowCount()}
-          onClickPrevious={() => table.previousPage()}
-          onClickNext={() => table.nextPage()}
-          canPrevious={table.getCanPreviousPage()}
-          canNext={table.getCanNextPage()}
-          setPageSize={pageSize => table.setPageSize(pageSize)}
-        />
+        <DataTable.Pagination table={table} />
       </DataTable.Root>
     );
   },

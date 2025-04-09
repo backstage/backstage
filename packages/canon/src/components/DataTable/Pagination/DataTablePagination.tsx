@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from 'react';
+
+import { forwardRef } from 'react';
 import { Text } from '../../Text';
 import { DataTablePaginationProps } from './types';
 import { IconButton } from '../../IconButton';
@@ -21,25 +22,19 @@ import clsx from 'clsx';
 import { Select } from '../../Select';
 
 /** @public */
-const DataTablePagination = React.forwardRef<
-  HTMLDivElement,
-  DataTablePaginationProps
->(({ className, ...props }, ref) => {
-  const {
-    pageIndex,
-    pageSize,
-    onClickPrevious,
-    onClickNext,
-    canPrevious,
-    canNext,
-    totalRows,
-    setPageSize,
-  } = props;
+function DataTablePagination<TData>(
+  props: DataTablePaginationProps<TData>,
+  ref: React.ForwardedRef<HTMLDivElement>,
+) {
+  const { className, table, ...rest } = props;
+  const pageIndex = table?.getState().pagination.pageIndex;
+  const pageSize = table?.getState().pagination.pageSize;
+
   return (
     <div
       ref={ref}
       className={clsx('canon-TablePagination', className)}
-      {...props}
+      {...rest}
     >
       <div className="canon-TablePagination--left">
         <Select
@@ -55,32 +50,37 @@ const DataTablePagination = React.forwardRef<
           ]}
           value={pageSize?.toString()}
           onValueChange={value => {
-            setPageSize?.(Number(value));
+            table?.setPageSize(Number(value));
           }}
         />
       </div>
       <div className="canon-TablePagination--right">
         <Text variant="body">{`${(pageIndex ?? 0) * (pageSize ?? 10) + 1} - ${
           ((pageIndex ?? 0) + 1) * (pageSize ?? 10)
-        } of ${totalRows}`}</Text>
+        } of ${table?.getRowCount()}`}</Text>
         <IconButton
           variant="secondary"
           size="small"
-          onClick={onClickPrevious}
-          disabled={!canPrevious}
+          onClick={() => table?.previousPage()}
+          disabled={!table?.getCanPreviousPage()}
           icon="chevron-left"
         />
         <IconButton
           variant="secondary"
           size="small"
-          onClick={onClickNext}
-          disabled={!canNext}
+          onClick={() => table?.nextPage()}
+          disabled={!table?.getCanNextPage()}
           icon="chevron-right"
         />
       </div>
     </div>
   );
-});
-DataTablePagination.displayName = 'DataTablePagination';
+}
 
-export { DataTablePagination };
+const ForwardedDataTablePagination = forwardRef(DataTablePagination) as <TData>(
+  props: DataTablePaginationProps<TData> & {
+    ref?: React.ForwardedRef<HTMLDivElement>;
+  },
+) => React.ReactElement;
+
+export { ForwardedDataTablePagination as DataTablePagination };

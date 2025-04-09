@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 import { forwardRef } from 'react';
+import clsx from 'clsx';
 
 const TableRoot = forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
-  <div className="table">
-    <table ref={ref} className={className} {...props} />
-  </div>
+  <table ref={ref} className={clsx('canon-TableRoot', className)} {...props} />
 ));
 TableRoot.displayName = 'TableRoot';
 
@@ -31,7 +30,7 @@ const TableHeader = forwardRef<
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
-    className={['table-header', className].join(' ')}
+    className={clsx('canon-TableHeader', className)}
     {...props}
   />
 ));
@@ -41,7 +40,7 @@ const TableBody = forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <tbody ref={ref} className={['table-body', className].join(' ')} {...props} />
+  <tbody ref={ref} className={clsx('canon-TableBody', className)} {...props} />
 ));
 TableBody.displayName = 'TableBody';
 
@@ -49,7 +48,7 @@ const TableRow = forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement>
 >(({ className, ...props }, ref) => (
-  <tr ref={ref} className={['table-row', className].join(' ')} {...props}>
+  <tr ref={ref} className={clsx('canon-TableRow', className)} {...props}>
     {props.children}
   </tr>
 ));
@@ -59,7 +58,7 @@ const TableHead = forwardRef<
   HTMLTableCellElement,
   React.ThHTMLAttributes<HTMLTableCellElement>
 >(({ className, ...props }, ref) => (
-  <th ref={ref} className={['table-head', className].join(' ')} {...props} />
+  <th ref={ref} className={clsx('canon-TableHead', className)} {...props} />
 ));
 TableHead.displayName = 'TableHead';
 
@@ -67,7 +66,7 @@ const TableCell = forwardRef<
   HTMLTableCellElement,
   React.TdHTMLAttributes<HTMLTableCellElement>
 >(({ className, ...props }, ref) => (
-  <td ref={ref} className={['table-cell', className].join(' ')} {...props} />
+  <td ref={ref} className={clsx('canon-TableCell', className)} {...props} />
 ));
 TableCell.displayName = 'TableCell';
 
@@ -77,7 +76,7 @@ const TableCaption = forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={['table-caption', className].join(' ')}
+    className={clsx('canon-TableCaption', className)}
     {...props}
   />
 ));

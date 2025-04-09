@@ -14,39 +14,13 @@
  * limitations under the License.
  */
 
+import { Table } from '@tanstack/react-table';
+
 /** @public */
-export interface DataTablePaginationProps
+export interface DataTablePaginationProps<TData>
   extends React.HTMLAttributes<HTMLDivElement> {
   /**
-   * The current page index.
+   * The table instance.
    */
-  pageIndex?: number;
-  /**
-   * The current page size.
-   */
-  pageSize?: number;
-  /**
-   * The total number of rows.
-   */
-  totalRows?: number;
-  /**
-   * The function to call when the previous button is clicked.
-   */
-  onClickPrevious?: () => void;
-  /**
-   * The function to call when the next button is clicked.
-   */
-  onClickNext?: () => void;
-  /**
-   * Whether the previous button is disabled.
-   */
-  canPrevious?: boolean;
-  /**
-   * Whether the next button is disabled.
-   */
-  canNext?: boolean;
-  /**
-   * The function to call when the page size is changed.
-   */
-  setPageSize?: (pageSize: number) => void;
+  table?: Table<TData>;
 }

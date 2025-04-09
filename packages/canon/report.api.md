@@ -10,15 +10,14 @@ import type { CSSProperties } from 'react';
 import { FC } from 'react';
 import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
-import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
+import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
-import { TdHTMLAttributes } from 'react';
-import { ThHTMLAttributes } from 'react';
+import { Table as Table_2 } from '@tanstack/react-table';
 import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
 import type { useRender } from '@base-ui-components/react/use-render';
 
@@ -218,6 +217,28 @@ export interface ContainerProps {
   // (undocumented)
   style?: React.CSSProperties;
 }
+
+// @public
+export const DataTable: {
+  Root: ForwardRefExoticComponent<
+    DataTableRootProps & RefAttributes<HTMLDivElement>
+  >;
+  Pagination: <TData>(
+    props: DataTablePaginationProps<TData> & {
+      ref?: React.ForwardedRef<HTMLDivElement>;
+    },
+  ) => React.ReactElement;
+};
+
+// @public (undocumented)
+export interface DataTablePaginationProps<TData>
+  extends React.HTMLAttributes<HTMLDivElement> {
+  table?: Table_2<TData>;
+}
+
+// @public (undocumented)
+export interface DataTableRootProps
+  extends React.HTMLAttributes<HTMLDivElement> {}
 
 // @public (undocumented)
 export type Display = 'none' | 'flex' | 'block' | 'inline';
@@ -1028,43 +1049,37 @@ export type StylingPropDef = {
   parseValue?: (value: string) => string | undefined;
 };
 
-// @public (undocumented)
-export const Table: ForwardRefExoticComponent<
-  HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>
->;
-
-// @public (undocumented)
-export const TableBody: ForwardRefExoticComponent<
-  HTMLAttributes<HTMLTableSectionElement> &
-    RefAttributes<HTMLTableSectionElement>
->;
-
-// @public (undocumented)
-export const TableCell: ForwardRefExoticComponent<
-  TdHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
->;
-
-// @public (undocumented)
-export const TableFooter: ForwardRefExoticComponent<
-  HTMLAttributes<HTMLTableSectionElement> &
-    RefAttributes<HTMLTableSectionElement>
->;
-
-// @public (undocumented)
-export const TableHead: ForwardRefExoticComponent<
-  ThHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
->;
-
-// @public (undocumented)
-export const TableHeader: ForwardRefExoticComponent<
-  HTMLAttributes<HTMLTableSectionElement> &
-    RefAttributes<HTMLTableSectionElement>
->;
-
-// @public (undocumented)
-export const TableRow: ForwardRefExoticComponent<
-  HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>
->;
+// @public
+export const Table: {
+  Root: React_2.ForwardRefExoticComponent<
+    React_2.HTMLAttributes<HTMLTableElement> &
+      React_2.RefAttributes<HTMLTableElement>
+  >;
+  Header: React_2.ForwardRefExoticComponent<
+    React_2.HTMLAttributes<HTMLTableSectionElement> &
+      React_2.RefAttributes<HTMLTableSectionElement>
+  >;
+  Body: React_2.ForwardRefExoticComponent<
+    React_2.HTMLAttributes<HTMLTableSectionElement> &
+      React_2.RefAttributes<HTMLTableSectionElement>
+  >;
+  Head: React_2.ForwardRefExoticComponent<
+    React_2.ThHTMLAttributes<HTMLTableCellElement> &
+      React_2.RefAttributes<HTMLTableCellElement>
+  >;
+  Row: React_2.ForwardRefExoticComponent<
+    React_2.HTMLAttributes<HTMLTableRowElement> &
+      React_2.RefAttributes<HTMLTableRowElement>
+  >;
+  Cell: React_2.ForwardRefExoticComponent<
+    React_2.TdHTMLAttributes<HTMLTableCellElement> &
+      React_2.RefAttributes<HTMLTableCellElement>
+  >;
+  Caption: React_2.ForwardRefExoticComponent<
+    React_2.HTMLAttributes<HTMLTableCaptionElement> &
+      React_2.RefAttributes<HTMLTableCaptionElement>
+  >;
+};
 
 // @public (undocumented)
 const Text_2: ForwardRefExoticComponent<
