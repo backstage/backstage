@@ -235,6 +235,18 @@ export async function createRouter(
 
       const body = parseResult.data;
 
+      if (
+        !(credentials.principal as BackstageUserPrincipal).issuedBy &&
+        body.items.some(
+          r =>
+            isResourcePermission(r.permission) && r.resourceRef === undefined,
+        )
+      ) {
+        throw new InputError(
+          'Resource permissions require a resourceRef to be set',
+        );
+      }
+
       res.json({
         items: await handleRequest(
           body.items,
