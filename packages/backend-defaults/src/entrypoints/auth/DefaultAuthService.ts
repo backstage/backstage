@@ -87,6 +87,7 @@ export class DefaultAuthService implements AuthService {
         userResult.userEntityRef,
         token,
         this.#getJwtExpiration(token),
+        this.pluginId,
       );
     }
 
