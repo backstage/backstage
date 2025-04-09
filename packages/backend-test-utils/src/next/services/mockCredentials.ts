@@ -108,7 +108,7 @@ export namespace mockCredentials {
    */
   export function user(
     userEntityRef: string = DEFAULT_MOCK_USER_ENTITY_REF,
-    options?: { actor?: string },
+    options?: { actor?: { subject: string } },
   ): BackstageCredentials<BackstageUserPrincipal> {
     validateUserEntityRef(userEntityRef);
     return {
@@ -134,14 +134,14 @@ export namespace mockCredentials {
      */
     export function token(
       userEntityRef?: string,
-      options?: { actor?: string },
+      options?: { actor?: { subject: string } },
     ): string {
       if (userEntityRef) {
         validateUserEntityRef(userEntityRef);
         return `${MOCK_USER_TOKEN_PREFIX}${JSON.stringify({
           sub: userEntityRef,
           ...(options?.actor && {
-            actor: options.actor,
+            actor: { subject: options.actor.subject },
           }),
         } satisfies UserTokenPayload)}`;
       }
