@@ -236,15 +236,19 @@ export async function createRouter(
       const body = parseResult.data;
 
       if (
-        !(credentials.principal as BackstageUserPrincipal).issuedBy &&
-        body.items.some(
-          r =>
-            isResourcePermission(r.permission) && r.resourceRef === undefined,
-        )
+        auth.isPrincipal(credentials, 'none') ||
+        (auth.isPrincipal(credentials, 'user') && !credentials.principal.actor)
       ) {
-        throw new InputError(
-          'Resource permissions require a resourceRef to be set',
-        );
+        if (
+          body.items.some(
+            r =>
+              isResourcePermission(r.permission) && r.resourceRef === undefined,
+          )
+        ) {
+          throw new InputError(
+            'Resource permissions require a resourceRef to be set. Direct user requests without a resourceRef are not allowed.',
+          );
+        }
       }
 
       res.json({
