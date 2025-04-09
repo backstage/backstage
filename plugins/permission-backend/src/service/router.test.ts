@@ -217,6 +217,9 @@ describe('createRouter', () => {
 
         const response = await request(app)
           .post('/authorize')
+          .auth(userTokenIssuedByService(), {
+            type: 'bearer',
+          })
           .send({
             items: [
               {
@@ -545,7 +548,7 @@ describe('createRouter', () => {
 
         const response = await request(app)
           .post('/authorize')
-          .auth(mockCredentials.user.token(), { type: 'bearer' })
+          .auth(userTokenIssuedByService(), { type: 'bearer' })
           .send({
             items: [
               {
@@ -592,7 +595,9 @@ describe('createRouter', () => {
 
         expect(mockApplyConditions).toHaveBeenCalledWith(
           'plugin-1',
-          mockCredentials.user(),
+          mockCredentials.user('user:default/spiderman', {
+            issuedBySubject: 'some-service',
+          }),
           [
             expect.objectContaining({
               id: '123',
@@ -605,7 +610,9 @@ describe('createRouter', () => {
 
         expect(mockApplyConditions).toHaveBeenCalledWith(
           'plugin-2',
-          mockCredentials.user(),
+          mockCredentials.user('user:default/spiderman', {
+            issuedBySubject: 'some-service',
+          }),
           [
             expect.objectContaining({
               id: '234',
@@ -719,6 +726,12 @@ describe('createRouter', () => {
           });
         },
       );
+
+      function userTokenIssuedByService() {
+        return mockCredentials.user.token('user:default/spiderman', {
+          issuedBySubject: 'some-service',
+        });
+      }
     });
 
     it.each([
@@ -794,6 +807,7 @@ describe('createRouter', () => {
                 resourceType: 'test-resource-1',
                 attributes: {},
               },
+              resourceRef: 'resource:1',
             },
           ],
         });
@@ -803,6 +817,42 @@ describe('createRouter', () => {
         expect.objectContaining({
           error: expect.objectContaining({
             message: expect.stringMatching(/invalid resource conditions/i),
+          }),
+        }),
+      );
+    });
+
+    it(`returns a 400 error if the request doesn't contain resourceRef for credentials not issued by a service`, async () => {
+      policy.handle.mockResolvedValueOnce({
+        result: AuthorizeResult.CONDITIONAL,
+        pluginId: 'test-plugin',
+        resourceType: 'test-resource-2',
+        conditions: {},
+      });
+
+      const response = await request(app)
+        .post('/authorize')
+        .send({
+          items: [
+            {
+              id: '123',
+              permission: {
+                type: 'resource',
+                name: 'test.permission',
+                resourceType: 'test-resource-1',
+                attributes: {},
+              },
+            },
+          ],
+        });
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          error: expect.objectContaining({
+            message: expect.stringMatching(
+              /Resource permissions require a resourceRef to be set/i,
+            ),
           }),
         }),
       );
