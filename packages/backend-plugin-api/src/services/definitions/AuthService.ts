@@ -36,7 +36,16 @@ export type BackstageUserPrincipal = {
    */
   userEntityRef: string;
 
-  via?: BackstageServicePrincipal;
+  /**
+   * The service principal that issued the token on behalf of the user.
+   *
+   * @remarks
+   *
+   * This field is present in scenarios where a backend service acts on behalf
+   * of a user. It provides context about the intermediary service that
+   * facilitated the authentication.
+   */
+  issuedBy?: BackstageServicePrincipal;
 };
 
 /**
