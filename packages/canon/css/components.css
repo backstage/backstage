@@ -757,6 +757,7 @@
   cursor: pointer;
   justify-content: space-between;
   align-items: center;
+  gap: var(--canon-space-2);
   width: 100%;
   transition: border-color .2s ease-in-out, outline-color .2s ease-in-out;
   display: flex;
@@ -882,4 +883,17 @@
   font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
   margin-left: var(--canon-space-1);
+}
+
+.canon-Select--icon {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.canon-Select--value {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  overflow: hidden;
 }
