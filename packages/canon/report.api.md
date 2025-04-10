@@ -10,14 +10,16 @@ import type { CSSProperties } from 'react';
 import { FC } from 'react';
 import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
+import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
-import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
 import { Table as Table_2 } from '@tanstack/react-table';
+import { TdHTMLAttributes } from 'react';
+import { ThHTMLAttributes } from 'react';
 import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
 import type { useRender } from '@base-ui-components/react/use-render';
 
@@ -1051,33 +1053,29 @@ export type StylingPropDef = {
 
 // @public
 export const Table: {
-  Root: React_2.ForwardRefExoticComponent<
-    React_2.HTMLAttributes<HTMLTableElement> &
-      React_2.RefAttributes<HTMLTableElement>
+  Root: ForwardRefExoticComponent<
+    HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>
   >;
-  Header: React_2.ForwardRefExoticComponent<
-    React_2.HTMLAttributes<HTMLTableSectionElement> &
-      React_2.RefAttributes<HTMLTableSectionElement>
+  Header: ForwardRefExoticComponent<
+    HTMLAttributes<HTMLTableSectionElement> &
+      RefAttributes<HTMLTableSectionElement>
   >;
-  Body: React_2.ForwardRefExoticComponent<
-    React_2.HTMLAttributes<HTMLTableSectionElement> &
-      React_2.RefAttributes<HTMLTableSectionElement>
+  Body: ForwardRefExoticComponent<
+    HTMLAttributes<HTMLTableSectionElement> &
+      RefAttributes<HTMLTableSectionElement>
   >;
-  Head: React_2.ForwardRefExoticComponent<
-    React_2.ThHTMLAttributes<HTMLTableCellElement> &
-      React_2.RefAttributes<HTMLTableCellElement>
+  Head: ForwardRefExoticComponent<
+    ThHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
   >;
-  Row: React_2.ForwardRefExoticComponent<
-    React_2.HTMLAttributes<HTMLTableRowElement> &
-      React_2.RefAttributes<HTMLTableRowElement>
+  Row: ForwardRefExoticComponent<
+    HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>
   >;
-  Cell: React_2.ForwardRefExoticComponent<
-    React_2.TdHTMLAttributes<HTMLTableCellElement> &
-      React_2.RefAttributes<HTMLTableCellElement>
+  Cell: ForwardRefExoticComponent<
+    TdHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
   >;
-  Caption: React_2.ForwardRefExoticComponent<
-    React_2.HTMLAttributes<HTMLTableCaptionElement> &
-      React_2.RefAttributes<HTMLTableCaptionElement>
+  Caption: ForwardRefExoticComponent<
+    HTMLAttributes<HTMLTableCaptionElement> &
+      RefAttributes<HTMLTableCaptionElement>
   >;
 };
 

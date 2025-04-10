@@ -19,10 +19,10 @@
 .canon-TableRow {
   border-bottom: 1px solid var(--canon-border);
   transition: color 0.2s ease-in-out;
+}
 
-  &:hover {
-    background-color: var(--canon-bg-tint-hover);
-  }
+.canon-TableBody .canon-TableRow:hover {
+  background-color: var(--canon-gray-2);
 }
 
 .canon-TableCell {

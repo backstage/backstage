@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
+import { forwardRef } from 'react';
 import clsx from 'clsx';
 import { DataTableRootProps } from './types';
 
 /** @public */
-const DataTableRoot = React.forwardRef<HTMLDivElement, DataTableRootProps>(
+const DataTableRoot = forwardRef<HTMLDivElement, DataTableRootProps>(
   ({ className, ...props }, ref) => {
     return (
       <div

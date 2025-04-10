@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ComponentType } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Table } from '../Table';
 
@@ -67,11 +67,11 @@ const meta = {
   title: 'Components/Table',
   component: Table.Root,
   subcomponents: {
-    Body: Table.Body as React.ComponentType<unknown>,
-    Cell: Table.Cell as React.ComponentType<unknown>,
-    Head: Table.Head as React.ComponentType<unknown>,
-    Header: Table.Header as React.ComponentType<unknown>,
-    Row: Table.Row as React.ComponentType<unknown>,
+    Body: Table.Body as ComponentType<unknown>,
+    Cell: Table.Cell as ComponentType<unknown>,
+    Head: Table.Head as ComponentType<unknown>,
+    Header: Table.Header as ComponentType<unknown>,
+    Row: Table.Row as ComponentType<unknown>,
   },
 } satisfies Meta<typeof Table>;
 

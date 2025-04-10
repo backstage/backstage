@@ -246,7 +246,7 @@ export const WithManyOptions: Story = {
   },
 };
 
-export const withErrorAndDescription: Story = {
+export const WithErrorAndDescription: Story = {
   args: {
     ...Preview.args,
     error: 'Invalid font family',

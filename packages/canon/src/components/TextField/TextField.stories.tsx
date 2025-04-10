@@ -95,14 +95,14 @@ export const Responsive: Story = {
   },
 };
 
-export const withError: Story = {
+export const WithError: Story = {
   args: {
     ...WithLabel.args,
     error: 'Invalid URL',
   },
 };
 
-export const withErrorAndDescription: Story = {
+export const WithErrorAndDescription: Story = {
   args: {
     ...WithLabel.args,
     error: 'Invalid URL',
