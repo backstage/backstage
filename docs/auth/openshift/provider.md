@@ -43,6 +43,9 @@ auth:
         authorizationUrl: ${AUTH_OPENSHIFT_AUTHORIZATION_URL}
         tokenUrl: ${AUTH_OPENSHIFT_TOKEN_URL}
         openshiftApiServerUrl: ${OPENSHIFT_API_SERVER_URL}
+        ## uncomment to set lifespan of user session
+        # sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
+        # sessionDuration: 1d
         signIn:
           resolvers:
             - resolver: displayNameMatchingUserEntityName
@@ -55,9 +58,12 @@ The OpenShift provider is a structure with these configuration keys:
 - `authorizationUrl`: The OpenShift OAuth client auth endpoint, format: `https://<oauth-client-route>/oauth/authorize`.
 - `tokenUrl`: The OpenShift OAuth client token endpoint, format: `https://<oauth-client-route>/oauth/token`.
 - `openshiftApiServerUrl`: The OpenShift API server endpoint, format: `https://<openshift-api>`.
+- `sessionDuration`: (optional): Lifespan of the user session.
 - `signIn`: The configuration for the sign-in process, including the **resolvers**
   that should be used to match the user from the auth provider with the user
   entity in the Backstage catalog (typically a single resolver is sufficient).
+
+The provider needs to use the scope **user:full**.
 
 ## Backend Installation
 
