@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { ReactNode } from 'react';
 import { renderHook } from '@testing-library/react';
 import { PodMetricsContext, usePodMetrics } from './usePodMetrics';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
@@ -45,7 +45,7 @@ describe('usePodMetrics', () => {
     const metrics = new Map<string, ClientPodStatus[]>();
     metrics.set('cluster', [clientPodStatus]);
     metrics.set('other-cluster', [otherClientPodStatus]);
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
+    const wrapper = ({ children }: { children: ReactNode }) => (
       <PodMetricsContext.Provider value={metrics}>
         {children}
       </PodMetricsContext.Provider>

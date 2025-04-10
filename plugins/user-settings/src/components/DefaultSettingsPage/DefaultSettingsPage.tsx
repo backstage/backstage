@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactElement } from 'react';
 import { UserSettingsAuthProviders } from '../AuthProviders';
 import { UserSettingsFeatureFlags } from '../FeatureFlags';
 import { UserSettingsGeneral } from '../General';
@@ -24,7 +24,7 @@ import { SettingsLayout, SettingsLayoutRouteProps } from '../SettingsLayout';
  * @public
  */
 export const DefaultSettingsPage = (props: {
-  tabs?: React.ReactElement<SettingsLayoutRouteProps>[];
+  tabs?: ReactElement<SettingsLayoutRouteProps>[];
   providerSettings?: JSX.Element;
 }) => {
   const { providerSettings, tabs } = props;

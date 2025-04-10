@@ -23,7 +23,7 @@ import Popover from '@material-ui/core/Popover';
 import { makeStyles } from '@material-ui/core/styles';
 import Edit from '@material-ui/icons/Edit';
 import MoreVert from '@material-ui/icons/MoreVert';
-import React, { useState } from 'react';
+import { SyntheticEvent, useState } from 'react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
 
@@ -49,7 +49,7 @@ export function TemplateWizardPageContextMenu(
     return null;
   }
 
-  const onOpen = (event: React.SyntheticEvent<HTMLButtonElement>) => {
+  const onOpen = (event: SyntheticEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 

@@ -55,7 +55,7 @@ import {
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
-import createDefaultFilters from '../../lib/templating/filters';
+import { createDefaultFilters } from '../../lib/templating/filters/createDefaultFilters';
 import { scaffolderActionRules } from '../../service/rules';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
@@ -634,6 +634,7 @@ function scaffoldingTracker() {
 
       taskCount.add(1, { template, user, result: 'ok' });
       taskDuration.record(endTime(), {
+        template,
         result: 'ok',
       });
     }
@@ -652,6 +653,7 @@ function scaffoldingTracker() {
 
       taskCount.add(1, { template, user, result: 'failed' });
       taskDuration.record(endTime(), {
+        template,
         result: 'failed',
       });
     }
@@ -670,6 +672,7 @@ function scaffoldingTracker() {
 
       taskCount.add(1, { template, user, result: 'cancelled' });
       taskDuration.record(endTime(), {
+        template,
         result: 'cancelled',
       });
     }
@@ -714,6 +717,8 @@ function scaffoldingTracker() {
 
       stepCount.add(1, { template, step: step.name, result: 'ok' });
       stepDuration.record(endTime(), {
+        template,
+        step: step.name,
         result: 'ok',
       });
     }
@@ -728,6 +733,8 @@ function scaffoldingTracker() {
 
       stepCount.add(1, { template, step: step.name, result: 'cancelled' });
       stepDuration.record(endTime(), {
+        template,
+        step: step.name,
         result: 'cancelled',
       });
     }
@@ -742,6 +749,8 @@ function scaffoldingTracker() {
 
       stepCount.add(1, { template, step: step.name, result: 'failed' });
       stepDuration.record(endTime(), {
+        template,
+        step: step.name,
         result: 'failed',
       });
     }
@@ -755,6 +764,8 @@ function scaffoldingTracker() {
 
       stepCount.add(1, { template, step: step.name, result: 'skipped' });
       stepDuration.record(endTime(), {
+        template,
+        step: step.name,
         result: 'skipped',
       });
     }

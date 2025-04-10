@@ -21,7 +21,6 @@ import {
   useEntity,
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
 import { apiEntityColumns } from './presets';
 import {
   CodeSnippet,

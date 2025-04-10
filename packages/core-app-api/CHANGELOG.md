@@ -1,5 +1,34 @@
 # @backstage/core-app-api
 
+## 1.16.1-next.0
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.16.0
+
+### Minor Changes
+
+- 9262001: The default auth injection middleware for the `FetchApi` will now also take configuration under `discovery.endpoints` into consideration when deciding whether to include credentials or not.
+- 12f8e01: The `discovery.endpoints` configuration no longer requires both `internal` and `external` target when using the object form, instead falling back to the default.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 1.16.0-next.0
 
 ### Minor Changes

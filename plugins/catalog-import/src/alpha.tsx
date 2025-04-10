@@ -33,10 +33,11 @@ import {
   scmAuthApiRef,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import React from 'react';
 import { CatalogImportClient, catalogImportApiRef } from './api';
 import { rootRouteRef } from './plugin';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
+
+export * from './translation';
 
 // TODO: It's currently possible to override the import page with a custom one. We need to decide
 //       whether this type of override is typically done with an input or by overriding the entire extension.

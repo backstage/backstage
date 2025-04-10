@@ -1,11 +1,6 @@
 {
   "name": "root",
-  "version": "1.37.0-next.2",
-  "private": true,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage"
-  },
+  "version": "1.38.0-next.2",
   "backstage": {
     "cli": {
       "new": {
@@ -15,6 +10,11 @@
         }
       }
     }
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage"
   },
   "workspaces": {
     "packages": [
@@ -33,8 +33,8 @@
     "build:plugins-report": "node ./scripts/build-plugins-report",
     "clean": "backstage-cli repo clean",
     "create-plugin": "echo \"use 'yarn new' instead\"",
-    "dev": "yarn workspaces foreach -A --include example-backend --include example-app --parallel --jobs unlimited -v -i run start",
-    "dev:next": "yarn workspaces foreach -A --include example-backend --include example-app-next --parallel --jobs unlimited -v -i run start",
+    "dev": "echo \"use 'yarn start' instead\"",
+    "dev:next": "echo \"use 'yarn start:next' instead\"",
     "docker-build": "yarn tsc && yarn workspace example-backend build && yarn workspace example-backend build-image",
     "fix": "backstage-cli repo fix --publish",
     "postinstall": "husky || true",
@@ -50,12 +50,11 @@
     "release": "node scripts/prepare-release.js && changeset version && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' '.changeset/*.json' && yarn install --no-immutable",
     "snyk:test": "npx snyk test --yarn-workspaces --strict-out-of-sync=false",
     "snyk:test:package": "yarn snyk:test --include",
-    "start": "yarn workspace example-app start",
-    "start:lighthouse": "yarn workspaces foreach -A --include example-backend --include example-app --parallel --jobs unlimited -v -i run start",
+    "start": "backstage-cli repo start",
+    "start-backend": "echo \"Use 'yarn start example-backend' instead\"",
+    "start-backend:legacy": "echo \"Use 'yarn start example-backend-legacy' instead\"",
     "start:microsite": "cd microsite/ && yarn start",
-    "start:next": "yarn workspace example-app-next start",
-    "start-backend": "yarn workspace example-backend start",
-    "start-backend:legacy": "yarn workspace example-backend-legacy start",
+    "start:next": "yarn start example-app-next example-backend",
     "storybook": "yarn ./storybook run storybook",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
@@ -103,9 +102,12 @@
     "@material-ui/pickers@^3.3.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch",
+    "ast-types@0.14.2": "patch:ast-types@npm%3A0.14.2#./.yarn/patches/ast-types-npm-0.14.2-43c4ac4b0d.patch",
     "ast-types@^0.14.1": "patch:ast-types@npm%3A0.14.2#./.yarn/patches/ast-types-npm-0.14.2-43c4ac4b0d.patch",
-    "ast-types@0.14.2": "patch:ast-types@npm%3A0.14.2#./.yarn/patches/ast-types-npm-0.14.2-43c4ac4b0d.patch"
+    "csstype@npm:^3.0.2": "3.0.9",
+    "csstype@npm:^3.1.2": "3.0.9",
+    "csstype@npm:^3.1.3": "3.0.9",
+    "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch"
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
@@ -149,7 +151,7 @@
     "typedoc": "^0.27.6",
     "typescript": "~5.6.0"
   },
-  "packageManager": "yarn@3.8.1",
+  "packageManager": "yarn@4.8.1",
   "engines": {
     "node": "20 || 22"
   }

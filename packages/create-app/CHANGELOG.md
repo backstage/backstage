@@ -1,5 +1,60 @@
 # @backstage/create-app
 
+## 0.6.1-next.2
+
+### Patch Changes
+
+- edabbd6: Updated the root `package.json` in the template to use the new `backstage-cli repo start` command.
+
+  The `yarn dev` command is now redundant and has been removed from the template. We recommend existing projects to add these or similar scripts to help redirect users:
+
+  ```json
+  {
+    "scripts": {
+      "dev": "echo \"Use 'yarn start' instead\"",
+      "start-backend": "echo \"Use 'yarn start backend' instead\""
+    }
+  }
+  ```
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.1-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.1-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.0
+
+### Minor Changes
+
+- 31731b0: Upgraded the TypeScript version in the template to `5.8`.
+
+### Patch Changes
+
+- 7d083ce: Canon is now ready to be used in Alpha. We are adding a custom CSS file at the root of the app to make all styles available for Canon components.
+- aed536a: Bumped create-app version.
+- f9fb465: Bumped create-app version.
+- 19e5c3f: Added link to multi-stage Dockerfile documentation as alternative option
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.6.0-next.2
 
 ### Minor Changes

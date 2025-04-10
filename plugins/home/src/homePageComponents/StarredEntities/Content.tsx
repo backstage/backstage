@@ -25,7 +25,7 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { StarredEntityListItem } from '../../components/StarredEntityListItem/StarredEntityListItem';
 import { makeStyles } from '@material-ui/core/styles';
@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
  * @public
  */
 export type StarredEntitiesProps = {
-  noStarredEntitiesMessage?: React.ReactNode | undefined;
+  noStarredEntitiesMessage?: ReactNode | undefined;
   groupByKind?: boolean;
   itemsPerPage?: number;
 };

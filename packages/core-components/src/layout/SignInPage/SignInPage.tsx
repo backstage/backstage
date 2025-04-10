@@ -24,7 +24,7 @@ import { UserIdentity } from './UserIdentity';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import React, { ComponentType, ReactNode, useState } from 'react';
+import { ComponentType, ReactNode, useState } from 'react';
 import { useMountEffect } from '@react-hookz/web';
 import { Progress } from '../../components/Progress';
 import { Content } from '../Content/Content';

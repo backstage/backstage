@@ -37,8 +37,6 @@ yarn --cwd packages/app add @backstage/plugin-home
 Inside your `packages/app` directory, create a new file where our new homepage component is going to live. Create `packages/app/src/components/home/HomePage.tsx` with the following initial code
 
 ```tsx
-import React from 'react';
-
 export const HomePage = () => (
   /* We will shortly compose a pretty homepage here. */
   <h1>Welcome to Backstage!</h1>
@@ -156,7 +154,6 @@ contribute, check the
 > [Contributing documentation](https://github.com/backstage/backstage/blob/master/plugins/home/README.md#contributing)
 
 ```tsx
-import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { HomePageCompanyLogo } from '@backstage/plugin-home';
 

@@ -19,7 +19,6 @@ import {
   TestApiProvider,
   mockApis,
 } from '@backstage/test-utils';
-import React from 'react';
 import { MyGroupsSidebarItem } from './MyGroupsSidebarItem';
 import GroupIcon from '@material-ui/icons/People';
 import { identityApiRef } from '@backstage/core-plugin-api';

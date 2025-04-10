@@ -28,12 +28,12 @@ import {
 import { EntityFilterQuery } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
+import { DefaultTechDocsCollatorFactory } from './collators/DefaultTechDocsCollatorFactory';
 import {
-  DefaultTechDocsCollatorFactory,
   TechDocsCollatorDocumentTransformer,
   TechDocsCollatorEntityTransformer,
-} from '@backstage/plugin-search-backend-module-techdocs';
-import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
+} from './collators';
 
 /** @public */
 export interface TechDocsCollatorEntityTransformerExtensionPoint {
@@ -130,7 +130,6 @@ export default createBackendModule({
         config: coreServices.rootConfig,
         logger: coreServices.logger,
         auth: coreServices.auth,
-        httpAuth: coreServices.httpAuth,
         discovery: coreServices.discovery,
         scheduler: coreServices.scheduler,
         catalog: catalogServiceRef,
@@ -140,7 +139,6 @@ export default createBackendModule({
         config,
         logger,
         auth,
-        httpAuth,
         discovery,
         scheduler,
         catalog,
@@ -163,7 +161,6 @@ export default createBackendModule({
           factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
             discovery,
             auth,
-            httpAuth,
             logger,
             catalogClient: catalog,
             entityTransformer,

@@ -152,7 +152,7 @@ If you do so, `default` will be used as provider ID.
   Wildcards cannot be used if the `validateLocationsExist` option is set to `true`.
 - **`filters`** _(optional)_:
   - **`branch`** _(optional)_:
-    String used to filter results based on the branch name.
+    String used to filter results based on the branch name. Branch name cannot have any slash (`/`) characters.
     Defaults to the default Branch of the repository.
   - **`repository`** _(optional)_:
     Regular expression used to filter results based on the repository name.

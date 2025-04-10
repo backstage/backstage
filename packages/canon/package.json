@@ -1,6 +1,6 @@
 {
   "name": "@backstage/canon",
-  "version": "0.2.0-next.1",
+  "version": "0.3.0-next.2",
   "backstage": {
     "role": "web-library"
   },
@@ -28,14 +28,16 @@
   ],
   "scripts": {
     "build": "yarn build:app && yarn build:css",
+    "build-storybook": "storybook build",
     "build:app": "backstage-cli package build",
     "build:css": "node scripts/build-css.mjs",
-    "build-storybook": "storybook build",
+    "build:css:watch": "node scripts/build-css.mjs --watch",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "start": "storybook dev -p 6006",
+    "start": "concurrently \"yarn build:css:watch\" \"yarn storybook\"",
+    "storybook": "storybook dev -p 6006",
     "test": "backstage-cli package test"
   },
   "dependencies": {
@@ -45,16 +47,15 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@storybook/addon-essentials": "^8.6.4",
-    "@storybook/addon-interactions": "^8.6.4",
+    "@storybook/addon-essentials": "^8.6.8",
+    "@storybook/addon-interactions": "^8.6.8",
     "@storybook/addon-styling-webpack": "^1.0.1",
-    "@storybook/addon-themes": "^8.6.4",
-    "@storybook/addon-webpack5-compiler-swc": "^2.1.0",
-    "@storybook/blocks": "^8.6.4",
-    "@storybook/react": "^8.6.4",
-    "@storybook/react-webpack5": "^8.6.4",
-    "@storybook/test": "^8.6.4",
-    "@testing-library/jest-dom": "^6.0.0",
+    "@storybook/addon-themes": "^8.6.8",
+    "@storybook/addon-webpack5-compiler-swc": "^3.0.0",
+    "@storybook/blocks": "^8.6.8",
+    "@storybook/react": "^8.6.8",
+    "@storybook/react-webpack5": "^8.6.8",
+    "@storybook/test": "^8.6.8",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "chalk": "^5.4.1",
@@ -66,7 +67,7 @@
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0",
-    "storybook": "^8.6.4"
+    "storybook": "^8.6.8"
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",
