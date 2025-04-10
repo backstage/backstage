@@ -18,10 +18,13 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import { settingsRouteRef } from '../plugin';
 import { SidebarItem } from '@backstage/core-components';
 import { useRouteRef, IconComponent } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../translation';
 
 /** @public */
 export const Settings = (props: { icon?: IconComponent }) => {
   const routePath = useRouteRef(settingsRouteRef);
   const Icon = props.icon ? props.icon : SettingsIcon;
-  return <SidebarItem text="Settings" to={routePath()} icon={Icon} />;
+  const { t } = useTranslationRef(userSettingsTranslationRef);
+  return <SidebarItem text={t('sideBarTitle')} to={routePath()} icon={Icon} />;
 };

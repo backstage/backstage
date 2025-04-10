@@ -20,6 +20,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Switch from '@material-ui/core/Switch';
 import Tooltip from '@material-ui/core/Tooltip';
 import { FeatureFlag } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
+import { TranslationFunction } from '@backstage/core-plugin-api/alpha';
 
 type Props = {
   flag: FeatureFlag;
@@ -27,22 +30,39 @@ type Props = {
   toggleHandler: Function;
 };
 
-const getSecondaryText = (flag: FeatureFlag) => {
+const getSecondaryText = (
+  flag: FeatureFlag,
+  t: TranslationFunction<typeof userSettingsTranslationRef.T>,
+) => {
   if (flag.description) {
     return flag.description;
   }
   return flag.pluginId
-    ? `Registered in ${flag.pluginId} plugin`
-    : 'Registered in the application';
+    ? t('featureFlags.flagItem.subTitle.registeredInPlugin', {
+        pluginId: flag.pluginId,
+      })
+    : t('featureFlags.flagItem.subTitle.registeredInApplication');
 };
 
-export const FlagItem = ({ flag, enabled, toggleHandler }: Props) => (
-  <ListItem divider button onClick={() => toggleHandler(flag.name)}>
-    <ListItemIcon>
-      <Tooltip placement="top" arrow title={enabled ? 'Disable' : 'Enable'}>
-        <Switch color="primary" checked={enabled} name={flag.name} />
-      </Tooltip>
-    </ListItemIcon>
-    <ListItemText primary={flag.name} secondary={getSecondaryText(flag)} />
-  </ListItem>
-);
+export const FlagItem = ({ flag, enabled, toggleHandler }: Props) => {
+  const { t } = useTranslationRef(userSettingsTranslationRef);
+
+  return (
+    <ListItem divider button onClick={() => toggleHandler(flag.name)}>
+      <ListItemIcon>
+        <Tooltip
+          placement="top"
+          arrow
+          title={
+            enabled
+              ? t('featureFlags.flagItem.title.disable')
+              : t('featureFlags.flagItem.title.enable')
+          }
+        >
+          <Switch color="primary" checked={enabled} name={flag.name} />
+        </Tooltip>
+      </ListItemIcon>
+      <ListItemText primary={flag.name} secondary={getSecondaryText(flag, t)} />
+    </ListItem>
+  );
+};

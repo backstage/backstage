@@ -19,6 +19,8 @@ import { EmptyProviders } from './EmptyProviders';
 import { DefaultProviderSettings } from './DefaultProviderSettings';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { InfoCard } from '@backstage/core-components';
+import { userSettingsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 /** @public */
 export const UserSettingsAuthProviders = (props: {
@@ -31,13 +33,14 @@ export const UserSettingsAuthProviders = (props: {
   const providers = providerSettings ?? (
     <DefaultProviderSettings configuredProviders={configuredProviders} />
   );
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   if (!providerSettings && !configuredProviders?.length) {
     return <EmptyProviders />;
   }
 
   return (
-    <InfoCard title="Available Providers">
+    <InfoCard title={t('authProviders.title')}>
       <List dense>{providers}</List>
     </InfoCard>
   );

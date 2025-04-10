@@ -19,6 +19,8 @@ import { UserSettingsAuthProviders } from '../AuthProviders';
 import { UserSettingsFeatureFlags } from '../FeatureFlags';
 import { UserSettingsGeneral } from '../General';
 import { SettingsLayout, SettingsLayoutRouteProps } from '../SettingsLayout';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
 /**
  * @public
@@ -28,19 +30,26 @@ export const DefaultSettingsPage = (props: {
   providerSettings?: JSX.Element;
 }) => {
   const { providerSettings, tabs } = props;
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   return (
     <SettingsLayout>
-      <SettingsLayout.Route path="general" title="General">
+      <SettingsLayout.Route
+        path="general"
+        title={t('defaultSettingsPage.tabsTitle.general')}
+      >
         <UserSettingsGeneral />
       </SettingsLayout.Route>
       <SettingsLayout.Route
         path="auth-providers"
-        title="Authentication Providers"
+        title={t('defaultSettingsPage.tabsTitle.authProviders')}
       >
         <UserSettingsAuthProviders providerSettings={providerSettings} />
       </SettingsLayout.Route>
-      <SettingsLayout.Route path="feature-flags" title="Feature Flags">
+      <SettingsLayout.Route
+        path="feature-flags"
+        title={t('defaultSettingsPage.tabsTitle.featureFlags')}
+      >
         <UserSettingsFeatureFlags />
       </SettingsLayout.Route>
       {tabs}

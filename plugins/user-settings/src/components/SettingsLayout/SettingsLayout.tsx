@@ -26,6 +26,8 @@ import {
   attachComponentData,
   useElementFilter,
 } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
 /** @public */
 export type SettingsLayoutRouteProps = {
@@ -57,6 +59,7 @@ export type SettingsLayoutProps = {
 export const SettingsLayout = (props: SettingsLayoutProps) => {
   const { title, children } = props;
   const { isMobile } = useSidebarPinState();
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   const routes = useElementFilter(children, elements =>
     elements
@@ -71,7 +74,7 @@ export const SettingsLayout = (props: SettingsLayoutProps) => {
 
   return (
     <Page themeId="home">
-      {!isMobile && <Header title={title ?? 'Settings'} />}
+      {!isMobile && <Header title={title ?? t('settingsLayout.title')} />}
       <RoutedTabs routes={routes} />
     </Page>
   );
