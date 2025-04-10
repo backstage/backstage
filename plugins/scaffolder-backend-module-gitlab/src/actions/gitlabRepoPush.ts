@@ -89,7 +89,7 @@ export const createGitlabRepoPushAction = (options: {
             type: 'string',
             enum: ['create', 'update', 'delete'],
             description:
-              'The action to be used for git commit. Defaults to create.',
+              'The action to be used for git commit. Defaults to create, but can be set to update or delete',
           },
         },
       },
