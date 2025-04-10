@@ -881,6 +881,75 @@ describe('createRouter', () => {
           },
         ],
       },
+      {
+        items: [
+          {
+            id: '123',
+            resourceRef: ['resource:1'],
+            permission: {
+              type: 'resource',
+              name: 'test.permission',
+              attributes: {},
+              resourceType: 'test-resource-1',
+            },
+          },
+        ],
+      },
+      {
+        items: [
+          {
+            id: '123',
+            resourceRefs: 'resource:1',
+            permission: {
+              type: 'resource',
+              name: 'test.permission',
+              attributes: {},
+              resourceType: 'test-resource-1',
+            },
+          },
+        ],
+      },
+      {
+        items: [
+          {
+            id: '123',
+            resourceRefs: ['resource:1'],
+            resourceRef: 'resource:1',
+            permission: {
+              type: 'resource',
+              name: 'test.permission',
+              attributes: {},
+              resourceType: 'test-resource-1',
+            },
+          },
+        ],
+      },
+      {
+        items: [
+          {
+            id: '123',
+            resourceRefs: ['resource:1'],
+            permission: {
+              type: 'basic',
+              name: 'test.permission',
+              attributes: {},
+            },
+          },
+        ],
+      },
+      {
+        items: [
+          {
+            id: '123',
+            resourceRef: 'resource:1',
+            permission: {
+              type: 'basic',
+              name: 'test.permission',
+              attributes: {},
+            },
+          },
+        ],
+      },
     ])('returns a 400 error for invalid request %#', async requestBody => {
       const response = await request(app).post('/authorize').send(requestBody);
 
