@@ -1,0 +1,65 @@
+header:
+  schema-version: 2.0.0
+  last-updated: '2025-04-10'
+  last-reviewed: '2025-04-10'
+  url: https://github.com/ossf/security-insights-spec/releases/download/v2.0.0/schema.cue
+
+project:
+  name: Backstage
+  homepage: https://backstage.io
+  roadmap: https://backstage.io/docs/overview/roadmap/
+  administrators:
+    - name: Patrik Oldsberg
+      affiliation: Spotify
+      email: poldsberg@gmail.com
+      primary: true
+    - name: Fredrik Adelöw
+      affiliation: Spotify
+      email: freben@spotify.com
+    - name: Ben Lambert
+      affiliation: Spotify
+      email: ben@blam.sh
+  documentation:
+    quickstart-guide: https://backstage.io/docs/getting-started/quickstart
+    detailed-guide: https://backstage.io/docs/overview/what-is-backstage
+    code-of-conduct: https://github.com/backstage/backstage/tree/master?tab=coc-ov-file#readme
+    release-process: https://backstage.io/docs/overview/versioning-policy
+    support-policy: https://backstage.io/docs/overview/versioning-policy
+  repositories:
+    - name: backstage
+      url: https://github.com/backstage/backstage
+      comment: This is the primary repository for the Backstage project.
+  
+  vulnerability-reporting:
+    reports-accepted: true
+    bug-bounty-available: true
+    bug-bounty-program: https://hackerone.com/spotify
+    security-policy: https://github.com/backstage/backstage/blob/master/SECURITY.md
+
+repository:
+  url: https://github.com/backstage/backstage
+  status: active
+  accepts-change-request: true
+  accepts-automated-change-request: true
+  core-team:
+    - name: Patrik Oldsberg
+      affiliation: Spotify
+      email: poldsberg@gmail.com
+      primary: true
+    - name: Fredrik Adelöw
+      affiliation: Spotify
+      email: freben@spotify.com
+    - name: Ben Lambert
+      affiliation: Spotify
+      email: ben@blam.sh
+  license:
+    url: https://github.com/backstage/backstage/blob/master/LICENSE
+    expression: Apache-2.0
+  security:
+    assessments:
+      self:
+        name: Threat model
+        evidence: https://backstage.io/docs/overview/threat-model
+        date: '2024-07-16'
+        comment: Threat model last updated in https://github.com/backstage/backstage/commit/d5e567efff47e2756c6e17a85df9ea52812c4cf0
+
