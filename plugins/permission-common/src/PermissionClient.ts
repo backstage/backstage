@@ -55,6 +55,12 @@ const authorizePermissionResponseSchema: z.ZodSchema<AuthorizePermissionResponse
       .or(z.literal(AuthorizeResult.DENY)),
   });
 
+const authorizePermissionResponseBatchSchema = z.object({
+  result: z.array(
+    z.literal(AuthorizeResult.ALLOW).or(z.literal(AuthorizeResult.DENY)),
+  ),
+});
+
 const queryPermissionResponseSchema: z.ZodSchema<QueryPermissionResponse> =
   z.union([
     z.object({
@@ -129,6 +135,10 @@ export class PermissionClient implements PermissionEvaluator {
     requests: AuthorizePermissionRequest[],
     options?: PermissionClientRequestOptions,
   ): Promise<AuthorizePermissionResponse[]> {
+    if (!this.enabled) {
+      return requests.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
+    }
+
     if (this.enableBatchedRequests) {
       return this.makeBatchedRequest(requests, options);
     }
@@ -147,6 +157,10 @@ export class PermissionClient implements PermissionEvaluator {
     queries: QueryPermissionRequest[],
     options?: PermissionClientRequestOptions,
   ): Promise<QueryPermissionResponse[]> {
+    if (!this.enabled) {
+      return queries.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
+    }
+
     return this.makeRequest(queries, queryPermissionResponseSchema, options);
   }
 
@@ -155,10 +169,6 @@ export class PermissionClient implements PermissionEvaluator {
     itemSchema: z.ZodSchema<TResult>,
     options?: AuthorizeRequestOptions,
   ) {
-    if (!this.enabled) {
-      return queries.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
-    }
-
     const request: PermissionMessageBatch<TQuery> = {
       items: queries.map(query => ({
         id: uuid.v4(),
@@ -166,25 +176,11 @@ export class PermissionClient implements PermissionEvaluator {
       })),
     };
 
-    const permissionApi = await this.discovery.getBaseUrl('permission');
-    const response = await fetch(`${permissionApi}/authorize`, {
-      method: 'POST',
-      body: JSON.stringify(request),
-      headers: {
-        ...this.getAuthorizationHeader(options?.token),
-        'content-type': 'application/json',
-      },
-    });
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
-
-    const responseBody = await response.json();
-
-    const parsedResponse = responseSchema(
+    const parsedResponse = await this.makeRawRequest(
+      request,
       itemSchema,
-      new Set(request.items.map(({ id }) => id)),
-    ).parse(responseBody);
+      options,
+    );
 
     const responsesById = parsedResponse.items.reduce((acc, r) => {
       acc[r.id] = r;
@@ -198,10 +194,6 @@ export class PermissionClient implements PermissionEvaluator {
     queries: AuthorizePermissionRequest[],
     options?: AuthorizeRequestOptions,
   ) {
-    if (!this.enabled) {
-      return queries.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
-    }
-
     const request: Record<string, BatchedAuthorizePermissionRequest> = {};
 
     for (const query of queries) {
@@ -218,11 +210,31 @@ export class PermissionClient implements PermissionEvaluator {
       }
     }
 
-    const rawRequest = { items: Object.values(request) };
+    const parsedResponse = await this.makeRawRequest(
+      { items: Object.values(request) },
+      authorizePermissionResponseBatchSchema,
+      options,
+    );
+
+    return queries.map(query => {
+      const { id } = request[query.permission.name];
+
+      const item = parsedResponse.items.find(i => i.id === id)!;
+      return {
+        result: query.resourceRef ? item.result.shift()! : item.result[0],
+      };
+    });
+  }
+
+  private async makeRawRequest<TQuery, TResult>(
+    request: PermissionMessageBatch<TQuery>,
+    itemSchema: z.ZodSchema<TResult>,
+    options?: AuthorizeRequestOptions,
+  ) {
     const permissionApi = await this.discovery.getBaseUrl('permission');
     const response = await fetch(`${permissionApi}/authorize`, {
       method: 'POST',
-      body: JSON.stringify(rawRequest),
+      body: JSON.stringify(request),
       headers: {
         ...this.getAuthorizationHeader(options?.token),
         'content-type': 'application/json',
@@ -234,23 +246,10 @@ export class PermissionClient implements PermissionEvaluator {
 
     const responseBody = await response.json();
 
-    const parsedResponse = responseSchema(
-      z.object({
-        result: z.array(
-          z.literal(AuthorizeResult.ALLOW).or(z.literal(AuthorizeResult.DENY)),
-        ),
-      }),
-      new Set(rawRequest.items.map(({ id }) => id)),
+    return responseSchema(
+      itemSchema,
+      new Set(request.items.map(({ id }) => id)),
     ).parse(responseBody);
-
-    return queries.map(query => {
-      const { id } = request[query.permission.name];
-
-      const item = parsedResponse.items.find(i => i.id === id)!;
-      return {
-        result: query.resourceRef ? item.result.shift()! : item.result[0],
-      };
-    });
   }
 
   private getAuthorizationHeader(token?: string): Record<string, string> {
