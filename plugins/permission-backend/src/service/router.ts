@@ -62,27 +62,33 @@ const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
     .optional(),
 });
 
-const permissionSchema = z.union([
-  z.object({
-    type: z.literal('basic'),
-    name: z.string(),
-    attributes: attributesSchema,
-  }),
-  z.object({
-    type: z.literal('resource'),
-    name: z.string(),
-    attributes: attributesSchema,
-    resourceType: z.string(),
-  }),
-]);
+const basicPermissionSchema = z.object({
+  type: z.literal('basic'),
+  name: z.string(),
+  attributes: attributesSchema,
+});
+
+const resourcePermissionSchema = z.object({
+  type: z.literal('resource'),
+  name: z.string(),
+  attributes: attributesSchema,
+  resourceType: z.string(),
+});
 
 const evaluatePermissionRequestSchema: z.ZodSchema<
   IdentifiedPermissionMessage<EvaluatePermissionRequest>
-> = z.object({
-  id: z.string(),
-  resourceRef: z.string().optional(),
-  permission: permissionSchema,
-});
+> = z.union([
+  z.object({
+    id: z.string(),
+    resourceRef: z.undefined().optional(),
+    permission: basicPermissionSchema,
+  }),
+  z.object({
+    id: z.string(),
+    resourceRef: z.string().optional(),
+    permission: resourcePermissionSchema,
+  }),
+]);
 
 const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionRequestBatch> =
   z.object({
