@@ -29,7 +29,7 @@ project:
     - name: backstage
       url: https://github.com/backstage/backstage
       comment: This is the primary repository for the Backstage project.
-  
+
   vulnerability-reporting:
     reports-accepted: true
     bug-bounty-available: true
@@ -62,4 +62,3 @@ repository:
         evidence: https://backstage.io/docs/overview/threat-model
         date: '2024-07-16'
         comment: Threat model last updated in https://github.com/backstage/backstage/commit/d5e567efff47e2756c6e17a85df9ea52812c4cf0
-
