@@ -43,6 +43,10 @@ auth:
         authorizationUrl: ${AUTH_OPENSHIFT_AUTHORIZATION_URL}
         tokenUrl: ${AUTH_OPENSHIFT_TOKEN_URL}
         userUrl: ${AUTH_OPENSHIFT_USER_URL}
+        ## uncomment if more than user:info is required
+        # additionalScopes: 'user:full'
+        ## uncomment to set lifespan of user session, most likely to be one day
+        # sessionDuration: 1d
 ```
 
 The OpenShift provider is a structure with these configuration keys:
@@ -52,6 +56,8 @@ The OpenShift provider is a structure with these configuration keys:
 - `authorizationUrl`: The OpenShift OAuth client auth endpoint, format: `https://<oauth-client-route>/oauth/authorize`.
 - `tokenUrl`: The OpenShift OAuth client token endpoint, format: `https://<oauth-client-route>/oauth/token`.
 - `userUrl`: The OpenShift API users endpoint, format: `https://<openshift-api>/apis/user.openshift.io/v1/users/~'`.
+- `additionalScopes`: (optional): By default only the scope `user:info` is required. Additional scopes can be found in ["User scopes"](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html-single/authentication_and_authorization/index#tokens-scoping-about_configuring-internal-oauth).
+- `sessionDuration`: (optional): Lifespan of the user session.
 
 ## Backend Installation
 
