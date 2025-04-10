@@ -865,9 +865,10 @@ export class CatalogBuilder {
     const processingIntervalKey = 'catalog.processingInterval';
 
     if (!config.has(processingIntervalKey)) {
+      // Set default processing interval every 24 hours.
       return createRandomProcessingInterval({
-        minSeconds: 100,
-        maxSeconds: 150,
+        minSeconds: 86400,
+        maxSeconds: 86400 * 1.5,
       });
     }
 
