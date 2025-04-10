@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,43 @@ import { JSX, useState } from 'react';
 import { Link } from '@backstage/core-components';
 import Modal from '@material-ui/core/Modal';
 import Box from '@material-ui/core/Box';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 
-import { useStyles } from './styles';
+/** @public */
+export type BackstageContentModalClassKey = 'contentModal' | 'linkText';
 
+export const useStyles = makeStyles(
+  (theme: Theme) => ({
+    contentModal: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '80%',
+      height: 'auto',
+    },
+    linkText: {
+      marginBottom: theme.spacing(1.5),
+    },
+  }),
+  { name: 'BackstageContentModal' },
+);
+
+/**
+ * Props customizing the <ContentModal/> component.
+ *
+ * @public
+ */
 export type ContentModalProps = {
   modalContent: JSX.Element;
   linkContent: string | JSX.Element;
 };
 
+/**
+ * A component to expand given content into a full screen modal.
+ *
+ * @public
+ */
 export const ContentModal = (props: ContentModalProps) => {
   const { modalContent, linkContent } = props;
   const styles = useStyles();

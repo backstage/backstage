@@ -18,7 +18,7 @@ import { JSX } from 'react';
 import { Link } from '@backstage/core-components';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import { ContentModal } from './ContentModal';
+import { ContentModal } from '@backstage/plugin-home-react';
 import { useStyles } from './styles';
 
 /**
@@ -30,7 +30,7 @@ export type QuickStartCardProps = {
   /** The modal link title */
   modalTitle?: string | JSX.Element;
   /** The link to docs title */
-  docsLinkTitle?: string;
+  docsLinkTitle?: string | JSX.Element;
   /** The link to docs */
   docsLink?: string;
   /** The video to play on the card */
