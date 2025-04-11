@@ -270,6 +270,8 @@ export const catalogPlugin = createBackendPlugin({
 
         builder.setEventBroker(events);
 
+        builder.setEntityLifecycleEvents(config, events);
+
         if (processingExtensions.onProcessingErrorHandler) {
           builder.subscribe({
             onProcessingError: processingExtensions.onProcessingErrorHandler,

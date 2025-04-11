@@ -117,6 +117,7 @@ import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultRefreshService } from './DefaultRefreshService';
 import { entitiesResponseToObjects } from './response';
 import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
+import { EntityLifecycleEvents, DefaultEntityLifecycleEvents } from '../events';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -193,6 +194,7 @@ export class CatalogBuilder {
   private allowedLocationType: string[];
   private legacySingleProcessorValidation = false;
   private eventBroker?: EventBroker | EventsService;
+  private entityLifecycleEvents?: EntityLifecycleEvents;
 
   /**
    * Creates a catalog builder.
@@ -469,6 +471,20 @@ export class CatalogBuilder {
   }
 
   /**
+   * Enables the publishing of entity lifecycle events.
+   */
+  setEntityLifecycleEvents(
+    config: Config,
+    broker: EventBroker | EventsService,
+  ): CatalogBuilder {
+    this.entityLifecycleEvents = DefaultEntityLifecycleEvents.fromConfig(
+      config,
+      { events: broker },
+    );
+    return this;
+  }
+
+  /**
    * Wires up and returns all of the component parts of the catalog
    */
   async build(): Promise<{
@@ -508,6 +524,7 @@ export class CatalogBuilder {
     const stitcher = DefaultStitcher.fromConfig(config, {
       knex: dbClient,
       logger,
+      entityLifecycleEvents: this.entityLifecycleEvents,
     });
 
     const processingDatabase = new DefaultProcessingDatabase({
@@ -519,6 +536,7 @@ export class CatalogBuilder {
     const providerDatabase = new DefaultProviderDatabase({
       database: dbClient,
       logger,
+      entityLifecycleEvents: this.entityLifecycleEvents,
     });
     const catalogDatabase = new DefaultCatalogDatabase({
       database: dbClient,
@@ -615,6 +633,7 @@ export class CatalogBuilder {
         this.onProcessingError?.(event);
       },
       eventBroker: this.eventBroker,
+      entityLifecycleEvents: this.entityLifecycleEvents,
     });
 
     const locationAnalyzer =

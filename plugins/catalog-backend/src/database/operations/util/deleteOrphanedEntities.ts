@@ -19,6 +19,7 @@ import uniq from 'lodash/uniq';
 import { StitchingStrategy } from '../../../stitching/types';
 import { DbRefreshStateRow } from '../../tables';
 import { markForStitching } from '../stitcher/markForStitching';
+import { EntityLifecycleEvents } from '../../../events';
 
 /**
  * Finds and deletes all orphaned entities, i.e. entities that do not have any
@@ -28,8 +29,9 @@ import { markForStitching } from '../stitcher/markForStitching';
 export async function deleteOrphanedEntities(options: {
   knex: Knex.Transaction | Knex;
   strategy: StitchingStrategy;
+  entityLifecycleEvents?: EntityLifecycleEvents;
 }): Promise<number> {
-  const { knex, strategy } = options;
+  const { knex, strategy, entityLifecycleEvents } = options;
 
   let total = 0;
 
@@ -49,6 +51,7 @@ export async function deleteOrphanedEntities(options: {
       )
       .select({
         entityId: 'orphans.entity_id',
+        entityRef: 'orphans.entity_ref',
         relationSourceId: 'refresh_state.entity_id',
       })
       .from('orphans')
@@ -79,6 +82,10 @@ export async function deleteOrphanedEntities(options: {
       .table<DbRefreshStateRow>('refresh_state')
       .delete()
       .whereIn('entity_id', orphanIds);
+
+    await entityLifecycleEvents?.publishDeletedEvent(
+      uniq(candidates.map(r => r.entityRef)),
+    );
 
     // Mark all of the things that the orphans had relations to for stitching
     await markForStitching({
