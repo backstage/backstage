@@ -35,7 +35,6 @@ import { runPlain } from '../../../../lib/run';
 import { transforms } from './transforms';
 import { version } from '../../../../lib/version';
 import yn from 'yn';
-import { hasReactDomClient } from './hasReactDomClient';
 import { createWorkspaceLinkingPlugins } from './linkWorkspaces';
 import { ConfigInjectingHtmlWebpackPlugin } from './ConfigInjectingHtmlWebpackPlugin';
 
@@ -315,9 +314,6 @@ export async function createConfig(
             () => JSON.stringify(options.getFrontendAppConfigs()),
             true,
           ),
-      // This allows for conditional imports of react-dom/client, since there's no way
-      // to check for presence of it in source code without module resolution errors.
-      'process.env.HAS_REACT_DOM_CLIENT': JSON.stringify(hasReactDomClient()),
     }),
   );
 
