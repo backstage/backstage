@@ -22,13 +22,11 @@ import { InputError } from '@backstage/errors';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
-  EvaluatePermissionRequest,
-  EvaluatePermissionRequestBatch,
   EvaluatePermissionResponse,
-  EvaluatePermissionResponseBatch,
   IdentifiedPermissionMessage,
   isResourcePermission,
   PermissionAttributes,
+  PermissionMessageBatch,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -62,32 +60,43 @@ const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
     .optional(),
 });
 
-const permissionSchema = z.union([
+const basicPermissionSchema = z.object({
+  type: z.literal('basic'),
+  name: z.string(),
+  attributes: attributesSchema,
+});
+
+const resourcePermissionSchema = z.object({
+  type: z.literal('resource'),
+  name: z.string(),
+  attributes: attributesSchema,
+  resourceType: z.string(),
+});
+
+const evaluatePermissionRequestSchema = z.union([
   z.object({
-    type: z.literal('basic'),
-    name: z.string(),
-    attributes: attributesSchema,
+    id: z.string(),
+    resourceRef: z.undefined().optional(),
+    resourceRefs: z.undefined().optional(),
+    permission: basicPermissionSchema,
   }),
   z.object({
-    type: z.literal('resource'),
-    name: z.string(),
-    attributes: attributesSchema,
-    resourceType: z.string(),
+    id: z.string(),
+    resourceRef: z.string().optional(),
+    resourceRefs: z.undefined().optional(),
+    permission: resourcePermissionSchema,
+  }),
+  z.object({
+    id: z.string(),
+    resourceRef: z.undefined().optional(),
+    resourceRefs: z.array(z.string()),
+    permission: resourcePermissionSchema,
   }),
 ]);
 
-const evaluatePermissionRequestSchema: z.ZodSchema<
-  IdentifiedPermissionMessage<EvaluatePermissionRequest>
-> = z.object({
-  id: z.string(),
-  resourceRef: z.string().optional(),
-  permission: permissionSchema,
+const evaluatePermissionRequestBatchSchema = z.object({
+  items: z.array(evaluatePermissionRequestSchema),
 });
-
-const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionRequestBatch> =
-  z.object({
-    items: z.array(evaluatePermissionRequestSchema),
-  });
 
 /**
  * Options required when constructing a new {@link express#Router} using
@@ -108,7 +117,7 @@ export interface RouterOptions {
 }
 
 const handleRequest = async (
-  requests: IdentifiedPermissionMessage<EvaluatePermissionRequest>[],
+  requests: z.infer<typeof evaluatePermissionRequestBatchSchema>['items'],
   policy: PermissionPolicy,
   permissionIntegrationClient: PermissionIntegrationClient,
   credentials: BackstageCredentials<
@@ -116,7 +125,9 @@ const handleRequest = async (
   >,
   auth: AuthService,
   userInfo: UserInfoService,
-): Promise<IdentifiedPermissionMessage<EvaluatePermissionResponse>[]> => {
+): Promise<
+  IdentifiedPermissionMessage<InternalEvaluatePermissionResponse>[]
+> => {
   const applyConditionsLoaderFor = memoize((pluginId: string) => {
     return new DataLoader<
       ApplyConditionsRequestEntry,
@@ -146,40 +157,50 @@ const handleRequest = async (
   }
 
   return Promise.all(
-    requests.map(({ id, resourceRef, ...request }) =>
-      policy.handle(request, user).then(decision => {
-        if (decision.result !== AuthorizeResult.CONDITIONAL) {
-          return {
-            id,
+    requests.map(request =>
+      policy
+        .handle({ permission: request.permission }, user)
+        .then(async decision => {
+          if (decision.result !== AuthorizeResult.CONDITIONAL) {
+            return {
+              id: request.id,
+              ...decision,
+            };
+          }
+
+          if (!isResourcePermission(request.permission)) {
+            throw new Error(
+              `Conditional decision returned from permission policy for non-resource permission ${request.permission.name}`,
+            );
+          }
+
+          if (decision.resourceType !== request.permission.resourceType) {
+            throw new Error(
+              `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
+            );
+          }
+
+          if (request.resourceRefs) {
+            return applyConditionsLoaderFor(decision.pluginId).load({
+              id: request.id,
+              resourceRefs: request.resourceRefs,
+              ...decision,
+            });
+          }
+
+          if (!request.resourceRef) {
+            return {
+              id: request.id,
+              ...decision,
+            };
+          }
+
+          return applyConditionsLoaderFor(decision.pluginId).load({
+            id: request.id,
+            resourceRef: request.resourceRef,
             ...decision,
-          };
-        }
-
-        if (!isResourcePermission(request.permission)) {
-          throw new Error(
-            `Conditional decision returned from permission policy for non-resource permission ${request.permission.name}`,
-          );
-        }
-
-        if (decision.resourceType !== request.permission.resourceType) {
-          throw new Error(
-            `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
-          );
-        }
-
-        if (!resourceRef) {
-          return {
-            id,
-            ...decision,
-          };
-        }
-
-        return applyConditionsLoaderFor(decision.pluginId).load({
-          id,
-          resourceRef,
-          ...decision,
-        });
-      }),
+          });
+        }),
     ),
   );
 };
@@ -218,8 +239,8 @@ export async function createRouter(
   router.post(
     '/authorize',
     async (
-      req: Request<EvaluatePermissionRequestBatch>,
-      res: Response<EvaluatePermissionResponseBatch>,
+      req: Request,
+      res: Response<PermissionMessageBatch<InternalEvaluatePermissionResponse>>,
     ) => {
       const credentials = await httpAuth.credentials(req, {
         allow: ['user', 'none'],
@@ -250,3 +271,12 @@ export async function createRouter(
 
   return router;
 }
+
+/**
+ * @internal
+ */
+type InternalEvaluatePermissionResponse =
+  | EvaluatePermissionResponse
+  | {
+      result: Array<AuthorizeResult.ALLOW | AuthorizeResult.DENY>;
+    };

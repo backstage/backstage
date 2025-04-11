@@ -7,6 +7,7 @@ import { AllOfCriteria } from '@backstage/plugin-permission-common';
 import { AnyOfCriteria } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { BackstageUserIdentity } from '@backstage/plugin-auth-node';
@@ -37,11 +38,20 @@ export type ApplyConditionsRequest = {
 };
 
 // @public
-export type ApplyConditionsRequestEntry = IdentifiedPermissionMessage<{
-  resourceRef: string;
-  resourceType: string;
-  conditions: PermissionCriteria<PermissionCondition>;
-}>;
+export type ApplyConditionsRequestEntry = IdentifiedPermissionMessage<
+  | {
+      resourceRef: string;
+      resourceRefs?: undefined;
+      resourceType: string;
+      conditions: PermissionCriteria<PermissionCondition>;
+    }
+  | {
+      resourceRef?: undefined;
+      resourceRefs: string[];
+      resourceType: string;
+      conditions: PermissionCriteria<PermissionCondition>;
+    }
+>;
 
 // @public
 export type ApplyConditionsResponse = {
@@ -49,8 +59,12 @@ export type ApplyConditionsResponse = {
 };
 
 // @public
-export type ApplyConditionsResponseEntry =
-  IdentifiedPermissionMessage<DefinitivePolicyDecision>;
+export type ApplyConditionsResponseEntry = IdentifiedPermissionMessage<
+  | DefinitivePolicyDecision
+  | {
+      result: Array<AuthorizeResult.ALLOW | AuthorizeResult.DENY>;
+    }
+>;
 
 // @public
 export type Condition<TRule> = TRule extends PermissionRule<
