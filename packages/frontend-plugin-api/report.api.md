@@ -95,13 +95,37 @@ export { alertApiRef };
 
 export { AlertMessage };
 
-// @public
+// @public @deprecated
 export type AnalyticsApi = {
   captureEvent(event: AnalyticsEvent): void;
 };
 
 // @public
 export const analyticsApiRef: ApiRef<AnalyticsApi>;
+
+// @public
+export const AnalyticsBlueprint: ExtensionBlueprint<{
+  kind: 'analytics';
+  name: undefined;
+  params: {
+    factory: AnalyticsImplementationFactory;
+  };
+  output: ConfigurableExtensionDataRef<
+    AnalyticsImplementationFactory<{}>,
+    'core.analytics.factory',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    factory: ConfigurableExtensionDataRef<
+      AnalyticsImplementationFactory<{}>,
+      'core.analytics.factory',
+      {}
+    >;
+  };
+}>;
 
 // @public
 export const AnalyticsContext: (options: {
@@ -126,6 +150,21 @@ export type AnalyticsEvent = {
 // @public
 export type AnalyticsEventAttributes = {
   [attribute in string]: string | boolean | number;
+};
+
+// @public
+export type AnalyticsImplementation = {
+  captureEvent(event: AnalyticsEvent): void;
+};
+
+// @public (undocumented)
+export type AnalyticsImplementationFactory<
+  Deps extends {
+    [name in string]: unknown;
+  } = {},
+> = {
+  deps: TypesToApiRefs<Deps>;
+  factory(deps: Deps): AnalyticsImplementation;
 };
 
 // @public
@@ -403,6 +442,15 @@ export type CoreNotFoundErrorPageProps = {
 
 // @public (undocumented)
 export type CoreProgressProps = {};
+
+// @public
+export function createAnalyticsImplementationFactory<
+  Deps extends {
+    [name in string]: unknown;
+  },
+>(
+  factory: AnalyticsImplementationFactory<Deps>,
+): AnalyticsImplementationFactory<Deps>;
 
 export { createApiFactory };
 
