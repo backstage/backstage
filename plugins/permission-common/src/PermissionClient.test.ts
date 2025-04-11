@@ -266,16 +266,31 @@ describe('PermissionClient', () => {
     });
 
     it('should include a request body', async () => {
-      await client.authorize([mockAuthorizeConditional]);
+      const basicPermission = createPermission({
+        name: 'test.permission-basic',
+        attributes: {},
+      });
+
+      await client.authorize([
+        { permission: mockPermission, resourceRef: 'foo:bar' },
+        { permission: mockPermission, resourceRef: 'foo:car' },
+        { permission: mockPermission, resourceRef: 'foo:baz' },
+        { permission: basicPermission },
+      ]);
 
       const request = mockAuthorizeHandler.mock.calls[0][0];
 
       expect(request.body).toEqual({
         items: [
-          expect.objectContaining({
+          {
+            id: expect.any(String),
             permission: mockPermission,
-            resourceRefs: ['foo:bar'],
-          }),
+            resourceRefs: ['foo:bar', 'foo:car', 'foo:baz'],
+          },
+          {
+            id: expect.any(String),
+            permission: basicPermission,
+          },
         ],
       });
     });
@@ -447,7 +462,6 @@ describe('PermissionClient', () => {
               name: 'test.permission3',
               attributes: {},
             },
-            resourceRefs: [],
             id: expect.any(String),
           },
           {
