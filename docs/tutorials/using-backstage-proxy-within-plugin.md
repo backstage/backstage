@@ -27,7 +27,7 @@ If your plugin requires access to an API, backstage offers
   - [Bundling your ApiRef with your plugin](#bundling-your-apiref-with-your-plugin)
   - [Using the API in your components](#using-your-plugin-in-your-components)
 
-# Setting up the backstage proxy
+## Setting up the backstage proxy
 
 Let's say your plugin's API is hosted at _https://api.myawesomeservice.com/v1_,
 and you want to be able to access it within backstage at
