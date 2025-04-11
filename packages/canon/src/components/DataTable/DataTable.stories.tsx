@@ -24,6 +24,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { useState } from 'react';
 
 const meta = {
   title: 'Components/DataTable',
@@ -32,13 +33,87 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const Uncontrolled: Story = {
   render: () => {
     const table = useReactTable<DataProps>({
       data,
       columns,
       getCoreRowModel: getCoreRowModel(),
       getPaginationRowModel: getPaginationRowModel(),
+    });
+
+    return (
+      <DataTable.Root table={table}>
+        <DataTable.Table>
+          <DataTable.Header>
+            {table.getHeaderGroups().map(headerGroup => (
+              <DataTable.Row key={headerGroup.id}>
+                {headerGroup.headers.map(header => {
+                  return (
+                    <DataTable.Head key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </DataTable.Head>
+                  );
+                })}
+              </DataTable.Row>
+            ))}
+          </DataTable.Header>
+          <DataTable.Body>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map(row => (
+                <DataTable.Row
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                >
+                  {row.getVisibleCells().map(cell => (
+                    <DataTable.Cell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </DataTable.Cell>
+                  ))}
+                </DataTable.Row>
+              ))
+            ) : (
+              <DataTable.Row>
+                <DataTable.Cell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </DataTable.Cell>
+              </DataTable.Row>
+            )}
+          </DataTable.Body>
+        </DataTable.Table>
+        <DataTable.Pagination />
+      </DataTable.Root>
+    );
+  },
+};
+
+export const Controlled: Story = {
+  render: () => {
+    const [pagination, setPagination] = useState({
+      pageIndex: 4,
+      pageSize: 5,
+    });
+
+    const table = useReactTable<DataProps>({
+      data,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+      state: {
+        pagination,
+      },
+      onPaginationChange: setPagination,
     });
 
     return (

@@ -45,6 +45,7 @@ const DataTablePagination = forwardRef(
             size="small"
             placeholder="Show 10 results"
             options={[
+              { label: 'Show 5 results', value: '5' },
               { label: 'Show 10 results', value: '10' },
               { label: 'Show 20 results', value: '20' },
               { label: 'Show 30 results', value: '30' },
