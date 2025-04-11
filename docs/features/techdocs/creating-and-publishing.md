@@ -62,8 +62,11 @@ plugins:
   - techdocs-core
 ```
 
-> Note - The plugins section above is optional. Backstage automatically adds the `techdocs-core` plugin to the
-> mkdocs file if it is missing. This functionality can be turned off with a [configuration option](./configuration.md) in Backstage.
+:::note Note
+
+The plugins section above is optional. Backstage automatically adds the `techdocs-core` plugin to the mkdocs file if it is missing. This functionality can be turned off with a [configuration option](./configuration.md) in Backstage.
+
+:::
 
 Update your component's entity description by adding the following lines to its
 `catalog-info.yaml` in the root of its repository:
@@ -83,9 +86,11 @@ Create a `/docs` folder in the root of your repository with at least an
 `index.md` file in it. _(If you add more markdown files, make sure to update the
 nav in the mkdocs.yml file to get a proper navigation for your documentation.)_
 
-> Note - Although `docs` is a popular directory name for storing documentation,
-> it can be renamed to something else and can be configured by `mkdocs.yml`. See
-> https://www.mkdocs.org/user-guide/configuration/#docs_dir
+:::note Note
+
+Although `docs` is a popular directory name for storing documentation, it can be renamed to something else and can be configured by `mkdocs.yml`. See https://www.mkdocs.org/user-guide/configuration/#docs_dir
+
+:::
 
 The `docs/index.md` can for example have the following content:
 
