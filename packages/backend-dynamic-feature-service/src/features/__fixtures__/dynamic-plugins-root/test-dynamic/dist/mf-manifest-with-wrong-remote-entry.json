@@ -9,7 +9,7 @@
       "buildName": "@backstage/plugin-test"
     },
     "remoteEntry": {
-      "name": "remoteEntry.js",
+      "name": "remoteEntry-not-found.js",
       "path": "",
       "type": "global"
     },
