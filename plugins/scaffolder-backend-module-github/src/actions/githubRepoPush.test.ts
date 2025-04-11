@@ -52,6 +52,9 @@ const initRepoAndPushMocked = initRepoAndPush as jest.Mock<
   Promise<{ commitHash: string }>
 >;
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
   rest: {
     repos: {
@@ -60,11 +63,7 @@ const mockOctokit = {
   },
 };
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 describe('github:repo:push', () => {
@@ -93,6 +92,8 @@ describe('github:repo:push', () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
+    octokitMock.mockImplementation(() => mockOctokit);
+
     initRepoAndPushMocked.mockResolvedValue({ commitHash: 'test123' });
 
     githubCredentialsProvider =
@@ -102,6 +103,18 @@ describe('github:repo:push', () => {
       config,
       githubCredentialsProvider,
     });
+  });
+
+  it('should pass context logger to Octokit client', async () => {
+    try {
+      await action.handler(mockContext);
+    } catch (e) {
+      // no-op
+    }
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
   });
 
   it('should call initRepoAndPush with the correct values', async () => {

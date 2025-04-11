@@ -242,7 +242,10 @@ export function createPublishGithubAction(options: {
         owner,
         repo,
       });
-      const client = new Octokit(octokitOptions);
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       const { remoteUrl, repoContentsUrl } = await ctx.checkpoint({
         key: `create.github.repo.${owner}.${repo}`,

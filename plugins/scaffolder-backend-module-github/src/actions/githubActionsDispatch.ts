@@ -104,16 +104,18 @@ export function createGithubActionsDispatchAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const client = new Octokit(
-        await getOctokitOptions({
-          integrations,
-          host,
-          owner,
-          repo,
-          credentialsProvider: githubCredentialsProvider,
-          token: providedToken,
-        }),
-      );
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        host,
+        owner,
+        repo,
+        credentialsProvider: githubCredentialsProvider,
+        token: providedToken,
+      });
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       await ctx.checkpoint({
         key: `create.workflow.dispatch.${owner}.${repo}.${workflowId}`,

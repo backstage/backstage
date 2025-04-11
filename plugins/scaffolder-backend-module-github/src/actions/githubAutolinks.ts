@@ -97,16 +97,18 @@ export function createGithubAutolinksAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const client = new Octokit(
-        await getOctokitOptions({
-          integrations,
-          host,
-          owner,
-          repo,
-          credentialsProvider: githubCredentialsProvider,
-          token,
-        }),
-      );
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        host,
+        owner,
+        repo,
+        credentialsProvider: githubCredentialsProvider,
+        token,
+      });
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       await ctx.checkpoint({
         key: `create.auto.link.${owner}.${repo}`,

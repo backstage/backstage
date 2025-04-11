@@ -124,7 +124,10 @@ export function createGithubDeployKeyAction(options: {
         repo,
       });
 
-      const client = new Octokit(octokitOptions);
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       await client.rest.repos.createDeployKey({
         owner: owner,

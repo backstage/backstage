@@ -31,6 +31,9 @@ jest.mock('../util', () => {
   };
 });
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
   rest: {
     issues: {
@@ -39,11 +42,7 @@ const mockOctokit = {
   },
 };
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 describe('github:issues:label', () => {
@@ -71,12 +70,25 @@ describe('github:issues:label', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    octokitMock.mockImplementation(() => mockOctokit);
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubIssuesLabelAction({
       integrations,
       githubCredentialsProvider,
     });
+  });
+
+  it('should pass context logger to Octokit client', async () => {
+    try {
+      await action.handler(mockContext);
+    } catch (e) {
+      // no-op
+    }
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
   });
 
   it('should call the githubApi for adding labels', async () => {
