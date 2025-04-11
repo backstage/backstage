@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import semver from 'semver';
 import { paths } from './paths';
-import { Lockfile } from './versioning';
+import { Lockfile } from '@backstage/cli-node';
 
 /* eslint-disable @backstage/no-relative-monorepo-imports */
 /*

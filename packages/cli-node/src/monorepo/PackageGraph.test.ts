@@ -17,13 +17,15 @@
 import { resolve as resolvePath } from 'path';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from './PackageGraph';
-import { Lockfile } from './Lockfile';
 import { GitUtils } from '../git';
+import { detectPackageManager } from '../pacman';
+import { Yarn } from '../pacman/yarn';
 
 const mockListChangedFiles = jest.spyOn(GitUtils, 'listChangedFiles');
 const mockReadFileAtRef = jest.spyOn(GitUtils, 'readFileAtRef');
 
 jest.mock('../util', () => ({
+  ...jest.requireActual('../util'),
   paths: {
     targetRoot: '/',
     resolveTargetRoot: (...paths: string[]) => resolvePath('/', ...paths),
@@ -197,8 +199,9 @@ c-dep@^2:
   version: "2.0.0"
   integrity: sha512-xyz
 `);
-    jest.spyOn(Lockfile, 'load').mockResolvedValueOnce(
-      Lockfile.parse(`
+    const pacman = await detectPackageManager();
+    jest.spyOn(Yarn.prototype, 'loadLockfile').mockResolvedValueOnce(
+      pacman.parseLockfile(`
 a@^1:
   version: "1.0.0"
 

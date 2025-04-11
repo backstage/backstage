@@ -24,9 +24,8 @@ import startCase from 'lodash/startCase';
 import upperCase from 'lodash/upperCase';
 import upperFirst from 'lodash/upperFirst';
 import lowerFirst from 'lodash/lowerFirst';
-import { Lockfile } from '../../versioning';
-import { paths } from '../../paths';
 import { createPackageVersionProvider } from '../../version';
+import { detectPackageManager, Lockfile } from '@backstage/cli-node';
 
 const builtInHelpers = {
   camelCase,
@@ -48,7 +47,8 @@ export class PortableTemplater {
   static async create(options: CreatePortableTemplaterOptions = {}) {
     let lockfile: Lockfile | undefined;
     try {
-      lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
+      const pacman = await detectPackageManager();
+      lockfile = await pacman.loadLockfile();
     } catch {
       /* ignored */
     }
