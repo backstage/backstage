@@ -1,5 +1,13 @@
 # @backstage/canon
 
+## 0.3.0-next.3
+
+### Patch Changes
+
+- bcbc593: Fix Checkbox styles on dark theme in Canon.
+- 74d463c: Fix Select styles on small sizes + with long option names in Canon.
+- f25a5be: Added a new gray scale for Canon for both light and dark theme.
+
 ## 0.3.0-next.2
 
 ### Minor Changes

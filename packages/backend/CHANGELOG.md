@@ -1,5 +1,26 @@
 # example-backend
 
+## 0.0.37-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.32.0-next.3
+  - @backstage/plugin-proxy-backend@0.6.1-next.0
+  - @backstage/plugin-auth-backend@0.24.5-next.3
+  - @backstage/plugin-catalog-backend@1.32.1-next.2
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.5.1-next.1
+  - @backstage/plugin-catalog-backend-module-openapi@0.2.9-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.7-next.1
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.5.7-next.1
+  - @backstage/plugin-kubernetes-backend@0.19.5-next.1
+  - @backstage/plugin-notifications-backend@0.5.5-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.3.3-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.4.1-next.3
+  - @backstage/plugin-techdocs-backend@2.0.1-next.3
+  - @backstage/plugin-auth-backend-module-github-provider@0.3.1
+  - @backstage/plugin-signals-backend@0.3.2
+
 ## 0.0.37-next.2
 
 ### Patch Changes

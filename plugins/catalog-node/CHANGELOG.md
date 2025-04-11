@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-node
 
+## 1.16.3-next.1
+
+### Patch Changes
+
+- 2c5598c: Adds documentation for the CatalogProcessingExtensionPoint functions.
+
 ## 1.16.3-next.0
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.6.5-next.3
+
+### Patch Changes
+
+- 871a8db: fix: Add missing config options to config declaration file
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3-next.1
+
 ## 0.6.5-next.2
 
 ### Patch Changes

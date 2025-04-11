@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog
 
+## 1.29.0-next.3
+
+### Patch Changes
+
+- 3f7e4f1: Fixed the layout of summary cards in the new frontend system, ensuring that the horizontal scroll grid doesn't grow too large as well as tweaked its scrolling parameters.
+- 3f7e4f1: The about, links, and labels card now all have the `info` card type by default in the new frontend system.
+- 3f7e4f1: The overview content is now part of the overview group by default in the new frontend system.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.17.0-next.3
+  - @backstage/core-compat-api@0.4.1-next.3
+  - @backstage/integration-react@1.2.6-next.1
+
 ## 1.29.0-next.2
 
 ### Minor Changes
