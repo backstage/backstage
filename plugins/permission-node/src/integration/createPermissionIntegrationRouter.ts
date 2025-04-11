@@ -58,12 +58,22 @@ const permissionCriteriaSchema: z.ZodSchema<
 
 const applyConditionsRequestSchema = z.object({
   items: z.array(
-    z.object({
-      id: z.string(),
-      resourceRef: z.string(),
-      resourceType: z.string(),
-      conditions: permissionCriteriaSchema,
-    }),
+    z.union([
+      z.object({
+        id: z.string(),
+        resourceRef: z.string(),
+        resourceRefs: z.undefined().optional(),
+        resourceType: z.string(),
+        conditions: permissionCriteriaSchema,
+      }),
+      z.object({
+        id: z.string(),
+        resourceRef: z.undefined().optional(),
+        resourceRefs: z.array(z.string()),
+        resourceType: z.string(),
+        conditions: permissionCriteriaSchema,
+      }),
+    ]),
   ),
 });
 
@@ -73,11 +83,20 @@ const applyConditionsRequestSchema = z.object({
  *
  * @public
  */
-export type ApplyConditionsRequestEntry = IdentifiedPermissionMessage<{
-  resourceRef: string;
-  resourceType: string;
-  conditions: PermissionCriteria<PermissionCondition>;
-}>;
+export type ApplyConditionsRequestEntry = IdentifiedPermissionMessage<
+  | {
+      resourceRef: string;
+      resourceRefs?: undefined;
+      resourceType: string;
+      conditions: PermissionCriteria<PermissionCondition>;
+    }
+  | {
+      resourceRef?: undefined;
+      resourceRefs: string[];
+      resourceType: string;
+      conditions: PermissionCriteria<PermissionCondition>;
+    }
+>;
 
 /**
  * A batch of {@link ApplyConditionsRequestEntry} objects.
@@ -94,8 +113,12 @@ export type ApplyConditionsRequest = {
  *
  * @public
  */
-export type ApplyConditionsResponseEntry =
-  IdentifiedPermissionMessage<DefinitivePolicyDecision>;
+export type ApplyConditionsResponseEntry = IdentifiedPermissionMessage<
+  | DefinitivePolicyDecision
+  | {
+      result: Array<AuthorizeResult.ALLOW | AuthorizeResult.DENY>;
+    }
+>;
 
 /**
  * A batch of {@link ApplyConditionsResponseEntry} objects.
@@ -157,6 +180,16 @@ const applyConditions = <TResourceType extends string, TResource>(
 
   return rule.apply(resource, criteria.params ?? {});
 };
+
+function authorizeResult<TResourceType extends string, TResource>(
+  criteria: PermissionCriteria<PermissionCondition<TResourceType>>,
+  resource: TResource | undefined,
+  getRule: (name: string) => PermissionRule<TResource, unknown, TResourceType>,
+) {
+  return applyConditions(criteria, resource, getRule)
+    ? AuthorizeResult.ALLOW
+    : AuthorizeResult.DENY;
+}
 
 /**
  * Takes some permission conditions and returns a definitive authorization result
@@ -478,7 +511,7 @@ export function createPermissionIntegrationRouter<
 
   router.post(
     '/.well-known/backstage/permissions/apply-conditions',
-    async (req, res: Response<ApplyConditionsResponse | string>) => {
+    async (req, res: Response<ApplyConditionsResponse>) => {
       const parseResult = applyConditionsRequestSchema.safeParse(req.body);
       if (!parseResult.success) {
         throw new InputError(parseResult.error.toString());
@@ -503,20 +536,31 @@ export function createPermissionIntegrationRouter<
           requestedType,
           requests
             .filter(r => r.resourceType === requestedType)
-            .map(i => i.resourceRef),
+            .map(i =>
+              typeof i.resourceRef === 'string'
+                ? [i.resourceRef]
+                : i.resourceRefs,
+            )
+            .flat(),
         );
       }
 
       res.json({
         items: requests.map(request => ({
           id: request.id,
-          result: applyConditions(
-            request.conditions,
-            resourcesByType[request.resourceType][request.resourceRef],
-            store.getRuleMapper(request.resourceType),
-          )
-            ? AuthorizeResult.ALLOW
-            : AuthorizeResult.DENY,
+          result: request.resourceRefs
+            ? request.resourceRefs.map(resourceRef =>
+                authorizeResult(
+                  request.conditions,
+                  resourcesByType[request.resourceType][resourceRef],
+                  store.getRuleMapper(request.resourceType),
+                ),
+              )
+            : authorizeResult(
+                request.conditions,
+                resourcesByType[request.resourceType][request.resourceRef],
+                store.getRuleMapper(request.resourceType),
+              ),
         })),
       });
     },
