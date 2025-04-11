@@ -14,17 +14,6 @@
  * limitations under the License.
  */
 
-import { DataTableRoot } from './Root/DataTableRoot';
-import { DataTablePagination } from './Pagination/DataTablePagination';
-
-/**
- * DataTable component for displaying tabular data with pagination
- * @public
- */
-export const DataTable = {
-  Root: DataTableRoot,
-  Pagination: DataTablePagination,
-};
-
+export * from './DataTable';
 export * from './Root/types';
 export * from './Pagination/types';

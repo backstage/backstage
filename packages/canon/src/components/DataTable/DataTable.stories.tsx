@@ -15,16 +15,13 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import { Table } from '../Table';
 import { DataTable } from '.';
-import { components, Component } from './mocked-components';
+import { data, Component } from './mocked-components';
 import { columns } from './mocked-columns';
 import {
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
   getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 
@@ -38,65 +35,63 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: () => {
     const table = useReactTable<Component>({
-      data: components,
+      data,
       columns,
       getCoreRowModel: getCoreRowModel(),
       getPaginationRowModel: getPaginationRowModel(),
-      getSortedRowModel: getSortedRowModel(),
-      getFilteredRowModel: getFilteredRowModel(),
     });
 
     return (
-      <DataTable.Root>
-        <Table.Root>
-          <Table.Header>
+      <DataTable.Root table={table}>
+        <DataTable.Table>
+          <DataTable.Header>
             {table.getHeaderGroups().map(headerGroup => (
-              <Table.Row key={headerGroup.id}>
+              <DataTable.Row key={headerGroup.id}>
                 {headerGroup.headers.map(header => {
                   return (
-                    <Table.Head key={header.id}>
+                    <DataTable.Head key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
                             header.getContext(),
                           )}
-                    </Table.Head>
+                    </DataTable.Head>
                   );
                 })}
-              </Table.Row>
+              </DataTable.Row>
             ))}
-          </Table.Header>
-          <Table.Body>
+          </DataTable.Header>
+          <DataTable.Body>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map(row => (
-                <Table.Row
+                <DataTable.Row
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map(cell => (
-                    <Table.Cell key={cell.id}>
+                    <DataTable.Cell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
                       )}
-                    </Table.Cell>
+                    </DataTable.Cell>
                   ))}
-                </Table.Row>
+                </DataTable.Row>
               ))
             ) : (
-              <Table.Row>
-                <Table.Cell
+              <DataTable.Row>
+                <DataTable.Cell
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
                   No results.
-                </Table.Cell>
-              </Table.Row>
+                </DataTable.Cell>
+              </DataTable.Row>
             )}
-          </Table.Body>
-        </Table.Root>
-        <DataTable.Pagination table={table} />
+          </DataTable.Body>
+        </DataTable.Table>
+        <DataTable.Pagination />
       </DataTable.Root>
     );
   },

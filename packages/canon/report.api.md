@@ -222,25 +222,71 @@ export interface ContainerProps {
 
 // @public
 export const DataTable: {
-  Root: ForwardRefExoticComponent<
-    DataTableRootProps & RefAttributes<HTMLDivElement>
+  Root: <TData>(
+    props: {
+      table: Table_2<TData>;
+    } & React.HTMLAttributes<HTMLDivElement>,
+  ) => JSX.Element;
+  Pagination: ForwardRefExoticComponent<
+    DataTablePaginationProps & RefAttributes<HTMLDivElement>
   >;
-  Pagination: <TData>(
-    props: DataTablePaginationProps<TData> & {
-      ref?: React.ForwardedRef<HTMLDivElement>;
-    },
-  ) => React.ReactElement;
+  Table: ForwardRefExoticComponent<
+    Omit<
+      HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>,
+      'ref'
+    > &
+      RefAttributes<HTMLTableElement>
+  >;
+  Header: ForwardRefExoticComponent<
+    Omit<
+      HTMLAttributes<HTMLTableSectionElement> &
+        RefAttributes<HTMLTableSectionElement>,
+      'ref'
+    > &
+      RefAttributes<HTMLTableSectionElement>
+  >;
+  Body: ForwardRefExoticComponent<
+    Omit<
+      HTMLAttributes<HTMLTableSectionElement> &
+        RefAttributes<HTMLTableSectionElement>,
+      'ref'
+    > &
+      RefAttributes<HTMLTableSectionElement>
+  >;
+  Row: ForwardRefExoticComponent<
+    Omit<
+      HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>,
+      'ref'
+    > &
+      RefAttributes<HTMLTableRowElement>
+  >;
+  Cell: ForwardRefExoticComponent<
+    Omit<
+      TdHTMLAttributes<HTMLTableCellElement> &
+        RefAttributes<HTMLTableCellElement>,
+      'ref'
+    > &
+      RefAttributes<HTMLTableCellElement>
+  >;
+  Head: ForwardRefExoticComponent<
+    Omit<
+      ThHTMLAttributes<HTMLTableCellElement> &
+        RefAttributes<HTMLTableCellElement>,
+      'ref'
+    > &
+      RefAttributes<HTMLTableCellElement>
+  >;
 };
 
 // @public (undocumented)
-export interface DataTablePaginationProps<TData>
-  extends React.HTMLAttributes<HTMLDivElement> {
-  table?: Table_2<TData>;
-}
+export interface DataTablePaginationProps
+  extends React.HTMLAttributes<HTMLDivElement> {}
 
 // @public (undocumented)
-export interface DataTableRootProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export interface DataTableRootProps<TData>
+  extends React.HTMLAttributes<HTMLDivElement> {
+  table: Table_2<TData>;
+}
 
 // @public (undocumented)
 export type Display = 'none' | 'flex' | 'block' | 'inline';

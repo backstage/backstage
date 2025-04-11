@@ -21,7 +21,7 @@ export interface Component {
   tags?: string[];
 }
 
-export const components: Component[] = [
+export const data: Component[] = [
   {
     name: 'authentication-and-authorization-service',
     owner: 'security-team',

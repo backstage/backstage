@@ -23,8 +23,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { components, Component } from '../mocked-components';
+import { data, Component } from '../mocked-components';
 import { columns } from '../mocked-columns';
+import { DataTable } from '../DataTable';
 
 const meta = {
   title: 'Components/DataTable/Pagination',
@@ -37,7 +38,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: () => {
     const table = useReactTable<Component>({
-      data: components,
+      data,
       columns,
       getCoreRowModel: getCoreRowModel(),
       getPaginationRowModel: getPaginationRowModel(),
@@ -45,6 +46,10 @@ export const Default: Story = {
       getFilteredRowModel: getFilteredRowModel(),
     });
 
-    return <DataTablePagination table={table} />;
+    return (
+      <DataTable.Root table={table}>
+        <DataTable.Pagination />
+      </DataTable.Root>
+    );
   },
 };

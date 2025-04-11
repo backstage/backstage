@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+import { Table } from '@tanstack/react-table';
+
 /** @public */
-export interface DataTableRootProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export interface DataTableRootProps<TData>
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /**
+   * The table instance.
+   */
+  table: Table<TData>;
+}

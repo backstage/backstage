@@ -14,22 +14,49 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
+import { forwardRef, createContext, useContext } from 'react';
 import clsx from 'clsx';
 import { DataTableRootProps } from './types';
+import { Table } from '@tanstack/react-table';
+
+type DataTableContextType<TData> = {
+  table: Table<TData>;
+};
 
 /** @public */
-const DataTableRoot = forwardRef<HTMLDivElement, DataTableRootProps>(
-  ({ className, ...props }, ref) => {
+export const DataTableContext = createContext<DataTableContextType<any> | null>(
+  null,
+);
+
+/** @public */
+const DataTableRoot = forwardRef(
+  <TData,>(
+    props: DataTableRootProps<TData>,
+    ref: React.ForwardedRef<HTMLDivElement>,
+  ) => {
+    const { className, table, ...rest } = props;
+
     return (
-      <div
-        ref={ref}
-        className={clsx('canon-DataTable', className)}
-        {...props}
-      />
+      <DataTableContext.Provider value={{ table }}>
+        <div
+          ref={ref}
+          className={clsx('canon-DataTable', className)}
+          {...rest}
+        />
+      </DataTableContext.Provider>
     );
   },
 );
+
 DataTableRoot.displayName = 'DataTableRoot';
 
 export { DataTableRoot };
+
+/** @public */
+export function useDataTable<TData>() {
+  const context = useContext(DataTableContext);
+  if (!context) {
+    throw new Error('useDataTable must be used within a DataTableRoot');
+  }
+  return context as DataTableContextType<TData>;
+}

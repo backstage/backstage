@@ -20,67 +20,67 @@ import { DataTablePaginationProps } from './types';
 import { IconButton } from '../../IconButton';
 import clsx from 'clsx';
 import { Select } from '../../Select';
+import { useDataTable } from '../Root/DataTableRoot';
 
 /** @public */
-function DataTablePagination<TData>(
-  props: DataTablePaginationProps<TData>,
-  ref: React.ForwardedRef<HTMLDivElement>,
-) {
-  const { className, table, ...rest } = props;
-  const pageIndex = table?.getState().pagination.pageIndex;
-  const pageSize = table?.getState().pagination.pageSize;
+const DataTablePagination = forwardRef(
+  (
+    props: DataTablePaginationProps,
+    ref: React.ForwardedRef<HTMLDivElement>,
+  ) => {
+    const { className, ...rest } = props;
+    const { table } = useDataTable();
+    const pageIndex = table?.getState().pagination.pageIndex;
+    const pageSize = table?.getState().pagination.pageSize;
 
-  return (
-    <div
-      ref={ref}
-      className={clsx('canon-TablePagination', className)}
-      {...rest}
-    >
-      <div className="canon-TablePagination--left">
-        <Select
-          name="pageSize"
-          size="small"
-          placeholder="Show 10 results"
-          options={[
-            { label: 'Show 10 results', value: '10' },
-            { label: 'Show 20 results', value: '20' },
-            { label: 'Show 30 results', value: '30' },
-            { label: 'Show 40 results', value: '40' },
-            { label: 'Show 50 results', value: '50' },
-          ]}
-          value={pageSize?.toString()}
-          onValueChange={value => {
-            table?.setPageSize(Number(value));
-          }}
-        />
+    return (
+      <div
+        ref={ref}
+        className={clsx('canon-TablePagination', className)}
+        {...rest}
+      >
+        <div className="canon-TablePagination--left">
+          <Select
+            name="pageSize"
+            size="small"
+            placeholder="Show 10 results"
+            options={[
+              { label: 'Show 10 results', value: '10' },
+              { label: 'Show 20 results', value: '20' },
+              { label: 'Show 30 results', value: '30' },
+              { label: 'Show 40 results', value: '40' },
+              { label: 'Show 50 results', value: '50' },
+            ]}
+            value={pageSize?.toString()}
+            onValueChange={value => {
+              table?.setPageSize(Number(value));
+            }}
+          />
+        </div>
+        <div className="canon-TablePagination--right">
+          <Text variant="body">{`${(pageIndex ?? 0) * (pageSize ?? 10) + 1} - ${
+            ((pageIndex ?? 0) + 1) * (pageSize ?? 10)
+          } of ${table?.getRowCount()}`}</Text>
+          <IconButton
+            variant="secondary"
+            size="small"
+            onClick={() => table?.previousPage()}
+            disabled={!table?.getCanPreviousPage()}
+            icon="chevron-left"
+          />
+          <IconButton
+            variant="secondary"
+            size="small"
+            onClick={() => table?.nextPage()}
+            disabled={!table?.getCanNextPage()}
+            icon="chevron-right"
+          />
+        </div>
       </div>
-      <div className="canon-TablePagination--right">
-        <Text variant="body">{`${(pageIndex ?? 0) * (pageSize ?? 10) + 1} - ${
-          ((pageIndex ?? 0) + 1) * (pageSize ?? 10)
-        } of ${table?.getRowCount()}`}</Text>
-        <IconButton
-          variant="secondary"
-          size="small"
-          onClick={() => table?.previousPage()}
-          disabled={!table?.getCanPreviousPage()}
-          icon="chevron-left"
-        />
-        <IconButton
-          variant="secondary"
-          size="small"
-          onClick={() => table?.nextPage()}
-          disabled={!table?.getCanNextPage()}
-          icon="chevron-right"
-        />
-      </div>
-    </div>
-  );
-}
-
-const ForwardedDataTablePagination = forwardRef(DataTablePagination) as <TData>(
-  props: DataTablePaginationProps<TData> & {
-    ref?: React.ForwardedRef<HTMLDivElement>;
+    );
   },
-) => React.ReactElement;
+);
 
-export { ForwardedDataTablePagination as DataTablePagination };
+DataTablePagination.displayName = 'DataTablePagination';
+
+export { DataTablePagination };
