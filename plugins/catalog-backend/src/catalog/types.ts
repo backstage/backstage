@@ -145,6 +145,36 @@ export interface EntityFacetsResponse {
   facets: Record<string, Array<{ value: string; count: number }>>;
 }
 
+export interface EntityRelationsRequest {
+  /**
+   * The entity reference to compute the relations for.
+   */
+  entityRef: string;
+  /**
+   * A filter to apply on the full list of entities before computing the relations.
+   */
+  filter?: EntityFilter;
+  /**
+   * The relations to compute.
+   *
+   * @remarks
+   *
+   * This is a list of relations types to compute. For example ["ownerOf", "memberOf"]
+   * would compute the relations of type "ownerOf" and "memberOf" for the entity
+   */
+  relationsTypes: string[];
+
+  /**
+   * Indicates if the relations should be computed for the entity itself or for
+   * all the entities in the with same relations tree.
+   */
+  transient?: boolean;
+  /**
+   * The credentials that authorizes the action.
+   */
+  credentials: BackstageCredentials;
+}
+
 export interface EntitiesCatalog {
   /**
    * Fetch entities.
@@ -192,6 +222,13 @@ export interface EntitiesCatalog {
    * @param request - Request options
    */
   facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse>;
+
+  /**
+   * Computes relations for a set of entities.
+   *
+   * @param request - Request options
+   */
+  relations(request: EntityRelationsRequest): Promise<EntitiesBatchResponse>;
 }
 
 /**

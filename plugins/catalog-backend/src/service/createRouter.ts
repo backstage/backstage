@@ -458,6 +458,60 @@ export async function createRouter(
           }
         },
       )
+      .get(
+        '/entities/by-name/:kind/:namespace/:name/relations',
+        async (req, res) => {
+          console.log('relations');
+          const { kind, namespace, name } = req.params;
+          const entityRef = stringifyEntityRef({ kind, namespace, name });
+
+          const auditorEvent = await auditor?.createEvent({
+            eventId: 'entity-fetch',
+            request: req,
+            meta: {
+              actionType: 'relations',
+              entityRef: entityRef,
+            },
+          });
+
+          try {
+            const { items } = await entitiesCatalog.relations({
+              entityRef,
+              filter: parseEntityFilterParams(req.query),
+              relationsTypes: req.query.relations ?? [],
+              transient: yn(req.query.transitive, { default: false }),
+              credentials: await httpAuth.credentials(req),
+            });
+
+            await auditorEvent?.success({
+              meta: {
+                rootEntityRef: entityRef,
+                relatedEntities: items.entities.map(related => {
+                  return related
+                    ? {
+                        entityRef: stringifyEntityRef(related as Entity),
+                      }
+                    : null;
+                }),
+              },
+            });
+
+            await writeEntitiesResponse({
+              res,
+              items,
+              alwaysUseObjectMode: !disableRelationsCompatibility,
+              responseWrapper: entities => ({
+                items: entities,
+              }),
+            });
+          } catch (err) {
+            await auditorEvent?.fail({
+              error: err,
+            });
+            throw err;
+          }
+        },
+      )
       .post('/entities/by-refs', async (req, res) => {
         const auditorEvent = await auditor?.createEvent({
           eventId: 'entity-fetch',
