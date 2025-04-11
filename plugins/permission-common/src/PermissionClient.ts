@@ -32,7 +32,13 @@ import {
   IdentifiedPermissionMessage,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
-import { AuthorizeRequestOptions, Permission } from './types/permission';
+import {
+  AuthorizeRequestOptions,
+  BasicPermission,
+  Permission,
+  ResourcePermission,
+} from './types/permission';
+import { isResourcePermission } from './permissions';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -199,14 +205,21 @@ export class PermissionClient implements PermissionEvaluator {
     for (const query of queries) {
       const { permission, resourceRef } = query;
 
-      request[permission.name] ||= {
-        permission,
-        resourceRefs: [],
-        id: uuid.v4(),
-      };
+      if (isResourcePermission(permission)) {
+        request[permission.name] ||= {
+          permission,
+          resourceRefs: [],
+          id: uuid.v4(),
+        };
+      } else {
+        request[permission.name] ||= {
+          permission,
+          id: uuid.v4(),
+        };
+      }
 
       if (resourceRef) {
-        request[permission.name].resourceRefs.push(resourceRef);
+        request[permission.name].resourceRefs?.push(resourceRef);
       }
     }
 
@@ -257,7 +270,10 @@ export class PermissionClient implements PermissionEvaluator {
   }
 }
 
-export type BatchedAuthorizePermissionRequest = IdentifiedPermissionMessage<{
-  permission: Permission;
-  resourceRefs: string[];
-}>;
+export type BatchedAuthorizePermissionRequest = IdentifiedPermissionMessage<
+  | {
+      permission: BasicPermission;
+      resourceRefs?: undefined;
+    }
+  | { permission: ResourcePermission; resourceRefs: string[] }
+>;
