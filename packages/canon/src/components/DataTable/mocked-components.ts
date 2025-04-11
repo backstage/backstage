@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export interface Component {
+export interface DataProps {
   name: string;
   owner: string;
   type: 'documentation' | 'library' | 'service' | 'website' | 'other';
@@ -21,7 +21,7 @@ export interface Component {
   tags?: string[];
 }
 
-export const data: Component[] = [
+export const data: DataProps[] = [
   {
     name: 'authentication-and-authorization-service',
     owner: 'security-team',

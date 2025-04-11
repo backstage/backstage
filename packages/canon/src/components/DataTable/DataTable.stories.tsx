@@ -16,7 +16,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { DataTable } from '.';
-import { data, Component } from './mocked-components';
+import { data, DataProps } from './mocked-components';
 import { columns } from './mocked-columns';
 import {
   flexRender,
@@ -34,7 +34,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => {
-    const table = useReactTable<Component>({
+    const table = useReactTable<DataProps>({
       data,
       columns,
       getCoreRowModel: getCoreRowModel(),

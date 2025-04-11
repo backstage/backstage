@@ -1,4 +1,4 @@
-.canon-TablePagination {
+.canon-DataTablePagination {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -6,15 +6,19 @@
   border-top: 1px solid var(--canon-border);
 }
 
-.canon-TablePagination--left {
+.canon-DataTablePagination--left {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.canon-TablePagination--right {
+.canon-DataTablePagination--right {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--canon-space-2);
+}
+
+.canon-DataTablePagination--select {
+  min-width: 168px;
 }

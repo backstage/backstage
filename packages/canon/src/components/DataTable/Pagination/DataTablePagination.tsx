@@ -36,10 +36,10 @@ const DataTablePagination = forwardRef(
     return (
       <div
         ref={ref}
-        className={clsx('canon-TablePagination', className)}
+        className={clsx('canon-DataTablePagination', className)}
         {...rest}
       >
-        <div className="canon-TablePagination--left">
+        <div className="canon-DataTablePagination--left">
           <Select
             name="pageSize"
             size="small"
@@ -55,9 +55,10 @@ const DataTablePagination = forwardRef(
             onValueChange={value => {
               table?.setPageSize(Number(value));
             }}
+            className="canon-DataTablePagination--select"
           />
         </div>
-        <div className="canon-TablePagination--right">
+        <div className="canon-DataTablePagination--right">
           <Text variant="body">{`${(pageIndex ?? 0) * (pageSize ?? 10) + 1} - ${
             ((pageIndex ?? 0) + 1) * (pageSize ?? 10)
           } of ${table?.getRowCount()}`}</Text>

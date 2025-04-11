@@ -100,7 +100,7 @@
   display: flex;
 }
 
-.canon-TablePagination {
+.canon-DataTablePagination {
   padding-top: var(--canon-space-3);
   border-top: 1px solid var(--canon-border);
   justify-content: space-between;
@@ -108,17 +108,21 @@
   display: flex;
 }
 
-.canon-TablePagination--left {
+.canon-DataTablePagination--left {
   justify-content: space-between;
   align-items: center;
   display: flex;
 }
 
-.canon-TablePagination--right {
+.canon-DataTablePagination--right {
   justify-content: space-between;
   align-items: center;
   gap: var(--canon-space-2);
   display: flex;
+}
+
+.canon-DataTablePagination--select {
+  min-width: 168px;
 }
 
 .canon-Flex {

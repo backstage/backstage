@@ -15,11 +15,11 @@
  */
 
 import { ColumnDef } from '@tanstack/react-table';
-import { Component } from './mocked-components';
+import { DataProps } from './mocked-components';
 import { Checkbox } from '../Checkbox';
 import { Text } from '../Text';
 
-export const columns: ColumnDef<Component>[] = [
+export const columns: ColumnDef<DataProps>[] = [
   {
     id: 'select',
     header: ({ table }) => (
