@@ -28,26 +28,30 @@ export function OffsetPaginatedCatalogTable(
   props: TableProps<CatalogTableRow>,
 ) {
   const { columns, data, options, ...restProps } = props;
-  const { setLimit, setOffset, limit, totalItems, offset } = useEntityList();
+  const { setLimit, setOffset, limit, totalItems, offset, paginationMode } =
+    useEntityList();
+  const clientPagination = paginationMode === 'none';
 
   const [page, setPage] = useState(
     offset && limit ? Math.floor(offset / limit) : 0,
   );
 
   useEffect(() => {
-    if (totalItems && page * limit >= totalItems) {
-      setOffset!(Math.max(0, totalItems - limit));
-    } else {
-      setOffset!(Math.max(0, page * limit));
+    if (clientPagination || !setOffset) {
+      return;
     }
-  }, [setOffset, page, limit, totalItems]);
+    let newOffset = page * limit;
+    if (totalItems && newOffset >= totalItems) {
+      newOffset = totalItems - limit;
+    }
+    setOffset(Math.max(0, newOffset));
+  }, [setOffset, page, limit, totalItems, clientPagination]);
 
   return (
     <Table
       columns={columns}
       data={data}
       options={{
-        paginationPosition: 'both',
         pageSizeOptions: [5, 10, 20, 50, 100],
         pageSize: limit,
         emptyRowsWhenPaging: false,
@@ -56,15 +60,14 @@ export function OffsetPaginatedCatalogTable(
       components={{
         Toolbar: CatalogTableToolbar,
       }}
-      page={page}
-      onPageChange={newPage => {
-        setPage(newPage);
-      }}
-      onRowsPerPageChange={pageSize => {
-        setLimit(pageSize);
-      }}
-      totalCount={totalItems}
-      localization={{ pagination: { labelDisplayedRows: '' } }}
+      {...(clientPagination
+        ? {}
+        : {
+            page,
+            onPageChange: setPage,
+            onRowsPerPageChange: setLimit,
+            totalCount: totalItems,
+          })}
       {...restProps}
     />
   );
