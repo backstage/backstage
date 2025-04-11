@@ -107,7 +107,8 @@
     "csstype@npm:^3.0.2": "3.0.9",
     "csstype@npm:^3.1.2": "3.0.9",
     "csstype@npm:^3.1.3": "3.0.9",
-    "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch"
+    "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch",
+    "@yarnpkg/plugin-npm@npm:^3.1.0": "patch:@yarnpkg/plugin-npm@npm%3A3.1.0#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.1.0-6533d0f5a1.patch"
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
