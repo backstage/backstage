@@ -26,9 +26,9 @@ import { Config } from '@backstage/config';
 import { stringifyError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { MysqlConnector } from './connectors/mysql';
-import { PgConnector } from './connectors/postgres';
+import { pgConnectionTransformers, PgConnector } from './connectors/postgres';
 import { Sqlite3Connector } from './connectors/sqlite3';
-import { Connector } from './types';
+import { Connector, KnexConfigTransformer } from './types';
 
 /**
  * Provides a config lookup path for a plugin's config block.
@@ -260,6 +260,30 @@ export class DatabaseManager {
         options,
       ),
     );
+  }
+
+  /**
+   *
+   * Registers a callback to be used for a specific client/type combination
+   *
+   * @param client - the client this transformer should be added to
+   * @param type - the connection.type this transformer is to be triggered for
+   * @param transformer - the callback method performing the transformation
+   */
+  static addConfigTransformer(
+    client: string,
+    type: string,
+    transformer: KnexConfigTransformer,
+  ) {
+    switch (client) {
+      case 'pg':
+        pgConnectionTransformers[type] = transformer;
+        break;
+      default:
+        throw Error(
+          `KnexConfigTransformer is not implemented for client: ${client}`,
+        );
+    }
   }
 
   private constructor(private readonly impl: DatabaseManagerImpl) {}
