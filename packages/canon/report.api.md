@@ -231,13 +231,16 @@ export const DataTable: {
     DataTablePaginationProps & RefAttributes<HTMLDivElement>
   >;
   Table: ForwardRefExoticComponent<
+    DataTableTableProps & RefAttributes<HTMLTableElement>
+  >;
+  TableRoot: ForwardRefExoticComponent<
     Omit<
       HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>,
       'ref'
     > &
       RefAttributes<HTMLTableElement>
   >;
-  Header: ForwardRefExoticComponent<
+  TableHeader: ForwardRefExoticComponent<
     Omit<
       HTMLAttributes<HTMLTableSectionElement> &
         RefAttributes<HTMLTableSectionElement>,
@@ -245,7 +248,7 @@ export const DataTable: {
     > &
       RefAttributes<HTMLTableSectionElement>
   >;
-  Body: ForwardRefExoticComponent<
+  TableBody: ForwardRefExoticComponent<
     Omit<
       HTMLAttributes<HTMLTableSectionElement> &
         RefAttributes<HTMLTableSectionElement>,
@@ -253,14 +256,14 @@ export const DataTable: {
     > &
       RefAttributes<HTMLTableSectionElement>
   >;
-  Row: ForwardRefExoticComponent<
+  TableRow: ForwardRefExoticComponent<
     Omit<
       HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>,
       'ref'
     > &
       RefAttributes<HTMLTableRowElement>
   >;
-  Cell: ForwardRefExoticComponent<
+  TableCell: ForwardRefExoticComponent<
     Omit<
       TdHTMLAttributes<HTMLTableCellElement> &
         RefAttributes<HTMLTableCellElement>,
@@ -268,7 +271,7 @@ export const DataTable: {
     > &
       RefAttributes<HTMLTableCellElement>
   >;
-  Head: ForwardRefExoticComponent<
+  TableHead: ForwardRefExoticComponent<
     Omit<
       ThHTMLAttributes<HTMLTableCellElement> &
         RefAttributes<HTMLTableCellElement>,
@@ -287,6 +290,10 @@ export interface DataTableRootProps<TData>
   extends React.HTMLAttributes<HTMLDivElement> {
   table: Table_2<TData>;
 }
+
+// @public (undocumented)
+export interface DataTableTableProps
+  extends React.HTMLAttributes<HTMLTableElement> {}
 
 // @public (undocumented)
 export type Display = 'none' | 'flex' | 'block' | 'inline';

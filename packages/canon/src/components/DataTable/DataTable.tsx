@@ -19,6 +19,7 @@ import { Table } from '../Table';
 import { DataTableRoot } from './Root/DataTableRoot';
 import { DataTablePagination } from './Pagination/DataTablePagination';
 import { Table as TanstackTable } from '@tanstack/react-table';
+import { DataTableTable } from './Table/DataTableTable';
 
 const TableRoot = forwardRef<
   React.ElementRef<typeof Table.Root>,
@@ -67,10 +68,11 @@ export const DataTable = {
     } & React.HTMLAttributes<HTMLDivElement>,
   ) => JSX.Element,
   Pagination: DataTablePagination,
-  Table: TableRoot,
-  Header: TableHeader,
-  Body: TableBody,
-  Row: TableRow,
-  Cell: TableCell,
-  Head: TableHead,
+  Table: DataTableTable,
+  TableRoot: TableRoot,
+  TableHeader: TableHeader,
+  TableBody: TableBody,
+  TableRow: TableRow,
+  TableCell: TableCell,
+  TableHead: TableHead,
 };

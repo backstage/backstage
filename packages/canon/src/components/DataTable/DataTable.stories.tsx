@@ -45,54 +45,7 @@ export const Uncontrolled: Story = {
 
     return (
       <DataTable.Root table={table}>
-        <DataTable.Table>
-          <DataTable.Header>
-            {table.getHeaderGroups().map(headerGroup => (
-              <DataTable.Row key={headerGroup.id}>
-                {headerGroup.headers.map(header => {
-                  return (
-                    <DataTable.Head key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </DataTable.Head>
-                  );
-                })}
-              </DataTable.Row>
-            ))}
-          </DataTable.Header>
-          <DataTable.Body>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map(row => (
-                <DataTable.Row
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map(cell => (
-                    <DataTable.Cell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </DataTable.Cell>
-                  ))}
-                </DataTable.Row>
-              ))
-            ) : (
-              <DataTable.Row>
-                <DataTable.Cell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </DataTable.Cell>
-              </DataTable.Row>
-            )}
-          </DataTable.Body>
-        </DataTable.Table>
+        <DataTable.Table />
         <DataTable.Pagination />
       </DataTable.Root>
     );
@@ -119,54 +72,72 @@ export const Controlled: Story = {
 
     return (
       <DataTable.Root table={table}>
-        <DataTable.Table>
-          <DataTable.Header>
+        <DataTable.Table />
+        <DataTable.Pagination />
+      </DataTable.Root>
+    );
+  },
+};
+
+export const WithCustomTable: Story = {
+  render: () => {
+    const table = useReactTable<DataProps>({
+      data,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+    });
+
+    return (
+      <DataTable.Root table={table}>
+        <DataTable.TableRoot>
+          <DataTable.TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
-              <DataTable.Row key={headerGroup.id}>
+              <DataTable.TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => {
                   return (
-                    <DataTable.Head key={header.id}>
+                    <DataTable.TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
                             header.getContext(),
                           )}
-                    </DataTable.Head>
+                    </DataTable.TableHead>
                   );
                 })}
-              </DataTable.Row>
+              </DataTable.TableRow>
             ))}
-          </DataTable.Header>
-          <DataTable.Body>
+          </DataTable.TableHeader>
+          <DataTable.TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map(row => (
-                <DataTable.Row
+                <DataTable.TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map(cell => (
-                    <DataTable.Cell key={cell.id}>
+                    <DataTable.TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
                       )}
-                    </DataTable.Cell>
+                    </DataTable.TableCell>
                   ))}
-                </DataTable.Row>
+                </DataTable.TableRow>
               ))
             ) : (
-              <DataTable.Row>
-                <DataTable.Cell
+              <DataTable.TableRow>
+                <DataTable.TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
                   No results.
-                </DataTable.Cell>
-              </DataTable.Row>
+                </DataTable.TableCell>
+              </DataTable.TableRow>
             )}
-          </DataTable.Body>
-        </DataTable.Table>
+          </DataTable.TableBody>
+        </DataTable.TableRoot>
         <DataTable.Pagination />
       </DataTable.Root>
     );
