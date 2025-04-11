@@ -26,7 +26,6 @@ import {
   isResourcePermission,
   PermissionAttributes,
   PermissionMessageBatch,
-  PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -125,9 +124,7 @@ const handleRequest = async (
   auth: AuthService,
   userInfo: UserInfoService,
 ): Promise<
-  IdentifiedPermissionMessage<
-    EvaluatePermissionResponse | BulkDefinitivePolicyDecision
-  >[]
+  IdentifiedPermissionMessage<InternalEvaluatePermissionResponse>[]
 > => {
   const applyConditionsLoaderFor = memoize((pluginId: string) => {
     return new DataLoader<
@@ -182,20 +179,11 @@ const handleRequest = async (
           }
 
           if (request.resourceRefs) {
-            const results = await Promise.all(
-              request.resourceRefs.map(resourceRef =>
-                applyConditionsLoaderFor(decision.pluginId).load({
-                  id: request.id,
-                  resourceRef,
-                  ...decision,
-                }),
-              ),
-            );
-
-            return {
+            return applyConditionsLoaderFor(decision.pluginId).load({
               id: request.id,
-              result: results.map(({ result }) => result),
-            };
+              resourceRefs: request.resourceRefs,
+              ...decision,
+            });
           }
 
           if (!request.resourceRef) {
@@ -254,9 +242,7 @@ export async function createRouter(
     '/authorize',
     async (
       req: Request,
-      res: Response<
-        PermissionMessageBatch<PolicyDecision | BulkDefinitivePolicyDecision>
-      >,
+      res: Response<PermissionMessageBatch<InternalEvaluatePermissionResponse>>,
     ) => {
       const credentials = await httpAuth.credentials(req, {
         allow: ['user', 'none'],
@@ -307,6 +293,8 @@ export async function createRouter(
 /**
  * @internal
  */
-type BulkDefinitivePolicyDecision = {
-  result: Array<AuthorizeResult.ALLOW | AuthorizeResult.DENY>;
-};
+type InternalEvaluatePermissionResponse =
+  | EvaluatePermissionResponse
+  | {
+      result: Array<AuthorizeResult.ALLOW | AuthorizeResult.DENY>;
+    };

@@ -165,11 +165,7 @@ describe('createRouter', () => {
       mockApplyConditions.mockResolvedValueOnce([
         {
           id: '123',
-          result: AuthorizeResult.ALLOW,
-        },
-        {
-          id: '123',
-          result: AuthorizeResult.DENY,
+          result: [AuthorizeResult.ALLOW, AuthorizeResult.DENY],
         },
       ]);
 
@@ -197,6 +193,21 @@ describe('createRouter', () => {
             },
           ],
         });
+
+      expect(mockApplyConditions).toHaveBeenCalledWith(
+        'test-plugin',
+        expect.any(Object),
+        [
+          {
+            conditions: { params: ['abc'], rule: 'test-rule' },
+            id: '123',
+            pluginId: 'test-plugin',
+            resourceRefs: ['resource:1', 'resource:2'],
+            resourceType: 'test-resource-1',
+            result: 'CONDITIONAL',
+          },
+        ],
+      );
 
       expect(response.status).toEqual(200);
 
