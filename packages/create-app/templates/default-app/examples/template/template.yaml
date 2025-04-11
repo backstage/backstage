@@ -48,6 +48,8 @@ spec:
           name: ${{ parameters.name }}
 
     # This step publishes the contents of the working directory to GitHub.
+    # If you or your organization prefer another default branch name over 'main'
+    # you can change that here.
     - id: publish
       name: Publish
       action: publish:github
@@ -55,6 +57,7 @@ spec:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: 'main'
 
     # The final step is to register our new component in the catalog.
     - id: register
