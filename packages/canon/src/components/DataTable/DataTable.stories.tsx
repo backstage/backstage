@@ -23,6 +23,7 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
+  PaginationState,
 } from '@tanstack/react-table';
 import { useState } from 'react';
 
@@ -100,7 +101,7 @@ export const Uncontrolled: Story = {
 
 export const Controlled: Story = {
   render: () => {
-    const [pagination, setPagination] = useState({
+    const [pagination, setPagination] = useState<PaginationState>({
       pageIndex: 4,
       pageSize: 5,
     });

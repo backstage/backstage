@@ -40,24 +40,26 @@ const DataTablePagination = forwardRef(
         {...rest}
       >
         <div className="canon-DataTablePagination--left">
-          <Select
-            name="pageSize"
-            size="small"
-            placeholder="Show 10 results"
-            options={[
-              { label: 'Show 5 results', value: '5' },
-              { label: 'Show 10 results', value: '10' },
-              { label: 'Show 20 results', value: '20' },
-              { label: 'Show 30 results', value: '30' },
-              { label: 'Show 40 results', value: '40' },
-              { label: 'Show 50 results', value: '50' },
-            ]}
-            value={pageSize?.toString()}
-            onValueChange={value => {
-              table?.setPageSize(Number(value));
-            }}
-            className="canon-DataTablePagination--select"
-          />
+          {!table.options.manualPagination && (
+            <Select
+              name="pageSize"
+              size="small"
+              placeholder="Show 10 results"
+              options={[
+                { label: 'Show 5 results', value: '5' },
+                { label: 'Show 10 results', value: '10' },
+                { label: 'Show 20 results', value: '20' },
+                { label: 'Show 30 results', value: '30' },
+                { label: 'Show 40 results', value: '40' },
+                { label: 'Show 50 results', value: '50' },
+              ]}
+              value={pageSize?.toString()}
+              onValueChange={value => {
+                table?.setPageSize(Number(value));
+              }}
+              className="canon-DataTablePagination--select"
+            />
+          )}
         </div>
         <div className="canon-DataTablePagination--right">
           <Text variant="body">{`${(pageIndex ?? 0) * (pageSize ?? 10) + 1} - ${
