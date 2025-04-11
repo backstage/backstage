@@ -50,6 +50,7 @@ import {
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import {
+  CheckpointContext,
   TaskContext,
   TemplateAction,
   TemplateFilter,
@@ -61,6 +62,7 @@ import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 import { convertFiltersToRecord } from '../../util/templating';
+import { CheckpointState } from '@backstage/plugin-scaffolder-node';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -91,16 +93,6 @@ type TemplateContext = {
     };
   };
 };
-
-type CheckpointState =
-  | {
-      status: 'failed';
-      reason: string;
-    }
-  | {
-      status: 'success';
-      value: JsonValue;
-    };
 
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
   return taskSpec.apiVersion === 'scaffolder.backstage.io/v1beta3';
@@ -397,10 +389,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           logger: loggerToWinstonLogger(taskLogger),
           logStream: streamLogger,
           workspacePath,
-          async checkpoint<T extends JsonValue | void>(opts: {
-            key?: string;
-            fn: () => Promise<T> | T;
-          }) {
+          async checkpoint<T extends JsonValue | void>(
+            opts: CheckpointContext<T>,
+          ) {
             const { key: checkpointKey, fn } = opts;
             const key = `v1.task.checkpoint.${step.id}.${checkpointKey}`;
 
@@ -409,9 +400,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
               if (prevTaskState) {
                 const prevState = (
-                  prevTaskState.state?.checkpoints as {
-                    [key: string]: CheckpointState;
-                  }
+                  prevTaskState.state?.checkpoints as CheckpointState
                 )?.[key];
 
                 if (prevState && prevState.status === 'success') {

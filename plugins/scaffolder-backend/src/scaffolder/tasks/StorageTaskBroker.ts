@@ -22,6 +22,7 @@ import {
 import { Config } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
+  CheckpointState,
   SerializedTask,
   SerializedTaskEvent,
   TaskBroker,
@@ -30,14 +31,10 @@ import {
   TaskContext,
   TaskSecrets,
   TaskStatus,
+  UpdateTaskCheckpointOptions,
 } from '@backstage/plugin-scaffolder-node';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
-import {
-  JsonObject,
-  JsonValue,
-  Observable,
-  createDeferred,
-} from '@backstage/types';
+import { JsonObject, Observable, createDeferred } from '@backstage/types';
 import { Logger } from 'winston';
 import ObservableImpl from 'zen-observable';
 import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
@@ -45,17 +42,7 @@ import { readDuration } from './helper';
 import { InternalTaskSecrets, TaskStore } from './types';
 
 type TaskState = {
-  checkpoints: {
-    [key: string]:
-      | {
-          status: 'failed';
-          reason: string;
-        }
-      | {
-          status: 'success';
-          value: JsonValue;
-        };
-  };
+  checkpoints: CheckpointState;
 };
 /**
  * TaskManager
@@ -152,20 +139,9 @@ export class TaskManager implements TaskContext {
     return this.storage.getTaskState?.({ taskId: this.task.taskId });
   }
 
-  async updateCheckpoint?(
-    options:
-      | {
-          key: string;
-          status: 'success';
-          value: JsonValue;
-        }
-      | {
-          key: string;
-          status: 'failed';
-          reason: string;
-        },
-  ): Promise<void> {
+  async updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void> {
     const { key, ...value } = options;
+
     if (this.task.state) {
       (this.task.state as TaskState).checkpoints[key] = value;
     } else {
