@@ -28,5 +28,17 @@ export interface Config {
      * Throttle duration between notification sending, defaults to 50ms
      */
     throttleInterval?: HumanDuration | string;
+    /**
+     * Default settings for user specific notification settings
+     */
+    defaultSettings?: {
+      channels: {
+        id: string;
+        origins: {
+          id: string;
+          enabled: boolean;
+        }[];
+      }[];
+    };
   };
 }
