@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 import { NotificationSettings } from './types';
+import crypto from 'crypto';
 
 /** @public */
 export const isNotificationsEnabledFor = (
   settings: NotificationSettings,
   channelId: string,
   originId: string,
+  topicId: string | null,
 ) => {
   const channel = settings.channels.find(c => c.id === channelId);
   if (!channel) {
@@ -30,5 +32,23 @@ export const isNotificationsEnabledFor = (
   if (!origin) {
     return true;
   }
-  return origin.enabled;
+  if (topicId === null) {
+    return origin.enabled;
+  }
+  const topic = origin.topics?.find(t => t.id === topicId);
+  if (!topic) {
+    return origin.enabled;
+  }
+  return topic.enabled;
+};
+
+/** @public */
+export const generateSettingsHash = (
+  user: string,
+  channel: string,
+  origin: string,
+  topic: string | null,
+): string => {
+  const rawKey = `${user}|${channel}|${origin}|${topic ?? ''}`;
+  return crypto.createHash('sha256').update(rawKey).digest('hex');
 };

@@ -129,12 +129,31 @@ export type NotificationProcessorFilters = {
 /**
  * @public
  */
+export type TopicSetting = {
+  id: string;
+  enabled: boolean;
+};
+
+/**
+ * @public
+ */
+export type OriginSetting = {
+  id: string;
+  enabled: boolean;
+  topics?: TopicSetting[];
+};
+
+/**
+ * @public
+ */
+export type ChannelSetting = {
+  id: string;
+  origins: OriginSetting[];
+};
+
+/**
+ * @public
+ */
 export type NotificationSettings = {
-  channels: {
-    id: string;
-    origins: {
-      id: string;
-      enabled: boolean;
-    }[];
-  }[];
+  channels: ChannelSetting[];
 };

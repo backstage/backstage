@@ -207,6 +207,7 @@ export function useNotificationsApi<T>(
 // @public (undocumented)
 export const UserNotificationSettingsCard: (props: {
   originNames?: Record<string, string>;
+  topicNames?: Record<string, string>;
 }) => JSX_2.Element;
 
 // (No @packageDocumentation comment for this package)

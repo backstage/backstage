@@ -307,9 +307,10 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       expect(notifications).toHaveLength(1);
     });
 
-    it('should not send to user entity if disabled in settings', async () => {
+    it('should not send to user entity if origin is disabled in settings', async () => {
       const client = await database.getClient();
       await client('user_settings').insert({
+        settings_key_hash: 'hash',
         user: 'user:default/mock',
         channel: 'Web',
         origin: 'external:test-service',
@@ -333,6 +334,85 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
         .where('user', 'user:default/mock')
         .select();
       expect(notifications).toHaveLength(0);
+    });
+
+    it('should not send to user entity if topic is disabled in settings', async () => {
+      const client = await database.getClient();
+      await client('user_settings').insert({
+        settings_key_hash: 'hash',
+        user: 'user:default/mock',
+        channel: 'Web',
+        origin: 'external:test-service',
+        topic: 'test-topic',
+        enabled: false,
+      });
+
+      const response = await sendNotification({
+        recipients: {
+          type: 'entity',
+          entityRef: ['user:default/mock'],
+        },
+        payload: {
+          title: 'test notification',
+          topic: 'test-topic',
+        },
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([]);
+
+      const notifications = await client('notification')
+        .where('user', 'user:default/mock')
+        .select();
+      expect(notifications).toHaveLength(0);
+    });
+
+    it('should send to user entity if origin is enabled, but topic is disabled in settings', async () => {
+      const client = await database.getClient();
+      await client('user_settings').insert({
+        settings_key_hash: 'hash',
+        user: 'user:default/mock',
+        channel: 'Web',
+        origin: 'external:test-service',
+        enabled: true,
+      });
+      await client('user_settings').insert({
+        settings_key_hash: 'hash1',
+        user: 'user:default/mock',
+        channel: 'Web',
+        origin: 'external:test-service',
+        topic: 'test-topic',
+        enabled: false,
+      });
+
+      const response = await sendNotification({
+        recipients: {
+          type: 'entity',
+          entityRef: ['user:default/mock'],
+        },
+        payload: {
+          title: 'test notification',
+        },
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([
+        {
+          created: expect.any(String),
+          id: expect.any(String),
+          origin: 'external:test-service',
+          payload: {
+            severity: 'normal',
+            title: 'test notification',
+          },
+          user: 'user:default/mock',
+        },
+      ]);
+
+      const notifications = await client('notification')
+        .where('user', 'user:default/mock')
+        .select();
+      expect(notifications).toHaveLength(1);
     });
 
     it('should fail without recipients', async () => {
@@ -490,6 +570,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     it('should return user settings', async () => {
       const client = await database.getClient();
       await client('user_settings').insert({
+        settings_key_hash: 'hash',
         user: 'user:default/mock',
         channel: 'Web',
         origin: 'external:test-service',
@@ -502,7 +583,9 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
         channels: [
           {
             id: 'Web',
-            origins: [{ enabled: false, id: 'external:test-service' }],
+            origins: [
+              { enabled: false, id: 'external:test-service', topics: [] },
+            ],
           },
         ],
       });
