@@ -2,8 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: var(--canon-space-3);
-  border-top: 1px solid var(--canon-border);
+  padding-top: var(--canon-space-5);
 }
 
 .canon-DataTablePagination--left {

@@ -101,8 +101,7 @@
 }
 
 .canon-DataTablePagination {
-  padding-top: var(--canon-space-3);
-  border-top: 1px solid var(--canon-border);
+  padding-top: var(--canon-space-5);
   justify-content: space-between;
   align-items: center;
   display: flex;
@@ -220,12 +219,11 @@
   text-align: left;
   padding: var(--canon-space-3);
   font-size: var(--canon-font-size-3);
+  color: var(--canon-fg-primary);
 }
 
 .canon-TableBody {
-  & tr:last-child {
-    border-bottom: none;
-  }
+  color: var(--canon-fg-primary);
 }
 
 .canon-TableRow {
