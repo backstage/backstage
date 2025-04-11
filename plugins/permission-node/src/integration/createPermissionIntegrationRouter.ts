@@ -536,11 +536,7 @@ export function createPermissionIntegrationRouter<
           requestedType,
           requests
             .filter(r => r.resourceType === requestedType)
-            .map(i =>
-              typeof i.resourceRef === 'string'
-                ? [i.resourceRef]
-                : i.resourceRefs,
-            )
+            .map(i => i.resourceRefs ?? [i.resourceRef])
             .flat(),
         );
       }

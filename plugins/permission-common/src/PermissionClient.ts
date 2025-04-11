@@ -62,7 +62,10 @@ const authorizePermissionResponseSchema: z.ZodSchema<AuthorizePermissionResponse
 
 const authorizePermissionResponseBatchSchema = z.object({
   result: z.array(
-    z.literal(AuthorizeResult.ALLOW).or(z.literal(AuthorizeResult.DENY)),
+    z.union([
+      z.literal(AuthorizeResult.ALLOW),
+      z.literal(AuthorizeResult.DENY),
+    ]),
   ),
 });
 
