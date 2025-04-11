@@ -35,6 +35,7 @@ import {
   EntityKindFilter,
   EntityLifecycleFilter,
   EntityNamespaceFilter,
+  EntityOrderFilter,
   EntityOrphanFilter,
   EntityOwnerFilter,
   EntityTagFilter,
@@ -64,6 +65,7 @@ export type DefaultEntityFilters = {
   orphan?: EntityOrphanFilter;
   error?: EntityErrorFilter;
   namespace?: EntityNamespaceFilter;
+  order?: EntityOrderFilter;
 };
 
 /** @public */
@@ -287,7 +289,6 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               ...backendFilter,
               limit,
               offset,
-              orderFields: [{ field: 'metadata.name', order: 'asc' }],
             });
             setOutputState({
               appliedFilters: requestedFilters,
