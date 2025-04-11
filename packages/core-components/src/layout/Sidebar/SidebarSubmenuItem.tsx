@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { resolvePath, useLocation, useResolvedPath } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -100,6 +100,10 @@ const useStyles = makeStyles(
         color: theme.palette.navigation.selectedColor,
       },
     },
+    dropdownButton: {
+      textTransform: 'none',
+      justifyContent: 'flex-start',
+    },
     textContent: {
       color: theme.palette.navigation.color,
       paddingLeft: theme.spacing(4),
@@ -183,6 +187,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
             onTouchStart={e => e.stopPropagation()}
             className={classnames(
               classes.item,
+              classes.dropdownButton,
               isActive ? classes.selected : undefined,
             )}
           >

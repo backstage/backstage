@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ElementType, ReactNode } from 'react';
 import { TabProps } from '@material-ui/core/Tab';
 import {
   Header,
@@ -32,7 +32,7 @@ export type SettingsLayoutRouteProps = {
   path: string;
   title: string;
   children: JSX.Element;
-  tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
+  tabProps?: TabProps<ElementType, { component?: ElementType }>;
 };
 
 export const LAYOUT_DATA_KEY = 'plugin.user-settings.settingsLayout';
@@ -48,7 +48,7 @@ attachComponentData(Route, 'core.gatherMountPoints', true);
 export type SettingsLayoutProps = {
   title?: string;
   subtitle?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**

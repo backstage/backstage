@@ -72,6 +72,30 @@ describe('FrontendHostDiscovery', () => {
     );
   });
 
+  it('should not use internal plugin overrides', async () => {
+    const discovery = FrontendHostDiscovery.fromConfig(
+      new ConfigReader({
+        backend: {
+          baseUrl: 'http://localhost:40',
+        },
+        discovery: {
+          endpoints: [
+            {
+              target: {
+                internal: 'http://catalog-backend-internal:8080/api/catalog',
+              },
+              plugins: ['catalog'],
+            },
+          ],
+        },
+      }),
+    );
+
+    await expect(discovery.getBaseUrl('catalog')).resolves.toBe(
+      'http://localhost:40/api/catalog',
+    );
+  });
+
   it('uses a single target for internal and external for a plugin', async () => {
     const discovery = FrontendHostDiscovery.fromConfig(
       new ConfigReader({

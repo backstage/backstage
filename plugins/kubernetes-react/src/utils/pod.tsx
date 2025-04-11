@@ -19,7 +19,7 @@ import {
   V1PodCondition,
   V1DeploymentCondition,
 } from '@kubernetes/client-node';
-import React, { Fragment, ReactNode } from 'react';
+import { Fragment, ReactNode } from 'react';
 import Chip from '@material-ui/core/Chip';
 import {
   StatusAborted,
@@ -87,7 +87,7 @@ export const containerStatuses = (pod: Pod): ReactNode => {
     }
 
     return accum;
-  }, [] as React.ReactNode[]);
+  }, [] as ReactNode[]);
 
   if (errors.length === 0) {
     return <StatusOK>OK</StatusOK>;
@@ -127,10 +127,10 @@ export const currentToDeclaredResourceToPerc = (
   }
 
   const numerator: bigint = BigInt(
-    typeof current === 'number' ? Math.round(current) : current,
+    typeof current === 'number' ? Math.round(current) : Number(current),
   );
   const denominator: bigint = BigInt(
-    typeof resource === 'number' ? Math.round(resource) : resource,
+    typeof resource === 'number' ? Math.round(resource) : Number(resource),
   );
 
   return `${(numerator * BigInt(100)) / denominator}%`;

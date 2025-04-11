@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import * as daemonsets from '../../__fixtures__/2-daemonsets.json';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { DaemonSetDrawer } from './DaemonSetsDrawer';

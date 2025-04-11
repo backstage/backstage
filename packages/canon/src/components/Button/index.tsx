@@ -15,3 +15,5 @@
  */
 export { Button } from './Button';
 export type { ButtonProps } from './types';
+export { buttonPropDefs } from './Button.props';
+export type { ButtonOwnProps } from './Button.props';

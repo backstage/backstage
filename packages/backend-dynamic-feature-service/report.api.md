@@ -11,9 +11,7 @@ import { ConfigSchema } from '@backstage/config-loader';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { EventBroker } from '@backstage/plugin-events-node';
-import { EventsBackend } from '@backstage/plugin-events-backend';
 import { EventsService } from '@backstage/plugin-events-node';
-import { FeatureDiscoveryService } from '@backstage/backend-plugin-api/alpha';
 import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { IndexBuilder } from '@backstage/plugin-search-backend-node';
@@ -23,7 +21,6 @@ import { PackagePlatform } from '@backstage/cli-node';
 import { PackageRole } from '@backstage/cli-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
-import { PluginCacheManager } from '@backstage/backend-common';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -31,7 +28,6 @@ import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { TokenManager } from '@backstage/backend-common';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { WinstonLoggerOptions } from '@backstage/backend-defaults/rootLogger';
 
@@ -150,13 +146,6 @@ export interface DynamicPluginsFactoryOptions {
 // @public @deprecated (undocumented)
 export const dynamicPluginsFeatureDiscoveryLoader: BackendFeature;
 
-// @public @deprecated (undocumented)
-export const dynamicPluginsFeatureDiscoveryServiceFactory: ServiceFactory<
-  FeatureDiscoveryService,
-  'root',
-  'singleton'
->;
-
 // @public
 export const dynamicPluginsFeatureLoader: ((
   options?: DynamicPluginsFeatureLoaderOptions,
@@ -245,10 +234,7 @@ export interface LegacyBackendPluginInstaller {
   // (undocumented)
   catalog?(builder: CatalogBuilder, env: LegacyPluginEnvironment): void;
   // (undocumented)
-  events?(
-    eventsBackend: EventsBackend,
-    env: LegacyPluginEnvironment,
-  ): HttpPostIngressOptions[];
+  events?(env: LegacyPluginEnvironment): HttpPostIngressOptions[];
   // (undocumented)
   kind: 'legacy';
   // (undocumented)
@@ -273,12 +259,10 @@ export interface LegacyBackendPluginInstaller {
 // @public @deprecated (undocumented)
 export type LegacyPluginEnvironment = {
   logger: Logger;
-  cache: PluginCacheManager;
   database: DatabaseService;
   config: Config;
   reader: UrlReaderService;
   discovery: DiscoveryService;
-  tokenManager: TokenManager;
   permissions: PermissionEvaluator;
   scheduler: SchedulerService;
   identity: IdentityApi;

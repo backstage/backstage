@@ -22,7 +22,7 @@ import {
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { examples } from './githubBranchProtection.examples';
 import * as inputProps from './inputProperties';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { Octokit } from 'octokit';
 import { enableBranchProtectionOnDefaultRepoBranch } from './gitHelpers';
 
@@ -115,42 +115,55 @@ export function createGithubBranchProtectionAction(options: {
         token: providedToken,
       } = ctx.input;
 
-      const octokitOptions = await getOctokitOptions({
-        integrations,
-        token: providedToken,
-        repoUrl: repoUrl,
-      });
-      const client = new Octokit(octokitOptions);
-
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError(`No owner provided for repo ${repoUrl}`);
       }
 
-      const repository = await client.rest.repos.get({
-        owner: owner,
-        repo: repo,
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        token: providedToken,
+        host,
+        owner,
+        repo,
+      });
+      const client = new Octokit(octokitOptions);
+
+      const defaultBranch = await ctx.checkpoint({
+        key: `read.default.branch.${owner}.${repo}`,
+        fn: async () => {
+          const repository = await client.rest.repos.get({
+            owner: owner,
+            repo: repo,
+          });
+          return repository.data.default_branch;
+        },
       });
 
-      await enableBranchProtectionOnDefaultRepoBranch({
-        repoName: repo,
-        client,
-        owner,
-        logger: ctx.logger,
-        requireCodeOwnerReviews,
-        bypassPullRequestAllowances,
-        requiredApprovingReviewCount,
-        restrictions,
-        requiredStatusCheckContexts,
-        requireBranchesToBeUpToDate,
-        requiredConversationResolution,
-        requireLastPushApproval,
-        defaultBranch: branch ?? repository.data.default_branch,
-        enforceAdmins,
-        dismissStaleReviews,
-        requiredCommitSigning,
-        requiredLinearHistory,
+      await ctx.checkpoint({
+        key: `enable.branch.protection.${owner}.${repo}`,
+        fn: async () => {
+          await enableBranchProtectionOnDefaultRepoBranch({
+            repoName: repo,
+            client,
+            owner,
+            logger: ctx.logger,
+            requireCodeOwnerReviews,
+            bypassPullRequestAllowances,
+            requiredApprovingReviewCount,
+            restrictions,
+            requiredStatusCheckContexts,
+            requireBranchesToBeUpToDate,
+            requiredConversationResolution,
+            requireLastPushApproval,
+            defaultBranch: branch ?? defaultBranch,
+            enforceAdmins,
+            dismissStaleReviews,
+            requiredCommitSigning,
+            requiredLinearHistory,
+          });
+        },
       });
     },
   });

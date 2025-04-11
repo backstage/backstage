@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Heading } from './Heading';
-import { Stack } from '../Stack';
-import { Text } from '../Text';
+import { Flex } from '../Flex';
+
 const meta = {
   title: 'Components/Heading',
   component: Heading,
@@ -41,13 +40,13 @@ export const Title1: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <Stack>
+    <Flex direction="column" gap="4">
       <Heading variant="display">Display</Heading>
       <Heading variant="title1">Title 1</Heading>
       <Heading variant="title2">Title 2</Heading>
       <Heading variant="title3">Title 3</Heading>
       <Heading variant="title4">Title 4</Heading>
-    </Stack>
+    </Flex>
   ),
 };
 
@@ -67,16 +66,28 @@ export const CustomTag: Story = {
   },
 };
 
+export const WrappedInLink: Story = {
+  args: {
+    ...Default.args,
+  },
+  decorators: [
+    Story => (
+      <a href="/">
+        <Story />
+      </a>
+    ),
+  ],
+};
+
 export const Playground: Story = {
   render: () => (
-    <Stack>
-      <Text>All variants</Text>
+    <Flex direction="column" gap="4">
       <Heading variant="display">Display</Heading>
       <Heading variant="title1">Title 1</Heading>
       <Heading variant="title2">Title 2</Heading>
       <Heading variant="title3">Title 3</Heading>
       <Heading variant="title4">Title 4</Heading>
       <Heading variant="title5">Title 5</Heading>
-    </Stack>
+    </Flex>
   ),
 };

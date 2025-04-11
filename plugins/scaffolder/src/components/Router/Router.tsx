@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { Routes, Route, useOutlet } from 'react-router-dom';
 
 import {
@@ -42,7 +42,6 @@ import {
   selectedTemplateRouteRef,
   templateFormRouteRef,
 } from '../../routes';
-import { ErrorPage } from '@backstage/core-components';
 
 import { ActionsPage } from '../../components/ActionsPage';
 import { ListTasksPage } from '../../components/ListTasksPage';
@@ -64,6 +63,9 @@ import {
   taskReadPermission,
   templateManagementPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
+import { useApp } from '@backstage/core-plugin-api';
+import { FormField, OpaqueFormField } from '@internal/scaffolder';
+import { useAsync, useMountEffect } from '@react-hookz/web';
 
 /**
  * The Props for the Scaffolder Router
@@ -72,16 +74,16 @@ import {
  */
 export type RouterProps = {
   components?: {
-    ReviewStepComponent?: React.ComponentType<ReviewStepProps>;
-    TemplateCardComponent?: React.ComponentType<{
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
+    TemplateCardComponent?: ComponentType<{
       template: TemplateEntityV1beta3;
     }>;
-    TaskPageComponent?: React.ComponentType<PropsWithChildren<{}>>;
-    EXPERIMENTAL_TemplateOutputsComponent?: React.ComponentType<{
+    TaskPageComponent?: ComponentType<PropsWithChildren<{}>>;
+    EXPERIMENTAL_TemplateOutputsComponent?: ComponentType<{
       output?: ScaffolderTaskOutput;
     }>;
-    EXPERIMENTAL_TemplateListPageComponent?: React.ComponentType<TemplateListPageProps>;
-    EXPERIMENTAL_TemplateWizardPageComponent?: React.ComponentType<TemplateWizardPageProps>;
+    EXPERIMENTAL_TemplateListPageComponent?: ComponentType<TemplateListPageProps>;
+    EXPERIMENTAL_TemplateWizardPageComponent?: ComponentType<TemplateWizardPageProps>;
   };
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
@@ -105,11 +107,16 @@ export type RouterProps = {
 };
 
 /**
- * The Scaffolder Router
+ * Internal router with additional props that aren't available in the public API
+ * for the old frontend system.
  *
- * @public
+ * @internal
  */
-export const Router = (props: PropsWithChildren<RouterProps>) => {
+export const InternalRouter = (
+  props: PropsWithChildren<
+    RouterProps & { formFieldLoaders?: Array<() => Promise<FormField>> }
+  >,
+) => {
   const {
     components: {
       TemplateCardComponent,
@@ -123,11 +130,15 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
     } = {},
   } = props;
   const outlet = useOutlet() || props.children;
-  const customFieldExtensions =
-    useCustomFieldExtensions<FieldExtensionOptions>(outlet);
+  const customFieldExtensions = useCustomFieldExtensions(outlet);
+  const loadedFieldExtensions = useFormFieldLoaders(props.formFieldLoaders);
+
+  const app = useApp();
+  const { NotFoundErrorPage } = app.getComponents();
 
   const fieldExtensions = [
     ...customFieldExtensions,
+    ...loadedFieldExtensions,
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
       ({ name }) =>
         !customFieldExtensions.some(
@@ -237,10 +248,30 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
           </RequirePermission>
         }
       />
-      <Route
-        path="*"
-        element={<ErrorPage status="404" statusMessage="Page not found" />}
-      />
+      <Route path="*" element={<NotFoundErrorPage />} />
     </Routes>
   );
 };
+
+/**
+ * The Scaffolder Router
+ *
+ * @public
+ */
+export const Router = (props: PropsWithChildren<RouterProps>) => {
+  return <InternalRouter {...props} />;
+};
+
+function useFormFieldLoaders(
+  formFieldLoaders?: Array<() => Promise<FormField>>,
+) {
+  const [{ result: loadedFieldExtensions }, { execute }] =
+    useAsync(async () => {
+      const loaded = await Promise.all(
+        (formFieldLoaders ?? []).map(loader => loader()),
+      );
+      return loaded.map(f => OpaqueFormField.toInternal(f));
+    }, []);
+  useMountEffect(execute);
+  return loadedFieldExtensions;
+}

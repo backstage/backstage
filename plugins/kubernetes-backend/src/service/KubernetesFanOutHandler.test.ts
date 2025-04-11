@@ -20,9 +20,13 @@ import {
   ObjectFetchParams,
   KubernetesServiceLocator,
   ServiceLocatorRequestContext,
+  ObjectToFetch,
 } from '../types/types';
 import { KubernetesCredential } from '../auth/types';
-import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
+import {
+  KubernetesFanOutHandler,
+  DEFAULT_OBJECTS,
+} from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -190,7 +194,10 @@ describe('KubernetesFanOutHandler', () => {
     ],
   };
 
-  const getKubernetesFanOutHandler = (customResources: CustomResource[]) => {
+  const getKubernetesFanOutHandler = (
+    customResources: CustomResource[],
+    objectTypesToFetch?: ObjectToFetch[],
+  ) => {
     return new KubernetesFanOutHandler({
       logger: mockServices.logger.mock(),
       fetcher: {
@@ -201,6 +208,7 @@ describe('KubernetesFanOutHandler', () => {
         getClustersByEntity,
       },
       customResources: customResources,
+      objectTypesToFetch: objectTypesToFetch || DEFAULT_OBJECTS,
       authStrategy: {
         getCredential: jest
           .fn<
@@ -448,6 +456,80 @@ describe('KubernetesFanOutHandler', () => {
             },
           ],
         }),
+      );
+    });
+
+    it('fetch objects should be called with secrets', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [cluster2],
+        }),
+      );
+
+      sut = getKubernetesFanOutHandler(
+        [],
+        [
+          {
+            group: '',
+            apiVersion: 'v1',
+            plural: 'secrets',
+            objectType: 'secrets',
+          },
+        ],
+      );
+
+      await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {},
+        },
+        { credentials: mockCredentials },
+      );
+
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
+      expect(
+        Array.from(fetchObjectsForService.mock.calls[0][0].objectTypesToFetch),
+      ).toEqual(
+        expect.arrayContaining([
+          {
+            group: '',
+            apiVersion: 'v1',
+            plural: 'secrets',
+            objectType: 'secrets',
+          },
+        ]),
+      );
+    });
+
+    it('fetch objects should not be called with secrets', async () => {
+      getClustersByEntity.mockImplementation(() =>
+        Promise.resolve({
+          clusters: [cluster2],
+        }),
+      );
+
+      sut = getKubernetesFanOutHandler([]);
+
+      await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {},
+        },
+        { credentials: mockCredentials },
+      );
+
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
+      expect(
+        Array.from(fetchObjectsForService.mock.calls[0][0].objectTypesToFetch),
+      ).toEqual(
+        expect.not.arrayContaining([
+          {
+            group: '',
+            apiVersion: 'v1',
+            plural: 'secrets',
+            objectType: 'secrets',
+          },
+        ]),
       );
     });
 

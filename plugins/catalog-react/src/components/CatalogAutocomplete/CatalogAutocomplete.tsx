@@ -31,7 +31,7 @@ import Autocomplete, {
   AutocompleteProps,
   AutocompleteRenderInputParams,
 } from '@material-ui/lab/Autocomplete';
-import React, { ReactNode, useCallback } from 'react';
+import { ReactNode, useCallback } from 'react';
 import { merge } from 'lodash';
 import classNames from 'classnames';
 
@@ -124,6 +124,11 @@ const PaperComponent = (props: PaperProps) => (
   <Paper {...props} elevation={8} />
 );
 
+/**
+ * Props for {@link CatalogAutocomplete}
+ *
+ * @public
+ */
 export type CatalogAutocompleteProps<
   T,
   Multiple extends boolean | undefined = undefined,
@@ -145,6 +150,7 @@ export type CatalogAutocompleteProps<
   >['renderInput'];
 };
 
+/** @public */
 export function CatalogAutocomplete<
   T,
   Multiple extends boolean | undefined = undefined,

@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
-import React from 'react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
@@ -53,10 +53,10 @@ describe('<EntityPicker />', () => {
     getEntities: jest.fn(async () => ({ items: entities })),
   });
 
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
           [catalogApiRef, catalogApi],
@@ -258,6 +258,73 @@ describe('<EntityPicker />', () => {
           ],
         }),
       );
+    });
+  });
+
+  describe('ui:disabled EntityPicker', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+    it('Prevents user from modifying input when ui:disabled is true', async () => {
+      props.uiSchema = { 'ui:disabled': true };
+      props.formData = 'component:default/myentity';
+
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      // Expect input to be disabled
+      expect(input).toBeDisabled();
+      expect(input).toHaveValue('component:default/myentity');
+    });
+
+    it('Allows user to edit when ui:disabled is false', async () => {
+      props.uiSchema = { 'ui:disabled': false };
+      props.formData = 'component:default/myentity';
+
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+      expect(input).not.toBeDisabled();
+
+      fireEvent.change(input, {
+        target: { value: 'component:default/mynewentity' },
+      });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('component:default/mynewentity');
+      expect(onChange).toHaveBeenCalledWith('component:default/mynewentity');
     });
   });
 

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli",
-  "version": "0.29.5",
+  "version": "0.32.0-next.2",
   "description": "CLI for developing Backstage plugins and apps",
   "backstage": {
     "role": "cli"
@@ -20,7 +20,8 @@
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "bin": {
-    "backstage-cli": "bin/backstage-cli"
+    "backstage-cli": "bin/backstage-cli",
+    "backstage-cli-alpha": "bin/backstage-cli-alpha"
   },
   "files": [
     "asset-types",
@@ -41,6 +42,11 @@
     "ext": "ts",
     "watch": "./src"
   },
+  "jest": {
+    "coveragePathIgnorePatterns": [
+      "/__fixtures__/"
+    ]
+  },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
     "@backstage/cli-common": "workspace:^",
@@ -53,7 +59,7 @@
     "@backstage/release-manifests": "workspace:^",
     "@backstage/types": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
-    "@module-federation/enhanced": "^0.8.0",
+    "@module-federation/enhanced": "^0.9.0",
     "@octokit/graphql": "^5.0.0",
     "@octokit/graphql-schema": "^13.7.0",
     "@octokit/oauth-app": "^4.2.0",
@@ -90,7 +96,7 @@
     "cross-spawn": "^7.0.3",
     "css-loader": "^6.5.1",
     "ctrlc-windows": "^2.1.0",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.25.0",
     "esbuild-loader": "^4.0.0",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^9.0.0",
@@ -122,10 +128,9 @@
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^2.4.2",
     "minimatch": "^9.0.0",
-    "node-libs-browser": "^2.2.1",
+    "node-stdlib-browser": "^1.3.1",
     "npm-packlist": "^5.0.0",
     "ora": "^5.3.0",
-    "p-limit": "^3.1.0",
     "p-queue": "^6.6.2",
     "pirates": "^4.0.6",
     "postcss": "^8.1.0",
@@ -155,7 +160,8 @@
     "yargs": "^16.2.0",
     "yml-loader": "^2.1.0",
     "yn": "^4.0.0",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zod-validation-error": "^3.4.0"
   },
   "devDependencies": {
     "@backstage/backend-plugin-api": "workspace:^",

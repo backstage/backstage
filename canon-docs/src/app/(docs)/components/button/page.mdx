@@ -2,15 +2,9 @@ import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
-import {
-  ButtonPreview,
-  ButtonSizes,
-  ButtonWithIcons,
-  ButtonFullWidth,
-  ButtonDisabled,
-  ButtonResponsive,
-} from '@/snippets/button';
-import { buttonVariants } from '@/snippets/_snippets';
+import { ButtonSnippet } from '@/snippets/stories-snippets';
+import { buttonVariants } from '@/snippets/code-snippets';
+import { buttonPropDefs } from './props';
 
 # Button
 
@@ -19,7 +13,7 @@ A button component that can be used to trigger actions.
 <Snippet
   align="center"
   py={4}
-  preview={<ButtonPreview />}
+  preview={<ButtonSnippet story="Variants" />}
   code={`<Inline alignY="center">
   <Button iconStart="cloud" variant="primary">
     Button
@@ -58,34 +52,7 @@ A button component that can be used to trigger actions.
 
 ## API reference
 
-<PropsTable
-  data={{
-    size: {
-      type: ['small', 'medium'],
-      responsive: true,
-    },
-    variant: {
-      type: ['primary', 'secondary', 'tertiary'],
-      responsive: true,
-    },
-    disabled: {
-      type: 'boolean',
-      responsive: false,
-    },
-    children: {
-      type: 'ReactNode',
-      responsive: false,
-    },
-    className: {
-      type: 'string',
-      responsive: false,
-    },
-    style: {
-      type: 'CSSProperties',
-      responsive: false,
-    },
-  }}
-/>
+<PropsTable data={buttonPropDefs} />
 
 ## Examples
 
@@ -97,7 +64,7 @@ Here's a view when buttons have different variants.
   align="center"
   py={4}
   open
-  preview={<ButtonPreview />}
+  preview={<ButtonSnippet story="Variants" />}
   code={buttonVariants}
 />
 
@@ -109,7 +76,7 @@ Here's a view when buttons have different sizes.
   align="center"
   py={4}
   open
-  preview={<ButtonSizes />}
+  preview={<ButtonSnippet story="Sizes" />}
   code={`<Inline alignY="center">
     <Button size="small">Small</Button>
     <Button size="medium">Medium</Button>
@@ -124,7 +91,7 @@ Here's a view when buttons have icons.
   align="center"
   py={4}
   open
-  preview={<ButtonWithIcons />}
+  preview={<ButtonSnippet story="WithIcons" />}
   code={`<Inline alignY="center">
     <Button iconStart="cloud">Button</Button>
     <Button iconEnd="chevronRight">Button</Button>
@@ -140,10 +107,10 @@ Here's a view when buttons are full width.
   align="center"
   py={4}
   open
-  preview={<ButtonFullWidth />}
-  code={`<Stack style={{ width: '300px' }}>
+  preview={<ButtonSnippet story="FullWidth" />}
+  code={`<Flex style={{ width: '300px' }}>
     <Button fullWidth>Full width</Button>
-</Stack>`}
+</Flex>`}
 />
 
 ### Disabled
@@ -154,7 +121,7 @@ Here's a view when buttons are disabled.
   align="center"
   py={4}
   open
-  preview={<ButtonDisabled />}
+  preview={<ButtonSnippet story="Disabled" />}
   code={`<Button disabled>Button</Button>`}
 />
 
@@ -162,14 +129,8 @@ Here's a view when buttons are disabled.
 
 Here's a view when buttons are responsive.
 
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<ButtonResponsive />}
-  code={`<Button
-    variant={{ xs: 'primary', sm: 'secondary', md: 'tertiary' }}
-    size={{ xs: 'small', sm: 'medium' }}>
-    Button
-</Button>`}
+<CodeBlock
+  code={`<Button variant={{ initial: 'primary', lg: 'secondary' }}>
+    Responsive Button
+  </Button>`}
 />

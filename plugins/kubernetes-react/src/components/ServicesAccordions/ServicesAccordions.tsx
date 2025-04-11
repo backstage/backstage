@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -77,6 +77,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
         ports: service.spec?.ports,
         ...metadata,
       }}
+      options={{ nestedValuesAsYaml: true }}
     />
   );
 };

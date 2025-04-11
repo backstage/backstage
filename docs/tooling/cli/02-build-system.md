@@ -515,6 +515,7 @@ The Backstage tooling supports [ECMAScript modules (ESM)](https://nodejs.org/doc
 
 - To enable support for native ESM in tests, you need to run the tests with the `--experimental-vm-modules` flag enabled, typically via `NODE_OPTIONS='--experimental-vm-modules'`.
 - Declaring a package as `"type": "module"` in `package.json` is supported, but in tests it will cause all local transitive dependencies to also be treated as ESM, regardless of whether they declare `"type": "module"` or not.
+- When running tests with coverage enabled the default `babel` coverage provider can mess with the hoisting of named exports. This can be worked around by using the `v8` provider instead by setting `"coverageProvider": "v8"` in the Jest configuration, although note that the `v8` provider is a fair bit slower than the `babel` one.
 - Node.js has an [ESM interoperability layer with CommonJS](https://nodejs.org/docs/latest-v22.x/api/esm.html#interoperability-with-commonjs) that allows for imports from ESM to identify named exports in CommonJS packages. This interoperability layer is **only** enabled when importing packages with a `.cts` or `.cjs` extension. This is because the interoperability layer is not fully compatible with the NPM ecosystem, and would break package if it was enabled for `.js` files.
 - Dynamic imports of CommonJS packages will vary in shape depending on the runtime, i.e. test vs local development, etc. It is therefore recommended to avoid dynamic imports of CommonJS packages and instead use `require`, or to use the explicit CommonJS extensions as mentioned above. If you do need to dynamically import CommonJS packages, avoid using `default` exports, as the shape of them vary across different environments and you would otherwise need to manually unwrap the import based on the shape of the module object.
 
@@ -596,22 +597,33 @@ Caching is used sparingly throughout the Backstage build system. It is always us
 
 For your productivity working with unit tests it's quite essential to have your debugging configured in IDE. It will help you to identify the root cause of the issue faster.
 
+We cannot execute tests with just raw `jest`, because there are a few concerns such as module transforms that need to be in place for the `jest` runtime to be happy.
+Therefore, we delegate to the Backstage CLI to wrap the jest run for us, since it knows how to put those things in place.
+This aligns things so that your in-IDE test runs work the same way as your CI and manual command line test runs do.
+
+With that in mind, here are some IDEs configurations to run backstage components' `jest` tests with `backstage-cli` in the role of `jest`.
+
 #### IntelliJ IDEA
 
-1. Update Jest configuration template by:
+1.  Update Jest configuration template by:
 
-- Click on "Edit Configurations" on top panel
-- In the modal dialog click on link "Edit configuration templates..." located in the bottom left corner.
-- In "Jest package" you have to point to relative path of jest module (it will be suggested by IntelliJ), i.e. `~/proj/backstage/node_modules/jest`
-- In "Jest config" point to your jest configuration file, use absolute path for that, i.e. `--config /Users/user/proj/backstage/packages/cli/config/jest.js --runInBand`
+    1.  Click on "Edit Configurations" on top panel
+    2.  In the modal dialog click on link "Edit configuration templates..." located in the bottom left corner.
+    3.  "Configuration file": leave empty (`backstage-cli` adds the config)
+    4.  "Node options": `--no-node-snapshot --experimental-vm-modules`
+    5.  "Jest package": `~/workspace/backstage/node_modules/@backstage/cli` - the location of the backstage cli package.
+    6.  "Working directory": `~/workspace/backstage`
+    7.  "Jest Options": `repo test --runInBand --watch=false`
 
-2. Now you can run any tests by clicking on green arrow located on `describe` or `it`.
+2.  Currently, intellij has an issue that if you right-click on a jest test and press "run", intellij will create a playwright run configuration instead of jest configuration, see [WEB-67720](https://youtrack.jetbrains.com/issue/WEB-67720/Jest-test-runs-as-playwright-test).
+
+    Until intellij maintainers resolve the issue, create a jest configuration manually. Happily, intellij will pre-fill the configuration from the template. The only thing you need to do is provide a path to the test file. Note, that after intellij runs test in the file you can click on the individual tests from the run panel and re-run them, this time intellij will create a correct jest run configuration.
 
 #### VS Code
 
 ```jsonc
 {
-  "jest.jestCommandLine": "node_modules/.bin/jest --config node_modules/@backstage/cli/config/jest.js",
+  "jest.jestCommandLine": "yarn test",
   // In a large repo like the Backstage main repo you likely want to disable
   // watch mode and the initial test run too, leaving just manual and perhaps
   // on-save test runs in place.

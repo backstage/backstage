@@ -14,20 +14,41 @@
  * limitations under the License.
  */
 
-/* Default utilities */
-@import './utilities/xs.css';
+/* Padding */
+@import './utilities/p.css';
+@import './utilities/pl.css';
+@import './utilities/pr.css';
+@import './utilities/pt.css';
+@import './utilities/pb.css';
+@import './utilities/py.css';
+@import './utilities/px.css';
 
-/* Min 640px */
-@import './utilities/sm.css';
+/* Margin */
+@import './utilities/m.css';
+@import './utilities/ml.css';
+@import './utilities/mr.css';
+@import './utilities/mt.css';
+@import './utilities/mb.css';
+@import './utilities/my.css';
+@import './utilities/mx.css';
 
-/* Min 768px */
-@import './utilities/md.css';
+/* Display */
+@import './utilities/display.css';
 
-/* Min 1024px */
-@import './utilities/lg.css';
+/* Width */
+@import './utilities/width.css';
 
-/* Min 1280px */
-@import './utilities/xl.css';
+/* Height */
+@import './utilities/height.css';
 
-/* Min 1536px */
-@import './utilities/2xl.css';
+/* Position */
+@import './utilities/position.css';
+
+/* Grid */
+@import './utilities/grid.css';
+
+/* Gap */
+@import './utilities/gap.css';
+
+/* Flex */
+@import './utilities/flex.css';

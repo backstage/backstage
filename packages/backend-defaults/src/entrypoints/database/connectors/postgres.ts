@@ -107,7 +107,7 @@ export async function buildPgDatabaseConfig(
   const connector = new CloudSqlConnector();
   const clientOpts = await connector.getOptions({
     instanceConnectionName: config.connection.instance,
-    ipType: IpAddressTypes.PUBLIC,
+    ipType: config.connection.ipAddressType ?? IpAddressTypes.PUBLIC,
     authType: AuthTypes.IAM,
   });
 

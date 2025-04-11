@@ -14,9 +14,4 @@
  * limitations under the License.
  */
 
-export { ToolDocumentCollatorFactory } from './ToolDocumentCollatorFactory';
-
-export type {
-  ToolDocument,
-  ToolDocumentCollatorFactoryOptions,
-} from './ToolDocumentCollatorFactory';
+export type { ToolDocument } from './ToolDocumentCollatorFactory';

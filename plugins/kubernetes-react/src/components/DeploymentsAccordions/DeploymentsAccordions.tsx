@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import { ReactNode, useContext } from 'react';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -41,14 +41,14 @@ import { StatusError, StatusOK } from '@backstage/core-components';
 import { READY_COLUMNS, RESOURCE_COLUMNS } from '../Pods/PodsTable';
 
 type DeploymentsAccordionsProps = {
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type DeploymentAccordionProps = {
   deployment: V1Deployment;
   ownedPods: V1Pod[];
   matchingHpa?: V2HorizontalPodAutoscaler;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type DeploymentSummaryProps = {
@@ -56,7 +56,7 @@ type DeploymentSummaryProps = {
   numberOfCurrentPods: number;
   numberOfPodsWithErrors: number;
   hpa?: V2HorizontalPodAutoscaler;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 const DeploymentSummary = ({

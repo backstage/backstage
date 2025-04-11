@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen } from '@testing-library/react';
-import { renderInTestApp } from '@backstage/test-utils';
+import {
+  mockApis,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 import { KubernetesContent } from './KubernetesContent';
 import { useKubernetesObjects } from '@backstage/plugin-kubernetes-react';
 import * as oneDeployment from './__fixtures__/1-deployments.json';
 import * as twoDeployments from './__fixtures__/2-deployments.json';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
 
 jest.mock('@backstage/plugin-kubernetes-react', () => ({
   ...jest.requireActual('@backstage/plugin-kubernetes-react'),
@@ -39,15 +43,17 @@ describe('KubernetesContent', () => {
       error: undefined,
     });
     await renderInTestApp(
-      <KubernetesContent
-        entity={
-          {
-            metadata: {
-              name: 'some-entity',
-            },
-          } as any
-        }
-      />,
+      <TestApiProvider apis={[[permissionApiRef, mockApis.permission()]]}>
+        <KubernetesContent
+          entity={
+            {
+              metadata: {
+                name: 'some-entity',
+              },
+            } as any
+          }
+        />
+      </TestApiProvider>,
     );
     expect(screen.getByText('Your Clusters')).toBeInTheDocument();
     // TODO add a prompt for the user to configure their clusters
@@ -81,15 +87,17 @@ describe('KubernetesContent', () => {
       error: undefined,
     });
     await renderInTestApp(
-      <KubernetesContent
-        entity={
-          {
-            metadata: {
-              name: 'some-entity',
-            },
-          } as any
-        }
-      />,
+      <TestApiProvider apis={[[permissionApiRef, mockApis.permission()]]}>
+        <KubernetesContent
+          entity={
+            {
+              metadata: {
+                name: 'some-entity',
+              },
+            } as any
+          }
+        />
+      </TestApiProvider>,
     );
 
     expect(screen.getByText('cluster-1')).toBeInTheDocument();
@@ -145,15 +153,17 @@ describe('KubernetesContent', () => {
       error: undefined,
     });
     await renderInTestApp(
-      <KubernetesContent
-        entity={
-          {
-            metadata: {
-              name: 'some-entity',
-            },
-          } as any
-        }
-      />,
+      <TestApiProvider apis={[[permissionApiRef, mockApis.permission()]]}>
+        <KubernetesContent
+          entity={
+            {
+              metadata: {
+                name: 'some-entity',
+              },
+            } as any
+          }
+        />
+      </TestApiProvider>,
     );
     expect(screen.getAllByText('Cluster')).toHaveLength(2);
     expect(screen.getByText('cluster-a')).toBeInTheDocument();

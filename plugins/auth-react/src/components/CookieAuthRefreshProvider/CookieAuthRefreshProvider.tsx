@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { ErrorPanel } from '@backstage/core-components';
 import { useApp } from '@backstage/core-plugin-api';
 import Button from '@material-ui/core/Button';

@@ -1,5 +1,163 @@
 # @backstage/plugin-devtools
 
+## 0.1.26-next.2
+
+### Patch Changes
+
+- e655f62: Updated `README.md` to use `yarn start` instead of `yarn dev`.
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/core-compat-api@0.4.1-next.2
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/plugin-permission-react@0.4.33-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-devtools-common@0.1.15
+
+## 0.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/core-compat-api@0.4.1-next.1
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-devtools-common@0.1.15
+  - @backstage/plugin-permission-react@0.4.32
+
+## 0.1.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.1-next.0
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-devtools-common@0.1.15
+  - @backstage/plugin-permission-react@0.4.32
+
+## 0.1.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/core-compat-api@0.4.0
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-devtools-common@0.1.15
+
+## 0.1.25-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/core-compat-api@0.4.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-devtools-common@0.1.15
+  - @backstage/plugin-permission-react@0.4.31
+
+## 0.1.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/core-compat-api@0.3.7-next.1
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/plugin-devtools-common@0.1.15
+  - @backstage/plugin-permission-react@0.4.31
+
+## 0.1.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+  - @backstage/core-compat-api@0.3.7-next.0
+
+## 0.1.24
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/core-compat-api@0.3.6
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-permission-react@0.4.31
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-devtools-common@0.1.15
+
+## 0.1.24-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+  - @backstage/core-compat-api@0.3.6-next.3
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-devtools-common@0.1.15
+  - @backstage/plugin-permission-react@0.4.31-next.0
+
+## 0.1.24-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-compat-api@0.3.6-next.2
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/plugin-devtools-common@0.1.15
+  - @backstage/plugin-permission-react@0.4.31-next.0
+
+## 0.1.24-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.1
+  - @backstage/core-compat-api@0.3.6-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/plugin-permission-react@0.4.31-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-devtools-common@0.1.15
+
+## 0.1.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.0
+  - @backstage/core-compat-api@0.3.6-next.0
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-devtools-common@0.1.15
+  - @backstage/plugin-permission-react@0.4.30
+
 ## 0.1.23
 
 ### Patch Changes

@@ -24,7 +24,7 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
 import { fireEvent, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import React from 'react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { MultiEntityPicker } from './MultiEntityPicker';
 import { MultiEntityPickerProps } from './schema';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
@@ -54,10 +54,10 @@ describe('<MultiEntityPicker />', () => {
   const catalogApi = catalogApiMock.mock({
     getEntities: jest.fn(async () => ({ items: entities })),
   });
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
           [catalogApiRef, catalogApi],
@@ -404,6 +404,38 @@ describe('<MultiEntityPicker />', () => {
 
       // Verify that the handleChange function was called with an empty array
       expect(onChange).toHaveBeenCalledWith([]);
+    });
+  });
+
+  describe('ui:disabled MultiEntityPicker', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          allowArbitraryValues: true,
+        },
+        'ui:disabled': true,
+      };
+      props = {
+        onChange,
+        schema,
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+    it('Prevents user from modifying input when ui:disabled is true', async () => {
+      props.formData = ['component/default:myentity'];
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+      expect(input).toBeDisabled();
     });
   });
 

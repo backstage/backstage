@@ -62,6 +62,11 @@ export interface Config {
         tenantId?: string;
         personalAccessToken?: string;
       }[];
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /**
@@ -94,6 +99,11 @@ export interface Config {
        * @visibility secret
        */
       appPassword?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for Bitbucket Cloud */
@@ -108,6 +118,11 @@ export interface Config {
        * @visibility secret
        */
       appPassword: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for Bitbucket Server */
@@ -137,6 +152,11 @@ export interface Config {
        * @visibility frontend
        */
       apiBaseUrl?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for Gerrit */
@@ -177,6 +197,11 @@ export interface Config {
        * @visibility secret
        */
       password?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for GitHub */
@@ -219,7 +244,7 @@ export interface Config {
          * The secret used for webhooks
          * @visibility secret
          */
-        webhookSecret: string;
+        webhookSecret?: string;
         /**
          * The client ID to use
          */
@@ -274,6 +299,11 @@ export interface Config {
        * @visibility frontend
        */
       baseUrl?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for Google Cloud Storage */
@@ -354,6 +384,11 @@ export interface Config {
        * @visibility secret
        */
       password?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
     /** Integration configuration for Harness Code */
     harness?: Array<{

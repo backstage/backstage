@@ -17,7 +17,10 @@
 import { createApiRef } from '@backstage/frontend-plugin-api';
 import { ScaffolderFormFieldsApi } from './types';
 
-/** @alpha */
+/**
+ * @alpha
+ * @deprecated This API is no longer necessary and will be removed
+ */
 export const formFieldsApiRef = createApiRef<ScaffolderFormFieldsApi>({
   id: 'plugin.scaffolder.form-fields',
 });

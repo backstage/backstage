@@ -67,3 +67,5 @@ export type {
   DeprecatedTechDocsEntityMetadata as TechDocsEntityMetadata,
   DeprecatedTechDocsMetadata as TechDocsMetadata,
 };
+
+export * from './overridableComponents';

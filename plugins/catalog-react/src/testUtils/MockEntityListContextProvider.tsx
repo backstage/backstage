@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  PropsWithChildren,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react';
+import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import {
   DefaultEntityFilters,
   EntityListContext,

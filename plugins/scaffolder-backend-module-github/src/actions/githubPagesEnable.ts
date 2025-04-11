@@ -25,7 +25,7 @@ import {
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { examples } from './githubPagesEnable.examples';
-import { getOctokitOptions } from '@backstage/plugin-scaffolder-backend-module-github';
+import { getOctokitOptions } from '../util';
 
 /**
  * Creates a new action that enables GitHub Pages for a repository.
@@ -55,25 +55,31 @@ export function createGithubPagesEnableAction(options: {
         properties: {
           repoUrl: {
             title: 'Repository Location',
-            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
+            description:
+              'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
             type: 'string',
           },
           buildType: {
             title: 'Build Type',
             type: 'string',
+            default: 'workflow',
             description:
-              'The GitHub Pages build type - "legacy" or "workflow". Default is "workflow',
+              'The GitHub Pages build type - `legacy` or `workflow`. Default is `workflow`',
+            enum: ['legacy', 'workflow'],
           },
           sourceBranch: {
             title: 'Source Branch',
             type: 'string',
+            default: 'main',
             description: 'The GitHub Pages source branch. Default is "main"',
           },
           sourcePath: {
             title: 'Source Path',
             type: 'string',
+            default: '/',
             description:
               'The GitHub Pages source path - "/" or "/docs". Default is "/"',
+            enum: ['/', '/docs'],
           },
           token: {
             title: 'Authorization Token',
@@ -92,34 +98,41 @@ export function createGithubPagesEnableAction(options: {
         token: providedToken,
       } = ctx.input;
 
-      const octokitOptions = await getOctokitOptions({
-        integrations,
-        credentialsProvider: githubCredentialsProvider,
-        token: providedToken,
-        repoUrl: repoUrl,
-      });
-      const client = new Octokit(octokitOptions);
-
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        token: providedToken,
+        host,
+        owner,
+        repo,
+      });
+      const client = new Octokit(octokitOptions);
+
       ctx.logger.info(
         `Attempting to enable GitHub Pages for ${owner}/${repo} with "${buildType}" build type, on source branch "${sourceBranch}" and source path "${sourcePath}"`,
       );
 
-      await client.request('POST /repos/{owner}/{repo}/pages', {
-        owner: owner,
-        repo: repo,
-        build_type: buildType,
-        source: {
-          branch: sourceBranch,
-          path: sourcePath,
-        },
-        headers: {
-          'X-GitHub-Api-Version': '2022-11-28',
+      await ctx.checkpoint({
+        key: `enabled.github.pages.${owner}.${repo}`,
+        fn: async () => {
+          await client.request('POST /repos/{owner}/{repo}/pages', {
+            owner: owner,
+            repo: repo,
+            build_type: buildType,
+            source: {
+              branch: sourceBranch,
+              path: sourcePath,
+            },
+            headers: {
+              'X-GitHub-Api-Version': '2022-11-28',
+            },
+          });
         },
       });
 

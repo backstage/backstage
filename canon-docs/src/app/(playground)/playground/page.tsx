@@ -1,14 +1,16 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { Grid, Stack, Text } from '../../../../../packages/canon';
+import { Grid, Flex, Text } from '../../../../../packages/canon';
 import { screenSizes } from '@/utils/data';
 import { Frame } from '@/components/Frame';
 import { usePlayground } from '@/utils/playground-context';
-import { ButtonPlayground } from '@/snippets/button';
-import { CheckboxPlayground } from '@/snippets/checkbox';
-import { HeadingPlayground } from '@/snippets/heading';
-import { TextPlayground } from '@/snippets/text';
+import {
+  ButtonSnippet,
+  CheckboxSnippet,
+  HeadingSnippet,
+  TextSnippet,
+} from '@/snippets/stories-snippets';
 
 import styles from './styles.module.css';
 
@@ -53,33 +55,36 @@ const Content = () => {
   const { selectedComponents } = usePlayground();
 
   return (
-    <Stack gap="xl">
+    <Flex direction="column" gap="4">
       {selectedComponents.find(c => c === 'button') && (
-        <Line content={<ButtonPlayground />} title="Button" />
+        <Line content={<ButtonSnippet story="Playground" />} title="Button" />
       )}
       {selectedComponents.find(c => c === 'checkbox') && (
-        <Line content={<CheckboxPlayground />} title="Checkbox" />
+        <Line
+          content={<CheckboxSnippet story="Playground" />}
+          title="Checkbox"
+        />
       )}
       {selectedComponents.find(c => c === 'heading') && (
-        <Line content={<HeadingPlayground />} title="Heading" />
+        <Line content={<HeadingSnippet story="Playground" />} title="Heading" />
       )}
       {selectedComponents.find(c => c === 'text') && (
-        <Line content={<TextPlayground />} title="Text" />
+        <Line content={<TextSnippet story="Playground" />} title="Text" />
       )}
       {/* {selectedComponents.find(c => c === 'input') && (
         <Line content={<InputPlayground />} title="Input" />
       )} */}
-    </Stack>
+    </Flex>
   );
 };
 
 const Line = ({ content, title }: { content: ReactNode; title: string }) => {
   return (
-    <Grid gap={{ xs: 'xs', md: 'xl' }}>
-      <Grid.Item colSpan={2}>
+    <Grid gap={{ xs: '2', md: '4' }}>
+      <Grid.Item colSpan="2">
         <Text>{title}</Text>
       </Grid.Item>
-      <Grid.Item colSpan={10}>{content}</Grid.Item>
+      <Grid.Item colSpan="10">{content}</Grid.Item>
     </Grid>
   );
 };

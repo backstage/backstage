@@ -17,7 +17,7 @@
 import MaterialButton, {
   ButtonProps as MaterialButtonProps,
 } from '@material-ui/core/Button';
-import React from 'react';
+import { forwardRef } from 'react';
 import { Link, LinkProps } from '../Link';
 
 /**
@@ -34,7 +34,7 @@ export type LinkButtonProps = MaterialButtonProps &
 /**
  * This wrapper is here to reset the color of the Link and make typescript happy.
  */
-const LinkWrapper = React.forwardRef<any, LinkProps>((props, ref) => (
+const LinkWrapper = forwardRef<any, LinkProps>((props, ref) => (
   <Link ref={ref} {...props} color="initial" />
 ));
 
@@ -44,11 +44,9 @@ const LinkWrapper = React.forwardRef<any, LinkProps>((props, ref) => (
  * @public
  * @remarks
  */
-export const LinkButton = React.forwardRef<any, LinkButtonProps>(
-  (props, ref) => (
-    <MaterialButton ref={ref} component={LinkWrapper} {...props} />
-  ),
-) as (props: LinkButtonProps) => JSX.Element;
+export const LinkButton = forwardRef<any, LinkButtonProps>((props, ref) => (
+  <MaterialButton ref={ref} component={LinkWrapper} {...props} />
+)) as (props: LinkButtonProps) => JSX.Element;
 
 /**
  * @public

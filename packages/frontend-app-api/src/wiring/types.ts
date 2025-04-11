@@ -13,12 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FrontendModule, FrontendPlugin } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/frontend-plugin-api';
+import { FrontendFeature as PluginApiFrontendFeature } from '@backstage/frontend-plugin-api';
+import { BackstageRouteObject } from '../routing/types';
 
-/** @public  */
-export type FrontendFeature =
-  | FrontendPlugin
-  | FrontendModule
-  // TODO(blam): This is just forwards backwards compatibility, remove after v1.31.0
-  | { $$type: '@backstage/ExtensionOverrides' }
-  | { $$type: '@backstage/BackstagePlugin' };
+/** @public
+ * @deprecated Use {@link @backstage/frontend-plugin-api#FrontendFeature} instead.
+ */
+export type FrontendFeature = PluginApiFrontendFeature;
+
+/** @internal */
+export type RouteInfo = {
+  routePaths: Map<RouteRef, string>;
+  routeParents: Map<RouteRef, RouteRef | undefined>;
+  routeObjects: BackstageRouteObject[];
+};

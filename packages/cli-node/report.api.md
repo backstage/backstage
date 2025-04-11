@@ -12,6 +12,9 @@ export type BackstagePackage = {
   packageJson: BackstagePackageJson;
 };
 
+// @public (undocumented)
+export type BackstagePackageFeatureType = (typeof packageFeatureType)[number];
+
 // @public
 export interface BackstagePackageJson {
   // (undocumented)
@@ -22,6 +25,7 @@ export interface BackstagePackageJson {
     pluginId?: string | null;
     pluginPackage?: string;
     pluginPackages?: string[];
+    features?: Record<string, BackstagePackageFeatureType>;
   };
   // (undocumented)
   bundled?: boolean;
@@ -111,6 +115,14 @@ export type LockfileDiffEntry = {
   name: string;
   range: string;
 };
+
+// @public
+export const packageFeatureType: readonly [
+  '@backstage/BackendFeature',
+  '@backstage/BackstagePlugin',
+  '@backstage/FrontendPlugin',
+  '@backstage/FrontendModule',
+];
 
 // @public
 export class PackageGraph extends Map<string, PackageGraphNode> {

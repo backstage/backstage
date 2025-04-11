@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   /** Configuration options for the auth plugin */
   auth?: {
@@ -38,6 +40,7 @@ export interface Config {
               | { resolver: 'emailMatchingUserEntityProfileEmail' }
             >;
           };
+          sessionDuration?: HumanDuration | string;
         };
       };
     };

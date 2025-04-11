@@ -24,10 +24,8 @@ import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import {
-  createGithubRepoWithCollaboratorsAndTopics,
-  getOctokitOptions,
-} from './helpers';
+import { createGithubRepoWithCollaboratorsAndTopics } from './helpers';
+import { getOctokitOptions } from '../util';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
 import { examples } from './githubRepoCreate.examples';
@@ -57,6 +55,7 @@ export function createGithubRepoCreateAction(options: {
     squashMergeCommitMessage?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
     allowMergeCommit?: boolean;
     allowAutoMerge?: boolean;
+    allowUpdateBranch?: boolean;
     requireCodeOwnerReviews?: boolean;
     bypassPullRequestAllowances?: {
       users?: string[];
@@ -132,6 +131,7 @@ export function createGithubRepoCreateAction(options: {
           squashMergeCommitMessage: inputProps.squashMergeCommitMessage,
           allowRebaseMerge: inputProps.allowRebaseMerge,
           allowAutoMerge: inputProps.allowAutoMerge,
+          allowUpdateBranch: inputProps.allowUpdateBranch,
           collaborators: inputProps.collaborators,
           hasProjects: inputProps.hasProjects,
           hasWiki: inputProps.hasWiki,
@@ -169,6 +169,7 @@ export function createGithubRepoCreateAction(options: {
         squashMergeCommitMessage = 'COMMIT_MESSAGES',
         allowRebaseMerge = true,
         allowAutoMerge = false,
+        allowUpdateBranch = false,
         collaborators,
         hasProjects = undefined,
         hasWiki = undefined,
@@ -182,49 +183,58 @@ export function createGithubRepoCreateAction(options: {
         token: providedToken,
       } = ctx.input;
 
-      const octokitOptions = await getOctokitOptions({
-        integrations,
-        credentialsProvider: githubCredentialsProvider,
-        token: providedToken,
-        repoUrl: repoUrl,
-      });
-      const client = new Octokit(octokitOptions);
-
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
-        client,
-        repo,
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        token: providedToken,
+        host,
         owner,
-        repoVisibility,
-        description,
-        homepage,
-        deleteBranchOnMerge,
-        allowMergeCommit,
-        allowSquashMerge,
-        squashMergeCommitTitle,
-        squashMergeCommitMessage,
-        allowRebaseMerge,
-        allowAutoMerge,
-        access,
-        collaborators,
-        hasProjects,
-        hasWiki,
-        hasIssues,
-        topics,
-        repoVariables,
-        secrets,
-        oidcCustomization,
-        customProperties,
-        subscribe,
-        ctx.logger,
-      );
+        repo,
+      });
+      const client = new Octokit(octokitOptions);
 
-      ctx.output('remoteUrl', newRepo.clone_url);
+      const remoteUrl = await ctx.checkpoint({
+        key: `create.repo.and.topics.${owner}.${repo}`,
+        fn: async () => {
+          const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
+            client,
+            repo,
+            owner,
+            repoVisibility,
+            description,
+            homepage,
+            deleteBranchOnMerge,
+            allowMergeCommit,
+            allowSquashMerge,
+            squashMergeCommitTitle,
+            squashMergeCommitMessage,
+            allowRebaseMerge,
+            allowAutoMerge,
+            allowUpdateBranch,
+            access,
+            collaborators,
+            hasProjects,
+            hasWiki,
+            hasIssues,
+            topics,
+            repoVariables,
+            secrets,
+            oidcCustomization,
+            customProperties,
+            subscribe,
+            ctx.logger,
+          );
+          return newRepo.clone_url;
+        },
+      });
+
+      ctx.output('remoteUrl', remoteUrl);
     },
   });
 }

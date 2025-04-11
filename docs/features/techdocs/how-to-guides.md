@@ -92,10 +92,11 @@ the source code hosting provider. Notice that instead of the `dir:` prefix, the
 
 Note, just as it's possible to specify a subdirectory with the `dir:` prefix,
 you can also provide a path to a non-root directory inside the repository which
-contains the `mkdocs.yml` file and `docs/` directory.
+contains the `mkdocs.yml` file and `docs/` directory. It is important that it is
+suffixed with a '/' in order for relative path resolution to work consistently.
 
 e.g.
-`url:https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend/examples/documented-component`
+`url:https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend/examples/documented-component/`
 
 ### Why is URL Reader faster than a git clone?
 
@@ -134,9 +135,14 @@ You can easily customize the TechDocs home page using TechDocs panel layout
 Modify your `App.tsx` as follows:
 
 ```tsx
+import { Fragment, PropsWithChildren } from 'react';
 import { TechDocsCustomHome } from '@backstage/plugin-techdocs';
 //...
 
+const options = { emptyRowsWhenPaging: false };
+const linkDestination = (entity: Entity): string | undefined => {
+  return entity.metadata.annotations?.['external-docs'];
+};
 const techDocsTabsConfig = [
   {
     label: 'Recommended Documentation',
@@ -145,18 +151,53 @@ const techDocsTabsConfig = [
         title: 'Golden Path',
         description: 'Documentation about standards to follow',
         panelType: 'DocsCardGrid',
+        panelProps: { CustomHeader: () => <ContentHeader title='Golden Path'/> },
+        filterPredicate: entity =>
+          entity?.metadata?.tags?.includes('golden-path') ?? false,
+      },
+      {
+        title: 'Recommended',
+        description: 'Useful documentation',
+        panelType: 'InfoCardGrid',
+        panelProps: {
+          CustomHeader: () => <ContentHeader title='Recommended' />
+          linkDestination: linkDestination,
+        },
         filterPredicate: entity =>
           entity?.metadata?.tags?.includes('recommended') ?? false,
       },
     ],
   },
+  {
+    label: 'Browse All',
+    panels: [
+      {
+        description: 'Browse all docs',
+        filterPredicate: filterEntity,
+        panelType: 'TechDocsIndexPage',
+        title: 'All',
+        panelProps: { PageWrapper: Fragment, CustomHeader: Fragment, options: options },
+      },
+    ],
+  },
 ];
-
+const docsFilter = {
+  kind: ['Location', 'Resource', 'Component'],
+  'metadata.annotations.featured-docs': CATALOG_FILTER_EXISTS,
+}
+const customPageWrapper = ({ children }: PropsWithChildren<{}>) =>
+  (<PageWithHeader title="Docs" themeId="documentation">{children}</PageWithHeader>)
 const AppRoutes = () => {
   <FlatRoutes>
     <Route
       path="/docs"
-      element={<TechDocsCustomHome tabsConfig={techDocsTabsConfig} />}
+      element={
+        <TechDocsCustomHome
+          tabsConfig={techDocsTabsConfig}
+          filter={docsFilter}
+          CustomPageWrapper={customPageWrapper}
+        />
+      }
     />
   </FlatRoutes>;
 };
@@ -172,7 +213,7 @@ maintain such a component in a new directory at
 For example, you can define the following Custom home page component:
 
 ```tsx
-import React from 'react';
+import { ReactNode } from 'react';
 
 import { Content } from '@backstage/core-components';
 import {
@@ -192,7 +233,7 @@ import { EntityListDocsGrid } from '@backstage/plugin-techdocs';
 
 export type CustomTechDocsHomeProps = {
   groups?: Array<{
-    title: React.ReactNode;
+    title: ReactNode;
     filterPredicate: ((entity: Entity) => boolean) | string;
   }>;
 };

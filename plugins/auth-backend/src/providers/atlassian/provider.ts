@@ -31,6 +31,7 @@ import { AuthHandler } from '../types';
  * Auth provider integration for Atlassian auth
  *
  * @public
+ * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
  */
 export const atlassian = createAuthProviderIntegration({
   create(options?: {

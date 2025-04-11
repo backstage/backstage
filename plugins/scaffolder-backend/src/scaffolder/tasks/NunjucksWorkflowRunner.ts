@@ -14,55 +14,60 @@
  * limitations under the License.
  */
 
-import { ScmIntegrations } from '@backstage/integration';
-import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
-import * as winston from 'winston';
-import fs from 'fs-extra';
-import path from 'path';
-import nunjucks from 'nunjucks';
-import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 import { InputError, NotAllowedError, stringifyError } from '@backstage/errors';
-import { PassThrough } from 'stream';
-import { generateExampleOutput, isTruthy } from './helper';
-import { validate as validateJsonSchema } from 'jsonschema';
-import { TemplateActionRegistry } from '../actions';
-import { metrics } from '@opentelemetry/api';
-import {
-  SecureTemplater,
-  SecureTemplateRenderer,
-} from '../../lib/templating/SecureTemplater';
+import { ScmIntegrations } from '@backstage/integration';
 import {
   TaskRecovery,
   TaskSpec,
   TaskSpecV1beta3,
   TaskStep,
 } from '@backstage/plugin-scaffolder-common';
-
+import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
+import { metrics } from '@opentelemetry/api';
+import fs from 'fs-extra';
+import { validate as validateJsonSchema } from 'jsonschema';
+import nunjucks from 'nunjucks';
+import path from 'path';
+import { PassThrough } from 'stream';
+import * as winston from 'winston';
 import {
-  TemplateAction,
-  TemplateFilter,
-  TemplateGlobal,
-  TaskContext,
-} from '@backstage/plugin-scaffolder-node';
-import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
+  SecureTemplater,
+  SecureTemplateRenderer,
+} from '../../lib/templating/SecureTemplater';
+import { TemplateActionRegistry } from '../actions';
+import { generateExampleOutput, isTruthy } from './helper';
+import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
+
+import type {
+  AuditorService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 import { UserEntity } from '@backstage/catalog-model';
-import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
-import { createDefaultFilters } from '../../lib/templating/filters';
 import {
   AuthorizeResult,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { scaffolderActionRules } from '../../service/rules';
+import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
-import { PermissionsService } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
+import {
+  TaskContext,
+  TemplateAction,
+  TemplateFilter,
+  TemplateGlobal,
+} from '@backstage/plugin-scaffolder-node';
+import { createDefaultFilters } from '../../lib/templating/filters/createDefaultFilters';
+import { scaffolderActionRules } from '../../service/rules';
+import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
+import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
+import { convertFiltersToRecord } from '../../util/templating';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   logger: winston.Logger;
+  auditor?: AuditorService;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionsService;
@@ -127,7 +132,7 @@ const createStepLogger = ({
   // Initially this stream used to be the only way to write to the client logs, but that
   // has changed over time, there's not really a need for this anymore.
   // You can just create a simple wrapper like the below in your action to write to the main logger.
-  // This way we also get recactions for free.
+  // This way we also get redactions for free.
   const streamLogger = new PassThrough();
   streamLogger.on('data', async data => {
     const message = data.toString().trim();
@@ -147,9 +152,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
   private readonly defaultTemplateFilters: Record<string, TemplateFilter>;
 
   constructor(private readonly options: NunjucksWorkflowRunnerOptions) {
-    this.defaultTemplateFilters = createDefaultFilters({
-      integrations: this.options.integrations,
-    });
+    this.defaultTemplateFilters = convertFiltersToRecord(
+      createDefaultFilters({
+        integrations: this.options.integrations,
+      }),
+    );
   }
 
   private readonly tracker = scaffoldingTracker();
@@ -245,7 +252,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     const stepTrack = await this.tracker.stepStart(task, step);
 
     if (task.cancelSignal.aborted) {
-      throw new Error(`Step ${step.name} has been cancelled.`);
+      throw new Error(
+        `Step ${step.id} (${step.name}) of task ${task.taskId} has been cancelled.`,
+      );
     }
 
     try {
@@ -304,13 +313,21 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           return;
         }
       }
+
+      const resolvedEach =
+        step.each && this.render(step.each, context, renderTemplate);
+
+      if (step.each && !resolvedEach) {
+        throw new InputError(
+          `Invalid value on action ${action.id}.each parameter, "${step.each}" cannot be resolved to a value`,
+        );
+      }
+
       const iterations = (
-        step.each
-          ? Object.entries(this.render(step.each, context, renderTemplate)).map(
-              ([key, value]) => ({
-                each: { key, value },
-              }),
-            )
+        resolvedEach
+          ? Object.entries(resolvedEach).map(([key, value]) => ({
+              each: { key, value },
+            }))
           : [{}]
       ).map(i => ({
         ...i,
@@ -454,7 +471,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       context.steps[step.id] = { output: stepOutput };
 
       if (task.cancelSignal.aborted) {
-        throw new Error(`Step ${step.name} has been cancelled.`);
+        throw new Error(
+          `Step ${step.id} (${step.name}) of task ${task.taskId} has been cancelled.`,
+        );
       }
 
       await stepTrack.markSuccessful();
@@ -615,6 +634,7 @@ function scaffoldingTracker() {
 
       taskCount.add(1, { template, user, result: 'ok' });
       taskDuration.record(endTime(), {
+        template,
         result: 'ok',
       });
     }
@@ -633,6 +653,7 @@ function scaffoldingTracker() {
 
       taskCount.add(1, { template, user, result: 'failed' });
       taskDuration.record(endTime(), {
+        template,
         result: 'failed',
       });
     }
@@ -651,6 +672,7 @@ function scaffoldingTracker() {
 
       taskCount.add(1, { template, user, result: 'cancelled' });
       taskDuration.record(endTime(), {
+        template,
         result: 'cancelled',
       });
     }
@@ -695,6 +717,8 @@ function scaffoldingTracker() {
 
       stepCount.add(1, { template, step: step.name, result: 'ok' });
       stepDuration.record(endTime(), {
+        template,
+        step: step.name,
         result: 'ok',
       });
     }
@@ -709,6 +733,8 @@ function scaffoldingTracker() {
 
       stepCount.add(1, { template, step: step.name, result: 'cancelled' });
       stepDuration.record(endTime(), {
+        template,
+        step: step.name,
         result: 'cancelled',
       });
     }
@@ -723,6 +749,8 @@ function scaffoldingTracker() {
 
       stepCount.add(1, { template, step: step.name, result: 'failed' });
       stepDuration.record(endTime(), {
+        template,
+        step: step.name,
         result: 'failed',
       });
     }
@@ -736,6 +764,8 @@ function scaffoldingTracker() {
 
       stepCount.add(1, { template, step: step.name, result: 'skipped' });
       stepDuration.record(endTime(), {
+        template,
+        step: step.name,
         result: 'skipped',
       });
     }

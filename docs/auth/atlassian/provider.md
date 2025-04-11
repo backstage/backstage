@@ -51,6 +51,8 @@ auth:
         additionalScopes:
           - 'read:jira-user'
           - 'read:jira-work'
+        ## uncomment to set lifespan of user session
+        # sessionDuration: { hours: 24 } # supports `ms` library format (e.g. '24h', '2 days'), ISO duration, "human duration" as used in code
         signIn:
           resolvers:
             # See https://backstage.io/docs/auth/atlassian/provider#resolvers for more resolvers
@@ -66,6 +68,10 @@ The Atlassian provider is a structure with the following configuration keys:
 - `additionalScopes` : (Optional) Additional permissions requested from Atlassian.
 
 **NOTE:** The scopes `offline_access`, `read:jira-work`, and `read:jira-user` are provided by default.
+
+### Optional
+
+- `sessionDuration`: Lifespan of the user session.
 
 ### Resolvers
 

@@ -26,7 +26,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useUnregisterEntityDialogState } from './useUnregisterEntityDialogState';
 
 import { alertApiRef, configApiRef, useApi } from '@backstage/core-plugin-api';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode, FC } from 'react';
 
 import { PageWithHeader } from '@backstage/core-components';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
@@ -25,7 +25,8 @@ import { useApi, configApiRef } from '@backstage/core-plugin-api';
  * @public
  */
 export type TechDocsPageWrapperProps = {
-  children?: React.ReactNode;
+  children?: ReactNode;
+  CustomPageWrapper?: FC<{ children?: ReactNode }>;
 };
 
 /**
@@ -34,19 +35,25 @@ export type TechDocsPageWrapperProps = {
  * @public
  */
 export const TechDocsPageWrapper = (props: TechDocsPageWrapperProps) => {
-  const { children } = props;
+  const { children, CustomPageWrapper } = props;
   const configApi = useApi(configApiRef);
   const generatedSubtitle = `Documentation available in ${
     configApi.getOptionalString('organization.name') ?? 'Backstage'
   }`;
 
   return (
-    <PageWithHeader
-      title="Documentation"
-      subtitle={generatedSubtitle}
-      themeId="documentation"
-    >
-      {children}
-    </PageWithHeader>
+    <>
+      {CustomPageWrapper ? (
+        <CustomPageWrapper>{children}</CustomPageWrapper>
+      ) : (
+        <PageWithHeader
+          title="Documentation"
+          subtitle={generatedSubtitle}
+          themeId="documentation"
+        >
+          {children}
+        </PageWithHeader>
+      )}
+    </>
   );
 };

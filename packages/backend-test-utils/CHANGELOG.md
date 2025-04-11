@@ -1,5 +1,189 @@
 # @backstage/backend-test-utils
 
+## 1.3.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0-next.2
+  - @backstage/backend-app-api@1.2.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-events-node@0.4.9
+
+## 1.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0-next.1
+  - @backstage/backend-app-api@1.2.1
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.9
+
+## 1.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0-next.0
+  - @backstage/backend-app-api@1.2.1
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.9
+
+## 1.3.1
+
+### Patch Changes
+
+- c3a91d5: Added support for PostgreSQL version 17
+- 37c6510: Moved `@types/jest` to `devDependencies`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.2
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/backend-app-api@1.2.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.3.1-next.2
+
+### Patch Changes
+
+- 37c6510: Moved `@types/jest` to `devDependencies`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.2-next.2
+  - @backstage/plugin-events-node@0.4.9-next.2
+  - @backstage/backend-app-api@1.2.1-next.2
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.6.1-next.1
+
+## 1.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1-next.1
+  - @backstage/backend-app-api@1.2.1-next.1
+  - @backstage/backend-defaults@0.8.2-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.9-next.1
+
+## 1.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.2-next.0
+  - @backstage/backend-app-api@1.2.1-next.0
+  - @backstage/plugin-auth-node@0.6.1-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-events-node@0.4.9-next.0
+
+## 1.3.0
+
+### Minor Changes
+
+- dd05a97: Added mocks for the new `PermissionsRegistryService`.
+- a4aa244: This change introduces mocks for the `auditor` service.
+
+### Patch Changes
+
+- f866b86: Internal refactor to use explicit `require` for lazy-loading dependency.
+- fb051f2: Sync feature installation compatibility logic with `@backstage/backend-app-api`.
+- 72cddf2: Added the new `getPermissionRuleset` method to `mockServices.permissionsRegistry`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.0
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-auth-node@0.6.0
+  - @backstage/backend-app-api@1.2.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.8
+
+## 1.3.0-next.3
+
+### Patch Changes
+
+- 72cddf2: Added the new `getPermissionRuleset` method to `mockServices.permissionsRegistry`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.0-next.3
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/backend-app-api@1.2.0-next.3
+  - @backstage/plugin-auth-node@0.6.0-next.2
+  - @backstage/plugin-events-node@0.4.8-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.3.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/plugin-auth-node@0.6.0-next.1
+  - @backstage/backend-defaults@0.8.0-next.2
+  - @backstage/backend-app-api@1.2.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.8-next.1
+
+## 1.3.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@1.1.2-next.1
+  - @backstage/backend-defaults@0.8.0-next.1
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-events-node@0.4.8-next.0
+
+## 1.3.0-next.0
+
+### Minor Changes
+
+- dd05a97: Added mocks for the new `PermissionsRegistryService`.
+- a4aa244: This change introduces mocks for the `auditor` service.
+
+### Patch Changes
+
+- f866b86: Internal refactor to use explicit `require` for lazy-loading dependency.
+- fb051f2: Sync feature installation compatibility logic with `@backstage/backend-app-api`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.0-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/backend-app-api@1.1.2-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-events-node@0.4.8-next.0
+
 ## 1.2.1
 
 ### Patch Changes

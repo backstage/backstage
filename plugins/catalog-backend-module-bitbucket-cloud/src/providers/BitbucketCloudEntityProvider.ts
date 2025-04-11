@@ -169,17 +169,17 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     };
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName(): string {
     return `bitbucketCloud-provider:${this.config.id}`;
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getTaskId} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getTaskId} */
   getTaskId(): string {
     return `${this.getProviderName()}:refresh`;
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
     await this.scheduleFn();
@@ -325,6 +325,8 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
     const optRepoFilter = repoSlug ? ` repo:${repoSlug}` : '';
     const query = `"${catalogFilename}" path:${catalogPath}${optRepoFilter}`;
+
+    if (repoSlug) return this.processQuery(workspace, query);
 
     const projects = this.client
       .listProjectsByWorkspace(workspace)

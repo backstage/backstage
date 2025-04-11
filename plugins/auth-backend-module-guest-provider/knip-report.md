@@ -1,11 +1,10 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused dependencies (1)
 
-| Name                      | Location     | Severity |
-| :------------------------ | :----------- | :------- |
-| @backstage/backend-common | package.json | error    |
-| passport-oauth2           | package.json | error    |
+| Name            | Location     | Severity |
+| :-------------- | :----------- | :------- |
+| passport-oauth2 | package.json | error    |
 
 ## Unused devDependencies (2)
 

@@ -561,7 +561,7 @@ catalogFilter:
     metadata.annotations.github.com/team-slug: { exists: true }
 ```
 
-#### Custom validation messages
+### Custom validation messages
 
 You may specify custom JSON Schema validation messages as supported by the
 [ajv-errors](https://github.com/ajv-validator/ajv-errors) plugin library to [ajv](https://github.com/ajv-validator/ajv).
@@ -631,7 +631,7 @@ output:
 
 ## The templating syntax
 
-You might have noticed variables wrapped in `${{ }}` in the examples. These are
+You might have noticed expressions wrapped in `${{ }}` in the examples. These are
 template strings for linking and gluing the different parts of the template
 together. All the form inputs from the `parameters` section will be available by
 using this template syntax (for example, `${{ parameters.firstName }}` inserts
@@ -704,219 +704,16 @@ You can read more about all the `inputs` and `outputs` defined in the actions in
 code part of the `JSONSchema`, or you can read more about our
 [built in actions](./builtin-actions.md).
 
-## Built in Filters
+### More about expressions
 
-Template filters are functions that help you transform data, extract specific information,
-and perform various operations in Scaffolder Templates.
+The `${{ }}` constructs in your template are evaluated using the
+powerful [Nunjucks templating engine](https://mozilla.github.io/nunjucks/).
+To learn more about basic Nunjucks templating please see
+[templating documentation](https://mozilla.github.io/nunjucks/templating.html).
 
-This section introduces the built-in filters provided by Backstage and offers examples of
-how to use them in the Scaffolder templates. It's important to mention that Backstage also leverages the
-native filters from the Nunjucks library. For a complete list of these native filters and their usage,
-refer to the [Nunjucks documentation](https://mozilla.github.io/nunjucks/templating.html#builtin-filters).
-
-To create your own custom filters, look to the section [Custom Filters and Globals](#custom-filters-and-globals) hereafter.
-
-### parseRepoUrl
-
-The `parseRepoUrl` filter parse a repository URL into
-its components, such as `owner`, repository `name`, and more.
-
-**Usage Example:**
-
-```yaml
-- id: log
-  name: Parse Repo URL
-  action: debug:log
-  input:
-    extra: ${{ parameters.repoUrl | parseRepoUrl }}
-```
-
-- **Input**: `github.com?repo=backstage&org=backstage`
-- **Output**: [RepoSpec](https://github.com/backstage/backstage/blob/v1.17.2/plugins/scaffolder-backend/src/scaffolder/actions/builtin/publish/util.ts#L39)
-
-### parseEntityRef
-
-The `parseEntityRef` filter allows you to extract different parts of
-an entity reference, such as the `kind`, `namespace`, and `name`.
-
-**Usage example**
-
-1. Without context
-
-```yaml
-- id: log
-  name: Parse Entity Reference
-  action: debug:log
-  input:
-    extra: ${{ parameters.owner | parseEntityRef }}
-```
-
-- **Input**: `group:techdocs`
-- **Output**: [CompoundEntityRef](https://github.com/backstage/backstage/blob/v1.17.2/packages/catalog-model/src/types.ts#L23)
-
-2. With context
-
-```yaml
-- id: log
-  name: Parse Entity Reference
-  action: debug:log
-  input:
-    extra: ${{ parameters.owner | parseEntityRef({ defaultKind:"group", defaultNamespace:"another-namespace" }) }}
-```
-
-- **Input**: `techdocs`
-- **Output**: [CompoundEntityRef](https://github.com/backstage/backstage/blob/v1.17.2/packages/catalog-model/src/types.ts#L23)
-
-### pick
-
-This `pick` filter allows you to select specific properties (`kind`, `namespace`, `name`) from an object.
-
-**Usage Example**
-
-```yaml
-- id: log
-  name: Pick
-  action: debug:log
-  input:
-    extra: ${{ parameters.owner | parseEntityRef | pick('name') }}
-```
-
-- **Input**: `{ kind: 'Group', namespace: 'default', name: 'techdocs' }`
-- **Output**: `techdocs`
-
-### projectSlug
-
-The `projectSlug` filter generates a project slug from a repository URL
-
-**Usage Example**
-
-```yaml
-- id: log
-  name: Project Slug
-  action: debug:log
-  input:
-    extra: ${{ parameters.repoUrl | projectSlug }}
-```
-
-- **Input**: `github.com?repo=backstage&org=backstage`
-- **Output**: `backstage/backstage`
-
-## Custom Filters and Globals
-
-You may wish to extend the filters and globals with your own custom ones. For example `${{ myGlobal | myFilter | myOtherFilter }}` or `${{ myFunctionGlobal(1,2) | myFilter }}`.
-This can be achieved using the `additionalTemplateFilters` and `additionalTemplateGlobals` properties respectively.
-
-These properties accept a `Record`
-
-```ts title="plugins/scaffolder-backend/src/service/router.ts"
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-```
-
-where the first parameter is the identifier of the filter or global and the second is a `TemplateFilter` or a `TemplateGlobal` respectively.
-A `TemplateFilter` is a function which will be called using the previous `JsonValue` objects and may return a `JsonValue` object.
-A `TemplateGlobal` can either be a function which will be called using the passed `JsonValue` objects and may return a `JsonValue` object or it can be a `JsonValue` object itself.
-
-```ts title="plugins/scaffolder-node/src/types.ts"
-export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
-
-export type TemplateGlobal =
-  | ((...args: JsonValue[]) => JsonValue | undefined)
-  | JsonValue;
-```
-
-**Usage Example**
-
-Given you want to have the following filters and globals available in you template:
-
-```yaml
-apiVersion: scaffolder.backstage.io/v1beta3
-kind: Template
-metadata:
-  name: test
-  title: Test
-spec:
-  owner: user:guest
-  type: service
-
-  steps:
-    - id: debug1
-      name: debug1
-      action: debug:log
-      input:
-        message: ${{ myGlobal | myFilter | myOtherFilter }}
-
-    - id: debug2
-      name: debug2
-      action: debug:log
-      input:
-        message: ${{ myFunctionGlobal(1,2) | myFilter }}
-```
-
-You will have to create a new [`BackendModule`](../../backend-system/architecture/06-modules.md) using the `scaffolderTemplatingExtensionPoint`.
-
-Here is a very simplified example of how to do that:
-
-```ts title="packages/backend-next/src/index.ts"
-/* highlight-add-start */
-import { scaffolderTemplatingExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
-import { createBackendModule } from '@backstage/backend-plugin-api';
-/* highlight-add-end */
-
-/* highlight-add-start */
-const scaffolderModuleCustomFilters = createBackendModule({
-  pluginId: 'scaffolder', // name of the plugin that the module is targeting
-  moduleId: 'custom-filters',
-  register(env) {
-    env.registerInit({
-      deps: {
-        scaffolder: scaffolderTemplatingExtensionPoint,
-        // ... and other dependencies as needed
-      },
-      async init({ scaffolder /* ..., other dependencies */ }) {
-        scaffolder.addTemplateGlobals({
-          myGlobal: () => 'myGlobal',
-          myFunctionGlobal: (...args: JsonValue[]) => args[0] + args[1],
-        });
-        scaffolder.addTemplateFilters({
-          myFilter: () => 'the value is this now',
-          myOtherFilter: (...args: JsonValue[]) => args.join(''),
-        });
-      },
-    });
-  },
-});
-/* highlight-add-end */
-
-const backend = createBackend();
-backend.add(import('@backstage/plugin-scaffolder-backend'));
-/* highlight-add-next-line */
-backend.add(scaffolderModuleCustomFilters);
-```
-
-If you still use the legacy backend system, then you will use the `createRouter()` function of the `Scaffolder plugin`
-
-```ts title="packages/backend/src/plugins/scaffolder.ts"
-export default async function createPlugin({
-  logger,
-  config,
-}: PluginEnvironment): Promise<Router> {
-  ...
-  return await createRouter({
-    logger,
-    config,
-
-    additionalTemplateFilters: {
-        <YOUR_FILTERS>
-    },
-    additionalTemplateGlobals: {
-        <YOUR_GLOBALS>
-    },
-  });
-}
-```
-
-Note that additional template global functions are currently not supported in `fetch:template` (see #25445).
+Information about Backstage's built-in Nunjucks extensions, as well as how to
+create your own customizations, may be found at
+[Template Extensions](./template-extensions.md).
 
 ## Template Editor
 

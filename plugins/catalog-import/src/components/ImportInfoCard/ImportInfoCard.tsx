@@ -18,9 +18,10 @@ import { InfoCard } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import Chip from '@material-ui/core/Chip';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
 import { catalogImportApiRef } from '../../api';
 import { useCatalogFilename } from '../../hooks';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { catalogImportTranslationRef } from '../../translation';
 
 /**
  * Props for {@link ImportInfoCard}.
@@ -43,6 +44,7 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
     exampleRepositoryUrl = 'https://github.com/backstage/backstage',
   } = props;
 
+  const { t } = useTranslationRef(catalogImportTranslationRef);
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
   const catalogImportApi = useApi(catalogImportApiRef);
@@ -53,7 +55,7 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
 
   return (
     <InfoCard
-      title="Register an existing component"
+      title={t('importInfoCard.title')}
       titleTypographyProps={{ component: 'h3' }}
       deepLink={{
         title: 'Learn more about the Software Catalog',

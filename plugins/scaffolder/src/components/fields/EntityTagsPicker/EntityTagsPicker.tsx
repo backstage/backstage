@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import useEffectOnce from 'react-use/esm/useEffectOnce';
 import { GetEntityFacetsRequest } from '@backstage/catalog-client';
@@ -45,6 +45,8 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
   const kinds = uiSchema['ui:options']?.kinds;
   const showCounts = uiSchema['ui:options']?.showCounts;
   const helperText = uiSchema['ui:options']?.helperText;
+  const isDisabled = uiSchema?.['ui:disabled'] ?? false;
+
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const { loading, value: existingTags } = useAsync(async () => {
@@ -69,7 +71,7 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
     return tagFacets;
   });
 
-  const setTags = (_: React.ChangeEvent<{}>, values: string[] | null) => {
+  const setTags = (_: ChangeEvent<{}>, values: string[] | null) => {
     // Reset error state in case all tags were removed
     let hasError = false;
     let addDuplicate = false;
@@ -101,6 +103,7 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
         freeSolo
         filterSelectedOptions
         onChange={setTags}
+        disabled={isDisabled}
         value={formData || []}
         inputValue={inputValue}
         loading={loading}
@@ -113,6 +116,7 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
           <TextField
             {...params}
             label={t('fields.entityTagsPicker.title')}
+            disabled={isDisabled}
             onChange={e => setInputValue(e.target.value)}
             error={inputError}
             helperText={helperText ?? t('fields.entityTagsPicker.description')}

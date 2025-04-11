@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+'use client';
 
-import React from 'react';
-import { Icon } from '../../../../packages/canon/src/components/Icon';
-import type { IconNames } from '../../../../packages/canon/src/components/Icon';
-import { Text } from '../../../../packages/canon/src/components/Text';
-import { icons } from '../../../../packages/canon/src/components/Icon/icons';
+import { Text, Icon, icons } from '../../../../packages/canon';
+import type { IconNames } from '../../../../packages/canon';
 import styles from './styles.module.css';
 
 export const IconLibrary = () => {

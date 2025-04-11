@@ -35,7 +35,7 @@ import Autocomplete, {
   AutocompleteChangeReason,
   createFilterOptions,
 } from '@material-ui/lab/Autocomplete';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {
   EntityPickerFilterQueryValue,
@@ -73,6 +73,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
+  const isDisabled = uiSchema?.['ui:disabled'] ?? false;
 
   const catalogApi = useApi(catalogApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
@@ -185,9 +186,10 @@ export const EntityPicker = (props: EntityPickerProps) => {
     >
       <Autocomplete
         disabled={
-          required &&
-          !allowArbitraryValues &&
-          entities?.catalogEntities.length === 1
+          isDisabled ||
+          (required &&
+            !allowArbitraryValues &&
+            entities?.catalogEntities.length === 1)
         }
         id={idSchema?.$id}
         value={selectedEntity}
@@ -212,6 +214,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
             FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
             variant="outlined"
             required={required}
+            disabled={isDisabled}
             InputProps={params.InputProps}
           />
         )}

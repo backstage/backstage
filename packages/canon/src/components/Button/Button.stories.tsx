@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Button } from './Button';
-import { Inline } from '../Inline';
-import { Stack } from '../Stack';
+import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { ButtonProps } from './types';
 
@@ -30,9 +28,14 @@ const meta = {
       control: 'select',
       options: ['small', 'medium'],
     },
+    variant: {
+      control: 'select',
+      options: ['primary', 'secondary'],
+    },
   },
   args: {
     size: 'medium',
+    variant: 'primary',
   },
 } satisfies Meta<typeof Button>;
 
@@ -51,17 +54,14 @@ export const Variants: Story = {
     },
   },
   render: () => (
-    <Inline alignY="center">
+    <Flex align="center">
       <Button iconStart="cloud" variant="primary">
         Button
       </Button>
       <Button iconStart="cloud" variant="secondary">
         Button
       </Button>
-      <Button iconStart="cloud" variant="tertiary">
-        Button
-      </Button>
-    </Inline>
+    </Flex>
   ),
 };
 
@@ -70,10 +70,10 @@ export const Sizes: Story = {
     children: 'Button',
   },
   render: () => (
-    <Inline alignY="center">
+    <Flex align="center">
       <Button size="medium">Medium</Button>
       <Button size="small">Small</Button>
-    </Inline>
+    </Flex>
   ),
 };
 
@@ -82,11 +82,11 @@ export const WithIcons: Story = {
     children: 'Button',
   },
   render: args => (
-    <Inline alignY="center">
+    <Flex align="center">
       <Button {...args} iconStart="cloud" />
-      <Button {...args} iconEnd="chevronRight" />
-      <Button {...args} iconStart="cloud" iconEnd="chevronRight" />
-    </Inline>
+      <Button {...args} iconEnd="chevron-right" />
+      <Button {...args} iconStart="cloud" iconEnd="chevron-right" />
+    </Flex>
   ),
 };
 
@@ -95,11 +95,11 @@ export const FullWidth: Story = {
     children: 'Button',
   },
   render: args => (
-    <Stack style={{ width: '300px' }}>
+    <Flex direction="column" gap="4" style={{ width: '300px' }}>
       <Button {...args} iconStart="cloud" />
-      <Button {...args} iconEnd="chevronRight" />
-      <Button {...args} iconStart="cloud" iconEnd="chevronRight" />
-    </Stack>
+      <Button {...args} iconEnd="chevron-right" />
+      <Button {...args} iconStart="cloud" iconEnd="chevron-right" />
+    </Flex>
   ),
 };
 
@@ -108,15 +108,20 @@ export const Disabled: Story = {
     children: 'Button',
     disabled: true,
   },
+  render: args => (
+    <Flex direction="row" gap="4">
+      <Button {...args} variant="primary" />
+      <Button {...args} variant="secondary" />
+    </Flex>
+  ),
 };
 
 export const Responsive: Story = {
   args: {
     children: 'Button',
     variant: {
-      xs: 'primary',
+      initial: 'primary',
       sm: 'secondary',
-      md: 'tertiary',
     },
     size: {
       xs: 'small',
@@ -125,19 +130,25 @@ export const Responsive: Story = {
   },
 };
 
-const variants: string[] = ['primary', 'secondary', 'tertiary'];
+const variants: string[] = ['primary', 'secondary'];
 
 export const Playground: Story = {
   args: {
     children: 'Button',
   },
   render: () => (
-    <Stack>
+    <Flex direction="column">
       {variants.map(variant => (
-        <Stack key={variant}>
+        <Flex direction="column" key={variant}>
           <Text>{variant}</Text>
           {['small', 'medium'].map(size => (
-            <Inline alignY="center" key={size}>
+            <Flex align="center" key={size}>
+              <Button
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+              >
+                Button
+              </Button>
               <Button
                 iconStart="cloud"
                 variant={variant as ButtonProps['variant']}
@@ -146,7 +157,7 @@ export const Playground: Story = {
                 Button
               </Button>
               <Button
-                iconEnd="chevronRight"
+                iconEnd="chevron-right"
                 variant={variant as ButtonProps['variant']}
                 size={size as ButtonProps['size']}
               >
@@ -154,17 +165,40 @@ export const Playground: Story = {
               </Button>
               <Button
                 iconStart="cloud"
-                iconEnd="chevronRight"
+                iconEnd="chevron-right"
                 style={{ width: '200px' }}
                 variant={variant as ButtonProps['variant']}
                 size={size as ButtonProps['size']}
               >
                 Button
               </Button>
-            </Inline>
+              <Button
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+                disabled
+              >
+                Button
+              </Button>
+              <Button
+                iconStart="cloud"
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+                disabled
+              >
+                Button
+              </Button>
+              <Button
+                iconEnd="chevron-right"
+                variant={variant as ButtonProps['variant']}
+                size={size as ButtonProps['size']}
+                disabled
+              >
+                Button
+              </Button>
+            </Flex>
           ))}
-        </Stack>
+        </Flex>
       ))}
-    </Stack>
+    </Flex>
   ),
 };

@@ -22,9 +22,10 @@ import {
   TestApiRegistry,
 } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { CatalogImportApi, catalogImportApiRef } from '../../api';
 import { ImportInfoCard } from './ImportInfoCard';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { catalogImportTranslationRef } from '../../translation';
 
 describe('<ImportInfoCard />', () => {
   let apis: TestApiRegistry;
@@ -50,6 +51,14 @@ describe('<ImportInfoCard />', () => {
   });
 
   it('renders without exploding', async () => {
+    let translatedText = '';
+
+    const TestComponent = () => {
+      const { t } = useTranslationRef(catalogImportTranslationRef);
+      translatedText = t('importInfoCard.title');
+      return <ImportInfoCard />;
+    };
+
     await renderInTestApp(
       <TestApiProvider
         apis={[
@@ -57,13 +66,10 @@ describe('<ImportInfoCard />', () => {
           [catalogImportApiRef, catalogImportApi],
         ]}
       >
-        <ImportInfoCard />
+        <TestComponent />
       </TestApiProvider>,
     );
-
-    expect(
-      screen.getByText('Register an existing component'),
-    ).toBeInTheDocument();
+    expect(screen.getByText(translatedText)).toBeInTheDocument();
   });
 
   it('renders section on GitHub discovery if supported', async () => {

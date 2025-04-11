@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
+import {
+  AuditorService,
+  AuthService,
+  BackstageCredentials,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import {
-  JsonObject,
-  JsonValue,
-  Observable,
-  createDeferred,
-} from '@backstage/types';
-import { Logger } from 'winston';
-import ObservableImpl from 'zen-observable';
 import {
   SerializedTask,
   SerializedTaskEvent,
@@ -34,14 +31,18 @@ import {
   TaskSecrets,
   TaskStatus,
 } from '@backstage/plugin-scaffolder-node';
-import { InternalTaskSecrets, TaskStore } from './types';
-import { readDuration } from './helper';
-import {
-  AuthService,
-  BackstageCredentials,
-} from '@backstage/backend-plugin-api';
-import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
+import {
+  JsonObject,
+  JsonValue,
+  Observable,
+  createDeferred,
+} from '@backstage/types';
+import { Logger } from 'winston';
+import ObservableImpl from 'zen-observable';
+import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
+import { readDuration } from './helper';
+import { InternalTaskSecrets, TaskStore } from './types';
 
 type TaskState = {
   checkpoints: {
@@ -275,6 +276,7 @@ export class StorageTaskBroker implements TaskBroker {
       string,
       WorkspaceProvider
     >,
+    private readonly auditor?: AuditorService,
   ) {}
 
   async list(options?: {
@@ -329,10 +331,7 @@ export class StorageTaskBroker implements TaskBroker {
 
   public async recoverTasks(): Promise<void> {
     const enabled =
-      (this.config &&
-        this.config.getOptionalBoolean(
-          'scaffolder.EXPERIMENTAL_recoverTasks',
-        )) ??
+      this.config?.getOptionalBoolean('scaffolder.EXPERIMENTAL_recoverTasks') ??
       false;
 
     if (enabled) {
@@ -449,6 +448,14 @@ export class StorageTaskBroker implements TaskBroker {
     const { tasks } = await this.storage.listStaleTasks(options);
     await Promise.all(
       tasks.map(async task => {
+        const auditorEvent = await this.auditor?.createEvent({
+          eventId: 'task',
+          severityLevel: 'medium',
+          meta: {
+            actionType: 'stale-cancel',
+            taskId: task.taskId,
+          },
+        });
         try {
           await this.storage.completeTask({
             taskId: task.taskId,
@@ -458,8 +465,10 @@ export class StorageTaskBroker implements TaskBroker {
                 'The task was cancelled because the task worker lost connection to the task broker',
             },
           });
+          await auditorEvent?.success();
         } catch (error) {
           this.logger.warn(`Failed to cancel task '${task.taskId}', ${error}`);
+          await auditorEvent?.fail({ error: error });
         }
       }),
     );

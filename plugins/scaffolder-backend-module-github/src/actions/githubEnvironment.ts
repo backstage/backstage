@@ -20,7 +20,7 @@ import {
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { Octokit } from 'octokit';
 import Sodium from 'libsodium-wrappers';
 import { examples } from './gitHubEnvironment.examples';
@@ -67,7 +67,8 @@ export function createGithubEnvironmentAction(options: {
         properties: {
           repoUrl: {
             title: 'Repository Location',
-            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
+            description:
+              'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
             type: 'string',
           },
           name: {
@@ -77,18 +78,21 @@ export function createGithubEnvironmentAction(options: {
           },
           deploymentBranchPolicy: {
             title: 'Deployment Branch Policy',
-            description: `The type of deployment branch policy for this environment. To allow all branches to deploy, set to null.`,
+            description:
+              'The type of deployment branch policy for this environment. To allow all branches to deploy, set to `null`.',
             type: 'object',
             required: ['protected_branches', 'custom_branch_policies'],
             properties: {
               protected_branches: {
                 title: 'Protected Branches',
-                description: `Whether only branches with branch protection rules can deploy to this environment. If protected_branches is true, custom_branch_policies must be false; if protected_branches is false, custom_branch_policies must be true.`,
+                description:
+                  'Whether only branches with branch protection rules can deploy to this environment. If `protected_branches` is `true`, `custom_branch_policies` must be `false`; if `protected_branches` is `false`, `custom_branch_policies` must be `true`.',
                 type: 'boolean',
               },
               custom_branch_policies: {
                 title: 'Custom Branch Policies',
-                description: `Whether only branches that match the specified name patterns can deploy to this environment. If custom_branch_policies is true, protected_branches must be false; if custom_branch_policies is false, protected_branches must be true.`,
+                description:
+                  'Whether only branches that match the specified name patterns can deploy to this environment. If `custom_branch_policies` is `true`, `protected_branches` must be `false`; if `custom_branch_policies` is `false`, `protected_branches` must be `true`.',
                 type: 'boolean',
               },
             },
@@ -97,7 +101,7 @@ export function createGithubEnvironmentAction(options: {
             title: 'Custom Branch Policy Name',
             description: `The name pattern that branches must match in order to deploy to the environment.
 
-            Wildcard characters will not match /. For example, to match branches that begin with release/ and contain an additional single slash, use release/*/*. For more information about pattern matching syntax, see the Ruby File.fnmatch documentation.`,
+Wildcard characters will not match \`/\`. For example, to match branches that begin with \`release/\` and contain an additional single slash, use \`release/*/*\`. For more information about pattern matching syntax, see the Ruby File.fnmatch documentation.`,
             type: 'array',
             items: {
               type: 'string',
@@ -107,7 +111,7 @@ export function createGithubEnvironmentAction(options: {
             title: 'Custom Tag Policy Name',
             description: `The name pattern that tags must match in order to deploy to the environment.
 
-            Wildcard characters will not match /. For example, to match tags that begin with release/ and contain an additional single slash, use release/*/*. For more information about pattern matching syntax, see the Ruby File.fnmatch documentation.`,
+Wildcard characters will not match \`/\`. For example, to match tags that begin with \`release/\` and contain an additional single slash, use \`release/*/*\`. For more information about pattern matching syntax, see the Ruby File.fnmatch documentation.`,
             type: 'array',
             items: {
               type: 'string',
@@ -175,22 +179,31 @@ export function createGithubEnvironmentAction(options: {
       // Add a 2-second delay before initiating the steps in this action.
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      const octokitOptions = await getOctokitOptions({
-        integrations,
-        token: providedToken,
-        repoUrl: repoUrl,
-      });
-
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError(`No owner provided for repo ${repoUrl}`);
       }
 
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        token: providedToken,
+        host,
+        owner,
+        repo,
+      });
+
       const client = new Octokit(octokitOptions);
-      const repository = await client.rest.repos.get({
-        owner: owner,
-        repo: repo,
+
+      const repositoryId = await ctx.checkpoint({
+        key: `get.repo.${owner}.${repo}`,
+        fn: async () => {
+          const repository = await client.rest.repos.get({
+            owner: owner,
+            repo: repo,
+          });
+          return repository.data.id;
+        },
       });
 
       // convert reviewers from catalog entity to Github user or team
@@ -213,25 +226,39 @@ export function createGithubEnvironmentAction(options: {
         for (const reviewerEntityRef of reviewersEntityRefs) {
           if (reviewerEntityRef?.kind === 'User') {
             try {
-              const user = await client.rest.users.getByUsername({
-                username: reviewerEntityRef.metadata.name,
+              const userId = await ctx.checkpoint({
+                key: `get.user.${reviewerEntityRef.metadata.name}`,
+                fn: async () => {
+                  const user = await client.rest.users.getByUsername({
+                    username: reviewerEntityRef.metadata.name,
+                  });
+                  return user.data.id;
+                },
               });
+
               githubReviewers.push({
                 type: 'User',
-                id: user.data.id,
+                id: userId,
               });
             } catch (error) {
               ctx.logger.error('User not found:', error);
             }
           } else if (reviewerEntityRef?.kind === 'Group') {
             try {
-              const team = await client.rest.teams.getByName({
-                org: owner,
-                team_slug: reviewerEntityRef.metadata.name,
+              const teamId = await ctx.checkpoint({
+                key: `get.team.${reviewerEntityRef.metadata.name}`,
+                fn: async () => {
+                  const team = await client.rest.teams.getByName({
+                    org: owner,
+                    team_slug: reviewerEntityRef.metadata.name,
+                  });
+                  return team.data.id;
+                },
               });
+
               githubReviewers.push({
                 type: 'Team',
-                id: team.data.id,
+                id: teamId,
               });
             } catch (error) {
               ctx.logger.error('Team not found:', error);
@@ -240,63 +267,92 @@ export function createGithubEnvironmentAction(options: {
         }
       }
 
-      await client.rest.repos.createOrUpdateEnvironment({
-        owner: owner,
-        repo: repo,
-        environment_name: name,
-        deployment_branch_policy: deploymentBranchPolicy ?? null,
-        wait_timer: waitTimer ?? 0,
-        prevent_self_review: preventSelfReview ?? false,
-        reviewers: githubReviewers.length ? githubReviewers : null,
+      await ctx.checkpoint({
+        key: `create.or.update.environment.${owner}.${repo}.${name}`,
+        fn: async () => {
+          await client.rest.repos.createOrUpdateEnvironment({
+            owner: owner,
+            repo: repo,
+            environment_name: name,
+            deployment_branch_policy: deploymentBranchPolicy ?? undefined,
+            wait_timer: waitTimer ?? undefined,
+            prevent_self_review: preventSelfReview ?? undefined,
+            reviewers: githubReviewers.length ? githubReviewers : undefined,
+          });
+        },
       });
 
       if (customBranchPolicyNames) {
         for (const item of customBranchPolicyNames) {
-          await client.rest.repos.createDeploymentBranchPolicy({
-            owner: owner,
-            repo: repo,
-            type: 'branch',
-            environment_name: name,
-            name: item,
+          await ctx.checkpoint({
+            key: `create.deployment.branch.policy.branch.${owner}.${repo}.${name}.${item}`,
+            fn: async () => {
+              await client.rest.repos.createDeploymentBranchPolicy({
+                owner: owner,
+                repo: repo,
+                type: 'branch',
+                environment_name: name,
+                name: item,
+              });
+            },
           });
         }
       }
 
       if (customTagPolicyNames) {
         for (const item of customTagPolicyNames) {
-          await client.rest.repos.createDeploymentBranchPolicy({
-            owner: owner,
-            repo: repo,
-            type: 'tag',
-            environment_name: name,
-            name: item,
+          await ctx.checkpoint({
+            key: `create.deployment.branch.policy.tag.${owner}.${repo}.${name}.${item}`,
+            fn: async () => {
+              await client.rest.repos.createDeploymentBranchPolicy({
+                owner: owner,
+                repo: repo,
+                type: 'tag',
+                environment_name: name,
+                name: item,
+              });
+            },
           });
         }
       }
 
       for (const [key, value] of Object.entries(environmentVariables ?? {})) {
-        await client.rest.actions.createEnvironmentVariable({
-          repository_id: repository.data.id,
-          owner: owner,
-          repo: repo,
-          environment_name: name,
-          name: key,
-          value,
+        await ctx.checkpoint({
+          key: `create.env.variable.${owner}.${repo}.${name}.${key}`,
+          fn: async () => {
+            await client.rest.actions.createEnvironmentVariable({
+              repository_id: repositoryId,
+              owner: owner,
+              repo: repo,
+              environment_name: name,
+              name: key,
+              value,
+            });
+          },
         });
       }
 
       if (secrets) {
-        const publicKeyResponse =
-          await client.rest.actions.getEnvironmentPublicKey({
-            repository_id: repository.data.id,
-            owner: owner,
-            repo: repo,
-            environment_name: name,
-          });
+        const { publicKey, publicKeyId } = await ctx.checkpoint({
+          key: `get.env.public.key.${owner}.${repo}.${name}`,
+          fn: async () => {
+            const publicKeyResponse =
+              await client.rest.actions.getEnvironmentPublicKey({
+                repository_id: repositoryId,
+                owner: owner,
+                repo: repo,
+                environment_name: name,
+              });
+            return {
+              publicKey: publicKeyResponse.data.key,
+              publicKeyId: publicKeyResponse.data.key_id,
+            };
+          },
+        });
 
         await Sodium.ready;
         const binaryKey = Sodium.from_base64(
-          publicKeyResponse.data.key,
+          publicKey,
           Sodium.base64_variants.ORIGINAL,
         );
         for (const [key, value] of Object.entries(secrets)) {
@@ -310,14 +366,19 @@ export function createGithubEnvironmentAction(options: {
             Sodium.base64_variants.ORIGINAL,
           );
 
-          await client.rest.actions.createOrUpdateEnvironmentSecret({
-            repository_id: repository.data.id,
-            owner: owner,
-            repo: repo,
-            environment_name: name,
-            secret_name: key,
-            encrypted_value: encryptedBase64Secret,
-            key_id: publicKeyResponse.data.key_id,
+          await ctx.checkpoint({
+            key: `create.or.update.env.secret.${owner}.${repo}.${name}.${key}`,
+            fn: async () => {
+              await client.rest.actions.createOrUpdateEnvironmentSecret({
+                repository_id: repositoryId,
+                owner: owner,
+                repo: repo,
+                environment_name: name,
+                secret_name: key,
+                encrypted_value: encryptedBase64Secret,
+                key_id: publicKeyId,
+              });
+            },
           });
         }
       }

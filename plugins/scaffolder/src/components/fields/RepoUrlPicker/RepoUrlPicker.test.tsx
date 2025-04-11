@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { RepoUrlPicker } from './RepoUrlPicker';
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import validator from '@rjsf/validator-ajv8';
@@ -117,6 +116,36 @@ describe('RepoUrlPicker', () => {
         }),
         expect.anything(),
       );
+    });
+
+    it('should disable the picker when ui:disabled', async () => {
+      const onSubmit = jest.fn();
+      const { getAllByRole } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApi],
+            [scmAuthApiRef, {}],
+            [scaffolderApiRef, mockScaffolderApi],
+          ]}
+        >
+          <SecretsContextProvider>
+            <Form
+              validator={validator}
+              schema={{ type: 'string' }}
+              uiSchema={{ 'ui:field': 'RepoUrlPicker', 'ui:disabled': true }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+              }}
+              onSubmit={onSubmit}
+            />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      const [ownerInput, repoInput] = getAllByRole('textbox');
+
+      expect(ownerInput).toBeDisabled();
+      expect(repoInput).toBeDisabled();
     });
 
     it('should render properly with allowedHosts', async () => {

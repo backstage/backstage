@@ -31,7 +31,7 @@ import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { HomePageSearchBar, searchPlugin } from '@backstage/plugin-search';
-import React, { ComponentType } from 'react';
+import { ComponentType } from 'react';
 
 const entities = [
   {

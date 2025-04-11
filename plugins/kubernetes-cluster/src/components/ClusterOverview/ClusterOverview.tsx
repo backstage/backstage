@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { InfoCard, StructuredMetadataTable } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useCluster } from './useCluster';
@@ -58,6 +58,7 @@ export const ClusterOverview = () => {
             'OIDC Token Provider': value.oidcTokenProvider ?? 'N/A',
             'Dashboard Link': value.dashboardUrl ?? 'N/A',
           }}
+          options={{ nestedValuesAsYaml: true }}
         />
       )}
     </InfoCard>

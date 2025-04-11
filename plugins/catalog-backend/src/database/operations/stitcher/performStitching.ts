@@ -33,7 +33,10 @@ import {
 import { buildEntitySearch } from './buildEntitySearch';
 import { markDeferredStitchCompleted } from './markDeferredStitchCompleted';
 import { BATCH_SIZE, generateStableHash } from './util';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  isDatabaseConflictError,
+} from '@backstage/backend-plugin-api';
 
 // See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
 const scriptProtocolPattern =
@@ -71,15 +74,29 @@ export async function performStitching(options: {
     }
 
     // Insert stitching ticket that will be compared before inserting the final entity.
-    await knex<DbFinalEntitiesRow>('final_entities')
-      .insert({
-        entity_id: entityResult[0].entity_id,
-        hash: '',
-        entity_ref: entityRef,
-        stitch_ticket: stitchTicket,
-      })
-      .onConflict('entity_id')
-      .merge(['stitch_ticket']);
+    try {
+      await knex<DbFinalEntitiesRow>('final_entities')
+        .insert({
+          entity_id: entityResult[0].entity_id,
+          hash: '',
+          entity_ref: entityRef,
+          stitch_ticket: stitchTicket,
+        })
+        .onConflict('entity_id')
+        .merge(['stitch_ticket']);
+    } catch (error) {
+      // It's possible to hit a race where a refresh_state table delete + insert
+      // is done just after we read the entity_id from it. This conflict is safe
+      // to ignore because the current stitching operation will be triggered by
+      // the old entry, and the new entry will trigger it's own stitching that
+      // will update the entity.
+      if (isDatabaseConflictError(error)) {
+        logger.debug(`Skipping stitching of ${entityRef}, conflict`, error);
+        return 'abandoned';
+      }
+
+      throw error;
+    }
 
     // Selecting from refresh_state and final_entities should yield exactly
     // one row (except in abnormal cases where the stitch was invoked for

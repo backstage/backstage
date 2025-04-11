@@ -20,7 +20,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import classNames from 'classnames';
-import React, { PropsWithChildren } from 'react';
+import {
+  MutableRefObject,
+  useState,
+  useLayoutEffect,
+  useRef,
+  PropsWithChildren,
+} from 'react';
 
 const generateGradientStops = (themeType: 'dark' | 'light') => {
   // 97% corresponds to the theme.palette.background.default for the light theme
@@ -120,13 +126,13 @@ const useStyles = makeStyles(
 
 // Returns scroll distance from left and right
 function useScrollDistance(
-  ref: React.MutableRefObject<HTMLElement | undefined>,
+  ref: MutableRefObject<HTMLElement | undefined>,
 ): [number, number] {
-  const [[scrollLeft, scrollRight], setScroll] = React.useState<
-    [number, number]
-  >([0, 0]);
+  const [[scrollLeft, scrollRight], setScroll] = useState<[number, number]>([
+    0, 0,
+  ]);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     const el = ref.current;
     if (!el) {
       setScroll([0, 0]);
@@ -158,13 +164,13 @@ function useScrollDistance(
 // Used to animate scrolling. Returns a single setScrollTarget function, when called with e.g. 200,
 // the element pointer to by the ref will be scrolled 200px forwards over time.
 function useSmoothScroll(
-  ref: React.MutableRefObject<HTMLElement | undefined>,
+  ref: MutableRefObject<HTMLElement | undefined>,
   speed: number,
   minDistance: number,
 ) {
-  const [scrollTarget, setScrollTarget] = React.useState<number>(0);
+  const [scrollTarget, setScrollTarget] = useState<number>(0);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     if (scrollTarget === 0) {
       return;
     }
@@ -213,7 +219,7 @@ export function HorizontalScrollGrid(props: PropsWithChildren<Props>) {
     ...otherProps
   } = props;
   const classes = useStyles(props);
-  const ref = React.useRef<HTMLElement>();
+  const ref = useRef<HTMLElement>();
 
   const [scrollLeft, scrollRight] = useScrollDistance(ref);
   const setScrollTarget = useSmoothScroll(ref, scrollSpeed, minScrollDistance);

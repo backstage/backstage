@@ -1,5 +1,141 @@
 # @backstage/frontend-plugin-api
 
+## 0.10.1-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.0
+
+### Minor Changes
+
+- 4823831: Introduced a `createFrontendFeatureLoader()` function, as well as a `FrontendFeatureLoader` interface, to gather several frontend plugins, modules or feature loaders in a single exported entrypoint and load them, possibly asynchronously. This new feature, very similar to the `createBackendFeatureLoader()` already available on the backend, supersedes the previous `CreateAppFeatureLoader` type which has been deprecated.
+- 8250ffe: **BREAKING**: Removed the deprecated `ExtensionOverrides` and `FrontendFeature` types.
+- 0d1a397: **BREAKING**: Removed deprecated variant of `createExtensionDataRef` where the ID is passed directly.
+
+### Patch Changes
+
+- 5aa7f2c: Added a new Utility API, `DialogApi`, which can be used to show dialogs in the React tree that can collect input from the user.
+- e23f5e0: Added new `ExtensionMiddlewareFactory` type.
+- a6cb67d: The extensions map for plugins created with `createFrontendPlugin` is now sorted alphabetically by ID in the TypeScript type.
+- de72253: Added a new `ExtensionBoundary.lazyComponent` helper in addition to the existing `ExtensionBoundary.lazy` helper.
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.0-next.2
+
+### Minor Changes
+
+- 8250ffe: **BREAKING**: Removed the deprecated `ExtensionOverrides` and `FrontendFeature` types.
+- 0d1a397: **BREAKING**: Removed deprecated variant of `createExtensionDataRef` where the ID is passed directly.
+
+### Patch Changes
+
+- 5aa7f2c: Added a new Utility API, `DialogApi`, which can be used to show dialogs in the React tree that can collect input from the user.
+- e23f5e0: Added new `ExtensionMiddlewareFactory` type.
+- a6cb67d: The extensions map for plugins created with `createFrontendPlugin` is now sorted alphabetically by ID in the TypeScript type.
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.9.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.9.6-next.0
+
+### Patch Changes
+
+- de72253: Added a new `ExtensionBoundary.lazyComponent` helper in addition to the existing `ExtensionBoundary.lazy` helper.
+
+## 0.9.5
+
+### Patch Changes
+
+- 3e21b8d: Added `getNodesByRoutePath` method to the `AppTreeApi`.
+- f1efb47: Add support for defining multiple attachment points for extensions and blueprints.
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- 9ff3322: Allow route references to be installed in multiple app instances as long as their name is the same.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/version-bridge@1.0.11
+  - @backstage/types@1.2.1
+
+## 0.9.5-next.3
+
+### Patch Changes
+
+- f1efb47: Add support for defining multiple attachment points for extensions and blueprints.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+
+## 0.9.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+
+## 0.9.5-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- 9ff3322: Allow route references to be installed in multiple app instances as long as their name is the same.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/types@1.2.1
+
+## 0.9.5-next.0
+
+### Patch Changes
+
+- 3e21b8d: Added `getNodesByRoutePath` method to the `AppTreeApi`.
+- Updated dependencies
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.10
+
 ## 0.9.4
 
 ### Patch Changes

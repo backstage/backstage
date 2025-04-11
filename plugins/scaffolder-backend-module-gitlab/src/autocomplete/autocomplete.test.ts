@@ -79,8 +79,8 @@ describe('handleAutocompleteRequest', () => {
 
     mockClient.Users.showCurrentUser.mockResolvedValue({ id: 3 });
     mockClient.Groups.allProjects.mockResolvedValue([
-      { name: 'repo1', id: 1 },
-      { name: 'repo2', id: 2 },
+      { name: 'Repo 1', path: 'repo-1' },
+      { name: 'Repo 2', path: 'repo-2' },
     ]);
 
     const result = await handleAutocompleteRequest({
@@ -91,8 +91,8 @@ describe('handleAutocompleteRequest', () => {
 
     expect(result).toEqual({
       results: [
-        { title: 'repo1', id: '1' },
-        { title: 'repo2', id: '2' },
+        { title: 'Repo 1', id: 'repo-1' },
+        { title: 'Repo 2', id: 'repo-2' },
       ],
     });
   });
@@ -104,8 +104,8 @@ describe('handleAutocompleteRequest', () => {
 
     mockClient.Users.showCurrentUser.mockResolvedValue({ id: 1 });
     mockClient.Users.allProjects.mockResolvedValue([
-      { name: 'repo1', id: 1 },
-      { name: 'repo2', id: 2 },
+      { name: 'Repo 1', path: 'repo-1' },
+      { name: 'Repo 2', path: 'repo-2' },
     ]);
 
     const result = await handleAutocompleteRequest({
@@ -116,8 +116,8 @@ describe('handleAutocompleteRequest', () => {
 
     expect(result).toEqual({
       results: [
-        { title: 'repo1', id: '1' },
-        { title: 'repo2', id: '2' },
+        { title: 'Repo 1', id: 'repo-1' },
+        { title: 'Repo 2', id: 'repo-2' },
       ],
     });
   });

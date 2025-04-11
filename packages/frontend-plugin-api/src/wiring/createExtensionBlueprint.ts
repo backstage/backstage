@@ -17,6 +17,7 @@
 import { ApiHolder, AppNode } from '../apis';
 import { Expand } from '@backstage/types';
 import {
+  ExtensionAttachToSpec,
   ExtensionDefinition,
   ResolvedExtensionInputs,
   VerifyExtensionFactoryOutput,
@@ -29,14 +30,12 @@ import {
   AnyExtensionDataRef,
   ExtensionDataValue,
 } from './createExtensionDataRef';
-import {
-  ExtensionDataContainer,
-  createExtensionDataContainer,
-} from './createExtensionDataContainer';
+import { createExtensionDataContainer } from '@internal/frontend';
 import {
   ResolveInputValueOverrides,
   resolveInputOverrides,
 } from './resolveInputOverrides';
+import { ExtensionDataContainer } from './types';
 
 /**
  * @public
@@ -57,7 +56,7 @@ export type CreateExtensionBlueprintOptions<
   TDataRefs extends { [name in string]: AnyExtensionDataRef },
 > = {
   kind: TKind;
-  attachTo: { id: string; input: string };
+  attachTo: ExtensionAttachToSpec;
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -107,7 +106,7 @@ export interface ExtensionBlueprint<
 
   make<TNewName extends string | undefined>(args: {
     name?: TNewName;
-    attachTo?: { id: string; input: string };
+    attachTo?: ExtensionAttachToSpec;
     disabled?: boolean;
     params: T['params'];
   }): ExtensionDefinition<{
@@ -141,7 +140,7 @@ export interface ExtensionBlueprint<
     },
   >(args: {
     name?: TNewName;
-    attachTo?: { id: string; input: string };
+    attachTo?: ExtensionAttachToSpec;
     disabled?: boolean;
     inputs?: TExtraInputs & {
       [KName in keyof T['inputs']]?: `Error: Input '${KName &

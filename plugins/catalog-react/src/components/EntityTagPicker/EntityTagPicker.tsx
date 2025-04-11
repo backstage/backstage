@@ -15,7 +15,6 @@
  */
 
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
 import { EntityTagFilter } from '../../filters';
 import { EntityAutocompletePicker } from '../EntityAutocompletePicker/EntityAutocompletePicker';
 import { catalogReactTranslationRef } from '../../translation';
@@ -27,6 +26,8 @@ export type CatalogReactEntityTagPickerClassKey = 'input';
 /** @public */
 export type EntityTagPickerProps = {
   showCounts?: boolean;
+  initialFilter?: string[];
+  hidden?: boolean;
 };
 
 const useStyles = makeStyles(
@@ -47,6 +48,8 @@ export const EntityTagPicker = (props: EntityTagPickerProps) => {
       Filter={EntityTagFilter}
       showCounts={props.showCounts}
       InputProps={{ className: classes.input }}
+      initialSelectedOptions={props.initialFilter ? props.initialFilter : []}
+      hidden={props.hidden}
     />
   );
 };

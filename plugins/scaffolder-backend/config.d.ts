@@ -28,6 +28,11 @@ export interface Config {
     };
 
     /**
+     * Default PGP signing key for signing commits.
+     * @visibility secret
+     */
+    defaultCommitSigningKey?: string;
+    /**
      * The commit message used when new components are created.
      */
     defaultCommitMessage?: string;
@@ -40,6 +45,11 @@ export interface Config {
      * Set to 0 to disable task workers altogether.
      */
     concurrentTasksLimit?: number;
+
+    /**
+     * Tries to wait for tasks to finish during SIGTERM before shutting down the TaskWorker.
+     */
+    EXPERIMENTAL_gracefulShutdown?: boolean;
 
     /**
      * Sets the tasks recoverability on system start up.

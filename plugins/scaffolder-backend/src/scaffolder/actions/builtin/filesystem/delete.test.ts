@@ -95,6 +95,15 @@ describe('fs:delete', () => {
     ).rejects.toThrow(
       /Relative path is not allowed to refer to a directory outside its parent/,
     );
+
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: { files: ['../../../**/index.js'] },
+      }),
+    ).rejects.toThrow(
+      /Relative path is not allowed to refer to a directory outside its parent/,
+    );
   });
 
   it('should call fs.rm with the correct values', async () => {
@@ -107,6 +116,48 @@ describe('fs:delete', () => {
     });
 
     await action.handler(mockContext);
+
+    files.forEach(file => {
+      const filePath = resolvePath(workspacePath, file);
+      const fileExists = fs.existsSync(filePath);
+      expect(fileExists).toBe(false);
+    });
+  });
+
+  it('should handle wildcards', async () => {
+    const files = ['unit-test-a.js', 'unit-test-b.js'];
+
+    files.forEach(file => {
+      const filePath = resolvePath(workspacePath, file);
+      const fileExists = fs.existsSync(filePath);
+      expect(fileExists).toBe(true);
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: { files: ['unit-*.js'] },
+    });
+
+    files.forEach(file => {
+      const filePath = resolvePath(workspacePath, file);
+      const fileExists = fs.existsSync(filePath);
+      expect(fileExists).toBe(false);
+    });
+  });
+
+  it('should handle windows style file paths', async () => {
+    const files = ['unit-test-a.js', 'unit-test-b.js'];
+
+    files.forEach(file => {
+      const filePath = resolvePath(workspacePath, file);
+      const fileExists = fs.existsSync(filePath);
+      expect(fileExists).toBe(true);
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: { files: files.map(file => `.\\${file}`) },
+    });
 
     files.forEach(file => {
       const filePath = resolvePath(workspacePath, file);

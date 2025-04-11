@@ -17,14 +17,16 @@ export function createPublishGiteaAction(options: {
   {
     repoUrl: string;
     description: string;
-    defaultBranch?: string | undefined;
-    repoVisibility?: 'private' | 'public' | undefined;
-    gitCommitMessage?: string | undefined;
-    gitAuthorName?: string | undefined;
-    gitAuthorEmail?: string | undefined;
-    sourcePath?: string | undefined;
+    defaultBranch?: string;
+    repoVisibility?: 'private' | 'public';
+    gitCommitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
+    sourcePath?: string;
+    signCommit?: boolean;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public

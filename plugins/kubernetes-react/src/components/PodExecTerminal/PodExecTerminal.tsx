@@ -18,7 +18,7 @@ import 'xterm/css/xterm.css';
 import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useRef, useEffect, useMemo, useState } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 
@@ -60,7 +60,7 @@ export const PodExecTerminal = (props: PodExecTerminalProps) => {
 
   const [baseUrl, setBaseUrl] = useState(window.location.host);
 
-  const terminalRef = React.useRef(null);
+  const terminalRef = useRef(null);
   const discoveryApi = useApi(discoveryApiRef);
   const namespace = podNamespace ?? 'default';
 

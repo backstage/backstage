@@ -5,19 +5,19 @@ import CodeMirror from '@uiw/react-codemirror';
 import { sass } from '@codemirror/lang-sass';
 import styles from './styles.module.css';
 import { usePlayground } from '@/utils/playground-context';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { Icon } from '../../../../packages/canon';
 import { createTheme } from '@uiw/codemirror-themes';
 import { tags as t } from '@lezer/highlight';
 
 const defaultTheme = `:root {
-  --canon-accent: #000;
+  --canon-bg-accent: #000;
 }`;
 
 const myTheme = createTheme({
   theme: 'light',
   settings: {
-    background: 'var(--canon-surface-1)',
+    background: 'var(--canon-bg-surface-1)',
     backgroundImage: '',
     foreground: '#6182B8',
     caret: '#5d00ff',
@@ -125,7 +125,7 @@ export const CustomTheme = () => {
                 className={styles.buttonClose}
                 onClick={() => setOpen(!open)}
               >
-                <Icon name={open ? 'chevronDown' : 'chevronUp'} />
+                <Icon name={open ? 'chevron-down' : 'chevron-up'} />
               </button>
             </div>
           </div>

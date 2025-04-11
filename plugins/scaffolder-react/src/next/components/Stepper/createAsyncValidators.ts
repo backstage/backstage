@@ -125,6 +125,30 @@ export const createAsyncValidators = (
         }
       };
 
+      const doValidateDependency = async (propValue: JsonObject) => {
+        const { schema: itemsSchema, uiSchema: itemsUiSchema } =
+          extractSchemaFromStep(propValue);
+        await doValidateItem(propValue, itemsSchema, itemsUiSchema);
+
+        const iterable = Array.isArray(value) ? value : [value];
+        for (const item of iterable) {
+          if (item && isObject(item)) {
+            const keys = Object.keys(item);
+            for (const k of keys) {
+              if (itemsUiSchema[k] && 'ui:field' in itemsUiSchema[k]) {
+                await validateForm(
+                  itemsUiSchema[k]['ui:field'],
+                  k,
+                  item[k],
+                  itemsSchema,
+                  itemsUiSchema,
+                );
+              }
+            }
+          }
+        }
+      };
+
       if ('ui:field' in definitionInSchema) {
         await doValidateItem(definitionInSchema, schema, uiSchema);
       } else if (hasItems && 'ui:field' in definitionInSchema.items) {
@@ -135,25 +159,11 @@ export const createAsyncValidators = (
         for (const [, propValue] of Object.entries(properties)) {
           await doValidate(propValue);
         }
-        if (Array.isArray(value)) {
-          for (const [_, v] of Object.entries(value)) {
-            const { schema: itemSchema, uiSchema: itemUiSchema } =
-              extractSchemaFromStep(definitionInSchema.items);
 
-            if (isObject(v)) {
-              for (const [pK, pV] of Object.entries(v)) {
-                if ('ui:field' in itemUiSchema[pK]) {
-                  await validateForm(
-                    itemUiSchema[pK]['ui:field'],
-                    pK,
-                    pV,
-                    itemSchema,
-                    itemUiSchema,
-                  );
-                }
-              }
-            }
-          }
+        const dependencies = (definitionInSchema.items?.dependencies ??
+          []) as JsonObject[];
+        for (const [, propValue] of Object.entries(dependencies)) {
+          await doValidateDependency(propValue);
         }
       } else if (isObject(value)) {
         formValidation[key] = await validate(formData, pointer, value);

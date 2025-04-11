@@ -11,7 +11,7 @@ Components inside Backstage. By default, it has the ability to load skeletons of
 code, template in some variables, and then publish the template to some
 locations like GitHub or GitLab.
 
-<video width="100%" height="100%" controls>
+<video width="100%" height="fit-content" controls>
   <source src="/video/software-templates.mp4" type="video/mp4" />
 </video>
 

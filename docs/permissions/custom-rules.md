@@ -24,14 +24,14 @@ yarn --cwd packages/backend add zod @backstage/catalog-model
 ...
 
 import type { Entity } from '@backstage/catalog-model';
-import { createCatalogPermissionRule } from '@backstage/plugin-catalog-backend/alpha';
-import { createConditionFactory } from '@backstage/plugin-permission-node';
+import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-backend/alpha';
+import { createConditionFactory, createPermissionRule } from '@backstage/plugin-permission-node';
 import { z } from 'zod';
 
-export const isInSystemRule = createCatalogPermissionRule({
+export const isInSystemRule = createPermissionRule({
   name: 'IS_IN_SYSTEM',
   description: 'Checks if an entity is part of the system provided',
-  resourceType: 'catalog-entity',
+  resourceRef: catalogEntityPermissionResourceRef,
   paramsSchema: z.object({
     systemRef: z
       .string()
@@ -64,22 +64,22 @@ Still in the `packages/backend/src/extensions/permissionsPolicyExtension.ts` fil
 ```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
 ...
 /* highlight-remove-next-line */
-import { createCatalogPermissionRule } from '@backstage/plugin-catalog-backend/alpha';
+import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-backend/alpha';
 /* highlight-add-next-line */
-import { catalogConditions, createCatalogConditionalDecision, createCatalogPermissionRule } from '@backstage/plugin-catalog-backend/alpha';
+import { catalogEntityPermissionResourceRef, createCatalogConditionalDecision, catalogConditions } from '@backstage/plugin-catalog-backend/alpha';
 /* highlight-remove-next-line */
-import { createConditionFactory } from '@backstage/plugin-permission-node';
+import { createConditionFactory, createPermissionRule } from '@backstage/plugin-permission-node';
 /* highlight-add-next-line */
-import { PermissionPolicy, PolicyQuery, PolicyQueryUser, createConditionFactory } from '@backstage/plugin-permission-node';
+import { createConditionFactory, createPermissionRule, PermissionPolicy, PolicyQuery, PolicyQueryUser } from '@backstage/plugin-permission-node';
 /* highlight-add-start */
 import { AuthorizeResult, PolicyDecision, isResourcePermission } from '@backstage/plugin-permission-common';
 /* highlight-add-end */
 ...
 
-export const isInSystemRule = createCatalogPermissionRule({
+export const isInSystemRule = createPermissionRule({
   name: 'IS_IN_SYSTEM',
   description: 'Checks if an entity is part of the system provided',
-  resourceType: 'catalog-entity',
+  resourceRef: catalogEntityPermissionResourceRef,
   paramsSchema: z.object({
     systemRef: z
       .string()
@@ -187,7 +187,7 @@ To install custom rules in a plugin, we need to use the [`PermissionsRegistrySer
    backend.add(import('./extensions/catalogPermissionRules'));
    ```
 
-5. Now when you run you Backstage instance - `yarn dev` - the rule will be added to the catalog plugin.
+5. Now when you run you Backstage instance - `yarn start` - the rule will be added to the catalog plugin.
 
 The updated policy will allow catalog entity resource permissions if any of the following are true:
 

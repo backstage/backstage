@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { ReactNode } from 'react';
 import { waitFor } from '@testing-library/react';
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -82,7 +82,7 @@ const Wrapper = ({
   children,
 }: {
   entityRef?: CompoundEntityRef;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => (
   <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
     <TechDocsReaderPageProvider entityRef={entityRef}>
@@ -126,20 +126,19 @@ describe('<TechDocsReaderPageContent />', () => {
     useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
     useReaderState.mockReturnValue({ state: 'cached' });
 
-    const rendered = await renderInTestApp(
-      <Wrapper>
-        <TechDocsReaderPageContent withSearch={false} />
-      </Wrapper>,
-    );
+    await expect(
+      renderInTestApp(
+        <Wrapper>
+          <TechDocsReaderPageContent withSearch={false} />
+        </Wrapper>,
+      ),
+    ).rejects.toThrow('Reached NotFound Page');
 
-    await waitFor(() => {
-      expect(
-        rendered.queryByTestId('techdocs-native-shadowroot'),
-      ).not.toBeInTheDocument();
-      expect(
-        rendered.getByText('ERROR 404: PAGE NOT FOUND'),
-      ).toBeInTheDocument();
-    });
+    // Check the global document for the absence of the shadow root
+    const shadowRoot = document.querySelector(
+      '[data-testid="techdocs-native-shadowroot"]',
+    );
+    expect(shadowRoot).not.toBeInTheDocument();
   });
 
   it('should render 404 if there is no dom and reader state is not found', async () => {

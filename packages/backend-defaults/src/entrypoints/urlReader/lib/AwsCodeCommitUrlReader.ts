@@ -21,6 +21,7 @@ import {
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadUrlOptions,
   UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 import {
@@ -31,7 +32,11 @@ import {
   AwsCodeCommitIntegration,
   ScmIntegrations,
 } from '@backstage/integration';
-import { ForwardedError, NotModifiedError } from '@backstage/errors';
+import {
+  assertError,
+  ForwardedError,
+  NotModifiedError,
+} from '@backstage/errors';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import {
   CodeCommitClient,
@@ -257,7 +262,7 @@ export class AwsCodeCommitUrlReader implements UrlReaderService {
       }
 
       return ReadUrlResponseFactory.fromReadable(
-        Readable.from([response?.fileContent] || []),
+        Readable.from([response?.fileContent]),
         {
           etag: response.commitId,
         },
@@ -357,7 +362,7 @@ export class AwsCodeCommitUrlReader implements UrlReaderService {
           commitSpecifier: commitSpecifier,
         });
         const response = await codeCommitClient.send(getFileCommand);
-        const objectData = await Readable.from([response?.fileContent] || []);
+        const objectData = await Readable.from([response?.fileContent]);
 
         responses.push({
           data: objectData,
@@ -380,8 +385,39 @@ export class AwsCodeCommitUrlReader implements UrlReaderService {
     }
   }
 
-  async search(): Promise<UrlReaderServiceSearchResponse> {
-    throw new Error('AwsCodeCommitReader does not implement search');
+  async search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse> {
+    const { path } = parseUrl(url, true);
+
+    if (path.match(/[*?]/)) {
+      throw new Error('Unsupported search pattern URL');
+    }
+
+    try {
+      const data = await this.readUrl(url, options);
+
+      return {
+        files: [
+          {
+            url: url,
+            content: data.buffer,
+            lastModifiedAt: data.lastModifiedAt,
+          },
+        ],
+        etag: data.etag ?? '',
+      };
+    } catch (error) {
+      assertError(error);
+      if (error.name === 'NotFoundError') {
+        return {
+          files: [],
+          etag: '',
+        };
+      }
+      throw error;
+    }
   }
 
   toString() {

@@ -1,14 +1,6 @@
-import React from 'react';
 import type { Preview, ReactRenderer } from '@storybook/react';
 import { withThemeByDataAttribute } from '@storybook/addon-themes';
-
-// Canon specific styles
-import '../src/css/core.css';
-import '../src/css/components.css';
-
-// Custom themes
-import './themes/backstage.css';
-import { CanonProvider } from '../src/contexts/canon';
+import '../src/css/styles.css';
 
 const preview: Preview = {
   parameters: {
@@ -29,43 +21,43 @@ const preview: Preview = {
     },
     viewport: {
       viewports: {
-        xs: {
-          name: 'XSmall',
+        initial: {
+          name: 'Initial',
           styles: {
             width: '320px',
             height: '100%',
           },
         },
-        small: {
-          name: 'Small',
+        xs: {
+          name: 'Extra Small',
           styles: {
             width: '640px',
             height: '100%',
           },
         },
-        medium: {
-          name: 'Medium',
+        sm: {
+          name: 'Small',
           styles: {
             width: '768px',
             height: '100%',
           },
         },
-        large: {
-          name: 'Large',
+        md: {
+          name: 'Medium',
           styles: {
             width: '1024px',
             height: '100%',
           },
         },
-        xlarge: {
-          name: 'XLarge',
+        lg: {
+          name: 'Large',
           styles: {
             width: '1280px',
             height: '100%',
           },
         },
-        '2xl': {
-          name: '2XL',
+        xl: {
+          name: 'Extra Large',
           styles: {
             width: '1536px',
             height: '100%',
@@ -79,25 +71,18 @@ const preview: Preview = {
       themes: {
         Light: 'light',
         Dark: 'dark',
-        'Backstage Light': 'backstage-light',
-        'Backstage Dark': 'backstage-dark',
       },
       defaultTheme: 'Light',
     }),
     Story => {
-      document.body.style.backgroundColor = 'var(--canon-background)';
+      document.body.style.backgroundColor = 'var(--canon-bg)';
 
       const docsStoryElements = document.getElementsByClassName('docs-story');
       Array.from(docsStoryElements).forEach(element => {
-        (element as HTMLElement).style.backgroundColor =
-          'var(--canon-background)';
+        (element as HTMLElement).style.backgroundColor = 'var(--canon-bg)';
       });
 
-      return (
-        <CanonProvider>
-          <Story />
-        </CanonProvider>
-      );
+      return <Story />;
     },
   ],
 };

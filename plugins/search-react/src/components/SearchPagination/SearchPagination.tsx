@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
+import {
   ReactNode,
   ChangeEvent,
   MouseEvent,

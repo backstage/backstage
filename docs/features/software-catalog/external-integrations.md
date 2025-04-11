@@ -72,7 +72,7 @@ putting all extensions like this in a backend module package of their own in the
 `plugins` folder of your Backstage repo:
 
 ```sh
-yarn new --select backend-module --option id=catalog
+yarn new --select backend-module --option pluginId=catalog
 ```
 
 The class will have this basic structure:
@@ -650,7 +650,7 @@ putting all extensions like this in a backend module package of their own in the
 `plugins` folder of your Backstage repo:
 
 ```sh
-yarn new --select backend-module --option id=catalog
+yarn new --select backend-module --option pluginId=catalog
 ```
 
 The class will have this basic structure:
@@ -686,9 +686,8 @@ export class SystemXReaderProcessor implements CatalogProcessor {
 
     try {
       // Use the builtin reader facility to grab data from the
-      // API. If you prefer, you can just use plain fetch here
-      // (from the node-fetch package), or any other method of
-      // your choosing.
+      // API. If you prefer, you can just use plain fetch here,
+      // or any other method of your choosing.
       const response = await this.reader.readUrl(location.target);
       const json = JSON.parse((await response.buffer()).toString());
       // Repeatedly call emit(processingResult.entity(location, <entity>))
@@ -1158,13 +1157,21 @@ export class MyIncrementalEntityProvider
 The last step is to implement the actual `next` method that will accept the cursor, call the API, process the result and return the result.
 
 ```ts
+import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+} from '@backstage/catalog-model';
+import { IncrementalEntityProvider } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
+
 export class MyIncrementalEntityProvider
   implements IncrementalEntityProvider<Cursor, Context>
 {
   private readonly token: string;
+  private readonly mySource: string;
 
-  constructor(token: string) {
+  constructor(token: string, mySource: string) {
     this.token = token;
+    this.mySource = mySource;
   }
 
   getProviderName() {
@@ -1182,6 +1189,7 @@ export class MyIncrementalEntityProvider
     cursor: Cursor = { page: 1 },
   ): Promise<EntityIteratorResult<Cursor>> {
     const { apiClient } = context;
+    const location = `${this.getProviderName()}:${this.mySource}`;
 
     // call your API with the current cursor
     const data = await apiClient.getServices(cursor);
@@ -1201,8 +1209,8 @@ export class MyIncrementalEntityProvider
           name: item.name,
           annotations: {
             // You need to define these, otherwise they'll fail validation
-            [ANNOTATION_LOCATION]: this.getProviderName(),
-            [ANNOTATION_ORIGIN_LOCATION]: this.getProviderName(),
+            [ANNOTATION_LOCATION]: location,
+            [ANNOTATION_ORIGIN_LOCATION]: location,
           },
         },
         spec: {

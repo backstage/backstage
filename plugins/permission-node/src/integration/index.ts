@@ -19,4 +19,8 @@ export * from './createConditionExports';
 export * from './createConditionTransformer';
 export * from './createPermissionIntegrationRouter';
 export * from './createPermissionRule';
+export {
+  createPermissionResourceRef,
+  type PermissionResourceRef,
+} from './createPermissionResourceRef';
 export { isAndCriteria, isOrCriteria, isNotCriteria } from './util';

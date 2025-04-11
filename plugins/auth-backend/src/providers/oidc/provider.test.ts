@@ -119,6 +119,7 @@ describe('oidc.create', () => {
         issueToken: jest.fn(),
         findCatalogUser: jest.fn(),
         signInWithCatalogUser: jest.fn(),
+        resolveOwnershipEntityRefs: jest.fn(),
       },
     };
   });

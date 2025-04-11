@@ -16,13 +16,8 @@
 
 import { Entity } from '@backstage/catalog-model';
 import {
-  CustomResource,
-  FetchResponseWrapper,
-  KubernetesFetcher,
   KubernetesObjectsProviderOptions,
-  KubernetesServiceLocator,
   ObjectsByEntityRequest,
-  ObjectToFetch,
 } from '../types/types';
 import {
   ClientContainerStatus,
@@ -31,6 +26,8 @@ import {
   ClusterObjects,
   CustomResourceMatcher,
   FetchResponse,
+  KUBERNETES_ANNOTATION,
+  KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION,
   KubernetesRequestAuth,
   ObjectsByEntityResponse,
   PodFetchResponse,
@@ -44,10 +41,15 @@ import {
 import {
   AuthenticationStrategy,
   ClusterDetails,
+  CustomResource,
   CustomResourcesByEntity,
+  FetchResponseWrapper,
   KubernetesCredential,
+  KubernetesFetcher,
   KubernetesObjectsByEntity,
   KubernetesObjectsProvider,
+  KubernetesServiceLocator,
+  ObjectToFetch,
 } from '@backstage/plugin-kubernetes-node';
 import {
   BackstageCredentials,
@@ -137,6 +139,16 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
     plural: 'daemonsets',
     objectType: 'daemonsets',
   },
+];
+
+export const ALL_OBJECTS: ObjectToFetch[] = [
+  {
+    group: '',
+    apiVersion: 'v1',
+    plural: 'secrets',
+    objectType: 'secrets',
+  },
+  ...DEFAULT_OBJECTS,
 ];
 
 export interface KubernetesFanOutHandlerOptions
@@ -275,8 +287,8 @@ export class KubernetesFanOutHandler implements KubernetesObjectsProvider {
 
     const labelSelector: string =
       entity.metadata?.annotations?.[
-        'backstage.io/kubernetes-label-selector'
-      ] || `backstage.io/kubernetes-id=${entityName}`;
+        KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION
+      ] || `${KUBERNETES_ANNOTATION}=${entityName}`;
 
     const namespace =
       entity.metadata?.annotations?.['backstage.io/kubernetes-namespace'];

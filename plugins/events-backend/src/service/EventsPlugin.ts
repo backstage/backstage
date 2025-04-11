@@ -24,6 +24,7 @@ import {
 } from '@backstage/plugin-events-node/alpha';
 import {
   eventsServiceRef,
+  HttpBodyParserOptions,
   HttpPostIngressOptions,
 } from '@backstage/plugin-events-node';
 import Router from 'express-promise-router';
@@ -31,7 +32,8 @@ import { HttpPostIngressEventPublisher } from './http';
 import { createEventBusRouter } from './hub';
 
 class EventsExtensionPointImpl implements EventsExtensionPoint {
-  #httpPostIngresses: HttpPostIngressOptions[] = [];
+  readonly #httpPostIngresses: HttpPostIngressOptions[] = [];
+  readonly #httpBodyParsers: HttpBodyParserOptions[] = [];
 
   setEventBroker(_: any): void {
     throw new Error(
@@ -55,8 +57,16 @@ class EventsExtensionPointImpl implements EventsExtensionPoint {
     this.#httpPostIngresses.push(options);
   }
 
+  addHttpPostBodyParser(options: HttpBodyParserOptions): void {
+    this.#httpBodyParsers.push(options);
+  }
+
   get httpPostIngresses() {
     return this.#httpPostIngresses;
+  }
+
+  get httpBodyParsers() {
+    return this.#httpBodyParsers;
   }
 }
 
@@ -99,10 +109,18 @@ export const eventsPlugin = createBackendPlugin({
           ]),
         );
 
+        const bodyParsers = Object.fromEntries(
+          extensionPoint.httpBodyParsers.map(option => [
+            option.contentType,
+            option.parser,
+          ]),
+        );
+
         const http = HttpPostIngressEventPublisher.fromConfig({
           config,
           events,
           ingresses,
+          bodyParsers,
           logger,
         });
         const eventsRouter = Router();

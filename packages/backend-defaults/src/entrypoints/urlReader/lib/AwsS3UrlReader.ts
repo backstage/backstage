@@ -20,6 +20,7 @@ import {
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadUrlOptions,
   UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
@@ -32,7 +33,11 @@ import {
   ScmIntegrations,
   AwsS3IntegrationConfig,
 } from '@backstage/integration';
-import { ForwardedError, NotModifiedError } from '@backstage/errors';
+import {
+  assertError,
+  ForwardedError,
+  NotModifiedError,
+} from '@backstage/errors';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import {
@@ -357,8 +362,39 @@ export class AwsS3UrlReader implements UrlReaderService {
     }
   }
 
-  async search(): Promise<UrlReaderServiceSearchResponse> {
-    throw new Error('AwsS3Reader does not implement search');
+  async search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse> {
+    const { path } = parseUrl(url, this.integration.config);
+
+    if (path.match(/[*?]/)) {
+      throw new Error('Unsupported search pattern URL');
+    }
+
+    try {
+      const data = await this.readUrl(url, options);
+
+      return {
+        files: [
+          {
+            url: url,
+            content: data.buffer,
+            lastModifiedAt: data.lastModifiedAt,
+          },
+        ],
+        etag: data.etag ?? '',
+      };
+    } catch (error) {
+      assertError(error);
+      if (error.name === 'NotFoundError') {
+        return {
+          files: [],
+          etag: '',
+        };
+      }
+      throw error;
+    }
   }
 
   toString() {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen } from '@testing-library/react';
 import * as services from './__fixtures__/2-services.json';
 import {
@@ -39,10 +38,10 @@ describe('ServiceDrawer', () => {
     expect(screen.getByText('Cluster IP')).toBeInTheDocument();
     expect(screen.getByText('Ports')).toBeInTheDocument();
     expect(
-      screen.getByText(textContentMatcher('Target Port: 1997')),
+      screen.getByText(textContentMatcher('targetPort: 1997')),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(textContentMatcher('App: awesome-service')),
+      screen.getByText(textContentMatcher('app: awesome-service')),
     ).toBeInTheDocument();
   });
 });

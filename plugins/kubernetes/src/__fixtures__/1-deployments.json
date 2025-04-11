@@ -50,6 +50,32 @@
                         "f:protocol": {}
                       }
                     },
+                    "f:livenessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
+                    "f:readinessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
                     "f:resources": {},
                     "f:terminationMessagePath": {},
                     "f:terminationMessagePolicy": {}
@@ -142,7 +168,38 @@
                 "protocol": "TCP"
               }
             ],
-            "resources": {},
+            "resources": {
+              "limits": {
+                "cpu": "50m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            },
+            "livenessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
             "terminationMessagePath": "/dev/termination-log",
             "terminationMessagePolicy": "File",
             "volumeMounts": [
@@ -294,6 +351,32 @@
                         "f:protocol": {}
                       }
                     },
+                    "f:livenessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
+                    "f:readinessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
                     "f:resources": {},
                     "f:terminationMessagePath": {},
                     "f:terminationMessagePolicy": {}
@@ -386,7 +469,38 @@
                 "protocol": "TCP"
               }
             ],
-            "resources": {},
+            "resources": {
+              "limits": {
+                "cpu": "50m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            },
+            "livenessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
             "terminationMessagePath": "/dev/termination-log",
             "terminationMessagePolicy": "File",
             "volumeMounts": [
@@ -538,6 +652,32 @@
                         "f:protocol": {}
                       }
                     },
+                    "f:livenessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
+                    "f:readinessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
                     "f:resources": {},
                     "f:terminationMessagePath": {},
                     "f:terminationMessagePolicy": {}
@@ -630,7 +770,38 @@
                 "protocol": "TCP"
               }
             ],
-            "resources": {},
+            "resources": {
+              "limits": {
+                "cpu": "50m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            },
+            "livenessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
             "terminationMessagePath": "/dev/termination-log",
             "terminationMessagePolicy": "File",
             "volumeMounts": [
@@ -782,6 +953,32 @@
                         "f:protocol": {}
                       }
                     },
+                    "f:livenessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
+                    "f:readinessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
                     "f:resources": {},
                     "f:terminationMessagePath": {},
                     "f:terminationMessagePolicy": {}
@@ -874,7 +1071,38 @@
                 "protocol": "TCP"
               }
             ],
-            "resources": {},
+            "resources": {
+              "limits": {
+                "cpu": "50m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            },
+            "livenessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
             "terminationMessagePath": "/dev/termination-log",
             "terminationMessagePolicy": "File",
             "volumeMounts": [
@@ -1026,6 +1254,32 @@
                         "f:protocol": {}
                       }
                     },
+                    "f:livenessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
+                    "f:readinessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
                     "f:resources": {},
                     "f:terminationMessagePath": {},
                     "f:terminationMessagePolicy": {}
@@ -1118,7 +1372,38 @@
                 "protocol": "TCP"
               }
             ],
-            "resources": {},
+            "resources": {
+              "limits": {
+                "cpu": "50m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            },
+            "livenessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
             "terminationMessagePath": "/dev/termination-log",
             "terminationMessagePolicy": "File",
             "volumeMounts": [
@@ -1270,6 +1555,32 @@
                         "f:protocol": {}
                       }
                     },
+                    "f:livenessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
+                    "f:readinessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
                     "f:resources": {},
                     "f:terminationMessagePath": {},
                     "f:terminationMessagePolicy": {}
@@ -1362,7 +1673,38 @@
                 "protocol": "TCP"
               }
             ],
-            "resources": {},
+            "resources": {
+              "limits": {
+                "cpu": "50m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            },
+            "livenessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
             "terminationMessagePath": "/dev/termination-log",
             "terminationMessagePolicy": "File",
             "volumeMounts": [
@@ -1514,6 +1856,32 @@
                         "f:protocol": {}
                       }
                     },
+                    "f:livenessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
+                    "f:readinessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
                     "f:resources": {},
                     "f:terminationMessagePath": {},
                     "f:terminationMessagePolicy": {}
@@ -1606,7 +1974,38 @@
                 "protocol": "TCP"
               }
             ],
-            "resources": {},
+            "resources": {
+              "limits": {
+                "cpu": "50m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            },
+            "livenessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
             "terminationMessagePath": "/dev/termination-log",
             "terminationMessagePolicy": "File",
             "volumeMounts": [
@@ -1758,6 +2157,32 @@
                         "f:protocol": {}
                       }
                     },
+                    "f:livenessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
+                    "f:readinessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
                     "f:resources": {},
                     "f:terminationMessagePath": {},
                     "f:terminationMessagePolicy": {}
@@ -1850,7 +2275,38 @@
                 "protocol": "TCP"
               }
             ],
-            "resources": {},
+            "resources": {
+              "limits": {
+                "cpu": "50m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            },
+            "livenessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
             "terminationMessagePath": "/dev/termination-log",
             "terminationMessagePolicy": "File",
             "volumeMounts": [
@@ -2002,6 +2458,32 @@
                         "f:protocol": {}
                       }
                     },
+                    "f:livenessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
+                    "f:readinessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
                     "f:resources": {},
                     "f:terminationMessagePath": {},
                     "f:terminationMessagePolicy": {}
@@ -2094,7 +2576,38 @@
                 "protocol": "TCP"
               }
             ],
-            "resources": {},
+            "resources": {
+              "limits": {
+                "cpu": "50m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            },
+            "livenessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
             "terminationMessagePath": "/dev/termination-log",
             "terminationMessagePolicy": "File",
             "volumeMounts": [
@@ -2246,6 +2759,32 @@
                         "f:protocol": {}
                       }
                     },
+                    "f:livenessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
+                    "f:readinessProbe": {
+                      ".": {},
+                      "f:failureThreshold": {},
+                      "f:httpGet": {
+                        ".": {},
+                        "f:path": {},
+                        "f:port": {},
+                        "f:scheme": {}
+                      },
+                      "f:periodSeconds": {},
+                      "f:successThreshold": {},
+                      "f:timeoutSeconds": {}
+                    },
                     "f:resources": {},
                     "f:terminationMessagePath": {},
                     "f:terminationMessagePolicy": {}
@@ -2338,7 +2877,38 @@
                 "protocol": "TCP"
               }
             ],
-            "resources": {},
+            "resources": {
+              "limits": {
+                "cpu": "50m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              }
+            },
+            "livenessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/",
+                "port": 80,
+                "scheme": "HTTP"
+              },
+              "timeoutSeconds": 1,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
             "terminationMessagePath": "/dev/termination-log",
             "terminationMessagePolicy": "File",
             "volumeMounts": [
@@ -2520,6 +3090,32 @@
                             "f:protocol": {}
                           }
                         },
+                        "f:livenessProbe": {
+                          ".": {},
+                          "f:failureThreshold": {},
+                          "f:httpGet": {
+                            ".": {},
+                            "f:path": {},
+                            "f:port": {},
+                            "f:scheme": {}
+                          },
+                          "f:periodSeconds": {},
+                          "f:successThreshold": {},
+                          "f:timeoutSeconds": {}
+                        },
+                        "f:readinessProbe": {
+                          ".": {},
+                          "f:failureThreshold": {},
+                          "f:httpGet": {
+                            ".": {},
+                            "f:path": {},
+                            "f:port": {},
+                            "f:scheme": {}
+                          },
+                          "f:periodSeconds": {},
+                          "f:successThreshold": {},
+                          "f:timeoutSeconds": {}
+                        },
                         "f:resources": {},
                         "f:terminationMessagePath": {},
                         "f:terminationMessagePolicy": {}
@@ -2591,7 +3187,38 @@
                     "protocol": "TCP"
                   }
                 ],
-                "resources": {},
+                "resources": {
+                  "limits": {
+                    "cpu": "50m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "50m",
+                    "memory": "64Mi"
+                  }
+                },
+                "livenessProbe": {
+                  "httpGet": {
+                    "path": "/",
+                    "port": 80,
+                    "scheme": "HTTP"
+                  },
+                  "timeoutSeconds": 1,
+                  "periodSeconds": 10,
+                  "successThreshold": 1,
+                  "failureThreshold": 3
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/",
+                    "port": 80,
+                    "scheme": "HTTP"
+                  },
+                  "timeoutSeconds": 1,
+                  "periodSeconds": 10,
+                  "successThreshold": 1,
+                  "failureThreshold": 3
+                },
                 "terminationMessagePath": "/dev/termination-log",
                 "terminationMessagePolicy": "File"
               }
@@ -2680,6 +3307,32 @@
                             "f:containerPort": {},
                             "f:protocol": {}
                           }
+                        },
+                        "f:livenessProbe": {
+                          ".": {},
+                          "f:failureThreshold": {},
+                          "f:httpGet": {
+                            ".": {},
+                            "f:path": {},
+                            "f:port": {},
+                            "f:scheme": {}
+                          },
+                          "f:periodSeconds": {},
+                          "f:successThreshold": {},
+                          "f:timeoutSeconds": {}
+                        },
+                        "f:readinessProbe": {
+                          ".": {},
+                          "f:failureThreshold": {},
+                          "f:httpGet": {
+                            ".": {},
+                            "f:path": {},
+                            "f:port": {},
+                            "f:scheme": {}
+                          },
+                          "f:periodSeconds": {},
+                          "f:successThreshold": {},
+                          "f:timeoutSeconds": {}
                         },
                         "f:resources": {},
                         "f:terminationMessagePath": {},
@@ -2784,7 +3437,38 @@
                     "protocol": "TCP"
                   }
                 ],
-                "resources": {},
+                "resources": {
+                  "limits": {
+                    "cpu": "50m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "50m",
+                    "memory": "64Mi"
+                  }
+                },
+                "livenessProbe": {
+                  "httpGet": {
+                    "path": "/",
+                    "port": 80,
+                    "scheme": "HTTP"
+                  },
+                  "timeoutSeconds": 1,
+                  "periodSeconds": 10,
+                  "successThreshold": 1,
+                  "failureThreshold": 3
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/",
+                    "port": 80,
+                    "scheme": "HTTP"
+                  },
+                  "timeoutSeconds": 1,
+                  "periodSeconds": 10,
+                  "successThreshold": 1,
+                  "failureThreshold": 3
+                },
                 "terminationMessagePath": "/dev/termination-log",
                 "terminationMessagePolicy": "File"
               }

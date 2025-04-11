@@ -14,26 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  BackendFeature,
-  createServiceRef,
-} from '@backstage/backend-plugin-api';
-
-/** @alpha */
-export interface FeatureDiscoveryService {
-  getBackendFeatures(): Promise<{ features: Array<BackendFeature> }>;
-}
-
-/**
- * An optional service that can be used to dynamically load in additional BackendFeatures at runtime.
- * @alpha
- * @deprecated The `featureDiscoveryServiceRef` is deprecated in favor of using {@link @backstage/backend-defaults#discoveryFeatureLoader} instead.
- */
-export const featureDiscoveryServiceRef =
-  createServiceRef<FeatureDiscoveryService>({
-    id: 'core.featureDiscovery',
-    scope: 'root',
-  });
+import { createServiceRef } from '@backstage/backend-plugin-api';
 
 /**
  * EXPERIMENTAL: Instance metadata service.

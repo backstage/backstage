@@ -33,6 +33,7 @@ export function makeFieldSchema<
   const { output, uiOptions } = options;
   return {
     TProps: undefined as any,
+    TOutput: undefined as any,
     schema: {
       returnValue: zodToJsonSchema(output(z)) as JSONSchema7,
       uiOptions: uiOptions && (zodToJsonSchema(uiOptions(z)) as JSONSchema7),
@@ -57,4 +58,5 @@ export interface FieldSchema<TReturn, TUiOptions> {
 
   readonly schema: CustomFieldExtensionSchema;
   readonly TProps: FieldExtensionComponentProps<TReturn, TUiOptions>;
+  readonly TOutput: TReturn;
 }

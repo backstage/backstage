@@ -40,7 +40,7 @@ import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize } from 'lodash';
 import pluralize from 'pluralize';
-import React, { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
 import { OffsetPaginatedCatalogTable } from './OffsetPaginatedCatalogTable';
@@ -49,7 +49,6 @@ import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { FavoriteToggleIcon } from '@backstage/core-components';
-import { CatalogTableToolbar } from './CatalogTableToolbar';
 
 /**
  * Props for {@link CatalogTable}.
@@ -246,9 +245,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
         pageSize: pageSize,
         pageSizeOptions: [20, 50, 100],
         ...options,
-      }}
-      components={{
-        Toolbar: CatalogTableToolbar,
       }}
       title={title}
       data={rows}

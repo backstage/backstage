@@ -100,7 +100,7 @@ import {
 // ...
 
 permissionsRegistry.addResourceType({
-  resourceType: TODO_LIST_RESOURCE_TYPE,
+  resourceRef: todoListPermissionResourceRef,
   /* highlight-remove-next-line */
   permissions: [todoListCreatePermission, todoListUpdatePermission],
   /* highlight-add-next-line */
@@ -129,17 +129,22 @@ import {
 import { add, getAll, getTodo, update } from './todos';
 /* highlight-add-next-line */
 import { add, getAll, getTodo, TodoFilter, update } from './todos';
+/* highlight-add-next-line */
+import { todoListPermissionResourceRef } from './rules';
 import {
   todoListCreatePermission,
   todoListUpdatePermission,
   /* highlight-add-next-line */
   todoListReadPermission,
-} from './permissions';
+} from '@internal/plugin-todo-list-common';
 
 // ...
 
-/* highlight-add-next-line */
-const transformConditions: ConditionTransformer<TodoFilter> = createConditionTransformer(Object.values(rules));
+/* highlight-add-start */
+const transformConditions = createConditionTransformer(
+  permissionsRegistry.getPermissionRuleset(todoListPermissionResourceRef)
+);
+/* highlight-add-end */
 
 /* highlight-remove-next-line */
 router.get('/todos', async (_req, res) => {
