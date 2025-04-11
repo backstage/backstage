@@ -368,9 +368,11 @@ auth:
       cert: 'fake-cert-base64'
     okta:
       development:
-        clientId: ${AUTH_OKTA_CLIENT_ID}
-        clientSecret: ${AUTH_OKTA_CLIENT_SECRET}
-        audience: ${AUTH_OKTA_AUDIENCE}
+        additionalScopes: devhome_scope
+        audience: https://adobe-stage.okta.com
+        authServerId: aus1exw340qLpDruL1d8
+        clientId: 0oa1v9j0w0u8av5wo1d8
+        clientSecret: uHokC1VivYzkS-vKQg2hIh4AAUaJQk_MRW7vulMAkOA3E65I2-HbKEswqbJc9l6q
     oauth2:
       development:
         clientId: ${AUTH_OAUTH2_CLIENT_ID}
