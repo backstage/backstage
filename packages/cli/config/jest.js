@@ -208,6 +208,7 @@ function getRoleConfig(role, pkgJson) {
     '\\.(bmp|gif|jpg|jpeg|png|ico|webp|frag|xml|svg|eot|woff|woff2|ttf)$':
       require.resolve('./jestFileTransform.js'),
     '\\.(yaml)$': require.resolve('./jestYamlTransform'),
+    '\\.(graphql|gql)$': require.resolve('./jestGraphQLTransform'),
   };
   if (FRONTEND_ROLES.includes(role)) {
     return {

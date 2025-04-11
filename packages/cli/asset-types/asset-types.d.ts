@@ -65,6 +65,16 @@ declare module '*.yaml' {
   export default src;
 }
 
+declare module '*.graphql' {
+  const src: string;
+  export default src;
+}
+
+declare module '*.gql' {
+  const src: string;
+  export default src;
+}
+
 /**
  * @deprecated support for .icon.svg extensions are being removed, inline the SVG elements in a MUI SvgIcon instead.
  * @example
