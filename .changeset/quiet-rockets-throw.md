@@ -2,4 +2,4 @@
 '@backstage/canon': patch
 ---
 
-Add new DataTable component.
+Add new DataTable component and update Table component styles.
