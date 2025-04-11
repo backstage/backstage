@@ -534,3 +534,4 @@ zsh
 scrollable
 severities
 intellij
+tsconfig
