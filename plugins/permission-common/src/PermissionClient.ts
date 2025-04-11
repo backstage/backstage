@@ -35,7 +35,6 @@ import { DiscoveryApi } from './types/discovery';
 import {
   AuthorizeRequestOptions,
   BasicPermission,
-  Permission,
   ResourcePermission,
 } from './types/permission';
 import { isResourcePermission } from './permissions';
@@ -270,6 +269,9 @@ export class PermissionClient implements PermissionEvaluator {
   }
 }
 
+/**
+ * @internal
+ */
 export type BatchedAuthorizePermissionRequest = IdentifiedPermissionMessage<
   | {
       permission: BasicPermission;
