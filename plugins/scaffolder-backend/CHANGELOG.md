@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.32.0-next.3
+
+### Patch Changes
+
+- 8685cab: Added `template` and `step` labels for scaffolder histogram metrics: `scaffolder_task_duration` and `scaffolder_step_duration`
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.7-next.1
+
 ## 1.32.0-next.2
 
 ### Patch Changes

@@ -1,5 +1,33 @@
 # example-app
 
+## 0.2.108-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.29.0-next.3
+  - @backstage/canon@0.3.0-next.3
+  - @backstage/plugin-catalog-react@1.17.0-next.3
+  - @backstage/plugin-api-docs@0.12.6-next.3
+  - @backstage/plugin-catalog-graph@0.4.18-next.3
+  - @backstage/plugin-catalog-import@0.12.13-next.3
+  - @backstage/plugin-org@0.6.38-next.3
+  - @backstage/plugin-scaffolder@1.30.0-next.3
+  - @backstage/plugin-scaffolder-react@1.15.0-next.3
+  - @backstage/plugin-techdocs@1.12.5-next.3
+  - @backstage/plugin-user-settings@0.8.21-next.3
+  - @backstage/cli@0.32.0-next.2
+  - @backstage/plugin-home@0.8.7-next.3
+  - @backstage/plugin-kubernetes@0.12.6-next.3
+  - @backstage/plugin-kubernetes-cluster@0.0.24-next.3
+  - @backstage/plugin-search@1.4.25-next.3
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.23-next.1
+  - @backstage/plugin-catalog-unprocessed-entities@0.2.16-next.3
+  - @backstage/plugin-devtools@0.1.26-next.3
+  - @backstage/plugin-notifications@0.5.4-next.3
+  - @backstage/integration-react@1.2.6-next.1
+  - @backstage/plugin-signals@0.0.18-next.1
+
 ## 0.2.108-next.2
 
 ### Patch Changes

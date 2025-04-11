@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-react
 
+## 1.17.0-next.3
+
+### Patch Changes
+
+- 3f7e4f1: Added a new `overview` entity content group for the new frontend system.
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.1-next.3
+  - @backstage/integration-react@1.2.6-next.1
+
 ## 1.17.0-next.2
 
 ### Minor Changes
