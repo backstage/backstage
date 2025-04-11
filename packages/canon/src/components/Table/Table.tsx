@@ -14,102 +14,84 @@
  * limitations under the License.
  */
 import { forwardRef } from 'react';
+import clsx from 'clsx';
 
-/** @public */
-const Table = forwardRef<
+const TableRoot = forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
-  <div className="table">
-    <table ref={ref} className={className} {...props} />
-  </div>
+  <table ref={ref} className={clsx('canon-TableRoot', className)} {...props} />
 ));
-Table.displayName = 'Table';
+TableRoot.displayName = 'TableRoot';
 
-/** @public */
 const TableHeader = forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
-    className={['table-header', className].join(' ')}
+    className={clsx('canon-TableHeader', className)}
     {...props}
   />
 ));
 TableHeader.displayName = 'TableHeader';
 
-/** @public */
 const TableBody = forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <tbody ref={ref} className={['table-body', className].join(' ')} {...props} />
+  <tbody ref={ref} className={clsx('canon-TableBody', className)} {...props} />
 ));
 TableBody.displayName = 'TableBody';
 
-/** @public */
-const TableFooter = forwardRef<
-  HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
-  <tfoot
-    ref={ref}
-    className={['table-footer', className].join(' ')}
-    {...props}
-  />
-));
-TableFooter.displayName = 'TableFooter';
-
-/** @public */
 const TableRow = forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement>
 >(({ className, ...props }, ref) => (
-  <tr ref={ref} className={['table-row', className].join(' ')} {...props}>
+  <tr ref={ref} className={clsx('canon-TableRow', className)} {...props}>
     {props.children}
   </tr>
 ));
 TableRow.displayName = 'TableRow';
 
-/** @public */
 const TableHead = forwardRef<
   HTMLTableCellElement,
   React.ThHTMLAttributes<HTMLTableCellElement>
 >(({ className, ...props }, ref) => (
-  <th ref={ref} className={['table-head', className].join(' ')} {...props} />
+  <th ref={ref} className={clsx('canon-TableHead', className)} {...props} />
 ));
 TableHead.displayName = 'TableHead';
 
-/** @public */
 const TableCell = forwardRef<
   HTMLTableCellElement,
   React.TdHTMLAttributes<HTMLTableCellElement>
 >(({ className, ...props }, ref) => (
-  <td ref={ref} className={['table-cell', className].join(' ')} {...props} />
+  <td ref={ref} className={clsx('canon-TableCell', className)} {...props} />
 ));
 TableCell.displayName = 'TableCell';
 
-/** @public */
 const TableCaption = forwardRef<
   HTMLTableCaptionElement,
   React.HTMLAttributes<HTMLTableCaptionElement>
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={['table-caption', className].join(' ')}
+    className={clsx('canon-TableCaption', className)}
     {...props}
   />
 ));
 TableCaption.displayName = 'TableCaption';
 
-export {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableCaption,
+/**
+ * Table component for displaying tabular data
+ * @public
+ */
+export const Table = {
+  Root: TableRoot,
+  Header: TableHeader,
+  Body: TableBody,
+  Head: TableHead,
+  Row: TableRow,
+  Cell: TableCell,
+  Caption: TableCaption,
 };

@@ -17,6 +17,7 @@ import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
+import { Table as Table_2 } from '@tanstack/react-table';
 import { TdHTMLAttributes } from 'react';
 import { ThHTMLAttributes } from 'react';
 import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
@@ -218,6 +219,81 @@ export interface ContainerProps {
   // (undocumented)
   style?: React.CSSProperties;
 }
+
+// @public
+export const DataTable: {
+  Root: <TData>(
+    props: {
+      table: Table_2<TData>;
+    } & React.HTMLAttributes<HTMLDivElement>,
+  ) => JSX.Element;
+  Pagination: ForwardRefExoticComponent<
+    DataTablePaginationProps & RefAttributes<HTMLDivElement>
+  >;
+  Table: ForwardRefExoticComponent<
+    DataTableTableProps & RefAttributes<HTMLTableElement>
+  >;
+  TableRoot: ForwardRefExoticComponent<
+    Omit<
+      HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>,
+      'ref'
+    > &
+      RefAttributes<HTMLTableElement>
+  >;
+  TableHeader: ForwardRefExoticComponent<
+    Omit<
+      HTMLAttributes<HTMLTableSectionElement> &
+        RefAttributes<HTMLTableSectionElement>,
+      'ref'
+    > &
+      RefAttributes<HTMLTableSectionElement>
+  >;
+  TableBody: ForwardRefExoticComponent<
+    Omit<
+      HTMLAttributes<HTMLTableSectionElement> &
+        RefAttributes<HTMLTableSectionElement>,
+      'ref'
+    > &
+      RefAttributes<HTMLTableSectionElement>
+  >;
+  TableRow: ForwardRefExoticComponent<
+    Omit<
+      HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>,
+      'ref'
+    > &
+      RefAttributes<HTMLTableRowElement>
+  >;
+  TableCell: ForwardRefExoticComponent<
+    Omit<
+      TdHTMLAttributes<HTMLTableCellElement> &
+        RefAttributes<HTMLTableCellElement>,
+      'ref'
+    > &
+      RefAttributes<HTMLTableCellElement>
+  >;
+  TableHead: ForwardRefExoticComponent<
+    Omit<
+      ThHTMLAttributes<HTMLTableCellElement> &
+        RefAttributes<HTMLTableCellElement>,
+      'ref'
+    > &
+      RefAttributes<HTMLTableCellElement>
+  >;
+};
+
+// @public (undocumented)
+export interface DataTablePaginationProps
+  extends React.HTMLAttributes<HTMLDivElement> {}
+
+// @public (undocumented)
+export interface DataTableRootProps<TData>
+  extends React.HTMLAttributes<HTMLDivElement> {
+  table: Table_2<TData>;
+}
+
+// @public (undocumented)
+export interface DataTableTableProps
+  extends React.HTMLAttributes<HTMLTableElement> {}
 
 // @public (undocumented)
 export type Display = 'none' | 'flex' | 'block' | 'inline';
@@ -1028,43 +1104,33 @@ export type StylingPropDef = {
   parseValue?: (value: string) => string | undefined;
 };
 
-// @public (undocumented)
-export const Table: ForwardRefExoticComponent<
-  HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>
->;
-
-// @public (undocumented)
-export const TableBody: ForwardRefExoticComponent<
-  HTMLAttributes<HTMLTableSectionElement> &
-    RefAttributes<HTMLTableSectionElement>
->;
-
-// @public (undocumented)
-export const TableCell: ForwardRefExoticComponent<
-  TdHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
->;
-
-// @public (undocumented)
-export const TableFooter: ForwardRefExoticComponent<
-  HTMLAttributes<HTMLTableSectionElement> &
-    RefAttributes<HTMLTableSectionElement>
->;
-
-// @public (undocumented)
-export const TableHead: ForwardRefExoticComponent<
-  ThHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
->;
-
-// @public (undocumented)
-export const TableHeader: ForwardRefExoticComponent<
-  HTMLAttributes<HTMLTableSectionElement> &
-    RefAttributes<HTMLTableSectionElement>
->;
-
-// @public (undocumented)
-export const TableRow: ForwardRefExoticComponent<
-  HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>
->;
+// @public
+export const Table: {
+  Root: ForwardRefExoticComponent<
+    HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>
+  >;
+  Header: ForwardRefExoticComponent<
+    HTMLAttributes<HTMLTableSectionElement> &
+      RefAttributes<HTMLTableSectionElement>
+  >;
+  Body: ForwardRefExoticComponent<
+    HTMLAttributes<HTMLTableSectionElement> &
+      RefAttributes<HTMLTableSectionElement>
+  >;
+  Head: ForwardRefExoticComponent<
+    ThHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
+  >;
+  Row: ForwardRefExoticComponent<
+    HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>
+  >;
+  Cell: ForwardRefExoticComponent<
+    TdHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
+  >;
+  Caption: ForwardRefExoticComponent<
+    HTMLAttributes<HTMLTableCaptionElement> &
+      RefAttributes<HTMLTableCaptionElement>
+  >;
+};
 
 // @public (undocumented)
 const Text_2: ForwardRefExoticComponent<
