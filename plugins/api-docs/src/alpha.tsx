@@ -248,3 +248,5 @@ export default createFrontendPlugin({
     apiDocsApisEntityContent,
   ],
 });
+
+export { apiDocsTranslationRef } from './translation';

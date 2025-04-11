@@ -18,6 +18,40 @@ import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
+
+// @alpha (undocumented)
+export const apiDocsTranslationRef: TranslationRef<
+  'api-docs',
+  {
+    readonly 'apiDefinitionDialog.closeButtonTitle': 'Close';
+    readonly 'apiDefinitionDialog.tabsAriaLabel': 'API definition options';
+    readonly 'apiDefinitionDialog.toggleButtonAriaLabel': 'Toggle API Definition Dialog';
+    readonly 'defaultApiExplorerPage.title': 'APIs';
+    readonly 'defaultApiExplorerPage.subtitle': '{{orgName}} API Explorer';
+    readonly 'defaultApiExplorerPage.pageTitleOverride': 'APIs';
+    readonly 'defaultApiExplorerPage.createButtonTitle': 'Register Existing API';
+    readonly 'defaultApiExplorerPage.supportButtonTitle': 'All your APIs';
+    readonly 'consumedApisCard.error.title': 'Could not load APIs';
+    readonly 'consumedApisCard.title': 'Consumed APIs';
+    readonly 'consumedApisCard.emptyContent.title': 'This {{entity}} does not consume any APIs.';
+    readonly 'hasApisCard.error.title': 'Could not load APIs';
+    readonly 'hasApisCard.title': 'APIs';
+    readonly 'hasApisCard.emptyContent.title': 'This {{entity}} does not contain any APIs.';
+    readonly 'providedApisCard.error.title': 'Could not load APIs';
+    readonly 'providedApisCard.title': 'Provided APIs';
+    readonly 'providedApisCard.emptyContent.title': 'This {{entity}} does not provide any APIs.';
+    readonly 'apiEntityColumns.typeTitle': 'Type';
+    readonly 'apiEntityColumns.apiDefinitionTitle': 'API Definition';
+    readonly 'consumingComponentsCard.error.title': 'Could not load components';
+    readonly 'consumingComponentsCard.title': 'Consumers';
+    readonly 'consumingComponentsCard.emptyContent.title': 'No component consumes this API.';
+    readonly 'providingComponentsCard.error.title': 'Could not load components';
+    readonly 'providingComponentsCard.title': 'Providers';
+    readonly 'providingComponentsCard.emptyContent.title': 'No component provides this API.';
+    readonly apisCardHelpLinkTitle: 'Learn how to change this';
+  }
+>;
 
 // @public (undocumented)
 const _default: FrontendPlugin<
