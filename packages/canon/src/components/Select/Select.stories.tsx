@@ -253,7 +253,7 @@ export const WithErrorAndDescription: Story = {
   },
 };
 
-export const WithLongLabels: Story = {
+export const WithLongOptionNames: Story = {
   args: {
     label: 'Document Template',
     options: [
@@ -272,9 +272,20 @@ export const WithLongLabels: Story = {
         label:
           'Detailed User Guide and Technical Documentation for Advanced System Features Covering Installation Procedures, Configuration Settings, Security Protocols, Troubleshooting Guidelines, Best Practices, Common Use Cases, Performance Optimization Tips, Integration Methods, API Documentation, and Frequently Asked Questions with Step-by-Step Solutions',
       },
+      {
+        value: 'marketing-plan',
+        label:
+          'Integrated Marketing Strategy and Campaign Planning Document for Q3 2024 Encompassing Target Audience Analysis, Channel Selection Criteria, Budget Allocation Framework, Creative Development Process, Content Calendar, Social Media Strategy, Email Marketing Campaigns, SEO Optimization, Paid Advertising Plans, and ROI Measurement Methodology',
+      },
+      {
+        value: 'research-paper',
+        label:
+          'Scientific Research Paper on Advanced Machine Learning Techniques and Applications Including Literature Review, Methodology Description, Experimental Setup, Data Collection Procedures, Analysis Techniques, Results Interpretation, Comparative Studies, Limitations Discussion, Future Research Directions, and Practical Implementation Guidelines',
+      },
     ],
     placeholder: 'Select a document template',
     name: 'template',
     style: { maxWidth: 400 },
+    value: 'annual-report-2024',
   },
 };

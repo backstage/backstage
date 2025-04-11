@@ -66,7 +66,10 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
           })}
           data-invalid={error}
         >
-          <SelectPrimitive.Value placeholder={placeholder} />
+          <SelectPrimitive.Value
+            className="canon-Select--value"
+            placeholder={placeholder}
+          />
           <SelectPrimitive.Icon className="canon-Select--icon">
             <Icon name="chevron-down" />
           </SelectPrimitive.Icon>
