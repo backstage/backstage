@@ -112,7 +112,7 @@ While we could attach the existing information to the `PluginMetadataService`, w
 
 ```ts
 interface InstanceMetadataService {
-  getLocallyInstalledFeatures: () => BackendFeatureMeta[];
+  getInstalledFeatures: () => BackendFeatureMeta[];
 }
 ```
 
@@ -124,7 +124,7 @@ We also propose exposing the new services through an HTTP API, so that these can
 
 ```yaml
 paths:
-  /.backstage/instanceInfo/features/installed:
+  /.backstage/instanceMetadata/features/installed:
     get:
       summary: Get a list of installed features for this instance.
       operationId: GetInstalledFeaturesByInstance
@@ -167,7 +167,7 @@ interface BackstageInstance {
 }
 
 interface SystemMetadataService {
-  listInstances: () => BackstageInstance[];
+  getInstances: () => BackstageInstance[];
 }
 ```
 
