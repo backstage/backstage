@@ -24,7 +24,10 @@ export const oktaAuthenticator: OAuthAuthenticator<
 export namespace oktaSignInResolvers {
   const emailMatchingUserEntityAnnotation: SignInResolverFactory<
     OAuthAuthenticatorResult<PassportProfile>,
-    unknown
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
 }
 ```

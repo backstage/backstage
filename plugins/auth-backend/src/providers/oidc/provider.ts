@@ -17,6 +17,7 @@
 import { AuthHandler } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import {
+  commonSignInResolvers,
   createOAuthProviderFactory,
   AuthResolverContext,
   BackstageSignInResult,
@@ -24,14 +25,11 @@ import {
   SignInInfo,
   SignInResolver,
 } from '@backstage/plugin-auth-node';
+import { adaptOAuthSignInResolverToLegacy } from '../../lib/legacy';
 import {
   oidcAuthenticator,
   OidcAuthResult,
 } from '@backstage/plugin-auth-backend-module-oidc-provider';
-import {
-  commonByEmailLocalPartResolver,
-  commonByEmailResolver,
-} from '../resolvers';
 
 /**
  * Auth provider integration for generic OpenID Connect auth
@@ -80,14 +78,16 @@ export const oidc = createAuthProviderIntegration({
           )),
     });
   },
-  resolvers: {
+  resolvers: adaptOAuthSignInResolverToLegacy({
     /**
      * Looks up the user by matching their email local part to the entity name.
      */
-    emailLocalPartMatchingUserEntityName: () => commonByEmailLocalPartResolver,
+    emailLocalPartMatchingUserEntityName:
+      commonSignInResolvers.emailLocalPartMatchingUserEntityName(),
     /**
      * Looks up the user by matching their email to the entity email.
      */
-    emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
-  },
+    emailMatchingUserEntityProfileEmail:
+      commonSignInResolvers.emailMatchingUserEntityProfileEmail(),
+  }),
 });

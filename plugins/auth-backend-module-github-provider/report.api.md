@@ -24,7 +24,10 @@ export const githubAuthenticator: OAuthAuthenticator<
 export namespace githubSignInResolvers {
   const usernameMatchingUserEntityName: SignInResolverFactory<
     OAuthAuthenticatorResult<PassportProfile>,
-    unknown
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
 }
 ```

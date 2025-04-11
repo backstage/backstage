@@ -40,7 +40,8 @@
     "@types/passport": "^1.0.16",
     "express": "^4.19.2",
     "jose": "^5.0.0",
-    "passport": "^0.7.0"
+    "passport": "^0.7.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

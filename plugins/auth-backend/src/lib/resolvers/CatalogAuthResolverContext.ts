@@ -163,20 +163,57 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     return { entity: result };
   }
 
-  async signInWithCatalogUser(query: AuthResolverCatalogUserQuery) {
-    const { entity } = await this.findCatalogUser(query);
+  async signInWithCatalogUser(
+    query: AuthResolverCatalogUserQuery,
+    options?: {
+      dangerousEntityRefFallback?:
+        | string
+        | {
+            kind?: string;
+            namespace?: string;
+            name: string;
+          };
+    },
+  ) {
+    try {
+      const { entity } = await this.findCatalogUser(query);
 
-    const { ownershipEntityRefs } = await this.resolveOwnershipEntityRefs(
-      entity,
-    );
+      const { ownershipEntityRefs } = await this.resolveOwnershipEntityRefs(
+        entity,
+      );
 
-    const token = await this.tokenIssuer.issueToken({
-      claims: {
-        sub: stringifyEntityRef(entity),
-        ent: ownershipEntityRefs,
-      },
-    });
-    return { token };
+      const token = await this.tokenIssuer.issueToken({
+        claims: {
+          sub: stringifyEntityRef(entity),
+          ent: ownershipEntityRefs,
+        },
+      });
+      return { token };
+    } catch (error) {
+      if (error?.name !== 'NotFoundError') {
+        throw error;
+      }
+      if (!options?.dangerousEntityRefFallback) {
+        throw new Error(
+          'Failed to sign-in, unable to resolve user identity. Please verify that your catalog contains the expected User entities that would match your configured sign-in resolver. For non-production environments, manually provision the user or disable the user provisioning requirement by setting the `dangerouslyAllowSignInWithoutUserInCatalog` option.',
+        );
+      }
+
+      const userEntityRef = stringifyEntityRef(
+        parseEntityRef(options.dangerousEntityRefFallback, {
+          defaultKind: 'User',
+          defaultNamespace: DEFAULT_NAMESPACE,
+        }),
+      );
+
+      const token = await this.tokenIssuer.issueToken({
+        claims: {
+          sub: userEntityRef,
+          ent: [userEntityRef],
+        },
+      });
+      return { token };
+    }
   }
 
   async resolveOwnershipEntityRefs(
