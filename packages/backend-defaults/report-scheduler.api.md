@@ -4,6 +4,7 @@
 
 ```ts
 import { DatabaseService } from '@backstage/backend-plugin-api';
+import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -16,6 +17,7 @@ export class DefaultSchedulerService {
     database: DatabaseService;
     logger: LoggerService;
     rootLifecycle?: RootLifecycleService;
+    httpRouter?: HttpRouterService;
   }): SchedulerService;
 }
 

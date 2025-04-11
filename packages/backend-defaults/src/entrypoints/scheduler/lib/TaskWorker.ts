@@ -21,8 +21,14 @@ import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
 import { v4 as uuid } from 'uuid';
 import { DB_TASKS_TABLE, DbTasksRow } from '../database/tables';
-import { TaskSettingsV2, taskSettingsV2Schema } from './types';
-import { delegateAbortController, nowPlus, sleep } from './util';
+import { TaskSettingsV2, taskSettingsV2Schema, TaskApiResponse } from './types';
+import {
+  delegateAbortController,
+  nowPlus,
+  sleep,
+  dbTime,
+  serializeError,
+} from './util';
 import { SchedulerServiceTaskFunction } from '@backstage/backend-plugin-api';
 
 const DEFAULT_WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
@@ -116,6 +122,47 @@ export class TaskWorker {
     }
   }
 
+  static async states(
+    knex: Knex,
+  ): Promise<Map<string, TaskApiResponse['state']>> {
+    const rows = await knex<DbTasksRow>(DB_TASKS_TABLE);
+    return new Map(
+      rows.map(row => {
+        const startedAt = row.current_run_started_at
+          ? dbTime(row.current_run_started_at).toISO()!
+          : undefined;
+        const timesOutAt = row.current_run_expires_at
+          ? dbTime(row.current_run_expires_at).toISO()!
+          : undefined;
+        const startsAt = row.next_run_start_at
+          ? dbTime(row.next_run_start_at).toISO()!
+          : undefined;
+        const lastRunEndedAt = row.last_run_ended_at
+          ? dbTime(row.last_run_ended_at).toISO()!
+          : undefined;
+        const lastRunError = row.last_run_error_json || undefined;
+
+        return [
+          row.id,
+          startedAt
+            ? {
+                running: true,
+                startedAt,
+                timesOutAt,
+                lastRunEndedAt,
+                lastRunError,
+              }
+            : {
+                running: false,
+                startsAt,
+                lastRunEndedAt,
+                lastRunError,
+              },
+        ];
+      }),
+    );
+  }
+
   /**
    * Makes a single attempt at running the task to completion, if ready.
    *
@@ -157,7 +204,7 @@ export class TaskWorker {
       taskAbortController.abort(); // releases resources
     } catch (e) {
       this.logger.error(e);
-      await this.tryReleaseTask(ticket, taskSettings);
+      await this.tryReleaseTask(ticket, taskSettings, e);
       return { result: 'failed' };
     } finally {
       clearTimeout(timeoutHandle);
@@ -321,6 +368,7 @@ export class TaskWorker {
   async tryReleaseTask(
     ticket: string,
     settings: TaskSettingsV2,
+    error?: Error,
   ): Promise<boolean> {
     const isManual = settings?.cadence === 'manual';
     const isDuration = settings?.cadence.startsWith('P');
@@ -366,6 +414,10 @@ export class TaskWorker {
         current_run_ticket: this.knex.raw('null'),
         current_run_started_at: this.knex.raw('null'),
         current_run_expires_at: this.knex.raw('null'),
+        last_run_ended_at: this.knex.fn.now(),
+        last_run_error_json: error
+          ? serializeError(error)
+          : this.knex.raw('null'),
       });
 
     return rows === 1;

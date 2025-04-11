@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { JsonObject } from '@backstage/types';
 import { CronTime } from 'cron';
 import { Duration } from 'luxon';
 import { z } from 'zod';
@@ -97,3 +98,27 @@ export const taskSettingsV2Schema = z.object({
  * The properties that control a scheduled task (version 2).
  */
 export type TaskSettingsV2 = z.infer<typeof taskSettingsV2Schema>;
+
+/**
+ * The shape of a task definition as returned by the service's REST API.
+ */
+export interface TaskApiResponse {
+  id: string;
+  scope: 'global' | 'local';
+  settings: { version: number } & JsonObject;
+  state:
+    | {
+        running: true;
+        startedAt: string;
+        timesOutAt?: string;
+        lastRunError?: string;
+        lastRunEndedAt?: string;
+      }
+    | {
+        running: false;
+        startsAt?: string;
+        lastRunError?: string;
+        lastRunEndedAt?: string;
+      }
+    | null;
+}
