@@ -173,6 +173,7 @@ graphviz
 Hackathons
 haproxy
 hardcoded
+hardcoding
 Harness
 harness
 Helidon
