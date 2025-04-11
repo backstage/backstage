@@ -8,6 +8,4 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 // @public
 const gatewayPlugin: BackendFeature;
 export default gatewayPlugin;
-
-// (No @packageDocumentation comment for this package)
 ```

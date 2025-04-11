@@ -13,4 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * A plugin for managing request routing in distributed Backstage deployments.
+ *
+ * @packageDocumentation
+ */
+
 export { gatewayPlugin as default } from './plugin';
