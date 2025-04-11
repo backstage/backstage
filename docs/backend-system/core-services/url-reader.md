@@ -31,7 +31,7 @@ createBackendPlugin({
       },
       async init({ urlReader }) {
         const buffer = await urlReader
-          .read('https://github.com/backstage/backstage/blob/master/README.md')
+          .readUrl('https://github.com/backstage/backstage/blob/master/README.md')
           .then(r => r.buffer());
 
         const tmpDir = os.tmpdir();
