@@ -147,7 +147,7 @@ A popular JSON based token format that is commonly encrypted and/or signed, see 
 
 ## Kind
 
-Classification of an [entity](#Entity) in the Backstage Software Catalog, for example _service_, _database_, and _team_.
+Classification of an [entity](#Entity) in the Backstage Software Catalog, for example _Component_, _Resource_, and _Group_.
 
 ## Kubernetes (CNCF Project)
 
