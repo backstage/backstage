@@ -736,8 +736,14 @@ export class CatalogBuilder {
       processors.push(builtinKindsEntityProcessor);
     }
 
-    // These are only added unless the user replaced them all
-    if (!this.processorsReplace) {
+    const disableDefaultProcessors = config.getOptionalBoolean(
+      'catalog.disableDefaultProcessors',
+    );
+
+    // Add default processors if:
+    // - processors have NOT been explicitly replaced
+    // - and default processors are NOT disabled via config
+    if (!this.processorsReplace && !disableDefaultProcessors) {
       processors.push(...this.getDefaultProcessors());
     }
 
