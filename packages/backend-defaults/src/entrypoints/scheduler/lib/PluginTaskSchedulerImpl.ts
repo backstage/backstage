@@ -27,9 +27,11 @@ import {
 import { Counter, Histogram, Gauge, metrics, trace } from '@opentelemetry/api';
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
+import express from 'express';
+import Router from 'express-promise-router';
 import { LocalTaskWorker } from './LocalTaskWorker';
 import { TaskWorker } from './TaskWorker';
-import { TaskSettingsV2 } from './types';
+import { TaskSettingsV2, TaskApiResponse } from './types';
 import { delegateAbortController, TRACER_ID, validateId } from './util';
 
 const tracer = trace.getTracer(TRACER_ID);
@@ -145,6 +147,40 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
 
   async getScheduledTasks(): Promise<SchedulerServiceTaskDescriptor[]> {
     return this.allScheduledTasks;
+  }
+
+  getRouter(): express.Router {
+    const router = Router();
+
+    router.get('/.backstage/scheduler/v1/tasks', async (_, res) => {
+      const result = new Array<TaskApiResponse>();
+      const globalState = await TaskWorker.states(await this.databaseFactory());
+
+      for (const task of this.allScheduledTasks) {
+        result.push({
+          id: task.id,
+          scope: task.scope,
+          settings: task.settings,
+          state:
+            this.localTasksById.get(task.id)?.state() ??
+            globalState.get(task.id) ??
+            null,
+        });
+      }
+
+      res.json({ tasks: result });
+    });
+
+    router.post(
+      '/.backstage/scheduler/v1/tasks/:id/trigger',
+      async (req, res) => {
+        const { id } = req.params;
+        await this.triggerTask(id);
+        res.status(200).end();
+      },
+    );
+
+    return router;
   }
 
   private instrumentedFunction(
