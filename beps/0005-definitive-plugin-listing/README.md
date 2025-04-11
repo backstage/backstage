@@ -167,7 +167,7 @@ interface BackstageInstance {
 }
 
 interface SystemMetadataService {
-  getInstances: () => BackstageInstance[];
+  getInstances: () => Promise<BackstageInstance[]>;
 }
 ```
 
