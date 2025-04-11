@@ -25,9 +25,12 @@ export const apiDocsTranslationRef: TranslationRef<
   'api-docs',
   {
     readonly 'apiDefinitionDialog.closeButtonTitle': 'Close';
+    readonly 'apiDefinitionDialog.tabsAriaLabel': 'API definition options';
+    readonly 'apiDefinitionDialog.toggleButtonAriaLabel': 'Toggle API Definition Dialog';
     readonly 'defaultApiExplorerPage.title': 'APIs';
     readonly 'defaultApiExplorerPage.subtitle': '{{orgName}} API Explorer';
     readonly 'defaultApiExplorerPage.pageTitleOverride': 'APIs';
+    readonly 'defaultApiExplorerPage.createButtonTitle': 'Register Existing API';
     readonly 'defaultApiExplorerPage.supportButtonTitle': 'All your APIs';
     readonly 'consumedApisCard.error.title': 'Could not load APIs';
     readonly 'consumedApisCard.title': 'Consumed APIs';
