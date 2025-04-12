@@ -60,10 +60,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
       <SelectPrimitive.Root {...rest}>
         <SelectPrimitive.Trigger
           id={selectId}
-          className={clsx('canon-Select--trigger', {
-            'canon-Select--trigger-size-small': responsiveSize === 'small',
-            'canon-Select--trigger-size-medium': responsiveSize === 'medium',
-          })}
+          className="canon-Select--trigger"
+          data-size={responsiveSize}
           data-invalid={error}
         >
           <SelectPrimitive.Value

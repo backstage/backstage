@@ -39,12 +39,9 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
     return (
       <button
         ref={ref}
-        className={clsx(
-          'canon-IconButton',
-          `canon-IconButton--size-${responsiveSize}`,
-          `canon-IconButton--variant-${responsiveVariant}`,
-          className,
-        )}
+        className={clsx('canon-IconButton', className)}
+        data-size={responsiveSize}
+        data-variant={responsiveVariant}
         style={style}
         {...rest}
       >

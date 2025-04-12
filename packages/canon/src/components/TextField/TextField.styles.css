@@ -81,11 +81,11 @@
   border: 1px solid var(--canon-border-disabled);
 }
 
-.canon-TextField--input-size-small {
+.canon-TextField--input[data-size='small'] {
   height: 2rem;
 }
 
-.canon-TextField--input-size-medium {
+.canon-TextField--input[data-size='medium'] {
   height: 2.5rem;
 }
 

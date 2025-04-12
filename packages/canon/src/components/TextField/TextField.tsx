@@ -61,10 +61,8 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
         )}
         <Input
           id={inputId}
-          className={clsx('canon-TextField--input', {
-            'canon-TextField--input-size-small': responsiveSize === 'small',
-            'canon-TextField--input-size-medium': responsiveSize === 'medium',
-          })}
+          className="canon-TextField--input"
+          data-size={responsiveSize}
           aria-labelledby={label ? inputId : undefined}
           aria-describedby={clsx({
             [descriptionId]: description,
