@@ -730,18 +730,62 @@ export interface Config {
    */
   discovery?: {
     /**
-     * A list of target baseUrls and the associated plugins.
+     * A list of target base URLs and their associated plugins.
+     *
+     * @example
+     *
+     * ```yaml
+     * discovery:
+     *   endpoints:
+     *     - target: https://internal.example.com/internal-catalog
+     *       plugins: [catalog]
+     *     - target: https://internal.example.com/secure/api/{{pluginId}}
+     *       plugins: [auth, permission]
+     *     - target:
+     *         internal: http+srv://backstage-plugin-{{pluginId}}.http.${SERVICE_DOMAIN}/search
+     *         external: https://example.com/search
+     *       plugins: [search]
+     * ```
      */
     endpoints: Array<{
       /**
-       * The target base URL to use for the plugin.
+       * The target base URL to use for the given set of plugins. Note that this
+       * needs to be a full URL including the protocol and path parts that fully
+       * address the root of a plugin's API endpoints.
        *
-       * Can be either a string or an object with internal and external keys.
-       * Targets with `{{pluginId}}` or `{{ pluginId }} in the URL will be replaced with the plugin ID.
+       * @remarks
+       *
+       * Can be either a single URL or an object where you can explicitly give a
+       * dedicated URL for internal (as seen from the backend) and/or external (as
+       * seen from the frontend) lookups.
+       *
+       * The default behavior is to use the backend base URL for external lookups,
+       * and a URL formed from the `.listen` and `.https` configs for internal
+       * lookups. Adding discovery endpoints as described here overrides one or both
+       * of those behaviors for a given set of plugins.
+       *
+       * URLs can be in the form of a regular HTTP or HTTPS URL if you are using
+       * A/AAAA/CNAME records or IP addresses. Specifically for internal URLs, if
+       * you add `+grpc` to the protocol part then the hostname is treated as an SRV
+       * record name and resolved. For example, if you pass in
+       * `http+srv://<srv-record>/path` then the record part is resolved into an
+       * actual host and port (with random weighted choice as usual when there is
+       * more than one match).
+       *
+       * Any strings with `{{pluginId}}` or `{{ pluginId }}` placeholders in them
+       * will have them replaced with the plugin ID.
+       *
+       * Example URLs:
+       *
+       * - `https://internal.example.com/secure/api/{{pluginId}}`
+       * - `http+srv://backstage-plugin-{{pluginId}}.http.${SERVICE_DOMAIN}/api/{{pluginId}}`
+       *   (can only be used in the `internal` key)
        */
       target: string | { internal?: string; external?: string };
       /**
-       * Array of plugins which use the target base URL.
+       * Array of plugins which use that target base URL.
+       *
+       * The special value `*` can be used to match all plugins.
        */
       plugins: string[];
     }>;
