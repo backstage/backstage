@@ -41,13 +41,10 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
     return (
       <p
         ref={ref}
-        className={clsx(
-          'canon-Text',
-          responsiveVariant && `canon-Text--variant-${responsiveVariant}`,
-          responsiveWeight && `canon-Text--weight-${responsiveWeight}`,
-          responsiveColor && `canon-Text--color-${responsiveColor}`,
-          className,
-        )}
+        className={clsx('canon-Text', className)}
+        data-variant={responsiveVariant}
+        data-weight={responsiveWeight}
+        data-color={responsiveColor}
         style={style}
         {...restProps}
       >
