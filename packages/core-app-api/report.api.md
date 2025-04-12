@@ -52,6 +52,7 @@ import { Observable } from '@backstage/types';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
+import { openshiftAuthApiRef } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
@@ -599,6 +600,12 @@ export type OneLoginAuthCreateOptions = {
   environment?: string;
   provider?: AuthProviderInfo;
 };
+
+// @public
+export class OpenShiftAuth {
+  // (undocumented)
+  static create(options: OAuthApiCreateOptions): typeof openshiftAuthApiRef.T;
+}
 
 // @public
 export type PopupOptions = {
