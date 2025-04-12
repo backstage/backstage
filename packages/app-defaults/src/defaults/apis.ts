@@ -35,6 +35,7 @@ import {
   FetchMiddlewares,
   VMwareCloudAuth,
   FrontendHostDiscovery,
+  OpenShiftAuth,
 } from '@backstage/core-app-api';
 
 import {
@@ -58,6 +59,7 @@ import {
   bitbucketServerAuthApiRef,
   atlassianAuthApiRef,
   vmwareCloudAuthApiRef,
+  openshiftAuthApiRef,
 } from '@backstage/core-plugin-api';
 import {
   permissionApiRef,
@@ -268,6 +270,22 @@ export const apis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) => {
       return VMwareCloudAuth.create({
+        configApi,
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      });
+    },
+  }),
+  createApiFactory({
+    api: openshiftAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) => {
+      return OpenShiftAuth.create({
         configApi,
         discoveryApi,
         oauthRequestApi,
