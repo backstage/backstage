@@ -25,18 +25,38 @@ export const breakpoints: { name: string; id: Breakpoint; value: number }[] = [
   { name: 'Extra Large', id: 'xl', value: 1536 },
 ];
 
-export const useBreakpoint = (): Breakpoint => {
-  // TODO: Perhaps refactor for useMediaQuery to accept an array of queries
+const getBreakpointValue = (key: Breakpoint): number => {
+  const breakpoint = breakpoints.find(bp => bp.id === key);
+  if (!breakpoint) {
+    throw new Error(`Invalid breakpoint key: ${key}`);
+  }
+  return breakpoint.value;
+};
+
+/** @public */
+export const useBreakpoint = () => {
   const matches = breakpoints.map(breakpoint => {
     const match = useMediaQuery(`(min-width: ${breakpoint.value}px)`);
     return match;
   });
 
+  let breakpoint: Breakpoint = breakpoints[0].id;
   for (let i = matches.length - 1; i >= 0; i--) {
     if (matches[i]) {
-      return breakpoints[i].id;
+      breakpoint = breakpoints[i].id;
+      break;
     }
   }
 
-  return breakpoints[0].id;
+  return {
+    breakpoint,
+    up: (key: Breakpoint): boolean => {
+      const value = getBreakpointValue(key);
+      return useMediaQuery(`(min-width: ${value}px)`);
+    },
+    down: (key: Breakpoint): boolean => {
+      const value = getBreakpointValue(key);
+      return useMediaQuery(`(max-width: ${value - 1}px)`);
+    },
+  };
 };

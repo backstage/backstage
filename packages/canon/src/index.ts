@@ -47,3 +47,6 @@ export * from './components/Select';
 // Types
 export * from './types';
 export * from './props';
+
+// Hooks
+export { useBreakpoint } from './hooks/useBreakpoint';
