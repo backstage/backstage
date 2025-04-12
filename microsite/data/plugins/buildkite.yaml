@@ -1,7 +1,7 @@
 ---
 title: Buildkite
 author: Buildkite
-authorUrl: https://buildkite.com 
+authorUrl: https://buildkite.com
 category: CI/CD
 description: View Buildkite CI builds from within Backstage
 documentation: https://github.com/buildkite/backstage-plugin
