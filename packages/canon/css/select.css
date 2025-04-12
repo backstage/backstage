@@ -74,11 +74,11 @@
   color: var(--canon-fg-disabled);
 }
 
-.canon-Select--trigger-size-small {
+.canon-Select--trigger[data-size="small"] {
   height: 2rem;
 }
 
-.canon-Select--trigger-size-medium {
+.canon-Select--trigger[data-size="medium"] {
   height: 3rem;
 }
 
