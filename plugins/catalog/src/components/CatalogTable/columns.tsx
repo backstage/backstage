@@ -30,6 +30,7 @@ import { JsonArray } from '@backstage/types';
 export const columnFactories = Object.freeze({
   createNameColumn(options?: {
     defaultKind?: string;
+    width?: string;
   }): TableColumn<CatalogTableRow> {
     function formatContent(entity: Entity): string {
       return (
@@ -44,6 +45,7 @@ export const columnFactories = Object.freeze({
       title: 'Name',
       field: 'resolved.entityRef',
       highlight: true,
+      width: options?.width ?? 'auto',
       customSort({ entity: entity1 }, { entity: entity2 }) {
         // TODO: We could implement this more efficiently by comparing field by field.
         // This has similar issues as above.
@@ -129,13 +131,14 @@ export const columnFactories = Object.freeze({
   createSpecTypeColumn(
     options: {
       hidden: boolean;
+      width?: string;
     } = { hidden: false },
   ): TableColumn<CatalogTableRow> {
     return {
       title: 'Type',
       field: 'entity.spec.type',
       hidden: options.hidden,
-      width: 'auto',
+      width: options?.width ?? 'auto',
     };
   },
   createSpecLifecycleColumn(): TableColumn<CatalogTableRow> {
@@ -183,17 +186,19 @@ export const columnFactories = Object.freeze({
   },
   createTitleColumn(options?: {
     hidden?: boolean;
+    width?: string;
   }): TableColumn<CatalogTableRow> {
     return {
       title: 'Title',
       field: 'entity.metadata.title',
       hidden: options?.hidden,
       searchable: true,
+      width: options?.width ?? 'auto',
     };
   },
   createLabelColumn(
     key: string,
-    options?: { title?: string; defaultValue?: string },
+    options?: { title?: string; defaultValue?: string; width?: string },
   ): TableColumn<CatalogTableRow> {
     function formatContent(keyLabel: string, entity: Entity): string {
       const labels: Record<string, string> | undefined =
@@ -230,7 +235,7 @@ export const columnFactories = Object.freeze({
           </>
         );
       },
-      width: 'auto',
+      width: options?.width ?? 'auto',
     };
   },
   createNamespaceColumn(): TableColumn<CatalogTableRow> {
