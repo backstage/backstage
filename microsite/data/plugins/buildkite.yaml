@@ -7,7 +7,4 @@ description: View Buildkite CI builds from within Backstage
 documentation: https://github.com/buildkite/backstage-plugin
 iconUrl: /img/buildkite.svg
 npmPackageName: '@buildkite/plugin-buildkite'
-tags:
-  - ci
-  - cd
 addedDate: '2025-04-12'
