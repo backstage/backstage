@@ -109,6 +109,7 @@ export type GitlabProviderConfig = {
   branch?: string;
   fallbackBranch: string;
   catalogFile: string;
+  validateLocationsExist?: boolean;
   projectPattern: RegExp;
   userPattern: RegExp;
   groupPattern: RegExp;
