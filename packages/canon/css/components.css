@@ -240,6 +240,12 @@
   font-size: var(--canon-font-size-3);
 }
 
+.canon-TableCellText, .canon-TableCellLink {
+  gap: var(--canon-space-0_5);
+  flex-direction: column;
+  display: flex;
+}
+
 .canon-Text {
   font-family: var(--canon-font-regular);
   color: var(--canon-fg-primary);

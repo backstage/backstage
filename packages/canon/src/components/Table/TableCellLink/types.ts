@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
-export * from './Table';
-export * from './TableCellText/types';
-export * from './TableCellLink/types';
+import type { useRender } from '@base-ui-components/react/use-render';
+
+/** @public */
+export interface TableCellLinkProps
+  extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  title: string;
+  description?: string;
+  href: string;
+  render?: useRender.ComponentProps<'a'>['render'];
+}

@@ -17,7 +17,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { DataProps } from './mocked-components';
 import { Checkbox } from '../Checkbox';
-import { Text } from '../Text';
+import { DataTable } from './DataTable';
 
 export const columns: ColumnDef<DataProps>[] = [
   {
@@ -32,11 +32,13 @@ export const columns: ColumnDef<DataProps>[] = [
       />
     ),
     cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onChange={(checked: boolean) => row.toggleSelected(checked)}
-        aria-label="Select row"
-      />
+      <td>
+        <Checkbox
+          checked={row.getIsSelected()}
+          onChange={(checked: boolean) => row.toggleSelected(checked)}
+          aria-label="Select row"
+        />
+      </td>
     ),
     enableSorting: false,
     enableHiding: false,
@@ -45,27 +47,28 @@ export const columns: ColumnDef<DataProps>[] = [
     accessorKey: 'name',
     header: 'Name',
     cell: ({ row }) => (
-      <div>
-        <Text variant="body">{row.getValue('name')}</Text>
-        <Text variant="body" color="secondary">
-          {row.original.description}
-        </Text>
-      </div>
+      <DataTable.TableCellLink
+        title={row.getValue('name')}
+        description={row.original.description}
+        href="/"
+      />
     ),
   },
   {
     accessorKey: 'owner',
     header: 'Owner',
-    cell: ({ row }) => <Text variant="body">{row.getValue('owner')}</Text>,
+    cell: ({ row }) => (
+      <DataTable.TableCellText title={row.getValue('owner')} />
+    ),
   },
   {
     accessorKey: 'type',
     header: 'Type',
-    cell: ({ row }) => <Text variant="body">{row.getValue('type')}</Text>,
+    cell: ({ row }) => <DataTable.TableCellText title={row.getValue('type')} />,
   },
   {
     accessorKey: 'tags',
     header: 'Tags',
-    cell: ({ row }) => <Text variant="body">{row.getValue('tags')}</Text>,
+    cell: ({ row }) => <DataTable.TableCellText title={row.getValue('tags')} />,
   },
 ];

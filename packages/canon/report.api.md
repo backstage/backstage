@@ -241,43 +241,27 @@ export const DataTable: {
       RefAttributes<HTMLTableElement>
   >;
   TableHeader: ForwardRefExoticComponent<
-    Omit<
-      HTMLAttributes<HTMLTableSectionElement> &
-        RefAttributes<HTMLTableSectionElement>,
-      'ref'
-    > &
+    HTMLAttributes<HTMLTableSectionElement> &
       RefAttributes<HTMLTableSectionElement>
   >;
   TableBody: ForwardRefExoticComponent<
-    Omit<
-      HTMLAttributes<HTMLTableSectionElement> &
-        RefAttributes<HTMLTableSectionElement>,
-      'ref'
-    > &
+    HTMLAttributes<HTMLTableSectionElement> &
       RefAttributes<HTMLTableSectionElement>
   >;
   TableRow: ForwardRefExoticComponent<
-    Omit<
-      HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>,
-      'ref'
-    > &
-      RefAttributes<HTMLTableRowElement>
+    HTMLAttributes<HTMLTableRowElement> & RefAttributes<HTMLTableRowElement>
   >;
   TableCell: ForwardRefExoticComponent<
-    Omit<
-      TdHTMLAttributes<HTMLTableCellElement> &
-        RefAttributes<HTMLTableCellElement>,
-      'ref'
-    > &
-      RefAttributes<HTMLTableCellElement>
+    TdHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
+  >;
+  TableCellText: ForwardRefExoticComponent<
+    TableCellTextProps & RefAttributes<HTMLDivElement>
+  >;
+  TableCellLink: ForwardRefExoticComponent<
+    TableCellLinkProps & RefAttributes<HTMLDivElement>
   >;
   TableHead: ForwardRefExoticComponent<
-    Omit<
-      ThHTMLAttributes<HTMLTableCellElement> &
-        RefAttributes<HTMLTableCellElement>,
-      'ref'
-    > &
-      RefAttributes<HTMLTableCellElement>
+    ThHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
   >;
 };
 
@@ -1126,11 +1110,39 @@ export const Table: {
   Cell: ForwardRefExoticComponent<
     TdHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
   >;
+  CellText: ForwardRefExoticComponent<
+    TableCellTextProps & RefAttributes<HTMLDivElement>
+  >;
+  CellLink: ForwardRefExoticComponent<
+    TableCellLinkProps & RefAttributes<HTMLDivElement>
+  >;
   Caption: ForwardRefExoticComponent<
     HTMLAttributes<HTMLTableCaptionElement> &
       RefAttributes<HTMLTableCaptionElement>
   >;
 };
+
+// @public (undocumented)
+export interface TableCellLinkProps
+  extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  // (undocumented)
+  description?: string;
+  // (undocumented)
+  href: string;
+  // (undocumented)
+  render?: useRender.ComponentProps<'a'>['render'];
+  // (undocumented)
+  title: string;
+}
+
+// @public (undocumented)
+export interface TableCellTextProps
+  extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  // (undocumented)
+  description?: string;
+  // (undocumented)
+  title: string;
+}
 
 // @public (undocumented)
 const Text_2: ForwardRefExoticComponent<

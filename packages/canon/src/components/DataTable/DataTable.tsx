@@ -27,36 +27,6 @@ const TableRoot = forwardRef<
 >(({ className, ...props }, ref) => <Table.Root ref={ref} {...props} />);
 TableRoot.displayName = Table.Root.displayName;
 
-const TableHeader = forwardRef<
-  React.ElementRef<typeof Table.Header>,
-  React.ComponentPropsWithoutRef<typeof Table.Header>
->(({ className, ...props }, ref) => <Table.Header ref={ref} {...props} />);
-TableHeader.displayName = Table.Header.displayName;
-
-const TableBody = forwardRef<
-  React.ElementRef<typeof Table.Body>,
-  React.ComponentPropsWithoutRef<typeof Table.Body>
->(({ className, ...props }, ref) => <Table.Body ref={ref} {...props} />);
-TableBody.displayName = Table.Body.displayName;
-
-const TableRow = forwardRef<
-  React.ElementRef<typeof Table.Row>,
-  React.ComponentPropsWithoutRef<typeof Table.Row>
->(({ className, ...props }, ref) => <Table.Row ref={ref} {...props} />);
-TableRow.displayName = Table.Row.displayName;
-
-const TableCell = forwardRef<
-  React.ElementRef<typeof Table.Cell>,
-  React.ComponentPropsWithoutRef<typeof Table.Cell>
->(({ className, ...props }, ref) => <Table.Cell ref={ref} {...props} />);
-TableCell.displayName = Table.Cell.displayName;
-
-const TableHead = forwardRef<
-  React.ElementRef<typeof Table.Head>,
-  React.ComponentPropsWithoutRef<typeof Table.Head>
->(({ className, ...props }, ref) => <Table.Head ref={ref} {...props} />);
-TableHead.displayName = Table.Head.displayName;
-
 /**
  * DataTable component for displaying tabular data with pagination
  * @public
@@ -70,9 +40,11 @@ export const DataTable = {
   Pagination: DataTablePagination,
   Table: DataTableTable,
   TableRoot: TableRoot,
-  TableHeader: TableHeader,
-  TableBody: TableBody,
-  TableRow: TableRow,
-  TableCell: TableCell,
-  TableHead: TableHead,
+  TableHeader: Table.Header,
+  TableBody: Table.Body,
+  TableRow: Table.Row,
+  TableCell: Table.Cell,
+  TableCellText: Table.CellText,
+  TableCellLink: Table.CellLink,
+  TableHead: Table.Head,
 };

@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
-export * from './Table';
-export * from './TableCellText/types';
-export * from './TableCellLink/types';
+import { forwardRef } from 'react';
+import clsx from 'clsx';
+
+/** @public */
+const TableCell = forwardRef<
+  HTMLTableCellElement,
+  React.TdHTMLAttributes<HTMLTableCellElement>
+>(({ className, ...props }, ref) => (
+  <td ref={ref} className={clsx('canon-TableCell', className)} {...props} />
+));
+TableCell.displayName = 'TableCell';
+
+export { TableCell };

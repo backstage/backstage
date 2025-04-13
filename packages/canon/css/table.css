@@ -1,29 +1,3 @@
-.canon-TableRoot {
-  caption-side: bottom;
-  border-collapse: collapse;
-  width: 100%;
-}
-
-.canon-TableHead {
-  text-align: left;
-  padding: var(--canon-space-3);
-  font-size: var(--canon-font-size-3);
-  color: var(--canon-fg-primary);
-}
-
-.canon-TableBody {
-  color: var(--canon-fg-primary);
-}
-
-.canon-TableRow {
-  border-bottom: 1px solid var(--canon-border);
-  transition: color .2s ease-in-out;
-}
-
-.canon-TableBody .canon-TableRow:hover {
-  background-color: var(--canon-gray-2);
-}
-
 .canon-TableCell {
   padding: var(--canon-space-3);
   font-size: var(--canon-font-size-3);

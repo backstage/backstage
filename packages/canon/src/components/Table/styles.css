@@ -23,8 +23,3 @@
 .canon-TableBody .canon-TableRow:hover {
   background-color: var(--canon-gray-2);
 }
-
-.canon-TableCell {
-  padding: var(--canon-space-3);
-  font-size: var(--canon-font-size-3);
-}

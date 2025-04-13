@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { forwardRef } from 'react';
 import clsx from 'clsx';
+import { TableCell } from './TableCell/TableCell';
+import { TableCellText } from './TableCellText/TableCellText';
+import { TableCellLink } from './TableCellLink/TableCellLink';
 
 const TableRoot = forwardRef<
   HTMLTableElement,
@@ -62,14 +66,6 @@ const TableHead = forwardRef<
 ));
 TableHead.displayName = 'TableHead';
 
-const TableCell = forwardRef<
-  HTMLTableCellElement,
-  React.TdHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
-  <td ref={ref} className={clsx('canon-TableCell', className)} {...props} />
-));
-TableCell.displayName = 'TableCell';
-
 const TableCaption = forwardRef<
   HTMLTableCaptionElement,
   React.HTMLAttributes<HTMLTableCaptionElement>
@@ -93,5 +89,7 @@ export const Table = {
   Head: TableHead,
   Row: TableRow,
   Cell: TableCell,
+  CellText: TableCellText,
+  CellLink: TableCellLink,
   Caption: TableCaption,
 };
