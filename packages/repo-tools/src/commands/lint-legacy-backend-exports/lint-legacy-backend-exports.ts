@@ -47,9 +47,6 @@ function verifyIndex(pkg: string, packageJson?: BackstagePackageJson) {
   const tsPath = path.join(pkg, 'src/index.ts');
   const sourceFile = project.getSourceFile(tsPath);
 
-  const tsRouterPath = path.join(pkg, 'src/service/router.ts');
-  const routerFile = project.getSourceFile(tsRouterPath);
-
   if (!sourceFile) {
     console.log(`Could not find ${tsPath}`);
     process.exit(1);
@@ -74,23 +71,28 @@ function verifyIndex(pkg: string, packageJson?: BackstagePackageJson) {
     console.log('   ❌ Missing default export');
   }
   let createRouterDeprecated = undefined;
+  let routerCreateRouterDeprecated = undefined;
   if (createRouterExport) {
     createRouterDeprecated = createRouterExport
       .getJsDocTags()
       .find(tag => tag.getName() === 'deprecated');
-  }
 
-  let routerCreateRouterDeprecated = undefined;
-  if (routerFile) {
-    const routerSymbols = routerFile?.getExportSymbols();
-    const routerCreateRouterExport = routerSymbols?.find(
-      symbol => symbol.getName() === 'createRouter',
-    );
-
-    if (routerCreateRouterExport) {
-      routerCreateRouterDeprecated = routerCreateRouterExport
-        .getJsDocTags()
-        .find(tag => tag.getName() === 'deprecated');
+    const declarations = createRouterExport?.getDeclarations();
+    const firstDeclaration = declarations?.[0];
+    let resolvedSymbol = undefined;
+    if (firstDeclaration) {
+      // Try resolving to the definition directly
+      resolvedSymbol = createRouterExport.getAliasedSymbol();
+      if (resolvedSymbol) {
+        const resolvedDeclarations = resolvedSymbol.getDeclarations();
+        const resolvedDeclaration = resolvedDeclarations?.[0];
+        if (resolvedDeclaration) {
+          routerCreateRouterDeprecated = resolvedDeclaration
+            .getSymbol()
+            ?.getJsDocTags()
+            .find(tag => tag.getName() === 'deprecated');
+        }
+      }
     }
   }
 
