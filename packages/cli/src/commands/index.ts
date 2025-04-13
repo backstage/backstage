@@ -15,7 +15,6 @@
  */
 
 import { Command } from 'commander';
-import { lazy } from '../lib/lazy';
 import { registerCommands as registerConfigCommands } from '../modules/config';
 import {
   registerPackageCommands as registerPackageBuildCommands,

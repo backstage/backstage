@@ -69,6 +69,7 @@ export default createCliPlugin({
     reg.addCommand({
       path: ['create'],
       description: 'Create a new Backstage app',
+      deprecated: true,
       execute: async () => {
         removed("use 'backstage-cli new' instead")();
       },
@@ -76,6 +77,7 @@ export default createCliPlugin({
     reg.addCommand({
       path: ['create-plugin'],
       description: 'Create a new Backstage plugin',
+      deprecated: true,
       execute: async () => {
         removed("use 'backstage-cli new' instead")();
       },

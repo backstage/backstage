@@ -12,17 +12,11 @@ Options:
   -h, --help
 
 Commands:
+  build-workspace [options] <workspace-dir> [packages...]
+  config:check [options]
   config:docs [options]
   config:print [options]
   config:schema [options]
-  repo [command]
-  package [command]
-  versions:bump [options]
-  versions:migrate [options]
-  migrate [command]
-  build-workspace [options] <workspace-dir> [packages...]
-  info
-  new [options]
   create-github-app <github-org>
   help [command]
   info
