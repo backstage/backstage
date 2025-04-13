@@ -132,7 +132,6 @@ Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugi
 | André Wanlin         | Spotify      | [awanlin](https://github.com/awanlin)       | `ahhhndre`   |
 | Bethany Griggs       | Red Hat      | [BethGriggs](https://github.com/BethGriggs) | `bethgriggs` |
 | Kashish Mittal       | Red Hat      | [04kash](https://github.com/04kash)         | `kashh._.`   |
-| Nick Boldt           | Red Hat      | [nickboldt](https://github.com/nickboldt)   | `nboldt`     |
 | Vincenzo Scamporlino | Spotify      | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
 
 ### Events
@@ -175,6 +174,16 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | ------------------- | ------------ | ------------------------------------- | ---------------- |
 | Bogdan Nechyporenko | Bol.com      | [acierto](https://github.com/acierto) | `bogdan_haarlem` |
 
+### Auditor
+
+Team: @backstage/auditor-maintainers
+
+Scope: The auditor core service, along with auditor usage in the main repository
+
+| Name         | Organization | GitHub                                          | Discord        |
+| ------------ | ------------ | ----------------------------------------------- | -------------- |
+| Paul Schultz | Red Hat      | [schultzp2020](https://github.com/schultzp2020) | `schultzp2020` |
+
 ### Documentation
 
 Team: @backstage/documentation-maintainers
@@ -189,11 +198,11 @@ Scope: The Backstage Documentation
 
 ## Sponsors
 
-| Name              | Organization | GitHub                                      | Email             |
-| ----------------- | ------------ | ------------------------------------------- | ----------------- |
-| Niklas Gustavsson | Spotify      | [protocol7](https://github.com/protocol7)   | ngn@spotify.com   |
-| Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | dzolo@spotify.com |
-| Pia Nilsson       | Spotify      | [pianilsson](https://github.com/pianilsson) | pia@spotify.com   |
+| Name              | Organization | GitHub                                      | Email               |
+| ----------------- | ------------ | ------------------------------------------- | ------------------- |
+| Niklas Gustavsson | Spotify      | [protocol7](https://github.com/protocol7)   | <ngn@spotify.com>   |
+| Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | <dzolo@spotify.com> |
+| Pia Nilsson       | Spotify      | [pianilsson](https://github.com/pianilsson) | <pia@spotify.com>   |
 
 ## Organization Members
 

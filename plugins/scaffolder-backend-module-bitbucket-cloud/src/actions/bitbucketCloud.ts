@@ -18,8 +18,8 @@ import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   createTemplateAction,
-  initRepoAndPush,
   getRepoSourceDirectory,
+  initRepoAndPush,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 
@@ -113,6 +113,7 @@ export function createPublishBitbucketCloudAction(options: {
     gitCommitMessage?: string;
     sourcePath?: string;
     token?: string;
+    signCommit?: boolean;
   }>({
     id: 'publish:bitbucketCloud',
     examples,
@@ -158,6 +159,11 @@ export function createPublishBitbucketCloudAction(options: {
             description:
               'The token to use for authorization to BitBucket Cloud',
           },
+          signCommit: {
+            title: 'Sign commit',
+            type: 'boolean',
+            description: 'Sign commit with configured PGP private key',
+          },
         },
       },
       output: {
@@ -185,6 +191,7 @@ export function createPublishBitbucketCloudAction(options: {
         defaultBranch = 'master',
         gitCommitMessage,
         repoVisibility = 'private',
+        signCommit,
       } = ctx.input;
 
       const { workspace, project, repo, host } = parseRepoUrl(
@@ -217,15 +224,19 @@ export function createPublishBitbucketCloudAction(options: {
 
       const apiBaseUrl = integrationConfig.config.apiBaseUrl;
 
-      const { remoteUrl, repoContentsUrl } = await createRepository({
-        authorization,
-        workspace: workspace || '',
-        project,
-        repo,
-        repoVisibility,
-        mainBranch: defaultBranch,
-        description,
-        apiBaseUrl,
+      const { remoteUrl, repoContentsUrl } = await ctx.checkpoint({
+        key: `create.repo.${host}.${repo}`,
+        fn: async () =>
+          await createRepository({
+            authorization,
+            workspace: workspace || '',
+            project,
+            repo,
+            repoVisibility,
+            mainBranch: defaultBranch,
+            description,
+            apiBaseUrl,
+          }),
       });
 
       const gitAuthorInfo = {
@@ -256,19 +267,38 @@ export function createPublishBitbucketCloudAction(options: {
         };
       }
 
-      const commitResult = await initRepoAndPush({
-        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
-        remoteUrl,
-        auth,
-        defaultBranch,
-        logger: ctx.logger,
-        commitMessage:
-          gitCommitMessage ||
-          config.getOptionalString('scaffolder.defaultCommitMessage'),
-        gitAuthorInfo,
+      const signingKey =
+        integrationConfig.config.commitSigningKey ??
+        config.getOptionalString('scaffolder.defaultCommitSigningKey');
+      if (signCommit && !signingKey) {
+        throw new Error(
+          'Signing commits is enabled but no signing key is provided in the configuration',
+        );
+      }
+
+      const commitHash = await ctx.checkpoint({
+        key: `init.repo.and.push${host}.${repo}`,
+        fn: async () => {
+          const commitResult = await initRepoAndPush({
+            dir: getRepoSourceDirectory(
+              ctx.workspacePath,
+              ctx.input.sourcePath,
+            ),
+            remoteUrl,
+            auth,
+            defaultBranch,
+            logger: ctx.logger,
+            commitMessage:
+              gitCommitMessage ||
+              config.getOptionalString('scaffolder.defaultCommitMessage'),
+            gitAuthorInfo,
+            signingKey: signCommit ? signingKey : undefined,
+          });
+          return commitResult?.commitHash;
+        },
       });
 
-      ctx.output('commitHash', commitResult?.commitHash);
+      ctx.output('commitHash', commitHash);
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },

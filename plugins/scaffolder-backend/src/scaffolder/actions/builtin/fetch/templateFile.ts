@@ -25,9 +25,10 @@ import {
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
-import { createDefaultFilters } from '../../../../lib/templating/filters';
+import { createDefaultFilters } from '../../../../lib/templating/filters/createDefaultFilters';
 import path from 'path';
 import fs from 'fs-extra';
+import { convertFiltersToRecord } from '../../../../util/templating';
 
 /**
  * Downloads a single file and templates variables into file.
@@ -48,7 +49,9 @@ export function createFetchTemplateFileAction(options: {
     additionalTemplateGlobals,
   } = options;
 
-  const defaultTemplateFilters = createDefaultFilters({ integrations });
+  const defaultTemplateFilters = convertFiltersToRecord(
+    createDefaultFilters({ integrations }),
+  );
 
   return createTemplateAction<{
     url: string;

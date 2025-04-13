@@ -17,30 +17,17 @@ building it incrementally with not conflict with the existing theming system.
 
 Install Canon using a package manager.
 
-<CodeBlock lang="shell" code={`npm install @backstage/canon`} />
+<CodeBlock lang="shell" code={`yarn add @backstage/canon`} />
 
 ### 2. Import the css files
 
 Import the global CSS file at the root of your application.
 
 ```tsx
-import '@backstage/canon/css/core.css';
-import '@backstage/canon/css/components.css';
+import '@backstage/canon/css/styles.css';
 ```
 
-### 3. Add the theme provider
-
-Add the theme provider to your application.
-
-```tsx
-import { ThemeProvider } from '@backstage/canon';
-
-<ThemeProvider>
-  <App />
-</ThemeProvider>;
-```
-
-### 4. Start building ✨
+### 3. Start building ✨
 
 Now you can start building your plugin using the new design system.
 

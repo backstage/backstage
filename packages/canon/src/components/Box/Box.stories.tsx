@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Box } from './Box';
 import { Flex } from '../Flex';
 
 const meta = {
-  title: 'Components/Box',
+  title: 'Layout/Box',
   component: Box,
   argTypes: {
     as: {
@@ -67,7 +67,7 @@ export const Preview: Story = {
   },
 };
 
-const CardDisplay = ({ children }: { children?: React.ReactNode }) => {
+const CardDisplay = ({ children }: { children?: ReactNode }) => {
   return (
     <div
       style={{

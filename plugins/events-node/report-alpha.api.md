@@ -7,10 +7,13 @@ import { EventBroker } from '@backstage/plugin-events-node';
 import { EventPublisher } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { HttpBodyParserOptions } from '@backstage/plugin-events-node';
 import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 
 // @alpha (undocumented)
 export interface EventsExtensionPoint {
+  // (undocumented)
+  addHttpPostBodyParser(options: HttpBodyParserOptions): void;
   // (undocumented)
   addHttpPostIngress(options: HttpPostIngressOptions): void;
   // @deprecated (undocumented)

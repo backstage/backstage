@@ -46,7 +46,7 @@ We will use some libraries in the module, so let's add them to your plugin modul
 git checkout -b tutorials/new-faq-snippets-collator
 
 # Install the package containing the interface
-yarn workspace @internal/backstage-plugin-search-backend-module-faq-snippets-collator add node-fetch @backstage/plugin-search-common @backstage/plugin-search-backend-node
+yarn workspace @internal/backstage-plugin-search-backend-module-faq-snippets-collator add @backstage/plugin-search-common @backstage/plugin-search-backend-node
 ```
 
 #### 3. Use Backstage App configuration
@@ -245,7 +245,7 @@ You can also check out the documentation on [how to test Backstage plugin module
 
 #### 9. Running the collator locally
 
-Run `yarn dev` in the root folder of your Backstage project and look for logs like these:
+Run `yarn start` in the root folder of your Backstage project and look for logs like these:
 
 ```sh
 [backend]: YYYY-MM-DDTHH:MM:SS.000Z search info Task worker starting: search_index_faq_snippets, {"version":2,"cadence":"PT10M","initialDelayDuration":"PT3S","timeoutAfterDuration":"PT15M"} task=search_index_faq_snippets

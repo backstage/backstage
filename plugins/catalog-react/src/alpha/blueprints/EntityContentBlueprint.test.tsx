@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { EntityContentBlueprint } from './EntityContentBlueprint';
 import {
   createExtensionTester,
@@ -54,7 +53,126 @@ describe('EntityContentBlueprint', () => {
             "additionalProperties": false,
             "properties": {
               "filter": {
-                "type": "string",
+                "anyOf": [
+                  {
+                    "type": "string",
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": [
+                              "string",
+                              "number",
+                              "boolean",
+                            ],
+                          },
+                          {
+                            "items": {
+                              "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0",
+                            },
+                            "type": "array",
+                          },
+                        ],
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "$all": {
+                            "items": {
+                              "$ref": "#/properties/filter/anyOf/1",
+                            },
+                            "type": "array",
+                          },
+                        },
+                        "required": [
+                          "$all",
+                        ],
+                        "type": "object",
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "$any": {
+                            "items": {
+                              "$ref": "#/properties/filter/anyOf/1",
+                            },
+                            "type": "array",
+                          },
+                        },
+                        "required": [
+                          "$any",
+                        ],
+                        "type": "object",
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "$not": {
+                            "$ref": "#/properties/filter/anyOf/1",
+                          },
+                        },
+                        "required": [
+                          "$not",
+                        ],
+                        "type": "object",
+                      },
+                      {
+                        "additionalProperties": {
+                          "anyOf": [
+                            {
+                              "$ref": "#/properties/filter/anyOf/1/anyOf/0",
+                            },
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "$exists": {
+                                  "type": "boolean",
+                                },
+                              },
+                              "required": [
+                                "$exists",
+                              ],
+                              "type": "object",
+                            },
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "$in": {
+                                  "items": {
+                                    "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0",
+                                  },
+                                  "type": "array",
+                                },
+                              },
+                              "required": [
+                                "$in",
+                              ],
+                              "type": "object",
+                            },
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "$contains": {
+                                  "$ref": "#/properties/filter/anyOf/1",
+                                },
+                              },
+                              "required": [
+                                "$contains",
+                              ],
+                              "type": "object",
+                            },
+                          ],
+                        },
+                        "propertyNames": {
+                          "pattern": "^(?!\\$).*$",
+                        },
+                        "type": "object",
+                      },
+                    ],
+                  },
+                ],
               },
               "group": {
                 "anyOf": [

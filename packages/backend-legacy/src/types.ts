@@ -19,7 +19,7 @@ import { Config } from '@backstage/config';
 import { PluginCacheManager, TokenManager } from '@backstage/backend-common';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { EventBroker, EventsService } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import {
   UrlReaderService,
@@ -39,10 +39,6 @@ export type PluginEnvironment = {
   permissions: PermissionEvaluator;
   scheduler: SchedulerService;
   identity: IdentityApi;
-  /**
-   * @deprecated use `events` instead
-   */
-  eventBroker: EventBroker;
   events: EventsService;
   signals: SignalsService;
 };

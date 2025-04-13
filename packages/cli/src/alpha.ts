@@ -18,12 +18,18 @@ import { CliInitializer } from './wiring/CliInitializer';
 import chalk from 'chalk';
 
 (async () => {
-  console.warn(
+  // Logging as stdout to prevent failures from stderr during api-report generation.
+  console.log(
     chalk.yellow(
       'THIS ENTRYPOINT IS IN ALPHA AND MAY CHANGE IN THE FUTURE - DO NOT USE THIS FOR NORMAL DEVELOPMENT',
     ),
   );
   const initializer = new CliInitializer();
+  initializer.add(import('./modules/info/alpha'));
   initializer.add(import('./modules/config/alpha'));
+  initializer.add(import('./modules/build/alpha'));
+  initializer.add(import('./modules/migrate/alpha'));
+  initializer.add(import('./modules/test/alpha'));
+  initializer.add(import('./modules/lint/alpha'));
   await initializer.run();
 })();

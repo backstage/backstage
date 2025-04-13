@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useCanon } from '../../contexts/canon';
+import { ComponentType } from 'react';
+import { useIcons } from './context';
 import type { IconProps } from './types';
 import clsx from 'clsx';
 
 /** @public */
 export const Icon = (props: IconProps) => {
   const { name, size, className, style, ...restProps } = props;
-  const { icons } = useCanon();
+  const { icons } = useIcons();
 
-  const CanonIcon = icons[name] as React.ComponentType<Omit<IconProps, 'name'>>;
+  const CanonIcon = icons[name] as ComponentType<Omit<IconProps, 'name'>>;
 
   if (!CanonIcon) {
     console.error(`Icon "${name}" not found or is not a valid component.`);
-    return <svg />; // Return a default icon or handle the error appropriately
+    return null;
   }
 
   return (

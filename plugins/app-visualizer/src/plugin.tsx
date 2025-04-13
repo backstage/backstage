@@ -21,7 +21,6 @@ import {
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import VisualizerIcon from '@material-ui/icons/Visibility';
-import React from 'react';
 
 const rootRouteRef = createRouteRef();
 

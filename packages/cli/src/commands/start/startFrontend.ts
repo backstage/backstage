@@ -16,7 +16,10 @@
 
 import { readJson } from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { getModuleFederationOptions, serveBundle } from '../../lib/bundler';
+import {
+  getModuleFederationOptions,
+  serveBundle,
+} from '../../modules/build/lib/bundler';
 import { paths } from '../../lib/paths';
 import { BackstagePackageJson } from '@backstage/cli-node';
 

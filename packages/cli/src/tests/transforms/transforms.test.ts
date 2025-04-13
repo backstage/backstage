@@ -16,7 +16,7 @@
 
 import { execFileSync } from 'child_process';
 import { resolve as resolvePath } from 'path';
-import { Output, buildPackage } from '../../lib/builder';
+import { Output, buildPackage } from '../../modules/build/lib/builder';
 
 const exportValues = {
   all: {

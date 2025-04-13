@@ -26,8 +26,8 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useCallback, useEffect, useState } from 'react';
-import { UnpackNestedValue, UseFormReturn } from 'react-hook-form';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { NestedValue, UseFormReturn } from 'react-hook-form';
 import useAsync from 'react-use/esm/useAsync';
 import YAML from 'yaml';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
@@ -57,6 +57,22 @@ type FormData = {
 };
 
 /**
+ * Helper for unpacking NestedValue into the underlying type.
+ *
+ * @public
+ * @deprecated This is a copy of the type from react-hook-form, and will be removed in a future release
+ */
+export type UnpackNestedValue<T> = T extends NestedValue<infer U>
+  ? U
+  : T extends Date | FileList | File | Blob
+  ? T
+  : T extends object
+  ? {
+      [K in keyof T]: UnpackNestedValue<T[K]>;
+    }
+  : T;
+
+/**
  * Props for {@link StepPrepareCreatePullRequest}.
  *
  * @public
@@ -78,7 +94,7 @@ export interface StepPrepareCreatePullRequestProps {
       groups: string[];
       groupsLoading: boolean;
     },
-  ) => React.ReactNode;
+  ) => ReactNode;
 }
 
 export function generateEntities(

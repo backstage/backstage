@@ -1,0 +1,107 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.name }}
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  owner: ${{ values.owner }}
+  lifecycle: experimental
+  providesApis:
+    - ${{ values.name }}-hello-api
+    - ${{ values.name }}-hello-name-api
+    - ${{ values.name }}-isalive-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: ${{ values.name }}-hello-api
+  description: A simple hello world API
+spec:
+  type: openapi
+  lifecycle: experimental
+  owner: ${{ values.owner }}
+  system: devops-infra
+  definition: |
+    openapi: "3.0.0"
+    info:
+      version: 1.0.0
+      title: Hello API
+      license:
+        name: MIT
+    servers:
+      - url: http://localhost:5000
+    paths:
+      /v1/hello:
+        get:
+          responses:
+            '200':
+              description: Returns a hello world message
+          summary: Returns a hello world message
+    ...
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: ${{ values.name }}-hello-name-api
+  description: A simple hello world API
+spec:
+  type: openapi
+  lifecycle: experimental
+  owner: ${{ values.owner }}
+  system: devops-infra
+  definition: |
+    openapi: "3.0.0"
+    info:
+    version: 1.0.0
+    title: Hello Name API
+    license:
+        name: MIT
+    servers:
+    - url: http://localhost:5000
+    paths:
+      /v1/hello/{name}:
+        parameters:
+          - name: name
+            in: path
+            required: true
+            description: The name to say hello to
+            schema:
+              type: string
+        get:
+          responses:
+            '200':
+              description: Returns a hello world message
+          summary: Returns a hello world message
+    ...
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: ${{ values.name }}-isalive-api
+  description: A simple health check API
+spec:
+  type: openapi
+  lifecycle: experimental
+  owner: ${{ values.owner }}
+  system: devops-infra
+  definition: |
+    openapi: "3.0.0"
+    info:
+    version: 1.0.0
+    title: IsAlive API
+    license:
+        name: MIT
+    servers:
+    - url: http://localhost:5000
+    paths:
+    /v1/isalive:
+        get:
+          responses:
+            '200':
+              description: Confirmation that the service is alive
+        summary: Health check to be used inside Kubernetes
+    ...
+  
+

@@ -27,7 +27,6 @@ jest.mock('./railsNewRunner', () => {
   };
 });
 
-import { ContainerRunner } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { resolve as resolvePath } from 'path';
@@ -37,6 +36,7 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { Writable } from 'stream';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { ContainerRunner } from './ContainerRunner';
 
 describe('fetch:rails', () => {
   const mockDir = createMockDirectory();

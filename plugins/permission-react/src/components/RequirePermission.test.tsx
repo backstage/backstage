@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { RequirePermission } from './RequirePermission';
 import { usePermission } from '../hooks';
 import { renderInTestApp } from '@backstage/test-utils';

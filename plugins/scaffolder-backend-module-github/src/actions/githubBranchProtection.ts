@@ -130,29 +130,40 @@ export function createGithubBranchProtectionAction(options: {
       });
       const client = new Octokit(octokitOptions);
 
-      const repository = await client.rest.repos.get({
-        owner: owner,
-        repo: repo,
+      const defaultBranch = await ctx.checkpoint({
+        key: `read.default.branch.${owner}.${repo}`,
+        fn: async () => {
+          const repository = await client.rest.repos.get({
+            owner: owner,
+            repo: repo,
+          });
+          return repository.data.default_branch;
+        },
       });
 
-      await enableBranchProtectionOnDefaultRepoBranch({
-        repoName: repo,
-        client,
-        owner,
-        logger: ctx.logger,
-        requireCodeOwnerReviews,
-        bypassPullRequestAllowances,
-        requiredApprovingReviewCount,
-        restrictions,
-        requiredStatusCheckContexts,
-        requireBranchesToBeUpToDate,
-        requiredConversationResolution,
-        requireLastPushApproval,
-        defaultBranch: branch ?? repository.data.default_branch,
-        enforceAdmins,
-        dismissStaleReviews,
-        requiredCommitSigning,
-        requiredLinearHistory,
+      await ctx.checkpoint({
+        key: `enable.branch.protection.${owner}.${repo}`,
+        fn: async () => {
+          await enableBranchProtectionOnDefaultRepoBranch({
+            repoName: repo,
+            client,
+            owner,
+            logger: ctx.logger,
+            requireCodeOwnerReviews,
+            bypassPullRequestAllowances,
+            requiredApprovingReviewCount,
+            restrictions,
+            requiredStatusCheckContexts,
+            requireBranchesToBeUpToDate,
+            requiredConversationResolution,
+            requireLastPushApproval,
+            defaultBranch: branch ?? defaultBranch,
+            enforceAdmins,
+            dismissStaleReviews,
+            requiredCommitSigning,
+            requiredLinearHistory,
+          });
+        },
       });
     },
   });

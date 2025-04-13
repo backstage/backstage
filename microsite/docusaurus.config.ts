@@ -23,6 +23,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 import { Config } from '@docusaurus/types';
 import RedirectPlugin from '@docusaurus/plugin-client-redirects';
 import { releases } from './releases';
+import type * as OpenApiPlugin from 'docusaurus-plugin-openapi-docs';
 
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
@@ -53,6 +54,14 @@ const PatchedRedirectPlugin: typeof RedirectPlugin = (ctx, opts) => {
     },
   };
 };
+
+const defaultOpenApiOptions = {
+  hideSendButton: true,
+  sidebarOptions: {
+    groupPathsBy: 'tag',
+    categoryLinkSource: 'tag',
+  },
+} satisfies OpenApiPlugin.Options;
 
 const config: Config = {
   title: 'Backstage Software Catalog and Developer Platform',
@@ -89,7 +98,7 @@ const config: Config = {
             return `https://github.com/backstage/backstage/edit/master/docs/${docPath}`;
           },
           path: '../docs',
-          sidebarPath: 'sidebars.js',
+          sidebarPath: 'sidebars.ts',
           ...(useVersionedDocs
             ? {
                 includeCurrentVersion: true,
@@ -110,9 +119,15 @@ const config: Config = {
                 },
               }
             : undefined),
+          docItemComponent: '@theme/ApiItem',
         },
         blog: {
           path: 'blog',
+          // Gets rid of the following:
+          // Warning:  Some blog authors used in "2024-12-18-backstage-wrapped-2024.mdx" are not defined in "authors.yml":
+          // - {"name":"Patrik Oldsberg, Spotify & Ben Lambert, Spotify","key":null,"page":null}
+          // Note that we recommend to declare authors once in a "authors.yml" file and reference them by key in blog posts front matter to avoid author info duplication.
+          onInlineAuthors: 'ignore',
         },
         theme: {
           customCss: 'src/theme/customTheme.scss',
@@ -266,8 +281,67 @@ const config: Config = {
         ratingMode: 'stars',
       },
     ],
+    [
+      'docusaurus-plugin-openapi-docs',
+      {
+        id: 'api', // plugin id
+        docsPluginId: 'classic', // configured for preset-classic
+        config: {
+          catalog: {
+            ...defaultOpenApiOptions,
+            specPath: '../plugins/catalog-backend/src/schema/openapi.yaml',
+            outputDir: '../docs/features/software-catalog/api',
+          } satisfies OpenApiPlugin.Options,
+          search: {
+            ...defaultOpenApiOptions,
+            specPath: '../plugins/search-backend/src/schema/openapi.yaml',
+            outputDir: '../docs/features/search/api',
+          } satisfies OpenApiPlugin.Options,
+        },
+      },
+    ],
   ],
+  themes: ['docusaurus-theme-openapi-docs'],
   themeConfig: {
+    languageTabs: [
+      {
+        highlight: 'javascript',
+        language: 'javascript',
+        logoClass: 'javascript',
+      },
+      {
+        highlight: 'bash',
+        language: 'curl',
+        logoClass: 'curl',
+      },
+      {
+        highlight: 'powershell',
+        language: 'powershell',
+        logoClass: 'powershell',
+      },
+      {
+        highlight: 'python',
+        language: 'python',
+        logoClass: 'python',
+      },
+      {
+        highlight: 'java',
+        language: 'java',
+        logoClass: 'java',
+        variant: 'unirest',
+      },
+      {
+        highlight: 'go',
+        language: 'go',
+        logoClass: 'go',
+      },
+      {
+        highlight: 'rust',
+        language: 'rust',
+        logoClass: 'rust',
+      },
+    ],
+
     colorMode: {
       defaultMode: 'dark',
       disableSwitch: true,
@@ -281,6 +355,11 @@ const config: Config = {
         {
           href: 'https://github.com/backstage/backstage',
           label: 'GitHub',
+          position: 'left',
+        },
+        {
+          href: 'https://discord.gg/backstage-687207715902193673',
+          label: 'Discord',
           position: 'left',
         },
         {
@@ -412,7 +491,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage</p>`,
+      copyright: `<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: <a href="https://www.linuxfoundation.org/trademark-usage" />https://www.linuxfoundation.org/trademark-usage</a></p>`,
     },
     algolia: {
       apiKey: '1f0ba86672ccfc3576faa94583e5b318',

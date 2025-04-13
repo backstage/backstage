@@ -1,5 +1,149 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.6.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.32.1-next.1
+  - @backstage/backend-defaults@0.9.0-next.2
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-app-node@0.1.31
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-events-backend@0.5.0
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/plugin-scaffolder-node@0.8.1-next.1
+  - @backstage/plugin-search-backend-node@1.3.9
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.6.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0-next.1
+  - @backstage/plugin-catalog-backend@1.32.1-next.0
+  - @backstage/plugin-scaffolder-node@0.8.1-next.1
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-events-backend@0.5.0
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/plugin-search-backend-node@1.3.9
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-app-node@0.1.31
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0-next.0
+  - @backstage/plugin-scaffolder-node@0.8.1-next.0
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-catalog-backend@1.32.0
+  - @backstage/plugin-events-backend@0.5.0
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/plugin-search-backend-node@1.3.9
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-app-node@0.1.31
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.6.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.0
+  - @backstage/backend-defaults@0.8.2
+  - @backstage/plugin-scaffolder-node@0.8.0
+  - @backstage/plugin-events-backend@0.5.0
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/plugin-catalog-backend@1.32.0
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/plugin-app-node@0.1.31
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-node@1.3.9
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.6.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.0-next.2
+  - @backstage/plugin-catalog-backend@1.32.0-next.2
+  - @backstage/config-loader@1.10.0-next.0
+  - @backstage/backend-defaults@0.8.2-next.2
+  - @backstage/plugin-events-backend@0.4.4-next.2
+  - @backstage/plugin-events-node@0.4.9-next.2
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-app-node@0.1.31-next.2
+  - @backstage/plugin-auth-node@0.6.1-next.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.9-next.1
+  - @backstage/plugin-search-backend-node@1.3.9-next.1
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.6.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1-next.1
+  - @backstage/plugin-catalog-backend@1.32.0-next.1
+  - @backstage/plugin-scaffolder-node@0.7.1-next.1
+  - @backstage/backend-defaults@0.8.2-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.9.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-app-node@0.1.31-next.1
+  - @backstage/plugin-events-backend@0.4.4-next.1
+  - @backstage/plugin-events-node@0.4.9-next.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.9-next.1
+  - @backstage/plugin-search-backend-node@1.3.9-next.1
+  - @backstage/plugin-search-common@1.2.17
+
 ## 0.6.1-next.0
 
 ### Patch Changes

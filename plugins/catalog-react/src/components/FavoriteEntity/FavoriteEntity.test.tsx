@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { storageApiRef } from '@backstage/core-plugin-api';
 
 import { MockStarredEntitiesApi, starredEntitiesApiRef } from '../../apis';

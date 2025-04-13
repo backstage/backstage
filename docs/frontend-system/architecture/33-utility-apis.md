@@ -6,7 +6,9 @@ sidebar_label: Utility APIs
 description: Utility APIs
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
+:::note Note
+The new frontend system is in alpha and is only supported by a small number of plugins.
+:::
 
 ## Overview
 

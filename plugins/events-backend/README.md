@@ -26,58 +26,6 @@ yarn --cwd packages/backend add @backstage/plugin-events-backend
 backend.add(import('@backstage/plugin-events-backend'));
 ```
 
-### Legacy Backend System
-
-```ts
-// packages/backend/src/plugins/events.ts
-import { HttpPostIngressEventPublisher } from '@backstage/plugin-events-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const eventsRouter = Router();
-
-  const http = HttpPostIngressEventPublisher.fromConfig({
-    config: env.config,
-    events: env.events,
-    logger: env.logger,
-  });
-  http.bind(eventsRouter);
-
-  return eventsRouter;
-}
-```
-
-### Event-based Entity Providers
-
-You can implement the `EventSubscriber` interface on an `EntityProviders` to allow it to handle events from other plugins e.g. the event backend plugin
-mentioned above.
-
-Assuming you have configured the `eventBroker` into the `PluginEnvironment` you can pass the broker to the entity provider for it to subscribe.
-
-```diff
-// packages/backend/src/plugins/catalog.ts
- import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
-+import { DemoEventBasedEntityProvider } from './DemoEventBasedEntityProvider';
- import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
- import { Router } from 'express';
- import { PluginEnvironment } from '../types';
-
- export default async function createPlugin(
-   env: PluginEnvironment,
- ): Promise<Router> {
-   const builder = await CatalogBuilder.create(env);
-   builder.addProcessor(new ScaffolderEntitiesProcessor());
-+  const demoProvider = new DemoEventBasedEntityProvider({ logger: env.logger, topics: ['example'], eventBroker: env.eventBroker });
-+  builder.addEntityProvider(demoProvider);
-   const { processingEngine, router } = await builder.build();
-   await processingEngine.start();
-   return router;
- }
-```
-
 ## Configuration
 
 In order to create HTTP endpoints to receive events for a certain
@@ -140,18 +88,44 @@ export const eventsModuleYourFeature = createBackendModule({
 });
 ```
 
-#### Legacy Backend System
+### Request Body Parse
+
+We need to parse the request body before we can validate it. We have some default parsers but you can provide your own when necessary.
 
 ```ts
-const http = HttpPostIngressEventPublisher.fromConfig({
-  config: env.config,
-  events: env.events,
-  ingresses: {
-    yourTopic: {
-      validator: yourValidator,
-    },
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
+
+// [...]
+
+export const eventsModuleYourFeature = createBackendModule({
+  pluginId: 'events',
+  moduleId: 'your-feature',
+  register(env) {
+    // [...]
+    env.registerInit({
+      deps: {
+        // [...]
+        events: eventsExtensionPoint,
+        // [...]
+      },
+      async init({ /* ... */ events /*, ... */ }) {
+        // [...]
+        events.addHttpPostBodyParser({
+          contentType: 'application/x-www-form-urlencoded',
+          parser: async (req, _topic) => {
+            return {
+              bodyParsed: req.body.toString('utf-8'),
+              bodyBuffer: req.body,
+              encoding: 'utf-8',
+            };
+          },
+        });
+      },
+    });
   },
-  logger: env.logger,
 });
-http.bind(router);
 ```
+
+We have the following default parsers:
+
+- `application/json`

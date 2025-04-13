@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { coreExtensionData } from './coreExtensionData';
 import { createExtensionBlueprint } from './createExtensionBlueprint';
 import {
@@ -28,8 +27,10 @@ import {
 import { createExtensionInput } from './createExtensionInput';
 import { RouteRef } from '../routing';
 import { ExtensionDefinition } from './createExtension';
-import { createExtensionDataContainer } from './createExtensionDataContainer';
-import { OpaqueExtensionDefinition } from '@internal/frontend';
+import {
+  createExtensionDataContainer,
+  OpaqueExtensionDefinition,
+} from '@internal/frontend';
 
 function unused(..._any: any[]) {}
 
