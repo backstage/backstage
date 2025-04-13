@@ -199,7 +199,7 @@ jobs:
           path: .cache/package-docs
           key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-${{ github.run_id }}
 
-      - name: Build Storybook
+      - name: storybook build
         run: yarn build-storybook
 
       - name: Upload Storybook
@@ -334,8 +334,18 @@ jobs:
           name: next-reference
           path: microsite/build/api/next/
 
+      - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        with:
+          name: stable-reference-beta
+          path: microsite/build/api/stable/
+
+      - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        with:
+          name: next-reference-beta
+          path: microsite/build/api/next/
+
       - name: Check the build output
-        run: ls microsite/build && ls microsite/build/storybook && ls microsite/build/api/stable && ls microsite/build/api/next
+        run: ls microsite/build && ls microsite/build/storybook && ls microsite/build/api/stable && ls microsite/build/api/next/
 
       - name: Deploy both microsite and storybook to gh-pages
         uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
