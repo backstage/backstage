@@ -80,8 +80,18 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+      # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
+      - name: restore package-docs cache
+        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-
+
       - name: build API reference (beta)
         run: yarn backstage-repo-tools package-docs
+        continue-on-error: true
 
       - name: upload API reference (beta)
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -90,6 +100,14 @@ jobs:
           path: type-docs/
           if-no-files-found: error
           retention-days: 1
+
+      # Always save success cache even if there were failures, that way it can be used in re-triggered builds
+      - name: save package-docs cache
+        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        if: always()
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-${{ github.run_id }}
 
       - name: microsite yarn install
         run: yarn install --immutable
@@ -147,8 +165,18 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+      # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
+      - name: restore package-docs cache
+        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-
+
       - name: build API reference (beta)
         run: yarn backstage-repo-tools package-docs
+        continue-on-error: true
 
       - name: upload API reference (beta)
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -157,6 +185,14 @@ jobs:
           path: type-docs/
           if-no-files-found: error
           retention-days: 1
+
+      # Always save success cache even if there were failures, that way it can be used in re-triggered builds
+      - name: save package-docs cache
+        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        if: always()
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-${{ github.run_id }}
 
         # Also build and upload storybook
       - name: storybook yarn install
