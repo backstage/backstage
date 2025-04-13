@@ -87,6 +87,23 @@ describe('GitlabDiscoveryEntityProvider - configuration', () => {
       'No schedule provided neither via code nor config for GitlabDiscoveryEntityProvider:test-id',
     );
   });
+
+  it('should fail with validateLocationsExist and wildcard catalogFile', () => {
+    const config = new ConfigReader(
+      mock.config_validate_location_exist_wildcard,
+    );
+    const schedule = new PersistingTaskRunner();
+
+    expect(() =>
+      GitlabDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+        schedule,
+      }),
+    ).toThrow(
+      'The catalog path packages/**/catalog-info.yaml contains a wildcard, which is incompatible with validation of locations existing before emitting them. Ensure that validateLocationsExist is set to false.',
+    );
+  });
+
   it('should throw error when no matching GitLab integration config found', () => {
     const schedule = new PersistingTaskRunner();
     const config = new ConfigReader(mock.config_github_host);
@@ -195,6 +212,38 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
           entity.entity.metadata.annotations[
             'backstage.io/managed-by-location'
           ].includes(projectPattern) &&
+          !entity.entity.metadata.annotations[
+            'backstage.io/managed-by-location'
+          ].includes('awesome'),
+      ),
+    });
+  });
+
+  it('should ignore entityFile existence validation when validateLocationsExist is set to false', async () => {
+    const config = new ConfigReader(
+      mock.config_no_validate_location_exist_wildcard,
+    );
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    await provider.refresh(logger);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_location_entities_with_wildcard.filter(
+        entity =>
+          !entity.entity.metadata.annotations[
+            'backstage.io/managed-by-location'
+          ].includes('forked') &&
           !entity.entity.metadata.annotations[
             'backstage.io/managed-by-location'
           ].includes('awesome'),

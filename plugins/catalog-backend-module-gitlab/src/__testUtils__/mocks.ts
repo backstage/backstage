@@ -429,6 +429,58 @@ export const config_no_schedule_integration: MockObject = {
   },
 };
 
+export const config_validate_location_exist_wildcard: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          group: 'group1',
+          entityFilename: 'packages/**/catalog-info.yaml',
+          fallbackBranch: 'main',
+          skipForkedRepos: true,
+          validateLocationsExist: true,
+        },
+      },
+    },
+  },
+};
+
+export const config_no_validate_location_exist_wildcard: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          group: 'group1',
+          entityFilename: 'packages/**/catalog-info.yaml',
+          fallbackBranch: 'main',
+          skipForkedRepos: true,
+          validateLocationsExist: false,
+        },
+      },
+    },
+  },
+};
+
 export const config_unmatched_project_integration: MockObject = {
   integrations: {
     gitlab: [
@@ -1627,6 +1679,38 @@ export const expected_location_entities_fallback_branch: MockObject[] =
     .map(project => {
       const branch = project.default_branch || 'main';
       const targetUrl = `https://example.com/${project.path_with_namespace}/-/blob/${branch}/catalog-info.yaml`;
+
+      return {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:${targetUrl}`,
+              'backstage.io/managed-by-origin-location': `url:${targetUrl}`,
+            },
+            name: locationSpecToMetadataName({
+              target: targetUrl,
+              type: 'url',
+            }),
+          },
+          spec: {
+            presence: 'optional',
+            target: targetUrl,
+            type: 'url',
+          },
+        },
+        locationKey: 'GitlabDiscoveryEntityProvider:test-id',
+      };
+    });
+
+// includes every GitLab project that has a default branch and the fallback declared in the config
+export const expected_location_entities_with_wildcard: MockObject[] =
+  all_projects_response
+    .filter(project => !project.archived)
+    .map(project => {
+      const branch = project.default_branch || 'main';
+      const targetUrl = `https://example.com/${project.path_with_namespace}/-/blob/${branch}/packages/**/catalog-info.yaml`;
 
       return {
         entity: {

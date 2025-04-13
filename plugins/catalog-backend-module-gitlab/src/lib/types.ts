@@ -175,6 +175,11 @@ export type GitlabProviderConfig = {
    */
   catalogFile: string;
   /**
+   * Whether to validate locations that exist before emitting them. This option avoids generating locations for catalog info files that do not exist in the source repository.
+   * Defaults to false. This option cannot be used in conjunction with wildcards in the catalogFile.
+   */
+  validateLocationsExist?: boolean;
+  /**
    * Filters found projects based on provided patter.
    * Defaults to `[\s\S]*`, which means to not filter anything
    */

@@ -71,6 +71,9 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const topicsArray = config.getOptionalStringArray('topics');
   const topics = topicsArray?.length ? topicsArray.join(',') : undefined;
 
+  const validateLocationsExist =
+    config.getOptionalBoolean('validateLocationsExist') ?? true;
+
   return {
     id,
     group,
@@ -92,6 +95,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     includeUsersWithoutSeat,
     membership,
     topics,
+    validateLocationsExist,
   };
 }
 
