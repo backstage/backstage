@@ -85,15 +85,6 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-      # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
-      - name: restore package-docs cache
-        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
-        with:
-          path: .cache/package-docs
-          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-
-
       - name: build API reference (beta)
         run: yarn backstage-repo-tools package-docs
 
@@ -102,14 +93,6 @@ jobs:
         with:
           name: stable-reference-beta
           path: type-docs/
-
-      # Always save success cache even if there were failures, that way it can be used in re-triggered builds
-      - name: save package-docs cache
-        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
-        if: always()
-        with:
-          path: .cache/package-docs
-          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-${{ github.run_id }}
 
       - name: microsite yarn install
         run: yarn install --immutable
@@ -166,15 +149,6 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-      # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
-      - name: restore package-docs cache
-        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
-        with:
-          path: .cache/package-docs
-          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-next-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-next-
-
       - name: build API reference (beta)
         run: yarn backstage-repo-tools package-docs
 
@@ -183,14 +157,6 @@ jobs:
         with:
           name: next-reference-beta
           path: type-docs/
-
-      # Always save success cache even if there were failures, that way it can be used in re-triggered builds
-      - name: save package-docs cache
-        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
-        if: always()
-        with:
-          path: .cache/package-docs
-          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-next-${{ github.run_id }}
 
         # Also build and upload storybook
       - name: storybook yarn install
@@ -323,6 +289,18 @@ jobs:
       - name: build microsite
         run: yarn build
         working-directory: microsite
+
+      - name: download stable reference (beta)
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        with:
+          name: stable-reference-beta
+          path: api/stable/
+
+      - name: download next reference (beta)
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        with:
+          name: next-reference-beta
+          path: api/next/
 
       - name: download stable reference (beta)
         uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
