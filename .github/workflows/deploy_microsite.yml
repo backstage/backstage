@@ -80,6 +80,17 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+      - name: build API reference (beta)
+        run: yarn backstage-repo-tools package-docs
+
+      - name: upload API reference (beta)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: stable-reference-beta
+          path: type-docs/
+          if-no-files-found: error
+          retention-days: 1
+
       - name: microsite yarn install
         run: yarn install --immutable
         working-directory: microsite
@@ -133,6 +144,17 @@ jobs:
         with:
           name: next-reference
           path: docs/reference/
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: build API reference (beta)
+        run: yarn backstage-repo-tools package-docs
+
+      - name: upload API reference (beta)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: next-reference-beta
+          path: type-docs/
           if-no-files-found: error
           retention-days: 1
 
@@ -265,8 +287,18 @@ jobs:
           name: storybook
           path: microsite/build/storybook
 
+      - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        with:
+          name: stable-reference-beta
+          path: microsite/build/api/stable/
+
+      - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        with:
+          name: next-reference-beta
+          path: microsite/build/api/next/
+
       - name: Check the build output
-        run: ls microsite/build && ls microsite/build/storybook
+        run: ls microsite/build && ls microsite/build/storybook && ls microsite/build/api/stable && ls microsite/build/api/next
 
       - name: Deploy both microsite and storybook to gh-pages
         uses: JamesIves/github-pages-deploy-action@62fec3add6773ec5dbbf18d2ee4260911aa35cf4 # v4.6.9

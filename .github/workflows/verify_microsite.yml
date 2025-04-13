@@ -85,6 +85,15 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+      - name: build API reference (beta)
+        run: yarn backstage-repo-tools package-docs
+
+      - name: upload API reference (beta)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: stable-reference-beta
+          path: type-docs/
+
       - name: microsite yarn install
         run: yarn install --immutable
         working-directory: microsite
@@ -139,6 +148,15 @@ jobs:
           path: docs/reference/
           if-no-files-found: error
           retention-days: 1
+
+      - name: build API reference (beta)
+        run: yarn backstage-repo-tools package-docs
+
+      - name: upload API reference (beta)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: next-reference-beta
+          path: type-docs/
 
         # Also build and upload storybook
       - name: storybook yarn install
@@ -271,3 +289,15 @@ jobs:
       - name: build microsite
         run: yarn build
         working-directory: microsite
+
+      - name: download stable reference (beta)
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        with:
+          name: stable-reference-beta
+          path: api/stable/
+
+      - name: download next reference (beta)
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        with:
+          name: next-reference-beta
+          path: api/next/
