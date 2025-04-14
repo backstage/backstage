@@ -61,6 +61,9 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const capitalize = (s: string) =>
+  s.charAt(0).toLocaleUpperCase('en-US') + s.slice(1);
+
 /** @public */
 export const UserSettingsLanguageToggle = () => {
   const classes = useStyles();
@@ -89,10 +92,7 @@ export const UserSettingsLanguageToggle = () => {
         type: 'language',
       });
       const languageDisplayName = names.of(language);
-      return languageDisplayName
-        ? languageDisplayName.charAt(0).toLocaleUpperCase('en-US') +
-            languageDisplayName.slice(1)
-        : language;
+      return languageDisplayName ? capitalize(languageDisplayName) : language;
     } catch (err) {
       return language;
     }
