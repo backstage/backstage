@@ -13,6 +13,8 @@ import * as TextFieldStories from '../../../packages/canon/src/components/TextFi
 import * as TextStories from '../../../packages/canon/src/components/Text/Text.stories';
 import * as FlexStories from '../../../packages/canon/src/components/Flex/Flex.stories';
 import * as SelectStories from '../../../packages/canon/src/components/Select/Select.stories';
+import * as MenuStories from '../../../packages/canon/src/components/Menu/Menu.stories';
+import * as LinkStories from '../../../packages/canon/src/components/Link/Link.stories';
 
 export const BoxSnippet = ({ story }: { story: keyof typeof BoxStories }) => {
   const stories = composeStories(BoxStories);
@@ -121,6 +123,20 @@ export const SelectSnippet = ({
   story: keyof typeof SelectStories;
 }) => {
   const stories = composeStories(SelectStories);
+  const StoryComponent = stories[story as keyof typeof stories];
+
+  return StoryComponent ? <StoryComponent /> : null;
+};
+
+export const MenuSnippet = ({ story }: { story: keyof typeof MenuStories }) => {
+  const stories = composeStories(MenuStories);
+  const StoryComponent = stories[story as keyof typeof stories];
+
+  return StoryComponent ? <StoryComponent /> : null;
+};
+
+export const LinkSnippet = ({ story }: { story: keyof typeof LinkStories }) => {
+  const stories = composeStories(LinkStories);
   const StoryComponent = stories[story as keyof typeof stories];
 
   return StoryComponent ? <StoryComponent /> : null;
