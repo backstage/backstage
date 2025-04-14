@@ -232,7 +232,7 @@ jobs:
         working-directory: microsite
 
       - name: clear generated docs
-        run: git clean -fd docs/
+        run: git clean -fdx docs/
 
       # Next docs
       - name: checkout master

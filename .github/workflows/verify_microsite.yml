@@ -243,7 +243,7 @@ jobs:
         working-directory: microsite
 
       - name: clear generated docs
-        run: git clean -fd docs/
+        run: git clean -fdx docs/
 
       - name: print directry contents
         run: ls docs/reference
