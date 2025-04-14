@@ -92,6 +92,11 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
+    title: 'Menu',
+    slug: 'menu',
+    status: 'alpha',
+  },
+  {
     title: 'Select',
     slug: 'select',
     status: 'alpha',
