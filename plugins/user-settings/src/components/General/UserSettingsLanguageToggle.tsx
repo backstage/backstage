@@ -88,7 +88,11 @@ export const UserSettingsLanguageToggle = () => {
       const names = new Intl.DisplayNames([language], {
         type: 'language',
       });
-      return names.of(language) || language;
+      const languageDisplayName = names.of(language);
+      return languageDisplayName
+        ? languageDisplayName.charAt(0).toLocaleUpperCase('en-US') +
+            languageDisplayName.slice(1)
+        : language;
     } catch (err) {
       return language;
     }
