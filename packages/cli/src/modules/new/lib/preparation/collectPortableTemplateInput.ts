@@ -15,8 +15,11 @@
  */
 
 import inquirer, { DistinctQuestion } from 'inquirer';
-import { getCodeownersFilePath, parseOwnerIds } from '../../codeowners';
-import { paths } from '../../paths';
+import {
+  getCodeownersFilePath,
+  parseOwnerIds,
+} from '../../../../lib/codeowners';
+import { paths } from '../../../../lib/paths';
 import {
   PortableTemplateConfig,
   PortableTemplateInput,

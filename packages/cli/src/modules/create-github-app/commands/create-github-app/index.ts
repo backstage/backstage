@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import { stringify as stringifyYaml } from 'yaml';
 import inquirer, { Question, Answers } from 'inquirer';
-import { paths } from '../../lib/paths';
+import { paths } from '../../../../lib/paths';
 import { GithubCreateAppServer } from './GithubCreateAppServer';
 import openBrowser from 'react-dev-utils/openBrowser';
 

@@ -24,9 +24,9 @@ import startCase from 'lodash/startCase';
 import upperCase from 'lodash/upperCase';
 import upperFirst from 'lodash/upperFirst';
 import lowerFirst from 'lodash/lowerFirst';
-import { Lockfile } from '../../versioning';
-import { paths } from '../../paths';
-import { createPackageVersionProvider } from '../../version';
+import { Lockfile } from '../../../../lib/versioning';
+import { paths } from '../../../../lib/paths';
+import { createPackageVersionProvider } from '../../../../lib/version';
 
 const builtInHelpers = {
   camelCase,
