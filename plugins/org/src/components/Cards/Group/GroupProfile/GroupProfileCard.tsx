@@ -203,19 +203,17 @@ export const GroupProfileCard = (props: {
                 secondary="Child Groups"
               />
             </ListItem>
-            {stringifyEntityRef(group) && (
-              <ListItem>
-                <ListItemIcon>
-                  <Tooltip title="Group ID">
-                    <PermIdentityIcon />
-                  </Tooltip>
-                </ListItemIcon>
-                <ListItemText
-                  primary={stringifyEntityRef(group)}
-                  secondary="Group ID"
-                />
-              </ListItem>
-            )}
+            <ListItem>
+              <ListItemIcon>
+                <Tooltip title="Entity Ref">
+                  <PermIdentityIcon />
+                </Tooltip>
+              </ListItemIcon>
+              <ListItemText
+                primary={stringifyEntityRef(group)}
+                secondary="Entity Ref"
+              />
+            </ListItem>
             {props?.showLinks && <LinksGroup links={links} />}
           </List>
         </Grid>
