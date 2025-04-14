@@ -15,7 +15,11 @@
  */
 export interface DataProps {
   name: string;
-  owner: string;
+  owner: {
+    name: string;
+    profilePicture?: string;
+    link?: string;
+  };
   type: 'documentation' | 'library' | 'service' | 'website' | 'other';
   description?: string;
   tags?: string[];
@@ -24,7 +28,11 @@ export interface DataProps {
 export const data: DataProps[] = [
   {
     name: 'authentication-and-authorization-service',
-    owner: 'security-team',
+    owner: {
+      name: 'security-team',
+      profilePicture: 'https://github.com/security-team.png',
+      link: 'https://github.com/orgs/company/teams/security-team',
+    },
     type: 'service',
     description:
       'A comprehensive service handling user authentication and role-based access control across all applications.',
@@ -32,7 +40,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'user-interface-dashboard-and-analytics-platform',
-    owner: 'frontend-team',
+    owner: {
+      name: 'frontend-team',
+      profilePicture: 'https://github.com/frontend-team.png',
+      link: 'https://github.com/orgs/company/teams/frontend-team',
+    },
     type: 'website',
     description:
       'Interactive dashboard providing real-time analytics and data visualization for business metrics.',
@@ -40,7 +52,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'payment-gateway',
-    owner: 'finance-team',
+    owner: {
+      name: 'finance-team',
+      profilePicture: 'https://github.com/finance-team.png',
+      link: 'https://github.com/orgs/company/teams/finance-team',
+    },
     type: 'service',
     description:
       'Secure payment processing system supporting multiple payment methods and currencies.',
@@ -48,7 +64,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'real-time-analytics-processing-and-visualization-engine',
-    owner: 'data-team',
+    owner: {
+      name: 'data-team',
+      profilePicture: 'https://github.com/data-team.png',
+      link: 'https://github.com/orgs/company/teams/data-team',
+    },
     type: 'service',
     description:
       'High-performance engine for processing and visualizing streaming data analytics.',
@@ -56,7 +76,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'notification-center',
-    owner: 'platform-team',
+    owner: {
+      name: 'platform-team',
+      profilePicture: 'https://github.com/platform-team.png',
+      link: 'https://github.com/orgs/company/teams/platform-team',
+    },
     type: 'service',
     description:
       'Centralized system for managing and delivering notifications across multiple channels.',
@@ -64,7 +88,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'administrative-control-panel-and-user-management-interface',
-    owner: 'frontend-team',
+    owner: {
+      name: 'frontend-team',
+      profilePicture: 'https://github.com/frontend-team.png',
+      link: 'https://github.com/orgs/company/teams/frontend-team',
+    },
     type: 'website',
     description:
       'Admin interface for managing users, permissions, and system configurations.',
@@ -72,7 +100,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'search-indexer',
-    owner: 'search-team',
+    owner: {
+      name: 'search-team',
+      profilePicture: 'https://github.com/search-team.png',
+      link: 'https://github.com/orgs/company/teams/search-team',
+    },
     type: 'service',
     description:
       'Service responsible for indexing and updating searchable content across the platform.',
@@ -80,7 +112,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'cross-platform-mobile-application-framework',
-    owner: 'mobile-team',
+    owner: {
+      name: 'mobile-team',
+      profilePicture: 'https://github.com/mobile-team.png',
+      link: 'https://github.com/orgs/company/teams/mobile-team',
+    },
     type: 'website',
     description:
       'Framework enabling development of cross-platform mobile applications with shared codebase.',
@@ -88,7 +124,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'database-migration',
-    owner: 'devops-team',
+    owner: {
+      name: 'devops-team',
+      profilePicture: 'https://github.com/devops-team.png',
+      link: 'https://github.com/orgs/company/teams/devops-team',
+    },
     type: 'other',
     description:
       'Tools and scripts for managing database schema migrations and data transformations.',
@@ -96,7 +136,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'api-gateway',
-    owner: 'platform-team',
+    owner: {
+      name: 'platform-team',
+      profilePicture: 'https://github.com/platform-team.png',
+      link: 'https://github.com/orgs/company/teams/platform-team',
+    },
     type: 'service',
     description:
       'Central entry point for all API requests, handling routing, authentication, and rate limiting.',
@@ -104,7 +148,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'content-management',
-    owner: 'content-team',
+    owner: {
+      name: 'content-team',
+      profilePicture: 'https://github.com/content-team.png',
+      link: 'https://github.com/orgs/company/teams/content-team',
+    },
     type: 'service',
     description:
       'System for managing and delivering digital content across multiple channels.',
@@ -112,7 +160,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'enterprise-reporting-and-analytics-dashboard',
-    owner: 'analytics-team',
+    owner: {
+      name: 'analytics-team',
+      profilePicture: 'https://github.com/analytics-team.png',
+      link: 'https://github.com/orgs/company/teams/analytics-team',
+    },
     type: 'website',
     description:
       'Comprehensive business intelligence platform for enterprise-wide reporting and analytics.',
@@ -120,7 +172,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'image-processing-and-optimization-service',
-    owner: 'media-team',
+    owner: {
+      name: 'media-team',
+      profilePicture: 'https://github.com/media-team.png',
+      link: 'https://github.com/orgs/company/teams/media-team',
+    },
     type: 'service',
     description:
       'Service for processing, optimizing, and delivering images across different devices and networks.',
@@ -128,7 +184,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'customer-portal',
-    owner: 'frontend-team',
+    owner: {
+      name: 'frontend-team',
+      profilePicture: 'https://github.com/frontend-team.png',
+      link: 'https://github.com/orgs/company/teams/frontend-team',
+    },
     type: 'website',
     description:
       'Self-service portal for customers to manage their accounts and access services.',
@@ -136,7 +196,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'log-aggregator',
-    owner: 'devops-team',
+    owner: {
+      name: 'devops-team',
+      profilePicture: 'https://github.com/devops-team.png',
+      link: 'https://github.com/orgs/company/teams/devops-team',
+    },
     type: 'service',
     description:
       'Centralized logging system for collecting, processing, and analyzing application logs.',
@@ -144,7 +208,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'identity-provider',
-    owner: 'security-team',
+    owner: {
+      name: 'security-team',
+      profilePicture: 'https://github.com/security-team.png',
+      link: 'https://github.com/orgs/company/teams/security-team',
+    },
     type: 'service',
     description:
       'Service managing user identities and authentication across the organization.',
@@ -152,7 +220,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'document-storage',
-    owner: 'storage-team',
+    owner: {
+      name: 'storage-team',
+      profilePicture: 'https://github.com/storage-team.png',
+      link: 'https://github.com/orgs/company/teams/storage-team',
+    },
     type: 'service',
     description:
       'Secure and scalable document storage system with version control and access management.',
@@ -160,7 +232,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'workflow-engine',
-    owner: 'platform-team',
+    owner: {
+      name: 'platform-team',
+      profilePicture: 'https://github.com/platform-team.png',
+      link: 'https://github.com/orgs/company/teams/platform-team',
+    },
     type: 'service',
     description:
       'Engine for defining and executing business processes and workflows.',
@@ -168,7 +244,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'mobile-backend',
-    owner: 'mobile-team',
+    owner: {
+      name: 'mobile-team',
+      profilePicture: 'https://github.com/mobile-team.png',
+      link: 'https://github.com/orgs/company/teams/mobile-team',
+    },
     type: 'service',
     description:
       'Backend services supporting mobile applications with optimized APIs and data synchronization.',
@@ -176,7 +256,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'system-monitoring-and-alerting-dashboard',
-    owner: 'devops-team',
+    owner: {
+      name: 'devops-team',
+      profilePicture: 'https://github.com/devops-team.png',
+      link: 'https://github.com/orgs/company/teams/devops-team',
+    },
     type: 'website',
     description:
       'Real-time monitoring and alerting system for infrastructure and application health.',
@@ -184,7 +268,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'email-service',
-    owner: 'communication-team',
+    owner: {
+      name: 'communication-team',
+      profilePicture: 'https://github.com/communication-team.png',
+      link: 'https://github.com/orgs/company/teams/communication-team',
+    },
     type: 'service',
     description:
       'Reliable email delivery service with templates and tracking capabilities.',
@@ -192,7 +280,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'data-pipeline',
-    owner: 'data-team',
+    owner: {
+      name: 'data-team',
+      profilePicture: 'https://github.com/data-team.png',
+      link: 'https://github.com/orgs/company/teams/data-team',
+    },
     type: 'service',
     description:
       'ETL pipeline for processing and transforming large volumes of data.',
@@ -200,7 +292,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'configuration-manager',
-    owner: 'platform-team',
+    owner: {
+      name: 'platform-team',
+      profilePicture: 'https://github.com/platform-team.png',
+      link: 'https://github.com/orgs/company/teams/platform-team',
+    },
     type: 'service',
     description:
       'Centralized system for managing application configurations across environments.',
@@ -208,7 +304,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'testing-framework',
-    owner: 'qa-team',
+    owner: {
+      name: 'qa-team',
+      profilePicture: 'https://github.com/qa-team.png',
+      link: 'https://github.com/orgs/company/teams/qa-team',
+    },
     type: 'library',
     description:
       'Comprehensive testing framework supporting various types of automated tests.',
@@ -216,7 +316,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'cache-service',
-    owner: 'platform-team',
+    owner: {
+      name: 'platform-team',
+      profilePicture: 'https://github.com/platform-team.png',
+      link: 'https://github.com/orgs/company/teams/platform-team',
+    },
     type: 'service',
     description:
       'Distributed caching service for improving application performance.',
@@ -224,7 +328,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'billing-system',
-    owner: 'finance-team',
+    owner: {
+      name: 'finance-team',
+      profilePicture: 'https://github.com/finance-team.png',
+      link: 'https://github.com/orgs/company/teams/finance-team',
+    },
     type: 'service',
     description:
       'System for managing customer billing, invoicing, and payment processing.',
@@ -232,7 +340,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'comprehensive-product-documentation-and-api-reference',
-    owner: 'docs-team',
+    owner: {
+      name: 'docs-team',
+      profilePicture: 'https://github.com/docs-team.png',
+      link: 'https://github.com/orgs/company/teams/docs-team',
+    },
     type: 'documentation',
     description:
       'Complete documentation covering product features, APIs, and integration guides.',
@@ -240,7 +352,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'queue-manager',
-    owner: 'platform-team',
+    owner: {
+      name: 'platform-team',
+      profilePicture: 'https://github.com/platform-team.png',
+      link: 'https://github.com/orgs/company/teams/platform-team',
+    },
     type: 'service',
     description:
       'Message queue system for asynchronous processing and event handling.',
@@ -248,7 +364,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'security-scanner',
-    owner: 'security-team',
+    owner: {
+      name: 'security-team',
+      profilePicture: 'https://github.com/security-team.png',
+      link: 'https://github.com/orgs/company/teams/security-team',
+    },
     type: 'other',
     description:
       'Automated security scanning tool for identifying vulnerabilities in code and infrastructure.',
@@ -256,7 +376,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'user-profile',
-    owner: 'frontend-team',
+    owner: {
+      name: 'frontend-team',
+      profilePicture: 'https://github.com/frontend-team.png',
+      link: 'https://github.com/orgs/company/teams/frontend-team',
+    },
     type: 'website',
     description:
       'User profile management interface with personalization features.',
@@ -264,7 +388,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'data-warehouse',
-    owner: 'data-team',
+    owner: {
+      name: 'data-team',
+      profilePicture: 'https://github.com/data-team.png',
+      link: 'https://github.com/orgs/company/teams/data-team',
+    },
     type: 'service',
     description:
       'Centralized data repository for business intelligence and analytics.',
@@ -272,7 +400,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'deployment-automation',
-    owner: 'devops-team',
+    owner: {
+      name: 'devops-team',
+      profilePicture: 'https://github.com/devops-team.png',
+      link: 'https://github.com/orgs/company/teams/devops-team',
+    },
     type: 'other',
     description:
       'Automated deployment pipeline for continuous integration and delivery.',
@@ -280,7 +412,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'chat-service',
-    owner: 'communication-team',
+    owner: {
+      name: 'communication-team',
+      profilePicture: 'https://github.com/communication-team.png',
+      link: 'https://github.com/orgs/company/teams/communication-team',
+    },
     type: 'service',
     description:
       'Real-time chat service supporting text, file sharing, and group conversations.',
@@ -288,7 +424,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'analytics-dashboard',
-    owner: 'analytics-team',
+    owner: {
+      name: 'analytics-team',
+      profilePicture: 'https://github.com/analytics-team.png',
+      link: 'https://github.com/orgs/company/teams/analytics-team',
+    },
     type: 'website',
     description:
       'Interactive dashboard for visualizing and analyzing business metrics.',
@@ -296,7 +436,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'file-uploader',
-    owner: 'storage-team',
+    owner: {
+      name: 'storage-team',
+      profilePicture: 'https://github.com/storage-team.png',
+      link: 'https://github.com/orgs/company/teams/storage-team',
+    },
     type: 'service',
     description:
       'Service for handling secure file uploads with progress tracking and validation.',
@@ -304,7 +448,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'search-service',
-    owner: 'search-team',
+    owner: {
+      name: 'search-team',
+      profilePicture: 'https://github.com/search-team.png',
+      link: 'https://github.com/orgs/company/teams/search-team',
+    },
     type: 'service',
     description:
       'Full-text search service with advanced filtering and ranking capabilities.',
@@ -312,7 +460,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'mobile-sdk',
-    owner: 'mobile-team',
+    owner: {
+      name: 'mobile-team',
+      profilePicture: 'https://github.com/mobile-team.png',
+      link: 'https://github.com/orgs/company/teams/mobile-team',
+    },
     type: 'library',
     description:
       'Software development kit for building mobile applications with native features.',
@@ -320,7 +472,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'performance-monitor',
-    owner: 'devops-team',
+    owner: {
+      name: 'devops-team',
+      profilePicture: 'https://github.com/devops-team.png',
+      link: 'https://github.com/orgs/company/teams/devops-team',
+    },
     type: 'service',
     description:
       'System for monitoring and analyzing application performance metrics.',
@@ -328,7 +484,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'content-delivery',
-    owner: 'media-team',
+    owner: {
+      name: 'media-team',
+      profilePicture: 'https://github.com/media-team.png',
+      link: 'https://github.com/orgs/company/teams/media-team',
+    },
     type: 'service',
     description:
       'CDN service for optimized content delivery across global networks.',
@@ -336,7 +496,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'user-authentication',
-    owner: 'security-team',
+    owner: {
+      name: 'security-team',
+      profilePicture: 'https://github.com/security-team.png',
+      link: 'https://github.com/orgs/company/teams/security-team',
+    },
     type: 'service',
     description:
       'Service handling user login, session management, and authentication flows.',
@@ -344,7 +508,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'data-export',
-    owner: 'data-team',
+    owner: {
+      name: 'data-team',
+      profilePicture: 'https://github.com/data-team.png',
+      link: 'https://github.com/orgs/company/teams/data-team',
+    },
     type: 'service',
     description:
       'Service for exporting data in various formats with scheduling capabilities.',
@@ -352,7 +520,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'admin-api',
-    owner: 'platform-team',
+    owner: {
+      name: 'platform-team',
+      profilePicture: 'https://github.com/platform-team.png',
+      link: 'https://github.com/orgs/company/teams/platform-team',
+    },
     type: 'service',
     description:
       'API endpoints for administrative functions and system management.',
@@ -360,14 +532,22 @@ export const data: DataProps[] = [
   },
   {
     name: 'testing-dashboard',
-    owner: 'qa-team',
+    owner: {
+      name: 'qa-team',
+      profilePicture: 'https://github.com/qa-team.png',
+      link: 'https://github.com/orgs/company/teams/qa-team',
+    },
     type: 'website',
     description: 'Dashboard for monitoring test results and quality metrics.',
     tags: ['testing', 'dashboard', 'qa'],
   },
   {
     name: 'message-broker',
-    owner: 'platform-team',
+    owner: {
+      name: 'platform-team',
+      profilePicture: 'https://github.com/platform-team.png',
+      link: 'https://github.com/orgs/company/teams/platform-team',
+    },
     type: 'service',
     description:
       'Message broker service for reliable event-driven communication between services.',
@@ -375,7 +555,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'payment-processor',
-    owner: 'finance-team',
+    owner: {
+      name: 'finance-team',
+      profilePicture: 'https://github.com/finance-team.png',
+      link: 'https://github.com/orgs/company/teams/finance-team',
+    },
     type: 'service',
     description:
       'Service for processing financial transactions and payment methods.',
@@ -383,14 +567,22 @@ export const data: DataProps[] = [
   },
   {
     name: 'document-viewer',
-    owner: 'frontend-team',
+    owner: {
+      name: 'frontend-team',
+      profilePicture: 'https://github.com/frontend-team.png',
+      link: 'https://github.com/orgs/company/teams/frontend-team',
+    },
     type: 'website',
     description: 'Web-based document viewer supporting multiple file formats.',
     tags: ['documents', 'viewer'],
   },
   {
     name: 'load-balancer',
-    owner: 'devops-team',
+    owner: {
+      name: 'devops-team',
+      profilePicture: 'https://github.com/devops-team.png',
+      link: 'https://github.com/orgs/company/teams/devops-team',
+    },
     type: 'service',
     description:
       'Service for distributing network traffic across multiple servers.',
@@ -398,7 +590,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'security-audit',
-    owner: 'security-team',
+    owner: {
+      name: 'security-team',
+      profilePicture: 'https://github.com/security-team.png',
+      link: 'https://github.com/orgs/company/teams/security-team',
+    },
     type: 'other',
     description:
       'Tools and processes for conducting security audits and compliance checks.',
@@ -406,7 +602,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'user-settings',
-    owner: 'frontend-team',
+    owner: {
+      name: 'frontend-team',
+      profilePicture: 'https://github.com/frontend-team.png',
+      link: 'https://github.com/orgs/company/teams/frontend-team',
+    },
     type: 'website',
     description:
       'Interface for users to manage their preferences and account settings.',
@@ -414,7 +614,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'data-import',
-    owner: 'data-team',
+    owner: {
+      name: 'data-team',
+      profilePicture: 'https://github.com/data-team.png',
+      link: 'https://github.com/orgs/company/teams/data-team',
+    },
     type: 'service',
     description:
       'Service for importing and validating data from external sources.',
@@ -422,7 +626,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'infrastructure-monitor',
-    owner: 'devops-team',
+    owner: {
+      name: 'devops-team',
+      profilePicture: 'https://github.com/devops-team.png',
+      link: 'https://github.com/orgs/company/teams/devops-team',
+    },
     type: 'service',
     description:
       'Monitoring system for infrastructure components and resources.',
@@ -430,7 +638,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'notification-manager',
-    owner: 'communication-team',
+    owner: {
+      name: 'communication-team',
+      profilePicture: 'https://github.com/communication-team.png',
+      link: 'https://github.com/orgs/company/teams/communication-team',
+    },
     type: 'service',
     description:
       'Service for managing and delivering notifications across multiple channels.',
@@ -438,7 +650,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'analytics-processor',
-    owner: 'analytics-team',
+    owner: {
+      name: 'analytics-team',
+      profilePicture: 'https://github.com/analytics-team.png',
+      link: 'https://github.com/orgs/company/teams/analytics-team',
+    },
     type: 'service',
     description:
       'Service for processing and analyzing business data and metrics.',
@@ -446,21 +662,33 @@ export const data: DataProps[] = [
   },
   {
     name: 'file-manager',
-    owner: 'storage-team',
+    owner: {
+      name: 'storage-team',
+      profilePicture: 'https://github.com/storage-team.png',
+      link: 'https://github.com/orgs/company/teams/storage-team',
+    },
     type: 'website',
     description: 'Web interface for managing files and storage resources.',
     tags: ['files', 'storage', 'management'],
   },
   {
     name: 'search-index',
-    owner: 'search-team',
+    owner: {
+      name: 'search-team',
+      profilePicture: 'https://github.com/search-team.png',
+      link: 'https://github.com/orgs/company/teams/search-team',
+    },
     type: 'service',
     description: 'Service for maintaining and updating search indices.',
     tags: ['search', 'indexing'],
   },
   {
     name: 'mobile-authentication',
-    owner: 'mobile-team',
+    owner: {
+      name: 'mobile-team',
+      profilePicture: 'https://github.com/mobile-team.png',
+      link: 'https://github.com/orgs/company/teams/mobile-team',
+    },
     type: 'service',
     description:
       'Authentication service specifically designed for mobile applications.',
@@ -468,7 +696,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'system-monitor',
-    owner: 'devops-team',
+    owner: {
+      name: 'devops-team',
+      profilePicture: 'https://github.com/devops-team.png',
+      link: 'https://github.com/orgs/company/teams/devops-team',
+    },
     type: 'service',
     description:
       'Monitoring service for system health and performance metrics.',
@@ -476,21 +708,33 @@ export const data: DataProps[] = [
   },
   {
     name: 'media-processor',
-    owner: 'media-team',
+    owner: {
+      name: 'media-team',
+      profilePicture: 'https://github.com/media-team.png',
+      link: 'https://github.com/orgs/company/teams/media-team',
+    },
     type: 'service',
     description: 'Service for processing and optimizing media files.',
     tags: ['media', 'processing', 'optimization'],
   },
   {
     name: 'user-management',
-    owner: 'security-team',
+    owner: {
+      name: 'security-team',
+      profilePicture: 'https://github.com/security-team.png',
+      link: 'https://github.com/orgs/company/teams/security-team',
+    },
     type: 'service',
     description: 'Service for managing user accounts and permissions.',
     tags: ['user', 'management', 'security'],
   },
   {
     name: 'data-transformer',
-    owner: 'data-team',
+    owner: {
+      name: 'data-team',
+      profilePicture: 'https://github.com/data-team.png',
+      link: 'https://github.com/orgs/company/teams/data-team',
+    },
     type: 'service',
     description:
       'Service for transforming data between different formats and structures.',
@@ -498,7 +742,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'admin-dashboard',
-    owner: 'platform-team',
+    owner: {
+      name: 'platform-team',
+      profilePicture: 'https://github.com/platform-team.png',
+      link: 'https://github.com/orgs/company/teams/platform-team',
+    },
     type: 'website',
     description:
       'Administrative interface for system management and monitoring.',
@@ -506,63 +754,99 @@ export const data: DataProps[] = [
   },
   {
     name: 'test-automation',
-    owner: 'qa-team',
+    owner: {
+      name: 'qa-team',
+      profilePicture: 'https://github.com/qa-team.png',
+      link: 'https://github.com/orgs/company/teams/qa-team',
+    },
     type: 'other',
     description: 'Tools and frameworks for automating testing processes.',
     tags: ['testing', 'automation', 'qa'],
   },
   {
     name: 'event-bus',
-    owner: 'platform-team',
+    owner: {
+      name: 'platform-team',
+      profilePicture: 'https://github.com/platform-team.png',
+      link: 'https://github.com/orgs/company/teams/platform-team',
+    },
     type: 'service',
     description: 'Event-driven communication system between services.',
     tags: ['events', 'messaging', 'communication'],
   },
   {
     name: 'invoice-generator',
-    owner: 'finance-team',
+    owner: {
+      name: 'finance-team',
+      profilePicture: 'https://github.com/finance-team.png',
+      link: 'https://github.com/orgs/company/teams/finance-team',
+    },
     type: 'service',
     description: 'Service for generating and managing invoices.',
     tags: ['invoices', 'finance'],
   },
   {
     name: 'document-editor',
-    owner: 'frontend-team',
+    owner: {
+      name: 'frontend-team',
+      profilePicture: 'https://github.com/frontend-team.png',
+      link: 'https://github.com/orgs/company/teams/frontend-team',
+    },
     type: 'website',
     description: 'Web-based document editing interface.',
     tags: ['documents', 'editor'],
   },
   {
     name: 'service-discovery',
-    owner: 'devops-team',
+    owner: {
+      name: 'devops-team',
+      profilePicture: 'https://github.com/devops-team.png',
+      link: 'https://github.com/orgs/company/teams/devops-team',
+    },
     type: 'service',
     description: 'Service for discovering and registering available services.',
     tags: ['discovery', 'services', 'devops'],
   },
   {
     name: 'security-monitor',
-    owner: 'security-team',
+    owner: {
+      name: 'security-team',
+      profilePicture: 'https://github.com/security-team.png',
+      link: 'https://github.com/orgs/company/teams/security-team',
+    },
     type: 'service',
     description: 'Service for monitoring security events and threats.',
     tags: ['security', 'monitoring', 'threats'],
   },
   {
     name: 'user-preferences',
-    owner: 'frontend-team',
+    owner: {
+      name: 'frontend-team',
+      profilePicture: 'https://github.com/frontend-team.png',
+      link: 'https://github.com/orgs/company/teams/frontend-team',
+    },
     type: 'website',
     description: 'Interface for managing user preferences and settings.',
     tags: ['user', 'preferences'],
   },
   {
     name: 'data-validator',
-    owner: 'data-team',
+    owner: {
+      name: 'data-team',
+      profilePicture: 'https://github.com/data-team.png',
+      link: 'https://github.com/orgs/company/teams/data-team',
+    },
     type: 'service',
     description: 'Service for validating data integrity and format.',
     tags: ['data', 'validation'],
   },
   {
     name: 'infrastructure-automation',
-    owner: 'devops-team',
+    owner: {
+      name: 'devops-team',
+      profilePicture: 'https://github.com/devops-team.png',
+      link: 'https://github.com/orgs/company/teams/devops-team',
+    },
     type: 'other',
     description:
       'Tools for automating infrastructure provisioning and management.',
@@ -570,7 +854,11 @@ export const data: DataProps[] = [
   },
   {
     name: 'notification-dispatcher',
-    owner: 'communication-team',
+    owner: {
+      name: 'communication-team',
+      profilePicture: 'https://github.com/communication-team.png',
+      link: 'https://github.com/orgs/company/teams/communication-team',
+    },
     type: 'service',
     description:
       'Service for dispatching notifications to appropriate channels.',
@@ -578,112 +866,176 @@ export const data: DataProps[] = [
   },
   {
     name: 'analytics-collector',
-    owner: 'analytics-team',
+    owner: {
+      name: 'analytics-team',
+      profilePicture: 'https://github.com/analytics-team.png',
+      link: 'https://github.com/orgs/company/teams/analytics-team',
+    },
     type: 'service',
     description: 'Service for collecting and aggregating analytics data.',
     tags: ['analytics', 'collection', 'aggregation'],
   },
   {
     name: 'file-processor',
-    owner: 'storage-team',
+    owner: {
+      name: 'storage-team',
+      profilePicture: 'https://github.com/storage-team.png',
+      link: 'https://github.com/orgs/company/teams/storage-team',
+    },
     type: 'service',
     description: 'Service for processing and managing files.',
     tags: ['files', 'processing'],
   },
   {
     name: 'search-analyzer',
-    owner: 'search-team',
+    owner: {
+      name: 'search-team',
+      profilePicture: 'https://github.com/search-team.png',
+      link: 'https://github.com/orgs/company/teams/search-team',
+    },
     type: 'service',
     description: 'Service for analyzing search queries and results.',
     tags: ['search', 'analysis'],
   },
   {
     name: 'mobile-notifications',
-    owner: 'mobile-team',
+    owner: {
+      name: 'mobile-team',
+      profilePicture: 'https://github.com/mobile-team.png',
+      link: 'https://github.com/orgs/company/teams/mobile-team',
+    },
     type: 'service',
     description: 'Service for sending notifications to mobile devices.',
     tags: ['mobile', 'notifications'],
   },
   {
     name: 'system-alerts',
-    owner: 'devops-team',
+    owner: {
+      name: 'devops-team',
+      profilePicture: 'https://github.com/devops-team.png',
+      link: 'https://github.com/orgs/company/teams/devops-team',
+    },
     type: 'service',
     description: 'Service for managing and dispatching system alerts.',
     tags: ['alerts', 'system', 'monitoring'],
   },
   {
     name: 'media-encoder',
-    owner: 'media-team',
+    owner: {
+      name: 'media-team',
+      profilePicture: 'https://github.com/media-team.png',
+      link: 'https://github.com/orgs/company/teams/media-team',
+    },
     type: 'service',
     description: 'Service for encoding and processing media files.',
     tags: ['media', 'encoding'],
   },
   {
     name: 'user-authorization',
-    owner: 'security-team',
+    owner: {
+      name: 'security-team',
+      profilePicture: 'https://github.com/security-team.png',
+      link: 'https://github.com/orgs/company/teams/security-team',
+    },
     type: 'service',
     description: 'Service for managing user permissions and access control.',
     tags: ['authorization', 'security', 'user'],
   },
   {
     name: 'data-aggregator',
-    owner: 'data-team',
+    owner: {
+      name: 'data-team',
+      profilePicture: 'https://github.com/data-team.png',
+      link: 'https://github.com/orgs/company/teams/data-team',
+    },
     type: 'service',
     description: 'Service for aggregating data from multiple sources.',
     tags: ['data', 'aggregation'],
   },
   {
     name: 'admin-authentication',
-    owner: 'platform-team',
+    owner: {
+      name: 'platform-team',
+      profilePicture: 'https://github.com/platform-team.png',
+      link: 'https://github.com/orgs/company/teams/platform-team',
+    },
     type: 'service',
     description: 'Authentication service for administrative access.',
     tags: ['admin', 'authentication', 'security'],
   },
   {
     name: 'test-coverage',
-    owner: 'qa-team',
+    owner: {
+      name: 'qa-team',
+      profilePicture: 'https://github.com/qa-team.png',
+      link: 'https://github.com/orgs/company/teams/qa-team',
+    },
     type: 'other',
     description: 'Tools for measuring and reporting test coverage.',
     tags: ['testing', 'coverage', 'qa'],
   },
   {
     name: 'event-processor',
-    owner: 'platform-team',
+    owner: {
+      name: 'platform-team',
+      profilePicture: 'https://github.com/platform-team.png',
+      link: 'https://github.com/orgs/company/teams/platform-team',
+    },
     type: 'service',
     description: 'Service for processing and handling events.',
     tags: ['events', 'processing'],
   },
   {
     name: 'payment-validator',
-    owner: 'finance-team',
+    owner: {
+      name: 'finance-team',
+      profilePicture: 'https://github.com/finance-team.png',
+      link: 'https://github.com/orgs/company/teams/finance-team',
+    },
     type: 'service',
     description: 'Service for validating payment transactions.',
     tags: ['payments', 'validation', 'finance'],
   },
   {
     name: 'document-converter',
-    owner: 'frontend-team',
+    owner: {
+      name: 'frontend-team',
+      profilePicture: 'https://github.com/frontend-team.png',
+      link: 'https://github.com/orgs/company/teams/frontend-team',
+    },
     type: 'service',
     description: 'Service for converting documents between different formats.',
     tags: ['documents', 'conversion'],
   },
   {
     name: 'service-health',
-    owner: 'devops-team',
+    owner: {
+      name: 'devops-team',
+      profilePicture: 'https://github.com/devops-team.png',
+      link: 'https://github.com/orgs/company/teams/devops-team',
+    },
     type: 'service',
     description: 'Service for monitoring and reporting service health status.',
     tags: ['health', 'monitoring', 'services'],
   },
   {
     name: 'security-logger',
-    owner: 'security-team',
+    owner: {
+      name: 'security-team',
+      profilePicture: 'https://github.com/security-team.png',
+      link: 'https://github.com/orgs/company/teams/security-team',
+    },
     type: 'service',
     description: 'Service for logging security-related events and activities.',
     tags: ['security', 'logging'],
   },
   {
     name: 'user-analytics',
-    owner: 'frontend-team',
+    owner: {
+      name: 'frontend-team',
+      profilePicture: 'https://github.com/frontend-team.png',
+      link: 'https://github.com/orgs/company/teams/frontend-team',
+    },
     type: 'website',
     description:
       'Analytics dashboard for user behavior and engagement metrics.',
@@ -691,126 +1043,198 @@ export const data: DataProps[] = [
   },
   {
     name: 'data-cleaner',
-    owner: 'data-team',
+    owner: {
+      name: 'data-team',
+      profilePicture: 'https://github.com/data-team.png',
+      link: 'https://github.com/orgs/company/teams/data-team',
+    },
     type: 'service',
     description: 'Service for cleaning and standardizing data.',
     tags: ['data', 'cleaning'],
   },
   {
     name: 'infrastructure-deployer',
-    owner: 'devops-team',
+    owner: {
+      name: 'devops-team',
+      profilePicture: 'https://github.com/devops-team.png',
+      link: 'https://github.com/orgs/company/teams/devops-team',
+    },
     type: 'other',
     description: 'Tools for deploying and managing infrastructure resources.',
     tags: ['infrastructure', 'deployment', 'devops'],
   },
   {
     name: 'notification-queue',
-    owner: 'communication-team',
+    owner: {
+      name: 'communication-team',
+      profilePicture: 'https://github.com/communication-team.png',
+      link: 'https://github.com/orgs/company/teams/communication-team',
+    },
     type: 'service',
     description: 'Queue system for managing notification delivery.',
     tags: ['notifications', 'queue'],
   },
   {
     name: 'analytics-exporter',
-    owner: 'analytics-team',
+    owner: {
+      name: 'analytics-team',
+      profilePicture: 'https://github.com/analytics-team.png',
+      link: 'https://github.com/orgs/company/teams/analytics-team',
+    },
     type: 'service',
     description: 'Service for exporting analytics data in various formats.',
     tags: ['analytics', 'export'],
   },
   {
     name: 'file-validator',
-    owner: 'storage-team',
+    owner: {
+      name: 'storage-team',
+      profilePicture: 'https://github.com/storage-team.png',
+      link: 'https://github.com/orgs/company/teams/storage-team',
+    },
     type: 'service',
     description: 'Service for validating file integrity and format.',
     tags: ['files', 'validation'],
   },
   {
     name: 'search-optimizer',
-    owner: 'search-team',
+    owner: {
+      name: 'search-team',
+      profilePicture: 'https://github.com/search-team.png',
+      link: 'https://github.com/orgs/company/teams/search-team',
+    },
     type: 'service',
     description: 'Service for optimizing search performance and relevance.',
     tags: ['search', 'optimization'],
   },
   {
     name: 'mobile-analytics',
-    owner: 'mobile-team',
+    owner: {
+      name: 'mobile-team',
+      profilePicture: 'https://github.com/mobile-team.png',
+      link: 'https://github.com/orgs/company/teams/mobile-team',
+    },
     type: 'service',
     description: 'Analytics service specifically for mobile applications.',
     tags: ['mobile', 'analytics'],
   },
   {
     name: 'system-logger',
-    owner: 'devops-team',
+    owner: {
+      name: 'devops-team',
+      profilePicture: 'https://github.com/devops-team.png',
+      link: 'https://github.com/orgs/company/teams/devops-team',
+    },
     type: 'service',
     description: 'Service for logging system events and activities.',
     tags: ['logging', 'system'],
   },
   {
     name: 'media-validator',
-    owner: 'media-team',
+    owner: {
+      name: 'media-team',
+      profilePicture: 'https://github.com/media-team.png',
+      link: 'https://github.com/orgs/company/teams/media-team',
+    },
     type: 'service',
     description: 'Service for validating media files and formats.',
     tags: ['media', 'validation'],
   },
   {
     name: 'user-audit',
-    owner: 'security-team',
+    owner: {
+      name: 'security-team',
+      profilePicture: 'https://github.com/security-team.png',
+      link: 'https://github.com/orgs/company/teams/security-team',
+    },
     type: 'service',
     description: 'Service for auditing user activities and access.',
     tags: ['audit', 'user', 'security'],
   },
   {
     name: 'data-normalizer',
-    owner: 'data-team',
+    owner: {
+      name: 'data-team',
+      profilePicture: 'https://github.com/data-team.png',
+      link: 'https://github.com/orgs/company/teams/data-team',
+    },
     type: 'service',
     description: 'Service for normalizing data formats and structures.',
     tags: ['data', 'normalization'],
   },
   {
     name: 'admin-authorization',
-    owner: 'platform-team',
+    owner: {
+      name: 'platform-team',
+      profilePicture: 'https://github.com/platform-team.png',
+      link: 'https://github.com/orgs/company/teams/platform-team',
+    },
     type: 'service',
     description: 'Authorization service for administrative functions.',
     tags: ['admin', 'authorization', 'security'],
   },
   {
     name: 'test-reporting',
-    owner: 'qa-team',
+    owner: {
+      name: 'qa-team',
+      profilePicture: 'https://github.com/qa-team.png',
+      link: 'https://github.com/orgs/company/teams/qa-team',
+    },
     type: 'other',
     description: 'Tools for generating and managing test reports.',
     tags: ['testing', 'reporting', 'qa'],
   },
   {
     name: 'event-aggregator',
-    owner: 'platform-team',
+    owner: {
+      name: 'platform-team',
+      profilePicture: 'https://github.com/platform-team.png',
+      link: 'https://github.com/orgs/company/teams/platform-team',
+    },
     type: 'service',
     description: 'Service for aggregating and processing events.',
     tags: ['events', 'aggregation'],
   },
   {
     name: 'payment-reconciler',
-    owner: 'finance-team',
+    owner: {
+      name: 'finance-team',
+      profilePicture: 'https://github.com/finance-team.png',
+      link: 'https://github.com/orgs/company/teams/finance-team',
+    },
     type: 'service',
     description: 'Service for reconciling payment transactions.',
     tags: ['payments', 'reconciliation', 'finance'],
   },
   {
     name: 'document-validator',
-    owner: 'frontend-team',
+    owner: {
+      name: 'frontend-team',
+      profilePicture: 'https://github.com/frontend-team.png',
+      link: 'https://github.com/orgs/company/teams/frontend-team',
+    },
     type: 'service',
     description: 'Service for validating document formats and content.',
     tags: ['documents', 'validation'],
   },
   {
     name: 'service-monitor',
-    owner: 'devops-team',
+    owner: {
+      name: 'devops-team',
+      profilePicture: 'https://github.com/devops-team.png',
+      link: 'https://github.com/orgs/company/teams/devops-team',
+    },
     type: 'service',
     description: 'Service for monitoring service health and performance.',
     tags: ['monitoring', 'services', 'health'],
   },
   {
     name: 'security-validator',
-    owner: 'security-team',
+    owner: {
+      name: 'security-team',
+      profilePicture: 'https://github.com/security-team.png',
+      link: 'https://github.com/orgs/company/teams/security-team',
+    },
     type: 'service',
     description: 'Service for validating security configurations and policies.',
     tags: ['security', 'validation'],

@@ -57,9 +57,17 @@ export const columns: ColumnDef<DataProps>[] = [
   {
     accessorKey: 'owner',
     header: 'Owner',
-    cell: ({ row }) => (
-      <DataTable.TableCellProfile name={row.getValue('owner')} />
-    ),
+    cell: ({ row }) => {
+      const owner = row.getValue('owner') as DataProps['owner'];
+
+      return (
+        <DataTable.TableCellProfile
+          name={owner.name}
+          src={owner.profilePicture}
+          to={owner.link}
+        />
+      );
+    },
   },
   {
     accessorKey: 'type',
