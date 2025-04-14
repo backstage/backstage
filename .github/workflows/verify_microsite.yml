@@ -96,7 +96,6 @@ jobs:
 
       - name: build API reference (beta)
         run: yarn backstage-repo-tools package-docs
-        continue-on-error: true
 
       - name: upload API reference (beta)
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -178,7 +177,6 @@ jobs:
 
       - name: build API reference (beta)
         run: yarn backstage-repo-tools package-docs
-        continue-on-error: true
 
       - name: upload API reference (beta)
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
