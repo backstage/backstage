@@ -17,7 +17,7 @@ If you need help, just jump into our [Discord chatroom](https://discord.gg/backs
 - [Accessibility](#accessibility)
 - [Get Started!](#get-started)
 - [Coding Guidelines](#coding-guidelines)
-- [Contributing Docs](#contributing-docs)
+- [Documentation Guidelines](#documentation-guidelines)
 - [Package Scripts](#package-scripts)
 - [Local configuration](#local-configuration)
 - [Creating Changesets](#creating-changesets)
@@ -118,7 +118,7 @@ If there are any updates in `markdown` file please make sure to run `yarn run li
 
 The Backstage development environment does not require any specific editor, but it is intended to be used with one that has built-in linting and type-checking. The development server does not include any checks by default, but they can be enabled using the `--check` flag. Note that using the flag may consume more system resources and slow things down.
 
-## Contributing Docs
+## Documentation Guidelines
 
 Contributing to the docs is one of the best ways to start getting involved with Backstage. The documentation site is often the first stop for anyone using or exploring Backstage, so even small improvements can have a big impact!
 
