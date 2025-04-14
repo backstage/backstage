@@ -1,8 +1,4 @@
-import {
-  classNamePropDefs,
-  stylePropDefs,
-  renderPropDefs,
-} from '@/utils/propDefs';
+import { classNamePropDefs, stylePropDefs } from '@/utils/propDefs';
 import type { PropDef } from '@/utils/propDefs';
 
 export const linkPropDefs: Record<string, PropDef> = {
