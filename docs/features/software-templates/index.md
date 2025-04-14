@@ -11,11 +11,7 @@ Components inside Backstage. By default, it has the ability to load skeletons of
 code, template in some variables, and then publish the template to some
 locations like GitHub or GitLab.
 
-<video width="100%" height="fit-content" controls>
-  <source src="/video/software-templates.mp4" type="video/mp4" />
-</video>
-
-## Getting Started
+## Prerequisites
 
 :::note Note
 
@@ -28,9 +24,9 @@ It's important to append to the existing `NODE_OPTIONS` value, if it's already s
 
 :::
 
-These docs assume you have already gone over the [Backstage Getting Started](../../getting-started) section.
+These docs assume you have already gone over the [Backstage Getting Started](../../getting-started) section and you are able to run Backstage locally or it has been deployed somewhere.
 
-## The Templates page
+## Getting Started
 
 Software Templates you have imported into Backstage can be found under `/create`.
 
@@ -138,4 +134,4 @@ In the event of a failed template execution, the "Start Over" option can be used
 
 ## Want to see it in action?
 
-The [Backstage Demo Site](https://demo.backstage.io/) has a template you are able to run, which is where the screenshots in this document were taken from!
+The [Backstage Demo Site](https://demo.backstage.io/create) has a template you are able to run, which is where the screenshots in this document were taken from!
