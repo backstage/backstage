@@ -5942,11 +5942,11 @@ __metadata:
   linkType: hard
 
 "docusaurus-pushfeedback@npm:^1.0.0":
-  version: 1.0.1
-  resolution: "docusaurus-pushfeedback@npm:1.0.1"
+  version: 1.0.3
+  resolution: "docusaurus-pushfeedback@npm:1.0.3"
   peerDependencies:
     "@docusaurus/core": 3.x
-  checksum: 10/5160e33eded0c4bec51fba986561c33b69eee46799d69051188990d66353e43e49d826f5e44c9f73a67d0df36aa03ee7a3679b6d0cd6b0d9fed5f0f78fe4a1a3
+  checksum: 10/ee80ae0c1fc079b2c317cab86d83ba50cce18938a6ce0ac647aad25dc68fc0ad659e55c11e93d0e7c23270c503c3cb300111dfbdd04785ef7aaf6fb123b57eae
   languageName: node
   linkType: hard
 
