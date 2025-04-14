@@ -82,6 +82,8 @@ A list of actions in a dropdown, enhanced with keyboard navigation.
 
 ### Menu.Root
 
+Groups all parts of the menu. Doesn't render its own HTML element.
+
 <PropsTable data={menuRootPropDefs} />
 
 ### Menu.Trigger
@@ -95,9 +97,13 @@ using the `render` prop to render a custom trigger.
 
 ### Menu.Positioner
 
+Positions the menu popup against the trigger. Renders a `<div>` element.
+
 <PropsTable data={menuPositionerPropDefs} />
 
 ### Menu.Item
+
+An individual interactive item in the menu. Renders a `<div>` element.
 
 <PropsTable data={menuItemPropDefs} />
 
