@@ -48,10 +48,10 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
   return (
     <div className={clsx('canon-Select', className)} style={style} ref={ref}>
       {label && (
-        <label className="canon-Select--label" htmlFor={selectId}>
+        <label className="canon-SelectLabel" htmlFor={selectId}>
           {label}
           {required && (
-            <span aria-hidden="true" className="canon-Select--required">
+            <span aria-hidden="true" className="canon-SelectRequired">
               (Required)
             </span>
           )}
@@ -60,35 +60,33 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
       <SelectPrimitive.Root {...rest}>
         <SelectPrimitive.Trigger
           id={selectId}
-          className={clsx('canon-Select--trigger', {
-            'canon-Select--trigger-size-small': responsiveSize === 'small',
-            'canon-Select--trigger-size-medium': responsiveSize === 'medium',
-          })}
+          className="canon-SelectTrigger"
+          data-size={responsiveSize}
           data-invalid={error}
         >
           <SelectPrimitive.Value
-            className="canon-Select--value"
+            className="canon-SelectValue"
             placeholder={placeholder}
           />
-          <SelectPrimitive.Icon className="canon-Select--icon">
+          <SelectPrimitive.Icon className="canon-SelectIcon">
             <Icon name="chevron-down" />
           </SelectPrimitive.Icon>
         </SelectPrimitive.Trigger>
         <SelectPrimitive.Portal>
           <SelectPrimitive.Backdrop />
           <SelectPrimitive.Positioner>
-            <SelectPrimitive.Popup className="canon-Select--popup">
+            <SelectPrimitive.Popup className="canon-SelectPopup">
               {options?.map(option => (
                 <SelectPrimitive.Item
                   key={option.value}
                   value={option.value}
                   disabled={option.disabled}
-                  className="canon-Select--item"
+                  className="canon-SelectItem"
                 >
-                  <SelectPrimitive.ItemIndicator className="canon-Select--item-indicator">
+                  <SelectPrimitive.ItemIndicator className="canon-SelectItemIndicator">
                     <Icon name="check" />
                   </SelectPrimitive.ItemIndicator>
-                  <SelectPrimitive.ItemText className="canon-Select--item-text">
+                  <SelectPrimitive.ItemText className="canon-SelectItemText">
                     {option.label}
                   </SelectPrimitive.ItemText>
                 </SelectPrimitive.Item>
@@ -98,12 +96,12 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
         </SelectPrimitive.Portal>
       </SelectPrimitive.Root>
       {description && (
-        <p className="canon-Select--description" id={descriptionId}>
+        <p className="canon-SelectDescription" id={descriptionId}>
           {description}
         </p>
       )}
       {error && (
-        <p className="canon-Select--error" id={errorId} role="alert">
+        <p className="canon-SelectError" id={errorId} role="alert">
           {error}
         </p>
       )}
