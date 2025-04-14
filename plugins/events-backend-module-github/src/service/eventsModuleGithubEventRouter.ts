@@ -25,7 +25,7 @@ import { GithubEventRouter } from '../router/GithubEventRouter';
  *
  * @alpha
  */
-export const eventsModuleGithubEventRouter = createBackendModule({
+export default createBackendModule({
   pluginId: 'events',
   moduleId: 'github-event-router',
   register(env) {

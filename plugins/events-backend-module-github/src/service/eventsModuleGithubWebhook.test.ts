@@ -21,7 +21,7 @@ import {
   RequestDetails,
 } from '@backstage/plugin-events-node';
 import { sign } from '@octokit/webhooks-methods';
-import { eventsModuleGithubWebhook } from './eventsModuleGithubWebhook';
+import eventsModuleGithubWebhook from './eventsModuleGithubWebhook';
 
 describe('eventsModuleGithubWebhook', () => {
   const secret = 'valid-secret';

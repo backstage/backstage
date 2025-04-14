@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
-export { eventsModuleGitlabEventRouter } from './service/eventsModuleGitlabEventRouter';
-export { eventsModuleGitlabWebhook } from './service/eventsModuleGitlabWebhook';
+import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+
+export default createBackendFeatureLoader({
+  loader() {
+    return [
+      import('./service/eventsModuleGitlabEventRouter'),
+      import('./service/eventsModuleGitlabWebhook'),
+    ];
+  },
+});

@@ -30,7 +30,7 @@ import { createGitlabTokenValidator } from '../http/createGitlabTokenValidator';
  *
  * @alpha
  */
-export const eventsModuleGitlabWebhook = createBackendModule({
+export default createBackendModule({
   pluginId: 'events',
   moduleId: 'gitlab-webhook',
   register(env) {
