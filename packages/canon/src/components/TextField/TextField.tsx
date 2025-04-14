@@ -50,10 +50,10 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
         ref={ref}
       >
         {label && (
-          <label className="canon-TextField--label" htmlFor={inputId}>
+          <label className="canon-TextFieldLabel" htmlFor={inputId}>
             {label}
             {required && (
-              <span aria-hidden="true" className="canon-TextField--required">
+              <span aria-hidden="true" className="canon-TextFieldRequired">
                 (Required)
               </span>
             )}
@@ -61,7 +61,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
         )}
         <Input
           id={inputId}
-          className="canon-TextField--input"
+          className="canon-TextFieldInput"
           data-size={responsiveSize}
           aria-labelledby={label ? inputId : undefined}
           aria-describedby={clsx({
@@ -73,12 +73,12 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           {...rest}
         />
         {description && (
-          <p className="canon-TextField--description" id={descriptionId}>
+          <p className="canon-TextFieldDescription" id={descriptionId}>
             {description}
           </p>
         )}
         {error && (
-          <p className="canon-TextField--error" id={errorId} role="alert">
+          <p className="canon-TextFieldError" id={errorId} role="alert">
             {error}
           </p>
         )}

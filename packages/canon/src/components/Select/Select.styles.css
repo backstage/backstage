@@ -21,14 +21,14 @@
   width: 100%;
 }
 
-.canon-Select--label {
+.canon-SelectLabel {
   font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-primary);
   margin-bottom: var(--canon-space-1_5);
 }
 
-.canon-Select--description {
+.canon-SelectDescription {
   font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-secondary);
@@ -36,7 +36,7 @@
   padding-top: var(--canon-space-1_5);
 }
 
-.canon-Select--error {
+.canon-SelectError {
   font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-danger);
@@ -44,7 +44,7 @@
   padding-top: var(--canon-space-1_5);
 }
 
-.canon-Select--trigger {
+.canon-SelectTrigger {
   box-sizing: border-box;
   border-radius: var(--canon-radius-3);
   border: 1px solid var(--canon-border);
@@ -63,41 +63,41 @@
   gap: var(--canon-space-2);
 }
 
-.canon-Select--trigger::placeholder {
+.canon-SelectTrigger::placeholder {
   color: var(--canon-fg-secondary);
 }
 
-.canon-Select--trigger:hover {
+.canon-SelectTrigger:hover {
   border-color: var(--canon-border-hover);
 }
 
-.canon-Select--trigger:focus-visible {
+.canon-SelectTrigger:focus-visible {
   border-color: var(--canon-border-pressed);
   outline: 0;
 }
 
-.canon-Select--trigger[data-invalid] {
+.canon-SelectTrigger[data-invalid] {
   border-color: var(--canon-fg-danger);
 }
-.canon-Select--trigger[data-invalid]:hover {
+.canon-SelectTrigger[data-invalid]:hover {
   border-width: 2px;
 }
 
-.canon-Select--trigger[data-invalid]:focus-visible {
+.canon-SelectTrigger[data-invalid]:focus-visible {
   border-width: 2px;
 }
 
-.canon-Select--trigger[data-disabled] {
+.canon-SelectTrigger[data-disabled] {
   cursor: not-allowed;
   border-color: var(--canon-border-disabled);
   color: var(--canon-fg-disabled);
 }
 
-.canon-Select--trigger[data-size='small'] {
+.canon-SelectTrigger[data-size='small'] {
   height: 2rem;
 }
 
-.canon-Select--trigger[data-size='medium'] {
+.canon-SelectTrigger[data-size='medium'] {
   height: 3rem;
 }
 
@@ -106,11 +106,11 @@
   transition: transform 0.2s ease;
 }
 
-.canon-Select--trigger[data-popup-open] .canon-SelectIcon {
+.canon-SelectTrigger[data-popup-open] .canon-SelectIcon {
   transform: rotate(180deg);
 }
 
-.canon-Select--popup {
+.canon-SelectPopup {
   box-sizing: border-box;
   max-height: var(--available-height);
   overflow-y: auto;
@@ -125,13 +125,13 @@
   transition: transform 150ms, opacity 150ms;
 }
 
-.canon-Select--popup[data-starting-style],
-.canon-Select--popup[data-ending-style] {
+.canon-SelectPopup[data-starting-style],
+.canon-SelectPopup[data-ending-style] {
   opacity: 0;
   transform: scale(0.9);
 }
 
-.canon-Select--item {
+.canon-SelectItem {
   position: relative;
   width: var(--anchor-width);
   display: grid;
@@ -149,13 +149,13 @@
   outline: none;
 }
 
-.canon-Select--item[data-highlighted] {
+.canon-SelectItem[data-highlighted] {
   z-index: 0;
   position: relative;
   color: var(--canon-fg-primary);
 }
 
-.canon-Select--item[data-highlighted]::before {
+.canon-SelectItem[data-highlighted]::before {
   content: '';
   z-index: -1;
   position: absolute;
@@ -165,37 +165,37 @@
   background-color: var(--canon-bg-tint-hover);
 }
 
-.canon-Select--item[data-disabled] {
+.canon-SelectItem[data-disabled] {
   cursor: not-allowed;
   color: var(--canon-fg-disabled);
 }
 
-.canon-Select--item-indicator {
+.canon-SelectItemIndicator {
   grid-area: icon;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.canon-Select--item-text {
+.canon-SelectItemText {
   flex: 1;
   grid-area: text;
 }
 
-.canon-Select--required {
+.canon-SelectRequired {
   color: var(--canon-fg-secondary);
   font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
   margin-left: var(--canon-space-1);
 }
 
-.canon-Select--icon {
+.canon-SelectIcon {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.canon-Select--value {
+.canon-SelectValue {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;

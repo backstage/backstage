@@ -45,7 +45,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         style={style}
         {...rest}
       >
-        <Icon name={icon} className="canon-IconButton--icon" />
+        <Icon name={icon} className="canon-IconButtonIcon" />
       </button>
     );
   },

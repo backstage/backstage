@@ -50,9 +50,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         style={style}
         {...rest}
       >
-        {iconStart && <Icon name={iconStart} className="canon-Button--icon" />}
+        {iconStart && <Icon name={iconStart} className="canon-ButtonIcon" />}
         {children}
-        {iconEnd && <Icon name={iconEnd} className="canon-Button--icon" />}
+        {iconEnd && <Icon name={iconEnd} className="canon-ButtonIcon" />}
       </button>
     );
   },
