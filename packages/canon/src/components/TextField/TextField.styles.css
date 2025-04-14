@@ -21,14 +21,14 @@
   width: 100%;
 }
 
-.canon-TextField--label {
+.canon-TextFieldLabel {
   font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-primary);
   margin-bottom: var(--canon-space-1_5);
 }
 
-.canon-TextField--description {
+.canon-TextFieldDescription {
   font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-secondary);
@@ -36,7 +36,7 @@
   padding-top: var(--canon-space-1_5);
 }
 
-.canon-TextField--error {
+.canon-TextFieldError {
   font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-danger);
@@ -44,7 +44,7 @@
   padding-top: var(--canon-space-1_5);
 }
 
-.canon-TextField--input {
+.canon-TextFieldInput {
   border-radius: var(--canon-radius-3);
   border: 1px solid var(--canon-border);
   padding: 0 var(--canon-space-4);
@@ -57,39 +57,39 @@
   width: 100%;
 }
 
-.canon-TextField--input::placeholder {
+.canon-TextFieldInput::placeholder {
   color: var(--canon-fg-secondary);
 }
 
-.canon-TextField--input:hover {
+.canon-TextFieldInput:hover {
   border-color: var(--canon-border-hover);
 }
 
-.canon-TextField--input:focus-visible {
+.canon-TextFieldInput:focus-visible {
   outline-color: var(--canon-border-pressed);
   outline-width: 0px;
   border-color: var(--canon-border-pressed);
 }
 
-.canon-TextField--input[data-invalid] {
+.canon-TextFieldInput[data-invalid] {
   border-color: var(--canon-fg-danger);
 }
 
-.canon-TextField--input[data-disabled] {
+.canon-TextFieldInput[data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
   border: 1px solid var(--canon-border-disabled);
 }
 
-.canon-TextField--input-size-small {
+.canon-TextFieldInput[data-size='small'] {
   height: 2rem;
 }
 
-.canon-TextField--input-size-medium {
+.canon-TextFieldInput[data-size='medium'] {
   height: 2.5rem;
 }
 
-.canon-TextField--required {
+.canon-TextFieldRequired {
   color: var(--canon-fg-secondary);
   font-size: var(--canon-font-size-2);
   font-weight: var(--canon-font-weight-regular);
