@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-export * from './Table';
-export * from './TableCellText/types';
-export * from './TableCellLink/types';
+export * from './DataTable';
+export * from './Root/types';
+export * from './Pagination/types';
+export * from './Table/types';

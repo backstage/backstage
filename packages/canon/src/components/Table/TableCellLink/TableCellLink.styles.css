@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-export * from './Table';
-export * from './TableCellText/types';
-export * from './TableCellLink/types';
+.canon-TableCellLink {
+  display: flex;
+  flex-direction: column;
+  gap: var(--canon-space-0_5);
+}

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-export * from './Table';
-export * from './TableCellText/types';
-export * from './TableCellLink/types';
+/** @public */
+export interface TableCellTextProps
+  extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  title: string;
+  description?: string;
+}

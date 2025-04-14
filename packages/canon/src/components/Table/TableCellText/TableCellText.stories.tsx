@@ -14,6 +14,26 @@
  * limitations under the License.
  */
 
-export * from './Table';
-export * from './TableCellText/types';
-export * from './TableCellLink/types';
+import type { Meta, StoryObj } from '@storybook/react';
+import { TableCellText } from './TableCellText';
+
+const meta = {
+  title: 'Components/Table/TableCellText',
+  component: TableCellText,
+} satisfies Meta<typeof TableCellText>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {
+    title: 'Hello world',
+  },
+};
+
+export const WithDescription: Story = {
+  args: {
+    ...Default.args,
+    description: 'This is a description',
+  },
+};

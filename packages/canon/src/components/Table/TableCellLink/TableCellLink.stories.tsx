@@ -14,6 +14,27 @@
  * limitations under the License.
  */
 
-export * from './Table';
-export * from './TableCellText/types';
-export * from './TableCellLink/types';
+import type { Meta, StoryObj } from '@storybook/react';
+import { TableCellLink } from './TableCellLink';
+
+const meta = {
+  title: 'Components/Table/TableCellLink',
+  component: TableCellLink,
+} satisfies Meta<typeof TableCellLink>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {
+    title: 'I am a link',
+    href: 'https://canon.backstage.io',
+  },
+};
+
+export const WithDescription: Story = {
+  args: {
+    ...Default.args,
+    description: 'This is a description',
+  },
+};
