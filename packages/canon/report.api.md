@@ -1222,6 +1222,13 @@ export const Tooltip: {
 };
 
 // @public (undocumented)
+export const useBreakpoint: () => {
+  breakpoint: Breakpoint;
+  up: (key: Breakpoint) => boolean;
+  down: (key: Breakpoint) => boolean;
+};
+
+// @public (undocumented)
 export const useIcons: () => IconContextProps;
 
 // @public (undocumented)
