@@ -32,6 +32,7 @@ export * from './components/Text';
 export * from './components/Heading';
 
 // UI components
+export * from './components/Avatar';
 export * from './components/Button';
 export * from './components/DataTable';
 export * from './components/Icon';
