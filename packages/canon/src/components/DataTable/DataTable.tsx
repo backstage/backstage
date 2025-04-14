@@ -46,5 +46,6 @@ export const DataTable = {
   TableCell: Table.Cell,
   TableCellText: Table.CellText,
   TableCellLink: Table.CellLink,
+  TableCellProfile: Table.CellProfile,
   TableHead: Table.Head,
 };

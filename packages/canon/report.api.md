@@ -260,6 +260,9 @@ export const DataTable: {
   TableCellLink: ForwardRefExoticComponent<
     TableCellLinkProps & RefAttributes<HTMLDivElement>
   >;
+  TableCellProfile: ForwardRefExoticComponent<
+    TableCellProfileProps & RefAttributes<HTMLDivElement>
+  >;
   TableHead: ForwardRefExoticComponent<
     ThHTMLAttributes<HTMLTableCellElement> & RefAttributes<HTMLTableCellElement>
   >;
@@ -1116,6 +1119,9 @@ export const Table: {
   CellLink: ForwardRefExoticComponent<
     TableCellLinkProps & RefAttributes<HTMLDivElement>
   >;
+  CellProfile: ForwardRefExoticComponent<
+    TableCellProfileProps & RefAttributes<HTMLDivElement>
+  >;
   Caption: ForwardRefExoticComponent<
     HTMLAttributes<HTMLTableCaptionElement> &
       RefAttributes<HTMLTableCaptionElement>
@@ -1124,7 +1130,7 @@ export const Table: {
 
 // @public (undocumented)
 export interface TableCellLinkProps
-  extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  extends React.HTMLAttributes<HTMLDivElement> {
   // (undocumented)
   description?: string;
   // (undocumented)
@@ -1136,8 +1142,21 @@ export interface TableCellLinkProps
 }
 
 // @public (undocumented)
+export interface TableCellProfileProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  src?: string;
+  // (undocumented)
+  to?: string;
+  // (undocumented)
+  withImage?: boolean;
+}
+
+// @public (undocumented)
 export interface TableCellTextProps
-  extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  extends React.HTMLAttributes<HTMLDivElement> {
   // (undocumented)
   description?: string;
   // (undocumented)
