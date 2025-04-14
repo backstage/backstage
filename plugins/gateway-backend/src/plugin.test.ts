@@ -22,6 +22,8 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
+import { EventSource } from 'eventsource';
+import waitForExpect from 'wait-for-expect';
 
 describe('gateway', () => {
   let backend: Backend;
@@ -47,6 +49,12 @@ describe('gateway', () => {
   });
 
   const discovery = mockServices.discovery.mock();
+  discovery.getBaseUrl.mockImplementation(async (pluginId: string) => {
+    if (pluginId === 'external-plugin') {
+      return 'http://localhost:7778/api/external-plugin';
+    }
+    return `http://localhost:7777/api/${pluginId}`;
+  });
 
   beforeAll(async () => {
     backend = createBackend();
@@ -97,6 +105,30 @@ describe('gateway', () => {
                 res.json({ bar: true });
               });
 
+              router.get('/endpoint-sse', async (_req, res) => {
+                res.setHeader('Content-Type', 'text/event-stream');
+                res.setHeader('Cache-Control', 'no-cache');
+                res.setHeader('Connection', 'keep-alive');
+
+                // Send periodic updates
+                let data = { timestamp: new Date().toISOString() };
+                res.write(`data: ${JSON.stringify(data)}\n\n`);
+                res.flush();
+                await pause(50);
+
+                data = { timestamp: new Date().toISOString() };
+                res.write(`data: ${JSON.stringify(data)}\n\n`);
+                res.flush();
+                await pause(50);
+
+                data = { timestamp: new Date().toISOString() };
+                res.write(`data: ${JSON.stringify(data)}\n\n`);
+                res.flush();
+                await pause(50);
+
+                res.destroy();
+              });
+
               httpRouter.use(router);
             },
           });
@@ -120,12 +152,6 @@ describe('gateway', () => {
   });
 
   it('should proxy requests for unknown plugins', async () => {
-    discovery.getBaseUrl.mockImplementation(async (pluginId: string) => {
-      if (pluginId === 'external-plugin') {
-        return 'http://localhost:7778/api/external-plugin';
-      }
-      return `http://localhost:7777/api/${pluginId}`;
-    });
     const response = await fetch(
       'http://localhost:7777/api/external-plugin/foo',
     );
@@ -134,4 +160,24 @@ describe('gateway', () => {
     const data = await response.json();
     expect(data).toEqual({ bar: true });
   });
+
+  it('should close the response for sse connections', async () => {
+    const eventSource = new EventSource(
+      'http://localhost:7777/api/external-plugin/endpoint-sse',
+    );
+
+    const mockOnMessage = jest.fn();
+    const mockOnError = jest.fn();
+    eventSource.addEventListener('message', mockOnMessage);
+    eventSource.addEventListener('error', mockOnError);
+
+    await waitForExpect(() => {
+      expect(mockOnMessage).toHaveBeenCalledTimes(3);
+      expect(mockOnError).toHaveBeenCalled();
+    });
+  });
 });
+
+function pause(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

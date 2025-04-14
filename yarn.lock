@@ -6745,8 +6745,10 @@ __metadata:
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/core": "npm:^1.29.0"
     "@types/express": "npm:^4.17.6"
+    eventsource: "npm:^3.0.6"
     express: "npm:^4.17.1"
     http-proxy-middleware: "npm:^3.0.3"
+    wait-for-expect: "npm:^3.0.2"
   languageName: unknown
   linkType: soft
 
@@ -29238,6 +29240,22 @@ __metadata:
   version: 3.3.0
   resolution: "events@npm:3.3.0"
   checksum: 10/a3d47e285e28d324d7180f1e493961a2bbb4cad6412090e4dec114f4db1f5b560c7696ee8e758f55e23913ede856e3689cd3aa9ae13c56b5d8314cd3b3ddd1be
+  languageName: node
+  linkType: hard
+
+"eventsource-parser@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "eventsource-parser@npm:3.0.1"
+  checksum: 10/2730c54c3cb47d55d2967f2ece843f9fc95d8a11c2fef6fece8d17d9080193cbe3cd9ac7b04a325977f63cbf8c1664fdd0512dec1aec601666a5c5bd8564b61f
+  languageName: node
+  linkType: hard
+
+"eventsource@npm:^3.0.6":
+  version: 3.0.6
+  resolution: "eventsource@npm:3.0.6"
+  dependencies:
+    eventsource-parser: "npm:^3.0.1"
+  checksum: 10/ac08c7d1b21e454c7685693fe4ace53fc0b84f3cf752699a556876f2a7f33b7a12972ae33d1c407fb920d6d4aed10de52fdf0dd01902ccdf45cd5da8d55e7f88
   languageName: node
   linkType: hard
 

@@ -41,6 +41,16 @@ export function createRouter({
       const pluginId = req.params.pluginId;
       return discovery.getBaseUrl(pluginId);
     },
+    on: {
+      proxyRes(proxyRes, _req, res) {
+        // https://github.com/chimurai/http-proxy-middleware/discussions/765
+        proxyRes.on('close', () => {
+          if (!res.writableEnded) {
+            res.end();
+          }
+        });
+      },
+    },
   });
 
   return function proxyMiddleware(
