@@ -47,7 +47,7 @@ const defaultCookieConfigurer: CookieConfigurer = ({
     ? pathname.slice(0, -'/handler/frame'.length)
     : `${pathname}/${providerId}`;
 
-  return { domain, path, secure, sameSite };
+  return { path, secure, sameSite };
 };
 
 /** @internal */
@@ -152,6 +152,16 @@ export class OAuthCookieManager {
     };
     const req = res.req;
     let output = res;
+
+    // clear cookie with domain due to a bug during sign-in with redirect flow
+    // and invalid cookie being present that causes infinite redirect loop
+    const { hostname: domain } = new URL(this.options.callbackUrl);
+
+    output = output.cookie(name, '', {
+      ...this.getRemoveCookieOptions(),
+      domain,
+    });
+
     if (val.length > MAX_COOKIE_SIZE_CHARACTERS) {
       const nonChunkedFormatExists = !!req.cookies[name];
       if (nonChunkedFormatExists) {
