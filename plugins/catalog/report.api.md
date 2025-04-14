@@ -159,24 +159,28 @@ export const CatalogTable: {
   columns: Readonly<{
     createNameColumn(options?: {
       defaultKind?: string;
+      width?: string;
     }): TableColumn<CatalogTableRow>;
     createSystemColumn(): TableColumn<CatalogTableRow>;
     createOwnerColumn(): TableColumn<CatalogTableRow>;
     createSpecTargetsColumn(): TableColumn<CatalogTableRow>;
     createSpecTypeColumn(options?: {
       hidden: boolean;
+      width?: string;
     }): TableColumn<CatalogTableRow>;
     createSpecLifecycleColumn(): TableColumn<CatalogTableRow>;
     createMetadataDescriptionColumn(): TableColumn<CatalogTableRow>;
     createTagsColumn(): TableColumn<CatalogTableRow>;
     createTitleColumn(options?: {
       hidden?: boolean;
+      width?: string;
     }): TableColumn<CatalogTableRow>;
     createLabelColumn(
       key: string,
       options?: {
         title?: string;
         defaultValue?: string;
+        width?: string;
       },
     ): TableColumn<CatalogTableRow>;
     createNamespaceColumn(): TableColumn<CatalogTableRow>;
