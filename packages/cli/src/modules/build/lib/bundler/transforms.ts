@@ -194,6 +194,10 @@ export const transforms = (options: TransformOptions): Transforms => {
         },
       ],
     },
+    {
+      test: /\.(graphql|gql)$/,
+      loader: 'webpack-graphql-loader',
+    },
   ];
 
   const plugins = new Array<WebpackPluginInstance>();
