@@ -4902,7 +4902,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-atlassian-provider@workspace:^, @backstage/plugin-auth-backend-module-atlassian-provider@workspace:plugins/auth-backend-module-atlassian-provider":
+"@backstage/plugin-auth-backend-module-atlassian-provider@workspace:plugins/auth-backend-module-atlassian-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-atlassian-provider@workspace:plugins/auth-backend-module-atlassian-provider"
   dependencies:
@@ -4920,7 +4920,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-auth0-provider@workspace:^, @backstage/plugin-auth-backend-module-auth0-provider@workspace:plugins/auth-backend-module-auth0-provider":
+"@backstage/plugin-auth-backend-module-auth0-provider@workspace:plugins/auth-backend-module-auth0-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-auth0-provider@workspace:plugins/auth-backend-module-auth0-provider"
   dependencies:
@@ -4940,7 +4940,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-aws-alb-provider@workspace:^, @backstage/plugin-auth-backend-module-aws-alb-provider@workspace:plugins/auth-backend-module-aws-alb-provider":
+"@backstage/plugin-auth-backend-module-aws-alb-provider@workspace:plugins/auth-backend-module-aws-alb-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-aws-alb-provider@workspace:plugins/auth-backend-module-aws-alb-provider"
   dependencies:
@@ -4959,7 +4959,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-azure-easyauth-provider@workspace:^, @backstage/plugin-auth-backend-module-azure-easyauth-provider@workspace:plugins/auth-backend-module-azure-easyauth-provider":
+"@backstage/plugin-auth-backend-module-azure-easyauth-provider@workspace:plugins/auth-backend-module-azure-easyauth-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-azure-easyauth-provider@workspace:plugins/auth-backend-module-azure-easyauth-provider"
   dependencies:
@@ -4977,7 +4977,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-bitbucket-provider@workspace:^, @backstage/plugin-auth-backend-module-bitbucket-provider@workspace:plugins/auth-backend-module-bitbucket-provider":
+"@backstage/plugin-auth-backend-module-bitbucket-provider@workspace:plugins/auth-backend-module-bitbucket-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-bitbucket-provider@workspace:plugins/auth-backend-module-bitbucket-provider"
   dependencies:
@@ -4995,7 +4995,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-bitbucket-server-provider@workspace:^, @backstage/plugin-auth-backend-module-bitbucket-server-provider@workspace:plugins/auth-backend-module-bitbucket-server-provider":
+"@backstage/plugin-auth-backend-module-bitbucket-server-provider@workspace:plugins/auth-backend-module-bitbucket-server-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-bitbucket-server-provider@workspace:plugins/auth-backend-module-bitbucket-server-provider"
   dependencies:
@@ -5013,7 +5013,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-cloudflare-access-provider@workspace:^, @backstage/plugin-auth-backend-module-cloudflare-access-provider@workspace:plugins/auth-backend-module-cloudflare-access-provider":
+"@backstage/plugin-auth-backend-module-cloudflare-access-provider@workspace:plugins/auth-backend-module-cloudflare-access-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-cloudflare-access-provider@workspace:plugins/auth-backend-module-cloudflare-access-provider"
   dependencies:
@@ -5034,7 +5034,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-gcp-iap-provider@workspace:^, @backstage/plugin-auth-backend-module-gcp-iap-provider@workspace:plugins/auth-backend-module-gcp-iap-provider":
+"@backstage/plugin-auth-backend-module-gcp-iap-provider@workspace:plugins/auth-backend-module-gcp-iap-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-gcp-iap-provider@workspace:plugins/auth-backend-module-gcp-iap-provider"
   dependencies:
@@ -5065,7 +5065,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-gitlab-provider@workspace:^, @backstage/plugin-auth-backend-module-gitlab-provider@workspace:plugins/auth-backend-module-gitlab-provider":
+"@backstage/plugin-auth-backend-module-gitlab-provider@workspace:plugins/auth-backend-module-gitlab-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-gitlab-provider@workspace:plugins/auth-backend-module-gitlab-provider"
   dependencies:
@@ -5083,7 +5083,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-google-provider@workspace:^, @backstage/plugin-auth-backend-module-google-provider@workspace:plugins/auth-backend-module-google-provider":
+"@backstage/plugin-auth-backend-module-google-provider@workspace:plugins/auth-backend-module-google-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-google-provider@workspace:plugins/auth-backend-module-google-provider"
   dependencies:
@@ -5116,7 +5116,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-microsoft-provider@workspace:^, @backstage/plugin-auth-backend-module-microsoft-provider@workspace:plugins/auth-backend-module-microsoft-provider":
+"@backstage/plugin-auth-backend-module-microsoft-provider@workspace:plugins/auth-backend-module-microsoft-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-microsoft-provider@workspace:plugins/auth-backend-module-microsoft-provider"
   dependencies:
@@ -5137,7 +5137,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-oauth2-provider@workspace:^, @backstage/plugin-auth-backend-module-oauth2-provider@workspace:plugins/auth-backend-module-oauth2-provider":
+"@backstage/plugin-auth-backend-module-oauth2-provider@workspace:plugins/auth-backend-module-oauth2-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-oauth2-provider@workspace:plugins/auth-backend-module-oauth2-provider"
   dependencies:
@@ -5154,7 +5154,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-oauth2-proxy-provider@workspace:^, @backstage/plugin-auth-backend-module-oauth2-proxy-provider@workspace:plugins/auth-backend-module-oauth2-proxy-provider":
+"@backstage/plugin-auth-backend-module-oauth2-proxy-provider@workspace:plugins/auth-backend-module-oauth2-proxy-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-oauth2-proxy-provider@workspace:plugins/auth-backend-module-oauth2-proxy-provider"
   dependencies:
@@ -5167,7 +5167,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-oidc-provider@workspace:^, @backstage/plugin-auth-backend-module-oidc-provider@workspace:plugins/auth-backend-module-oidc-provider":
+"@backstage/plugin-auth-backend-module-oidc-provider@workspace:plugins/auth-backend-module-oidc-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-oidc-provider@workspace:plugins/auth-backend-module-oidc-provider"
   dependencies:
@@ -5191,7 +5191,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-okta-provider@workspace:^, @backstage/plugin-auth-backend-module-okta-provider@workspace:plugins/auth-backend-module-okta-provider":
+"@backstage/plugin-auth-backend-module-okta-provider@workspace:plugins/auth-backend-module-okta-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-okta-provider@workspace:plugins/auth-backend-module-okta-provider"
   dependencies:
@@ -5209,7 +5209,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-onelogin-provider@workspace:^, @backstage/plugin-auth-backend-module-onelogin-provider@workspace:plugins/auth-backend-module-onelogin-provider":
+"@backstage/plugin-auth-backend-module-onelogin-provider@workspace:plugins/auth-backend-module-onelogin-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-onelogin-provider@workspace:plugins/auth-backend-module-onelogin-provider"
   dependencies:
@@ -5286,23 +5286,6 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
-    "@backstage/plugin-auth-backend-module-atlassian-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-auth0-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-aws-alb-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-azure-easyauth-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-bitbucket-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-bitbucket-server-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-cloudflare-access-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-gcp-iap-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-github-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-gitlab-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-google-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-microsoft-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-oauth2-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-oauth2-proxy-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-oidc-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-okta-provider": "workspace:^"
-    "@backstage/plugin-auth-backend-module-onelogin-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"

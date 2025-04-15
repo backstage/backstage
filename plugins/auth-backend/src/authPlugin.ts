@@ -88,7 +88,6 @@ export const authPlugin = createBackendPlugin({
           httpAuth,
           catalogApi,
           providerFactories: Object.fromEntries(providers),
-          disableDefaultProviderFactories: true,
           ownershipResolver,
         });
         httpRouter.addAuthPolicy({

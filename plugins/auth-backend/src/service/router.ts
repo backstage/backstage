@@ -25,7 +25,6 @@ import {
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { defaultAuthProviderFactories } from '../providers';
 import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
 import {
   TokenManager,
@@ -49,10 +48,6 @@ import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
 
-/**
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
- */
 export interface RouterOptions {
   logger: LoggerService;
   database: DatabaseService;
@@ -63,15 +58,10 @@ export interface RouterOptions {
   httpAuth?: HttpAuthService;
   tokenFactoryAlgorithm?: string;
   providerFactories?: ProviderFactories;
-  disableDefaultProviderFactories?: boolean;
   catalogApi?: CatalogApi;
   ownershipResolver?: AuthOwnershipResolver;
 }
 
-/**
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
- */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -151,15 +141,8 @@ export async function createRouter(
   router.use(express.urlencoded({ extended: false }));
   router.use(express.json());
 
-  const providers = options.disableDefaultProviderFactories
-    ? providerFactories
-    : {
-        ...defaultAuthProviderFactories,
-        ...providerFactories,
-      };
-
   bindProviderRouters(router, {
-    providers,
+    providers: providerFactories,
     appUrl,
     baseUrl: authUrl,
     tokenIssuer,

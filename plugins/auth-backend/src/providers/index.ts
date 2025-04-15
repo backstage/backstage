@@ -14,29 +14,7 @@
  * limitations under the License.
  */
 
-export type { AwsAlbResult } from './aws-alb';
-export type { EasyAuthResult } from './azure-easyauth';
-export type {
-  BitbucketOAuthResult,
-  BitbucketPassportProfile,
-} from './bitbucket';
-export type { BitbucketServerOAuthResult } from './bitbucketServer';
-export type {
-  CloudflareAccessClaims,
-  CloudflareAccessGroup,
-  CloudflareAccessResult,
-  CloudflareAccessIdentityProfile,
-} from './cloudflare-access';
-export type { GithubOAuthResult } from './github';
-export type { OAuth2ProxyResult } from './oauth2-proxy';
-export type { OidcAuthResult } from './oidc';
-export type { SamlAuthResult } from './saml';
-export type { GcpIapResult, GcpIapTokenInfo } from './gcp-iap';
-
-export { providers, defaultAuthProviderFactories } from './providers';
 export { createOriginFilter, type ProviderFactories } from './router';
-
-export { createAuthProviderIntegration } from './createAuthProviderIntegration';
 
 export type {
   AuthProviderConfig,
@@ -54,5 +32,3 @@ export type {
   ProfileInfo,
   OAuthStartResponse,
 } from './types';
-
-export { prepareBackstageIdentityResponse } from './prepareBackstageIdentityResponse';
