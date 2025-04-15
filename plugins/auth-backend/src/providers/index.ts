@@ -15,9 +15,3 @@
  */
 
 export { createOriginFilter, type ProviderFactories } from './router';
-
-export type {
-  AuthHandler,
-  AuthHandlerResult,
-  OAuthStartResponse,
-} from './types';

@@ -39,16 +39,7 @@ import {
 } from '@backstage/plugin-auth-node';
 import { CatalogIdentityClient } from '../catalog';
 
-/**
- * Uses the default ownership resolution logic to return an array
- * of entity refs that the provided entity claims ownership through.
- *
- * A reference to the entity itself will also be included in the returned array.
- *
- * @public
- * @deprecated use `ctx.resolveOwnershipEntityRefs(entity)` from the provided `AuthResolverContext` instead.
- */
-export function getDefaultOwnershipEntityRefs(entity: Entity) {
+function getDefaultOwnershipEntityRefs(entity: Entity) {
   const membershipRefs =
     entity.relations
       ?.filter(
@@ -59,9 +50,6 @@ export function getDefaultOwnershipEntityRefs(entity: Entity) {
   return Array.from(new Set([stringifyEntityRef(entity), ...membershipRefs]));
 }
 
-/**
- * @internal
- */
 export class CatalogAuthResolverContext implements AuthResolverContext {
   static create(options: {
     logger: LoggerService;
