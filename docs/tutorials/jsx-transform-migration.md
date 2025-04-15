@@ -39,7 +39,7 @@ To streamline this process, consider using an automated codemod. Instructions ar
 
 ### Updating Configuration Files
 
-To ensure compatibility when using the `backstage-cli`, you must modify both the `tsconfig.json` and `eslintrc.js` files. Failure to do so may result in errors.
+To ensure compatibility when using `@backstage/cli`, you must update your `tsconfig.json` to use the new JSX transforms.
 
 #### TypeScript Configuration (TSConfig)
 
