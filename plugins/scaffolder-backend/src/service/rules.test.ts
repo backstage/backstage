@@ -23,7 +23,6 @@ import {
   hasStringProperty,
   hasTag,
   hasCreatedBy,
-  hasTemplateEntityRefs,
 } from './rules';
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
@@ -598,87 +597,6 @@ describe('hasCreatedBy', () => {
     ).toEqual({
       property: 'createdBy',
       values: ['user:default/user-1', 'user:default/user-2'],
-    });
-  });
-});
-
-describe('hasTemplateEntityRefs', () => {
-  describe('apply', () => {
-    const task: SerializedTask = {
-      id: 'a-random-id',
-      spec: {
-        templateInfo: { entityRef: 'template:default/test-1' },
-      } as TaskSpec,
-      status: 'completed',
-      createdAt: '',
-    };
-    it('returns false when templateEntityRefs is an empty array', () => {
-      expect(
-        hasTemplateEntityRefs.apply(task, {
-          templateEntityRefs: [],
-        }),
-      ).toEqual(false);
-    });
-    it('returns false when templateEntityRef is not matched (single entityRef in templateEntityRefs)', () => {
-      expect(
-        hasTemplateEntityRefs.apply(task, {
-          templateEntityRefs: ['template:default/not-matched'],
-        }),
-      ).toEqual(false);
-    });
-    it('returns true when templateEntityRef matches (single entityRef in templateEntityRefs)', () => {
-      expect(
-        hasTemplateEntityRefs.apply(task, {
-          templateEntityRefs: ['template:default/test-1'],
-        }),
-      ).toEqual(true);
-    });
-    it('returns false when templateEntityRefs is not matched (multiple entitRefs in templateEntityRefs)', () => {
-      expect(
-        hasTemplateEntityRefs.apply(task, {
-          templateEntityRefs: [
-            'template:default/test-2',
-            'template:default/test-3',
-            'template:default/test-4',
-          ],
-        }),
-      ).toEqual(false);
-    });
-    it('returns true when templateEntityRefs matches (multiple entityRefs in templateEntityRefs)', () => {
-      expect(
-        hasTemplateEntityRefs.apply(task, {
-          templateEntityRefs: [
-            'template:default/test-2',
-            'template:default/test-1',
-            'template:default/test-3',
-          ],
-        }),
-      ).toEqual(true);
-    });
-  });
-  describe('toQuery', () => {
-    it('returns the correct query filter with values (single entityRef in templateEntityRefs)', () => {
-      expect(
-        hasTemplateEntityRefs.toQuery({
-          templateEntityRefs: ['template:default/test-1'],
-        }),
-      ).toEqual({
-        property: 'templateEntityRefs',
-        values: ['template:default/test-1'],
-      });
-    });
-  });
-  it('returns the correct query filter with values (multiple entityRefs in templateEntityRefs)', () => {
-    expect(
-      hasTemplateEntityRefs.toQuery({
-        templateEntityRefs: [
-          'template:default/test-1',
-          'template:default/test-2',
-        ],
-      }),
-    ).toEqual({
-      property: 'templateEntityRefs',
-      values: ['template:default/test-1', 'template:default/test-2'],
     });
   });
 });

@@ -216,6 +216,7 @@ export class DatabaseTaskStore implements TaskStore {
   ): Knex.QueryBuilder {
     // handle not criteria
     if (isNotCriteria(filter)) {
+      console.log(`reached here: ${JSON.stringify(filter)}`);
       return this.parseFilter(filter.not, query, db, !negate);
     }
 
@@ -223,24 +224,13 @@ export class DatabaseTaskStore implements TaskStore {
       const values: string[] = compact(filter.values) ?? [];
 
       if (filter.property === 'createdBy') {
-        query.whereIn('created_by', [...new Set(values)]);
-      }
-
-      if (filter.property === 'templateEntityRefs' && values.length > 0) {
-        const dbClient = this.db.client.config.client;
-        const placeholders = values.map(() => '?').join(', ');
-        if (dbClient === 'pg') {
-          query.whereRaw(
-            `spec::jsonb->'templateInfo'->>'entityRef' IN (${placeholders})`,
-            values,
-          );
-        } else if (dbClient === 'better-sqlite3') {
-          query.whereRaw(
-            `json_extract(spec, '$.templateInfo.entityRef') IN (${placeholders})`,
-            values,
-          );
+        if (negate) {
+          query.whereNotIn('created_by', [...new Set(values)]);
+        } else {
+          query.whereIn('created_by', [...new Set(values)]);
         }
       }
+
       return query;
     }
 
@@ -299,6 +289,8 @@ export class DatabaseTaskStore implements TaskStore {
     if (combinedPermissionFilters) {
       this.parseFilter(combinedPermissionFilters, queryBuilder, this.db);
     }
+
+    console.log(`Parse FIlters: ${queryBuilder}`);
 
     if (status || filters?.status) {
       const arr: TaskStatus[] = flattenParams<TaskStatus>(

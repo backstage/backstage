@@ -110,7 +110,7 @@ export type TaskBrokerDispatchOptions = {
  * @public
  */
 export type TaskFilter = {
-  property: 'createdBy' | 'templateEntityRefs';
+  property: 'createdBy';
   values: Array<string> | undefined;
 };
 

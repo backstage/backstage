@@ -23,7 +23,9 @@ import {
   SerializedTaskEvent,
   SerializedTask,
   TaskStatus,
+  TaskFilters,
 } from '@backstage/plugin-scaffolder-node';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
 /**
  * TaskStoreEmitOptions
@@ -131,6 +133,7 @@ export interface TaskStore {
       limit?: number;
       offset?: number;
     };
+    permissionFilters?: PermissionCriteria<TaskFilters>;
     order?: { order: 'asc' | 'desc'; field: string }[];
   }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
 
