@@ -39949,8 +39949,8 @@ __metadata:
   linkType: hard
 
 "pg@npm:^8.11.3, pg@npm:^8.9.0":
-  version: 8.14.0
-  resolution: "pg@npm:8.14.0"
+  version: 8.14.1
+  resolution: "pg@npm:8.14.1"
   dependencies:
     pg-cloudflare: "npm:^1.1.1"
     pg-connection-string: "npm:^2.7.0"
@@ -39966,7 +39966,7 @@ __metadata:
   peerDependenciesMeta:
     pg-native:
       optional: true
-  checksum: 10/3d2d962a117195963d3b1564ed5a4963a7bb427e1d98c805ffcc3eb0142769ec69c5d91d19dab995d34b8b0aebce8079da55309c39298b531c42128ba6aac4d9
+  checksum: 10/45f2d5719fd74a6a4784c5115c0ff482af92d1e5b101bf423160b6a983e37cc2fad4a7eea2a06f27e6f8bdb8abce23486d2d522c8c52c90f68a2bc897f0553c4
   languageName: node
   linkType: hard
 
