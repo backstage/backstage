@@ -50,7 +50,7 @@ export interface HostDiscoveryEndpoint {
    *
    * URLs can be in the form of a regular HTTP or HTTPS URL if you are using
    * A/AAAA/CNAME records or IP addresses. Specifically for internal URLs, if
-   * you add `+grpc` to the protocol part then the hostname is treated as an SRV
+   * you add `+src` to the protocol part then the hostname is treated as an SRV
    * record name and resolved. For example, if you pass in
    * `http+srv://<record>/path` then the record part is resolved into an
    * actual host and port (with random weighted choice as usual when there is
