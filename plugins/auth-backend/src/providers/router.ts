@@ -32,10 +32,6 @@ import { Minimatch } from 'minimatch';
 import { CatalogAuthResolverContext } from '../lib/resolvers/CatalogAuthResolverContext';
 import { TokenIssuer } from '../identity/types';
 
-/**
- * @public
- * @deprecated Migrate the auth plugin to the new backend system https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
- */
 export type ProviderFactories = { [s: string]: AuthProviderFactory };
 
 export function bindProviderRouters(

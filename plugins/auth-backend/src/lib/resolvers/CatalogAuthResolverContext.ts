@@ -31,7 +31,7 @@ import {
   AuthResolverContext,
   TokenParams,
 } from '@backstage/plugin-auth-node';
-import { CatalogIdentityClient } from '../catalog';
+import { CatalogIdentityClient } from '../catalog/CatalogIdentityClient';
 
 function getDefaultOwnershipEntityRefs(entity: Entity) {
   const membershipRefs =

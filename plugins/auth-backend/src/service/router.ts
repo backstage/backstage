@@ -27,12 +27,10 @@ import {
 import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
 import { NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
-import {
-  bindOidcRouter,
-  KeyStores,
-  TokenFactory,
-  UserInfoDatabaseHandler,
-} from '../identity';
+import { bindOidcRouter } from '../identity/router';
+import { KeyStores } from '../identity/KeyStores';
+import { TokenFactory } from '../identity/TokenFactory';
+import { UserInfoDatabaseHandler } from '../identity/UserInfoDatabaseHandler';
 import session from 'express-session';
 import connectSessionKnex from 'connect-session-knex';
 import passport from 'passport';
@@ -43,7 +41,7 @@ import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
 
-export interface RouterOptions {
+interface RouterOptions {
   logger: LoggerService;
   database: DatabaseService;
   config: RootConfigService;
