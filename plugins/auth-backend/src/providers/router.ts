@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  AuthService,
-  DiscoveryService,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
-import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { assertError, NotFoundError } from '@backstage/errors';
 import {
   AuthOwnershipResolver,
   AuthProviderFactory,
 } from '@backstage/plugin-auth-node';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Minimatch } from 'minimatch';
@@ -42,11 +38,10 @@ export function bindProviderRouters(
     baseUrl: string;
     config: Config;
     logger: LoggerService;
-    discovery: DiscoveryService;
     auth: AuthService;
     tokenIssuer: TokenIssuer;
     ownershipResolver?: AuthOwnershipResolver;
-    catalogApi?: CatalogApi;
+    catalog: CatalogService;
   },
 ) {
   const {
@@ -55,10 +50,9 @@ export function bindProviderRouters(
     baseUrl,
     config,
     logger,
-    discovery,
     auth,
     tokenIssuer,
-    catalogApi,
+    catalog,
     ownershipResolver,
   } = options;
 
@@ -84,8 +78,7 @@ export function bindProviderRouters(
           logger,
           resolverContext: CatalogAuthResolverContext.create({
             logger,
-            catalogApi:
-              catalogApi ?? new CatalogClient({ discoveryApi: discovery }),
+            catalog,
             tokenIssuer,
             auth,
             ownershipResolver,

@@ -25,8 +25,8 @@ import {
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import { NotFoundError } from '@backstage/errors';
-import { CatalogApi } from '@backstage/catalog-client';
 import { bindOidcRouter } from '../identity/router';
 import { KeyStores } from '../identity/KeyStores';
 import { TokenFactory } from '../identity/TokenFactory';
@@ -49,7 +49,7 @@ interface RouterOptions {
   auth: AuthService;
   tokenFactoryAlgorithm?: string;
   providerFactories?: ProviderFactories;
-  catalogApi?: CatalogApi;
+  catalog: CatalogService;
   ownershipResolver?: AuthOwnershipResolver;
 }
 

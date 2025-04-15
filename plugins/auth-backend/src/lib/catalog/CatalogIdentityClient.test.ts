@@ -20,15 +20,15 @@ import {
 } from '@backstage/catalog-model';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { CatalogIdentityClient } from './CatalogIdentityClient';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('CatalogIdentityClient', () => {
-  const auth = mockServices.auth();
+  const auth = mockServices.auth({ pluginId: 'auth' });
 
   afterEach(() => jest.resetAllMocks());
 
   it('findUser passes through the correct search params', async () => {
-    const catalogApi = catalogServiceMock({
+    const catalog = catalogServiceMock({
       entities: [
         {
           apiVersion: 'backstage.io/v1beta1',
@@ -42,16 +42,16 @@ describe('CatalogIdentityClient', () => {
         },
       ],
     });
-    jest.spyOn(catalogApi, 'getEntities');
+    jest.spyOn(catalog, 'getEntities');
 
     const client = new CatalogIdentityClient({
-      catalogApi,
+      catalog,
       auth,
     });
 
     await client.findUser({ annotations: { key: 'value' } });
 
-    expect(catalogApi.getEntities).toHaveBeenCalledWith(
+    expect(catalog.getEntities).toHaveBeenCalledWith(
       {
         filter: {
           kind: 'user',
@@ -59,10 +59,7 @@ describe('CatalogIdentityClient', () => {
         },
       },
       {
-        token: mockCredentials.service.token({
-          onBehalfOf: mockCredentials.service('plugin:test'),
-          targetPluginId: 'catalog',
-        }),
+        credentials: await auth.getOwnServiceCredentials(),
       },
     );
   });
@@ -103,11 +100,11 @@ describe('CatalogIdentityClient', () => {
         ],
       },
     ];
-    const catalogApi = catalogServiceMock({ entities: mockUsers });
-    jest.spyOn(catalogApi, 'getEntities');
+    const catalog = catalogServiceMock({ entities: mockUsers });
+    jest.spyOn(catalog, 'getEntities');
 
     const client = new CatalogIdentityClient({
-      catalogApi,
+      catalog,
       auth,
     });
 
@@ -115,7 +112,7 @@ describe('CatalogIdentityClient', () => {
       entityRefs: ['inigom', 'User:default/imontoya', 'User:reality/mpatinkin'],
     });
 
-    expect(catalogApi.getEntities).toHaveBeenCalledWith(
+    expect(catalog.getEntities).toHaveBeenCalledWith(
       {
         filter: [
           {
@@ -136,10 +133,7 @@ describe('CatalogIdentityClient', () => {
         ],
       },
       {
-        token: mockCredentials.service.token({
-          onBehalfOf: mockCredentials.service('plugin:test'),
-          targetPluginId: 'catalog',
-        }),
+        credentials: await auth.getOwnServiceCredentials(),
       },
     );
 

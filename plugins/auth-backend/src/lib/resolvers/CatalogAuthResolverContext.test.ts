@@ -25,15 +25,16 @@ describe('CatalogAuthResolverContext', () => {
     jest.clearAllMocks();
   });
 
-  const catalogApi = catalogServiceMock();
-  jest.spyOn(catalogApi, 'getEntities');
+  const catalog = catalogServiceMock();
+  jest.spyOn(catalog, 'getEntities');
 
   it('adds kind to filter when missing', async () => {
+    const auth = mockServices.auth();
     const context = CatalogAuthResolverContext.create({
       logger: mockServices.logger.mock(),
-      catalogApi,
+      catalog,
       tokenIssuer: {} as TokenIssuer,
-      auth: mockServices.auth(),
+      auth,
     });
 
     await expect(
@@ -41,11 +42,11 @@ describe('CatalogAuthResolverContext', () => {
         filter: [{}, { kind: 'group' }, { KIND: 'USER' }],
       }),
     ).rejects.toThrow(NotFoundError);
-    expect(catalogApi.getEntities).toHaveBeenCalledWith(
+    expect(catalog.getEntities).toHaveBeenCalledWith(
       {
         filter: [{ kind: 'user' }, { kind: 'group' }, { KIND: 'USER' }],
       },
-      { token: 'mock-service-token:{"sub":"plugin:test","target":"catalog"}' },
+      { credentials: await auth.getOwnServiceCredentials() },
     );
   });
 });

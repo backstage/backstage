@@ -16,7 +16,7 @@
 
 import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { ConflictError, NotFoundError } from '@backstage/errors';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import {
   CompoundEntityRef,
   parseEntityRef,
@@ -29,11 +29,11 @@ import {
  * A catalog client tailored for reading out identity data from the catalog.
  */
 export class CatalogIdentityClient {
-  private readonly catalogApi: CatalogApi;
+  private readonly catalog: CatalogService;
   private readonly auth: AuthService;
 
-  constructor(options: { catalogApi: CatalogApi; auth: AuthService }) {
-    this.catalogApi = options.catalogApi;
+  constructor(options: { catalog: CatalogService; auth: AuthService }) {
+    this.catalog = options.catalog;
     this.auth = options.auth;
   }
 
@@ -52,12 +52,10 @@ export class CatalogIdentityClient {
       filter[`metadata.annotations.${key}`] = value;
     }
 
-    const { token } = await this.auth.getPluginRequestToken({
-      onBehalfOf: await this.auth.getOwnServiceCredentials(),
-      targetPluginId: 'catalog',
-    });
-
-    const { items } = await this.catalogApi.getEntities({ filter }, { token });
+    const { items } = await this.catalog.getEntities(
+      { filter },
+      { credentials: await this.auth.getOwnServiceCredentials() },
+    );
 
     if (items.length !== 1) {
       if (items.length > 1) {
@@ -103,13 +101,11 @@ export class CatalogIdentityClient {
       'metadata.name': ref.name,
     }));
 
-    const { token } = await this.auth.getPluginRequestToken({
-      onBehalfOf: await this.auth.getOwnServiceCredentials(),
-      targetPluginId: 'catalog',
-    });
-
-    const entities = await this.catalogApi
-      .getEntities({ filter }, { token })
+    const entities = await this.catalog
+      .getEntities(
+        { filter },
+        { credentials: await this.auth.getOwnServiceCredentials() },
+      )
       .then(r => r.items);
 
     if (entityRefs.length !== entities.length) {
