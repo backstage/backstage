@@ -501,6 +501,7 @@ export interface TaskStore {
       limit?: number;
       offset?: number;
     };
+    permissionFilters?: PermissionCriteria<TaskFilters>;
     order?: {
       order: 'asc' | 'desc';
       field: string;

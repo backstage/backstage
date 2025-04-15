@@ -237,66 +237,51 @@ describe('DatabaseTaskStore', () => {
     const { store } = await createStore();
 
     await store.createTask({
-      spec: {
-        templateInfo: { entityRef: 'template:default/three' },
-      } as TaskSpec,
+      spec: {} as TaskSpec,
       createdBy: 'user:default/one',
     });
 
     await store.createTask({
-      spec: {
-        templateInfo: { entityRef: 'template:default/four' },
-      } as TaskSpec,
+      spec: {} as TaskSpec,
       createdBy: 'user:default/two',
     });
 
     await store.createTask({
-      spec: {
-        templateInfo: { entityRef: 'template:default/one' },
-      } as TaskSpec,
+      spec: {} as TaskSpec,
       createdBy: 'user:default/three',
     });
 
     await store.createTask({
-      spec: {
-        templateInfo: { entityRef: 'template:default/two' },
-      } as TaskSpec,
-      createdBy: 'user:default/three',
+      spec: {} as TaskSpec,
+      createdBy: 'user:default/one',
     });
 
     await store.createTask({
-      spec: {
-        templateInfo: { entityRef: 'template:default/three' },
-      } as TaskSpec,
-      createdBy: 'user:default/three',
+      spec: {} as TaskSpec,
+      createdBy: 'user:default/four',
     });
 
     const permissionFilters: PermissionCriteria<TaskFilters> = {
-      anyOf: [
-        {
-          property: 'createdBy',
-          values: ['user:default/one', 'user:default/two'],
-        },
-        {
-          property: 'templateEntityRefs',
-          values: ['template:default/one', 'template:default/two'],
-        },
-      ],
+      not: {
+        property: 'createdBy',
+        values: ['user:default/three', 'user:default/four'],
+      },
     };
 
     const { tasks, totalTasks } = await store.list({
       permissionFilters: permissionFilters,
     });
 
-    expect(totalTasks).toBe(4);
+    console.log(JSON.stringify);
 
-    expect(tasks).not.toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          createdBy: 'user:default/three',
-          spec: { templateInfo: { entityRef: 'template:default/three' } },
-        }),
-      ]),
+    expect(totalTasks).toBe(3);
+
+    const createdByList = tasks.map(task => task.createdBy);
+    expect(createdByList).toEqual(
+      expect.arrayContaining(['user:default/one', 'user:default/two']),
+    );
+    expect(createdByList).not.toEqual(
+      expect.arrayContaining(['user:default/three', 'user:default/four']),
     );
   });
 

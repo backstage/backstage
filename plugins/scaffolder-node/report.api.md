@@ -468,7 +468,7 @@ export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
 
 // @public
 export type TaskFilter = {
-  property: 'createdBy' | 'templateEntityRefs';
+  property: 'createdBy';
   values: Array<string> | undefined;
 };
 

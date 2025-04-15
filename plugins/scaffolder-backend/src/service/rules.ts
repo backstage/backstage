@@ -167,31 +167,6 @@ export const hasCreatedBy = createTaskPermissionRule({
   },
 });
 
-export const hasTemplateEntityRefs = createTaskPermissionRule({
-  name: 'HAS_TEMPLATE_ENTITY_REFS',
-  description: 'Match tasks with the given template entity refs',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
-  paramsSchema: z.object({
-    templateEntityRefs: z
-      .array(z.string())
-      .describe(
-        'List of template entity refs; only tasks related to these templates will be viewable',
-      ),
-  }),
-  apply: (resource, { templateEntityRefs }) => {
-    if (!resource.spec.templateInfo) {
-      return false;
-    }
-    return templateEntityRefs.includes(resource.spec.templateInfo.entityRef);
-  },
-  toQuery: ({ templateEntityRefs }) => {
-    return {
-      property: 'templateEntityRefs' as TaskFilter['property'],
-      values: templateEntityRefs,
-    };
-  },
-});
-
 export const scaffolderTemplateRules = { hasTag };
 export const scaffolderActionRules = {
   hasActionId,
@@ -199,4 +174,4 @@ export const scaffolderActionRules = {
   hasNumberProperty,
   hasStringProperty,
 };
-export const scaffolderTaskRules = { hasCreatedBy, hasTemplateEntityRefs };
+export const scaffolderTaskRules = { hasCreatedBy };
