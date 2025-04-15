@@ -25,7 +25,7 @@ setup process, allowing you to focus on your actions' unique functionality.
 Start by using the `yarn backstage-cli new` command to generate a scaffolder module. This command sets up the necessary
 boilerplate code, providing a smooth start:
 
-```
+```sh
 $ yarn backstage-cli new
 ? What do you want to create?
   plugin-common - A new isomorphic common plugin package
@@ -33,8 +33,6 @@ $ yarn backstage-cli new
   plugin-react - A new web library plugin package
 > scaffolder-module - An module exporting custom actions for @backstage/plugin-scaffolder-backend
 ```
-
-You can find a [list](../../tooling/cli/03-commands.md) of all commands provided by the Backstage CLI.
 
 When prompted, select the option to generate a scaffolder module. This creates a solid foundation for your custom
 action. Enter the name of the module you wish to create, and the CLI will generate the required files and directory
@@ -87,7 +85,7 @@ for reference.
 
 The `createTemplateAction` takes an object which specifies the following:
 
-- `id` - A unique ID for your custom action. We encourage you to namespace these
+- `id` - A **unique** ID for your custom action. We encourage you to namespace these
   in some way so that they won't collide with future built-in actions that we
   may ship with the `scaffolder-backend` plugin.
 - `description` - An optional field to describe the purpose of the action. This will populate in the `/create/actions`
@@ -151,9 +149,6 @@ Also feel free to use your company name to namespace them if you prefer too, for
 Prefer to use `camelCase` over `snake_case` or `kebab-case` for these actions if possible, which leads to better reading
 and writing of template entity definitions.
 
-> We're aware that there are some exceptions to this, but try to follow as close as possible. We'll be working on
-> migrating these in the repository over time too.
-
 ### Adding a TemplateExample
 
 A TemplateExample is a predefined structure that can be used to create custom actions in your software templates. It
@@ -187,7 +182,9 @@ export const examples: TemplateExample[] = [
 
 Add the example to the `createTemplateAction` under the object property `examples`:
 
-`return createTemplateAction<{ contents: string; filename: string }>({id: 'acme:file:create', description: 'Create an Acme file', examples, ...};`
+```ts
+return createTemplateAction<{ contents: string; filename: string }>({id: 'acme:file:create', description: 'Create an Acme file', examples, ...});
+```
 
 ### The context object
 
@@ -275,9 +272,7 @@ env.registerInit({
 
 ### Using Checkpoints in Custom Actions (Experimental)
 
-Idempotent action could be achieved via the usage of checkpoints.
-
-Example:
+Idempotent action could be achieved via the usage of checkpoints, for example:
 
 ```ts title="plugins/my-company-scaffolder-actions-plugin/src/vendor/my-custom-action.ts"
 const res = await ctx.checkpoint?.({
