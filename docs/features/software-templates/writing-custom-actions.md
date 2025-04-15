@@ -302,4 +302,7 @@ By changing the key, you'll invalidate the cache of the checkpoint.
 
 ## Contributed Community Actions
 
-You can find a list of community-contributed actions here in our [contrib](https://github.com/backstage/backstage/blob/master/contrib/scaffolder/custom-action-packages.md) docs!
+You can find a list of community-contributed and open-source actions by:
+
+- Going to the [Backstage Plugin Directory](https://backstage.io/plugins/) and filter by `scaffolder`!
+- Checking out the [Community Plugins Repo](https://github.com/backstage/community-plugins)!
