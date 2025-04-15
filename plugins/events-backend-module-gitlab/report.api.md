@@ -11,7 +11,9 @@ import { RequestValidator } from '@backstage/plugin-events-node';
 import { SubTopicEventRouter } from '@backstage/plugin-events-node';
 
 // @public
-export function createGitlabTokenValidator(config: Config): RequestValidator;
+export function createGitlabTokenValidator(
+  config: Config,
+): RequestValidator | undefined;
 
 // @public (undocumented)
 const _default: BackendFeature;

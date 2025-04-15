@@ -42,6 +42,27 @@ describe('eventsModuleGithubWebhook', () => {
     } as RequestDetails;
   };
 
+  it('should not add ingress if validator is undefined', async () => {
+    let addedIngress: HttpPostIngressOptions | undefined;
+    const extensionPoint = {
+      addHttpPostIngress: (ingress: any) => {
+        addedIngress = ingress;
+      },
+    };
+
+    await startTestBackend({
+      extensionPoints: [[eventsExtensionPoint, extensionPoint]],
+      features: [
+        eventsModuleGithubWebhook,
+        mockServices.rootConfig.factory({
+          data: {},
+        }),
+      ],
+    });
+
+    expect(addedIngress).toBeUndefined();
+  });
+
   it('should be correctly wired and set up', async () => {
     let addedIngress: HttpPostIngressOptions | undefined;
     const extensionPoint = {

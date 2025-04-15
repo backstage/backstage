@@ -13,7 +13,7 @@ import { SubTopicEventRouter } from '@backstage/plugin-events-node';
 // @public
 export function createGithubSignatureValidator(
   config: Config,
-): RequestValidator;
+): RequestValidator | undefined;
 
 // @public (undocumented)
 const _default: BackendFeature;
