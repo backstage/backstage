@@ -1,6 +1,6 @@
 ---
 '@backstage/plugin-scaffolder-backend-module-github': minor
-'@backstage/create-app': minor
+'@backstage/create-app': patch
 ---
 
 **BREAKING** The `publish:github` scaffolder action now defaults to initializing with a branch named "main" instead of "master" when creating new repositories.
