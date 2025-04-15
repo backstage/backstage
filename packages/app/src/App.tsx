@@ -63,7 +63,7 @@ import {
 } from '@backstage/plugin-user-settings';
 import { AdvancedSettings } from './components/advancedSettings';
 import AlarmIcon from '@material-ui/icons/Alarm';
-import { Navigate, Route } from 'react-router-dom';
+import { Navigate, Outlet, Route } from 'react-router-dom';
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
 import { homePage } from './components/home/HomePage';
@@ -116,25 +116,25 @@ const routes = (
   <FlatRoutes>
     <Route path="/" element={<Navigate to="catalog" />} />
     {/* TODO(rubenl): Move this to / once its more mature and components exist */}
-    <Route path="/home" element={<HomepageCompositionRoot />}>
-      {homePage}
+    <Route path="home" element={<HomepageCompositionRoot />}>
+      {/* {homePage} */}
     </Route>
     <Route
-      path="/catalog"
+      path="catalog"
       element={<CatalogIndexPage pagination={{ mode: 'offset', limit: 20 }} />}
     />
     <Route
-      path="/catalog/:namespace/:kind/:name"
+      path="catalog/:namespace/:kind/:name"
       element={<CatalogEntityPage />}
     >
-      {entityPage}
+      {/* {entityPage} */}
     </Route>
     <Route
-      path="/catalog-unprocessed-entities"
+      path="catalog-unprocessed-entities"
       element={<CatalogUnprocessedEntitiesPage />}
     />
     <Route
-      path="/catalog-import"
+      path="catalog-import"
       element={
         <RequirePermission permission={catalogEntityCreatePermission}>
           <CatalogImportPage />
@@ -142,7 +142,7 @@ const routes = (
       }
     />
     <Route
-      path="/catalog-graph"
+      path="catalog-graph"
       element={
         <CatalogGraphPage
           initialState={{
@@ -164,23 +164,22 @@ const routes = (
       }
     />
     <Route
-      path="/docs"
+      path="docs"
       element={<TechDocsIndexPage pagination={{ mode: 'offset', limit: 20 }} />}
     />
-    <Route
-      path="/docs/:namespace/:kind/:name/*"
-      element={<TechDocsReaderPage />}
-    >
-      {techDocsPage}
-      <TechDocsAddons>
-        <ExpandableNavigation />
-        <ReportIssue />
-        <TextSize />
-        <LightBox />
-      </TechDocsAddons>
+    <Route path="docs/:namespace/:kind/:name">
+      <Route path="*" element={<TechDocsReaderPage />}>
+        {/* {techDocsPage}
+        <TechDocsAddons>
+          <ExpandableNavigation />
+          <ReportIssue />
+          <TextSize />
+          <LightBox />
+        </TechDocsAddons> */}
+      </Route>
     </Route>
     <Route
-      path="/create"
+      path="create"
       element={
         <ScaffolderPage
           defaultPreviewTemplate={defaultPreviewTemplate}
@@ -194,33 +193,37 @@ const routes = (
         />
       }
     >
-      <ScaffolderFieldExtensions>
+      {/* <ScaffolderFieldExtensions>
         <DelayingComponentFieldExtension />
       </ScaffolderFieldExtensions>
       <ScaffolderLayouts>
         <TwoColumnLayout />
-      </ScaffolderLayouts>
+      </ScaffolderLayouts> */}
     </Route>
 
-    <Route path="/api-docs" element={<ApiExplorerPage />} />
-    <Route path="/search" element={<SearchPage />}>
-      {searchPage}
+    <Route path="api-docs" element={<ApiExplorerPage />} />
+    <Route path="search" element={<SearchPage />}>
+      {/* {searchPage} */}
     </Route>
 
-    <Route path="/settings" element={<UserSettingsPage />}>
-      <SettingsLayout.Route path="/advanced" title="Advanced">
+    <Route path="settings" element={<UserSettingsPage />}>
+      {/* <SettingsLayout.Route path="advanced" title="Advanced">
         <AdvancedSettings />
       </SettingsLayout.Route>
-      <SettingsLayout.Route path="/notifications" title="Notifications">
+      <SettingsLayout.Route path="notifications" title="Notifications">
         <UserNotificationSettingsCard
           originNames={{ 'plugin:scaffolder': 'Scaffolder' }}
         />
-      </SettingsLayout.Route>
+      </SettingsLayout.Route> */}
     </Route>
-    <Route path="/devtools" element={<DevToolsPage />}>
-      {customDevToolsPage}
+    <Route path="devtools" element={<DevToolsPage />}>
+      {/* {customDevToolsPage} */}
     </Route>
-    <Route path="/notifications" element={<NotificationsPage />} />
+    <Route path="notifications" element={<NotificationsPage />} />
+    <Route path="test">
+      <Route index element={<div>Next</div>} />
+      <Route path="*" element={<div>Splat</div>} />
+    </Route>
   </FlatRoutes>
 );
 
