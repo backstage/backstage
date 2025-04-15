@@ -300,57 +300,6 @@ If you'll preserve the same key, and you'll try to restart the affected task, it
 The cached result will not match with the expected updated return type.
 By changing the key, you'll invalidate the cache of the checkpoint.
 
-### Register Custom Actions with the Legacy Backend System
-
-Once you have your Custom Action ready for usage with the scaffolder, you'll
-need to pass this into the `scaffolder-backend` `createRouter` function. You
-should have something similar to the below in
-`packages/backend/src/plugins/scaffolder.ts`
-
-```ts
-return await createRouter({
-  catalogClient,
-  logger: env.logger,
-  config: env.config,
-  database: env.database,
-  reader: env.reader,
-});
-```
-
-There's another property you can pass here, which is an array of `actions` which
-will set the available actions that the scaffolder has access to.
-
-```ts
-import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
-import { ScmIntegrations } from '@backstage/integration';
-import { createNewFileAction } from './scaffolder/actions/custom';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
-  const integrations = ScmIntegrations.fromConfig(env.config);
-
-  const builtInActions = createBuiltinActions({
-    integrations,
-    catalogClient,
-    config: env.config,
-    reader: env.reader,
-  });
-
-  const actions = [...builtInActions, createNewFileAction()];
-
-  return createRouter({
-    actions,
-    catalogClient: catalogClient,
-    logger: env.logger,
-    config: env.config,
-    database: env.database,
-    reader: env.reader,
-  });
-}
-```
-
 ## List of custom action packages
 
 Here is a list of Open Source custom actions that you can add to your Backstage
