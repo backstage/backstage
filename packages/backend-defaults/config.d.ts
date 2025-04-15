@@ -51,6 +51,19 @@ export interface Config {
       serverShutdownDelay?: string | HumanDuration;
     };
 
+    /**
+     * Corresponds to the Express `trust proxy` setting.
+     *
+     * @see https://expressjs.com/en/guide/behind-proxies.html
+     * @remarks
+     *
+     * This setting is used to determine whether the backend should trust the
+     * `X-Forwarded-*` headers that are set by proxies. This is important for
+     * determining the original client IP address and protocol (HTTP/HTTPS) when
+     * the backend is behind a reverse proxy or load balancer.
+     */
+    trustProxy?: boolean | number | string | string[];
+
     /** Address that the backend should listen to. */
     listen?:
       | string
