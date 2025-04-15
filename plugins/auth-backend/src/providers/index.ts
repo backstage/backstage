@@ -17,18 +17,7 @@
 export { createOriginFilter, type ProviderFactories } from './router';
 
 export type {
-  AuthProviderConfig,
-  AuthProviderRouteHandlers,
-  AuthProviderFactory,
   AuthHandler,
-  AuthResolverCatalogUserQuery,
-  AuthResolverContext,
   AuthHandlerResult,
-  SignInResolver,
-  SignInInfo,
-  CookieConfigurer,
-  StateEncoder,
-  AuthResponse,
-  ProfileInfo,
   OAuthStartResponse,
 } from './types';

@@ -15,36 +15,9 @@
  */
 
 import {
-  AuthProviderConfig as _AuthProviderConfig,
-  AuthProviderRouteHandlers as _AuthProviderRouteHandlers,
-  AuthProviderFactory as _AuthProviderFactory,
-  AuthResolverCatalogUserQuery as _AuthResolverCatalogUserQuery,
   AuthResolverContext as _AuthResolverContext,
-  ClientAuthResponse as _ClientAuthResponse,
-  CookieConfigurer as _CookieConfigurer,
   ProfileInfo as _ProfileInfo,
-  SignInInfo as _SignInInfo,
-  SignInResolver as _SignInResolver,
 } from '@backstage/plugin-auth-node';
-import { OAuthStartRequest } from '../lib/oauth/types';
-
-/**
- * @public
- * @deprecated import from `@backstage/plugin-auth-node` instead
- */
-export type AuthResolverCatalogUserQuery = _AuthResolverCatalogUserQuery;
-
-/**
- * @public
- * @deprecated import from `@backstage/plugin-auth-node` instead
- */
-export type AuthResolverContext = _AuthResolverContext;
-
-/**
- * @public
- * @deprecated import from `@backstage/plugin-auth-node` instead
- */
-export type CookieConfigurer = _CookieConfigurer;
 
 /**
  * @public
@@ -60,48 +33,6 @@ export type OAuthStartResponse = {
    */
   status?: number;
 };
-
-/**
- * @public
- * @deprecated import from `@backstage/plugin-auth-node` instead
- */
-export type AuthProviderConfig = _AuthProviderConfig;
-
-/**
- * @public
- * @deprecated import from `@backstage/plugin-auth-node` instead
- */
-export type AuthProviderRouteHandlers = _AuthProviderRouteHandlers;
-
-/**
- * @public
- * @deprecated import from `@backstage/plugin-auth-node` instead
- */
-export type AuthProviderFactory = _AuthProviderFactory;
-
-/**
- * @public
- * @deprecated import `ClientAuthResponse` from `@backstage/plugin-auth-node` instead
- */
-export type AuthResponse<TProviderInfo> = _ClientAuthResponse<TProviderInfo>;
-
-/**
- * @public
- * @deprecated import from `@backstage/plugin-auth-node` instead
- */
-export type ProfileInfo = _ProfileInfo;
-
-/**
- * @public
- * @deprecated import from `@backstage/plugin-auth-node` instead
- */
-export type SignInInfo<TAuthResult> = _SignInInfo<TAuthResult>;
-
-/**
- * @public
- * @deprecated import from `@backstage/plugin-auth-node` instead
- */
-export type SignInResolver<TAuthResult> = _SignInResolver<TAuthResult>;
 
 /**
  * The return type of an authentication handler. Must contain valid profile
@@ -130,11 +61,3 @@ export type AuthHandler<TAuthResult> = (
   input: TAuthResult,
   context: _AuthResolverContext,
 ) => Promise<AuthHandlerResult>;
-
-/**
- * @public
- * @deprecated Use `createOAuthRouteHandlers` from `@backstage/plugin-auth-node` instead
- */
-export type StateEncoder = (
-  req: OAuthStartRequest,
-) => Promise<{ encodedState: string }>;
