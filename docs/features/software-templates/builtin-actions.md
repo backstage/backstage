@@ -10,7 +10,7 @@ git repository.
 
 ## Action Modules
 
-There are also several modules available for various SCM tools:
+There are several action modules that are available to be added:
 
 - [Azure DevOps](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-azure): `@backstage/plugin-scaffolder-backend-module-azure`
 - [Bitbucket Cloud](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-bitbucket-cloud): `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud`
@@ -19,6 +19,10 @@ There are also several modules available for various SCM tools:
 - [Gitea](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-gitea): `@backstage/plugin-scaffolder-backend-module-gitea`
 - [GitHub](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-github): `@backstage/plugin-scaffolder-backend-module-github`
 - [GitLab](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-gitlab): `@backstage/plugin-scaffolder-backend-module-gitlab`
+- [Rails](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-rails): `@backstage/plugin-scaffolder-backend-module-rails`
+- [Yeoman](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-yeoman): `@backstage/plugin-scaffolder-backend-module-yeoman`
+- [Sentry](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-sentry): `@backstage/plugin-scaffolder-backend-module-sentry`
+- [Cookiecutter](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-cookiecutter): `@backstage/plugin-scaffolder-backend-module-cookiecutter`
 
 ## Installing Action Modules
 
