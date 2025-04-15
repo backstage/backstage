@@ -28,7 +28,7 @@ import { createGithubSignatureValidator } from '../http/createGithubSignatureVal
  *
  * @alpha
  */
-export const eventsModuleGithubWebhook = createBackendModule({
+export default createBackendModule({
   pluginId: 'events',
   moduleId: 'github-webhook',
   register(env) {

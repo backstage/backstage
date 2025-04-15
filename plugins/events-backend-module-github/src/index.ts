@@ -20,6 +20,16 @@
  *
  * @packageDocumentation
  */
+import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+
+export default createBackendFeatureLoader({
+  loader() {
+    return [
+      import('./service/eventsModuleGithubEventRouter'),
+      import('./service/eventsModuleGithubWebhook'),
+    ];
+  },
+});
 
 export { createGithubSignatureValidator } from './http/createGithubSignatureValidator';
 export { GithubEventRouter } from './router/GithubEventRouter';
