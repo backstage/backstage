@@ -123,7 +123,7 @@ export function createGithubRepoPushAction(options: {
     async handler(ctx) {
       const {
         repoUrl,
-        defaultBranch = 'master',
+        defaultBranch = 'main',
         protectDefaultBranch = true,
         protectEnforceAdmins = true,
         gitCommitMessage = 'initial commit',
