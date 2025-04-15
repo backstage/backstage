@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+@import '../components/Avatar/Avatar.styles.css';
 @import '../components/Box/styles.css';
 @import '../components/Button/styles.css';
 @import '../components/DataTable/Root/DataTableRoot.styles.css';
