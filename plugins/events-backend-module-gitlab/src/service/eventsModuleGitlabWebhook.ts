@@ -28,7 +28,7 @@ import { createGitlabTokenValidator } from '../http/createGitlabTokenValidator';
  *
  * Registers the `GitlabEventRouter`.
  *
- * @alpha
+ * @public
  */
 export default createBackendModule({
   pluginId: 'events',

@@ -23,7 +23,7 @@ import { GithubEventRouter } from '../router/GithubEventRouter';
  *
  * Registers the `GithubEventRouter`.
  *
- * @alpha
+ * @public
  */
 export default createBackendModule({
   pluginId: 'events',
