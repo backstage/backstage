@@ -44,18 +44,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={disabled}
-        className={clsx(
-          'canon-Button',
-          `canon-Button--size-${responsiveSize}`,
-          `canon-Button--variant-${responsiveVariant}`,
-          className,
-        )}
+        className={clsx('canon-Button', className)}
+        data-size={responsiveSize}
+        data-variant={responsiveVariant}
         style={style}
         {...rest}
       >
-        {iconStart && <Icon name={iconStart} className="canon-Button--icon" />}
+        {iconStart && <Icon name={iconStart} className="canon-ButtonIcon" />}
         {children}
-        {iconEnd && <Icon name={iconEnd} className="canon-Button--icon" />}
+        {iconEnd && <Icon name={iconEnd} className="canon-ButtonIcon" />}
       </button>
     );
   },

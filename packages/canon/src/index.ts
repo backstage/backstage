@@ -33,6 +33,7 @@ export * from './components/Heading';
 
 // UI components
 export * from './components/Button';
+export * from './components/DataTable';
 export * from './components/Icon';
 export * from './components/IconButton';
 export * from './components/Checkbox';
@@ -47,3 +48,6 @@ export * from './components/Select';
 // Types
 export * from './types';
 export * from './props';
+
+// Hooks
+export { useBreakpoint } from './hooks/useBreakpoint';

@@ -38,14 +38,9 @@ export const Link = forwardRef<HTMLElement, LinkProps>((props, ref) => {
   const { renderElement } = useRender({
     render,
     props: {
-      className: clsx(
-        'canon-Link',
-        responsiveVariant && `canon-Link--variant-${responsiveVariant}`,
-        responsiveWeight && `canon-Link--weight-${responsiveWeight}`,
-        className,
-      ),
-      responsiveVariant,
-      responsiveWeight,
+      className: clsx('canon-Link', className),
+      ['data-variant']: responsiveVariant,
+      ['data-weight']: responsiveWeight,
       ...restProps,
     },
     refs: [ref, internalRef],
