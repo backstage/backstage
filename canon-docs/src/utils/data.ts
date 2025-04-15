@@ -82,6 +82,11 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
+    title: 'Collapsible',
+    slug: 'collapsible',
+    status: 'alpha',
+  },
+  {
     title: 'Heading',
     slug: 'heading',
     status: 'alpha',

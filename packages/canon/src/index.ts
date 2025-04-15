@@ -34,6 +34,7 @@ export * from './components/Heading';
 // UI components
 export * from './components/Avatar';
 export * from './components/Button';
+export * from './components/Collapsible';
 export * from './components/DataTable';
 export * from './components/Icon';
 export * from './components/IconButton';
