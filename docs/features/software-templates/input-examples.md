@@ -80,7 +80,7 @@ parameters:
 
 ### Array with custom titles
 
-In the example below the user will see the the `enumNames` instead of the `enum` values, making it easier to read.
+In the example below the user will see the `enumNames` instead of the `enum` values, making it easier to read.
 
 ```yaml
 parameters:
