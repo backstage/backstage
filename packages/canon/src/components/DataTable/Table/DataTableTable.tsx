@@ -28,13 +28,21 @@ const DataTableTable = forwardRef(
     const { table } = useDataTable();
 
     return (
-      <Table.Root ref={ref} className={clsx(className)} {...rest}>
+      <Table.Root
+        ref={ref}
+        style={{ minWidth: table.getTotalSize() }}
+        className={clsx(className)}
+        {...rest}
+      >
         <Table.Header>
           {table.getHeaderGroups().map(headerGroup => (
             <Table.Row key={headerGroup.id}>
               {headerGroup.headers.map(header => {
                 return (
-                  <Table.Head key={header.id}>
+                  <Table.Head
+                    key={header.id}
+                    style={{ width: header.getSize() }}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -55,7 +63,10 @@ const DataTableTable = forwardRef(
                 data-state={row.getIsSelected() && 'selected'}
               >
                 {row.getVisibleCells().map(cell => (
-                  <Table.Cell key={cell.id}>
+                  <Table.Cell
+                    key={cell.id}
+                    style={{ width: cell.column.getSize() }}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </Table.Cell>
                 ))}
@@ -66,6 +77,7 @@ const DataTableTable = forwardRef(
               <Table.Cell
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
+                style={{ width: table.getTotalSize() }}
               >
                 No results.
               </Table.Cell>

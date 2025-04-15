@@ -36,6 +36,7 @@ const DataTablePagination = forwardRef(
     return (
       <div
         ref={ref}
+        style={{ minWidth: table?.getTotalSize() }}
         className={clsx('canon-DataTablePagination', className)}
         {...rest}
       >

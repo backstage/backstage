@@ -42,6 +42,7 @@ export const columns: ColumnDef<DataProps>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
+    size: 50,
   },
   {
     accessorKey: 'name',
@@ -53,6 +54,7 @@ export const columns: ColumnDef<DataProps>[] = [
         href="/"
       />
     ),
+    size: 450,
   },
   {
     accessorKey: 'owner',
@@ -73,10 +75,12 @@ export const columns: ColumnDef<DataProps>[] = [
     accessorKey: 'type',
     header: 'Type',
     cell: ({ row }) => <DataTable.TableCellText title={row.getValue('type')} />,
+    size: 150,
   },
   {
     accessorKey: 'tags',
     header: 'Tags',
     cell: ({ row }) => <DataTable.TableCellText title={row.getValue('tags')} />,
+    size: 150,
   },
 ];
