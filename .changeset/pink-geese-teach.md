@@ -1,5 +1,6 @@
 ---
 '@backstage/backend-defaults': minor
+'@backstage/backend-plugin-api': minor
 '@backstage/backend-test-utils': minor
 ---
 
