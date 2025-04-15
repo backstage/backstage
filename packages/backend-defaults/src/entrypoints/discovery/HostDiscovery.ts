@@ -101,7 +101,7 @@ export interface HostDiscoveryOptions {
    *
    * This parameter is usedful for example if you want to provide a shared
    * library of core services to your plugin developers, which is set up for the
-   * default behaviors in your org. This alleviates the need fo replicating any
+   * default behaviors in your org. This alleviates the need for replicating any
    * given set of endpoint config in every backend that you deploy.
    */
   defaultEndpoints?: HostDiscoveryEndpoint[];
