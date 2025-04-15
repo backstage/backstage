@@ -40,10 +40,13 @@ export default createBackendModule({
         events: eventsExtensionPoint,
       },
       async init({ config, events }) {
-        events.addHttpPostIngress({
-          topic: 'gitlab',
-          validator: createGitlabTokenValidator(config),
-        });
+        const validator = createGitlabTokenValidator(config);
+        if (validator) {
+          events.addHttpPostIngress({
+            topic: 'gitlab',
+            validator: createGitlabTokenValidator(config),
+          });
+        }
       },
     });
   },
