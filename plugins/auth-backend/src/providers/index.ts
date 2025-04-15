@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { createOriginFilter, type ProviderFactories } from './router';
+export { type ProviderFactories } from './router';

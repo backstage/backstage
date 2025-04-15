@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-import { TokenManager } from '@backstage/backend-common';
 import {
   RELATION_MEMBER_OF,
   UserEntityV1alpha1,
 } from '@backstage/catalog-model';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { CatalogIdentityClient } from './CatalogIdentityClient';
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 describe('CatalogIdentityClient', () => {
-  const tokenManager: jest.Mocked<TokenManager> = {
-    getToken: jest.fn(),
-    authenticate: jest.fn(),
-  };
+  const auth = mockServices.auth();
 
   afterEach(() => jest.resetAllMocks());
 
@@ -48,11 +44,9 @@ describe('CatalogIdentityClient', () => {
     });
     jest.spyOn(catalogApi, 'getEntities');
 
-    tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
     const client = new CatalogIdentityClient({
-      discovery: mockServices.discovery(),
       catalogApi,
-      tokenManager,
+      auth,
     });
 
     await client.findUser({ annotations: { key: 'value' } });
@@ -64,9 +58,13 @@ describe('CatalogIdentityClient', () => {
           'metadata.annotations.key': 'value',
         },
       },
-      { token: 'my-token' },
+      {
+        token: mockCredentials.service.token({
+          onBehalfOf: mockCredentials.service('plugin:test'),
+          targetPluginId: 'catalog',
+        }),
+      },
     );
-    expect(tokenManager.getToken).toHaveBeenCalledWith();
   });
 
   it('resolveCatalogMembership resolves membership', async () => {
@@ -107,12 +105,10 @@ describe('CatalogIdentityClient', () => {
     ];
     const catalogApi = catalogServiceMock({ entities: mockUsers });
     jest.spyOn(catalogApi, 'getEntities');
-    tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
 
     const client = new CatalogIdentityClient({
-      discovery: {} as any,
       catalogApi,
-      tokenManager,
+      auth,
     });
 
     const claims = await client.resolveCatalogMembership({
@@ -139,7 +135,12 @@ describe('CatalogIdentityClient', () => {
           },
         ],
       },
-      { token: 'my-token' },
+      {
+        token: mockCredentials.service.token({
+          onBehalfOf: mockCredentials.service('plugin:test'),
+          targetPluginId: 'catalog',
+        }),
+      },
     );
 
     expect(claims).toMatchObject([

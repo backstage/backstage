@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { TokenManager } from '@backstage/backend-common';
 import {
   AuthService,
   DiscoveryService,
-  HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
@@ -50,8 +48,6 @@ export function bindProviderRouters(
     logger: LoggerService;
     discovery: DiscoveryService;
     auth: AuthService;
-    httpAuth: HttpAuthService;
-    tokenManager?: TokenManager;
     tokenIssuer: TokenIssuer;
     ownershipResolver?: AuthOwnershipResolver;
     catalogApi?: CatalogApi;
@@ -65,8 +61,6 @@ export function bindProviderRouters(
     logger,
     discovery,
     auth,
-    httpAuth,
-    tokenManager,
     tokenIssuer,
     catalogApi,
     ownershipResolver,
@@ -97,10 +91,7 @@ export function bindProviderRouters(
             catalogApi:
               catalogApi ?? new CatalogClient({ discoveryApi: discovery }),
             tokenIssuer,
-            tokenManager,
-            discovery,
             auth,
-            httpAuth,
             ownershipResolver,
           }),
         });
@@ -148,10 +139,6 @@ export function bindProviderRouters(
   }
 }
 
-/**
- * @public
- * @deprecated this export will be removed
- */
 export function createOriginFilter(
   config: Config,
 ): (origin: string) => boolean {

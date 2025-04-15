@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { TokenManager } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   DEFAULT_NAMESPACE,
@@ -24,12 +23,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
-import {
-  AuthService,
-  DiscoveryService,
-  HttpAuthService,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { TokenIssuer } from '../../identity/types';
 import {
   AuthOwnershipResolver,
@@ -55,18 +49,12 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     logger: LoggerService;
     catalogApi: CatalogApi;
     tokenIssuer: TokenIssuer;
-    tokenManager?: TokenManager;
-    discovery: DiscoveryService;
     auth: AuthService;
-    httpAuth: HttpAuthService;
     ownershipResolver?: AuthOwnershipResolver;
   }): CatalogAuthResolverContext {
     const catalogIdentityClient = new CatalogIdentityClient({
       catalogApi: options.catalogApi,
-      tokenManager: options.tokenManager,
-      discovery: options.discovery,
       auth: options.auth,
-      httpAuth: options.httpAuth,
     });
 
     return new CatalogAuthResolverContext(
