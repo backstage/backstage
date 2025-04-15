@@ -12,13 +12,13 @@ git repository.
 
 There are also several modules available for various SCM tools:
 
-- Azure DevOps: `@backstage/plugin-scaffolder-backend-module-azure`
-- Bitbucket Cloud: `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud`
-- Bitbucket Server: `@backstage/plugin-scaffolder-backend-module-bitbucket-server`
-- Gerrit: `@backstage/plugin-scaffolder-backend-module-gerrit`
-- Gitea: `@backstage/plugin-scaffolder-backend-module-gitea`
-- GitHub: `@backstage/plugin-scaffolder-backend-module-github`
-- GitLab: `@backstage/plugin-scaffolder-backend-module-gitlab`
+- [Azure DevOps](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-azure): `@backstage/plugin-scaffolder-backend-module-azure`
+- [Bitbucket Cloud](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-bitbucket-cloud): `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud`
+- [Bitbucket Server](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-bitbucket-server): `@backstage/plugin-scaffolder-backend-module-bitbucket-server`
+- [Gerrit](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-gerrit): `@backstage/plugin-scaffolder-backend-module-gerrit`
+- [Gitea](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-gitea): `@backstage/plugin-scaffolder-backend-module-gitea`
+- [GitHub](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-github): `@backstage/plugin-scaffolder-backend-module-github`
+- [GitLab](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-gitlab): `@backstage/plugin-scaffolder-backend-module-gitlab`
 
 ## Installing Action Modules
 
@@ -37,7 +37,6 @@ const backend = createBackend();
 
 backend.add(import('@backstage/plugin-app-backend'));
 
-// catalog plugin
 backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
@@ -50,12 +49,6 @@ backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
 
 backend.start();
 ```
-
-:::note Note
-
-This is a simplified example of what your backend may look like, you may have more code in here then this.
-
-:::
 
 ## Listing Actions
 
