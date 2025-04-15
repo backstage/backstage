@@ -1,5 +1,14 @@
 # @backstage/integration
 
+## 1.16.3
+
+### Patch Changes
+
+- 9768992: Mark GitHub `webhookSecret` config property as optional. A `webhookSecret` is not required when creating a GitHub App.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 1.16.3-next.0
 
 ### Patch Changes

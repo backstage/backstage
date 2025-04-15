@@ -1,5 +1,22 @@
 # @backstage/test-utils
 
+## 1.7.7
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/plugin-permission-react@0.4.33
+  - @backstage/core-app-api@1.16.1
+  - @backstage/theme@0.6.5
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
 ## 1.7.7-next.0
 
 ### Patch Changes

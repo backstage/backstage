@@ -1,5 +1,38 @@
 # @backstage/canon
 
+## 0.3.0
+
+### Minor Changes
+
+- df4e292: Improve class name structure using data attributes instead of class names.
+- f038613: Updated TextField and Select component to work with React Hook Form.
+- 1b0cf40: Add new Select component for Canon
+- 5074d61: **BREAKING**: Added a new TextField component to replace the Field and Input component. After feedback, it became clear that we needed to build a more opinionated version to avoid any problem in the future.
+
+### Patch Changes
+
+- 6af7b16: Updated styles for the Menu component in Canon.
+- bcbc593: Fix Checkbox styles on dark theme in Canon.
+- e7efb7d: Add new breakpoint helpers up(), down() and current breakpoint to help you use our breakpoints in your React components.
+- f7cb538: Internal refactor and fixes to the prop extraction logic for layout components.
+- 35b36ec: Add new Collapsible component for Canon.
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 513477f: Add global CSS reset for anchor tags.
+- 24f0e08: Improved Container styles, changing our max-width to 120rem and improving padding on smaller screens.
+- 851779d: Add new Avatar component to Canon.
+- ec5ebd1: Add new TableCellProfile component for Table and DataTable in Canon.
+- 5e80f0b: Fix types on the Icon component.
+- 0e654bf: Add new DataTable component and update Table component styles.
+- 7ae28ba: Move styles to the root of the TextField component.
+- 4fe5b08: We added a render prop to the Link component to make sure it can work with React Router.
+- 74d463c: Fix Select styles on small sizes + with long option names in Canon.
+- f25a5be: Added a new gray scale for Canon for both light and dark theme.
+- 5ee4fc2: Add support for column sizing in DataTable.
+- 05a5003: Fix the Icon component when the name is not found to return null instead of an empty SVG.
+
 ## 0.3.0-next.2
 
 ### Minor Changes

@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.6.5
+
+### Patch Changes
+
+- 27d1031: fixed misleading example location annotations in docs
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0
+  - @backstage/plugin-catalog-node@1.16.3
+  - @backstage/plugin-catalog-backend@1.32.1
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.10
+  - @backstage/plugin-permission-common@0.8.4
+
 ## 0.6.5-next.2
 
 ### Patch Changes
