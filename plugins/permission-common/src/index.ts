@@ -21,4 +21,7 @@
  */
 export * from './types';
 export * from './permissions';
-export * from './PermissionClient';
+export {
+  PermissionClient,
+  type PermissionClientRequestOptions,
+} from './PermissionClient';
