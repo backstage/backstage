@@ -1,7 +1,6 @@
 # List of custom action packages
 
-Here is a list of Open Source custom actions that you can add to your Backstage
-scaffolder backend!
+Here is a list of Open Source custom actions that you can add to your Backstage scaffolder backend!
 
 | Name                     | Package                                                                                                                                         | Owner                                                        |
 | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
@@ -17,3 +16,5 @@ scaffolder backend!
 | NPM Actions              | [plugin-scaffolder-npm-actions](https://www.npmjs.com/package/@mdude2314/backstage-plugin-scaffolder-npm-actions)                               | [Drew Hill](https://github.com/arhill05)                     |
 | Slack Actions            | [plugin-scaffolder-backend-module-slack](https://www.npmjs.com/package/@mdude2314/backstage-plugin-scaffolder-backend-module-slack)             | [Drew Hill](https://github.com/arhill05)                     |
 | Microsoft Teams Actions  | [plugin-scaffolder-backend-module-ms-teams](https://www.npmjs.com/package/@grvpandey11/backstage-plugin-scaffolder-backend-module-ms-teams)     | [Gaurav Pandey](https://github.com/grvpandey11)              |
+
+You may also want to check out the [Community Plugins Repo](https://github.com/backstage/community-plugins) for more!
