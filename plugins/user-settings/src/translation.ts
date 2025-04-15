@@ -109,7 +109,7 @@ export const userSettingsTranslationRef = createTranslationRef({
           disable: 'Disable',
           enable: 'Enable',
         },
-        subTitle: {
+        subtitle: {
           registeredInApplication: 'Registered in the application',
           registeredInPlugin: 'Registered in {{pluginId}} plugin',
         },
@@ -118,6 +118,6 @@ export const userSettingsTranslationRef = createTranslationRef({
     settingsLayout: {
       title: 'Settings',
     },
-    sideBarTitle: 'Settings',
+    sidebarTitle: 'Settings',
   },
 });

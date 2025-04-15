@@ -26,5 +26,5 @@ export const Settings = (props: { icon?: IconComponent }) => {
   const routePath = useRouteRef(settingsRouteRef);
   const Icon = props.icon ? props.icon : SettingsIcon;
   const { t } = useTranslationRef(userSettingsTranslationRef);
-  return <SidebarItem text={t('sideBarTitle')} to={routePath()} icon={Icon} />;
+  return <SidebarItem text={t('sidebarTitle')} to={routePath()} icon={Icon} />;
 };

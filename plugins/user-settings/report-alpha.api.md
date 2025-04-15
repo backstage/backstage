@@ -116,8 +116,8 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly 'featureFlags.emptyFlags.description': 'Feature Flags make it possible for plugins to register features in Backstage for users to opt into. You can use this to split out logic in your code for manual A/B testing, etc.';
     readonly 'featureFlags.flagItem.title.disable': 'Disable';
     readonly 'featureFlags.flagItem.title.enable': 'Enable';
-    readonly 'featureFlags.flagItem.subTitle.registeredInApplication': 'Registered in the application';
-    readonly 'featureFlags.flagItem.subTitle.registeredInPlugin': 'Registered in {{pluginId}} plugin';
+    readonly 'featureFlags.flagItem.subtitle.registeredInApplication': 'Registered in the application';
+    readonly 'featureFlags.flagItem.subtitle.registeredInPlugin': 'Registered in {{pluginId}} plugin';
     readonly 'languageToggle.select': 'Select language {{language}}';
     readonly 'languageToggle.title': 'Language';
     readonly 'languageToggle.description': 'Change the language';
@@ -153,7 +153,7 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly 'defaultSettingsPage.tabsTitle.authProviders': 'Authentication Providers';
     readonly 'defaultSettingsPage.tabsTitle.general': 'General';
     readonly 'settingsLayout.title': 'Settings';
-    readonly sideBarTitle: 'Settings';
+    readonly sidebarTitle: 'Settings';
   }
 >;
 

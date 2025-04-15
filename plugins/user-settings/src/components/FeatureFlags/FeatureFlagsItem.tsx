@@ -38,10 +38,10 @@ const getSecondaryText = (
     return flag.description;
   }
   return flag.pluginId
-    ? t('featureFlags.flagItem.subTitle.registeredInPlugin', {
+    ? t('featureFlags.flagItem.subtitle.registeredInPlugin', {
         pluginId: flag.pluginId,
       })
-    : t('featureFlags.flagItem.subTitle.registeredInApplication');
+    : t('featureFlags.flagItem.subtitle.registeredInApplication');
 };
 
 export const FlagItem = ({ flag, enabled, toggleHandler }: Props) => {
