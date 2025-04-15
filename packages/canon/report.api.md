@@ -6,6 +6,7 @@
 import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
 import { Breakpoint as Breakpoint_2 } from '@backstage/canon';
 import { ChangeEvent } from 'react';
+import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
 import { Context } from 'react';
 import type { CSSProperties } from 'react';
 import { FC } from 'react';
@@ -206,6 +207,25 @@ export interface CheckboxProps {
   // (undocumented)
   value?: string;
 }
+
+// @public
+export const Collapsible: {
+  Root: ForwardRefExoticComponent<
+    Omit<Collapsible_2.Root.Props & RefAttributes<HTMLDivElement>, 'ref'> &
+      RefAttributes<HTMLDivElement>
+  >;
+  Trigger: ForwardRefExoticComponent<
+    Omit<
+      Collapsible_2.Trigger.Props & RefAttributes<HTMLButtonElement>,
+      'ref'
+    > &
+      RefAttributes<HTMLButtonElement>
+  >;
+  Panel: ForwardRefExoticComponent<
+    Omit<Collapsible_2.Panel.Props & RefAttributes<HTMLButtonElement>, 'ref'> &
+      RefAttributes<HTMLButtonElement>
+  >;
+};
 
 // @public (undocumented)
 export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 'auto';
