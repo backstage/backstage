@@ -140,11 +140,13 @@ export interface Config {
           callbackUrl?: string;
         };
       };
-      /**
-       * The backstage token expiration.
-       */
-      backstageTokenExpiration?: HumanDuration | string;
     };
+
+    /**
+     * The backstage token expiration.
+     */
+    backstageTokenExpiration?: HumanDuration | string;
+
     /**
      * Additional app origins to allow for authenticating
      */
