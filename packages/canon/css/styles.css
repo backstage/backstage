@@ -9368,6 +9368,17 @@
   height: 1.5rem;
 }
 
+.canon-CollapsiblePanel {
+  height: var(--collapsible-panel-height);
+  transition: all .15s ease-out;
+  display: flex;
+  overflow: hidden;
+
+  &[data-starting-style], &[data-ending-style] {
+    height: 0;
+  }
+}
+
 .canon-DataTableRoot {
   gap: var(--canon-space-3);
   flex-direction: column;
