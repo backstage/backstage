@@ -71,11 +71,7 @@ describe('github:autolinks:create', () => {
       workspacePath,
     });
 
-    try {
-      await action.handler(mockContext);
-    } catch (e) {
-      // no-op
-    }
+    await action.handler(mockContext);
 
     expect(octokitMock).toHaveBeenCalledWith(
       expect.objectContaining({ log: mockContext.logger }),

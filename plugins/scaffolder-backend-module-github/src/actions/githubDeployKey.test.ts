@@ -73,11 +73,14 @@ describe('github:deployKey:create', () => {
   });
 
   it('should pass context logger to Octokit client', async () => {
-    try {
-      await action.handler(mockContext);
-    } catch (e) {
-      // no-op
-    }
+    mockOctokit.rest.actions.getRepoPublicKey.mockResolvedValue({
+      data: {
+        key: publicKey,
+        key_id: 'keyid',
+      },
+    });
+
+    await action.handler(mockContext);
 
     expect(octokitMock).toHaveBeenCalledWith(
       expect.objectContaining({ log: mockContext.logger }),

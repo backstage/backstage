@@ -73,11 +73,7 @@ describe('github:repository:webhook:create', () => {
   });
 
   it('should pass context logger to Octokit client', async () => {
-    try {
-      await action.handler(mockContext);
-    } catch (e) {
-      // no-op
-    }
+    await action.handler(mockContext);
 
     expect(octokitMock).toHaveBeenCalledWith(
       expect.objectContaining({ log: mockContext.logger }),

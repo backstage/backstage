@@ -140,11 +140,13 @@ describe('publish:github', () => {
   afterEach(jest.resetAllMocks);
 
   it('should pass context logger to Octokit client', async () => {
-    try {
-      await action.handler(mockContext);
-    } catch (e) {
-      // no-op
-    }
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'Organization' },
+    });
+
+    mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+
+    await action.handler(mockContext);
 
     expect(octokitMock).toHaveBeenCalledWith(
       expect.objectContaining({ log: mockContext.logger }),

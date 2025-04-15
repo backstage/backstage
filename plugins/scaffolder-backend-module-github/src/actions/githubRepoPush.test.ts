@@ -106,11 +106,14 @@ describe('github:repo:push', () => {
   });
 
   it('should pass context logger to Octokit client', async () => {
-    try {
-      await action.handler(mockContext);
-    } catch (e) {
-      // no-op
-    }
+    mockOctokit.rest.repos.get.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await action.handler(mockContext);
 
     expect(octokitMock).toHaveBeenCalledWith(
       expect.objectContaining({ log: mockContext.logger }),
