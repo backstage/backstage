@@ -88,6 +88,11 @@ export namespace mockCredentials {
   }
   export function user(
     userEntityRef?: string,
+    options?: {
+      actor?: {
+        subject: string;
+      };
+    },
   ): BackstageCredentials<BackstageUserPrincipal>;
   export namespace user {
     export function header(userEntityRef?: string): string;
@@ -95,7 +100,14 @@ export namespace mockCredentials {
     export function invalidHeader(): string;
     // (undocumented)
     export function invalidToken(): string;
-    export function token(userEntityRef?: string): string;
+    export function token(
+      userEntityRef?: string,
+      options?: {
+        actor?: {
+          subject: string;
+        };
+      },
+    ): string;
   }
 }
 
