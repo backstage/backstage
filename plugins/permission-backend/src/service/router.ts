@@ -209,6 +209,11 @@ export async function createRouter(
     );
   }
 
+  const disabledDefaultAuthPolicy =
+    config.getOptionalBoolean(
+      'backend.auth.dangerouslyDisableDefaultAuthPolicy',
+    ) ?? false;
+
   const permissionIntegrationClient = new PermissionIntegrationClient({
     discovery,
     auth,
@@ -242,7 +247,7 @@ export async function createRouter(
       const body = parseResult.data;
 
       if (
-        auth.isPrincipal(credentials, 'none') ||
+        (auth.isPrincipal(credentials, 'none') && !disabledDefaultAuthPolicy) ||
         (auth.isPrincipal(credentials, 'user') && !credentials.principal.actor)
       ) {
         if (
