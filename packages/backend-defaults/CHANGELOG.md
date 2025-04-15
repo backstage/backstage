@@ -1,5 +1,46 @@
 # @backstage/backend-defaults
 
+## 0.9.0
+
+### Minor Changes
+
+- 1daedce: Remove Throttle of Bitbucket Server API calls
+- 01edf6e: Allow pass through of redis client and cluster options to Cache core service
+- cf4eb13: Added `actor` property to `BackstageUserPrincipal` containing the subject of the last service (if any) who performed authentication on behalf of the user.
+
+### Patch Changes
+
+- 7c6740e: Implemented SRV lookup support in the default `HostDiscovery`. You can now specify internal URLs on the form `http+srv://some-srv-name/api/{{pluginId}}` and they will be resolved in real time.
+- 939116c: Added an optional `backend.trustProxy` app config value, which sets the
+  corresponding [Express.js `trust proxy`](https://expressjs.com/en/guide/behind-proxies.html) setting. This lets
+  you easily configure proxy trust without making a custom `configure` callback
+  for the `rootHttpRouter` service.
+
+  If you already are using a custom `configure` callback, and if that also _does not_ call `applyDefaults()`, you may want to add the following to it:
+
+  ```ts
+  const trustProxy = config.getOptional('backend.trustProxy');
+  if (trustProxy !== undefined) {
+    app.set('trust proxy', trustProxy);
+  }
+  ```
+
+- 175528c: Adds `backend.auditor.severityLogLevelMappings` to map severity levels to log levels.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/integration@1.16.3
+  - @backstage/backend-app-api@1.2.2
+  - @backstage/plugin-auth-node@0.6.2
+  - @backstage/plugin-permission-node@0.9.1
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.10
+
 ## 0.9.0-next.2
 
 ### Patch Changes

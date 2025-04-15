@@ -1,5 +1,22 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.23
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 9c12a76: Fixed rendering issues in `ReportIssue` addon for unsupported repository types and improved shadow DOM event handling. The addon now properly prevents initialization when encountering unsupported repository types and correctly handles selection events within the shadow DOM.
+- Updated dependencies
+  - @backstage/plugin-techdocs-react@1.2.16
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/integration-react@1.2.6
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/integration@1.16.3
+
 ## 1.1.23-next.1
 
 ### Patch Changes

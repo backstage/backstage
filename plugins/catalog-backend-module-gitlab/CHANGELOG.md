@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.6.5
+
+### Patch Changes
+
+- a568cda: add filter for repos by membership and topics
+- 871a8db: fix: Add missing config options to config declaration file
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0
+  - @backstage/plugin-catalog-node@1.16.3
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/integration@1.16.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-events-node@0.4.10
+
 ## 0.6.5-next.2
 
 ### Patch Changes

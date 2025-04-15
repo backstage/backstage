@@ -1,5 +1,75 @@
 # @backstage/plugin-catalog-react
 
+## 1.17.0
+
+### Minor Changes
+
+- 0f37fa8: `entityRouteParams` now also accepts entity refs, and can help with encoding the resulting parameters.
+- 61d350f: **BREAKING ALPHA**: `CatalogFilterBlueprint`, used in the new frontend system, is now exported under plugin-catalog-react instead of plugin-catalog.
+
+  ```diff
+  + import { CatalogFilterBlueprint } from '@backstage/plugin-catalog-react/alpha';
+  - import { CatalogFilterBlueprint } from '@backstage/plugin-catalog/alpha';
+  ```
+
+- 09afd67: Adds `EntityContextMenuItemBlueprint` to enable extending the entity page's context menu with user defined items.
+
+  For example:
+
+  ```ts
+  import { EntityContextMenuItemBlueprint } from '@backstage/plugin-catalog-react/alpha';
+
+  const myCustomHref = EntityContextMenuItemBlueprint.make({
+    name: 'test-href',
+    params: {
+      icon: <span>Example Icon</span>,
+      useProps: () => ({
+        title: 'Example Href',
+        href: '/example-path',
+        disabled: false,
+        component: 'a',
+      }),
+    },
+  });
+
+  const myCustomOnClick = EntityContextMenuItemBlueprint.make({
+    name: 'test-click',
+    params: {
+      icon: <span>Test Icon</span>,
+      useProps: () => ({
+        title: 'Example onClick',
+        onClick: () => window.alert('Hello world!'),
+        disabled: false,
+      }),
+    },
+  });
+  ```
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 3f7e4f1: Added a new `overview` entity content group for the new frontend system.
+- 186d016: Add `operation` to alpha `defaultEntityContentGroups`.
+- 221ddba: Fix offset pagination to reset when updating filters in `useEntityList`
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/frontend-test-utils@0.3.1
+  - @backstage/integration-react@1.2.6
+  - @backstage/core-compat-api@0.4.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/plugin-permission-react@0.4.33
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+
 ## 1.17.0-next.2
 
 ### Minor Changes

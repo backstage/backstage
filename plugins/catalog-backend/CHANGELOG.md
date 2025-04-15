@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-backend
 
+## 1.32.1
+
+### Patch Changes
+
+- 7cc4995: Fix for duplicate results in `queryEntities` when providing an `orderField` parameter
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/integration@1.16.3
+  - @backstage/plugin-permission-node@0.9.1
+  - @backstage/plugin-search-backend-module-catalog@0.3.3
+  - @backstage/backend-openapi-utils@0.5.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-events-node@0.4.10
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
 ## 1.32.1-next.1
 
 ### Patch Changes
