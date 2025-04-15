@@ -59,10 +59,17 @@ export const columns: ColumnDef<DataProps>[] = [
   {
     accessorKey: 'owner',
     header: 'Owner',
-    cell: ({ row }) => (
-      <DataTable.TableCellText title={row.getValue('owner')} />
-    ),
-    size: 200,
+    cell: ({ row }) => {
+      const owner = row.getValue('owner') as DataProps['owner'];
+
+      return (
+        <DataTable.TableCellProfile
+          name={owner.name}
+          src={owner.profilePicture}
+          to={owner.link}
+        />
+      );
+    },
   },
   {
     accessorKey: 'type',

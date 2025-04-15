@@ -19,6 +19,7 @@ import clsx from 'clsx';
 import { TableCell } from './TableCell/TableCell';
 import { TableCellText } from './TableCellText/TableCellText';
 import { TableCellLink } from './TableCellLink/TableCellLink';
+import { TableCellProfile } from './TableCellProfile/TableCellProfile';
 
 const TableRoot = forwardRef<
   HTMLTableElement,
@@ -91,5 +92,6 @@ export const Table = {
   Cell: TableCell,
   CellText: TableCellText,
   CellLink: TableCellLink,
+  CellProfile: TableCellProfile,
   Caption: TableCaption,
 };

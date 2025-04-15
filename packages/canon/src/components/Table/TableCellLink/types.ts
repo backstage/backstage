@@ -18,7 +18,7 @@ import type { useRender } from '@base-ui-components/react/use-render';
 
 /** @public */
 export interface TableCellLinkProps
-  extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
   description?: string;
   href: string;

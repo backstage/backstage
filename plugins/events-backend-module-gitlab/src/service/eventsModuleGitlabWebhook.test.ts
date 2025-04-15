@@ -20,7 +20,7 @@ import {
   HttpPostIngressOptions,
   RequestDetails,
 } from '@backstage/plugin-events-node';
-import { eventsModuleGitlabWebhook } from './eventsModuleGitlabWebhook';
+import eventsModuleGitlabWebhook from './eventsModuleGitlabWebhook';
 
 describe('gitlabWebhookEventsModule', () => {
   const requestWithToken = (token?: string) => {
