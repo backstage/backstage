@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import type { useRender } from '@base-ui-components/react/use-render';
-
 /** @public */
-export interface TableCellLinkProps
+export interface TableCellProfileProps
   extends React.HTMLAttributes<HTMLDivElement> {
-  title: string;
-  description?: string;
-  href: string;
-  render?: useRender.ComponentProps<'a'>['render'];
+  src?: string;
+  name?: string;
+  to?: string;
+  withImage?: boolean;
 }

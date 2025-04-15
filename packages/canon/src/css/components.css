@@ -28,6 +28,7 @@
 @import '../components/Table/TableCell/TableCell.styles.css';
 @import '../components/Table/TableCellText/TableCellText.styles.css';
 @import '../components/Table/TableCellLink/TableCellLink.styles.css';
+@import '../components/Table/TableCellProfile/TableCellProfile.styles.css';
 @import '../components/Text/styles.css';
 @import '../components/Heading/styles.css';
 @import '../components/IconButton/styles.css';

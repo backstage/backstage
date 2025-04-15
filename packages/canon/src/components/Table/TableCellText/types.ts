@@ -16,7 +16,7 @@
 
 /** @public */
 export interface TableCellTextProps
-  extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
   description?: string;
 }
