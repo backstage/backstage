@@ -56,7 +56,7 @@ This hook is called by yarn when resolving direct and indirect dependencies in
 the workspace, and allows modifying the version range. The yarn plugin uses this
 hook to parameterize `backstage:^` ranges with the current Backstage version and
 the corresponding npm package version from the manifest. This uses the system
-built into yarn for adding parameters to version ranges. An
+built into yarn for adding parameters to version ranges.
 
 ### `BackstageNpmResolver`
 
