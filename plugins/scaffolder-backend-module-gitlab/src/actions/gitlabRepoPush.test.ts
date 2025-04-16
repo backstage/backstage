@@ -420,7 +420,7 @@ describe('createGitLabCommit', () => {
       );
 
       await expect(instance.handler(ctx)).rejects.toThrow(
-        "Modifying the files in some-branch failed. Please verify that all files you're trying to modify exist in the repository. Error: Commit failed",
+        "Committing the changes to some-branch failed. Please verify that all files you're trying to modify exist in the repository. Error: Commit failed",
       );
     });
 
@@ -443,7 +443,7 @@ describe('createGitLabCommit', () => {
       );
 
       await expect(instance.handler(ctx)).rejects.toThrow(
-        "Modifying the files in some-branch failed. Please verify that all files you're trying to modify exist in the repository. Error: Commit failed",
+        "Committing the changes to some-branch failed. Please verify that all files you're trying to modify exist in the repository. Error: Commit failed",
       );
     });
   });

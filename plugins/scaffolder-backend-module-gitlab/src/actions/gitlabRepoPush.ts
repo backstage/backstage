@@ -205,7 +205,7 @@ export const createGitlabRepoPushAction = (options: {
       } catch (e) {
         if (commitAction !== 'create') {
           throw new InputError(
-            `Modifying the files in ${branchName} failed. Please verify that all files you're trying to modify exist in the repository. ${getErrorMessage(
+            `Committing the changes to ${branchName} failed. Please verify that all files you're trying to modify exist in the repository. ${getErrorMessage(
               e,
             )}`,
           );
