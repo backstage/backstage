@@ -29,8 +29,10 @@ import {
   catalogApiRef,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
+import { MarkdownContent } from '@backstage/core-components';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
+import { makeStyles } from '@material-ui/core/styles';
 import Autocomplete, {
   AutocompleteChangeReason,
   createFilterOptions,
@@ -49,6 +51,18 @@ import { scaffolderTranslationRef } from '../../../translation';
 
 export { EntityPickerSchema } from './schema';
 
+const useStyles = makeStyles(theme => ({
+  markdownDescription: {
+    fontSize: theme.typography.caption.fontSize,
+    margin: 0,
+    color: theme.palette.text.secondary,
+    '& :first-child': {
+      margin: 0,
+      marginTop: '3px', // to keep the standard browser padding
+    },
+  },
+}));
+
 /**
  * The underlying component that is rendered in the form for the `EntityPicker`
  * field extension.
@@ -57,6 +71,7 @@ export { EntityPickerSchema } from './schema';
  */
 export const EntityPicker = (props: EntityPickerProps) => {
   const { t } = useTranslationRef(scaffolderTranslationRef);
+  const classes = useStyles();
   const {
     onChange,
     schema: {
@@ -210,8 +225,6 @@ export const EntityPicker = (props: EntityPickerProps) => {
             {...params}
             label={title}
             margin="dense"
-            helperText={description}
-            FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
             variant="outlined"
             required={required}
             disabled={isDisabled}
@@ -226,6 +239,13 @@ export const EntityPicker = (props: EntityPickerProps) => {
         })}
         ListboxComponent={VirtualizedListbox}
       />
+      {description && (
+        <MarkdownContent
+          content={description}
+          linkTarget="_blank"
+          className={classes.markdownDescription}
+        />
+      )}
     </FormControl>
   );
 };
