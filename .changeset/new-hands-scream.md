@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-auth-backend': major
+'@backstage/plugin-auth-backend': minor
 ---
 
 **BREAKING**: Removed support for the old backend system, and removed all deprecated exports.
