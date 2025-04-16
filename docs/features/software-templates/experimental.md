@@ -131,7 +131,7 @@ export const mockDecorator = createScaffolderFormDecorator({
   decorator: async (
     // Context has all the things needed to write simple decorators
     { setSecrets, setFormState, input: { test } },
-    // Depepdencies injected here
+    // Dependencies injected here
     { githubApi },
   ) => {
     // mutate the form state
