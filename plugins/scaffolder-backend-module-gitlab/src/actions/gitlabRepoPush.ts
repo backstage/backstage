@@ -203,6 +203,13 @@ export const createGitlabRepoPushAction = (options: {
         ctx.output('projectPath', repoID);
         ctx.output('commitHash', commitId);
       } catch (e) {
+        if (commitAction !== 'create') {
+          throw new InputError(
+            `Modifying the files in ${branchName} failed. Please verify that all files you're trying to modify exist in the repository. ${getErrorMessage(
+              e,
+            )}`,
+          );
+        }
         throw new InputError(
           `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${getErrorMessage(
             e,
