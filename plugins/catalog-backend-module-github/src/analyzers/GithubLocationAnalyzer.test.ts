@@ -39,13 +39,11 @@ import {
 } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 const server = setupServer();
 
 describe('GithubLocationAnalyzer', () => {
-  const mockDiscovery = mockServices.discovery.mock({
-    getBaseUrl: async () => 'http://localhost:7007',
-  });
   const mockAuthService = mockServices.auth.mock({
     getPluginRequestToken: async () => ({ token: 'abc123' }),
   });
@@ -115,7 +113,7 @@ describe('GithubLocationAnalyzer', () => {
     });
 
     const analyzer = new GithubLocationAnalyzer({
-      discovery: mockDiscovery,
+      catalog: catalogServiceMock(),
       auth: mockAuthService,
       config,
     });
@@ -142,7 +140,7 @@ describe('GithubLocationAnalyzer', () => {
     });
 
     const analyzer = new GithubLocationAnalyzer({
-      discovery: mockDiscovery,
+      catalog: catalogServiceMock(),
       auth: mockAuthService,
       config,
     });
@@ -168,7 +166,7 @@ describe('GithubLocationAnalyzer', () => {
     });
 
     const analyzer = new GithubLocationAnalyzer({
-      discovery: mockDiscovery,
+      catalog: catalogServiceMock(),
       auth: mockAuthService,
       config,
     });

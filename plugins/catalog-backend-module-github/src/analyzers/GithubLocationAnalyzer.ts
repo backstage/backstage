@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
@@ -26,31 +25,30 @@ import { isEmpty, trimEnd } from 'lodash';
 import parseGitUrl from 'git-url-parse';
 import {
   AnalyzeOptions,
+  CatalogService,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
-import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { extname } from 'path';
 
 /** @public */
 export type GithubLocationAnalyzerOptions = {
   config: Config;
-  discovery: DiscoveryService;
   auth: AuthService;
   githubCredentialsProvider?: GithubCredentialsProvider;
-  catalog?: CatalogApi;
+  catalog: CatalogService;
 };
 
 /** @public */
 export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
-  private readonly catalogClient: CatalogApi;
+  private readonly catalogClient: CatalogService;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
   private readonly integrations: ScmIntegrationRegistry;
   private readonly auth: AuthService;
 
   constructor(options: GithubLocationAnalyzerOptions) {
-    this.catalogClient =
-      options.catalog ?? new CatalogClient({ discoveryApi: options.discovery });
+    this.catalogClient = options.catalog;
     this.integrations = ScmIntegrations.fromConfig(options.config);
     this.githubCredentialsProvider =
       options.githubCredentialsProvider ||
@@ -106,10 +104,7 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
         });
       const defaultBranch = repoInformation.data.default_branch;
 
-      const { token: serviceToken } = await this.auth.getPluginRequestToken({
-        onBehalfOf: await this.auth.getOwnServiceCredentials(),
-        targetPluginId: 'catalog',
-      });
+      const credentials = await this.auth.getOwnServiceCredentials();
 
       const result = await Promise.all(
         searchResult.data.items
@@ -121,7 +116,7 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
                 target,
                 dryRun: true,
               },
-              { token: serviceToken },
+              { credentials },
             );
             return addLocationResult.entities.map(e => ({
               location: { type: 'url', target },
