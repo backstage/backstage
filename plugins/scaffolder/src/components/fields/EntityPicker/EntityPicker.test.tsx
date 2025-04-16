@@ -28,13 +28,6 @@ import { EntityPickerProps } from './schema';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
-import * as backstageCore from '@backstage/core-components';
-
-// Mock MarkdownContent to test that it's called with the right props
-jest.mock('@backstage/core-components', () => ({
-  ...jest.requireActual('@backstage/core-components'),
-  MarkdownContent: jest.fn(() => null),
-}));
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -817,41 +810,6 @@ describe('<EntityPicker />', () => {
 
       // Verify that the handleChange function was called with undefined
       expect(onChange).toHaveBeenCalledWith(undefined);
-    });
-  });
-
-  describe('with markdown description', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-      uiSchema = { 'ui:options': {} };
-      props = {
-        onChange,
-        schema: {
-          description: '**Bold text** and *italic text*',
-        },
-        required,
-        uiSchema,
-        rawErrors,
-        formData,
-      } as unknown as FieldProps;
-
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
-    });
-
-    it('renders description as markdown', async () => {
-      await renderInTestApp(
-        <Wrapper>
-          <EntityPicker {...props} />
-        </Wrapper>,
-      );
-
-      expect(backstageCore.MarkdownContent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          content: '**Bold text** and *italic text*',
-          linkTarget: '_blank',
-        }),
-        expect.anything(),
-      );
     });
   });
 });

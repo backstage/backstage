@@ -29,10 +29,7 @@ import {
   catalogApiRef,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
-import { MarkdownContent } from '@backstage/core-components';
 import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import { makeStyles } from '@material-ui/core/styles';
 import Autocomplete, {
   AutocompleteChangeReason,
   createFilterOptions,
@@ -48,20 +45,9 @@ import {
 import { VirtualizedListbox } from '../VirtualizedListbox';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
 
 export { EntityPickerSchema } from './schema';
-
-const useStyles = makeStyles(theme => ({
-  markdownDescription: {
-    fontSize: theme.typography.caption.fontSize,
-    margin: 0,
-    color: theme.palette.text.secondary,
-    '& :first-child': {
-      margin: 0,
-      marginTop: '3px', // to keep the standard browser padding
-    },
-  },
-}));
 
 /**
  * The underlying component that is rendered in the form for the `EntityPicker`
@@ -71,7 +57,6 @@ const useStyles = makeStyles(theme => ({
  */
 export const EntityPicker = (props: EntityPickerProps) => {
   const { t } = useTranslationRef(scaffolderTranslationRef);
-  const classes = useStyles();
   const {
     onChange,
     schema: {
@@ -83,6 +68,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
     rawErrors,
     formData,
     idSchema,
+    errors,
   } = props;
   const catalogFilter = buildCatalogFilter(uiSchema);
   const defaultKind = uiSchema['ui:options']?.defaultKind;
@@ -194,10 +180,12 @@ export const EntityPicker = (props: EntityPickerProps) => {
   }, [entities, onChange, selectedEntity, required, allowArbitraryValues]);
 
   return (
-    <FormControl
-      margin="normal"
+    <ScaffolderField
+      rawErrors={rawErrors}
+      rawDescription={description}
       required={required}
-      error={rawErrors?.length > 0 && !formData}
+      disabled={isDisabled}
+      errors={errors}
     >
       <Autocomplete
         disabled={
@@ -239,14 +227,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
         })}
         ListboxComponent={VirtualizedListbox}
       />
-      {description && (
-        <MarkdownContent
-          content={description}
-          linkTarget="_blank"
-          className={classes.markdownDescription}
-        />
-      )}
-    </FormControl>
+    </ScaffolderField>
   );
 };
 
