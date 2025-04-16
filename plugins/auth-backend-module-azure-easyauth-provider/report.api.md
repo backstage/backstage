@@ -32,7 +32,10 @@ export namespace azureEasyAuthSignInResolvers {
   const // (undocumented)
     idMatchingUserEntityAnnotation: SignInResolverFactory<
       AzureEasyAuthResult,
-      unknown
+      | {
+          dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+        }
+      | undefined
     >;
 }
 
