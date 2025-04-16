@@ -274,4 +274,6 @@ jobs:
 
       - name: build microsite
         run: yarn build
+        env:
+          RSPACK_PROFILE: TRACE=layer=logger
         working-directory: microsite
