@@ -28,10 +28,6 @@ import {
   AnalyzeOptions,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
-import {
-  TokenManager,
-  createLegacyAuthAdapters,
-} from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { extname } from 'path';
@@ -40,8 +36,7 @@ import { extname } from 'path';
 export type GithubLocationAnalyzerOptions = {
   config: Config;
   discovery: DiscoveryService;
-  tokenManager?: TokenManager;
-  auth?: AuthService;
+  auth: AuthService;
   githubCredentialsProvider?: GithubCredentialsProvider;
   catalog?: CatalogApi;
 };
@@ -61,11 +56,7 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
       options.githubCredentialsProvider ||
       DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
 
-    this.auth = createLegacyAuthAdapters({
-      auth: options.auth,
-      discovery: options.discovery,
-      tokenManager: options.tokenManager,
-    }).auth;
+    this.auth = options.auth;
   }
 
   supports(url: string) {
