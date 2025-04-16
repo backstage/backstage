@@ -38,7 +38,6 @@ import {
 import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
 import { metricsHandler, metricsInit } from './metrics';
-import authPlugin from './plugins/auth';
 import catalog from './plugins/catalog';
 import events from './plugins/events';
 import kubernetes from './plugins/kubernetes';
@@ -125,7 +124,6 @@ async function main() {
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
-  const authEnv = useHotMemoize(module, () => createEnv('auth'));
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
   const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
   const eventsEnv = useHotMemoize(module, () => createEnv('events'));
@@ -134,7 +132,6 @@ async function main() {
   apiRouter.use('/catalog', await catalog(catalogEnv));
   apiRouter.use('/events', await events(eventsEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
-  apiRouter.use('/auth', await authPlugin(authEnv));
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
   apiRouter.use('/permission', await permission(permissionEnv));
   apiRouter.use(notFoundHandler());
