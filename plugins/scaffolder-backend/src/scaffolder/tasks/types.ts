@@ -17,91 +17,13 @@
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
 import {
-  SerializedTask as _SerializedTask,
-  SerializedTaskEvent as _SerializedTaskEvent,
-  TaskBroker as _TaskBroker,
-  TaskBrokerDispatchOptions as _TaskBrokerDispatchOptions,
-  TaskBrokerDispatchResult as _TaskBrokerDispatchResult,
-  TaskCompletionState as _TaskCompletionState,
-  TaskContext as _TaskContext,
-  TaskEventType as _TaskEventType,
+  SerializedTask,
+  SerializedTaskEvent,
+  TaskContext,
   TaskSecrets,
-  TaskStatus as _TaskStatus,
+  TaskStatus,
   TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
-
-/**
- * The status of each step of the Task
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TaskStatus = _TaskStatus;
-
-/**
- * The state of a completed task.
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TaskCompletionState = _TaskCompletionState;
-
-/**
- * SerializedTask
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type SerializedTask = _SerializedTask;
-
-/**
- * TaskEventType
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TaskEventType = _TaskEventType;
-
-/**
- * SerializedTaskEvent
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type SerializedTaskEvent = _SerializedTaskEvent;
-
-/**
- * The result of `TaskBroker.dispatch`.
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TaskBrokerDispatchResult = _TaskBrokerDispatchResult;
-
-/**
- * The options passed to `TaskBroker.dispatch`.
- * Currently a spec and optional secrets
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TaskBrokerDispatchOptions = _TaskBrokerDispatchOptions;
-
-/**
- * Task
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TaskContext = _TaskContext;
-
-/**
- * TaskBroker
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TaskBroker = _TaskBroker;
 
 /**
  * TaskStoreEmitOptions

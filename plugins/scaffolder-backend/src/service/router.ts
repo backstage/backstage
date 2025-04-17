@@ -163,11 +163,6 @@ export interface RouterOptions {
   scheduler?: SchedulerService;
   actions?: TemplateAction<any, any, any>[];
   /**
-   * @deprecated taskWorkers is deprecated in favor of concurrentTasksLimit option with a single TaskWorker
-   * @defaultValue 1
-   */
-  taskWorkers?: number;
-  /**
    * Sets the number of concurrent tasks that can be run at any given time on the TaskWorker
    * @defaultValue 10
    */
@@ -224,7 +219,6 @@ export async function createRouter(
     database,
     catalogClient,
     actions,
-    taskWorkers,
     scheduler,
     additionalTemplateFilters,
     additionalTemplateGlobals,
@@ -310,7 +304,7 @@ export async function createRouter(
       'scaffolder.EXPERIMENTAL_gracefulShutdown',
     );
 
-    for (let i = 0; i < (taskWorkers || 1); i++) {
+    for (let i = 0; i < (concurrentTasksLimit || 1); i++) {
       const worker = await TaskWorker.create({
         taskBroker,
         actionRegistry,
