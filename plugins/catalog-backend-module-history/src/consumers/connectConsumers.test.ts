@@ -40,7 +40,7 @@ describe('connectConsumers', () => {
 
       const backend = await startTestBackend({
         features: [
-          mockServices.database.mock({ getClient: async () => knex }).factory,
+          mockServices.database.factory({ knex }),
           catalogBackend,
           catalogModuleHistory,
           mockProvider,
@@ -62,6 +62,8 @@ describe('connectConsumers', () => {
         knex,
         signal: controller.signal,
       });
+
+      // Add an entity and make sure that all consumers are notified
 
       mockProvider.addEntity({
         apiVersion: 'backstage.io/v1alpha1',
@@ -104,6 +106,54 @@ describe('connectConsumers', () => {
           },
         ]);
         expect(mockConsumer2.received[0].eventAt.getTime()).toBeCloseTo(
+          Date.now(),
+          -4, // at most 5s offset
+        );
+      });
+
+      // Update the already existing entity but now but to keep it simple, from now on check just one consumer
+
+      mockProvider.addEntity({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'foo',
+        },
+        spec: {
+          type: 'service',
+          owner: 'you', // changed
+          lifecycle: 'experimental',
+        },
+      });
+
+      await waitFor(() => {
+        expect(mockConsumer1.received[1]).toEqual({
+          id: expect.any(String),
+          eventAt: expect.any(Date),
+          eventType: 'entity_updated',
+          entityRef: 'component:default/foo',
+          entityJson: expect.stringContaining('"owner":"you"'),
+        });
+        expect(mockConsumer1.received[1].eventAt.getTime()).toBeCloseTo(
+          Date.now(),
+          -4, // at most 5s offset
+        );
+      });
+
+      // Delete the entity
+
+      mockProvider.removeEntity('component:default/foo');
+
+      await waitFor(() => {
+        expect(mockConsumer1.received[2]).toEqual({
+          id: expect.any(String),
+          eventAt: expect.any(Date),
+          eventType: 'entity_deleted',
+          entityRef: 'component:default/foo',
+          entityJson: expect.stringContaining('"owner":"you"'),
+        });
+        expect(mockConsumer1.received[2].eventAt.getTime()).toBeCloseTo(
           Date.now(),
           -4, // at most 5s offset
         );

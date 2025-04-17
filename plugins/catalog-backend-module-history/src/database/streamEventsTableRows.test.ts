@@ -39,7 +39,7 @@ describe('streamEventsTableRows', () => {
 
       const backend = await startTestBackend({
         features: [
-          mockServices.database.mock({ getClient: async () => knex }).factory,
+          mockServices.database.factory({ knex }),
           catalogBackend,
           catalogModuleHistory,
           mockProvider,

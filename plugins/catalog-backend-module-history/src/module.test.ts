@@ -60,7 +60,7 @@ describe('module', () => {
 
     const backend = await startTestBackend({
       features: [
-        mockServices.database.mock({ getClient: async () => knex }).factory,
+        mockServices.database.factory({ knex }),
         catalogBackend,
         catalogModuleHistory,
         mockEntityProvider,
