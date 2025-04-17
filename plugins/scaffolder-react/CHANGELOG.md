@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.15.1
+
+### Patch Changes
+
+- 40de23c: Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
+
 ## 1.15.0
 
 ### Minor Changes

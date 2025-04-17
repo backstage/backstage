@@ -1,5 +1,11 @@
 # @backstage/canon
 
+## 0.3.1
+
+### Patch Changes
+
+- 2175122: Fix Canon missing dependencies
+
 ## 0.3.0
 
 ### Minor Changes
