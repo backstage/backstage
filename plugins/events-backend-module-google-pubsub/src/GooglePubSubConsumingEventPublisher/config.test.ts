@@ -17,10 +17,7 @@
 import { mockServices } from '@backstage/backend-test-utils';
 import { JsonObject } from '@backstage/types';
 import { Message } from '@google-cloud/pubsub';
-import {
-  createPatternResolver,
-  readSubscriptionTasksFromConfig,
-} from './config';
+import { readSubscriptionTasksFromConfig } from './config';
 
 function makeMessage(
   data: JsonObject,
@@ -193,42 +190,5 @@ describe('readSubscriptionTasksFromConfig', () => {
     ).toThrowErrorMatchingInlineSnapshot(
       `"Expected Googoe Pub/Sub 'subscriptionName' to be on the form 'projects/PROJECT_ID/subscriptions/SUBSCRIPTION_ID' but got 'sid'"`,
     );
-  });
-});
-
-describe('createPatternResolver', () => {
-  it('resolves patterns as expected', () => {
-    expect(createPatternResolver('foo')({})).toEqual('foo');
-    expect(createPatternResolver('{{a.b}}')({ a: { b: 'test' } })).toEqual(
-      'test',
-    );
-    expect(createPatternResolver('{{a.b}}')({ a: { b: '7' } })).toEqual('7');
-    expect(
-      createPatternResolver('{{a.b-c}}')({ a: { 'b-c': 'test' } }),
-    ).toEqual('test');
-    expect(
-      createPatternResolver("{{a['b-c']}}")({ a: { 'b-c': 'test' } }),
-    ).toEqual('test');
-    expect(
-      createPatternResolver(' {{ a.b }} ')({ a: { b: ' test ' } }),
-    ).toEqual('  test  ');
-  });
-
-  it('throws on bad / missing context values', () => {
-    expect(() =>
-      createPatternResolver('{{a.b}}')({ a: { b: [7] } }),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"Expected string or number value for selector 'a.b', got object"`,
-    );
-    expect(() =>
-      createPatternResolver('{{a.b}}')({ a: {} }),
-    ).toThrowErrorMatchingInlineSnapshot(`"No value for selector 'a.b'"`);
-  });
-
-  it('just passes down broken parts of patterns', () => {
-    expect(createPatternResolver('-{{a}}-}}')({ a: 1 })).toEqual('-1-}}');
-    expect(createPatternResolver('{{-{{a}}-')({ a: 1 })).toEqual('{{-1-');
-    expect(createPatternResolver('{{-{{a}}-}}')({ a: 1 })).toEqual('{{-1-}}');
-    expect(createPatternResolver('{{-{{}}-}}')({ a: 1 })).toEqual('{{--}}');
   });
 });

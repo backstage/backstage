@@ -18,8 +18,8 @@ import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { Message } from '@google-cloud/pubsub';
+import { createPatternResolver } from '../util/createPatternResolver';
 import { SubscriptionTask } from './types';
-import lodash from 'lodash';
 
 export function readSubscriptionTasksFromConfig(
   rootConfig: RootConfigService,
@@ -34,7 +34,7 @@ export function readSubscriptionTasksFromConfig(
   return subscriptionsConfig.keys().map(subscriptionId => {
     if (!subscriptionId.match(/^[-_\w]+$/)) {
       throw new InputError(
-        `Expected Googoe Pub/Sub subscription ID to consist of letters, numbers, dashes and lodashes, but got '${subscriptionId}'`,
+        `Expected Googoe Pub/Sub subscription ID to consist of letters, numbers, dashes and underscores, but got '${subscriptionId}'`,
       );
     }
 
@@ -112,7 +112,7 @@ function readMetadataMapper(
             metadata[key] = value;
           }
         } catch {
-          // ignore silently, keep original unchanged
+          // ignore silently, keep original
         }
       });
     }
@@ -127,52 +127,4 @@ function readMetadataMapper(
     }
     return result;
   };
-}
-
-/**
- * Takes a pattern string that may contain `{{ path.to.value }}` placeholders,
- * and returns a function that accepts a context object and returns strings that
- * have had its placeholders filled in by using `lodash.get` accordingly on the
- * context.
- */
-export function createPatternResolver(
-  pattern: string,
-): (context: unknown) => string {
-  // This split results in an array where even elements are static strings
-  // between placeholders, and odd elements are the contents inside
-  // placeholders.
-  //
-  // For example, the pattern:
-  //   "{{ foo }}-{{bar}}{{baz}}."
-  // will result in:
-  //   ['', 'foo', '-', 'bar', '', 'baz', .']
-  const patternParts = pattern.split(/\{{\s*([\w\[\]'_.-]*)\s*}}/g);
-
-  const resolvers = new Array<(context: unknown) => string>();
-
-  for (let i = 0; i < patternParts.length; i += 2) {
-    const staticPart = patternParts[i];
-    const placeholderPart = patternParts[i + 1];
-
-    if (staticPart) {
-      resolvers.push(() => staticPart);
-    }
-
-    if (placeholderPart) {
-      resolvers.push(context => {
-        const value = lodash.get(context, placeholderPart);
-        if (typeof value === 'string' || Number.isFinite(value)) {
-          return String(value);
-        } else if (!value) {
-          throw new InputError(`No value for selector '${placeholderPart}'`);
-        } else {
-          throw new InputError(
-            `Expected string or number value for selector '${placeholderPart}', got ${typeof value}`,
-          );
-        }
-      });
-    }
-  }
-
-  return context => resolvers.map(resolver => resolver(context)).join('');
 }

@@ -6399,7 +6399,6 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@google-cloud/pubsub": "npm:^4.10.0"
     "@opentelemetry/api": "npm:^1.9.0"
-    lodash: "npm:^4.17.21"
     wait-for-expect: "npm:^3.0.2"
   languageName: unknown
   linkType: soft
