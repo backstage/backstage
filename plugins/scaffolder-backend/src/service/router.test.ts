@@ -360,10 +360,10 @@ describe.each([
         });
       });
 
-      describe('GET /v2/template-extensions', () => {
+      describe('GET /v2/templating-extensions', () => {
         it('lists template filters and globals', async () => {
           const response = await request(app)
-            .get('/v2/template-extensions')
+            .get('/v2/templating-extensions')
             .send();
           expect(response.status).toEqual(200);
           const integrations = ScmIntegrations.fromConfig(config);
