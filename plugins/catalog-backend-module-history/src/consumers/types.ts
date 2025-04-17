@@ -15,7 +15,7 @@
  */
 
 /**
- * THe options passed to {@link HistoryConsumerConnection.subscribe}.
+ * THe options passed to {@link HistoryConsumerConnection["subscribe"]}.
  *
  * @public
  */

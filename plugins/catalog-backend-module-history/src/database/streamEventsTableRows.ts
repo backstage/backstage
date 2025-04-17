@@ -76,7 +76,7 @@ export async function* streamEventsTableRows(options: {
         SELECT last_event_id
         FROM module_history__subscriptions
         WHERE id = :consumerId
-        FOR UPDATE
+        ${knex.client.config.client === 'pg' ? 'FOR UPDATE' : ''}
       ),
       selected_events AS (
         SELECT module_history__events.*
@@ -98,7 +98,7 @@ export async function* streamEventsTableRows(options: {
       WHERE module_history__subscriptions.id = :consumerId
       AND (SELECT COUNT(*) FROM selected_events) > 0
       RETURNING events_array.events
-    `,
+      `,
       { consumerId: subscriptionId, pageSize },
     );
 
