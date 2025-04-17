@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { useElementFilter } from './useElementFilter';
 import { renderHook } from '@testing-library/react';
 import { attachComponentData } from './componentData';
@@ -41,12 +41,7 @@ const FeatureFlagComponent = (_props: {
 }) => null;
 attachComponentData(FeatureFlagComponent, 'core.featureFlagged', true);
 const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
-const Wrapper = ({
-  children,
-}: {
-  children?: React.ReactNode;
-  tree?: ReactNode;
-}) => (
+const Wrapper = ({ children }: { children?: ReactNode; tree?: ReactNode }) => (
   <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagsApi]]}>
     {children}
   </TestApiProvider>

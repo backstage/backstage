@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import { ReactNode, useContext } from 'react';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -32,20 +32,20 @@ import { StatusError, StatusOK } from '@backstage/core-components';
 import { READY_COLUMNS, RESOURCE_COLUMNS } from '../Pods/PodsTable';
 
 type DaemonSetsAccordionsProps = {
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type DaemonSetAccordionProps = {
   daemonset: V1DaemonSet;
   ownedPods: V1Pod[];
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type DaemonSetSummaryProps = {
   daemonset: V1DaemonSet;
   numberOfCurrentPods: number;
   numberOfPodsWithErrors: number;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 const DaemonSetSummary = ({

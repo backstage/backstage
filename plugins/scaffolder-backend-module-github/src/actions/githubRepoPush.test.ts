@@ -117,7 +117,7 @@ describe('github:repo:push', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',
@@ -188,7 +188,7 @@ describe('github:repo:push', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',
@@ -229,7 +229,7 @@ describe('github:repo:push', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',
@@ -253,7 +253,7 @@ describe('github:repo:push', () => {
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://github.com/html/url/blob/master',
+      'https://github.com/html/url/blob/main',
     );
   });
 
@@ -298,7 +298,7 @@ describe('github:repo:push', () => {
       client: mockOctokit,
       repoName: 'repository',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
@@ -327,7 +327,7 @@ describe('github:repo:push', () => {
       client: mockOctokit,
       repoName: 'repository',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: true,
@@ -356,7 +356,7 @@ describe('github:repo:push', () => {
       client: mockOctokit,
       repoName: 'repository',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: false,
@@ -385,7 +385,7 @@ describe('github:repo:push', () => {
       client: mockOctokit,
       repoName: 'repository',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
@@ -484,7 +484,7 @@ describe('github:repo:push', () => {
         client: mockOctokit,
         repoName: 'repository',
         logger: mockContext.logger,
-        defaultBranch: 'master',
+        defaultBranch: 'main',
         requireCodeOwnerReviews: false,
         requiredStatusCheckContexts: [],
         requireBranchesToBeUpToDate: true,
@@ -513,7 +513,7 @@ describe('github:repo:push', () => {
         client: mockOctokit,
         repoName: 'repository',
         logger: mockContext.logger,
-        defaultBranch: 'master',
+        defaultBranch: 'main',
         requireCodeOwnerReviews: false,
         requiredStatusCheckContexts: [],
         requireBranchesToBeUpToDate: true,
@@ -542,7 +542,7 @@ describe('github:repo:push', () => {
         client: mockOctokit,
         repoName: 'repository',
         logger: mockContext.logger,
-        defaultBranch: 'master',
+        defaultBranch: 'main',
         requireCodeOwnerReviews: false,
         requiredStatusCheckContexts: [],
         requireBranchesToBeUpToDate: true,

@@ -21,7 +21,7 @@ import Popover from '@material-ui/core/Popover';
 import Typography from '@material-ui/core/Typography';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import React, { Fragment } from 'react';
+import { MouseEvent, useState, Fragment } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { Link } from '../../components/Link';
 import { Header } from '../Header';
@@ -47,10 +47,8 @@ export const InHeader = () => (
 );
 
 export const OutsideOfHeader = () => {
-  const [anchorEl, setAnchorEl] = React.useState<HTMLAnchorElement | null>(
-    null,
-  );
-  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const [anchorEl, setAnchorEl] = useState<HTMLAnchorElement | null>(null);
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     setAnchorEl(event.currentTarget);
   };
 

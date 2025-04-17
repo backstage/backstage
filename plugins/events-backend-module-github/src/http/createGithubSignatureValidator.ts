@@ -35,8 +35,13 @@ import { verify } from '@octokit/webhooks-methods';
  */
 export function createGithubSignatureValidator(
   config: Config,
-): RequestValidator {
-  const secret = config.getString('events.modules.github.webhookSecret');
+): RequestValidator | undefined {
+  const secret = config.getOptionalString(
+    'events.modules.github.webhookSecret',
+  );
+  if (!secret) {
+    return undefined;
+  }
 
   return async (
     request: RequestDetails,

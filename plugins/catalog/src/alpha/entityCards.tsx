@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { compatWrapper } from '@backstage/core-compat-api';
 
 export const catalogAboutEntityCard = EntityCardBlueprint.make({
   name: 'about',
   params: {
+    type: 'info',
     loader: async () =>
       import('../components/AboutCard').then(m =>
         compatWrapper(<m.AboutCard variant="gridItem" />),
@@ -31,6 +31,7 @@ export const catalogAboutEntityCard = EntityCardBlueprint.make({
 export const catalogLinksEntityCard = EntityCardBlueprint.make({
   name: 'links',
   params: {
+    type: 'info',
     filter: 'has:links',
     loader: async () =>
       import('../components/EntityLinksCard').then(m =>
@@ -42,6 +43,7 @@ export const catalogLinksEntityCard = EntityCardBlueprint.make({
 export const catalogLabelsEntityCard = EntityCardBlueprint.make({
   name: 'labels',
   params: {
+    type: 'info',
     filter: 'has:labels',
     loader: async () =>
       import('../components/EntityLabelsCard').then(m =>

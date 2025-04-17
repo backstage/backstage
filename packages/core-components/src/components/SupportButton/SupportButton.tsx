@@ -27,7 +27,7 @@ import Popover from '@material-ui/core/Popover';
 import { Theme, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import React, { MouseEventHandler, useState } from 'react';
+import { ReactNode, Children, MouseEventHandler, useState } from 'react';
 import { SupportItem, SupportItemLink, useSupportConfig } from '../../hooks';
 import { HelpIcon } from '../../icons';
 import { Link } from '../Link';
@@ -37,7 +37,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 type SupportButtonProps = {
   title?: string;
   items?: SupportItem[];
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 export type SupportButtonClassKey = 'popoverList';
@@ -164,7 +164,7 @@ export function SupportButton(props: SupportButtonProps) {
               <Typography variant="subtitle1">{title}</Typography>
             </MenuItem>
           )}
-          {React.Children.map(children, (child, i) => (
+          {Children.map(children, (child, i) => (
             <MenuItem
               button={false}
               alignItems="flex-start"

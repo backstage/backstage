@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
-import React from 'react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
@@ -53,10 +53,10 @@ describe('<EntityPicker />', () => {
     getEntities: jest.fn(async () => ({ items: entities })),
   });
 
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
           [catalogApiRef, catalogApi],
@@ -810,6 +810,99 @@ describe('<EntityPicker />', () => {
 
       // Verify that the handleChange function was called with undefined
       expect(onChange).toHaveBeenCalledWith(undefined);
+    });
+  });
+
+  describe('rendering consistency', () => {
+    beforeEach(() => {
+      uiSchema = { 'ui:options': {} };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData: 'group:default/team-a',
+      } as unknown as FieldProps<string>;
+    });
+
+    it('renders consistent entity display between dropdown and selected value', async () => {
+      // Mock the presentation API to return specific values for testing
+      const mockEntityPresentation = {
+        entityRef: 'group:default/team-a',
+        primaryTitle: 'Team A',
+      };
+
+      // Create a catalog API that includes the specific test entity
+      const testCatalogApi = catalogApiMock.mock({
+        getEntities: jest.fn().mockResolvedValue({
+          items: [makeEntity('Group', 'default', 'team-a')],
+        }),
+      });
+
+      // Create mock entity presentation mapping
+      const entityRefToPresentation = new Map();
+      entityRefToPresentation.set(
+        'group:default/team-a',
+        mockEntityPresentation,
+      );
+
+      const renderResult = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, testCatalogApi],
+            [
+              entityPresentationApiRef,
+              {
+                forEntity: jest.fn().mockReturnValue({
+                  snapshot: mockEntityPresentation,
+                  promise: Promise.resolve(mockEntityPresentation),
+                }),
+              },
+            ],
+          ]}
+        >
+          <EntityPicker {...props} />
+        </TestApiProvider>,
+      );
+
+      // Wait for the entity data to load and be processed
+      // This is needed because the EntityPicker uses useAsync
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Force a re-render to apply the mocked data
+      renderResult.rerender(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, testCatalogApi],
+            [
+              entityPresentationApiRef,
+              {
+                forEntity: jest.fn().mockReturnValue({
+                  snapshot: mockEntityPresentation,
+                  promise: Promise.resolve(mockEntityPresentation),
+                }),
+              },
+            ],
+          ]}
+        >
+          <EntityPicker {...props} formData="group:default/team-a" />
+        </TestApiProvider>,
+      );
+
+      // Force update to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Verify the selected value shows the correct display
+      const input = screen.getByRole('textbox');
+      expect(input).toHaveValue('Team A');
+
+      // Open the dropdown
+      fireEvent.mouseDown(input);
+
+      // Check if dropdown shows the same representation
+      const option = await screen.findByText('Team A');
+      expect(option).toBeInTheDocument();
     });
   });
 });

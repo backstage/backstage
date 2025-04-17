@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { fireEvent, screen } from '@testing-library/react';
 import { DocsTableRow } from './types';
 import { renderInTestApp } from '@backstage/test-utils';

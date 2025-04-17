@@ -17,7 +17,7 @@ import Box from '@material-ui/core/Box';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React, {
+import {
   PropsWithChildren,
   useCallback,
   useEffect,

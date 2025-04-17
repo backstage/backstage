@@ -22,7 +22,6 @@ import {
   SignInPage,
 } from '@backstage/core-components';
 import { CookieAuthRedirect } from '@backstage/plugin-auth-react';
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { providers } from '../src/identityProviders';
 import {

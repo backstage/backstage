@@ -35,7 +35,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import React, { useState } from 'react';
+import { ReactElement, Fragment, useState } from 'react';
 
 const useStyles = makeStyles(theme => ({
   nested: {
@@ -53,9 +53,9 @@ export interface EntityListComponentProps {
     target: string;
     entities: (Entity | CompoundEntityRef)[];
   }>;
-  locationListItemIcon: (target: string) => React.ReactElement;
+  locationListItemIcon: (target: string) => ReactElement;
   collapsed?: boolean;
-  firstListItem?: React.ReactElement;
+  firstListItem?: ReactElement;
   onItemClick?: (target: string) => void;
   withLinks?: boolean;
 }
@@ -100,7 +100,7 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
     <List>
       {firstListItem}
       {locations.map(r => (
-        <React.Fragment key={r.target}>
+        <Fragment key={r.target}>
           <ListItem
             dense
             button={Boolean(onItemClick) as any}
@@ -153,7 +153,7 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
               })}
             </List>
           </Collapse>
-        </React.Fragment>
+        </Fragment>
       ))}
     </List>
   );

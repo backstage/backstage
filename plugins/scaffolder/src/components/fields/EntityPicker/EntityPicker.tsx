@@ -30,12 +30,11 @@ import {
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
 import Autocomplete, {
   AutocompleteChangeReason,
   createFilterOptions,
 } from '@material-ui/lab/Autocomplete';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {
   EntityPickerFilterQueryValue,
@@ -46,6 +45,7 @@ import {
 import { VirtualizedListbox } from '../VirtualizedListbox';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
 
 export { EntityPickerSchema } from './schema';
 
@@ -68,6 +68,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
     rawErrors,
     formData,
     idSchema,
+    errors,
   } = props;
   const catalogFilter = buildCatalogFilter(uiSchema);
   const defaultKind = uiSchema['ui:options']?.defaultKind;
@@ -179,10 +180,12 @@ export const EntityPicker = (props: EntityPickerProps) => {
   }, [entities, onChange, selectedEntity, required, allowArbitraryValues]);
 
   return (
-    <FormControl
-      margin="normal"
+    <ScaffolderField
+      rawErrors={rawErrors}
+      rawDescription={description}
       required={required}
-      error={rawErrors?.length > 0 && !formData}
+      disabled={isDisabled}
+      errors={errors}
     >
       <Autocomplete
         disabled={
@@ -201,7 +204,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
           typeof option === 'string'
             ? option
             : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
-                ?.entityRef!
+                ?.primaryTitle || stringifyEntityRef(option)
         }
         autoSelect
         freeSolo={allowArbitraryValues}
@@ -210,8 +213,6 @@ export const EntityPicker = (props: EntityPickerProps) => {
             {...params}
             label={title}
             margin="dense"
-            helperText={description}
-            FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
             variant="outlined"
             required={required}
             disabled={isDisabled}
@@ -226,7 +227,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
         })}
         ListboxComponent={VirtualizedListbox}
       />
-    </FormControl>
+    </ScaffolderField>
   );
 };
 

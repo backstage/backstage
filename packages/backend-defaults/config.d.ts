@@ -51,6 +51,19 @@ export interface Config {
       serverShutdownDelay?: string | HumanDuration;
     };
 
+    /**
+     * Corresponds to the Express `trust proxy` setting.
+     *
+     * @see https://expressjs.com/en/guide/behind-proxies.html
+     * @remarks
+     *
+     * This setting is used to determine whether the backend should trust the
+     * `X-Forwarded-*` headers that are set by proxies. This is important for
+     * determining the original client IP address and protocol (HTTP/HTTPS) when
+     * the backend is behind a reverse proxy or load balancer.
+     */
+    trustProxy?: boolean | number | string | string[];
+
     /** Address that the backend should listen to. */
     listen?:
       | string
@@ -81,6 +94,32 @@ export interface Config {
             key: string;
           };
         };
+
+    /**
+     * Options used by the default auditor service.
+     */
+    auditor?: {
+      /**
+       * Defines how audit event severity levels are mapped to log levels.
+       * This allows you to control the verbosity of audit logs based on the
+       * severity of the event. For example, you might want to log 'low' severity
+       * events as 'debug' messages, while logging 'critical' events as 'error'
+       * messages. Each severity level ('low', 'medium', 'high', 'critical')
+       * can be mapped to one of the standard log levels ('debug', 'info', 'warn', 'error').
+       *
+       * By default, audit events are mapped to log levels as follows:
+       * - `low`: `debug`
+       * - `medium`: `info`
+       * - `high`: `info`
+       * - `critical`: `info`
+       */
+      severityLogLevelMappings?: {
+        low?: 'debug' | 'info' | 'warn' | 'error';
+        medium?: 'debug' | 'info' | 'warn' | 'error';
+        high?: 'debug' | 'info' | 'warn' | 'error';
+        critical?: 'debug' | 'info' | 'warn' | 'error';
+      };
+    };
 
     /**
      * Options used by the default auth, httpAuth and userInfo services.
@@ -704,18 +743,62 @@ export interface Config {
    */
   discovery?: {
     /**
-     * A list of target baseUrls and the associated plugins.
+     * A list of target base URLs and their associated plugins.
+     *
+     * @example
+     *
+     * ```yaml
+     * discovery:
+     *   endpoints:
+     *     - target: https://internal.example.com/internal-catalog
+     *       plugins: [catalog]
+     *     - target: https://internal.example.com/secure/api/{{pluginId}}
+     *       plugins: [auth, permission]
+     *     - target:
+     *         internal: http+srv://backstage-plugin-{{pluginId}}.http.${SERVICE_DOMAIN}/search
+     *         external: https://example.com/search
+     *       plugins: [search]
+     * ```
      */
     endpoints: Array<{
       /**
-       * The target base URL to use for the plugin.
+       * The target base URL to use for the given set of plugins. Note that this
+       * needs to be a full URL including the protocol and path parts that fully
+       * address the root of a plugin's API endpoints.
        *
-       * Can be either a string or an object with internal and external keys.
-       * Targets with `{{pluginId}}` or `{{ pluginId }} in the URL will be replaced with the plugin ID.
+       * @remarks
+       *
+       * Can be either a single URL or an object where you can explicitly give a
+       * dedicated URL for internal (as seen from the backend) and/or external (as
+       * seen from the frontend) lookups.
+       *
+       * The default behavior is to use the backend base URL for external lookups,
+       * and a URL formed from the `.listen` and `.https` configs for internal
+       * lookups. Adding discovery endpoints as described here overrides one or both
+       * of those behaviors for a given set of plugins.
+       *
+       * URLs can be in the form of a regular HTTP or HTTPS URL if you are using
+       * A/AAAA/CNAME records or IP addresses. Specifically for internal URLs, if
+       * you add `+src` to the protocol part then the hostname is treated as an SRV
+       * record name and resolved. For example, if you pass in
+       * `http+srv://<srv-record>/path` then the record part is resolved into an
+       * actual host and port (with random weighted choice as usual when there is
+       * more than one match).
+       *
+       * Any strings with `{{pluginId}}` or `{{ pluginId }}` placeholders in them
+       * will have them replaced with the plugin ID.
+       *
+       * Example URLs:
+       *
+       * - `https://internal.example.com/secure/api/{{pluginId}}`
+       * - `http+srv://backstage-plugin-{{pluginId}}.http.${SERVICE_DOMAIN}/api/{{pluginId}}`
+       *   (can only be used in the `internal` key)
        */
       target: string | { internal?: string; external?: string };
       /**
-       * Array of plugins which use the target base URL.
+       * Array of plugins which use that target base URL.
+       *
+       * The special value `*` can be used to match all plugins.
        */
       plugins: string[];
     }>;

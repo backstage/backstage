@@ -1,6 +1,6 @@
 {
   "name": "example-backend-legacy",
-  "version": "0.2.109-next.0",
+  "version": "0.2.109",
   "backstage": {
     "role": "backend"
   },
@@ -35,11 +35,9 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/integration": "workspace:^",
-    "@backstage/plugin-auth-backend": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^",
-    "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-events-backend": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",

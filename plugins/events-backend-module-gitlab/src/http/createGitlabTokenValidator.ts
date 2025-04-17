@@ -30,8 +30,16 @@ import {
  * @param config - root config
  * @public
  */
-export function createGitlabTokenValidator(config: Config): RequestValidator {
-  const secret = config.getString('events.modules.gitlab.webhookSecret');
+export function createGitlabTokenValidator(
+  config: Config,
+): RequestValidator | undefined {
+  const secret = config.getOptionalString(
+    'events.modules.gitlab.webhookSecret',
+  );
+
+  if (!secret) {
+    return undefined;
+  }
 
   return async (
     request: RequestDetails,

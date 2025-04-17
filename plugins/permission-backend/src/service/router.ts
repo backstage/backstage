@@ -62,27 +62,33 @@ const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
     .optional(),
 });
 
-const permissionSchema = z.union([
-  z.object({
-    type: z.literal('basic'),
-    name: z.string(),
-    attributes: attributesSchema,
-  }),
-  z.object({
-    type: z.literal('resource'),
-    name: z.string(),
-    attributes: attributesSchema,
-    resourceType: z.string(),
-  }),
-]);
+const basicPermissionSchema = z.object({
+  type: z.literal('basic'),
+  name: z.string(),
+  attributes: attributesSchema,
+});
+
+const resourcePermissionSchema = z.object({
+  type: z.literal('resource'),
+  name: z.string(),
+  attributes: attributesSchema,
+  resourceType: z.string(),
+});
 
 const evaluatePermissionRequestSchema: z.ZodSchema<
   IdentifiedPermissionMessage<EvaluatePermissionRequest>
-> = z.object({
-  id: z.string(),
-  resourceRef: z.string().optional(),
-  permission: permissionSchema,
-});
+> = z.union([
+  z.object({
+    id: z.string(),
+    resourceRef: z.undefined().optional(),
+    permission: basicPermissionSchema,
+  }),
+  z.object({
+    id: z.string(),
+    resourceRef: z.string().optional(),
+    permission: resourcePermissionSchema,
+  }),
+]);
 
 const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionRequestBatch> =
   z.object({
@@ -203,6 +209,11 @@ export async function createRouter(
     );
   }
 
+  const disabledDefaultAuthPolicy =
+    config.getOptionalBoolean(
+      'backend.auth.dangerouslyDisableDefaultAuthPolicy',
+    ) ?? false;
+
   const permissionIntegrationClient = new PermissionIntegrationClient({
     discovery,
     auth,
@@ -234,6 +245,22 @@ export async function createRouter(
       }
 
       const body = parseResult.data;
+
+      if (
+        (auth.isPrincipal(credentials, 'none') && !disabledDefaultAuthPolicy) ||
+        (auth.isPrincipal(credentials, 'user') && !credentials.principal.actor)
+      ) {
+        if (
+          body.items.some(
+            r =>
+              isResourcePermission(r.permission) && r.resourceRef === undefined,
+          )
+        ) {
+          throw new InputError(
+            'Resource permissions require a resourceRef to be set. Direct user requests without a resourceRef are not allowed.',
+          );
+        }
+      }
 
       res.json({
         items: await handleRequest(

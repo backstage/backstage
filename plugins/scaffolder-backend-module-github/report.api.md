@@ -210,6 +210,7 @@ export function createGithubRepoCreateAction(options: {
     squashMergeCommitMessage?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
     allowMergeCommit?: boolean;
     allowAutoMerge?: boolean;
+    allowUpdateBranch?: boolean;
     requireCodeOwnerReviews?: boolean;
     bypassPullRequestAllowances?: {
       users?: string[];
@@ -355,6 +356,7 @@ export function createPublishGithubAction(options: {
     squashMergeCommitMessage?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
     allowMergeCommit?: boolean;
     allowAutoMerge?: boolean;
+    allowUpdateBranch?: boolean;
     sourcePath?: string;
     bypassPullRequestAllowances?:
       | {

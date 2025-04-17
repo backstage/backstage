@@ -243,4 +243,55 @@ describe('gitlab:group:ensureExists', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 3);
   });
+
+  it(`Should ${examples[5].description}`, async () => {
+    mockGitlabClient.Groups.search.mockResolvedValue([
+      {
+        id: 1,
+        full_path: 'group1',
+      },
+      {
+        id: 2,
+        full_path: 'group1/group2',
+      },
+      {
+        id: 3,
+        full_path: 'group1/group2/group3',
+      },
+    ]);
+    mockGitlabClient.Groups.create.mockResolvedValue({
+      id: 4,
+      full_path: 'group1/group2/group3/group4',
+    });
+
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'gitlab.com',
+            token: 'tokenlols',
+            apiBaseUrl: 'https://api.gitlab.com',
+          },
+        ],
+      },
+    });
+    const integrations = ScmIntegrations.fromConfig(config);
+
+    const action = createGitlabGroupEnsureExistsAction({ integrations });
+
+    await action.handler({
+      ...mockContext,
+      input: yaml.parse(examples[5].example).steps[0].input,
+    });
+
+    expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith(
+      'Group 4',
+      'group4',
+      {
+        parentId: 3,
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 4);
+  });
 });

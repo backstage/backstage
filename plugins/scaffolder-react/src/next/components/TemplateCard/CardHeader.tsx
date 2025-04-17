@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import { ItemCardHeader } from '@backstage/core-components';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -35,6 +34,9 @@ const useStyles = makeStyles<
   subtitleWrapper: {
     display: 'flex',
     justifyContent: 'space-between',
+  },
+  detailIcon: {
+    color: ({ cardFontColor }) => cardFontColor,
   },
 }));
 
@@ -67,7 +69,10 @@ export const CardHeader = (props: CardHeaderProps) => {
     <div className={styles.subtitleWrapper}>
       <div>{type}</div>
       <div>
-        <TemplateDetailButton template={props.template} />
+        <TemplateDetailButton
+          className={styles.detailIcon}
+          template={props.template}
+        />
         <FavoriteEntity
           entity={props.template}
           style={{ padding: 0, marginLeft: 6 }}

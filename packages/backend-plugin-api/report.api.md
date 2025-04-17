@@ -177,6 +177,7 @@ export interface BackstageUserInfo {
 export type BackstageUserPrincipal = {
   type: 'user';
   userEntityRef: string;
+  actor?: BackstageServicePrincipal;
 };
 
 // @public

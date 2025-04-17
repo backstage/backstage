@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { type ParsedTemplateSchema } from './useTemplateSchema';

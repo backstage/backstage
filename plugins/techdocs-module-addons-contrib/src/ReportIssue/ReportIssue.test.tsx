@@ -16,11 +16,11 @@
 
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
 
-import React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react';
 
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { ReportIssue } from '../plugin';
+import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 
 const byUrl = jest.fn();
 
@@ -51,6 +51,15 @@ describe('ReportIssue', () => {
     toString: () => 'his ',
     containsNode: () => true,
   } as unknown as Selection;
+
+  const entityPresentationApiMock = {
+    forEntity: jest.fn(),
+  };
+  entityPresentationApiMock.forEntity.mockReturnValue({
+    snapshot: {
+      primaryTitle: 'Test Entity',
+    },
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -93,7 +102,10 @@ describe('ReportIssue', () => {
             </body>
           </html>,
         )
-        .withApis([[scmIntegrationsApiRef, { byUrl }]])
+        .withApis([
+          [scmIntegrationsApiRef, { byUrl }],
+          [entityPresentationApiRef, entityPresentationApiMock],
+        ])
         .renderWithEffects();
 
     (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
@@ -151,7 +163,10 @@ describe('ReportIssue', () => {
             </body>
           </html>,
         )
-        .withApis([[scmIntegrationsApiRef, { byUrl }]])
+        .withApis([
+          [scmIntegrationsApiRef, { byUrl }],
+          [entityPresentationApiRef, entityPresentationApiMock],
+        ])
         .renderWithEffects();
 
     (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
@@ -217,7 +232,10 @@ describe('ReportIssue', () => {
             </body>
           </html>,
         )
-        .withApis([[scmIntegrationsApiRef, { byUrl }]])
+        .withApis([
+          [scmIntegrationsApiRef, { byUrl }],
+          [entityPresentationApiRef, entityPresentationApiMock],
+        ])
         .renderWithEffects();
 
     (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
