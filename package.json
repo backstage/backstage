@@ -52,7 +52,6 @@
     "snyk:test:package": "yarn snyk:test --include",
     "start": "backstage-cli repo start",
     "start-backend": "echo \"Use 'yarn start example-backend' instead\"",
-    "start-backend:legacy": "echo \"Use 'yarn start example-backend-legacy' instead\"",
     "start:microsite": "cd microsite/ && yarn start",
     "start:next": "yarn start example-app-next example-backend",
     "storybook": "yarn ./storybook run storybook",
