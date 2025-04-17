@@ -4,4 +4,4 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-Fixing a bug where the name for `templatingExtensions` was incorrect
+Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
