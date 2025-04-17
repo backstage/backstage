@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-import { DatabaseManager } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore, RawDbTaskEventRow } from './DatabaseTaskStore';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { ConflictError } from '@backstage/errors';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import { EventsService } from '@backstage/plugin-events-node';
 
 const createStore = async (events?: EventsService) => {
-  const manager = DatabaseManager.fromConfig(
-    new ConfigReader({
-      backend: {
-        database: {
-          client: 'better-sqlite3',
-          connection: ':memory:',
-        },
-      },
-    }),
-  ).forPlugin('scaffolder');
+  const manager = mockServices.database.mock();
   const store = await DatabaseTaskStore.create({
     database: manager,
     events,

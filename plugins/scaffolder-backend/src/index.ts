@@ -21,8 +21,11 @@
  */
 
 export { scaffolderPlugin as default } from './ScaffolderPlugin';
+export type {
+  ActionPermissionRuleInput,
+  TemplatePermissionRuleInput,
+} from './service/router';
 export * from './scaffolder';
-export * from './service/router';
 export * from './lib';
 
 export * from './deprecated';

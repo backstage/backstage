@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import {
   AuditorService,
   AuthService,
   BackstageCredentials,
   DatabaseService,
-  DiscoveryService,
   HttpAuthService,
   LifecycleService,
   PermissionsService,
@@ -37,12 +35,8 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
+import { InputError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import {
-  IdentityApi,
-  IdentityApiGetIdentityRequest,
-} from '@backstage/plugin-auth-node';
 import { EventsService } from '@backstage/plugin-events-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import {
@@ -82,7 +76,7 @@ import {
   CreatedTemplateGlobal,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
+import { HumanDuration, JsonObject } from '@backstage/types';
 import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
@@ -109,7 +103,6 @@ import {
   parseStringsParam,
 } from './helpers';
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
-import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 import {
   convertFiltersToRecord,
   convertGlobalsToRecord,
@@ -158,8 +151,7 @@ function isActionPermissionRuleInput(
 /**
  * RouterOptions
  *
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ * @internal
  */
 export interface RouterOptions {
   logger: Logger;
@@ -192,10 +184,8 @@ export interface RouterOptions {
   permissionRules?: Array<
     TemplatePermissionRuleInput | ActionPermissionRuleInput
   >;
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
-  identity?: IdentityApi;
-  discovery?: DiscoveryService;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
   events?: EventsService;
   auditor?: AuditorService;
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
@@ -203,70 +193,6 @@ export interface RouterOptions {
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
   return entity.apiVersion === 'scaffolder.backstage.io/v1beta3';
-}
-
-/*
- * @deprecated This function remains as the DefaultIdentityClient behaves slightly differently to the pre-existing
- * scaffolder behaviour. Specifically if the token fails to parse, the DefaultIdentityClient will raise an error.
- * The scaffolder did not raise an error in this case. As such we chose to allow it to behave as it did previously
- * until someone explicitly passes an IdentityApi. When we have reasonable confidence that most backstage deployments
- * are using the IdentityApi, we can remove this function.
- */
-function buildDefaultIdentityClient(options: RouterOptions): IdentityApi {
-  return {
-    getIdentity: async ({ request }: IdentityApiGetIdentityRequest) => {
-      const header = request.headers.authorization;
-      const { logger } = options;
-
-      if (!header) {
-        return undefined;
-      }
-
-      try {
-        const token = header.match(/^Bearer\s(\S+\.\S+\.\S+)$/i)?.[1];
-        if (!token) {
-          throw new TypeError('Expected Bearer with JWT');
-        }
-
-        const [_header, rawPayload, _signature] = token.split('.');
-        const payload: JsonValue = JSON.parse(
-          Buffer.from(rawPayload, 'base64').toString(),
-        );
-
-        if (
-          typeof payload !== 'object' ||
-          payload === null ||
-          Array.isArray(payload)
-        ) {
-          throw new TypeError('Malformed JWT payload');
-        }
-
-        const sub = payload.sub;
-        if (typeof sub !== 'string') {
-          throw new TypeError('Expected string sub claim');
-        }
-
-        if (sub === 'backstage-server') {
-          return undefined;
-        }
-
-        // Check that it's a valid ref, otherwise this will throw.
-        parseEntityRef(sub);
-
-        return {
-          identity: {
-            userEntityRef: sub,
-            ownershipEntityRefs: [],
-            type: 'user',
-          },
-          token,
-        };
-      } catch (e) {
-        logger.error(`Invalid authorization header: ${stringifyError(e)}`);
-        return undefined;
-      }
-    },
-  };
 }
 
 const readDuration = (
@@ -282,8 +208,7 @@ const readDuration = (
 
 /**
  * A method to create a router for the scaffolder backend plugin.
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ * @internal
  */
 export async function createRouter(
   options: RouterOptions,
@@ -306,18 +231,12 @@ export async function createRouter(
     additionalWorkspaceProviders,
     permissions,
     permissionRules,
-    discovery = HostDiscovery.fromConfig(config),
-    identity = buildDefaultIdentityClient(options),
     autocompleteHandlers = {},
     events: eventsService,
     auditor,
+    auth,
+    httpAuth,
   } = options;
-
-  const { auth, httpAuth } = createLegacyAuthAdapters({
-    ...options,
-    identity,
-    discovery,
-  });
 
   const concurrentTasksLimit =
     options.concurrentTasksLimit ??

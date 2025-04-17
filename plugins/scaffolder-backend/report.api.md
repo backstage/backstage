@@ -6,13 +6,10 @@
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
 import { AuditorService } from '@backstage/backend-plugin-api';
 import { AuthService } from '@backstage/backend-plugin-api';
-import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { CreatedTemplateFilter } from '@backstage/plugin-scaffolder-node/alpha';
-import { CreatedTemplateGlobal } from '@backstage/plugin-scaffolder-node/alpha';
 import { createGithubActionsDispatchAction as createGithubActionsDispatchAction_2 } from '@backstage/plugin-scaffolder-backend-module-github';
 import { createGithubDeployKeyAction as createGithubDeployKeyAction_2 } from '@backstage/plugin-scaffolder-backend-module-github';
 import { createGithubEnvironmentAction as createGithubEnvironmentAction_2 } from '@backstage/plugin-scaffolder-backend-module-github';
@@ -32,29 +29,22 @@ import { createPublishGithubAction as createPublishGithubAction_2 } from '@backs
 import { createPublishGitlabAction as createPublishGitlabAction_2 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 import { createTemplateAction as createTemplateAction_2 } from '@backstage/plugin-scaffolder-node';
 import { DatabaseService } from '@backstage/backend-plugin-api';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
 import { EventsService } from '@backstage/plugin-events-node';
 import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-scaffolder-node';
 import { ExecuteShellCommandOptions } from '@backstage/plugin-scaffolder-node';
-import express from 'express';
 import { fetchContents as fetchContents_2 } from '@backstage/plugin-scaffolder-node';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HumanDuration } from '@backstage/types';
-import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
-import { LifecycleService } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
-import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessor_2 } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
-import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SerializedTask as SerializedTask_2 } from '@backstage/plugin-scaffolder-node';
@@ -379,9 +369,6 @@ export const createPublishGitlabMergeRequestAction: (options: {
   'v1'
 >;
 
-// @public @deprecated
-export function createRouter(options: RouterOptions): Promise<express.Router>;
-
 // @public @deprecated (undocumented)
 export const createTemplateAction: typeof createTemplateAction_2;
 
@@ -521,61 +508,6 @@ export const executeShellCommand: typeof executeShellCommand_2;
 
 // @public @deprecated
 export const fetchContents: typeof fetchContents_2;
-
-// @public @deprecated
-export interface RouterOptions {
-  // (undocumented)
-  actions?: TemplateAction_2<any, any, any>[];
-  // (undocumented)
-  additionalTemplateFilters?:
-    | Record<string, TemplateFilter_2>
-    | CreatedTemplateFilter<any, any>[];
-  // (undocumented)
-  additionalTemplateGlobals?:
-    | Record<string, TemplateGlobal_2>
-    | CreatedTemplateGlobal[];
-  // (undocumented)
-  additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
-  // (undocumented)
-  auditor?: AuditorService;
-  // (undocumented)
-  auth?: AuthService;
-  // (undocumented)
-  autocompleteHandlers?: Record<string, AutocompleteHandler>;
-  // (undocumented)
-  catalogClient: CatalogApi;
-  concurrentTasksLimit?: number;
-  // (undocumented)
-  config: Config;
-  // (undocumented)
-  database: DatabaseService;
-  // (undocumented)
-  discovery?: DiscoveryService;
-  // (undocumented)
-  events?: EventsService;
-  // (undocumented)
-  httpAuth?: HttpAuthService;
-  // (undocumented)
-  identity?: IdentityApi;
-  // (undocumented)
-  lifecycle?: LifecycleService;
-  // (undocumented)
-  logger: Logger;
-  // (undocumented)
-  permissionRules?: Array<
-    TemplatePermissionRuleInput | ActionPermissionRuleInput
-  >;
-  // (undocumented)
-  permissions?: PermissionsService;
-  // (undocumented)
-  reader: UrlReaderService;
-  // (undocumented)
-  scheduler?: SchedulerService;
-  // (undocumented)
-  taskBroker?: TaskBroker_2;
-  // @deprecated (undocumented)
-  taskWorkers?: number;
-}
 
 // @public @deprecated
 export type RunCommandOptions = ExecuteShellCommandOptions;
