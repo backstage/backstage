@@ -86,6 +86,7 @@ function makeCreateEnv(config: Config) {
     const scheduler = DefaultSchedulerService.create({
       logger,
       database,
+      config,
     });
 
     return {

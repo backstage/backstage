@@ -402,6 +402,7 @@ export async function createRouter(
         concurrentTasksLimit,
         permissions,
         gracefulShutdown,
+        config,
         ...templateExtensions,
       });
       workers.push(worker);
