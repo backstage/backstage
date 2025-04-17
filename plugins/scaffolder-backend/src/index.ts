@@ -26,6 +26,3 @@ export type {
   TemplatePermissionRuleInput,
 } from './service/router';
 export * from './scaffolder';
-export * from './lib';
-
-export * from './deprecated';
