@@ -1,5 +1,14 @@
 # example-app
 
+## 0.2.109
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/canon@0.3.1
+  - @backstage/plugin-scaffolder@1.30.1
+  - @backstage/plugin-scaffolder-react@1.15.1
+
 ## 0.2.108
 
 ### Patch Changes

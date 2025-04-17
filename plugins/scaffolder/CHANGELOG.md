@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder
 
+## 1.30.1
+
+### Patch Changes
+
+- 88571fc: Fixed `EntityPicker` display inconsistency between dropdown options and selected value.
+- 27bd094: Fix EntityPicker field to render description as markdown, matching other form components in the system.
+- 7b76e3c: Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.15.1
+
 ## 1.30.0
 
 ### Minor Changes
