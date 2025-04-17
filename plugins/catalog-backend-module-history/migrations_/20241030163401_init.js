@@ -108,7 +108,6 @@ exports.up = async function up(knex) {
       $$ LANGUAGE plpgsql;
       `,
     );
-
     await knex.schema.raw(
       `
       CREATE TRIGGER final_entities_change_history
