@@ -52,6 +52,6 @@
   },
   "files": [
     "dist",
-    "migrations"
+    "migrations_"
   ]
 }

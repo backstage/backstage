@@ -17,13 +17,14 @@
 import { Knex } from 'knex';
 import { createOpenApiRouter } from '../schema/openapi';
 
-export async function createRouter(options: {
+export async function createRouter(_options: {
   knexPromise: Promise<Knex>;
   signal: AbortSignal;
 }) {
   const router = await createOpenApiRouter();
 
-  router.get('/history/v1/events', async (req, res) => {
+  router.get('/history/v1/events', async (_, res) => {
+    /*
     let from = req.query._from;
     const _order = req.query.order;
     const _limit = req.query.limit;
@@ -35,6 +36,7 @@ export async function createRouter(options: {
     if (!from) {
       from = 'start';
     }
+    */
 
     res.json({
       items: [],

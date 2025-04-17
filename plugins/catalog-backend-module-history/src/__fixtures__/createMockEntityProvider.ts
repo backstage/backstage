@@ -25,8 +25,8 @@ import {
 } from '@backstage/catalog-model';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { createDeferred } from '@backstage/types';
 import merge from 'lodash/merge';
-import { createDeferred } from './createDeferred';
 
 type UpsertCommand = { type: 'upsert'; entity: Entity };
 type DeleteCommand = { type: 'delete'; entityRef: string };
@@ -45,7 +45,7 @@ export function createMockEntityProvider(): MockEntityProvider {
 
   async function runLoop(connection: EntityProviderConnection) {
     for (;;) {
-      await commandsLock.promise;
+      await commandsLock;
       const commands = Array.from(commandsQueue);
       commandsQueue.clear();
       commandsLock = createDeferred();
@@ -112,7 +112,7 @@ export function createMockEntityProvider(): MockEntityProvider {
   });
 
   return Object.assign(provider, {
-    ready: ready.promise,
+    ready,
     addEntity,
     removeEntity,
   });
