@@ -106,7 +106,11 @@ exports.up = async function up(knex) {
         RETURN null;
       END;
       $$ LANGUAGE plpgsql;
+      `,
+    );
 
+    await knex.schema.raw(
+      `
       CREATE TRIGGER final_entities_change_history
       AFTER INSERT OR DELETE OR UPDATE OF final_entity ON final_entities
       FOR EACH ROW EXECUTE PROCEDURE final_entities_change_history();
@@ -181,11 +185,9 @@ exports.up = async function up(knex) {
 exports.down = async function down(knex) {
   if (knex.client.config.client.includes('pg')) {
     await knex.schema.raw(
-      `
-    DROP TRIGGER final_entities_change_history ON final_entities;
-    DROP FUNCTION final_entities_change_history();
-    `,
+      `DROP TRIGGER final_entities_change_history ON final_entities;`,
     );
+    await knex.schema.raw(`DROP FUNCTION final_entities_change_history();`);
   } else if (knex.client.config.client.includes('sqlite')) {
     await knex.schema.raw(
       `DROP TRIGGER final_entities_change_history_inserted;`,

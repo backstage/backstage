@@ -4521,7 +4521,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-backend-module-history@^0.0.0, @backstage/plugin-catalog-backend-module-history@workspace:plugins/catalog-backend-module-history":
+"@backstage/plugin-catalog-backend-module-history@npm:^0.0.0, @backstage/plugin-catalog-backend-module-history@workspace:plugins/catalog-backend-module-history":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-history@workspace:plugins/catalog-backend-module-history"
   dependencies:
@@ -4537,10 +4537,10 @@ __metadata:
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/repo-tools": "workspace:^"
     "@backstage/types": "workspace:^"
-    express-promise-router: ^4.1.0
-    knex: ^3.0.0
-    lodash: ^4.17.21
-    wait-for-expect: ^3.0.2
+    express-promise-router: "npm:^4.1.0"
+    knex: "npm:^3.0.0"
+    lodash: "npm:^4.17.21"
+    wait-for-expect: "npm:^3.0.2"
   languageName: unknown
   linkType: soft
 
@@ -30145,7 +30145,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^"
-    "@backstage/plugin-catalog-backend-module-history": ^0.0.0
+    "@backstage/plugin-catalog-backend-module-history": "npm:^0.0.0"
     "@backstage/plugin-catalog-backend-module-openapi": "workspace:^"
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"

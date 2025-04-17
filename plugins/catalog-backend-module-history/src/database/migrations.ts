@@ -17,7 +17,6 @@
 import {
   DatabaseService,
   LifecycleService,
-  resolvePackagePath,
 } from '@backstage/backend-plugin-api';
 import { CatalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { Knex } from 'knex';
@@ -31,7 +30,7 @@ export async function applyDatabaseMigrations(knex: Knex): Promise<void> {
   //   'migrations',
   // );
   // eslint-disable-next-line no-restricted-syntax
-  const migrationsDir = resolvePath(__dirname, '../../migrations');
+  const migrationsDir = resolvePath(__dirname, '../../migrations_');
 
   await knex.migrate.latest({
     directory: migrationsDir,

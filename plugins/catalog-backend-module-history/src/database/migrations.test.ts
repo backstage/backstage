@@ -27,7 +27,7 @@ import catalogBackend from '@backstage/plugin-catalog-backend';
 import { createMockEntityProvider } from '../__fixtures__/createMockEntityProvider';
 import { DB_MIGRATIONS_TABLE } from './migrations';
 
-const migrationsDir = `${__dirname}/../../migrations`;
+const migrationsDir = `${__dirname}/../../migrations_`;
 const migrationsFiles = fs.readdirSync(migrationsDir).sort();
 
 async function migrateUpOnce(knex: Knex): Promise<void> {
