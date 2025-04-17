@@ -129,7 +129,7 @@ export type TemplateGlobalValue = {
  *
  * @public
  */
-export type ListTemplateExtensionsResponse = {
+export type ListTemplatingExtensionsResponse = {
   filters: Record<string, TemplateFilter>;
   globals: {
     functions: Record<string, TemplateGlobalFunction>;
@@ -300,7 +300,7 @@ export interface ScaffolderApi {
   /**
    * Returns a structure describing the available templating extensions.
    */
-  listTemplateExtensions?(): Promise<ListTemplateExtensionsResponse>;
+  listTemplatingExtensions?(): Promise<ListTemplatingExtensionsResponse>;
 
   streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent>;
 
