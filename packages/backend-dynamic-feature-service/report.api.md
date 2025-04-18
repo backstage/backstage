@@ -248,10 +248,10 @@ export type FrontendRemoteResolver = {
   getRemoteEntryType?: (
     manifestContent: JsonObject,
   ) => 'manifest' | 'javascript';
-  getAdditionaRemoteInfo?: (
+  getAdditionalRemoteInfo?: (
     manifestContent: JsonObject,
   ) => AdditionalRemoteInfo;
-  getAdditionalRemoteInfo?: (
+  getAdditionaRemoteInfo?: (
     manifestContent: JsonObject,
   ) => AdditionalRemoteInfo;
   overrideExposedModules?: (
