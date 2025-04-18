@@ -1,0 +1,10 @@
+---
+title: 'Scalr'
+author: 'Scalr'
+authorUrl: 'https://www.scalr.com'
+category: 'Infrastructure as Code'
+description: 'This Plugin adds Scalr Environments to your entities'
+documentation: 'https://github.com/Scalr/scalr-backstage-plugin/blob/main/README.md'
+iconUrl: 'https://cdn.prod.website-files.com/63e6a81a3b7fbc072c4af4a7/63eab2d9d2e4cb583a3a7613_Scalr%20Full-Color%20Logo%20Dark.svg'
+npmPackageName: '@scalr-io/backstage-plugin-scalr'
+addedDate: '2025-04-15'
