@@ -59,6 +59,14 @@ export type FrontendRemoteResolver = {
   /**
    * Additional module federation fields, which might be required if the remote entry type is 'javascript'.
    */
+  getAdditionalRemoteInfo?: (
+    manifestContent: JsonObject,
+  ) => AdditionalRemoteInfo;
+
+  /**
+   * Additional module federation fields, which might be required if the remote entry type is 'javascript'.
+   * @deprecated Use `getAdditionalRemoteInfo` instead.
+   */
   getAdditionaRemoteInfo?: (
     manifestContent: JsonObject,
   ) => AdditionalRemoteInfo;
