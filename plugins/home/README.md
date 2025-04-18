@@ -173,7 +173,7 @@ Available home page properties that are used for homepage widgets are:
 To define settings that the users can change for your component, you should define the `layout` and `settings`
 properties. The `settings.schema` object should follow
 [react-jsonschema-form](https://rjsf-team.github.io/react-jsonschema-form/docs/) definition and the type of the schema
-must be `object`. As well, the `uiSchema` can be defined if a certain UI style needs to be applied fo any of the defined
+must be `object`. As well, the `uiSchema` can be defined if a certain UI style needs to be applied for any of the defined
 properties. More documentation [here](https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema).
 
 If you want to hide the card title, you can do it by setting a `name` and leaving the `title` empty.

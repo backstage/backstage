@@ -310,7 +310,7 @@ describe('PermissionClient', () => {
       ).rejects.toThrow(/request failed with 401/i);
     });
 
-    it('should handle reponses with rules with no params', async () => {
+    it('should handle responses with rules with no params', async () => {
       mockPolicyDecisionHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
           const responses = req.body.items.map(

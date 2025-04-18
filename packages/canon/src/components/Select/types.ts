@@ -84,7 +84,7 @@ export interface SelectProps {
   onValueChange?: (value: string) => void;
 
   /**
-   * Callbak that is called when the select field is opened or closed
+   * Callback that is called when the select field is opened or closed
    */
   onOpenChange?: (open: boolean) => void;
 
