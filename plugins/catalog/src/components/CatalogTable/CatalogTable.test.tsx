@@ -448,4 +448,34 @@ describe('CatalogTable component', () => {
     const labelCellValue = screen.getByText('generic');
     expect(labelCellValue).toBeInTheDocument();
   });
+  it('should set width: auto for columns by default', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            entities,
+            filters: {
+              kind: {
+                value: 'component',
+                label: 'Component',
+                getCatalogFilters: () => ({ kind: 'component' }),
+                toQueryValue: () => 'component',
+              },
+            },
+          }}
+        >
+          <CatalogTable />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    // Get the 'Name' header cell
+    const nameHeader = screen.getByText('Name').closest('th');
+    expect(nameHeader).toHaveStyle({ width: 'auto' });
+  });
 });
