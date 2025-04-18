@@ -23,8 +23,7 @@ export type QuickStartCardClassKey =
   | 'contentModal'
   | 'imageSize'
   | 'link'
-  | 'linkText'
-  | 'videoContainer';
+  | 'linkText';
 
 export const useStyles = makeStyles(
   (theme: Theme) => ({
@@ -56,12 +55,6 @@ export const useStyles = makeStyles(
     },
     linkText: {
       marginBottom: theme.spacing(1.5),
-    },
-    videoContainer: {
-      borderRadius: '10px',
-      width: '100%',
-      height: 'auto',
-      background: `${theme.palette.background.default}`,
     },
   }),
   { name: 'HomeQuickStartCard' },

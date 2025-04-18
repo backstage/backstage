@@ -62,6 +62,13 @@ export const Customized = () => {
           />
         }
         cardDescription="Backstage system model will help you create new entities"
+        additionalContent={
+          <p>
+            This is a custom description for the Quick Start card. It can be
+            used to provide additional information or context about the Quick
+            Start process.
+          </p>
+        }
       />
     </Grid>
   );
