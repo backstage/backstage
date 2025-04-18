@@ -57,7 +57,7 @@ const useStyles = makeStyles(
   { name: 'ScaffolderCustomFieldExtensionsPlaygroud' },
 );
 
-export const CustomFieldPlaygroud = ({
+export const CustomFieldPlayground = ({
   fieldExtensions = [],
 }: {
   fieldExtensions?: FieldExtensionOptions<any, any>[];
