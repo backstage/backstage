@@ -244,7 +244,7 @@ describe('createSpecializedApp', () => {
     `);
   });
 
-  it('should intitialize the APIs in the correct order to allow for overrides', () => {
+  it('should initialize the APIs in the correct order to allow for overrides', () => {
     const mockAnalyticsApi = jest.fn(() => ({ captureEvent: jest.fn() }));
 
     const app = createSpecializedApp({

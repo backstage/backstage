@@ -37,7 +37,7 @@ export type AdditionalRemoteInfo = Omit<RemoteInfo, 'name' | 'entry'>;
  * */
 export type FrontendRemoteResolver = {
   /**
-   * Relative path to the module federation assets folder from thr root folder of the plugin package.
+   * Relative path to the module federation assets folder from the root folder of the plugin package.
    * Default value is `dist`.
    */
   assetsPathFromPackage?: string;

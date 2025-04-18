@@ -472,7 +472,7 @@ export class BackendInitializer {
 
     const rootLifecycleService = await this.#getRootLifecycleImpl();
 
-    // Root services like the health one need to immediatelly be notified of the shutdown
+    // Root services like the health one need to immediately be notified of the shutdown
     await rootLifecycleService.beforeShutdown();
 
     // Get all plugins.

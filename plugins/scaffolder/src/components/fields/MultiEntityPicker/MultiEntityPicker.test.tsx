@@ -188,7 +188,7 @@ describe('<MultiEntityPicker />', () => {
       });
     });
 
-    it('search for entitities containing an specific key', async () => {
+    it('search for entities containing an specific key', async () => {
       const uiSchemaWithBoolean = {
         'ui:options': {
           catalogFilter: [

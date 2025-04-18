@@ -69,7 +69,7 @@ export async function findTargetPackages(
 
   const packages = await PackageGraph.listTargetPackages();
 
-  // Priorotize plugin options, so that the `start` script can contain a list of packages,
+  // Prioritize plugin options, so that the `start` script can contain a list of packages,
   // but make them easy to override by running for example `yarn start --plugin catalog`
   for (const pluginId of pluginIds) {
     const matchingPackages = packages.filter(pkg => {

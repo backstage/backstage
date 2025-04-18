@@ -317,7 +317,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
         }
       }
 
-      let reviewerIds: number[] | undefined = undefined; // Explicitly set to undefined. Strangely, passing an empty array to the API will result the other options being undefined also being explicity passed to the Gitlab API call (e.g. assigneeId)
+      let reviewerIds: number[] | undefined = undefined; // Explicitly set to undefined. Strangely, passing an empty array to the API will result the other options being undefined also being explicitly passed to the Gitlab API call (e.g. assigneeId)
       if (reviewers !== undefined) {
         reviewerIds = (
           await Promise.all(

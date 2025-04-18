@@ -412,7 +412,7 @@ describe.skip('GerritUrlReader', () => {
         gerritProcessor.readTree(shaTreeUrl, { etag: sha }),
       ).rejects.toThrow(NotModifiedError);
     });
-    it('can fetch files for a specifc sha.', async () => {
+    it('can fetch files for a specific sha.', async () => {
       const response = await gerritProcessorWithGitiles.readTree(
         `https://gerrit.com/gitiles/app/web/+/${sha}/`,
       );

@@ -113,7 +113,7 @@ describe('BitbucketRepoBranchPicker', () => {
       </TestApiProvider>,
     );
 
-    // Open the Autcomplete dropdown
+    // Open the Autocomplete dropdown
     const input = getByRole('textbox');
     await userEvent.click(input);
 
