@@ -43,6 +43,8 @@ import { createRouter } from './createRouter';
 import { basicEntityFilter } from './request';
 import { LocationInput, LocationService, RefreshService } from './types';
 import { decodeCursor, encodeCursor } from './util';
+import { a } from 'msw/lib/glossary-2792c6da';
+import { filter } from 'lodash';
 
 const middleware = MiddlewareFactory.create({
   logger: mockServices.logger.mock(),
@@ -66,6 +68,7 @@ describe('createRouter readonly disabled', () => {
       entityAncestry: jest.fn(),
       facets: jest.fn(),
       queryEntities: jest.fn(),
+      relations: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),
@@ -550,6 +553,67 @@ describe('createRouter readonly disabled', () => {
       });
       expect(response.status).toEqual(404);
       expect(response.text).toMatch(/name/);
+    });
+  });
+
+  describe('GET /entities/by-name/:kind/:namespace/:name/relations', () => {
+    it('can fetch entity relations by name', async () => {
+      entitiesCatalog.relations.mockResolvedValue({
+        items: {
+          entities: [
+            {
+              apiVersion: 'a',
+              kind: 'k',
+              metadata: { namespace: 'ns', name: 'n' },
+            },
+            {
+              apiVersion: 'a',
+              kind: 'k',
+              metadata: { namespace: 'ns', name: 'n1' },
+            },
+            {
+              apiVersion: 'a',
+              kind: 'k',
+              metadata: { namespace: 'ns', name: 'n2' },
+            },
+          ],
+          type: 'object',
+        },
+      });
+
+      const response = await request(app).get(
+        '/entities/by-name/k/ns/n/relations',
+      );
+
+      expect(entitiesCatalog.relations).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.relations).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entityRef: 'k:ns/n',
+          filter: undefined,
+          relationsTypes: [],
+          transient: false,
+        }),
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items: [
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { namespace: 'ns', name: 'n' },
+          },
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { namespace: 'ns', name: 'n1' },
+          },
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { namespace: 'ns', name: 'n2' },
+          },
+        ],
+      });
     });
   });
 
