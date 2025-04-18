@@ -178,8 +178,6 @@ jobs:
 
     env:
       CI: true
-      NODE_OPTIONS: --max-old-space-size=16384
-      DOCUSAURUS_SSR_CONCURRENCY: 5
 
     needs:
       - stable
@@ -268,6 +266,11 @@ jobs:
           name: next-openapi-docs
           path: docs
 
+      - name: remove cache
+        run: rm -rf node_modules/.cache
+
       - name: build microsite
         run: yarn build
+        env:
+          RSPACK_PROFILE: TRACE=layer=logger
         working-directory: microsite
