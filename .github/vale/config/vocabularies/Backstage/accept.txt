@@ -177,6 +177,7 @@ graphql
 GraphQL
 graphviz
 Hackathons
+hackathon
 haproxy
 hardcoded
 hardcoding
