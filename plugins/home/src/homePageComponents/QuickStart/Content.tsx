@@ -33,8 +33,8 @@ export type QuickStartCardProps = {
   docsLinkTitle?: string | JSX.Element;
   /** The link to docs */
   docsLink?: string;
-  /** The video to play on the card */
-  video?: JSX.Element;
+  /** Additional card content */
+  additionalContent?: JSX.Element;
   /** A quickstart image to display on the card */
   image: JSX.Element;
   /** The card description*/
@@ -78,7 +78,7 @@ export const Content = (props: QuickStartCardProps): JSX.Element => {
           </Link>
         </Grid>
       </Grid>
-      {props.video && props.video}
+      {props.additionalContent && props.additionalContent}
     </>
   );
 };
