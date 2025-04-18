@@ -85,7 +85,7 @@ describe('KubernetesAuthProviders tests', () => {
     );
   });
 
-  it('returns error for missconfigured oidc authProvider', async () => {
+  it('returns error for misconfigured oidc authProvider', async () => {
     await expect(
       kap.decorateRequestBodyForAuth('oidc.random', requestBody),
     ).rejects.toThrow(

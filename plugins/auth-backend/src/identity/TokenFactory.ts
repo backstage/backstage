@@ -52,7 +52,7 @@ export interface BackstageTokenPayload {
   sub: string;
 
   /**
-   * The entity refs that the user claims ownership througg
+   * The entity refs that the user claims ownership through
    */
   ent: string[];
 

@@ -147,7 +147,7 @@ export class RemoteConfigSource implements ConfigSource {
     if (rawData === undefined) {
       /**
        * This error message is/was coupled to the implementation and with refactoring it is no longer truly accurate
-       * This behavior is also inconsistent with {@link FileConfigSource}, which doesn't error on unparseable or empty
+       * This behavior is also inconsistent with {@link FileConfigSource}, which doesn't error on unparsable or empty
        * content
        *
        * Preserving to not make a breaking change
