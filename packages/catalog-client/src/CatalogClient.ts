@@ -36,6 +36,7 @@ import {
   GetEntityAncestorsResponse,
   GetEntityFacetsRequest,
   GetEntityFacetsResponse,
+  GetLocationsResponse,
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
@@ -73,6 +74,21 @@ export class CatalogClient implements CatalogApi {
         options,
       ),
     );
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.getLocations}
+   */
+  async getLocations(
+    request?: {},
+    options?: CatalogRequestOptions,
+  ): Promise<GetLocationsResponse> {
+    const res = await this.requestRequired(
+      await this.apiClient.getLocations(request ?? {}, options),
+    );
+    return {
+      items: res.map(item => item.data),
+    };
   }
 
   /**
