@@ -149,6 +149,15 @@ export interface Config {
     disableRelationsCompatibility?: boolean;
 
     /**
+     * Disables the default backstage processors.
+     *
+     * Enabling this option allows more complete control of which processors are included
+     * in the backstage processing loop.
+     *
+     */
+    disableDefaultProcessors?: boolean;
+
+    /**
      * The strategy to use for entities that are orphaned, i.e. no longer have
      * any other entities or providers referencing them. The default value is
      * "keep".
