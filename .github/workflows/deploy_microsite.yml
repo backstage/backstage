@@ -69,17 +69,6 @@ jobs:
         with:
           cache-prefix: ${{ runner.os }}-v20.x
 
-      - name: build API reference
-        run: yarn build:api-docs
-
-      - name: upload API reference
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: stable-reference
-          path: docs/reference/
-          if-no-files-found: error
-          retention-days: 1
-
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore package-docs cache
         uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
@@ -152,17 +141,6 @@ jobs:
         uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           cache-prefix: ${{ runner.os }}-v20.x
-
-      - name: build API reference
-        run: yarn build:api-docs
-
-      - name: upload API reference
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: next-reference
-          path: docs/reference/
-          if-no-files-found: error
-          retention-days: 1
 
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore package-docs cache
@@ -266,12 +244,6 @@ jobs:
         run: yarn install --immutable
         working-directory: microsite
 
-      - name: download stable reference
-        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
-        with:
-          name: stable-reference
-          path: docs/reference
-
       - name: download stable OpenAPI API docs
         uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
         with:
@@ -299,12 +271,6 @@ jobs:
       - name: microsite yarn install
         run: yarn install --immutable
         working-directory: microsite
-
-      - name: download next reference
-        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
-        with:
-          name: next-reference
-          path: docs/reference
 
       - name: download next OpenAPI API docs
         uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4

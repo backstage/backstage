@@ -109,9 +109,6 @@ jobs:
       - name: check api reports and generate API reference
         run: yarn build:api-reports:only --ci --docs
 
-      - name: verify api reference
-        run: node scripts/verify-api-reference.js
-
       - name: verify catalog-info.yaml consistency
         run: yarn backstage-repo-tools generate-catalog-info --ci
 
