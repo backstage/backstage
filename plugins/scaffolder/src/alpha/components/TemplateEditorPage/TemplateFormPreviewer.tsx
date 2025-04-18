@@ -177,7 +177,7 @@ export const TemplateFormPreviewer = ({
         )
         .catch(e =>
           alertApi.post({
-            message: `Error loading exisiting templates: ${e.message}`,
+            message: `Error loading existing templates: ${e.message}`,
             severity: 'error',
           }),
         ),

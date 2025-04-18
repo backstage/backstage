@@ -295,7 +295,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
     // Overwrite baseConfig with options from config file.
     const mergedConfig = lodash.merge(baseConfig, configToMerge);
 
-    // Overwite mergedConfig with requiredConfig (i.e., spec.type and spec.definition) to avoid bad configuration.
+    // Overwrite mergedConfig with requiredConfig (i.e., spec.type and spec.definition) to avoid bad configuration.
     const documentationEntity = lodash.merge(
       mergedConfig,
       requiredConfig,

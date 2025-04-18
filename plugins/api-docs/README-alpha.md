@@ -77,12 +77,12 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
        # Shows a table of components that provides a particular api
        - entity-card:api-docs/providing-components:
            config:
-             # Presenting the card ony for entities of kind api
+             # Presenting the card only for entities of kind api
              filter: kind:api
        # Shows a table of components that consumes a particular api
        - entity-card:api-docs/consuming-components:
            config:
-             # Presenting the card ony for entities of kind api
+             # Presenting the card only for entities of kind api
              filter: kind:api
        # Enabling some contents
        # The contents will be displayed in the same order it appears in this setting list

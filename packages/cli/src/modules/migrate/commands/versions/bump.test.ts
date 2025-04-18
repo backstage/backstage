@@ -131,10 +131,10 @@ const lockfileMock = `${HEADER}
 
 // Avoid flakes by comparing sorted log lines. File system access is async, which leads to the log line order being indeterministic
 const expectLogsToMatch = (
-  recievedLogs: String[],
+  receivedLogs: String[],
   expected: String[],
 ): void => {
-  expect(recievedLogs.filter(Boolean).sort()).toEqual(expected.sort());
+  expect(receivedLogs.filter(Boolean).sort()).toEqual(expected.sort());
 };
 
 describe('bump', () => {

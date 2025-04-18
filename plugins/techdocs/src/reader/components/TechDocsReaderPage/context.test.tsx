@@ -44,7 +44,7 @@ const mockEntityMetadata: Entity = {
 };
 
 const mockTechDocsMetadata: TechDocsMetadata = {
-  site_name: 'test-componnet',
+  site_name: 'test-component',
   site_description: 'this is a test component',
 };
 

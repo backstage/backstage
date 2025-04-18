@@ -326,7 +326,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load organization', async () => {
     worker.use(
-      rest.get('https://example.com/organization/tentant-id', (_, res, ctx) =>
+      rest.get('https://example.com/organization/tenant-id', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.json({
@@ -336,7 +336,7 @@ describe('MicrosoftGraphClient', () => {
       ),
     );
 
-    const organization = await client.getOrganization('tentant-id');
+    const organization = await client.getOrganization('tenant-id');
 
     expect(organization).toEqual({ displayName: 'Example' });
   });

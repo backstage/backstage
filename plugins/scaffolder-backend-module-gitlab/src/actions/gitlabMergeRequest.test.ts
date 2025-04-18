@@ -1144,7 +1144,7 @@ describe('createGitLabMergeRequest', () => {
       mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!', 'auto.txt': 'File exist' },
-          irrevelant: {},
+          irrelevant: {},
         },
       });
 
