@@ -47,7 +47,7 @@ export function AdvancedSettings() {
               <ListItemSecondaryAction>
                 <Switch
                   color="primary"
-                  value={value}
+                  checked={value === 'on'}
                   onChange={toggleValue}
                   name="advanced"
                 />
