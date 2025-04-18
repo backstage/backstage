@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export * from '../models/ErrorError.model';
-export * from '../models/ErrorRequest.model';
-export * from '../models/ErrorResponse.model';
+export * from '../models/ErrorPayload.model';
+export * from '../models/ErrorPayloadError.model';
+export * from '../models/ErrorPayloadRequest.model';
+export * from '../models/ErrorPayloadResponse.model';
 export * from '../models/Event.model';
-export * from '../models/EventsResponse.model';
-export * from '../models/EventsResponsePageInfo.model';
-export * from '../models/ModelError.model';
+export * from '../models/Events.model';
+export * from '../models/EventsPageInfo.model';

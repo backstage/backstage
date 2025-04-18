@@ -68,7 +68,7 @@ export interface SubscriptionEvent {
 
 /**
  * The consumer connection passed by the framework to
- * {@link HistoryConsumer.connect}.
+ * {@link HistoryConsumer['connect']}.
  *
  * @public
  */
