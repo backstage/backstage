@@ -97,6 +97,17 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         );
       }
 
+      const validateLocationsExist = providerConfig.validateLocationsExist;
+
+      const catalogFileContainsWildcard =
+        providerConfig.catalogFile?.includes('*');
+
+      if (validateLocationsExist && catalogFileContainsWildcard) {
+        throw Error(
+          `The catalog path ${providerConfig.catalogFile} contains a wildcard, which is incompatible with validation of locations existing before emitting them. Ensure that validateLocationsExist is set to false.`,
+        );
+      }
+
       const taskRunner =
         options.schedule ??
         options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
@@ -236,6 +247,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     logger.info(
       `Processed ${locations.length} from scanned ${res.scanned} projects.`,
     );
+
     await this.connection.applyMutation({
       type: 'full',
       entities: locations.map(location => ({
@@ -488,6 +500,16 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       this.config.branch ??
       project.default_branch ??
       this.config.fallbackBranch;
+
+    if (
+      this.config.hasOwnProperty('validateLocationsExist') &&
+      !this.config.validateLocationsExist
+    ) {
+      this.logger.debug(
+        `Skipping check for '${this.config.catalogFile}' existence because 'validateLocationsExist' was explicitly disabled (set to false)`,
+      );
+      return true;
+    }
 
     const hasFile = await client.hasFile(
       project.path_with_namespace ?? '',
