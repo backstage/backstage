@@ -31,11 +31,12 @@ import {
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
+import { makeStyles } from '@material-ui/core/styles';
 import Autocomplete, {
   AutocompleteChangeReason,
   createFilterOptions,
 } from '@material-ui/lab/Autocomplete';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {
   EntityPickerFilterQueryValue,
@@ -49,6 +50,22 @@ import { scaffolderTranslationRef } from '../../../translation';
 
 export { EntityPickerSchema } from './schema';
 
+const useStyles = makeStyles(theme => ({
+  entityDisplayContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    display: 'flex',
+    alignItems: 'center',
+    paddingLeft: theme.spacing(1.5),
+    zIndex: 1,
+    pointerEvents: 'none',
+    backgroundColor: theme.palette.background.paper,
+  },
+}));
+
 /**
  * The underlying component that is rendered in the form for the `EntityPicker`
  * field extension.
@@ -57,6 +74,8 @@ export { EntityPickerSchema } from './schema';
  */
 export const EntityPicker = (props: EntityPickerProps) => {
   const { t } = useTranslationRef(scaffolderTranslationRef);
+  const classes = useStyles();
+  const [inputFocused, setInputFocused] = useState(false);
   const {
     onChange,
     schema: {
@@ -215,7 +234,20 @@ export const EntityPicker = (props: EntityPickerProps) => {
             variant="outlined"
             required={required}
             disabled={isDisabled}
-            InputProps={params.InputProps}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
+            InputProps={{
+              ...params.InputProps,
+              // Use a custom display for entity objects to match how they appear in the dropdown
+              startAdornment:
+                !inputFocused &&
+                typeof selectedEntity !== 'string' &&
+                selectedEntity ? (
+                  <div className={classes.entityDisplayContainer}>
+                    <EntityDisplayName entityRef={selectedEntity} />
+                  </div>
+                ) : undefined,
+            }}
           />
         )}
         renderOption={option => <EntityDisplayName entityRef={option} />}
