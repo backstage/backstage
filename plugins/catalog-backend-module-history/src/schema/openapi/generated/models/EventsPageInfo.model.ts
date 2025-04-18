@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,12 @@
 // ******************************************************************
 
 /**
+ * Pagination information. If the \"cursor\" property is set, it can be used for requesting subsequent pages of data.
  * @public
  */
-export interface ErrorError {
-  name: string;
-  message: string;
+export interface EventsPageInfo {
+  /**
+   * The cursor for the next set of results.
+   */
+  cursor?: string;
 }

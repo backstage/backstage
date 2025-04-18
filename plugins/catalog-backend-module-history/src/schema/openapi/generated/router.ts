@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ export const spec = {
   info: {
     title: 'events',
     version: '1',
-    description: 'The hostiry module for the Backstage catalog backend plugin.',
+    description: 'The history module for the Backstage catalog backend plugin.',
     license: {
       name: 'Apache-2.0',
       url: 'http://www.apache.org/licenses/LICENSE-2.0.html',
@@ -78,7 +78,7 @@ export const spec = {
       limit: {
         name: 'limit',
         in: 'query',
-        description: 'Number of records to return in the response.',
+        description: 'Maximum number of records to return in the response.',
         required: false,
         schema: {
           type: 'integer',
@@ -112,16 +112,26 @@ export const spec = {
       ErrorResponse: {
         description: 'An error response from the backend.',
         content: {
-          'application/json; charset=utf-8': {
+          'application/json': {
             schema: {
-              $ref: '#/components/schemas/Error',
+              $ref: '#/components/schemas/ErrorPayload',
+            },
+          },
+        },
+      },
+      EventsResponse: {
+        description: 'Some events returned from the backend.',
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/Events',
             },
           },
         },
       },
     },
     schemas: {
-      Error: {
+      ErrorPayload: {
         type: 'object',
         properties: {
           error: {
@@ -188,16 +198,16 @@ export const spec = {
           },
         },
       },
-      EventsResponse: {
+      Events: {
         type: 'object',
         properties: {
           items: {
             type: 'array',
+            description:
+              'The list of events. The number of returned items may be fewer than requested.',
             items: {
               $ref: '#/components/schemas/Event',
             },
-            description:
-              'The list of events. The number of returned items may be fewer than requested.',
           },
           pageInfo: {
             type: 'object',
@@ -230,14 +240,7 @@ export const spec = {
         description: 'Gets history events',
         responses: {
           '200': {
-            description: 'Ok',
-            content: {
-              'application/json': {
-                schema: {
-                  $ref: '#/components/schemas/EventsResponse',
-                },
-              },
-            },
+            $ref: '#/components/responses/EventsResponse',
           },
           '202': {
             description:
