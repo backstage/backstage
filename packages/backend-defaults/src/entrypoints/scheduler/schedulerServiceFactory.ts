@@ -35,8 +35,22 @@ export const schedulerServiceFactory = createServiceFactory({
     database: coreServices.database,
     logger: coreServices.logger,
     rootLifecycle: coreServices.rootLifecycle,
+    httpRouter: coreServices.httpRouter,
+    pluginMetadata: coreServices.pluginMetadata,
   },
-  async factory({ database, logger, rootLifecycle }) {
-    return DefaultSchedulerService.create({ database, logger, rootLifecycle });
+  async factory({
+    database,
+    logger,
+    rootLifecycle,
+    httpRouter,
+    pluginMetadata,
+  }) {
+    return DefaultSchedulerService.create({
+      database,
+      logger,
+      rootLifecycle,
+      httpRouter,
+      pluginMetadata,
+    });
   },
 });
