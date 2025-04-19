@@ -22,6 +22,10 @@ import { ScmIntegrations } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
+
 const mockOctokit = {
   rest: {
     actions: {
@@ -48,11 +52,7 @@ const mockCatalogClient: Partial<CatalogApi> = {
 };
 
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 jest.mock('@backstage/catalog-client', () => ({
@@ -91,6 +91,8 @@ describe('github:environment:create', () => {
   });
 
   beforeEach(() => {
+    octokitMock.mockImplementation(() => mockOctokit);
+
     mockOctokit.rest.actions.getEnvironmentPublicKey.mockResolvedValue({
       data: {
         key: publicKey,
@@ -137,6 +139,14 @@ describe('github:environment:create', () => {
   });
 
   afterEach(jest.resetAllMocks);
+
+  it('should pass context logger to Octokit client', async () => {
+    await action.handler(mockContext);
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
+  });
 
   it('should work happy path', async () => {
     await action.handler(mockContext);
