@@ -1,5 +1,12 @@
 # @backstage/plugin-notifications
 
+## 0.5.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.0
+
 ## 0.5.4
 
 ### Patch Changes

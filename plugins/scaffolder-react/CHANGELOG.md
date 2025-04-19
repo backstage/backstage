@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.15.2-next.0
+
+### Patch Changes
+
+- 36ae651: Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+
 ## 1.15.0
 
 ### Minor Changes

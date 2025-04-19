@@ -1,5 +1,11 @@
 # @backstage/plugin-auth-backend-module-github-provider
 
+## 0.3.3-next.0
+
+### Patch Changes
+
+- 5cdfe05: Added missing types package
+
 ## 0.3.2
 
 ### Patch Changes

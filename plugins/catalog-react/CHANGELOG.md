@@ -1,5 +1,38 @@
 # @backstage/plugin-catalog-react
 
+## 1.18.0-next.0
+
+### Minor Changes
+
+- d47aaa3: Added EntityOrderFilter to sort entities by different fields/columns. This new filter allows users to specify the order in which entities are displayed in the catalog.
+
+  Example usage:
+
+  ```ts
+  import {
+    EntityOrderFilter,
+    useEntityList,
+  } from '@backstage/plugin-catalog-react';
+  // ...
+  const { updateFilters } = useEntityList();
+
+  // ...
+  updateFilters({
+    order: new EntityOrderFilter([
+      {
+        field: 'metadata.name',
+        order: 'desc',
+      },
+    ]),
+  });
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/integration-react@1.2.6
+
 ## 1.17.0
 
 ### Minor Changes

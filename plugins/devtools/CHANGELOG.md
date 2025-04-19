@@ -1,5 +1,12 @@
 # @backstage/plugin-devtools
 
+## 0.1.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.0
+
 ## 0.1.26
 
 ### Patch Changes
