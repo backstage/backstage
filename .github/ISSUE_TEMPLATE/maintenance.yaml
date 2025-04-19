@@ -1,0 +1,95 @@
+name: '🚧 Maintenance Task'
+description: 'Track a maintenance task'
+labels:
+  - type:maintenance
+  - status:needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This template lets you highlight maintenance tasks that need special consideration, such as tricky version bumps or migrations.
+  - type: checkboxes
+    id: issue-labels
+    attributes:
+      label: '📜 Issue Labels'
+      options:
+        - label: 'Please familiarize yourself with the issue labels used in this project: [LABELS.md](https://github.com/backstage/backstage/blob/master/LABELS.md)'
+          required: true
+  - type: textarea
+    id: search-terms
+    attributes:
+      label: '🔎 Search Terms'
+      render: plain
+      description: |
+        What search terms did you use when trying to find an existing feature proposal?
+      placeholder: |
+        List of keywords you searched for before creating this issue. Write them down here so that others can find this bug more easily and help provide feedback.
+
+        e.g. "catalog github rate limited", "http root service configurer", "scaffolder template include", "entity card title"
+    validations:
+      required: true
+  - type: dropdown
+    id: project-area
+    attributes:
+      label: '🗃️ Project Area'
+      description: What area of the project would this feature be related to? This will help find an owner for the issue faster.
+      options:
+        - Unknown
+        - Auditor
+        - Catalog
+        - CLI Tooling
+        - Core Framework
+        - Design System
+        - Documentation
+        - Events System
+        - Home
+        - Kubernetes Plugin
+        - Microsite
+        - Notifications
+        - OpenAPI Tooling
+        - Permission Framework
+        - Software Templates
+        - Search
+        - TechDocs
+    validations:
+      required: true
+  - type: textarea
+    id: task
+    validations:
+      required: true
+    attributes:
+      label: '🛠️ Task'
+      description: Describe the task that requires attention
+      placeholder: |
+        Explain what needs to be accomplished as well as any context for the change such as dependencies.
+  - type: textarea
+    id: proposal
+    validations:
+      required: true
+    attributes:
+      label: '📊 Priority & Impact'
+      description: Explain the urgency and impact of this task
+      placeholder: |
+        Explain what level of prioritization this task should receive. Are there any particular benefits provided in newer versions in case of a version bump, or any security vulnerabilities that can be removed?
+
+        Also list any important dates or deadlines, which as current versions reaching end of life, or release dates for stable releases.
+  - type: checkboxes
+    id: read-code-of-conduct
+    attributes:
+      label: 'Have you read the Code of Conduct?'
+      options:
+        - label: 'I have read the [Code of Conduct](https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md)'
+          required: true
+  - type: dropdown
+    id: willing-to-submit-pr
+    attributes:
+      label: Are you willing to submit PR?
+      description: This is absolutely not required, but we are happy to guide you in the contribution process.
+      options:
+        - Undecided
+        - Yes, and I have enough information to get started
+        - Yes, but I would like some more guidance
+        - No, but I'm happy to collaborate on a PR with someone else
+        - No, I don't have time to work on this right now
+    validations:
+      required: true
