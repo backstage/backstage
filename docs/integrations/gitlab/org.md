@@ -269,67 +269,114 @@ You can inject your own transformation logic to help map GitLab API responses
 into Backstage entities. You can do this on the user and group requests to
 enable you to do further processing or updates to these entities.
 
-To enable this you pass a function into the `GitlabOrgDiscoveryEntityProvider`. You can
-pass a `UserTransformer`, a `GroupEntitiesTransformer` or a `GroupNameTransformer` (or all of them)). The function is invoked
-for each item (user or group) that is returned from the API.
+To enable this create your own implementation of this plugin, passing a function into the `GitlabOrgDiscoveryEntityProvider`.
+You can pass a `UserTransformer`, a `GroupEntitiesTransformer` or a `GroupNameTransformer` (or all of them).
+The function is invoked for each item (user or group) that is returned from the API.
 
-The example below uses the groupNameTransformer option to change the metadata.name property of the Backstage Group Entity. Instead of populating it with the usual `group.full_path` data that comes from GitLab, it uses the `group.id`:
+The example below uses a custom `UserTransformer` based on the default transformer used in [catalog-backend-module-gitlab](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-gitlab/src/lib/defaultTransformers.ts#L99) with the addition of ensuring
+that users without an email address in GitLab are assigned a default email based on their name:
 
-```ts
-import { loggerToWinstonLogger } from '@backstage/backend-common';
-import {
-  coreServices,
-  createBackendModule,
-} from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
-import {
-  GitlabOrgDiscoveryEntityProvider,
-  /* highlight-add-next-line */
-  GroupNameTransformerOptions,
-} from '@backstage/plugin-catalog-backend-module-gitlab';
+- Create a new module that extends an existing plugin using the backstage cli:
 
-/* highlight-add-start */
-function customGroupNameTransformer(
-  options: GroupNameTransformerOptions,
-): string {
-  return `${options.group.id}`;
-}
-/* highlight-add-end */
+  ```shell
+  yarn backstage-cli new
+  ```
 
-/**
- * Registers the GitlabDiscoveryEntityProvider with the catalog processing extension point.
- *
- * @alpha
- */
-export const catalogModuleGitlabOrgDiscoveryEntityProvider =
-  createBackendModule({
-    pluginId: 'catalog',
-    moduleId: 'gitlabOrgDiscoveryEntityProvider',
-    register(env) {
-      env.registerInit({
-        deps: {
-          config: coreServices.rootConfig,
-          catalog: catalogProcessingExtensionPoint,
-          logger: coreServices.logger,
-          scheduler: coreServices.scheduler,
-          events: eventsServiceRef,
+  - Select `backend-module - A new backend module that extends an existing backend plugin with additional features`.
+  - Choose names for the plugin and module. Example: `catalog` and `gitlab-org-discovery-entity-provider`.
+
+- Add the following code to the new module (`module.ts`):
+
+  ```ts
+  import {
+    coreServices,
+    createBackendModule,
+  } from '@backstage/backend-plugin-api';
+  import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+  import { eventsServiceRef } from '@backstage/plugin-events-node';
+  import {
+    GitlabOrgDiscoveryEntityProvider,
+    UserTransformerOptions,
+  } from '@backstage/plugin-catalog-backend-module-gitlab';
+  import { UserEntityV1alpha1 } from '@backstage/catalog-model';
+
+  function customTransformer(
+    options: UserTransformerOptions,
+  ): UserEntityV1alpha1 {
+    const annotations: { [key: string]: string } = {};
+    annotations[`${options.integrationConfig.host}/user-login`] =
+      options.user.web_url;
+    if (options.user?.group_saml_identity?.extern_uid) {
+      annotations[`${options.integrationConfig.host}/saml-external-uid`] =
+        options.user.group_saml_identity.extern_uid;
+    }
+    const entity = {
+      apiVersion: 'backstage.io/v1alpha1' as const,
+      kind: 'User' as const,
+      metadata: {
+        name: options.user.username,
+        annotations,
+      },
+      spec: {
+        profile: {
+          displayName: options.user.name || void 0,
+          picture: options.user.avatar_url || void 0,
+          email: options.user.email || void 0,
         },
-        async init({ config, catalog, logger, scheduler, events }) {
-          const gitlabOrgDiscoveryEntityProvider =
-            GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-              /* highlight-add-next-line */
-              groupNameTransformer: customGroupNameTransformer,
-              logger: loggerToWinstonLogger(logger),
-              events,
-              scheduler,
-            });
-          catalog.addEntityProvider(gitlabOrgDiscoveryEntityProvider);
-        },
-      });
-    },
-  });
-```
+        memberOf: [] as string[],
+      },
+    };
+    if (options.user.email) {
+      entity.spec.profile.email = options.user.email;
+    } else {
+      entity.spec.profile.email = `${options.user.name
+        .split(' ')
+        .map(s => s.toLocaleLowerCase())
+        .join('.')}@myorg.com`;
+    }
+    if (options.user.groups) {
+      for (const group of options.user.groups) {
+        if (!entity.spec.memberOf) {
+          entity.spec.memberOf = [];
+        }
+        entity.spec.memberOf.push(
+          options.groupNameTransformer({
+            group,
+            providerConfig: options.providerConfig,
+          }),
+        );
+      }
+    }
+    return entity;
+  }
+
+  export const catalogModuleGitlabOrgDiscoveryEntityProvider =
+    createBackendModule({
+      pluginId: 'catalog',
+      moduleId: 'gitlabOrgDiscoveryEntityProvider',
+      register(env) {
+        env.registerInit({
+          deps: {
+            config: coreServices.rootConfig,
+            catalog: catalogProcessingExtensionPoint,
+            logger: coreServices.logger,
+            scheduler: coreServices.scheduler,
+            events: eventsServiceRef,
+          },
+          async init({ config, catalog, logger, scheduler, events }) {
+            const gitlabOrgDiscoveryEntityProvider =
+              GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+                userTransformer: customTransformer,
+                logger,
+                events,
+                scheduler,
+              });
+            catalog.addEntityProvider(gitlabOrgDiscoveryEntityProvider);
+          },
+        });
+      },
+    });
+  ```
 
 ## Troubleshooting
 
