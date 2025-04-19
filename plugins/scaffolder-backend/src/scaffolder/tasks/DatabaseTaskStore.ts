@@ -35,6 +35,7 @@ import {
   SerializedTask,
   SerializedTaskEvent,
   TaskEventType,
+  TaskFilter,
   TaskSecrets,
   TaskStatus,
 } from '@backstage/plugin-scaffolder-node';
@@ -48,6 +49,14 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { flattenParams } from '../../service/helpers';
 import { EventsService } from '@backstage/plugin-events-node';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import {
+  isAndCriteria,
+  isNotCriteria,
+  isOrCriteria,
+} from '@backstage/plugin-permission-node';
+import { TaskFilters } from '@backstage/plugin-scaffolder-node';
+import { compact } from 'lodash';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -197,6 +206,53 @@ export class DatabaseTaskStore implements TaskStore {
     }
   }
 
+  private isTaskFilter(filter: any): filter is TaskFilter {
+    return filter.hasOwnProperty('property');
+  }
+
+  private parseFilter(
+    filter: PermissionCriteria<TaskFilters>,
+    query: Knex.QueryBuilder,
+    db: Knex,
+    negate: boolean = false,
+  ): Knex.QueryBuilder {
+    // handle not criteria
+    if (isNotCriteria(filter)) {
+      console.log(`reached here: ${JSON.stringify(filter)}`);
+      return this.parseFilter(filter.not, query, db, !negate);
+    }
+
+    if (this.isTaskFilter(filter)) {
+      const values: string[] = compact(filter.values) ?? [];
+
+      if (filter.property === 'createdBy') {
+        if (negate) {
+          query.whereNotIn('created_by', [...new Set(values)]);
+        } else {
+          query.whereIn('created_by', [...new Set(values)]);
+        }
+      }
+
+      return query;
+    }
+
+    return query[negate ? 'andWhereNot' : 'andWhere'](subQuery => {
+      if (isOrCriteria(filter)) {
+        for (const subFilter of filter.anyOf ?? []) {
+          subQuery.orWhere(subQueryInner =>
+            this.parseFilter(subFilter, subQueryInner, db, false),
+          );
+        }
+      } else if (isAndCriteria(filter)) {
+        for (const subFilter of filter.allOf ?? []) {
+          subQuery.andWhere(subQueryInner =>
+            this.parseFilter(subFilter, subQueryInner, db, false),
+          );
+        }
+      }
+    });
+  }
+
   async list(options: {
     createdBy?: string;
     status?: TaskStatus;
@@ -209,17 +265,34 @@ export class DatabaseTaskStore implements TaskStore {
       offset?: number;
     };
     order?: { order: 'asc' | 'desc'; field: string }[];
+    permissionFilters?: PermissionCriteria<TaskFilters>;
   }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }> {
-    const { createdBy, status, pagination, order, filters } = options ?? {};
+    const { createdBy, status, pagination, order, filters, permissionFilters } =
+      options ?? {};
     const queryBuilder = this.db<RawDbTaskRow & { count: number }>('tasks');
 
-    if (createdBy || filters?.createdBy) {
-      const arr: string[] = flattenParams<string>(
-        createdBy,
-        filters?.createdBy,
-      );
-      queryBuilder.whereIn('created_by', [...new Set(arr)]);
+    const createdByValues = flattenParams<string>(
+      createdBy,
+      filters?.createdBy,
+    );
+
+    const combinedPermissionFilters:
+      | PermissionCriteria<TaskFilters>
+      | undefined =
+      createdByValues.length > 0
+        ? {
+            allOf: [
+              { property: 'createdBy', values: createdByValues },
+              ...(permissionFilters ? [permissionFilters] : []),
+            ],
+          }
+        : permissionFilters;
+
+    if (combinedPermissionFilters) {
+      this.parseFilter(combinedPermissionFilters, queryBuilder, this.db);
     }
+
+    console.log(`Parse FIlters: ${queryBuilder}`);
 
     if (status || filters?.status) {
       const arr: TaskStatus[] = flattenParams<TaskStatus>(

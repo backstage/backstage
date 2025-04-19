@@ -28,7 +28,9 @@ import {
   TaskSecrets,
   TaskStatus as _TaskStatus,
   TemplateAction,
+  TaskFilters,
 } from '@backstage/plugin-scaffolder-node';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
 /**
  * The status of each step of the Task
@@ -202,6 +204,7 @@ export interface TaskStore {
       limit?: number;
       offset?: number;
     };
+    permissionFilters?: PermissionCriteria<TaskFilters>;
     order?: { order: 'asc' | 'desc'; field: string }[];
   }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
 
