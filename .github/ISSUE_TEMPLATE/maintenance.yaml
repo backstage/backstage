@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        This template lets you highlight maintenance tasks that need special consideration, such as tricky version bumps or migrations.
+        This template helps you track maintenance tasks that require special consideration, such as complex version updates or migrations.
   # This field is managed by .common.yaml
   - id: issue-labels
     type: checkboxes
@@ -35,7 +35,7 @@ body:
     type: dropdown
     attributes:
       label: '🗃️ Project Area'
-      description: What project area is this issue closest related to? This will help find an owner for the issue faster.
+      description: Which project area is this issue most closely related to? This will help find an owner for the issue faster.
       options:
         - Unknown
         - Auditor
@@ -64,7 +64,7 @@ body:
       label: '🛠️ Task'
       description: Describe the task that requires attention
       placeholder: |
-        Explain what needs to be accomplished as well as any context for the change such as dependencies.
+        Explain what needs to be accomplished, including any relevant context such as dependencies or related components.
   - type: textarea
     id: proposal
     validations:
@@ -73,9 +73,9 @@ body:
       label: '📊 Priority & Impact'
       description: Explain the urgency and impact of this task
       placeholder: |
-        Explain what level of prioritization this task should receive. Are there any particular benefits provided in newer versions in case of a version bump, or any security vulnerabilities that can be removed?
+        Explain what level of prioritization this task should receive. Are there any particular benefits provided in newer versions in case of a version update, or any security vulnerabilities that can be addressed?
 
-        Also list any important dates or deadlines, which as current versions reaching end of life, or release dates for stable releases.
+        Also list any important dates or deadlines, such as current versions reaching end of life, or release dates for stable releases.
   # This field is managed by .common.yaml
   - id: read-code-of-conduct
     type: checkboxes
@@ -88,7 +88,7 @@ body:
   - id: willing-to-submit-pr
     type: dropdown
     attributes:
-      label: Are you willing to submit PR?
+      label: Are you willing to submit a PR?
       description: This is absolutely not required, but we are happy to guide you in the contribution process.
       options:
         - Undecided
