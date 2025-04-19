@@ -21,7 +21,6 @@ import { CSSProperties } from '@material-ui/styles/withStyles';
 import {
   CATALOG_FILTER_EXISTS,
   catalogApiRef,
-  CatalogApi,
   useEntityOwnership,
   EntityListProvider,
 } from '@backstage/plugin-catalog-react';
@@ -188,7 +187,7 @@ export type TechDocsCustomHomeProps = {
 export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
   const { tabsConfig, filter, CustomPageWrapper } = props;
   const [selectedTab, setSelectedTab] = useState<number>(0);
-  const catalogApi: CatalogApi = useApi(catalogApiRef);
+  const catalogApi = useApi(catalogApiRef);
 
   const {
     value: entities,
