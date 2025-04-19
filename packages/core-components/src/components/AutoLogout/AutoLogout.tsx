@@ -42,7 +42,7 @@ type AutoLogoutTrackableEvent = EventsType;
 export type AutoLogoutProps = {
   /**
    * Enable/disable the AutoLogoutMechanism.
-   * defauls to true.
+   * defaults to true.
    */
   enabled?: boolean;
   /**

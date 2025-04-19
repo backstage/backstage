@@ -200,7 +200,7 @@ describe('BitbucketRepoPicker', () => {
         </TestApiProvider>,
       );
 
-      // Open the Autcomplete dropdown
+      // Open the Autocomplete dropdown
       const workspaceInput = getAllByRole('textbox')[0];
       await userEvent.click(workspaceInput);
 
@@ -230,7 +230,7 @@ describe('BitbucketRepoPicker', () => {
         </TestApiProvider>,
       );
 
-      // Open the Autcomplete dropdown
+      // Open the Autocomplete dropdown
       const projectInput = getAllByRole('textbox')[1];
       await userEvent.click(projectInput);
 

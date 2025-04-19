@@ -518,7 +518,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       const service =
         config.getOptionalString('service') ?? requestSigner.service;
       if (service !== 'es' && service !== 'aoss')
-        throw new Error(`Unrecognized serivce type: ${service}`);
+        throw new Error(`Unrecognized service type: ${service}`);
       return {
         provider: 'aws',
         node: config.getString('node'),

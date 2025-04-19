@@ -72,7 +72,7 @@ export default createBackendModule({
         const baseConfig = config.getOptional(baseKey);
         if (!baseConfig) {
           logger.warn(
-            'No configuration found under "search.elasticsearch" key.  Skipping search engine inititalization.',
+            'No configuration found under "search.elasticsearch" key.  Skipping search engine initialization.',
           );
           return;
         }

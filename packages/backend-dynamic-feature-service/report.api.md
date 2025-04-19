@@ -248,6 +248,9 @@ export type FrontendRemoteResolver = {
   getRemoteEntryType?: (
     manifestContent: JsonObject,
   ) => 'manifest' | 'javascript';
+  getAdditionalRemoteInfo?: (
+    manifestContent: JsonObject,
+  ) => AdditionalRemoteInfo;
   getAdditionaRemoteInfo?: (
     manifestContent: JsonObject,
   ) => AdditionalRemoteInfo;

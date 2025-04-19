@@ -108,7 +108,7 @@ describe('<Workflow />', () => {
       </ApiProvider>,
     );
 
-    // Test template title is overriden
+    // Test template title is overridden
     expect(getByRole('heading', { level: 2 }).innerHTML).toBe(
       'Different title than template',
     );

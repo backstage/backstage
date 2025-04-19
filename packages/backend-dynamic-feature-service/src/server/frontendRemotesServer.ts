@@ -37,7 +37,7 @@ export type AdditionalRemoteInfo = Omit<RemoteInfo, 'name' | 'entry'>;
  * */
 export type FrontendRemoteResolver = {
   /**
-   * Relative path to the module federation assets folder from thr root folder of the plugin package.
+   * Relative path to the module federation assets folder from the root folder of the plugin package.
    * Default value is `dist`.
    */
   assetsPathFromPackage?: string;
@@ -58,6 +58,14 @@ export type FrontendRemoteResolver = {
 
   /**
    * Additional module federation fields, which might be required if the remote entry type is 'javascript'.
+   */
+  getAdditionalRemoteInfo?: (
+    manifestContent: JsonObject,
+  ) => AdditionalRemoteInfo;
+
+  /**
+   * Additional module federation fields, which might be required if the remote entry type is 'javascript'.
+   * @deprecated Use `getAdditionalRemoteInfo` instead.
    */
   getAdditionaRemoteInfo?: (
     manifestContent: JsonObject,

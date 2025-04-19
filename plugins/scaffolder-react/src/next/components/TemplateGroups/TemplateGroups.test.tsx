@@ -44,7 +44,7 @@ describe('TemplateGroups', () => {
   });
 
   it('should use the error api if there is an error with the retrieval of entitylist', async () => {
-    const mockError = new Error('tings went poop');
+    const mockError = new Error('things went poop');
     (useEntityList as jest.Mock).mockReturnValue({
       error: mockError,
     });

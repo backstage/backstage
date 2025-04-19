@@ -43,7 +43,7 @@ export const Default = () => {
   );
 };
 
-export const InAccordian = () => {
+export const InAccordion = () => {
   const ExpandedComponentAccordion = (props: any) => (
     <ComponentAccordion expanded {...props} />
   );

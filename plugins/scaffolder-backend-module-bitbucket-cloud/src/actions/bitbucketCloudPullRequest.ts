@@ -82,7 +82,7 @@ const createPullRequest = async (opts: {
       data,
     );
   } catch (e) {
-    throw new Error(`Unable to create pull-reqeusts, ${e}`);
+    throw new Error(`Unable to create pull-requests, ${e}`);
   }
 
   if (response.status !== 201) {

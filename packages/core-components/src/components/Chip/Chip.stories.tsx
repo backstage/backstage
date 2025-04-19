@@ -58,7 +58,7 @@ export default {
 export const Default = (args: ChipProps) => <Chip {...args} />;
 Default.args = defaultArgs;
 
-export const Deleteable = (args: ChipProps) => (
+export const Deletable = (args: ChipProps) => (
   <Chip {...args} onDelete={() => ({})} />
 );
-Deleteable.args = defaultArgs;
+Deletable.args = defaultArgs;

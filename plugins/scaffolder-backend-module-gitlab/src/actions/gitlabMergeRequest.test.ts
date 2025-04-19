@@ -418,7 +418,7 @@ describe('createGitLabMergeRequest', () => {
   });
 
   describe('createGitLabMergeRequestWithAssignee', () => {
-    it('assignee is set correcly when a valid assignee username is passed in options', async () => {
+    it('assignee is set correctly when a valid assignee username is passed in options', async () => {
       const input = {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         title: 'Create my new MR',
@@ -678,7 +678,7 @@ describe('createGitLabMergeRequest', () => {
       );
     });
 
-    it('reviewer is set correcly when a valid reviewer username is passed in options in combination with MR approval rules', async () => {
+    it('reviewer is set correctly when a valid reviewer username is passed in options in combination with MR approval rules', async () => {
       const input = {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         title: 'Create my new MR',
@@ -730,7 +730,7 @@ describe('createGitLabMergeRequest', () => {
       );
     });
 
-    it('reviewer is set correcly when a valid reviewer username is passed in options in combination with deactivated approval rules', async () => {
+    it('reviewer is set correctly when a valid reviewer username is passed in options in combination with deactivated approval rules', async () => {
       const input = {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         title: 'Create my new MR',
@@ -824,7 +824,7 @@ describe('createGitLabMergeRequest', () => {
       expect(mockGitlabClient.MergeRequests.edit).not.toHaveBeenCalled();
     });
 
-    it('reviewer is set correcly when a valid reviewer username is passed in options and MR rules are not included in the Gitlab license (404)', async () => {
+    it('reviewer is set correctly when a valid reviewer username is passed in options and MR rules are not included in the Gitlab license (404)', async () => {
       const input = {
         repoUrl:
           'gitlab.com?repo=repo-without-approval-rule-license&owner=owner',
@@ -875,7 +875,7 @@ describe('createGitLabMergeRequest', () => {
       expect(ctx.logger.warn).toHaveBeenCalledWith(
         'Failed to retrieve approval rules for MR 6: Error: Not Found. Proceeding with MR creation without reviewers from approval rules.',
       );
-      expect(ctx.output).toHaveBeenCalledWith('targetBranchName', 'main'); // This ensures that the MR scaffolder step finishes successfully and all errors are catched.
+      expect(ctx.output).toHaveBeenCalledWith('targetBranchName', 'main'); // This ensures that the MR scaffolder step finishes successfully and all errors are caught.
     });
 
     it('assignee is not set when a valid assignee username is not passed in options', async () => {
@@ -1144,7 +1144,7 @@ describe('createGitLabMergeRequest', () => {
       mockDir.setContent({
         [workspacePath]: {
           source: { 'foo.txt': 'Hello there!', 'auto.txt': 'File exist' },
-          irrevelant: {},
+          irrelevant: {},
         },
       });
 

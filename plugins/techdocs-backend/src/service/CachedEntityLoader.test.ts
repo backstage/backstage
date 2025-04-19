@@ -70,7 +70,7 @@ describe('CachedEntityLoader', () => {
     expect(catalog.getEntityByRef).not.toHaveBeenCalled();
   });
 
-  it('does not cache missing entites', async () => {
+  it('does not cache missing entities', async () => {
     const catalog = catalogServiceMock({ entities: [] });
     cache.get.mockResolvedValue(undefined);
 

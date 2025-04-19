@@ -36,7 +36,7 @@ import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 
 import { ActionPageContent } from '../../../components/ActionsPage/ActionsPage';
 import { scaffolderTranslationRef } from '../../../translation';
-import { CustomFieldPlaygroud } from './CustomFieldPlaygroud';
+import { CustomFieldPlayground } from './CustomFieldPlayground';
 
 const useStyles = makeStyles(
   theme => ({
@@ -116,7 +116,7 @@ export function TemplateEditorToolbar(props: {
           open={showFieldsDrawer}
           onClose={() => setShowFieldsDrawer(false)}
         >
-          <CustomFieldPlaygroud fieldExtensions={fieldExtensions} />
+          <CustomFieldPlayground fieldExtensions={fieldExtensions} />
         </Drawer>
         <Drawer
           classes={{ paper: classes.paper }}
