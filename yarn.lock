@@ -3407,13 +3407,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage-community/plugin-stackstorm@npm:^0.1.16":
-  version: 0.1.20
-  resolution: "@backstage-community/plugin-stackstorm@npm:0.1.20"
+"@backstage-community/plugin-stackstorm@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "@backstage-community/plugin-stackstorm@npm:0.6.0"
   dependencies:
-    "@backstage/core-components": "npm:^0.15.1"
-    "@backstage/core-plugin-api": "npm:^1.10.0"
-    "@backstage/errors": "npm:^1.2.4"
+    "@backstage/core-components": "npm:^0.17.1"
+    "@backstage/core-plugin-api": "npm:^1.10.6"
+    "@backstage/errors": "npm:^1.2.7"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@types/react": "npm:^16.13.1 || ^17.0.0 || ^18.0.0"
@@ -3422,7 +3422,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: 10/5dac0ca61198ba9e12ae06e9f00f5cf3cb2f620b58624e7270fa2539e0fb374f52bde9366cfa0f30dd123768a0a35d4515d2cbd822de92379ba59aaccedba869
+  checksum: 10/7e99cad8f6595f2b5aa98a3c2a12544842eb521bd3a3d182ac21b6acc62642afaa71540a70c55c80b583b0b7d5c1ae08b3d20cd40c3cff73ebe2d523cc19729f
   languageName: node
   linkType: hard
 
@@ -4149,7 +4149,7 @@ __metadata:
   resolution: "@backstage/core-compat-api@workspace:packages/core-compat-api"
   dependencies:
     "@backstage-community/plugin-puppetdb": "npm:^0.1.18"
-    "@backstage-community/plugin-stackstorm": "npm:^0.1.16"
+    "@backstage-community/plugin-stackstorm": "npm:^0.6.0"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
@@ -4284,7 +4284,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/core-components@workspace:^, @backstage/core-components@workspace:packages/core-components":
+"@backstage/core-components@npm:^0.17.1, @backstage/core-components@workspace:^, @backstage/core-components@workspace:packages/core-components":
   version: 0.0.0-use.local
   resolution: "@backstage/core-components@workspace:packages/core-components"
   dependencies:
@@ -4362,7 +4362,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-plugin-api@npm:^1.10.0, @backstage/core-plugin-api@npm:^1.8.2, @backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
+"@backstage/core-plugin-api@npm:^1.10.0, @backstage/core-plugin-api@npm:^1.10.6, @backstage/core-plugin-api@npm:^1.8.2, @backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
   version: 0.0.0-use.local
   resolution: "@backstage/core-plugin-api@workspace:packages/core-plugin-api"
   dependencies:
