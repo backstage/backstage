@@ -17,6 +17,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Menu } from './Menu';
 import { Button } from '../Button';
+import { Icon } from '../Icon';
 
 const meta = {
   title: 'Components/Menu',
@@ -36,7 +37,7 @@ export const Default: Story = {
               {...props}
               size="medium"
               variant="secondary"
-              iconEnd="chevron-down"
+              iconEnd={<Icon name="chevron-down" />}
             >
               Menu
             </Button>

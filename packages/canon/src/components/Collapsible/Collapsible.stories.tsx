@@ -19,6 +19,7 @@ import { Collapsible } from './';
 import { Button } from '../Button';
 import { Box } from '../Box';
 import { Text } from '../Text';
+import { Icon } from '../Icon';
 
 const meta = {
   title: 'Components/Collapsible',
@@ -42,7 +43,13 @@ export const Default: Story = {
           render={(props, state) => (
             <Button
               variant="secondary"
-              iconEnd={state.open ? 'chevron-up' : 'chevron-down'}
+              iconEnd={
+                state.open ? (
+                  <Icon name="chevron-up" />
+                ) : (
+                  <Icon name="chevron-down" />
+                )
+              }
               {...props}
             >
               {state.open ? 'Close Panel' : 'Open Panel'}

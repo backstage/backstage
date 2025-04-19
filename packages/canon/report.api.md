@@ -15,6 +15,7 @@ import { ForwardRefExoticComponent } from 'react';
 import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
+import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
@@ -173,8 +174,8 @@ export const buttonPropDefs: {
 export interface ButtonProps
   extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   children: React.ReactNode;
-  iconEnd?: IconNames;
-  iconStart?: IconNames;
+  iconEnd?: ReactElement;
+  iconStart?: ReactElement;
   size?: ButtonOwnProps['size'];
   variant?: ButtonOwnProps['variant'];
 }
@@ -697,7 +698,7 @@ export const iconButtonPropDefs: {
 // @public
 export interface IconButtonProps
   extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  icon: IconNames;
+  icon: ReactElement;
   size?: IconButtonOwnProps['size'];
   variant?: IconButtonOwnProps['variant'];
 }

@@ -21,6 +21,7 @@ import { IconButton } from '../../IconButton';
 import clsx from 'clsx';
 import { Select } from '../../Select';
 import { useDataTable } from '../Root/DataTableRoot';
+import { Icon } from '../../Icon';
 
 /** @public */
 const DataTablePagination = forwardRef(
@@ -71,14 +72,14 @@ const DataTablePagination = forwardRef(
             size="small"
             onClick={() => table?.previousPage()}
             disabled={!table?.getCanPreviousPage()}
-            icon="chevron-left"
+            icon={<Icon name="chevron-left" />}
           />
           <IconButton
             variant="secondary"
             size="small"
             onClick={() => table?.nextPage()}
             disabled={!table?.getCanNextPage()}
-            icon="chevron-right"
+            icon={<Icon name="chevron-right" />}
           />
         </div>
       </div>
