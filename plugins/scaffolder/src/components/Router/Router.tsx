@@ -41,6 +41,7 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
   templateFormRouteRef,
+  templatingExtensionsRouteRef,
 } from '../../routes';
 
 import { ActionsPage } from '../../components/ActionsPage';
@@ -66,6 +67,7 @@ import {
 import { useApp } from '@backstage/core-plugin-api';
 import { FormField, OpaqueFormField } from '@internal/scaffolder';
 import { useAsync, useMountEffect } from '@react-hookz/web';
+import { TemplatingExtensionsPage } from '../TemplatingExtensionsPage';
 
 /**
  * The Props for the Scaffolder Router
@@ -247,6 +249,10 @@ export const InternalRouter = (
             </SecretsContextProvider>
           </RequirePermission>
         }
+      />
+      <Route
+        path={templatingExtensionsRouteRef.path}
+        element={<TemplatingExtensionsPage />}
       />
       <Route path="*" element={<NotFoundErrorPage />} />
     </Routes>

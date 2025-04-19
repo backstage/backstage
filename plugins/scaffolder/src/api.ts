@@ -328,7 +328,7 @@ export class ScaffolderClient implements ScaffolderApi {
   async listTemplatingExtensions(): Promise<ListTemplatingExtensionsResponse> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const response = await this.fetchApi.fetch(
-      `${baseUrl}/v2/template-extensions`,
+      `${baseUrl}/v2/templating-extensions`,
     );
     if (!response.ok) {
       throw ResponseError.fromResponse(response);
