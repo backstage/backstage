@@ -1411,7 +1411,7 @@ export type TableFilter = {
 // Warning: (ae-missing-release-tag) "TableFiltersClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type TableFiltersClassKey = 'root' | 'value' | 'header' | 'filters';
+export type TableFiltersClassKey = 'root' | 'value' | 'heder' | 'filters';
 
 // Warning: (ae-missing-release-tag) "TableHeaderClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
