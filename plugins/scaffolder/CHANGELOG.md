@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder
 
+## 1.30.2-next.0
+
+### Patch Changes
+
+- d7da01d: Fix EntityPicker field to render description as markdown, matching other form components in the system.
+- 36ae651: Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+  - @backstage/plugin-scaffolder-react@1.15.2-next.0
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/integration-react@1.2.6
+
 ## 1.30.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-user-settings
 
+## 0.8.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+  - @backstage/core-compat-api@0.4.2-next.0
+
 ## 0.8.21
 
 ### Patch Changes

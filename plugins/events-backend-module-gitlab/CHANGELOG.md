@@ -1,5 +1,11 @@
 # @backstage/plugin-events-backend-module-gitlab
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- a820df1: Adds support for `object_kind` field with priority over `event_name` on Gitlab webhook event types
+
 ## 0.3.0
 
 ### Minor Changes

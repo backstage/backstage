@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.6.0-next.0
+
+### Minor Changes
+
+- f453d5c: **BREAKING** Removed support for the legacy backend and removed references to `@backstage/backend-common`, please [migrate to the new backend system](https://backstage.io/docs/backend-system/building-plugins-and-modules/migrating)
+
 ## 0.5.7
 
 ### Patch Changes

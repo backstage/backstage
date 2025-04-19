@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.32.2-next.0
+
+### Patch Changes
+
+- 36ae651: Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.1-next.0
+
 ## 1.32.0
 
 ### Minor Changes

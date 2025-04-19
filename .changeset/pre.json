@@ -199,5 +199,16 @@
     "@backstage/plugin-user-settings-backend": "0.3.1",
     "@backstage/plugin-user-settings-common": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "bumpy-showers-design",
+    "chubby-needles-vanish",
+    "create-app-1745052655",
+    "cruel-lights-sip",
+    "cyan-pots-appear",
+    "green-trainers-float",
+    "huge-olives-do",
+    "new-hands-scream",
+    "sharp-numbers-doubt",
+    "shiny-symbols-grow"
+  ]
 }

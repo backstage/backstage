@@ -1,5 +1,17 @@
 # example-backend
 
+## 0.0.38-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-github-provider@0.3.3-next.0
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.6.0-next.0
+  - @backstage/plugin-auth-backend@0.25.0-next.0
+  - @backstage/plugin-scaffolder-backend@1.32.2-next.0
+  - @backstage/plugin-notifications-backend@0.5.5
+  - @backstage/plugin-signals-backend@0.3.3
+
 ## 0.0.37
 
 ### Patch Changes
