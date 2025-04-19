@@ -5579,7 +5579,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-github@workspace:plugins/catalog-backend-module-github"
   dependencies:
-    "@backstage/backend-common": "npm:^0.25.0"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
