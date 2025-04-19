@@ -10,18 +10,20 @@ body:
         This template is used to report issues in the Backstage documentation.
 
         The documentation at [backstage.io](https://backstage.io) is only updated when a new release is made. Before reporting an issue here, please check that the issue also exists in the ["next"](https://backstage.io/docs/next/overview/what-is-backstage) version of the documentation, which you can switch to in the top-right dropdown menu.
-  - type: checkboxes
-    id: issue-labels
+  # This field is managed by .common.yaml
+  - id: issue-labels
+    type: checkboxes
     attributes:
       label: '📜 Issue Labels'
       options:
         - label: 'Please familiarize yourself with the issue labels used in this project: [LABELS.md](https://github.com/backstage/backstage/blob/master/LABELS.md)'
           required: true
-  - type: dropdown
-    id: project-area
+  # This field is managed by .common.yaml
+  - id: project-area
+    type: dropdown
     attributes:
       label: '🗃️ Project Area'
-      description: What area of the project do you think this bug is related to? This will help find an owner for the issue faster.
+      description: What area of the project would this feature be related to? This will help find an owner for the issue faster.
       options:
         - Unknown
         - Auditor
@@ -71,8 +73,9 @@ body:
       description: Describe the problem you have found in the docs.
       placeholder: |
         Please provide links to the specific pages and sections that need to be corrected and describe the problem you have found.
-  - type: checkboxes
-    id: read-code-of-conduct
+  # This field is managed by .common.yaml
+  - id: read-code-of-conduct
+    type: checkboxes
     attributes:
       label: 'Have you read the Code of Conduct?'
       options:

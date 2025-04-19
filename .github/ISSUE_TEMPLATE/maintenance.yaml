@@ -8,15 +8,17 @@ body:
     attributes:
       value: |
         This template lets you highlight maintenance tasks that need special consideration, such as tricky version bumps or migrations.
-  - type: checkboxes
-    id: issue-labels
+  # This field is managed by .common.yaml
+  - id: issue-labels
+    type: checkboxes
     attributes:
       label: '📜 Issue Labels'
       options:
         - label: 'Please familiarize yourself with the issue labels used in this project: [LABELS.md](https://github.com/backstage/backstage/blob/master/LABELS.md)'
           required: true
-  - type: textarea
-    id: search-terms
+  # This field is managed by .common.yaml
+  - id: search-terms
+    type: textarea
     attributes:
       label: '🔎 Search Terms'
       render: plain
@@ -28,8 +30,9 @@ body:
         e.g. "catalog github rate limited", "http root service configurer", "scaffolder template include", "entity card title"
     validations:
       required: true
-  - type: dropdown
-    id: project-area
+  # This field is managed by .common.yaml
+  - id: project-area
+    type: dropdown
     attributes:
       label: '🗃️ Project Area'
       description: What area of the project would this feature be related to? This will help find an owner for the issue faster.
@@ -73,15 +76,17 @@ body:
         Explain what level of prioritization this task should receive. Are there any particular benefits provided in newer versions in case of a version bump, or any security vulnerabilities that can be removed?
 
         Also list any important dates or deadlines, which as current versions reaching end of life, or release dates for stable releases.
-  - type: checkboxes
-    id: read-code-of-conduct
+  # This field is managed by .common.yaml
+  - id: read-code-of-conduct
+    type: checkboxes
     attributes:
       label: 'Have you read the Code of Conduct?'
       options:
         - label: 'I have read the [Code of Conduct](https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md)'
           required: true
-  - type: dropdown
-    id: willing-to-submit-pr
+  # This field is managed by .common.yaml
+  - id: willing-to-submit-pr
+    type: dropdown
     attributes:
       label: Are you willing to submit PR?
       description: This is absolutely not required, but we are happy to guide you in the contribution process.

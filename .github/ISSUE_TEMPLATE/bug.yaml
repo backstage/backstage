@@ -9,20 +9,22 @@ body:
       value: |
         Please fill in each section completely, and [search in GitHub](https://github.com/backstage/backstage/search?type=Issues)
         before reporting a new bug in order to avoid duplicates. Thank you!
-  - type: checkboxes
-    id: issue-labels
+  # This field is managed by .common.yaml
+  - id: issue-labels
+    type: checkboxes
     attributes:
       label: '📜 Issue Labels'
       options:
         - label: 'Please familiarize yourself with the issue labels used in this project: [LABELS.md](https://github.com/backstage/backstage/blob/master/LABELS.md)'
           required: true
-  - type: textarea
-    id: search-terms
+  # This field is managed by .common.yaml
+  - id: search-terms
+    type: textarea
     attributes:
       label: '🔎 Search Terms'
       render: plain
       description: |
-        What search terms did you use when trying to find an existing bug report?
+        What search terms did you use when trying to find an existing feature proposal?
       placeholder: |
         List of keywords you searched for before creating this issue. Write them down here so that others can find this bug more easily and help provide feedback.
 
@@ -38,11 +40,12 @@ body:
         ## Defining the bug
 
         Defining the bug accurately will help ensure that it is identified and fixed correctly.
-  - type: dropdown
-    id: project-area
+  # This field is managed by .common.yaml
+  - id: project-area
+    type: dropdown
     attributes:
       label: '🗃️ Project Area'
-      description: What area of the project do you think this bug is related to? This will help find an owner for the issue faster.
+      description: What area of the project would this feature be related to? This will help find an owner for the issue faster.
       options:
         - Unknown
         - Auditor
@@ -135,8 +138,9 @@ body:
         3. Scroll down to '....'"
     validations:
       required: false
-  - type: checkboxes
-    id: read-code-of-conduct
+  # This field is managed by .common.yaml
+  - id: read-code-of-conduct
+    type: checkboxes
     attributes:
       label: 'Have you read the Code of Conduct?'
       options:
