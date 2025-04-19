@@ -44,7 +44,13 @@ import {
 import { NotImplementedError } from '@backstage/errors';
 import { applyInternalErrorFilter } from './applyInternalErrorFilter';
 
-type LogMeta = {
+/**
+ * Type used to represent the metadata of a log entry.
+ *
+ * @public
+ */
+
+export type LogMeta = {
   date: string;
   method: string;
   url: string;
@@ -55,7 +61,13 @@ type LogMeta = {
   referrer?: string;
 };
 
-function getLogMeta(req: Request, res: Response): LogMeta {
+/**
+ * Returns a log metadata object for a given request and response.
+ *
+ * @public
+ */
+
+export function getLogMeta(req: Request, res: Response): LogMeta {
   const referrer = req.headers.referer ?? req.headers.referrer;
   const userAgent = req.headers['user-agent'];
   const contentLength = Number(res.getHeader('content-length'));
