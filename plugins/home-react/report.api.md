@@ -5,8 +5,21 @@
 ```ts
 import { Extension } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { JSX as JSX_3 } from 'react';
+import { Overrides } from '@material-ui/core/styles/overrides';
 import { RJSFSchema } from '@rjsf/utils';
+import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { UiSchema } from '@rjsf/utils';
+
+// @public (undocumented)
+export type BackstageContentModalClassKey = 'contentModal' | 'linkText';
+
+// @public (undocumented)
+export type BackstageOverrides = Overrides & {
+  [Name in keyof CatalogReactComponentsNameToClassKey]?: Partial<
+    StyleRules<CatalogReactComponentsNameToClassKey[Name]>
+  >;
+};
 
 // @public (undocumented)
 export type CardConfig = {
@@ -40,6 +53,11 @@ export type CardSettings = {
 };
 
 // @public (undocumented)
+export type CatalogReactComponentsNameToClassKey = {
+  BackstageContentModal: BackstageContentModalClassKey;
+};
+
+// @public (undocumented)
 export type ComponentParts = {
   Content: (props?: any) => JSX.Element;
   Actions?: () => JSX.Element;
@@ -50,6 +68,15 @@ export type ComponentParts = {
 // @public (undocumented)
 export type ComponentRenderer = {
   Renderer?: (props: RendererProps) => JSX.Element;
+};
+
+// @public
+export const ContentModal: (props: ContentModalProps) => JSX_2.Element;
+
+// @public
+export type ContentModalProps = {
+  modalContent: JSX_3.Element;
+  linkContent: string | JSX_3.Element;
 };
 
 // @public
