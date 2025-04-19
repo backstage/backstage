@@ -15,7 +15,7 @@
  */
 
 import { ReactNode, useMemo } from 'react';
-import { useRoutes } from 'react-router-dom';
+import { useRoutes, createRoutesFromChildren } from 'react-router-dom';
 import {
   attachComponentData,
   useApp,
@@ -27,7 +27,7 @@ let warned = false;
 
 type RouteObject = {
   path: string;
-  element: ReactNode;
+  element?: ReactNode;
   children?: RouteObject[];
 };
 
@@ -38,6 +38,23 @@ type RouteObject = {
  */
 export type FlatRoutesProps = {
   children: ReactNode;
+};
+
+export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
+  const app = useApp();
+  const { NotFoundErrorPage } = app.getComponents();
+  const routes = createRoutesFromChildren(props.children);
+
+  // TODO(Rugvip): Possibly add a way to skip this, like a noNotFoundPage prop
+  const withNotFound = [
+    ...routes,
+    {
+      path: '*',
+      element: <NotFoundErrorPage />,
+    },
+  ];
+
+  return useRoutes(withNotFound);
 };
 
 /**
@@ -51,7 +68,7 @@ export type FlatRoutesProps = {
  *
  * @public
  */
-export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
+export const FlatRoutes2 = (props: FlatRoutesProps): JSX.Element | null => {
   const app = useApp();
   const { NotFoundErrorPage } = app.getComponents();
   const isBeta = useMemo(() => isReactRouterBeta(), []);
@@ -63,16 +80,11 @@ export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
         children?: ReactNode;
       }>()
       .flatMap<RouteObject>(child => {
-        let path = child.props.path;
-
-        // TODO(Rugvip): Work around plugins registering empty paths, remove once deprecated routes are gone
-        if (path === '') {
-          return [];
-        }
-        path = path?.replace(/\/\*$/, '') ?? '/';
+        const path = child.props.path;
+        const children = child.props.children;
 
         let element = isBeta ? child : child.props.element;
-        if (!isBeta && !element) {
+        if (!isBeta && !element && !children) {
           element = child;
           if (!warned && process.env.NODE_ENV !== 'test') {
             // eslint-disable-next-line no-console
@@ -84,28 +96,56 @@ export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
           }
         }
 
+        let correctedPath = path ?? '/';
+        if (path?.length === 0) {
+          // Route paths should not be empty
+          // eslint-disable-next-line no-console
+          console.warn(
+            `DEPRECATION WARNING: The path property in the <Route /> component must not be left empty.`,
+          );
+        }
+
+        if (correctedPath.startsWith('/') && correctedPath.length > 1) {
+          // Route paths should not have a leading '/'
+          // eslint-disable-next-line no-console
+          console.warn(
+            `DEPRECATION WARNING: Remove the leading '/' from the path property in the <Route /> component: ${path}.`,
+          );
+          correctedPath = correctedPath.slice(1);
+        }
+
+        let isSplat = false;
+        if (correctedPath.endsWith('/*')) {
+          // Route paths should not have a trailing '/*'
+          // instead a new Route component should be used
+          // eslint-disable-next-line no-console
+          console.warn(
+            `DEPRECATION WARNING: Remove the trailing '/*' from the path property in the <Route /> component: ${path}. For more information, see: https://reactrouter.com/upgrading/v6#v7_relativesplatpath.`,
+          );
+          isSplat = true;
+          correctedPath = correctedPath.slice(0, -2);
+        }
+
+        if (isSplat) {
+          return [
+            {
+              path: correctedPath,
+              children: [{ path: '*', element: element, children }],
+            },
+          ] as RouteObject[];
+        }
+
         return [
           {
-            // Each route matches any sub route, except for the explicit root path
-            path,
+            path: correctedPath,
             element,
-            children: child.props.children
-              ? [
-                  // These are the children of each route, which we all add in under a catch-all
-                  // subroute in order to make them available to `useOutlet`
-                  {
-                    path: path === '/' ? '/' : '*', // The root path must require an exact match
-                    element: child.props.children,
-                  },
-                ]
-              : undefined,
+            children,
           },
-        ];
+        ] as RouteObject[];
       })
       // Routes are sorted to work around a bug where prefixes are unexpectedly matched
       // TODO(Rugvip): This can be removed once react-router v6 beta is no longer supported
-      .sort((a, b) => b.path.localeCompare(a.path))
-      .map(obj => ({ ...obj, path: obj.path === '/' ? '/' : `${obj.path}/*` })),
+      .sort((a, b) => b.path.localeCompare(a.path)),
   );
 
   // TODO(Rugvip): Possibly add a way to skip this, like a noNotFoundPage prop

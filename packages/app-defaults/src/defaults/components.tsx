@@ -21,6 +21,7 @@ import {
   MemoryRouter,
   useInRouterContext,
   BrowserRouter,
+  type BrowserRouterProps,
 } from 'react-router-dom';
 import {
   AppComponents,
@@ -34,6 +35,16 @@ export function OptionallyWrapInRouter({ children }: { children: ReactNode }) {
   }
   return <MemoryRouter>{children}</MemoryRouter>;
 }
+
+const DefaultRouter = (props: BrowserRouterProps) => (
+  <BrowserRouter
+    {...props}
+    future={{
+      v7_relativeSplatPath: true,
+      v7_startTransition: true,
+    }}
+  />
+);
 
 const DefaultNotFoundPage = () => (
   <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />
@@ -79,7 +90,7 @@ const DefaultErrorBoundaryFallback = ({
  */
 export const components: AppComponents = {
   Progress,
-  Router: BrowserRouter,
+  Router: DefaultRouter,
   NotFoundErrorPage: DefaultNotFoundPage,
   BootErrorPage: DefaultBootErrorPage,
   ErrorBoundaryFallback: DefaultErrorBoundaryFallback,

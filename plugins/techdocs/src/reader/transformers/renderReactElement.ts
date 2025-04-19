@@ -14,22 +14,9 @@
  * limitations under the License.
  */
 
-let ReactDOMPromise: Promise<
-  typeof import('react-dom') | typeof import('react-dom/client')
->;
-if (process.env.HAS_REACT_DOM_CLIENT) {
-  ReactDOMPromise = import('react-dom/client');
-} else {
-  ReactDOMPromise = import('react-dom');
-}
+import { createRoot } from 'react-dom/client';
 
 /** @internal */
 export function renderReactElement(element: JSX.Element, root: HTMLElement) {
-  ReactDOMPromise.then(ReactDOM => {
-    if ('createRoot' in ReactDOM) {
-      ReactDOM.createRoot(root).render(element);
-    } else {
-      ReactDOM.render(element, root);
-    }
-  });
+  createRoot(root).render(element);
 }

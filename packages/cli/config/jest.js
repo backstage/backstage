@@ -43,15 +43,6 @@ const envOptions = {
   oldTests: Boolean(process.env.BACKSTAGE_OLD_TESTS),
 };
 
-try {
-  require.resolve('react-dom/client', {
-    paths: [paths.targetRoot],
-  });
-  process.env.HAS_REACT_DOM_CLIENT = true;
-} catch {
-  /* ignored */
-}
-
 /**
  * A list of config keys that are valid for project-level config.
  * Jest will complain if we forward any other root configuration to the projects.
