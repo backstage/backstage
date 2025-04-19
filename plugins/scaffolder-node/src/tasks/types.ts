@@ -16,7 +16,8 @@
 
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { JsonObject, JsonValue, Observable } from '@backstage/types';
+import { JsonObject, Observable } from '@backstage/types';
+import { CheckpointStateValue } from '../checkpoints';
 
 /**
  * TaskSecrets
@@ -105,6 +106,15 @@ export type TaskBrokerDispatchOptions = {
 };
 
 /**
+ * Options for updating a checkpoint in a task.
+ *
+ * @public
+ */
+export type UpdateTaskCheckpointOptions = {
+  key: string;
+} & CheckpointStateValue;
+
+/**
  * Task
  *
  * @public
@@ -129,19 +139,7 @@ export interface TaskContext {
     | undefined
   >;
 
-  updateCheckpoint?(
-    options:
-      | {
-          key: string;
-          status: 'success';
-          value: JsonValue;
-        }
-      | {
-          key: string;
-          status: 'failed';
-          reason: string;
-        },
-  ): Promise<void>;
+  updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 
   serializeWorkspace?(options: { path: string }): Promise<void>;
 
