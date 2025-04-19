@@ -64,6 +64,15 @@ export type DefaultResultListItemProps = {
 };
 
 // @public (undocumented)
+export type FilterValue = string | FilterValueWithLabel;
+
+// @public (undocumented)
+export type FilterValueWithLabel = {
+  value: string;
+  label: string;
+};
+
+// @public (undocumented)
 export const HighlightedSearchResultText: (
   props: HighlightedSearchResultTextProps,
 ) => JSX_2.Element;
@@ -215,7 +224,7 @@ export type SearchFilterComponentProps = {
   className?: string;
   name: string;
   label?: string;
-  values?: string[] | ((partial: string) => Promise<string[]>);
+  values?: FilterValue[] | ((partial: string) => Promise<FilterValue[]>);
   defaultValue?: string[] | string | null;
   valuesDebounceMs?: number;
 };
