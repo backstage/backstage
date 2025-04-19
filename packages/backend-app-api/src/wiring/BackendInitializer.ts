@@ -365,17 +365,38 @@ export class BackendInitializer {
             }
             await tree.parallelTopologicalTraversal(
               async ({ moduleId, moduleInit }) => {
-                const moduleDeps = await this.#getInitDeps(
-                  moduleInit.init.deps,
-                  pluginId,
-                  moduleId,
-                );
-                await moduleInit.init.func(moduleDeps).catch(error => {
-                  throw new ForwardedError(
-                    `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
-                    error,
+                const isModuleBootFailurePermitted =
+                  this.#getPluginModuleBootFailurePredicate(
+                    pluginId,
+                    moduleId,
+                    rootConfig,
                   );
-                });
+
+                try {
+                  const moduleDeps = await this.#getInitDeps(
+                    moduleInit.init.deps,
+                    pluginId,
+                    moduleId,
+                  );
+                  await moduleInit.init.func(moduleDeps).catch(error => {
+                    throw new ForwardedError(
+                      `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
+                      error,
+                    );
+                  });
+                } catch (error: unknown) {
+                  assertError(error);
+                  if (isModuleBootFailurePermitted) {
+                    initLogger.onPermittedPluginModuleFailure(
+                      pluginId,
+                      moduleId,
+                      error,
+                    );
+                  } else {
+                    initLogger.onPluginModuleFailed(pluginId, moduleId, error);
+                    throw error;
+                  }
+                }
               },
             );
           }
@@ -648,6 +669,24 @@ export class BackendInitializer {
       ) ?? defaultStartupBootFailureValue;
 
     return pluginStartupBootFailureValue === 'continue';
+  }
+
+  #getPluginModuleBootFailurePredicate(
+    pluginId: string,
+    moduleId: string,
+    config?: Config,
+  ): boolean {
+    const defaultStartupBootFailureValue =
+      config?.getOptionalString(
+        'backend.startup.default.onPluginModuleBootFailure',
+      ) ?? 'abort';
+
+    const pluginModuleStartupBootFailureValue =
+      config?.getOptionalString(
+        `backend.startup.plugins.${pluginId}.modules.${moduleId}.onPluginModuleBootFailure`,
+      ) ?? defaultStartupBootFailureValue;
+
+    return pluginModuleStartupBootFailureValue === 'continue';
   }
 }
 
