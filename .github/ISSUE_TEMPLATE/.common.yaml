@@ -32,6 +32,7 @@
     options:
       - Unknown
       - Auditor
+      - Auth
       - Catalog
       - CLI Tooling
       - Core Framework
@@ -40,13 +41,32 @@
       - Events System
       - Home
       - Kubernetes Plugin
-      - Microsite
       - Notifications
       - OpenAPI Tooling
       - Permission Framework
-      - Software Templates
       - Search
+      - Software Templates
       - TechDocs
+  validations:
+    required: true
+- type: dropdown
+  id: integration
+  attributes:
+    label: '🔗 External Integration'
+    description: Is this issue related to an integration with any particular external system?
+    options:
+      - N/A
+      - AWS
+      - Azure
+      - Azure DevOps
+      - Bitbucket Cloud
+      - Bitbucket Server
+      - GCP
+      - Gerrit
+      - Gitea
+      - GitHub
+      - GitLab
+      - Other
   validations:
     required: true
 - id: read-code-of-conduct
