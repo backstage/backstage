@@ -42682,6 +42682,7 @@ __metadata:
     sort-package-json: "npm:^2.8.0"
     typedoc: "npm:^0.27.6"
     typescript: "npm:~5.6.0"
+    yaml: "npm:^2.7.0"
   languageName: unknown
   linkType: soft
 
