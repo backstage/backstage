@@ -17,8 +17,11 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import { paths as cliPaths, resolvePackagePaths } from '../../lib/paths';
 import { createTemporaryTsConfig } from './utils';
-import { mkdir, readFile, writeFile } from 'fs/promises';
+import { readFile, writeFile } from 'fs/promises';
 import pLimit from 'p-limit';
+import { mkdirp } from 'fs-extra';
+import { PackageDocsCache } from './Cache';
+import { Lockfile } from '@backstage/cli-node';
 
 const limit = pLimit(8);
 
@@ -38,6 +41,7 @@ const EXCLUDE = [
   'packages/techdocs-cli-embedded-app',
   'packages/yarn-plugin',
   'packages/backend',
+  'packages/backend-legacy',
 ];
 
 const HIGHLIGHT_LANGUAGES = [
@@ -53,6 +57,8 @@ const HIGHLIGHT_LANGUAGES = [
   'js',
   'json',
 ];
+
+const CACHE_DIR = '.cache/package-docs';
 
 function getExports(packageJson: any) {
   if (packageJson.exports) {
@@ -75,41 +81,35 @@ async function generateDocJson(pkg: string) {
     !exports.length ||
     !exports.some(e => e.startsWith('src') || e.startsWith('./src'))
   ) {
-    return;
+    return false;
   }
 
-  try {
-    await mkdir(cliPaths.resolveTargetRoot(`dist-types`, pkg), {
-      recursive: true,
-    });
+  await mkdirp(cliPaths.resolveTargetRoot(`dist-types`, pkg));
 
-    const { stdout, stderr } = await execAsync(
-      [
-        cliPaths.resolveTargetRoot('node_modules/.bin/typedoc'),
-        '--json',
-        cliPaths.resolveTargetRoot(`dist-types`, pkg, 'docs.json'),
-        '--tsconfig',
-        temporaryTsConfigPath,
-        '--basePath',
-        cliPaths.targetRoot,
-        '--skipErrorChecking',
-        ...(getExports(packageJson).flatMap(e => [
-          '--entryPoints',
-          e,
-        ]) as string[]),
-      ].join(' '),
-      {
-        cwd: pkg,
-        env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=12288' },
-      },
-    );
-    console.log(`### Processed ${pkg}`);
-    console.log(stdout);
-    console.error(stderr);
-  } catch (e) {
-    console.error('Failed to generate docs for', pkg);
-    console.error(e);
-  }
+  const { stdout, stderr } = await execAsync(
+    [
+      cliPaths.resolveTargetRoot('node_modules/.bin/typedoc'),
+      '--json',
+      cliPaths.resolveTargetRoot(`dist-types`, pkg, 'docs.json'),
+      '--tsconfig',
+      temporaryTsConfigPath,
+      '--basePath',
+      cliPaths.targetRoot,
+      '--skipErrorChecking',
+      ...(getExports(packageJson).flatMap(e => [
+        '--entryPoints',
+        e,
+      ]) as string[]),
+    ].join(' '),
+    {
+      cwd: pkg,
+      env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=12288' },
+    },
+  );
+  console.log(`### Processed ${pkg}`);
+  console.log(stdout);
+  console.error(stderr);
+  return true;
 }
 
 export default async function packageDocs(paths: string[] = [], opts: any) {
@@ -120,6 +120,12 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
     exclude: opts.exclude,
   });
 
+  await mkdirp(CACHE_DIR);
+  const cache = await PackageDocsCache.loadAsync(
+    CACHE_DIR,
+    await Lockfile.load(cliPaths.resolveTargetRoot('yarn.lock')),
+  );
+
   console.log(`### Generating docs.`);
   await Promise.all(
     selectedPackageDirs.map(pkg =>
@@ -127,8 +133,29 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
         if (EXCLUDE.includes(pkg)) {
           return;
         }
-        console.log(`### Processing ${pkg}`);
-        await generateDocJson(pkg);
+        if (await cache.has(pkg)) {
+          console.log(`### Skipping ${pkg} due to cache hit`);
+          try {
+            await cache.restore(pkg);
+            return;
+          } catch (e) {
+            console.error('Failed to restore cache for', pkg);
+            console.error(e);
+          }
+        }
+        try {
+          console.log(`### Processing ${pkg}`);
+          const success = await generateDocJson(pkg);
+          if (success) {
+            await cache.write(
+              pkg,
+              cliPaths.resolveTargetRoot(`dist-types`, pkg),
+            );
+          }
+        } catch (e) {
+          console.error('Failed to generate docs for', pkg);
+          console.error(e);
+        }
       }),
     ),
   );

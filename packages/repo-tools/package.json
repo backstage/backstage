@@ -69,6 +69,7 @@
     "commander": "^12.0.0",
     "fs-extra": "^11.2.0",
     "glob": "^8.0.3",
+    "globby": "^11.0.0",
     "is-glob": "^4.0.3",
     "js-yaml": "^4.1.0",
     "just-diff": "^6.0.2",
