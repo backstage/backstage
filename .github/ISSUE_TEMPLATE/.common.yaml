@@ -17,9 +17,9 @@
     label: '🔎 Search Terms'
     render: plain
     description: |
-      What search terms did you use when trying to find an existing feature proposal?
+      What search terms did you use when trying to find similar issues?
     placeholder: |
-      List of keywords you searched for before creating this issue. Write them down here so that others can find this bug more easily and help provide feedback.
+      List of keywords you searched for before creating this issue. Write them down here so that others can find this issue more easily and help provide feedback.
 
       e.g. "catalog github rate limited", "http root service configurer", "scaffolder template include", "entity card title"
   validations:
@@ -28,7 +28,7 @@
   type: dropdown
   attributes:
     label: '🗃️ Project Area'
-    description: What area of the project would this feature be related to? This will help find an owner for the issue faster.
+    description: What project area is this issue closest related to? This will help find an owner for the issue faster.
     options:
       - Unknown
       - Auditor

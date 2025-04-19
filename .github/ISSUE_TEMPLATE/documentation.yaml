@@ -23,7 +23,7 @@ body:
     type: dropdown
     attributes:
       label: '🗃️ Project Area'
-      description: What area of the project would this feature be related to? This will help find an owner for the issue faster.
+      description: What project area is this issue closest related to? This will help find an owner for the issue faster.
       options:
         - Unknown
         - Auditor
