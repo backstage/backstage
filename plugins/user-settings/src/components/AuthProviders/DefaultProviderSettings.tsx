@@ -26,6 +26,7 @@ import {
   bitbucketServerAuthApiRef,
   atlassianAuthApiRef,
   oneloginAuthApiRef,
+  openshiftAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 /** @public */
@@ -104,6 +105,14 @@ export const DefaultProviderSettings = (props: {
           title="Bitbucket Server"
           description="Provides authentication towards Bitbucket Server APIs"
           apiRef={bitbucketServerAuthApiRef}
+          icon={Star}
+        />
+      )}
+      {configuredProviders.includes('openshift') && (
+        <ProviderSettingsItem
+          title="OpenShift"
+          description="Provides authentication towards OpenShift APIs and identities"
+          apiRef={openshiftAuthApiRef}
           icon={Star}
         />
       )}
