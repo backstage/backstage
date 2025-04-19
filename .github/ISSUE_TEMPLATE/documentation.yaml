@@ -1,0 +1,92 @@
+name: '📖 Documentation Issue'
+description: 'Report an issue in the Backstage documentation'
+labels:
+  - type:documentation
+  - status:needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This template is used to report issues in the Backstage documentation.
+
+        The documentation at [backstage.io](https://backstage.io) is only updated when a new release is made. Before reporting an issue here, please check that the issue also exists in the ["next"](https://backstage.io/docs/next/overview/what-is-backstage) version of the documentation, which you can switch to in the top-right dropdown menu.
+  - type: checkboxes
+    id: issue-labels
+    attributes:
+      label: '📜 Issue Labels'
+      options:
+        - label: 'Please familiarize yourself with the issue labels used in this project: [LABELS.md](https://github.com/backstage/backstage/blob/master/LABELS.md)'
+          required: true
+  - type: dropdown
+    id: project-area
+    attributes:
+      label: '🗃️ Project Area'
+      description: What area of the project do you think this bug is related to? This will help find an owner for the issue faster.
+      options:
+        - Unknown
+        - Auditor
+        - Catalog
+        - CLI Tooling
+        - Core Framework
+        - Design System
+        - Documentation
+        - Events System
+        - Home
+        - Kubernetes Plugin
+        - Microsite
+        - Notifications
+        - OpenAPI Tooling
+        - Permission Framework
+        - Software Templates
+        - Search
+        - TechDocs
+    validations:
+      required: true
+  - type: dropdown
+    id: integration
+    attributes:
+      label: '🔗 External Integration'
+      description: Is this issue related to an integration with any particular external system?
+      options:
+        - N/A
+        - AWS
+        - Azure
+        - Azure DevOps
+        - Bitbucket Cloud
+        - Bitbucket Server
+        - GCP
+        - Gerrit
+        - GitHub
+        - GitLab
+        - Gitea
+        - LDAP
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    validations:
+      required: true
+    attributes:
+      label: '📝 Description'
+      description: Describe the problem you have found in the docs.
+      placeholder: |
+        Please provide links to the specific pages and sections that need to be corrected and describe the problem you have found.
+  - type: checkboxes
+    id: read-code-of-conduct
+    attributes:
+      label: 'Have you read the Code of Conduct?'
+      options:
+        - label: 'I have read the [Code of Conduct](https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md)'
+          required: true
+  - type: dropdown
+    attributes:
+      label: Are you willing to submit PR?
+      description: This is absolutely not required, but we are happy to guide you in the contribution process.
+      options:
+        - Undecided
+        - Yes, and I have enough information to get started
+        - Yes, but I would like some more guidance
+        - No, but I'm happy to collaborate on a PR with someone else
+        - No, I don't have time to work on this right now
+    validations:
+      required: true
