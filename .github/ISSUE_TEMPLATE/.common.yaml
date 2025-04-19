@@ -1,0 +1,71 @@
+# This file contains common fields for all issue templates
+# Each field is identified by its ID, and are synced with the `sync.js` script
+#
+# WARNING: After updating this file, run `yarn sync-issue-templates`
+#
+
+- id: issue-labels
+  type: checkboxes
+  attributes:
+    label: '📜 Issue Labels'
+    options:
+      - label: 'Please familiarize yourself with the issue labels used in this project: [LABELS.md](https://github.com/backstage/backstage/blob/master/LABELS.md)'
+        required: true
+- id: search-terms
+  type: textarea
+  attributes:
+    label: '🔎 Search Terms'
+    render: plain
+    description: |
+      What search terms did you use when trying to find an existing feature proposal?
+    placeholder: |
+      List of keywords you searched for before creating this issue. Write them down here so that others can find this bug more easily and help provide feedback.
+
+      e.g. "catalog github rate limited", "http root service configurer", "scaffolder template include", "entity card title"
+  validations:
+    required: true
+- id: project-area
+  type: dropdown
+  attributes:
+    label: '🗃️ Project Area'
+    description: What area of the project would this feature be related to? This will help find an owner for the issue faster.
+    options:
+      - Unknown
+      - Auditor
+      - Catalog
+      - CLI Tooling
+      - Core Framework
+      - Design System
+      - Documentation
+      - Events System
+      - Home
+      - Kubernetes Plugin
+      - Microsite
+      - Notifications
+      - OpenAPI Tooling
+      - Permission Framework
+      - Software Templates
+      - Search
+      - TechDocs
+  validations:
+    required: true
+- id: read-code-of-conduct
+  type: checkboxes
+  attributes:
+    label: 'Have you read the Code of Conduct?'
+    options:
+      - label: 'I have read the [Code of Conduct](https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md)'
+        required: true
+- id: willing-to-submit-pr
+  type: dropdown
+  attributes:
+    label: Are you willing to submit PR?
+    description: This is absolutely not required, but we are happy to guide you in the contribution process.
+    options:
+      - Undecided
+      - Yes, and I have enough information to get started
+      - Yes, but I would like some more guidance
+      - No, but I'm happy to collaborate on a PR with someone else
+      - No, I don't have time to work on this right now
+  validations:
+    required: true
