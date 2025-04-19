@@ -39,7 +39,7 @@ Use the following advanced settings:
 - `Session cookie name` = `AWSELBAuthSessionCookie`
 - `Session timeout` = `604800` seconds
 - `Scope` = `openid profile offline_access`
-- `Action on unauthenticated request` = `Autenticate (client reattempt)`
+- `Action on unauthenticated request` = `Authenticate (client reattempt)`
 
 Once you've saved the action, you should see an authentication flow be triggered against Entra ID when visiting Backstage address at `https://backstage.yourdomain.com`. The flow will not complete successfully as the Backstage app isn't yet configured properly.
 

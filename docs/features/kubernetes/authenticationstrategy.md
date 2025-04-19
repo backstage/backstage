@@ -13,7 +13,7 @@ it also defines what authentication metadata about a Kubernetes cluster is retur
 
 ## Context
 
-Backstage includes by default some [Kubernetes Auth Providers](./authentication.md) to ease the authentication proccess to
+Backstage includes by default some [Kubernetes Auth Providers](./authentication.md) to ease the authentication process to
 kubernetes clusters, it includes:
 
 - `Server Side Providers` like `localKubectlProxy` or `serviceAccount` where the same set
