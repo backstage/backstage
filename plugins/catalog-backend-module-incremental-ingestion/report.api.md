@@ -4,11 +4,9 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { EventParams } from '@backstage/plugin-events-node';
-import { EventSubscriber } from '@backstage/plugin-events-node';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HumanDuration } from '@backstage/types';
 import { IncrementalEntityProvider as IncrementalEntityProvider_2 } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
@@ -16,7 +14,6 @@ import { IncrementalEntityProviderOptions as IncrementalEntityProviderOptions_2 
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
-import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 
@@ -36,23 +33,6 @@ export type EntityIteratorResult<T> =
       entities?: DeferredEntity[];
       cursor?: T;
     };
-
-// @public @deprecated (undocumented)
-export class IncrementalCatalogBuilder {
-  // (undocumented)
-  addIncrementalEntityProvider<TCursor, TContext>(
-    provider: IncrementalEntityProvider<TCursor, TContext>,
-    options: IncrementalEntityProviderOptions,
-  ): EventSubscriber;
-  // (undocumented)
-  build(): Promise<{
-    incrementalAdminRouter: Router;
-  }>;
-  static create(
-    env: PluginEnvironment,
-    builder: CatalogBuilder,
-  ): Promise<IncrementalCatalogBuilder>;
-}
 
 // @public
 export type IncrementalEntityEventResult =
