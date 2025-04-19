@@ -15,8 +15,6 @@
  */
 
 import os from 'os';
-import { DatabaseManager } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker } from './StorageTaskBroker';
 import { TaskWorker, TaskWorkerOptions } from './TaskWorker';
@@ -40,16 +38,7 @@ const MockedNunjucksWorkflowRunner =
 MockedNunjucksWorkflowRunner.mockImplementation();
 
 async function createStore(): Promise<DatabaseTaskStore> {
-  const manager = DatabaseManager.fromConfig(
-    new ConfigReader({
-      backend: {
-        database: {
-          client: 'better-sqlite3',
-          connection: ':memory:',
-        },
-      },
-    }),
-  ).forPlugin('scaffolder');
+  const manager = mockServices.database.mock();
   return await DatabaseTaskStore.create({
     database: manager,
   });

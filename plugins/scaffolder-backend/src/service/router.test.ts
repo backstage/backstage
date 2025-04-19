@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
@@ -32,7 +31,7 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { createRouter, DatabaseTaskStore } from '../index';
+import { DatabaseTaskStore } from '../index';
 import {
   TaskBroker,
   TemplateFilter,
@@ -66,6 +65,7 @@ import {
   extractGlobalValueMetadata,
 } from '../util/templating';
 import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
+import { createRouter } from './router';
 
 const mockAccess = jest.fn();
 
@@ -83,16 +83,7 @@ jest.mock('fs-extra', () => ({
 }));
 
 function createDatabase(): DatabaseService {
-  return DatabaseManager.fromConfig(
-    new ConfigReader({
-      backend: {
-        database: {
-          client: 'better-sqlite3',
-          connection: ':memory:',
-        },
-      },
-    }),
-  ).forPlugin('scaffolder');
+  return mockServices.database.mock();
 }
 
 const mockUrlReader = UrlReaders.default({
@@ -194,7 +185,6 @@ describe.each([
     } as unknown as PermissionEvaluator;
     const auth = mockServices.auth();
     const httpAuth = mockServices.httpAuth();
-    const discovery = mockServices.discovery();
     const events = {
       publish: jest.fn(),
     } as unknown as EventsService;
@@ -309,7 +299,6 @@ describe.each([
           permissions: permissionApi,
           auth,
           httpAuth,
-          discovery,
           events,
           additionalTemplateFilters,
           additionalTemplateGlobals,
@@ -886,7 +875,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           permissions: permissionApi,
           auth,
           httpAuth,
-          discovery,
         });
         app = express().use(router);
 
@@ -1657,7 +1645,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             permissions: permissionApi,
             auth,
             httpAuth,
-            discovery,
             autocompleteHandlers: {
               'test-provider': handleAutocompleteRequest,
             },

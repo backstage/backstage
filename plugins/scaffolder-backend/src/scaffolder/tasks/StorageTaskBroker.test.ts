@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { DatabaseManager } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
   SerializedTaskEvent,
@@ -27,16 +25,7 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 
 async function createStore(): Promise<DatabaseTaskStore> {
-  const manager = DatabaseManager.fromConfig(
-    new ConfigReader({
-      backend: {
-        database: {
-          client: 'better-sqlite3',
-          connection: ':memory:',
-        },
-      },
-    }),
-  ).forPlugin('scaffolder');
+  const manager = mockServices.database.mock();
 
   return await DatabaseTaskStore.create({
     database: manager,
