@@ -97,6 +97,8 @@ export async function createRouter(
     limit: concurrencyLimit,
     interval: throttleInterval,
   });
+  const defaultNotificationSettings: NotificationSettings | undefined =
+    config.getOptional<NotificationSettings>('notifications.defaultSettings');
 
   const getUser = async (req: Request<unknown>) => {
     const credentials = await httpAuth.credentials(req, { allow: ['user'] });
@@ -108,27 +110,49 @@ export async function createRouter(
     return [WEB_NOTIFICATION_CHANNEL, ...processors.map(p => p.getName())];
   };
 
-  const getNotificationSettings = async (user: string) => {
+  const getNotificationSettings = async (
+    user: string,
+  ): Promise<NotificationSettings> => {
     const { origins } = await store.getUserNotificationOrigins({ user });
     const settings = await store.getNotificationSettings({ user });
     const channels = getNotificationChannels();
 
-    const response: NotificationSettings = {
-      channels: channels.map(channel => {
+    return {
+      channels: channels.map((channel: string) => {
         const channelSettings = settings.channels.find(c => c.id === channel);
+        const defaultChannelSettings =
+          defaultNotificationSettings?.channels.find(c => c.id === channel);
+        const notMappedOrigins =
+          defaultChannelSettings?.origins.filter(
+            o => origins.indexOf(o.id) === -1,
+          ) ?? [];
+
         if (channelSettings) {
-          return channelSettings;
+          return {
+            id: channel,
+            origins: [...channelSettings.origins, ...notMappedOrigins],
+          };
         }
+
         return {
           id: channel,
-          origins: origins.map(origin => ({
-            id: origin,
-            enabled: true,
-          })),
+          origins: [
+            ...origins.map((origin: string) => {
+              const defaultOriginSettings =
+                defaultChannelSettings?.origins.find(o => o.id === origin);
+              if (defaultOriginSettings) {
+                return defaultOriginSettings;
+              }
+              return {
+                id: origin,
+                enabled: true,
+              };
+            }),
+            ...notMappedOrigins,
+          ],
         };
       }),
     };
-    return response;
   };
 
   const isNotificationsEnabled = async (opts: {
