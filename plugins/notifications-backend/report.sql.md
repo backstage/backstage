@@ -63,14 +63,16 @@
 
 ## Table `user_settings`
 
-| Column    | Type                | Nullable | Max Length | Default |
-| --------- | ------------------- | -------- | ---------- | ------- |
-| `channel` | `character varying` | false    | 255        | -       |
-| `enabled` | `boolean`           | false    | -          | `true`  |
-| `origin`  | `character varying` | false    | 255        | -       |
-| `user`    | `character varying` | false    | 255        | -       |
+| Column              | Type                | Nullable | Max Length | Default |
+| ------------------- | ------------------- | -------- | ---------- | ------- |
+| `channel`           | `character varying` | false    | 255        | -       |
+| `enabled`           | `boolean`           | false    | -          | `true`  |
+| `origin`            | `character varying` | false    | 255        | -       |
+| `settings_key_hash` | `character varying` | false    | 64         | -       |
+| `topic`             | `character varying` | true     | 255        | -       |
+| `user`              | `character varying` | false    | 255        | -       |
 
 ### Indices
 
-- `user_settings_unique_idx` (`user`, `channel`, `origin`) unique
+- `user_settings_unique_idx` (`settings_key_hash`) unique
 - `user_settings_user_idx` (`user`)
