@@ -39,6 +39,7 @@ body:
       options:
         - Unknown
         - Auditor
+        - Auth
         - Catalog
         - CLI Tooling
         - Core Framework
@@ -47,12 +48,11 @@ body:
         - Events System
         - Home
         - Kubernetes Plugin
-        - Microsite
         - Notifications
         - OpenAPI Tooling
         - Permission Framework
-        - Software Templates
         - Search
+        - Software Templates
         - TechDocs
     validations:
       required: true

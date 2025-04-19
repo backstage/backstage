@@ -1,6 +1,7 @@
 name: '📖 Documentation Issue'
 description: 'Report an issue in the Backstage documentation'
 labels:
+  - domain:docs
   - type:documentation
   - status:needs-triage
 body:
@@ -27,6 +28,7 @@ body:
       options:
         - Unknown
         - Auditor
+        - Auth
         - Catalog
         - CLI Tooling
         - Core Framework
@@ -35,15 +37,15 @@ body:
         - Events System
         - Home
         - Kubernetes Plugin
-        - Microsite
         - Notifications
         - OpenAPI Tooling
         - Permission Framework
-        - Software Templates
         - Search
+        - Software Templates
         - TechDocs
     validations:
       required: true
+  # This field is managed by .common.yaml
   - type: dropdown
     id: integration
     attributes:
@@ -58,10 +60,10 @@ body:
         - Bitbucket Server
         - GCP
         - Gerrit
+        - Gitea
         - GitHub
         - GitLab
-        - Gitea
-        - LDAP
+        - Other
     validations:
       required: true
   - type: textarea
