@@ -10,7 +10,7 @@ const COMMON_FILE = path.join(TEMPLATES_DIR, '.common.yaml');
 // Read the common fields from .common.yaml
 const commonDoc = yaml.parseDocument(fs.readFileSync(COMMON_FILE, 'utf8'));
 const commonFields = new Map(
-  commonDoc.contents.items.map(field => {
+  commonDoc.get('body').items.map(field => {
     field.commentBefore = ' This field is managed by .common.yaml';
     return [field.get('id'), field];
   }),
