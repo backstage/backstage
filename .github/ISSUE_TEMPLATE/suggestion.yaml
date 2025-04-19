@@ -37,7 +37,7 @@ body:
     type: dropdown
     attributes:
       label: '🗃️ Project Area'
-      description: What project area is this issue closest related to? This will help find an owner for the issue faster.
+      description: Which project area is this issue most closely related to? This will help find an owner for the issue faster.
       options:
         - Unknown
         - Auditor
@@ -66,7 +66,7 @@ body:
       label: '🔖 Need'
       description: What is the rationale for this change, and who will benefit from it?
       placeholder: |
-        Explain why this change is important and who will benefit from it. Provide context for the change, such as highlighting relevant past work in this area.
+        Explain why this change is important and who will benefit from it. Provide context for the change, such as highlighting relevant past work in this area or specific use cases.
   - type: textarea
     id: proposal
     validations:
@@ -79,7 +79,7 @@ body:
 
         Including a proposed implementation is optional, but if you do, consider adding design details such as TypeScript examples, database schema, or sequence diagrams.
 
-        If the change requires particular care when being rolled out, it can be helpful to for example include a plan for a phased release.
+        If the change requires particular care when being rolled out, it can be helpful to include a plan for a phased release.
   - type: textarea
     id: alternatives
     attributes:
@@ -101,7 +101,7 @@ body:
   - id: willing-to-submit-pr
     type: dropdown
     attributes:
-      label: Are you willing to submit PR?
+      label: Are you willing to submit a PR?
       description: This is absolutely not required, but we are happy to guide you in the contribution process.
       options:
         - Undecided

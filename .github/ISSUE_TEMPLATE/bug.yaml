@@ -8,7 +8,7 @@ body:
     attributes:
       value: |
         Please fill in each section completely, and [search in GitHub](https://github.com/backstage/backstage/search?type=Issues)
-        before reporting a new bug in order to avoid duplicates. Thank you!
+        before reporting a new bug to avoid duplicates. Thank you!
   # This field is managed by .common.yaml
   - id: issue-labels
     type: checkboxes
@@ -45,7 +45,7 @@ body:
     type: dropdown
     attributes:
       label: '🗃️ Project Area'
-      description: What project area is this issue closest related to? This will help find an owner for the issue faster.
+      description: Which project area is this issue most closely related to? This will help find an owner for the issue faster.
       options:
         - Unknown
         - Auditor
@@ -94,9 +94,9 @@ body:
     attributes:
       label: '📝 Description & Context'
       placeholder: |
-        Describe the observed behavior that you deem to be incorrect, as well as any additional context that might be useful in understanding the bug.
+        Describe the observed behavior that you believe to be incorrect, as well as any additional context that might be useful in understanding the bug.
 
-        e.g. "When i navigate to the catalog index page it loads without a hitch. May be related to https://xkcd.com/1172"
+        e.g. "When I navigate to the catalog index page, it loads without any issues. This might be related to https://xkcd.com/1172"
   - type: textarea
     id: expected-behavior
     validations:
@@ -117,9 +117,9 @@ body:
 
         Being able to easily reproduce the bug will significantly increase the likelihood that it can be identified and fixed. Please provide a repository where the bug can be reproduced, unless this is a critical bug that needs immediate attention.
 
-        If you are unable to provide a reproduction repo, please explain the reproduction steps in as much detail as possible, and include the output of `yarn backstage-cli info` if relevant.
+        If you are unable to provide a reproduction repository, please explain the reproduction steps in as much detail as possible, and include the output of `yarn backstage-cli info` if relevant.
 
-        If inadequate or no reproduction steps are provided, the bug report is likely to be labelled as needing reproduction steps before it can be progressed further.
+        If inadequate or no reproduction steps are provided, the bug report is likely to be labeled as needing reproduction steps before it can be progressed further.
   - type: input
     id: reproduction-repo
     attributes:

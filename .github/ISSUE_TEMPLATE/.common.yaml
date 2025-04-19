@@ -29,7 +29,7 @@ body:
     type: dropdown
     attributes:
       label: '🗃️ Project Area'
-      description: What project area is this issue closest related to? This will help find an owner for the issue faster.
+      description: Which project area is this issue most closely related to? This will help find an owner for the issue faster.
       options:
         - Unknown
         - Auditor
@@ -80,7 +80,7 @@ body:
   - id: willing-to-submit-pr
     type: dropdown
     attributes:
-      label: Are you willing to submit PR?
+      label: Are you willing to submit a PR?
       description: This is absolutely not required, but we are happy to guide you in the contribution process.
       options:
         - Undecided

@@ -4,9 +4,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        This template can be used to create issues that don't fit any of the other templates. Valid examples include meta issues or other task tracking issues to help coordinate work, or informative issues that are kept around to appear in searches.
+        This template can be used to create issues that don't fit any of the other templates. Valid examples include meta issues or other task tracking issues to help coordinate work, or informative issues that are kept for search purposes.
 
-        Do not use this template to submit support or help requests, they will be closed. Please use other forums such as our [Community Discord](https://discord.gg/backstage-687207715902193673) instead.
+        Do not use this template to submit support or help requests, as they will be closed. Please use other forums such as our [Community Discord](https://discord.gg/backstage-687207715902193673) instead.
   - type: checkboxes
     id: acknowledgement
     attributes:
