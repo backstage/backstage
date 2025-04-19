@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { auditorServiceFactory } from '@backstage/backend-defaults/auditor';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
 import { HostDiscovery } from '@backstage/backend-defaults/discovery';
@@ -43,10 +44,7 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import {
-  eventsServiceFactory,
-  eventsServiceRef,
-} from '@backstage/plugin-events-node';
+import { EventsService, eventsServiceRef } from '@backstage/plugin-events-node';
 import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
 import { MockAuthService } from './MockAuthService';
@@ -54,7 +52,7 @@ import { MockHttpAuthService } from './MockHttpAuthService';
 import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockUserInfoService } from './MockUserInfoService';
 import { mockCredentials } from './mockCredentials';
-import { auditorServiceFactory } from '@backstage/backend-defaults/auditor';
+import { MockEventsService } from './MockEventsService';
 
 /** @internal */
 function createLoggerMock() {
@@ -521,8 +519,24 @@ export namespace mockServices {
     }));
   }
 
+  /**
+   * Creates a functional mock implementation of the
+   * {@link @backstage/backend-events-node#eventsServiceRef}.
+   */
+  export function events(): EventsService {
+    return new MockEventsService();
+  }
   export namespace events {
-    export const factory = () => eventsServiceFactory;
+    /**
+     * Creates a functional mock factory for the
+     * {@link @backstage/backend-events-node#eventsServiceRef}.
+     */
+    export const factory = simpleFactoryWithOptions(eventsServiceRef, events);
+    /**
+     * Creates a mock of the
+     * {@link @backstage/backend-events-node#eventsServiceRef}, optionally
+     * with some given method implementations.
+     */
     export const mock = simpleMock(eventsServiceRef, () => ({
       publish: jest.fn(),
       subscribe: jest.fn(),
