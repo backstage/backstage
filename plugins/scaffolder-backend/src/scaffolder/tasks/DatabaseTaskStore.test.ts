@@ -22,6 +22,8 @@ import { ConflictError } from '@backstage/errors';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import { EventsService } from '@backstage/plugin-events-node';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { TaskFilters } from '@backstage/plugin-scaffolder-node';
 
 const createStore = async (events?: EventsService) => {
   const manager = DatabaseManager.fromConfig(
@@ -229,6 +231,73 @@ describe('DatabaseTaskStore', () => {
     expect(tasks[0].createdBy).toBe('him');
     expect(tasks[0].status).toBe('open');
     expect(tasks[0].id).toBeDefined();
+  });
+
+  it('should filter tasks based on permissionFilters', async () => {
+    const { store } = await createStore();
+
+    await store.createTask({
+      spec: {
+        templateInfo: { entityRef: 'template:default/three' },
+      } as TaskSpec,
+      createdBy: 'user:default/one',
+    });
+
+    await store.createTask({
+      spec: {
+        templateInfo: { entityRef: 'template:default/four' },
+      } as TaskSpec,
+      createdBy: 'user:default/two',
+    });
+
+    await store.createTask({
+      spec: {
+        templateInfo: { entityRef: 'template:default/one' },
+      } as TaskSpec,
+      createdBy: 'user:default/three',
+    });
+
+    await store.createTask({
+      spec: {
+        templateInfo: { entityRef: 'template:default/two' },
+      } as TaskSpec,
+      createdBy: 'user:default/three',
+    });
+
+    await store.createTask({
+      spec: {
+        templateInfo: { entityRef: 'template:default/three' },
+      } as TaskSpec,
+      createdBy: 'user:default/three',
+    });
+
+    const permissionFilters: PermissionCriteria<TaskFilters> = {
+      anyOf: [
+        {
+          property: 'createdBy',
+          values: ['user:default/one', 'user:default/two'],
+        },
+        {
+          property: 'templateEntityRefs',
+          values: ['template:default/one', 'template:default/two'],
+        },
+      ],
+    };
+
+    const { tasks, totalTasks } = await store.list({
+      permissionFilters: permissionFilters,
+    });
+
+    expect(totalTasks).toBe(4);
+
+    expect(tasks).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          createdBy: 'user:default/three',
+          spec: { templateInfo: { entityRef: 'template:default/three' } },
+        }),
+      ]),
+    );
   });
 
   it('should sent an event to start cancelling the task', async () => {
