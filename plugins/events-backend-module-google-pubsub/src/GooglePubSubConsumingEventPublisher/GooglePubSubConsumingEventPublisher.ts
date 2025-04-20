@@ -130,7 +130,7 @@ export class GooglePubSubConsumingEventPublisher {
           event = this.#messageToEvent(message, task)!;
           if (!event) {
             this.#metrics.messages.add(1, {
-              topic: 'unknown',
+              subscription: task.id,
               status: 'ignored',
             });
             return;
@@ -138,7 +138,7 @@ export class GooglePubSubConsumingEventPublisher {
         } catch (error) {
           this.#logger.error('Error processing Google Pub/Sub message', error);
           this.#metrics.messages.add(1, {
-            topic: 'unknown',
+            subscription: task.id,
             status: 'failed',
           });
           // We unconditionally ACK the message in this case, because if it's
@@ -151,14 +151,14 @@ export class GooglePubSubConsumingEventPublisher {
         try {
           await this.#events.publish(event);
           this.#metrics.messages.add(1, {
-            topic: event.topic,
+            subscription: task.id,
             status: 'success',
           });
           message.ack();
         } catch (error) {
           this.#logger.error('Error processing Google Pub/Sub message', error);
           this.#metrics.messages.add(1, {
-            topic: event.topic,
+            subscription: task.id,
             status: 'failed',
           });
           // We fast-NACK the message in this case because this may be a
