@@ -60,8 +60,8 @@ Search for `const app = createApp({` in this file, and replace:
 
 ```tsx title="packages/app/src/App.tsx"
 components: {
-    SignInPage: props => <SignInPage {...props} auto providers={['guest']} />,
-  },
+  SignInPage: props => <SignInPage {...props} auto providers={['guest']} />,
+},
 ```
 
 with
