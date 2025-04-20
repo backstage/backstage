@@ -243,11 +243,11 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     async () => {
       const kindValue =
         requestedFilters.kind?.value?.toLocaleLowerCase('en-US');
-      const effectiveFilters =
+      const adjustedFilters =
         kindValue === 'user' || kindValue === 'group'
           ? { ...requestedFilters, owners: undefined }
           : requestedFilters;
-      const compacted = compact(Object.values(effectiveFilters));
+      const compacted = compact(Object.values(adjustedFilters));
 
       const queryParams = Object.keys(requestedFilters).reduce(
         (params, key) => {
