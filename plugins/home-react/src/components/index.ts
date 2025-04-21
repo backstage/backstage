@@ -17,5 +17,5 @@
 export { SettingsModal } from './SettingsModal';
 export { ContentModal } from './ContentModal';
 
-export type { BackstageContentModalClassKey } from './ContentModal';
+export type { PluginHomeContentModalClassKey } from './ContentModal';
 export type { ContentModalProps } from './ContentModal';

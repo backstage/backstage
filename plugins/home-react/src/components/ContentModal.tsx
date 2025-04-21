@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import Box from '@material-ui/core/Box';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 
 /** @public */
-export type BackstageContentModalClassKey = 'contentModal' | 'linkText';
+export type PluginHomeContentModalClassKey = 'contentModal' | 'linkText';
 
 export const useStyles = makeStyles(
   (theme: Theme) => ({
@@ -37,7 +37,7 @@ export const useStyles = makeStyles(
       marginBottom: theme.spacing(1.5),
     },
   }),
-  { name: 'BackstageContentModal' },
+  { name: 'PluginHomeContentModal' },
 );
 
 /**

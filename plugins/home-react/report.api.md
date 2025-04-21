@@ -12,9 +12,6 @@ import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { UiSchema } from '@rjsf/utils';
 
 // @public (undocumented)
-export type BackstageContentModalClassKey = 'contentModal' | 'linkText';
-
-// @public (undocumented)
 export type BackstageOverrides = Overrides & {
   [Name in keyof CatalogReactComponentsNameToClassKey]?: Partial<
     StyleRules<CatalogReactComponentsNameToClassKey[Name]>
@@ -54,7 +51,7 @@ export type CardSettings = {
 
 // @public (undocumented)
 export type CatalogReactComponentsNameToClassKey = {
-  BackstageContentModal: BackstageContentModalClassKey;
+  PluginHomeContentModal: PluginHomeContentModalClassKey;
 };
 
 // @public (undocumented)
@@ -88,6 +85,9 @@ export function createCardExtension<T>(options: {
   layout?: CardLayout;
   settings?: CardSettings;
 }): Extension<(props: CardExtensionProps<T>) => JSX_2.Element>;
+
+// @public (undocumented)
+export type PluginHomeContentModalClassKey = 'contentModal' | 'linkText';
 
 // @public (undocumented)
 export type RendererProps = {
