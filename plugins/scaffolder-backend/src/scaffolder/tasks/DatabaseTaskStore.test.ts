@@ -20,12 +20,18 @@ import { ConflictError } from '@backstage/errors';
 import {
   createMockDirectory,
   mockServices,
+  TestDatabases,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import { EventsService } from '@backstage/plugin-events-node';
 
 const createStore = async (events?: EventsService) => {
-  const manager = mockServices.database.mock();
+  const databases = TestDatabases.create({
+    ids: ['SQLITE_3'],
+  });
+  const knex = await databases.init('SQLITE_3');
+
+  const manager = mockServices.database({ knex });
   const store = await DatabaseTaskStore.create({
     database: manager,
     events,

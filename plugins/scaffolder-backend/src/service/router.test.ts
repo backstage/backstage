@@ -46,6 +46,7 @@ import {
   mockCredentials,
   mockErrorHandler,
   mockServices,
+  TestDatabases,
 } from '@backstage/backend-test-utils';
 import {
   AutocompleteHandler,
@@ -82,8 +83,12 @@ jest.mock('fs-extra', () => ({
   remove: jest.fn(),
 }));
 
-function createDatabase(): DatabaseService {
-  return mockServices.database.mock();
+async function createDatabase(): Promise<DatabaseService> {
+  const databases = TestDatabases.create({
+    ids: ['SQLITE_3'],
+  });
+  const knex = await databases.init('SQLITE_3');
+  return mockServices.database({ knex });
 }
 
 const mockUrlReader = UrlReaders.default({
@@ -279,7 +284,7 @@ describe.each([
       beforeEach(async () => {
         const logger = loggerToWinstonLogger(mockServices.logger.mock());
         const databaseTaskStore = await DatabaseTaskStore.create({
-          database: createDatabase(),
+          database: await createDatabase(),
         });
         taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
 
@@ -292,7 +297,7 @@ describe.each([
         const router = await createRouter({
           logger: logger,
           config: new ConfigReader({}),
-          database: createDatabase(),
+          database: await createDatabase(),
           catalogClient,
           reader: mockUrlReader,
           taskBroker,
@@ -855,7 +860,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       beforeEach(async () => {
         const logger = loggerToWinstonLogger(mockServices.logger.mock());
         const databaseTaskStore = await DatabaseTaskStore.create({
-          database: createDatabase(),
+          database: await createDatabase(),
         });
         taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
 
@@ -868,7 +873,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         const router = await createRouter({
           logger: logger,
           config: new ConfigReader({}),
-          database: createDatabase(),
+          database: await createDatabase(),
           catalogClient,
           reader: mockUrlReader,
           taskBroker,
@@ -1638,7 +1643,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           const router = await createRouter({
             logger: loggerToWinstonLogger(mockServices.logger.mock()),
             config: new ConfigReader({}),
-            database: createDatabase(),
+            database: await createDatabase(),
             catalogClient,
             reader: mockUrlReader,
             taskBroker,

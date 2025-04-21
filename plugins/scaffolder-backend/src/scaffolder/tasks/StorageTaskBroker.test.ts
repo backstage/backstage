@@ -21,11 +21,16 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker, TaskManager } from './StorageTaskBroker';
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 
 async function createStore(): Promise<DatabaseTaskStore> {
-  const manager = mockServices.database.mock();
+  const databases = TestDatabases.create({
+    ids: ['SQLITE_3'],
+  });
+  const knex = await databases.init('SQLITE_3');
+
+  const manager = mockServices.database({ knex });
 
   return await DatabaseTaskStore.create({
     database: manager,
