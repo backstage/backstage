@@ -6980,7 +6980,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-permission-backend@workspace:plugins/permission-backend"
   dependencies:
-    "@backstage/backend-common": "npm:^0.25.0"
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"

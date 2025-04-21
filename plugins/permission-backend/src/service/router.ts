@@ -17,7 +17,6 @@
 import { z } from 'zod';
 import express, { Request, Response } from 'express';
 import Router from 'express-promise-router';
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
@@ -99,8 +98,7 @@ const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionReques
  * Options required when constructing a new {@link express#Router} using
  * {@link createRouter}.
  *
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ * @internal
  */
 export interface RouterOptions {
   logger: LoggerService;
@@ -108,9 +106,9 @@ export interface RouterOptions {
   policy: PermissionPolicy;
   identity?: IdentityApi;
   config: RootConfigService;
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
-  userInfo?: UserInfoService;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
+  userInfo: UserInfoService;
 }
 
 const handleRequest = async (
@@ -194,14 +192,13 @@ const handleRequest = async (
  * Creates a new {@link express#Router} which provides the backend API
  * for the permission system.
  *
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
- * @public
+ * @internal
  */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { policy, discovery, config, logger } = options;
-  const { auth, httpAuth, userInfo } = createLegacyAuthAdapters(options);
+  const { policy, discovery, config, logger, auth, httpAuth, userInfo } =
+    options;
 
   if (!config.getOptionalBoolean('permission.enabled')) {
     logger.warn(
