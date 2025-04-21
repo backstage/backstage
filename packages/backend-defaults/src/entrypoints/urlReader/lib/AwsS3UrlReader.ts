@@ -79,7 +79,7 @@ export function parseUrl(
   if (
     config.host === 'amazonaws.com' ||
     config.host === 'amazonaws.com.cn' ||
-    config.host.endsWith('vpce.amazonaws.com')
+    /^(bucket|accesspoint|control)\.vpce-([a-z0-9-]+)\.s3\.([a-z0-9-]+)\.vpce.amazonaws\.com?$/.test(config.host)
   ) {
     const match = host.match(
       /^(?:([a-z0-9.-]+)\.)?s3(?:[.-]([a-z0-9-]+))?\.(vpce\.)?amazonaws\.com(\.cn)?$/,
