@@ -113,7 +113,7 @@ describe('GithubLocationAnalyzer', () => {
     });
 
     const analyzer = new GithubLocationAnalyzer({
-      catalog: catalogServiceMock(),
+      catalog: catalogServiceMock.mock(),
       auth: mockAuthService,
       config,
     });
@@ -140,7 +140,7 @@ describe('GithubLocationAnalyzer', () => {
     });
 
     const analyzer = new GithubLocationAnalyzer({
-      catalog: catalogServiceMock(),
+      catalog: catalogServiceMock.mock(),
       auth: mockAuthService,
       config,
     });
@@ -166,7 +166,7 @@ describe('GithubLocationAnalyzer', () => {
     });
 
     const analyzer = new GithubLocationAnalyzer({
-      catalog: catalogServiceMock(),
+      catalog: catalogServiceMock.mock(),
       auth: mockAuthService,
       config,
     });
