@@ -227,6 +227,9 @@ export async function moveAppTask(
           `Failed to move app from ${tempDir} to ${destination}: ${error.message}`,
         );
       })
+      .then(() => {
+        fs.writeFileSync(resolvePath(destination, '.nvmrc'), 'lts/iron');
+      })
       .finally(() => {
         // remove temporary files on both success and failure
         fs.removeSync(tempDir);
