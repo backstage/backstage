@@ -230,7 +230,7 @@ describe('<EntityPicker />', () => {
       );
     });
 
-    it('search for entitities containing an specific key', async () => {
+    it('search for entities containing a specific key', async () => {
       const uiSchemaWithBoolean = {
         'ui:options': {
           catalogFilter: [
