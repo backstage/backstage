@@ -41,11 +41,11 @@ export const spec = {
     examples: {},
     headers: {},
     parameters: {
-      from: {
-        name: 'from',
+      afterEventId: {
+        name: 'afterEventId',
         in: 'query',
         description:
-          'Start iterating from the given point. Can be an event ID (not inclusive), or the special strings "start" (start before the earliest event) or "end" (start after the latest event).\n',
+          'Return events that are after (newer if ordered ascending or older if ordered decending) but not equal to the given event ID.\n',
         required: false,
         schema: {
           type: 'string',
@@ -56,6 +56,17 @@ export const spec = {
         name: 'entityRef',
         in: 'query',
         description: 'Limit results to the given entity ref.',
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'string',
+          minLength: 1,
+        },
+      },
+      entityId: {
+        name: 'entityId',
+        in: 'query',
+        description: 'Limit results to the given entity uid.',
         required: false,
         allowReserved: true,
         schema: {
@@ -176,7 +187,8 @@ export const spec = {
         properties: {
           id: {
             type: 'string',
-            description: 'An ISO timestamp string for when the event happened',
+            description:
+              'A unique sequential big-integer ID for the event, as a string.',
           },
           eventAt: {
             type: 'string',
@@ -200,6 +212,7 @@ export const spec = {
       },
       Events: {
         type: 'object',
+        required: ['items', 'pageInfo'],
         properties: {
           items: {
             type: 'array',
@@ -221,7 +234,6 @@ export const spec = {
             },
           },
         },
-        required: ['items', 'pageInfo'],
         additionalProperties: false,
       },
     },
@@ -258,19 +270,22 @@ export const spec = {
         ],
         parameters: [
           {
-            $ref: '#/components/parameters/from',
+            $ref: '#/components/parameters/cursor',
+          },
+          {
+            $ref: '#/components/parameters/afterEventId',
+          },
+          {
+            $ref: '#/components/parameters/entityRef',
+          },
+          {
+            $ref: '#/components/parameters/entityId',
           },
           {
             $ref: '#/components/parameters/order',
           },
           {
             $ref: '#/components/parameters/limit',
-          },
-          {
-            $ref: '#/components/parameters/entityRef',
-          },
-          {
-            $ref: '#/components/parameters/cursor',
           },
           {
             $ref: '#/components/parameters/block',
