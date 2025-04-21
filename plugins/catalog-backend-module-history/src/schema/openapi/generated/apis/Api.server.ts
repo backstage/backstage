@@ -27,11 +27,12 @@ import { Events } from '../models/Events.model';
  */
 export type GetEvents = {
   query: {
-    _from?: string;
+    cursor?: string;
+    afterEventId?: string;
+    entityRef?: string;
+    entityId?: string;
     order?: 'asc' | 'desc';
     limit?: number;
-    entityRef?: string;
-    cursor?: string;
     block?: boolean;
   };
   response: Events | void | ErrorPayload;

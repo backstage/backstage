@@ -84,7 +84,7 @@ describe('connectConsumers', () => {
           {
             id: expect.any(String),
             eventAt: expect.any(Date),
-            eventType: 'entity_inserted',
+            eventType: 'entity_created',
             entityRef: 'component:default/foo',
             entityJson: expect.stringContaining('"owner":"me"'),
           },
@@ -100,7 +100,7 @@ describe('connectConsumers', () => {
           {
             id: expect.any(String),
             eventAt: expect.any(Date),
-            eventType: 'entity_inserted',
+            eventType: 'entity_created',
             entityRef: 'component:default/foo',
             entityJson: expect.stringContaining('"owner":"me"'),
           },

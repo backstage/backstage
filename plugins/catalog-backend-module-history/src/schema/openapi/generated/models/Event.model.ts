@@ -23,7 +23,7 @@
  */
 export interface Event {
   /**
-   * An ISO timestamp string for when the event happened
+   * A unique sequential big-integer ID for the event, as a string.
    */
   id: string;
   /**

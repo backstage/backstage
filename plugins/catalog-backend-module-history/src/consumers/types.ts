@@ -62,6 +62,8 @@ export interface SubscriptionEvent {
   eventType: string;
   /** The entity ref related to the event, where applicable */
   entityRef?: string;
+  /** The entity uid related to the event, where applicable */
+  entityId?: string;
   /** The JSON serialized body of the entity related to the event, where applicable */
   entityJson?: string;
 }

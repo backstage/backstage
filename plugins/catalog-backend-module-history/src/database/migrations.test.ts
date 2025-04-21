@@ -103,8 +103,9 @@ describe('migrations', () => {
           {
             id: expect.anything(),
             event_at: expect.anything(),
-            event_type: 'entity_inserted',
+            event_type: 'entity_created',
             entity_ref: entityRef,
+            entity_id: expect.any(String),
             entity_json: expect.stringContaining('"owner":"me"'),
           },
         ]);
@@ -121,8 +122,9 @@ describe('migrations', () => {
           {
             id: expect.anything(),
             event_at: expect.anything(),
-            event_type: 'entity_inserted',
+            event_type: 'entity_created',
             entity_ref: entityRef,
+            entity_id: expect.any(String),
             entity_json: expect.stringContaining('"owner":"me"'),
           },
           {
@@ -130,6 +132,7 @@ describe('migrations', () => {
             event_at: expect.anything(),
             event_type: 'entity_updated',
             entity_ref: entityRef,
+            entity_id: expect.any(String),
             entity_json: expect.stringContaining('"owner":"you"'),
           },
         ]);
@@ -146,8 +149,9 @@ describe('migrations', () => {
         {
           id: expect.anything(),
           event_at: expect.anything(),
-          event_type: 'entity_inserted',
+          event_type: 'entity_created',
           entity_ref: entityRef,
+          entity_id: expect.any(String),
           entity_json: expect.stringContaining('"owner":"me"'),
         },
         {
@@ -155,6 +159,7 @@ describe('migrations', () => {
           event_at: expect.anything(),
           event_type: 'entity_updated',
           entity_ref: entityRef,
+          entity_id: expect.any(String),
           entity_json: expect.stringContaining('"owner":"you"'),
         },
       ]);
@@ -169,8 +174,9 @@ describe('migrations', () => {
           {
             id: expect.anything(),
             event_at: expect.anything(),
-            event_type: 'entity_inserted',
+            event_type: 'entity_created',
             entity_ref: entityRef,
+            entity_id: expect.any(String),
             entity_json: expect.stringContaining('"owner":"me"'),
           },
           {
@@ -178,6 +184,7 @@ describe('migrations', () => {
             event_at: expect.anything(),
             event_type: 'entity_updated',
             entity_ref: entityRef,
+            entity_id: expect.any(String),
             entity_json: expect.stringContaining('"owner":"you"'),
           },
           {
@@ -185,6 +192,7 @@ describe('migrations', () => {
             event_at: expect.anything(),
             event_type: 'entity_deleted',
             entity_ref: entityRef,
+            entity_id: expect.any(String),
             entity_json: expect.stringContaining('"owner":"you"'),
           },
         ]);

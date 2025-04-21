@@ -38,12 +38,14 @@ export const catalogModuleHistory = createBackendModule({
 
     reg.registerExtensionPoint(historyConsumersExtensionPoint, {
       addConsumer(consumer) {
-        for (const previous of consumers) {
-          if (previous.getConsumerName() === consumer.getConsumerName()) {
-            throw new Error(
-              `Consumer with name '${consumer.getConsumerName()}' already exists`,
-            );
-          }
+        if (
+          consumers.some(
+            prev => prev.getConsumerName() === consumer.getConsumerName(),
+          )
+        ) {
+          throw new Error(
+            `Consumer with name '${consumer.getConsumerName()}' already exists`,
+          );
         }
         consumers.push(consumer);
       },

@@ -37,6 +37,10 @@ exports.up = async function up(knex) {
       .nullable()
       .comment('Affected entity ref, where applicable');
     table
+      .string('entity_id')
+      .nullable()
+      .comment('Affected entity uid, where applicable');
+    table
       .text('entity_json', 'longtext')
       .nullable()
       .comment('The body of the affected entity, where applicable');
@@ -64,6 +68,8 @@ exports.up = async function up(knex) {
       RETURNS trigger AS $$
       DECLARE
         event_type TEXT;
+        entity_ref TEXT;
+        entity_id TEXT;
         entity_json TEXT;
       BEGIN
         IF (TG_OP = 'INSERT') THEN
@@ -73,33 +79,36 @@ exports.up = async function up(knex) {
           IF (NEW.final_entity IS NULL) THEN
             RETURN null;
           END IF;
-          event_type = 'entity_inserted';
+          event_type = 'entity_created';
+          entity_ref = NEW.entity_ref;
+          entity_id = NEW.entity_id;
           entity_json = NEW.final_entity;
         ELSIF (TG_OP = 'UPDATE') THEN
           IF (OLD.final_entity IS NULL) THEN
             -- Before first stitch completes, an entry is made with a null final_entity.
-            event_type = 'entity_inserted';
+            event_type = 'entity_created';
           ELSIF (OLD.final_entity IS DISTINCT FROM NEW.final_entity) THEN
             event_type = 'entity_updated';
           ELSE
             RETURN null;
           END IF;
+          entity_ref = NEW.entity_ref;
+          entity_id = NEW.entity_id;
           entity_json = NEW.final_entity;
         ELSIF (TG_OP = 'DELETE') THEN
           event_type = 'entity_deleted';
+          entity_ref = OLD.entity_ref;
+          entity_id = OLD.entity_id;
           entity_json = OLD.final_entity;
         ELSE
           RETURN null;
         END IF;
 
-        INSERT INTO module_history__events (event_at, event_type, entity_ref, entity_json) VALUES (
+        INSERT INTO module_history__events (event_at, event_type, entity_ref, entity_id, entity_json) VALUES (
           CURRENT_TIMESTAMP,
           event_type,
-          lower(
-            (entity_json::json->>'kind') || ':' ||
-            (entity_json::json->'metadata'->>'namespace') || '/' ||
-            (entity_json::json->'metadata'->>'name')
-          ),
+          entity_ref,
+          entity_id,
           entity_json
         );
 
@@ -123,14 +132,11 @@ exports.up = async function up(knex) {
       FOR EACH ROW
       WHEN (NEW.final_entity IS NOT NULL)
       BEGIN
-        INSERT INTO module_history__events (event_at, event_type, entity_ref, entity_json) VALUES (
+        INSERT INTO module_history__events (event_at, event_type, entity_ref, entity_id, entity_json) VALUES (
           CURRENT_TIMESTAMP,
-          'entity_inserted',
-          lower(
-            (NEW.final_entity->>'kind') || ':' ||
-            (NEW.final_entity->'metadata'->>'namespace') || '/' ||
-            (NEW.final_entity->'metadata'->>'name')
-          ),
+          'entity_created',
+          NEW.entity_ref,
+          NEW.entity_id,
           NEW.final_entity
         );
       END;
@@ -142,14 +148,11 @@ exports.up = async function up(knex) {
       AFTER UPDATE OF final_entity ON final_entities
       FOR EACH ROW
       BEGIN
-        INSERT INTO module_history__events (event_at, event_type, entity_ref, entity_json) VALUES (
+        INSERT INTO module_history__events (event_at, event_type, entity_ref, entity_id, entity_json) VALUES (
           CURRENT_TIMESTAMP,
-          CASE WHEN (OLD.final_entity IS NULL) THEN 'entity_inserted' ELSE 'entity_updated' END,
-          lower(
-            (NEW.final_entity->>'kind') || ':' ||
-            (NEW.final_entity->'metadata'->>'namespace') || '/' ||
-            (NEW.final_entity->'metadata'->>'name')
-          ),
+          CASE WHEN (OLD.final_entity IS NULL) THEN 'entity_created' ELSE 'entity_updated' END,
+          NEW.entity_ref,
+          NEW.entity_id,
           NEW.final_entity
         );
       END;
@@ -161,14 +164,11 @@ exports.up = async function up(knex) {
       AFTER DELETE ON final_entities
       FOR EACH ROW
       BEGIN
-        INSERT INTO module_history__events (event_at, event_type, entity_ref, entity_json) VALUES (
+        INSERT INTO module_history__events (event_at, event_type, entity_ref, entity_id, entity_json) VALUES (
           CURRENT_TIMESTAMP,
           'entity_deleted',
-          lower(
-            (OLD.final_entity->>'kind') || ':' ||
-            (OLD.final_entity->'metadata'->>'namespace') || '/' ||
-            (OLD.final_entity->'metadata'->>'name')
-          ),
+          OLD.entity_ref,
+          OLD.entity_id,
           OLD.final_entity
         );
       END;
