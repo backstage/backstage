@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-export interface EventsTableRow {
-  id: string;
-  event_at: Date | string;
-  event_type: string;
-  entity_ref: string | null;
-  entity_id: string | null;
-  entity_json: string | null;
-}
+import { Knex } from 'knex';
 
-export interface SubscriptionsTableRow {
-  id: string;
-  consumer_name: string;
-  updated_at: Date | string;
-  last_event_id: string;
+export async function getMaxId(knex: Knex): Promise<string> {
+  const result = await knex.raw(
+    `SELECT COALESCE(MAX(id), '0') AS m FROM module_history__events`,
+  );
+  return result.rows[0].m;
 }

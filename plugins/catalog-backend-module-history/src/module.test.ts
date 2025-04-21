@@ -102,7 +102,7 @@ describe('module', () => {
         {
           id: expect.any(String),
           eventAt: expect.any(String),
-          eventType: 'entity_inserted',
+          eventType: 'entity_created',
           entityRef: 'component:default/foo',
           entityJson: expect.stringContaining('"owner":"me"'),
         },
@@ -118,7 +118,7 @@ describe('module', () => {
         {
           id: expect.any(String),
           eventAt: expect.any(String),
-          eventType: 'entity_inserted',
+          eventType: 'entity_created',
           entityRef: 'component:default/foo',
           entityJson: expect.stringContaining('"owner":"me"'),
         },
@@ -140,7 +140,7 @@ describe('module', () => {
         {
           id: expect.any(String),
           eventAt: expect.any(String),
-          eventType: 'entity_inserted',
+          eventType: 'entity_created',
           entityRef: 'component:default/foo',
           entityJson: expect.stringContaining('"owner":"me"'),
         },

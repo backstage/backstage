@@ -1,10 +1,12 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-history",
-  "description": "The history backend module for the catalog plugin.",
   "version": "0.0.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "description": "The history backend module for the catalog plugin.",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
@@ -15,20 +17,22 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/catalog-backend-module-history"
   },
-  "backstage": {
-    "role": "backend-plugin-module",
-    "pluginId": "catalog",
-    "pluginPackage": "@backstage/plugin-catalog-backend"
-  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "migrations_"
+  ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "generate": "backstage-repo-tools package schema openapi generate --server",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
-    "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "NODE_OPTIONS=--experimental-vm-modules backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-openapi-utils": "workspace:^",
@@ -38,9 +42,11 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/types": "workspace:^",
+    "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",
@@ -48,10 +54,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/repo-tools": "workspace:^",
+    "supertest": "^7.0.0",
     "wait-for-expect": "^3.0.2"
-  },
-  "files": [
-    "dist",
-    "migrations_"
-  ]
+  }
 }

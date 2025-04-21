@@ -13,13 +13,14 @@ components:
   examples: {}
   headers: {}
   parameters:
-    from:
-      name: from
+    afterEventId:
+      name: afterEventId
       in: query
       description: >
-        Start iterating from the given point. Can be an event ID (not
-        inclusive), or the special strings "start" (start before the earliest
-        event) or "end" (start after the latest event).
+        Return events that are after (newer if ordered ascending or older if ordered
+        decending) but not equal to the given event ID. Use the special value "last"
+        to start reading from the very end of the events list. This is typically
+        only usable in "asc" order and with "block" set to true.
       required: false
       schema:
         type: string
@@ -28,6 +29,15 @@ components:
       name: entityRef
       in: query
       description: Limit results to the given entity ref.
+      required: false
+      allowReserved: true
+      schema:
+        type: string
+        minLength: 1
+    entityId:
+      name: entityId
+      in: query
+      description: Limit results to the given entity uid.
       required: false
       allowReserved: true
       schema:
@@ -131,7 +141,7 @@ components:
       properties:
         id:
           type: string
-          description: An ISO timestamp string for when the event happened
+          description: A unique sequential big-integer ID for the event, as a string.
         eventAt:
           type: string
           description: An ISO timestamp string for when the event happened
@@ -146,6 +156,9 @@ components:
           description: The JSON serialized body of the entity related to the event, where applicable
     Events:
       type: object
+      required:
+        - items
+        - pageInfo
       properties:
         items:
           type: array
@@ -159,9 +172,6 @@ components:
             cursor:
               type: string
               description: The cursor for the next set of results.
-      required:
-        - items
-        - pageInfo
       additionalProperties: false
   securitySchemes:
     JWT:
@@ -184,9 +194,10 @@ paths:
         - {}
         - JWT: []
       parameters:
-        - $ref: '#/components/parameters/from'
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/afterEventId'
+        - $ref: '#/components/parameters/entityRef'
+        - $ref: '#/components/parameters/entityId'
         - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/entityRef'
-        - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/block'
