@@ -105,10 +105,13 @@ describe('<OwnerPicker />', () => {
             kind: ['Group', 'User'],
           },
           fields: [
+            'kind',
             'metadata.name',
             'metadata.namespace',
             'metadata.title',
-            'kind',
+            'metadata.description',
+            'spec.profile.displayName',
+            'spec.type',
           ],
         }),
       );
@@ -208,10 +211,13 @@ describe('<OwnerPicker />', () => {
             kind: ['User'],
           },
           fields: [
+            'kind',
             'metadata.name',
             'metadata.namespace',
             'metadata.title',
-            'kind',
+            'metadata.description',
+            'spec.profile.displayName',
+            'spec.type',
           ],
         }),
       );
