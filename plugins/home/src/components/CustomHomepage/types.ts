@@ -95,7 +95,7 @@ export type CustomHomepageGridProps = {
   allowOverlap?: boolean;
   /**
    * Controls if widgets can collide with each other. If true, grid items won't change position when being dragged over.
-   * @defaultValue false
+   * @defaultValue true
    */
   preventCollision?: boolean;
 };
