@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createContext, useContext } from 'react';
-import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
+import type { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 
 /**

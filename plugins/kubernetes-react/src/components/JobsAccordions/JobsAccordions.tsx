@@ -19,7 +19,7 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Grid from '@material-ui/core/Grid';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { V1Job, V1Pod } from '@kubernetes/client-node';
+import type { V1Job, V1Pod } from '@kubernetes/client-node';
 import { PodsTable } from '../Pods';
 import { JobDrawer } from './JobsDrawer';
 import { getOwnedResources } from '../../utils/owner';
