@@ -44,6 +44,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@types/passport-github2": "^1.2.4",
     "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"

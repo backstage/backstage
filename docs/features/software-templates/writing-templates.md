@@ -252,7 +252,7 @@ spec:
   type: service
 
   parameters:
-    - title: Authenticaion
+    - title: Authentication
       description: Provide authentication for the resource
       required:
         - username
