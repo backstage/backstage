@@ -15,14 +15,8 @@
  */
 
 import {
-  DatabaseService,
   LoggerService,
-  PermissionsService,
-  RootConfigService,
-  RootLoggerService,
-  SchedulerService,
   SchedulerServiceTaskFunction,
-  UrlReaderService,
 } from '@backstage/backend-plugin-api';
 import type {
   DeferredEntity,
@@ -183,16 +177,6 @@ export interface IncrementalEntityProviderOptions {
    */
   rejectEmptySourceCollections?: boolean;
 }
-
-/** @public */
-export type PluginEnvironment = {
-  logger: RootLoggerService;
-  database: DatabaseService;
-  scheduler: SchedulerService;
-  config: RootConfigService;
-  reader: UrlReaderService;
-  permissions: PermissionsService;
-};
 
 export interface IterationEngine {
   taskFn: SchedulerServiceTaskFunction;
