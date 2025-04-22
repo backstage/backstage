@@ -32,7 +32,7 @@ import { Expanded, RenderSchema, SchemaRenderContext } from '../RenderSchema';
 import { ScaffolderUsageExamplesTable } from '../ScaffolderUsageExamplesTable';
 import { inspectFunctionArgSchema } from './functionArgs';
 import { Extension, renderFragment } from './navigation';
-import { Xlate } from './types';
+import { TranslationMessages } from './types';
 
 const FunctionDetailContent = ({
   classes,
@@ -43,13 +43,13 @@ const FunctionDetailContent = ({
   classes: ClassNameMap;
   name: string;
   fn: TemplateGlobalFunction;
-  t: Xlate<typeof scaffolderTranslationRef>;
+  t: TranslationMessages<typeof scaffolderTranslationRef>;
 }) => {
   const expanded = useState<Expanded>({});
   if (!Object.keys(fn).length) {
     return (
       <Typography style={{ fontStyle: 'italic' }}>
-        Function metadata unavailable
+        {t('templatingExtensions.content.functions.notAvailable')}
       </Typography>
     );
   }
@@ -134,7 +134,7 @@ export const TemplateGlobalFunctions = ({
 }: {
   classes: ClassNameMap;
   functions: ListTemplatingExtensionsResponse['globals']['functions'];
-  t: Xlate<typeof scaffolderTranslationRef>;
+  t: TranslationMessages<typeof scaffolderTranslationRef>;
   baseLink: ReactElement<Parameters<typeof Link>[0]>;
   selectedItem: Extension | null;
 }) => {
@@ -185,7 +185,7 @@ export const TemplateGlobalValues = ({
   selectedItem,
 }: {
   classes: ClassNameMap;
-  t: Xlate<typeof scaffolderTranslationRef>;
+  t: TranslationMessages<typeof scaffolderTranslationRef>;
   values: ListTemplatingExtensionsResponse['globals']['values'];
   baseLink: ReactElement<Parameters<typeof Link>[0]>;
   selectedItem: Extension | null;

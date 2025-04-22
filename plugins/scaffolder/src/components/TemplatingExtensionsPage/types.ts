@@ -23,6 +23,6 @@ export type StyleClasses = ClassNameMap<
   'code' | 'codeRequired' | 'argRequired' | 'link'
 >;
 
-export type Xlate<R> = R extends TranslationRef<any, infer M>
+export type TranslationMessages<R> = R extends TranslationRef<any, infer M>
   ? TranslationFunction<M>
   : never;

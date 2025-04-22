@@ -32,7 +32,7 @@ import { Expanded, RenderSchema, SchemaRenderContext } from '../RenderSchema';
 import { ScaffolderUsageExamplesTable } from '../ScaffolderUsageExamplesTable';
 import { inspectFunctionArgSchema } from './functionArgs';
 import { Extension, renderFragment } from './navigation';
-import { StyleClasses, Xlate } from './types';
+import { StyleClasses, TranslationMessages } from './types';
 
 const FilterDetailContent = ({
   t,
@@ -40,7 +40,7 @@ const FilterDetailContent = ({
   name,
   filter,
 }: {
-  t: Xlate<typeof scaffolderTranslationRef>;
+  t: TranslationMessages<typeof scaffolderTranslationRef>;
   classes: ClassNameMap;
   name: string;
   filter: TemplateFilter;
@@ -144,7 +144,7 @@ export const TemplateFilters = ({
   baseLink,
   selectedItem,
 }: {
-  t: Xlate<typeof scaffolderTranslationRef>;
+  t: TranslationMessages<typeof scaffolderTranslationRef>;
   classes: StyleClasses;
   filters: ListTemplatingExtensionsResponse['filters'];
   baseLink: ReactElement<Parameters<typeof Link>[0]>;
