@@ -74,7 +74,9 @@ export class BackstageNpmResolver implements Resolver {
     const npmVersion = structUtils.parseRange(descriptor.range).params?.npm;
 
     if (!npmVersion) {
-      throw new Error(`Unreachable`);
+      throw new Error(
+        `Missing npm parameter on backstage: range "${descriptor.range}".`,
+      );
     }
 
     return {
@@ -133,7 +135,9 @@ export class BackstageNpmResolver implements Resolver {
    * `npm:` protocol.
    */
   shouldPersistResolution = () => {
-    throw new Error('Unreachable');
+    throw new Error(
+      'Unreachable: BackstageNpmResolver should never persist resolution as it uses npm: protocol',
+    );
   };
 
   /**
@@ -141,6 +145,8 @@ export class BackstageNpmResolver implements Resolver {
    * `npm:` protocol.
    */
   resolve = async () => {
-    throw new Error(`Unreachable`);
+    throw new Error(
+      'Unreachable: BackstageNpmResolver should never resolve as it uses npm: protocol',
+    );
   };
 }
