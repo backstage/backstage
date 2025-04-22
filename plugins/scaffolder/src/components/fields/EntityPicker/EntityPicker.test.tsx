@@ -19,6 +19,7 @@ import { Entity } from '@backstage/catalog-model';
 import {
   catalogApiRef,
   entityPresentationApiRef,
+  EntityDisplayName,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
@@ -826,6 +827,91 @@ describe('<EntityPicker />', () => {
       } as unknown as FieldProps<string>;
     });
 
+    it('shows display inconsistency before the fix', async () => {
+      // Mock the presentation API to return specific values for testing
+      const mockEntityPresentation = {
+        entityRef: 'group:default/team-a',
+        primaryTitle: 'Team A',
+      };
+
+      // Create a catalog API that includes the specific test entity
+      const testCatalogApi = catalogApiMock.mock({
+        getEntities: jest.fn().mockResolvedValue({
+          items: [makeEntity('Group', 'default', 'team-a')],
+        }),
+      });
+
+      // Create an entity presentation API that returns different display values
+      const entityPresentationApiWithOriginalBehavior = {
+        forEntity: jest.fn().mockReturnValue({
+          snapshot: {
+            ...mockEntityPresentation,
+            primaryTitle: undefined,
+            entityRef: 'group:default/team-a',
+          },
+          promise: Promise.resolve({
+            ...mockEntityPresentation,
+            primaryTitle: undefined,
+            entityRef: 'group:default/team-a',
+          }),
+        }),
+      };
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, testCatalogApi],
+            [
+              entityPresentationApiRef,
+              entityPresentationApiWithOriginalBehavior,
+            ],
+          ]}
+        >
+          <EntityPicker {...props} formData="group:default/team-a" />
+        </TestApiProvider>,
+      );
+
+      // Wait for the entity data to load and be processed
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Check how it appears in the input (should show raw entity ref)
+      const input = screen.getByRole('textbox');
+
+      // With the old behavior (before the fix), the input shows the entity ref
+      // but may render differently in the dropdown, causing inconsistency
+      expect(input).toHaveValue('group:default/team-a');
+
+      // Now observe how EntityDisplayName would render the selected option:
+      // We need to render a separate EntityDisplayName component to check what
+      // the dropdown would render
+      const { getByText } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, testCatalogApi],
+            [
+              entityPresentationApiRef,
+              {
+                forEntity: jest.fn().mockReturnValue({
+                  snapshot: mockEntityPresentation,
+                  promise: Promise.resolve(mockEntityPresentation),
+                }),
+              },
+            ],
+          ]}
+        >
+          <EntityDisplayName
+            entityRef={makeEntity('Group', 'default', 'team-a')}
+          />
+        </TestApiProvider>,
+      );
+
+      // EntityDisplayName would typically show a formatted version, not the raw reference
+      expect(getByText('Team A')).toBeInTheDocument();
+
+      // This demonstrates the inconsistency - one shows "group:default/team-a" (input)
+      // while the other would show "Team A" (dropdown with EntityDisplayName)
+    });
+
     it('renders consistent entity display between dropdown and selected value', async () => {
       // Mock the presentation API to return specific values for testing
       const mockEntityPresentation = {
@@ -903,6 +989,75 @@ describe('<EntityPicker />', () => {
       // Check if dropdown shows the same representation
       const option = await screen.findByText('Team A');
       expect(option).toBeInTheDocument();
+    });
+
+    it('preserves the entity reference when selecting an entity with allowArbitraryValues enabled', async () => {
+      // Create a test with allowArbitraryValues (which is the default)
+      uiSchema = { 'ui:options': { allowArbitraryValues: true } };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData: undefined,
+      } as unknown as FieldProps<string>;
+
+      // Mock the presentation API to return specific values for testing
+      const mockEntityPresentation = {
+        entityRef: 'group:default/team-a',
+        primaryTitle: 'Team A',
+      };
+
+      // Create a catalog API that includes the specific test entity
+      const testCatalogApi = catalogApiMock.mock({
+        getEntities: jest.fn().mockResolvedValue({
+          items: [makeEntity('Group', 'default', 'team-a')],
+        }),
+      });
+
+      // Create mock entity presentation mapping
+      const entityRefToPresentation = new Map();
+      entityRefToPresentation.set(
+        'group:default/team-a',
+        mockEntityPresentation,
+      );
+
+      const mockEntity = makeEntity('Group', 'default', 'team-a');
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, testCatalogApi],
+            [
+              entityPresentationApiRef,
+              {
+                forEntity: jest.fn().mockReturnValue({
+                  snapshot: mockEntityPresentation,
+                  promise: Promise.resolve(mockEntityPresentation),
+                }),
+              },
+            ],
+          ]}
+        >
+          <EntityPicker {...props} />
+        </TestApiProvider>,
+      );
+
+      // Wait for the entity data to load and be processed
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Open the dropdown
+      const input = screen.getByRole('textbox');
+      fireEvent.mouseDown(input);
+
+      // Find and click on the "Team A" option
+      const option = await screen.findByText('Team A');
+      fireEvent.click(option);
+
+      // Verify that onChange was called with the entity reference, not the display name
+      expect(onChange).toHaveBeenCalledWith('group:default/team-a');
+      expect(onChange).not.toHaveBeenCalledWith('Team A');
     });
   });
 });
