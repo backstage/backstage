@@ -83,10 +83,11 @@ jest.mock('fs-extra', () => ({
   remove: jest.fn(),
 }));
 
+const databases = TestDatabases.create({
+  ids: ['SQLITE_3'],
+});
+
 async function createDatabase(): Promise<DatabaseService> {
-  const databases = TestDatabases.create({
-    ids: ['SQLITE_3'],
-  });
   const knex = await databases.init('SQLITE_3');
   return mockServices.database({ knex });
 }

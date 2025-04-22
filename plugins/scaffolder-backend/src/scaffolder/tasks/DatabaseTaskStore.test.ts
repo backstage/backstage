@@ -25,10 +25,11 @@ import {
 import fs from 'fs-extra';
 import { EventsService } from '@backstage/plugin-events-node';
 
+const databases = TestDatabases.create({
+  ids: ['SQLITE_3'],
+});
+
 const createStore = async (events?: EventsService) => {
-  const databases = TestDatabases.create({
-    ids: ['SQLITE_3'],
-  });
   const knex = await databases.init('SQLITE_3');
 
   const manager = mockServices.database({ knex });

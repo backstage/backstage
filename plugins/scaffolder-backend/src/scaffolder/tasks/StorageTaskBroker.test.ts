@@ -24,25 +24,20 @@ import { StorageTaskBroker, TaskManager } from './StorageTaskBroker';
 import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 
-async function createStore(): Promise<DatabaseTaskStore> {
-  const databases = TestDatabases.create({
-    ids: ['SQLITE_3'],
-  });
-  const knex = await databases.init('SQLITE_3');
-
-  const manager = mockServices.database({ knex });
-
-  return await DatabaseTaskStore.create({
-    database: manager,
-  });
-}
-
 describe('StorageTaskBroker', () => {
   let storage: DatabaseTaskStore;
   const fakeSecrets = { backstageToken: 'secret' } as TaskSecrets;
+  const databases = TestDatabases.create({
+    ids: ['SQLITE_3'],
+  });
 
   beforeAll(async () => {
-    storage = await createStore();
+    const knex = await databases.init('SQLITE_3');
+    const manager = mockServices.database({ knex });
+
+    storage = await DatabaseTaskStore.create({
+      database: manager,
+    });
   });
 
   const emptyTaskSpec = { spec: { steps: [] } as unknown as TaskSpec };

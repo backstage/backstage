@@ -36,11 +36,11 @@ jest.mock('./NunjucksWorkflowRunner');
 const MockedNunjucksWorkflowRunner =
   NunjucksWorkflowRunner as jest.Mock<NunjucksWorkflowRunner>;
 MockedNunjucksWorkflowRunner.mockImplementation();
+const databases = TestDatabases.create({
+  ids: ['SQLITE_3'],
+});
 
 async function createStore(): Promise<DatabaseTaskStore> {
-  const databases = TestDatabases.create({
-    ids: ['SQLITE_3'],
-  });
   const knex = await databases.init('SQLITE_3');
 
   const manager = mockServices.database({ knex });
