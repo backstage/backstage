@@ -124,7 +124,10 @@ export function createGithubDeployKeyAction(options: {
         repo,
       });
 
-      const client = new Octokit(octokitOptions);
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       await ctx.checkpoint({
         key: `create.deploy.key.${owner}.${repo}.${publicKey}`,

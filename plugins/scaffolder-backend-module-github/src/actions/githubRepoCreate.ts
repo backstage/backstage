@@ -197,7 +197,10 @@ export function createGithubRepoCreateAction(options: {
         owner,
         repo,
       });
-      const client = new Octokit(octokitOptions);
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       const remoteUrl = await ctx.checkpoint({
         key: `create.repo.and.topics.${owner}.${repo}`,

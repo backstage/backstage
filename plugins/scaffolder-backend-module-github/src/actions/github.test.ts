@@ -54,6 +54,9 @@ const initRepoAndPushMocked = initRepoAndPush as jest.Mock<
   Promise<{ commitHash: string }>
 >;
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
   rest: {
     users: {
@@ -81,11 +84,7 @@ const mockOctokit = {
   request: jest.fn(),
 };
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 describe('publish:github', () => {
@@ -114,6 +113,7 @@ describe('publish:github', () => {
   });
 
   beforeEach(() => {
+    octokitMock.mockImplementation(() => mockOctokit);
     initRepoAndPushMocked.mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     });
@@ -138,6 +138,20 @@ describe('publish:github', () => {
   });
 
   afterEach(jest.resetAllMocks);
+
+  it('should pass context logger to Octokit client', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'Organization' },
+    });
+
+    mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+
+    await action.handler(mockContext);
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
+  });
 
   it('should fail to create if the team is not found in the org', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({
