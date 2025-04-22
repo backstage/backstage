@@ -104,8 +104,6 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
         });
       const defaultBranch = repoInformation.data.default_branch;
 
-      const credentials = await this.auth.getOwnServiceCredentials();
-
       const result = await Promise.all(
         searchResult.data.items
           .map(i => `${trimEnd(url, '/')}/blob/${defaultBranch}/${i.path}`)
@@ -116,7 +114,7 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
                 target,
                 dryRun: true,
               },
-              { credentials },
+              { credentials: await this.auth.getOwnServiceCredentials() },
             );
             return addLocationResult.entities.map(e => ({
               location: { type: 'url', target },
