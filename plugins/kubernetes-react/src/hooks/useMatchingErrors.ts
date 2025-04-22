@@ -18,8 +18,8 @@ import {
   DetectedError,
   ResourceRef,
 } from '@backstage/plugin-kubernetes-common';
-import { TypeMeta } from '@kubernetes-models/base';
-import { IIoK8sApimachineryPkgApisMetaV1ObjectMeta as V1ObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
+import type { TypeMeta } from '@kubernetes-models/base';
+import type { IIoK8sApimachineryPkgApisMetaV1ObjectMeta as V1ObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 
 /**
  * Context for detected errors

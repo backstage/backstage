@@ -15,7 +15,7 @@
  */
 
 import { ReactNode } from 'react';
-import { V1Deployment } from '@kubernetes/client-node';
+import type { V1Deployment } from '@kubernetes/client-node';
 import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 import { renderCondition } from '../../utils/pod';
 import Typography from '@material-ui/core/Typography';

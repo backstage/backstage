@@ -27,7 +27,7 @@ import { Table, TableColumn } from '@backstage/core-components';
 import { ClusterContext } from '../../hooks/Cluster';
 import { useMatchingErrors } from '../../hooks/useMatchingErrors';
 import { Pod } from 'kubernetes-models/v1/Pod';
-import { V1Pod } from '@kubernetes/client-node';
+import type { V1Pod } from '@kubernetes/client-node';
 import { usePodMetrics } from '../../hooks/usePodMetrics';
 import Typography from '@material-ui/core/Typography';
 
