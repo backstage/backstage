@@ -81,10 +81,13 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   const { value: entities, loading } = useAsync(async () => {
     const fields = [
+      'kind',
       'metadata.name',
       'metadata.namespace',
       'metadata.title',
-      'kind',
+      'metadata.description',
+      'spec.profile.displayName',
+      'spec.type',
     ];
     const { items } = await catalogApi.getEntities(
       catalogFilter
