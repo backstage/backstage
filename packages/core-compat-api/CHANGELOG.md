@@ -1,5 +1,16 @@
 # @backstage/core-compat-api
 
+## 0.4.2-next.0
+
+### Patch Changes
+
+- 6eedf46: Updated dependency `@backstage-community/plugin-puppetdb` to `^0.6.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.4.1
 
 ### Patch Changes
