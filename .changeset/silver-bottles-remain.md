@@ -1,6 +1,8 @@
 ---
-
 '@backstage/create-app': patch
+---
+
+---
 
 ## '@backstage/create-app': patch
 
