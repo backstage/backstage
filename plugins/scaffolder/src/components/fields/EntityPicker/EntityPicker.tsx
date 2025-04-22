@@ -185,7 +185,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
   return (
     <ScaffolderField
       rawErrors={rawErrors}
-      rawDescription={description}
+      rawDescription={uiSchema['ui:description'] ?? description}
       required={required}
       disabled={isDisabled}
       errors={errors}
