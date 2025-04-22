@@ -1,5 +1,11 @@
 # @backstage/canon
 
+## 0.3.2-next.0
+
+### Patch Changes
+
+- e996368: Fix Canon missing dependencies
+
 ## 0.3.0
 
 ### Minor Changes

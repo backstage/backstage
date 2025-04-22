@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-logs
 
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.32.2-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-events-node@0.4.11-next.0
+
 ## 0.1.9
 
 ### Patch Changes

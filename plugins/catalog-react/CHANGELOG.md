@@ -1,5 +1,52 @@
 # @backstage/plugin-catalog-react
 
+## 1.18.0-next.0
+
+### Minor Changes
+
+- d47aaa3: Added EntityOrderFilter to sort entities by different fields/columns. This new filter allows users to specify the order in which entities are displayed in the catalog.
+
+  Example usage:
+
+  ```ts
+  import {
+    EntityOrderFilter,
+    useEntityList,
+  } from '@backstage/plugin-catalog-react';
+  // ...
+  const { updateFilters } = useEntityList();
+
+  // ...
+  updateFilters({
+    order: new EntityOrderFilter([
+      {
+        field: 'metadata.name',
+        order: 'desc',
+      },
+    ]),
+  });
+  ```
+
+- 1a003ff: Add `getLocations` method to `CatalogApi` and `CatalogClient`. This method calls the [`GET /locations`](https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-locations) endpoint from the catalog backend.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/integration-react@1.2.7-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/frontend-test-utils@0.3.2-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-react@0.4.33
+
 ## 1.17.0
 
 ### Minor Changes

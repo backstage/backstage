@@ -1,5 +1,21 @@
 # @backstage/plugin-permission-backend
 
+## 0.7.0-next.0
+
+### Minor Changes
+
+- cf8fd51: **BREAKING** Removed support for the legacy backend system, please [migrate to the new backend system](https://backstage.io/docs/backend-system/building-backends/migrating)
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.6.3-next.0
+  - @backstage/plugin-permission-node@0.9.2-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.8.4
+
 ## 0.6.0
 
 ### Minor Changes

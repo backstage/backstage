@@ -197,7 +197,38 @@
     "@backstage/plugin-techdocs-react": "1.2.16",
     "@backstage/plugin-user-settings": "0.8.21",
     "@backstage/plugin-user-settings-backend": "0.3.1",
-    "@backstage/plugin-user-settings-common": "0.0.1"
+    "@backstage/plugin-user-settings-common": "0.0.1",
+    "@backstage/plugin-events-backend-module-google-pubsub": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "breezy-hotels-deny",
+    "bright-moles-sort",
+    "bumpy-showers-design",
+    "calm-toys-occur",
+    "chubby-needles-vanish",
+    "cold-humans-check",
+    "common-goats-raise",
+    "create-app-1745325336",
+    "cruel-lights-sip",
+    "cyan-pots-appear",
+    "eleven-ghosts-strive",
+    "green-trainers-float",
+    "heavy-baths-rule",
+    "huge-olives-do",
+    "icy-mugs-glow",
+    "lovely-cats-take",
+    "new-hands-scream",
+    "old-crews-serve",
+    "pretty-corners-speak",
+    "renovate-68baea0",
+    "renovate-e32145b",
+    "sharp-numbers-doubt",
+    "shiny-symbols-grow",
+    "silent-clubs-roll",
+    "small-eggs-develop",
+    "spicy-steaks-swim",
+    "warm-llamas-return",
+    "wise-pillows-smile",
+    "yellow-cows-tickle"
+  ]
 }

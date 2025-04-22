@@ -1,5 +1,37 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.32.2-next.0
+
+### Patch Changes
+
+- 36ae651: Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.1-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.1-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.0
+  - @backstage/backend-defaults@0.9.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.9-next.0
+  - @backstage/plugin-scaffolder-node@0.8.2-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.6.3-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.8-next.0
+  - @backstage/plugin-events-node@0.4.11-next.0
+  - @backstage/plugin-permission-node@0.9.2-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-scaffolder-common@1.5.10
+
 ## 1.32.0
 
 ### Minor Changes
