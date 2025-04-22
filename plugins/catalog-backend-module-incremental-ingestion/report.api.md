@@ -4,18 +4,12 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { DatabaseService } from '@backstage/backend-plugin-api';
 import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { EventParams } from '@backstage/plugin-events-node';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HumanDuration } from '@backstage/types';
 import { IncrementalEntityProvider as IncrementalEntityProvider_2 } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
 import { IncrementalEntityProviderOptions as IncrementalEntityProviderOptions_2 } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
-import { PermissionsService } from '@backstage/backend-plugin-api';
-import { RootConfigService } from '@backstage/backend-plugin-api';
-import { RootLoggerService } from '@backstage/backend-plugin-api';
-import { SchedulerService } from '@backstage/backend-plugin-api';
-import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public
 const catalogModuleIncrementalIngestionEntityProvider: BackendFeature;
@@ -81,14 +75,4 @@ export interface IncrementalIngestionProviderExtensionPoint {
 
 // @public
 export const incrementalIngestionProvidersExtensionPoint: ExtensionPoint<IncrementalIngestionProviderExtensionPoint>;
-
-// @public (undocumented)
-export type PluginEnvironment = {
-  logger: RootLoggerService;
-  database: DatabaseService;
-  scheduler: SchedulerService;
-  config: RootConfigService;
-  reader: UrlReaderService;
-  permissions: PermissionsService;
-};
 ```
