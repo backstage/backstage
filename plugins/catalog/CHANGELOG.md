@@ -1,5 +1,190 @@
 # @backstage/plugin-catalog
 
+## 1.29.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/integration-react@1.2.7-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.33
+  - @backstage/plugin-scaffolder-common@1.5.10
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-search-react@1.8.8
+
+## 1.29.0
+
+### Minor Changes
+
+- 9454ef9: Added support of filtering based on system columns in catalog table
+- 61d350f: **BREAKING ALPHA**: `CatalogFilterBlueprint`, used in the new frontend system, is now exported under plugin-catalog-react instead of plugin-catalog.
+
+  ```diff
+  + import { CatalogFilterBlueprint } from '@backstage/plugin-catalog-react/alpha';
+  - import { CatalogFilterBlueprint } from '@backstage/plugin-catalog/alpha';
+  ```
+
+- 09afd67: Adds `EntityContextMenuItemBlueprint` to enable extending the entity page's context menu with user defined items.
+
+  For example:
+
+  ```ts
+  import { EntityContextMenuItemBlueprint } from '@backstage/plugin-catalog-react/alpha';
+
+  const myCustomHref = EntityContextMenuItemBlueprint.make({
+    name: 'test-href',
+    params: {
+      icon: <span>Example Icon</span>,
+      useProps: () => ({
+        title: 'Example Href',
+        href: '/example-path',
+        disabled: false,
+        component: 'a',
+      }),
+    },
+  });
+
+  const myCustomOnClick = EntityContextMenuItemBlueprint.make({
+    name: 'test-click',
+    params: {
+      icon: <span>Test Icon</span>,
+      useProps: () => ({
+        title: 'Example onClick',
+        onClick: () => window.alert('Hello world!'),
+        disabled: false,
+      }),
+    },
+  });
+  ```
+
+### Patch Changes
+
+- 3f7e4f1: Fixed the layout of summary cards in the new frontend system, ensuring that the horizontal scroll grid doesn't grow too large as well as tweaked its scrolling parameters.
+- e655f62: Updated `README.md` to use `yarn start` instead of `yarn dev`.
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 3f7e4f1: The about, links, and labels card now all have the `info` card type by default in the new frontend system.
+- 3f7e4f1: The overview content is now part of the overview group by default in the new frontend system.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.17.0
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/integration-react@1.2.6
+  - @backstage/core-compat-api@0.4.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/plugin-permission-react@0.4.33
+  - @backstage/plugin-search-react@1.8.8
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-scaffolder-common@1.5.10
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.29.0-next.2
+
+### Minor Changes
+
+- 61d350f: **BREAKING ALPHA**: `CatalogFilterBlueprint`, used in the new frontend system, is now exported under plugin-catalog-react instead of plugin-catalog.
+
+  ```diff
+  + import { CatalogFilterBlueprint } from '@backstage/plugin-catalog-react/alpha';
+  - import { CatalogFilterBlueprint } from '@backstage/plugin-catalog/alpha';
+  ```
+
+- 09afd67: Adds `EntityContextMenuItemBlueprint` to enable extending the entity page's context menu with user defined items.
+
+  For example:
+
+  ```ts
+  import { EntityContextMenuItemBlueprint } from '@backstage/plugin-catalog-react/alpha';
+
+  const myCustomHref = EntityContextMenuItemBlueprint.make({
+    name: 'test-href',
+    params: {
+      icon: <span>Example Icon</span>,
+      useProps: () => ({
+        title: 'Example Href',
+        href: '/example-path',
+        disabled: false,
+        component: 'a',
+      }),
+    },
+  });
+
+  const myCustomOnClick = EntityContextMenuItemBlueprint.make({
+    name: 'test-click',
+    params: {
+      icon: <span>Test Icon</span>,
+      useProps: () => ({
+        title: 'Example onClick',
+        onClick: () => window.alert('Hello world!'),
+        disabled: false,
+      }),
+    },
+  });
+  ```
+
+### Patch Changes
+
+- e655f62: Updated `README.md` to use `yarn start` instead of `yarn dev`.
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/integration-react@1.2.6-next.1
+  - @backstage/core-compat-api@0.4.1-next.2
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/plugin-permission-react@0.4.33-next.0
+  - @backstage/plugin-catalog-react@1.17.0-next.2
+  - @backstage/plugin-search-react@1.8.8-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-scaffolder-common@1.5.10
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.29.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/integration-react@1.2.6-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/plugin-catalog-react@1.16.1-next.1
+  - @backstage/plugin-search-react@1.8.8-next.0
+  - @backstage/core-compat-api@0.4.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/plugin-scaffolder-common@1.5.10
+  - @backstage/plugin-search-common@1.2.17
+
 ## 1.29.0-next.0
 
 ### Minor Changes

@@ -20,7 +20,6 @@ import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import LanguageIcon from '@material-ui/icons/Language';
-import React from 'react';
 import { CardLink } from './CardLink';
 
 const useStyles = makeStyles<Theme>({});

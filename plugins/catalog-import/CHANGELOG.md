@@ -1,5 +1,89 @@
 # @backstage/plugin-catalog-import
 
+## 0.12.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/integration-react@1.2.7-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.12.13
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 5b9514f: Expose the `UnpackNestedValue` type as it's been removed from `react-hook-form`
+- f1d9a64: adding translation for `Register an existing component` text
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.17.0
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/integration-react@1.2.6
+  - @backstage/core-compat-api@0.4.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/integration@1.16.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.12.13-next.2
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/integration-react@1.2.6-next.1
+  - @backstage/core-compat-api@0.4.1-next.2
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/plugin-catalog-react@1.17.0-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.12.12-next.1
+
+### Patch Changes
+
+- 5b9514f: Expose the `UnpackNestedValue` type as it's been removed from `react-hook-form`
+- f1d9a64: adding translation for `Register an existing component` text
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/integration-react@1.2.6-next.0
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/plugin-catalog-react@1.16.1-next.1
+  - @backstage/core-compat-api@0.4.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+
 ## 0.12.12-next.0
 
 ### Patch Changes

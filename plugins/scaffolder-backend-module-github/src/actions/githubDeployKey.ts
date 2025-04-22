@@ -124,22 +124,40 @@ export function createGithubDeployKeyAction(options: {
         repo,
       });
 
-      const client = new Octokit(octokitOptions);
-
-      await client.rest.repos.createDeployKey({
-        owner: owner,
-        repo: repo,
-        title: deployKeyName,
-        key: publicKey,
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
       });
-      const publicKeyResponse = await client.rest.actions.getRepoPublicKey({
-        owner: owner,
-        repo: repo,
+
+      await ctx.checkpoint({
+        key: `create.deploy.key.${owner}.${repo}.${publicKey}`,
+        fn: async () => {
+          await client.rest.repos.createDeployKey({
+            owner: owner,
+            repo: repo,
+            title: deployKeyName,
+            key: publicKey,
+          });
+        },
+      });
+
+      const { key, keyId } = await ctx.checkpoint({
+        key: `get.repo.public.key.${owner}.${repo}`,
+        fn: async () => {
+          const publicKeyResponse = await client.rest.actions.getRepoPublicKey({
+            owner: owner,
+            repo: repo,
+          });
+          return {
+            key: publicKeyResponse.data.key,
+            keyId: publicKeyResponse.data.key_id,
+          };
+        },
       });
 
       await Sodium.ready;
       const binaryKey = Sodium.from_base64(
-        publicKeyResponse.data.key,
+        key,
         Sodium.base64_variants.ORIGINAL,
       );
       const binarySecret = Sodium.from_string(privateKey);
@@ -152,12 +170,17 @@ export function createGithubDeployKeyAction(options: {
         Sodium.base64_variants.ORIGINAL,
       );
 
-      await client.rest.actions.createOrUpdateRepoSecret({
-        owner: owner,
-        repo: repo,
-        secret_name: privateKeySecretName,
-        encrypted_value: encryptedBase64Secret,
-        key_id: publicKeyResponse.data.key_id,
+      await ctx.checkpoint({
+        key: `create.or.update.repo.secret.${owner}.${repo}.${keyId}`,
+        fn: async () => {
+          await client.rest.actions.createOrUpdateRepoSecret({
+            owner: owner,
+            repo: repo,
+            secret_name: privateKeySecretName,
+            encrypted_value: encryptedBase64Secret,
+            key_id: keyId,
+          });
+        },
       });
 
       ctx.output('privateKeySecretName', privateKeySecretName);

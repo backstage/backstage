@@ -21,7 +21,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 import GroupIcon from '@material-ui/icons/Group';
-import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { DefaultResultListItem } from './DefaultResultListItem';
 

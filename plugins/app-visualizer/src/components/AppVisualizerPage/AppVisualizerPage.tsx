@@ -18,7 +18,7 @@ import { Content, Header, HeaderTabs, Page } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { appTreeApiRef } from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { DetailedVisualizer } from './DetailedVisualizer';
 import { TextVisualizer } from './TextVisualizer';
 import { TreeVisualizer } from './TreeVisualizer';

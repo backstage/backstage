@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   compatWrapper,
   convertLegacyRouteRef,
@@ -73,6 +72,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       EntityContentBlueprint.dataRefs.filterExpression.optional(),
       EntityContentBlueprint.dataRefs.group.optional(),
     ]),
+    contextMenuItems: createExtensionInput([coreExtensionData.reactElement]),
   },
   config: {
     schema: {
@@ -89,6 +89,10 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       loader: async () => {
         const { EntityLayout } = await import('./components/EntityLayout');
 
+        const menuItems = inputs.contextMenuItems.map(item =>
+          item.get(coreExtensionData.reactElement),
+        );
+
         type Groups = Record<
           string,
           { title: string; items: Array<(typeof inputs.contents)[0]> }
@@ -96,7 +100,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
 
         const header = inputs.header?.get(
           EntityHeaderBlueprint.dataRefs.element,
-        ) ?? <EntityHeader />;
+        ) ?? <EntityHeader contextMenuItems={menuItems} />;
 
         let groups = Object.entries(defaultEntityContentGroups).reduce<Groups>(
           (rest, group) => {
@@ -135,7 +139,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
         const Component = () => {
           return (
             <AsyncEntityProvider {...useEntityFromUrl()}>
-              <EntityLayout header={header}>
+              <EntityLayout header={header} contextMenuItems={menuItems}>
                 {Object.values(groups).flatMap(({ title, items }) =>
                   items.map(output => (
                     <EntityLayout.Route

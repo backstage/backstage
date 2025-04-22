@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, ChangeEvent, useRef } from 'react';
+import { ReactElement, ChangeEvent, useRef } from 'react';
 import { capitalize } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import FormControl from '@material-ui/core/FormControl';

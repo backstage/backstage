@@ -16,7 +16,6 @@
 
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import React from 'react';
 
 /**
  * @internal

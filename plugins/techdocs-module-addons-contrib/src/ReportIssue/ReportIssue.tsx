@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useGitRepository } from './hooks';
 import { ReportIssueTemplateBuilder } from './types';
 import { ADDON_ISSUE_REPO_TYPES_SUPPORTED } from './constants';

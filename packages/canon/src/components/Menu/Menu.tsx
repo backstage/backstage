@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { forwardRef } from 'react';
 import { Menu as MenuPrimitive } from '@base-ui-components/react/menu';
 import clsx from 'clsx';
 import { MenuComponent } from './types';
 
-const MenuTrigger = React.forwardRef<
+const MenuTrigger = forwardRef<
   React.ElementRef<typeof MenuPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.Trigger>
 >(({ className, ...props }, ref) => (
@@ -31,7 +31,7 @@ const MenuTrigger = React.forwardRef<
 ));
 MenuTrigger.displayName = MenuPrimitive.Trigger.displayName;
 
-const MenuBackdrop = React.forwardRef<
+const MenuBackdrop = forwardRef<
   React.ElementRef<typeof MenuPrimitive.Backdrop>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.Backdrop>
 >(({ className, ...props }, ref) => (
@@ -43,7 +43,7 @@ const MenuBackdrop = React.forwardRef<
 ));
 MenuBackdrop.displayName = MenuPrimitive.Backdrop.displayName;
 
-const MenuPositioner = React.forwardRef<
+const MenuPositioner = forwardRef<
   React.ElementRef<typeof MenuPrimitive.Positioner>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.Positioner>
 >(({ className, ...props }, ref) => (
@@ -55,7 +55,7 @@ const MenuPositioner = React.forwardRef<
 ));
 MenuPositioner.displayName = MenuPrimitive.Positioner.displayName;
 
-const MenuPopup = React.forwardRef<
+const MenuPopup = forwardRef<
   React.ElementRef<typeof MenuPrimitive.Popup>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.Popup>
 >(({ className, ...props }, ref) => (
@@ -67,7 +67,7 @@ const MenuPopup = React.forwardRef<
 ));
 MenuPopup.displayName = MenuPrimitive.Popup.displayName;
 
-const MenuArrow = React.forwardRef<
+const MenuArrow = forwardRef<
   React.ElementRef<typeof MenuPrimitive.Arrow>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.Arrow>
 >(({ className, ...props }, ref) => (
@@ -79,7 +79,7 @@ const MenuArrow = React.forwardRef<
 ));
 MenuArrow.displayName = MenuPrimitive.Arrow.displayName;
 
-const MenuItem = React.forwardRef<
+const MenuItem = forwardRef<
   React.ElementRef<typeof MenuPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.Item>
 >(({ className, ...props }, ref) => (
@@ -91,7 +91,7 @@ const MenuItem = React.forwardRef<
 ));
 MenuItem.displayName = MenuPrimitive.Item.displayName;
 
-const MenuGroup = React.forwardRef<
+const MenuGroup = forwardRef<
   React.ElementRef<typeof MenuPrimitive.Group>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.Group>
 >(({ className, ...props }, ref) => (
@@ -103,7 +103,7 @@ const MenuGroup = React.forwardRef<
 ));
 MenuGroup.displayName = MenuPrimitive.Group.displayName;
 
-const MenuGroupLabel = React.forwardRef<
+const MenuGroupLabel = forwardRef<
   React.ElementRef<typeof MenuPrimitive.GroupLabel>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.GroupLabel>
 >(({ className, ...props }, ref) => (
@@ -115,7 +115,7 @@ const MenuGroupLabel = React.forwardRef<
 ));
 MenuGroupLabel.displayName = MenuPrimitive.GroupLabel.displayName;
 
-const MenuRadioGroup = React.forwardRef<
+const MenuRadioGroup = forwardRef<
   React.ElementRef<typeof MenuPrimitive.RadioGroup>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioGroup>
 >(({ className, ...props }, ref) => (
@@ -127,7 +127,7 @@ const MenuRadioGroup = React.forwardRef<
 ));
 MenuRadioGroup.displayName = MenuPrimitive.RadioGroup.displayName;
 
-const MenuRadioItem = React.forwardRef<
+const MenuRadioItem = forwardRef<
   React.ElementRef<typeof MenuPrimitive.RadioItem>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioItem>
 >(({ className, ...props }, ref) => (
@@ -139,7 +139,7 @@ const MenuRadioItem = React.forwardRef<
 ));
 MenuRadioItem.displayName = MenuPrimitive.RadioItem.displayName;
 
-const MenuRadioItemIndicator = React.forwardRef<
+const MenuRadioItemIndicator = forwardRef<
   React.ElementRef<typeof MenuPrimitive.RadioItemIndicator>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.RadioItemIndicator>
 >(({ className, ...props }, ref) => (
@@ -152,7 +152,7 @@ const MenuRadioItemIndicator = React.forwardRef<
 MenuRadioItemIndicator.displayName =
   MenuPrimitive.RadioItemIndicator.displayName;
 
-const MenuCheckboxItem = React.forwardRef<
+const MenuCheckboxItem = forwardRef<
   React.ElementRef<typeof MenuPrimitive.CheckboxItem>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.CheckboxItem>
 >(({ className, ...props }, ref) => (
@@ -164,7 +164,7 @@ const MenuCheckboxItem = React.forwardRef<
 ));
 MenuCheckboxItem.displayName = MenuPrimitive.CheckboxItem.displayName;
 
-const MenuCheckboxItemIndicator = React.forwardRef<
+const MenuCheckboxItemIndicator = forwardRef<
   React.ElementRef<typeof MenuPrimitive.CheckboxItemIndicator>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.CheckboxItemIndicator>
 >(({ className, ...props }, ref) => (
@@ -177,7 +177,7 @@ const MenuCheckboxItemIndicator = React.forwardRef<
 MenuCheckboxItemIndicator.displayName =
   MenuPrimitive.CheckboxItemIndicator.displayName;
 
-const MenuSubmenuTrigger = React.forwardRef<
+const MenuSubmenuTrigger = forwardRef<
   React.ElementRef<typeof MenuPrimitive.SubmenuTrigger>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.SubmenuTrigger>
 >(({ className, ...props }, ref) => (
@@ -189,7 +189,7 @@ const MenuSubmenuTrigger = React.forwardRef<
 ));
 MenuSubmenuTrigger.displayName = MenuPrimitive.SubmenuTrigger.displayName;
 
-const MenuSeparator = React.forwardRef<
+const MenuSeparator = forwardRef<
   React.ElementRef<typeof MenuPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.Separator>
 >(({ className, ...props }, ref) => (

@@ -23,7 +23,7 @@ import {
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
-import React from 'react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { OwnerPicker } from './OwnerPicker';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { fireEvent, screen } from '@testing-library/react';
@@ -59,10 +59,10 @@ describe('<OwnerPicker />', () => {
   const catalogApi = catalogApiMock.mock({
     getEntities: jest.fn(async () => ({ items: entities })),
   });
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
           [catalogApiRef, catalogApi],
@@ -105,10 +105,13 @@ describe('<OwnerPicker />', () => {
             kind: ['Group', 'User'],
           },
           fields: [
+            'kind',
             'metadata.name',
             'metadata.namespace',
             'metadata.title',
-            'kind',
+            'metadata.description',
+            'spec.profile.displayName',
+            'spec.type',
           ],
         }),
       );
@@ -208,10 +211,13 @@ describe('<OwnerPicker />', () => {
             kind: ['User'],
           },
           fields: [
+            'kind',
             'metadata.name',
             'metadata.namespace',
             'metadata.title',
-            'kind',
+            'metadata.description',
+            'spec.profile.displayName',
+            'spec.type',
           ],
         }),
       );

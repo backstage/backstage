@@ -17,7 +17,6 @@ import { IconComponent, useApp, useRouteRef } from '@backstage/core-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
 import LinkIcon from '@material-ui/icons/Link';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { Link } from '@backstage/core-components';

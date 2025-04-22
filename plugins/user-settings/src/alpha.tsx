@@ -28,8 +28,6 @@ import {
 import SettingsIcon from '@material-ui/icons/Settings';
 import { settingsRouteRef } from './plugin';
 
-import React from 'react';
-
 export * from './translation';
 
 const userSettingsPage = PageBlueprint.makeWithOverrides({

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import Grid from '@material-ui/core/Grid';
 
 import {
@@ -249,3 +248,5 @@ export default createFrontendPlugin({
     apiDocsApisEntityContent,
   ],
 });
+
+export { apiDocsTranslationRef } from './translation';

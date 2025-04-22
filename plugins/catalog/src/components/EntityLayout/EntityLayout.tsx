@@ -56,7 +56,13 @@ import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import { TabProps } from '@material-ui/core/Tab';
 import Alert from '@material-ui/lab/Alert';
-import React, { ComponentProps, useEffect, useState } from 'react';
+import {
+  ComponentProps,
+  useEffect,
+  useState,
+  ElementType,
+  ReactNode,
+} from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogTranslationRef } from '../../alpha/translation';
@@ -69,7 +75,7 @@ export type EntityLayoutRouteProps = {
   title: string;
   children: JSX.Element;
   if?: (entity: Entity) => boolean;
-  tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
+  tabProps?: TabProps<ElementType, { component?: ElementType }>;
 };
 
 const dataKey = 'plugin.catalog.entityLayoutRoute';
@@ -173,8 +179,8 @@ interface EntityContextMenuOptions {
 export interface EntityLayoutProps {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   UNSTABLE_contextMenuOptions?: EntityContextMenuOptions;
-  children?: React.ReactNode;
-  NotFoundComponent?: React.ReactNode;
+  children?: ReactNode;
+  NotFoundComponent?: ReactNode;
   /**
    * An array of relation types used to determine the parent entities in the hierarchy.
    * These relations are prioritized in the order provided, allowing for flexible

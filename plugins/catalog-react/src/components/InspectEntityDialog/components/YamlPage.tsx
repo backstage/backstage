@@ -17,7 +17,6 @@
 import { Entity } from '@backstage/catalog-model';
 import { CodeSnippet } from '@backstage/core-components';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import React from 'react';
 import YAML from 'yaml';
 import { sortKeys } from './util';
 import { catalogReactTranslationRef } from '../../../translation';

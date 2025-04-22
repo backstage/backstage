@@ -563,6 +563,7 @@ export default {
           'tutorials/yarn-migration',
           'tutorials/migrate-to-mui5',
           'tutorials/auth-service-migration',
+          'tutorials/jsx-transform-migration',
         ],
       },
     ],

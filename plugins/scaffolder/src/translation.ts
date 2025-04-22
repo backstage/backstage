@@ -30,13 +30,6 @@ export const scaffolderTranslationRef = createTranslationRef({
             'There are no actions installed or there was an issue communicating with backend.',
         },
         searchFieldPlaceholder: 'Search for an action',
-        tableCell: {
-          name: 'Name',
-          title: 'Title',
-          description: 'Description',
-          type: 'Type',
-        },
-        noRowsDescription: 'No schema defined',
       },
       action: {
         input: 'Input',
@@ -192,6 +185,52 @@ export const scaffolderTranslationRef = createTranslationRef({
         emptyText: 'There are no spec parameters in the template to preview.',
       },
     },
+    renderSchema: {
+      tableCell: {
+        name: 'Name',
+        title: 'Title',
+        description: 'Description',
+        type: 'Type',
+      },
+      undefined: 'No schema defined',
+    },
+    templatingExtensions: {
+      title: 'Templating Extensions',
+      pageTitle: 'Templating Extensions',
+      subtitle: 'This is the collection of available templating extensions',
+      content: {
+        emptyState: {
+          title: 'No information to display',
+          description:
+            'There are no templating extensions available or there was an issue communicating with the backend.',
+        },
+        searchFieldPlaceholder: 'Search for an extension',
+        filters: {
+          title: 'Filters',
+          notAvailable: 'There are no template filters defined.',
+          metadataAbsent: 'Filter metadata unavailable',
+          schema: {
+            input: 'Input',
+            arguments: 'Arguments',
+            output: 'Output',
+          },
+          examples: 'Examples',
+        },
+        functions: {
+          title: 'Functions',
+          notAvailable: 'There are no global template functions defined.',
+          schema: {
+            arguments: 'Arguments',
+            output: 'Output',
+          },
+          examples: 'Examples',
+        },
+        values: {
+          title: 'Values',
+          notAvailable: 'There are no global template values defined.',
+        },
+      },
+    },
     templateTypePicker: {
       title: 'Categories',
     },
@@ -254,13 +293,15 @@ export const scaffolderTranslationRef = createTranslationRef({
           title: 'Load Template Directory',
           description:
             'Load a local template directory, allowing you to both edit and try executing your own template.',
-          unsupportedTooltip: 'Only supported in some Chromium-based browsers',
+          unsupportedTooltip:
+            'Only supported in some Chromium-based browsers with the page loaded over HTTPS',
         },
         createLocal: {
           title: 'Create New Template',
           description:
             'Create a local template directory, allowing you to both edit and try executing your own template.',
-          unsupportedTooltip: 'Only supported in some Chromium-based browsers',
+          unsupportedTooltip:
+            'Only supported in some Chromium-based browsers with the page loaded over HTTPS',
         },
         formEditor: {
           title: 'Template Form Playground',
@@ -312,6 +353,8 @@ export const scaffolderTranslationRef = createTranslationRef({
     templateEditorToolbar: {
       customFieldExplorerTooltip: 'Custom Fields Explorer',
       installedActionsDocumentationTooltip: 'Installed Actions Documentation',
+      templatingExtensionsDocumentationTooltip:
+        'Templating Extensions Documentation',
       addToCatalogButton: 'Publish',
       addToCatalogDialogTitle: 'Publish changes',
       addToCatalogDialogContent: {

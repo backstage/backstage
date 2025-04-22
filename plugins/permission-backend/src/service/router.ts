@@ -17,7 +17,6 @@
 import { z } from 'zod';
 import express, { Request, Response } from 'express';
 import Router from 'express-promise-router';
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
@@ -62,27 +61,33 @@ const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
     .optional(),
 });
 
-const permissionSchema = z.union([
-  z.object({
-    type: z.literal('basic'),
-    name: z.string(),
-    attributes: attributesSchema,
-  }),
-  z.object({
-    type: z.literal('resource'),
-    name: z.string(),
-    attributes: attributesSchema,
-    resourceType: z.string(),
-  }),
-]);
+const basicPermissionSchema = z.object({
+  type: z.literal('basic'),
+  name: z.string(),
+  attributes: attributesSchema,
+});
+
+const resourcePermissionSchema = z.object({
+  type: z.literal('resource'),
+  name: z.string(),
+  attributes: attributesSchema,
+  resourceType: z.string(),
+});
 
 const evaluatePermissionRequestSchema: z.ZodSchema<
   IdentifiedPermissionMessage<EvaluatePermissionRequest>
-> = z.object({
-  id: z.string(),
-  resourceRef: z.string().optional(),
-  permission: permissionSchema,
-});
+> = z.union([
+  z.object({
+    id: z.string(),
+    resourceRef: z.undefined().optional(),
+    permission: basicPermissionSchema,
+  }),
+  z.object({
+    id: z.string(),
+    resourceRef: z.string().optional(),
+    permission: resourcePermissionSchema,
+  }),
+]);
 
 const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionRequestBatch> =
   z.object({
@@ -93,8 +98,7 @@ const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionReques
  * Options required when constructing a new {@link express#Router} using
  * {@link createRouter}.
  *
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
+ * @internal
  */
 export interface RouterOptions {
   logger: LoggerService;
@@ -102,9 +106,9 @@ export interface RouterOptions {
   policy: PermissionPolicy;
   identity?: IdentityApi;
   config: RootConfigService;
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
-  userInfo?: UserInfoService;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
+  userInfo: UserInfoService;
 }
 
 const handleRequest = async (
@@ -188,20 +192,24 @@ const handleRequest = async (
  * Creates a new {@link express#Router} which provides the backend API
  * for the permission system.
  *
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
- * @public
+ * @internal
  */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { policy, discovery, config, logger } = options;
-  const { auth, httpAuth, userInfo } = createLegacyAuthAdapters(options);
+  const { policy, discovery, config, logger, auth, httpAuth, userInfo } =
+    options;
 
   if (!config.getOptionalBoolean('permission.enabled')) {
     logger.warn(
       'Permission backend started with permissions disabled. Enable permissions by setting permission.enabled=true.',
     );
   }
+
+  const disabledDefaultAuthPolicy =
+    config.getOptionalBoolean(
+      'backend.auth.dangerouslyDisableDefaultAuthPolicy',
+    ) ?? false;
 
   const permissionIntegrationClient = new PermissionIntegrationClient({
     discovery,
@@ -234,6 +242,22 @@ export async function createRouter(
       }
 
       const body = parseResult.data;
+
+      if (
+        (auth.isPrincipal(credentials, 'none') && !disabledDefaultAuthPolicy) ||
+        (auth.isPrincipal(credentials, 'user') && !credentials.principal.actor)
+      ) {
+        if (
+          body.items.some(
+            r =>
+              isResourcePermission(r.permission) && r.resourceRef === undefined,
+          )
+        ) {
+          throw new InputError(
+            'Resource permissions require a resourceRef to be set. Direct user requests without a resourceRef are not allowed.',
+          );
+        }
+      }
 
       res.json({
         items: await handleRequest(

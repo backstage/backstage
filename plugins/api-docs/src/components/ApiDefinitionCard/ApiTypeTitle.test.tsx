@@ -16,7 +16,7 @@
 
 import { ApiEntity } from '@backstage/catalog-model';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import React from 'react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { ApiDocsConfig, apiDocsConfigRef } from '../../config';
 import { ApiTypeTitle } from './ApiTypeTitle';
 
@@ -24,10 +24,10 @@ describe('<ApiTypeTitle />', () => {
   const apiDocsConfig: jest.Mocked<ApiDocsConfig> = {
     getApiDefinitionWidget: jest.fn(),
   } as any;
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider apis={[[apiDocsConfigRef, apiDocsConfig]]}>
         {children}
       </TestApiProvider>
