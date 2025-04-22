@@ -22065,14 +22065,14 @@ __metadata:
   linkType: hard
 
 "@yarnpkg/core@npm:^4.2.1, @yarnpkg/core@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "@yarnpkg/core@npm:4.4.0"
+  version: 4.4.1
+  resolution: "@yarnpkg/core@npm:4.4.1"
   dependencies:
     "@arcanis/slice-ansi": "npm:^1.1.1"
     "@types/semver": "npm:^7.1.0"
     "@types/treeify": "npm:^1.0.0"
     "@yarnpkg/fslib": "npm:^3.1.2"
-    "@yarnpkg/libzip": "npm:^3.2.0"
+    "@yarnpkg/libzip": "npm:^3.2.1"
     "@yarnpkg/parsers": "npm:^3.0.3"
     "@yarnpkg/shell": "npm:^4.1.2"
     camelcase: "npm:^5.3.1"
@@ -22094,7 +22094,7 @@ __metadata:
     treeify: "npm:^1.1.0"
     tslib: "npm:^2.4.0"
     tunnel: "npm:^0.0.6"
-  checksum: 10/59c3757ebda89b506d0bbb22baf20983f467c038917f5730da6bd76a0e91b2f244ea9cbd079281a00f949a0ad3abc09129e62e89dd1b9460a6318e98796f3e08
+  checksum: 10/05be6d775778dfbf005d6c74dad28beb33f57153af4628cef9f4752441f25942c8f97728008d9db0c8d5bbe6fa5a91463e8164b743f2d4cf3592577f04244f2f
   languageName: node
   linkType: hard
 
@@ -22158,16 +22158,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@yarnpkg/libzip@npm:^3.1.1, @yarnpkg/libzip@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@yarnpkg/libzip@npm:3.2.0"
+"@yarnpkg/libzip@npm:^3.1.1, @yarnpkg/libzip@npm:^3.2.0, @yarnpkg/libzip@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "@yarnpkg/libzip@npm:3.2.1"
   dependencies:
     "@types/emscripten": "npm:^1.39.6"
     "@yarnpkg/fslib": "npm:^3.1.2"
     tslib: "npm:^2.4.0"
   peerDependencies:
     "@yarnpkg/fslib": ^3.1.2
-  checksum: 10/158f80177dfc51d0efefaa7dcc3a725a0cc07114538774799b64d1ed50951e08511fe154db22b4a6eb4c639773fe9b5835005c14b9bb87df443c885c25c58115
+  checksum: 10/c8c3bc43777e2ef3c812c991266b9bbccef4d01cea5de44a6b8c359c953dab5325e26fda5640ff611567b61f9dd62ac3a0c3ba79343eb53224d733915a7eb664
   languageName: node
   linkType: hard
 
@@ -47427,11 +47427,11 @@ __metadata:
   linkType: hard
 
 "uuid@npm:^11.0.0, uuid@npm:^11.0.2, uuid@npm:^11.0.3":
-  version: 11.0.5
-  resolution: "uuid@npm:11.0.5"
+  version: 11.1.0
+  resolution: "uuid@npm:11.1.0"
   bin:
     uuid: dist/esm/bin/uuid
-  checksum: 10/0594ecdff3051e15d4a2c614b4c72e73af373bde0a5d156512353c01156975295d024ae8d7151846d7bd4d22ccd251b16ed51b4318fa71505fb20ad984102dc1
+  checksum: 10/d2da43b49b154d154574891ced66d0c83fc70caaad87e043400cf644423b067542d6f3eb641b7c819224a7cd3b4c2f21906acbedd6ec9c6a05887aa9115a9cf5
   languageName: node
   linkType: hard
 
