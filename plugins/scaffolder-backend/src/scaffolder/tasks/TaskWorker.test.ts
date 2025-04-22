@@ -51,6 +51,7 @@ async function createStore(): Promise<DatabaseTaskStore> {
 
 describe('TaskWorker', () => {
   let storage: DatabaseTaskStore;
+  let taskWorker: TaskWorker;
 
   const integrations: ScmIntegrations = {} as ScmIntegrations;
 
@@ -70,11 +71,13 @@ describe('TaskWorker', () => {
     MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
   });
 
+  afterEach(() => taskWorker?.stop());
+
   const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
   it('should call the default workflow runner when the apiVersion is beta3', async () => {
     const broker = new StorageTaskBroker(storage, logger);
-    const taskWorker = await TaskWorker.create({
+    taskWorker = await TaskWorker.create({
       logger,
       workingDirectory,
       integrations,
@@ -105,7 +108,7 @@ describe('TaskWorker', () => {
     });
 
     const broker = new StorageTaskBroker(storage, logger);
-    const taskWorker = await TaskWorker.create({
+    taskWorker = await TaskWorker.create({
       logger,
       workingDirectory,
       integrations,
@@ -135,6 +138,7 @@ describe('TaskWorker', () => {
 
 describe('Concurrent TaskWorker', () => {
   let storage: DatabaseTaskStore;
+  let taskWorker: TaskWorker;
 
   const integrations: ScmIntegrations = {} as ScmIntegrations;
 
@@ -163,6 +167,8 @@ describe('Concurrent TaskWorker', () => {
     MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
   });
 
+  afterEach(() => taskWorker?.stop());
+
   const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
   it('should be able to run multiple tasks at once', async () => {
@@ -181,7 +187,7 @@ describe('Concurrent TaskWorker', () => {
       });
 
     const expectedConcurrentTasks = 3;
-    const taskWorker = await TaskWorker.create({
+    taskWorker = await TaskWorker.create({
       logger,
       workingDirectory,
       integrations,
@@ -206,6 +212,7 @@ describe('Cancellable TaskWorker', () => {
   const integrations: ScmIntegrations = {} as ScmIntegrations;
   const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
   const workingDirectory = os.tmpdir();
+  let taskWorker: TaskWorker;
 
   let myTask: TaskContext | undefined = undefined;
 
@@ -224,11 +231,13 @@ describe('Cancellable TaskWorker', () => {
     MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
   });
 
+  afterEach(() => taskWorker?.stop());
+
   const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
   it('should be able to cancel the running task', async () => {
     const taskBroker = new StorageTaskBroker(storage, logger);
-    const taskWorker = await TaskWorker.create({
+    taskWorker = await TaskWorker.create({
       logger,
       workingDirectory,
       integrations,
@@ -267,6 +276,10 @@ describe('TaskWorker internals', () => {
     new (options: TaskWorkerOptions): TaskWorker;
   };
 
+  let taskWorker: TaskWorker;
+
+  afterEach(() => taskWorker?.stop());
+
   it('should not pick up tasks before it is ready to execute more work', async () => {
     const inflightTasks = new Array<{
       task: TaskContext;
@@ -288,7 +301,7 @@ describe('TaskWorker internals', () => {
     >();
 
     let claimedTaskCount = 0;
-    const taskWorker = new TaskWorkerConstructor({
+    taskWorker = new TaskWorkerConstructor({
       runners: { workflowRunner },
       taskBroker: {
         event$() {
