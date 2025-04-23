@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { TokenParams } from '@backstage/plugin-auth-node';
+import {
+  BackstageUserIdentity,
+  TokenParams,
+} from '@backstage/plugin-auth-node';
 
 /** Represents any form of serializable JWK */
 export interface AnyJWK extends Record<string, string> {
@@ -31,7 +34,9 @@ export type TokenIssuer = {
   /**
    * Issues a new ID Token
    */
-  issueToken(params: TokenParams): Promise<string>;
+  issueToken(
+    params: TokenParams,
+  ): Promise<{ token: string; identity?: BackstageUserIdentity }>;
 
   /**
    * List all public keys that are currently being used to sign tokens, or have been used

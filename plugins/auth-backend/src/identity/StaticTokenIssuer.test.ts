@@ -83,7 +83,7 @@ describe('StaticTokenIssuer', () => {
       options,
       staticKeyStore as unknown as StaticKeyStore,
     );
-    const token = await issuer.issueToken({
+    const { token } = await issuer.issueToken({
       claims: {
         sub: entityRef,
         ent: [entityRef],

@@ -29,7 +29,11 @@ import { omit } from 'lodash';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { TokenParams, tokenTypes } from '@backstage/plugin-auth-node';
+import {
+  BackstageSignInResult,
+  TokenParams,
+  tokenTypes,
+} from '@backstage/plugin-auth-node';
 import { AnyJWK, KeyStore, TokenIssuer } from './types';
 import { JsonValue } from '@backstage/types';
 import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
@@ -119,6 +123,10 @@ type Options = {
    * If not, add a knex migration file in the migrations folder.
    * More info on supported algorithms: https://github.com/panva/jose */
   algorithm?: string;
+  /**
+   * A list of claims to omit from issued tokens and only store in the user info database
+   */
+  omitClaimsFromToken?: string[];
   userInfoDatabaseHandler: UserInfoDatabaseHandler;
 };
 
@@ -142,6 +150,7 @@ export class TokenFactory implements TokenIssuer {
   private readonly keyStore: KeyStore;
   private readonly keyDurationSeconds: number;
   private readonly algorithm: string;
+  private readonly omitClaimsFromToken?: string[];
   private readonly userInfoDatabaseHandler: UserInfoDatabaseHandler;
 
   private keyExpiry?: Date;
@@ -153,10 +162,11 @@ export class TokenFactory implements TokenIssuer {
     this.keyStore = options.keyStore;
     this.keyDurationSeconds = options.keyDurationSeconds;
     this.algorithm = options.algorithm ?? 'ES256';
+    this.omitClaimsFromToken = options.omitClaimsFromToken;
     this.userInfoDatabaseHandler = options.userInfoDatabaseHandler;
   }
 
-  async issueToken(params: TokenParams): Promise<string> {
+  async issueToken(params: TokenParams): Promise<BackstageSignInResult> {
     const key = await this.getKey();
 
     const iss = this.issuer;
@@ -203,7 +213,10 @@ export class TokenFactory implements TokenIssuer {
       uip,
     };
 
-    const token = await new SignJWT(claims)
+    const tokenClaims = this.omitClaimsFromToken
+      ? omit(claims, this.omitClaimsFromToken)
+      : claims;
+    const token = await new SignJWT(tokenClaims)
       .setProtectedHeader({
         typ: tokenTypes.user.typParam,
         alg: key.alg,
@@ -214,7 +227,7 @@ export class TokenFactory implements TokenIssuer {
     if (token.length > MAX_TOKEN_LENGTH) {
       throw new Error(
         `Failed to issue a new user token. The resulting token is excessively large, with either too many ownership claims or too large custom claims. You likely have a bug either in the sign-in resolver or catalog data. The following claims were requested: '${JSON.stringify(
-          claims,
+          tokenClaims,
         )}'`,
       );
     }
@@ -225,7 +238,14 @@ export class TokenFactory implements TokenIssuer {
       claims: omit(claims, ['aud', 'iat', 'iss', 'uip']),
     });
 
-    return token;
+    return {
+      token,
+      identity: {
+        type: 'user',
+        userEntityRef: sub,
+        ownershipEntityRefs: ent,
+      },
+    };
   }
 
   // This will be called by other services that want to verify ID tokens.
