@@ -88,7 +88,7 @@ const evaluatePermissionRequestSchema = z.union([
   z.object({
     id: z.string(),
     resourceRef: z.undefined().optional(),
-    resourceRefs: z.array(z.string()),
+    resourceRefs: z.array(z.string()).nonempty().optional(),
     permission: resourcePermissionSchema,
   }),
 ]);
@@ -265,7 +265,9 @@ export async function createRouter(
         if (
           body.items.some(
             r =>
-              isResourcePermission(r.permission) && r.resourceRef === undefined,
+              isResourcePermission(r.permission) &&
+              r.resourceRef === undefined &&
+              r.resourceRefs === undefined,
           )
         ) {
           throw new InputError(

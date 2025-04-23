@@ -924,6 +924,20 @@ describe('createRouter', () => {
         items: [
           {
             id: '123',
+            resourceRefs: [],
+            permission: {
+              type: 'resource',
+              name: 'test.permission',
+              attributes: {},
+              resourceType: 'test-resource-1',
+            },
+          },
+        ],
+      },
+      {
+        items: [
+          {
+            id: '123',
             resourceRefs: ['resource:1'],
             resourceRef: 'resource:1',
             permission: {
@@ -965,13 +979,7 @@ describe('createRouter', () => {
       const response = await request(app).post('/authorize').send(requestBody);
 
       expect(response.status).toEqual(400);
-      expect(response.body).toEqual(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message: expect.stringMatching(/invalid/i),
-          }),
-        }),
-      );
+      expect(response.body.error.name).toEqual('InputError');
     });
 
     it('returns a 500 error if the policy returns a different resourceType', async () => {
@@ -1009,7 +1017,7 @@ describe('createRouter', () => {
       );
     });
 
-    it(`returns a 400 error if the request doesn't contain resourceRef for credentials not issued by a service`, async () => {
+    it(`returns a 400 error if the request doesn't contain resourceRef or resourceRefs for credentials not issued by a service`, async () => {
       policy.handle.mockResolvedValueOnce({
         result: AuthorizeResult.CONDITIONAL,
         pluginId: 'test-plugin',
