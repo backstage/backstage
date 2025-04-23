@@ -213,15 +213,15 @@ export class PermissionClient implements PermissionEvaluator {
           resourceRefs: [],
           id: uuid.v4(),
         };
+
+        if (resourceRef) {
+          request[permission.name].resourceRefs?.push(resourceRef);
+        }
       } else {
         request[permission.name] ||= {
           permission,
           id: uuid.v4(),
         };
-      }
-
-      if (resourceRef) {
-        request[permission.name].resourceRefs?.push(resourceRef);
       }
     }
 
