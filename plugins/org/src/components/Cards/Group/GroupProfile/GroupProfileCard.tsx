@@ -150,6 +150,17 @@ export const GroupProfileCard = (props: {
         </Grid>
         <Grid item md={10} xl={11}>
           <List>
+            <ListItem>
+              <ListItemIcon>
+                <Tooltip title="Entity Ref">
+                  <PermIdentityIcon />
+                </Tooltip>
+              </ListItemIcon>
+              <ListItemText
+                primary={stringifyEntityRef(group)}
+                secondary="Entity Ref"
+              />
+            </ListItem>
             {profile?.email && (
               <ListItem>
                 <ListItemIcon>
@@ -201,17 +212,6 @@ export const GroupProfileCard = (props: {
                   )
                 }
                 secondary="Child Groups"
-              />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <Tooltip title="Entity Ref">
-                  <PermIdentityIcon />
-                </Tooltip>
-              </ListItemIcon>
-              <ListItemText
-                primary={stringifyEntityRef(group)}
-                secondary="Entity Ref"
               />
             </ListItem>
             {props?.showLinks && <LinksGroup links={links} />}
