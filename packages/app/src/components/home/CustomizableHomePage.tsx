@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,19 @@
  */
 import { Page, Content } from '@backstage/core-components';
 import {
+  HomePageCompanyLogo,
+  TemplateBackstageLogo,
   HomePageStarredEntities,
+  HomePageToolkit,
   CustomHomepageGrid,
   HomePageRandomJoke,
   HomePageTopVisited,
   HomePageRecentlyVisited,
 } from '@backstage/plugin-home';
 import { HomePageSearchBar } from '@backstage/plugin-search';
-// import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 
-// import { tools } from './shared';
+import { tools, useLogoStyles } from './shared';
 
 const defaultConfig = [
   {
@@ -65,26 +68,23 @@ const defaultConfig = [
 ];
 
 export const CustomizableHomePage = () => {
-  // const { svg, path, container } = useLogoStyles();
+  const { svg, path, container } = useLogoStyles();
 
   return (
     <Page themeId="home">
       <Content>
-        {/* <Grid container justifyContent="center">
+        <Grid container justifyContent="center">
           <HomePageCompanyLogo
             className={container}
             logo={<TemplateBackstageLogo classes={{ svg, path }} />}
           />
-        </Grid> */}
+        </Grid>
 
-        <CustomHomepageGrid
-          config={defaultConfig}
-          title="Your Dashboard"
-          containerPadding={[0, 0]}
-        >
+        <CustomHomepageGrid config={defaultConfig}>
           <HomePageSearchBar />
           <HomePageRecentlyVisited />
           <HomePageTopVisited />
+          <HomePageToolkit tools={tools} />
           <HomePageStarredEntities />
           <HomePageRandomJoke />
         </CustomHomepageGrid>

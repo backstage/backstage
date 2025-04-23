@@ -84,7 +84,7 @@ import {
   UserNotificationSettingsCard,
 } from '@backstage/plugin-notifications';
 import { CustomizableHomePage } from './components/home/CustomizableHomePage';
-import { homePage } from './components/home/HomePage';
+import { HomePage } from './components/home/HomePage';
 
 const app = createApp({
   apis,
@@ -131,7 +131,7 @@ const routes = (
     </FeatureFlagged>
     <FeatureFlagged without="customizable-home-page-preview">
       <Route path="/home" element={<HomepageCompositionRoot />}>
-        {homePage}
+        <HomePage />
       </Route>
     </FeatureFlagged>
 
