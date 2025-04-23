@@ -15,7 +15,7 @@
  */
 
 import type { JsonObject, JsonValue } from '@backstage/types';
-import {
+import type {
   PodStatus,
   V1ConfigMap,
   V1CronJob,
