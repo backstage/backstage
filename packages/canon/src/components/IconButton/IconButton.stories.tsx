@@ -19,6 +19,7 @@ import { IconButton } from './IconButton';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { IconButtonProps } from './types';
+import { Icon } from '../Icon';
 
 const meta = {
   title: 'Components/IconButton',
@@ -44,7 +45,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Variants: Story = {
   args: {
-    icon: 'cloud',
+    icon: <Icon name="cloud" />,
+    'aria-label': 'Cloud icon button',
   },
   parameters: {
     argTypes: {
@@ -63,7 +65,8 @@ export const Variants: Story = {
 
 export const Sizes: Story = {
   args: {
-    icon: 'cloud',
+    icon: <Icon name="cloud" />,
+    'aria-label': 'Cloud icon button',
   },
   render: args => (
     <Flex align="center">
@@ -75,8 +78,9 @@ export const Sizes: Story = {
 
 export const Disabled: Story = {
   args: {
-    icon: 'cloud',
+    icon: <Icon name="cloud" />,
     disabled: true,
+    'aria-label': 'Cloud icon button',
   },
   render: args => (
     <Flex direction="row" gap="4">
@@ -88,7 +92,8 @@ export const Disabled: Story = {
 
 export const Responsive: Story = {
   args: {
-    icon: 'cloud',
+    icon: <Icon name="cloud" />,
+    'aria-label': 'Cloud icon button',
     variant: {
       initial: 'primary',
       sm: 'secondary',
@@ -104,7 +109,8 @@ const variants: string[] = ['primary', 'secondary'];
 
 export const Playground: Story = {
   args: {
-    icon: 'cloud',
+    icon: <Icon name="cloud" />,
+    'aria-label': 'Cloud icon button',
   },
   render: args => (
     <Flex direction="column">
@@ -120,13 +126,15 @@ export const Playground: Story = {
               />
               <IconButton
                 {...args}
-                icon="chevron-right"
+                icon={<Icon name="chevron-right" />}
+                aria-label="Chevron right icon button"
                 variant={variant as IconButtonProps['variant']}
                 size={size as IconButtonProps['size']}
               />
               <IconButton
                 {...args}
-                icon="chevron-right"
+                icon={<Icon name="chevron-right" />}
+                aria-label="Chevron right icon button"
                 variant={variant as IconButtonProps['variant']}
                 size={size as IconButtonProps['size']}
               />
