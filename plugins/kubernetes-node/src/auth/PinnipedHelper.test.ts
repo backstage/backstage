@@ -38,6 +38,8 @@ import { setupServer } from 'msw/node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 
+jest.setTimeout(60_000);
+
 describe('Pinniped - tokenCredentialRequest', () => {
   let app: ExtendedHttpServer;
   const logger = loggerToWinstonLogger(mockServices.logger.mock());

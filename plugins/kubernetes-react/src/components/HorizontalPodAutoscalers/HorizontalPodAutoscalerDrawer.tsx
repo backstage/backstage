@@ -15,7 +15,7 @@
  */
 
 import { ReactNode } from 'react';
-import { V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
+import type { V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 
 /** @public */
