@@ -45,6 +45,7 @@ These labels indicate which part of Backstage an issue or pull request relates t
 - `area:events` - The Events system and integrations for other plugins.
 - `area:home` - The Home plugin and the main page of the Backstage site.
 - `area:kubernetes` - The Kubernetes plugin and integrations for other plugins.
+- `area:microsite` - The microsite at [backstage.io](https://backstage.io), excluding the documentation.
 - `area:notifications` - The Notifications plugin and integrations for other plugins.
 - `area:openapi-tooling` - The OpenAPI tooling it's use in plugins.
 - `area:permission` - The Permissions system and permission integrations from other plugins.
@@ -65,6 +66,7 @@ These labels help you find issues related to specific external integrations:
 - `integration:gitea` - [Gitea](https://gitea.com/)
 - `integration:github` - [GitHub](https://github.com/)
 - `integration:gitlab` - [GitLab](https://gitlab.com/)
+- `integration:other` - Any other integration
 
 ## Domain Labels
 
