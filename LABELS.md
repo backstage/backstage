@@ -84,6 +84,7 @@ These labels indicate that an issue is related to specific domains of expertise.
 - `fix before release` - Should be handled before the next release.
 - `good first issue` - Good for new contributors.
 - `stale` - The issue or pull request has not seen any activity for a while and will be closed if no further activity is seen.
+- `no stale` - The issue or pull request should not be closed due to inactivity.
 
 ## Common Issue Filters
 
