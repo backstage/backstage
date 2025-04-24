@@ -104,9 +104,7 @@ export type AuthResolverCatalogUserQuery =
 
 // @public
 export type AuthResolverContext = {
-  issueToken(params: TokenParams): Promise<{
-    token: string;
-  }>;
+  issueToken(params: TokenParams): Promise<BackstageSignInResult>;
   findCatalogUser(query: AuthResolverCatalogUserQuery): Promise<{
     entity: Entity;
   }>;
@@ -126,6 +124,7 @@ export interface BackstageIdentityResponse extends BackstageSignInResult {
 
 // @public
 export interface BackstageSignInResult {
+  identity?: BackstageUserIdentity;
   token: string;
 }
 

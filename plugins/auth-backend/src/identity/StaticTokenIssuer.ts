@@ -20,7 +20,10 @@ import { parseEntityRef } from '@backstage/catalog-model';
 import { AuthenticationError } from '@backstage/errors';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { StaticKeyStore } from './StaticKeyStore';
-import { TokenParams } from '@backstage/plugin-auth-node';
+import {
+  BackstageSignInResult,
+  TokenParams,
+} from '@backstage/plugin-auth-node';
 
 const MS_IN_S = 1000;
 
@@ -56,7 +59,7 @@ export class StaticTokenIssuer implements TokenIssuer {
     this.keyStore = keyStore;
   }
 
-  public async issueToken(params: TokenParams): Promise<string> {
+  public async issueToken(params: TokenParams): Promise<BackstageSignInResult> {
     const key = await this.getSigningKey();
 
     // TODO: code shared with TokenFactory.ts
@@ -81,7 +84,15 @@ export class StaticTokenIssuer implements TokenIssuer {
       throw new AuthenticationError('No algorithm was provided in the key');
     }
 
-    return new SignJWT({ ...additionalClaims, iss, sub, ent, aud, iat, exp })
+    const token = await new SignJWT({
+      ...additionalClaims,
+      iss,
+      sub,
+      ent,
+      aud,
+      iat,
+      exp,
+    })
       .setProtectedHeader({ alg: key.alg, kid: key.kid })
       .setIssuer(iss)
       .setAudience(aud)
@@ -89,6 +100,7 @@ export class StaticTokenIssuer implements TokenIssuer {
       .setIssuedAt(iat)
       .setExpirationTime(exp)
       .sign(await importJWK(key));
+    return { token };
   }
 
   private async getSigningKey(): Promise<JWK> {

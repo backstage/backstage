@@ -34,6 +34,12 @@ export interface BackstageSignInResult {
    * The token used to authenticate the user within Backstage.
    */
   token: string;
+
+  /**
+   * Identity information to pass to the client rather than using the
+   * information that's embeeded in the token.
+   */
+  identity?: BackstageUserIdentity;
 }
 
 /**
@@ -141,7 +147,7 @@ export type AuthResolverContext = {
   /**
    * Issues a Backstage token using the provided parameters.
    */
-  issueToken(params: TokenParams): Promise<{ token: string }>;
+  issueToken(params: TokenParams): Promise<BackstageSignInResult>;
 
   /**
    * Finds a single user in the catalog using the provided query.
