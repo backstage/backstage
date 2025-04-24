@@ -177,7 +177,7 @@ export function LogLine({
 
   useEffect(() => {
     if (lineRef.current && setRowHeight) {
-      // lineNumber is 1-based, but heights is 0-based
+      // lineNumber is 1-based, but height index is 0-based
       setRowHeight(line.lineNumber - 1, lineRef.current.offsetHeight + 5);
     }
   }, [line.lineNumber, setRowHeight]);
@@ -187,7 +187,6 @@ export function LogLine({
       chunks.map(({ text, modifiers, highlight }, index) => (
         // eslint-disable-next-line react/forbid-elements
         <span
-          ref={lineRef}
           key={index}
           className={classnames(
             getModifierClasses(classes, modifiers),
@@ -204,5 +203,5 @@ export function LogLine({
     [chunks, highlightResultIndex, classes, setRowHeight],
   );
 
-  return <>{elements}</>;
+  return <span ref={lineRef}>{elements}</span>;
 }
