@@ -208,6 +208,7 @@ export function createSpecializedApp(options?: {
   extensionFactoryMiddleware?:
     | ExtensionFactoryMiddleware
     | ExtensionFactoryMiddleware[];
+  flags?: Record<string, boolean>;
 }): { apis: ApiHolder; tree: AppTree } {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []);
@@ -221,9 +222,7 @@ export function createSpecializedApp(options?: {
       ],
       parameters: readAppExtensionsConfig(config),
       forbidden: new Set(['root']),
-      ignoreStaleExtensionConfig: config.getOptionalBoolean(
-        'app.ignoreStaleExtensionConfig',
-      ),
+      allowUnknownExtensionConfig: options?.flags?.allowUnknownExtensionConfig,
     }),
   );
 
