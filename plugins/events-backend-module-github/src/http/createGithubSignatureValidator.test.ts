@@ -47,6 +47,24 @@ describe('createGithubSignatureValidator', () => {
       },
     },
   });
+  const configWithAppSecret = new ConfigReader({
+    integrations: {
+      github: [
+        {
+          host: 'github.com',
+          apps: [
+            {
+              appId: 1,
+              privateKey: 'a',
+              clientId: 'b',
+              clientSecret: 'c',
+              webhookSecret: secret,
+            },
+          ],
+        },
+      ],
+    },
+  });
   const payloadString = '{"test": "payload", "score": 5.0}';
   const payload = JSON.parse(payloadString);
   const payloadBuffer = Buffer.from(payloadString);
@@ -100,6 +118,16 @@ describe('createGithubSignatureValidator', () => {
     const context = new TestContext();
 
     const validator = createGithubSignatureValidator(configWithSecret);
+    await validator!(request, context);
+
+    expect(context.details).toBeUndefined();
+  });
+
+  it('secret configured, accept request with valid signature defined in integrations', async () => {
+    const request = await requestWithSignature(await validSignature);
+    const context = new TestContext();
+
+    const validator = createGithubSignatureValidator(configWithAppSecret);
     await validator!(request, context);
 
     expect(context.details).toBeUndefined();
