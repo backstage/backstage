@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
 import {
   RequestDetails,
   RequestValidationContext,
@@ -36,10 +37,25 @@ import { verify } from '@octokit/webhooks-methods';
 export function createGithubSignatureValidator(
   config: Config,
 ): RequestValidator | undefined {
-  const secret = config.getOptionalString(
+  const webhookSecrets = new Set<string>();
+
+  const integrations = ScmIntegrations.fromConfig(config);
+  for (const integration of integrations.github.list()) {
+    for (const app of integration.config.apps ?? []) {
+      if (app.webhookSecret) {
+        webhookSecrets.add(app.webhookSecret);
+      }
+    }
+  }
+
+  const moduleSecret = config.getOptionalString(
     'events.modules.github.webhookSecret',
   );
-  if (!secret) {
+  if (moduleSecret) {
+    webhookSecrets.add(moduleSecret);
+  }
+
+  if (webhookSecrets.size === 0) {
     return undefined;
   }
 
@@ -51,18 +67,18 @@ export function createGithubSignatureValidator(
       | string
       | undefined;
 
-    if (
-      !signature ||
-      !(await verify(
-        secret,
-        request.raw.body.toString(request.raw.encoding),
-        signature,
-      ))
-    ) {
-      context.reject({
-        status: 403,
-        payload: { message: 'invalid signature' },
-      });
+    if (signature) {
+      const body = request.raw.body.toString(request.raw.encoding);
+      for (const secret of webhookSecrets) {
+        if (await verify(secret, body, signature)) {
+          return; // OK
+        }
+      }
     }
+
+    context.reject({
+      status: 403,
+      payload: { message: 'invalid signature' },
+    });
   };
 }
