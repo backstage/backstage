@@ -2,7 +2,7 @@ name: '💡 Suggest a change'
 description: 'Suggest an idea for a new feature or change to Backstage'
 labels:
   - type:suggestion
-  - status:needs-triage
+  - needs:triage
 body:
   - type: markdown
     attributes:

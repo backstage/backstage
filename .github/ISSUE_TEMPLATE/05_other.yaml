@@ -1,5 +1,7 @@
 name: '❓ Other'
 description: 'Something not captured by any other template'
+labels:
+  - needs:triage
 body:
   - type: markdown
     attributes:
