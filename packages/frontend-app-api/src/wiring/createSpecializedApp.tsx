@@ -219,7 +219,7 @@ export function createSpecializedApp(options?: {
       builtinExtensions: [
         resolveExtensionDefinition(Root, { namespace: 'root' }),
       ],
-      parameters: readAppExtensionsConfig(config),
+      parameters: readAppExtensionsConfig(config, features),
       forbidden: new Set(['root']),
     }),
   );
