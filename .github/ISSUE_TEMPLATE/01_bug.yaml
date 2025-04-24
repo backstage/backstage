@@ -2,7 +2,7 @@ name: '🪲 Report a bug'
 description: 'Report a bug that you have encountered'
 labels:
   - type:bug
-  - status:needs-triage
+  - needs:triage
 body:
   - type: markdown
     attributes:
