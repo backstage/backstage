@@ -20,6 +20,8 @@ jobs:
         with:
           egress-policy: audit
 
+      # We need to checkout the `.github/ISSUE_TEMPLATE` for the advanced labeler action to be able to read the templates
+      # While at it we might as well checkout all of `.github` so that the labeling actions don't need to fetch their configs
       - uses: actions/checkout@v4
         with:
           sparse-checkout: .github
