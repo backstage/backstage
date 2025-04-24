@@ -83,3 +83,9 @@ export const ExampleLogViewer = () => (
     <LogViewer text={exampleLog} />
   </div>
 );
+
+export const WithTextWrap = () => (
+  <div style={{ height: 240 }}>
+    <LogViewer text={exampleLog} textWrap />
+  </div>
+);

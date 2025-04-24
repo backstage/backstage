@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { AnsiChunk, AnsiLine, ChunkModifiers } from './AnsiProcessor';
 import startCase from 'lodash/startCase';
 import classnames from 'classnames';
@@ -159,6 +159,7 @@ export interface LogLineProps {
   classes: ReturnType<typeof useStyles>;
   searchText: string;
   highlightResultIndex?: number;
+  setRowHeight?: (index: number, size: number) => void;
 }
 
 export function LogLine({
@@ -166,11 +167,20 @@ export function LogLine({
   classes,
   searchText,
   highlightResultIndex,
+  setRowHeight,
 }: LogLineProps) {
+  const lineRef = useRef<HTMLSpanElement>(null);
   const chunks = useMemo(
     () => calculateHighlightedChunks(line, searchText),
     [line, searchText],
   );
+
+  useEffect(() => {
+    if (lineRef.current && setRowHeight) {
+      // lineNumber is 1-based but height index is 0-based
+      setRowHeight(line.lineNumber - 1, lineRef.current.offsetHeight + 5);
+    }
+  }, [line.lineNumber, setRowHeight]);
 
   const elements = useMemo(
     () =>
@@ -184,13 +194,14 @@ export function LogLine({
               (highlight === highlightResultIndex
                 ? classes.textSelectedHighlight
                 : classes.textHighlight),
+            !!setRowHeight && classes.modifierTextWrap,
           )}
         >
           <Linkify options={{ render: renderLink }}>{text}</Linkify>
         </span>
       )),
-    [chunks, highlightResultIndex, classes],
+    [chunks, highlightResultIndex, classes, setRowHeight],
   );
 
-  return <>{elements}</>;
+  return <span ref={lineRef}>{elements}</span>;
 }
