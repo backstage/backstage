@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Page, Content } from '@backstage/core-components';
+import { Page, Content, Header } from '@backstage/core-components';
 import {
   HomePageCompanyLogo,
   TemplateBackstageLogo,
@@ -22,6 +22,9 @@ import {
   HomePageToolkit,
   HomePageTopVisited,
   HomePageRecentlyVisited,
+  WelcomeTitle,
+  HeaderWorldClock,
+  ClockConfig,
 } from '@backstage/plugin-home';
 import { HomePageSearchBar } from '@backstage/plugin-search';
 import { SearchContextProvider } from '@backstage/plugin-search-react';
@@ -43,6 +46,31 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const clockConfigs: ClockConfig[] = [
+  {
+    label: 'NYC',
+    timeZone: 'America/New_York',
+  },
+  {
+    label: 'UTC',
+    timeZone: 'UTC',
+  },
+  {
+    label: 'STO',
+    timeZone: 'Europe/Stockholm',
+  },
+  {
+    label: 'TYO',
+    timeZone: 'Asia/Tokyo',
+  },
+];
+
+const timeFormat: Intl.DateTimeFormatOptions = {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+};
+
 export const HomePage = () => {
   const classes = useStyles();
   const { svg, path, container } = useLogoStyles();
@@ -50,6 +78,12 @@ export const HomePage = () => {
   return (
     <SearchContextProvider>
       <Page themeId="home">
+        <Header title={<WelcomeTitle />} pageTitleOverride="Home">
+          <HeaderWorldClock
+            clockConfigs={clockConfigs}
+            customTimeFormat={timeFormat}
+          />
+        </Header>
         <Content>
           <Grid container justifyContent="center" spacing={2}>
             <HomePageCompanyLogo
