@@ -37,9 +37,9 @@ export class DefaultSchedulerService {
   static create(options: {
     database: DatabaseService;
     logger: LoggerService;
-    rootLifecycle?: RootLifecycleService;
-    httpRouter?: HttpRouterService;
-    pluginMetadata?: PluginMetadataService;
+    rootLifecycle: RootLifecycleService;
+    httpRouter: HttpRouterService;
+    pluginMetadata: PluginMetadataService;
   }): SchedulerService {
     const databaseFactory = once(async () => {
       const knex = await options.database.getClient();
@@ -56,7 +56,7 @@ export class DefaultSchedulerService {
           logger: options.logger,
         });
 
-        options.rootLifecycle?.addShutdownHook(() => abortController.abort());
+        options.rootLifecycle.addShutdownHook(() => abortController.abort());
         janitor.start(abortController.signal);
       }
 
@@ -64,13 +64,13 @@ export class DefaultSchedulerService {
     });
 
     const scheduler = new PluginTaskSchedulerImpl(
-      options.pluginMetadata?.getId() ?? 'unknown',
+      options.pluginMetadata.getId(),
       databaseFactory,
       options.logger,
       options.rootLifecycle,
     );
 
-    options.httpRouter?.use(scheduler.getRouter());
+    options.httpRouter.use(scheduler.getRouter());
 
     return scheduler;
   }
