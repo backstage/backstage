@@ -1,4 +1,4 @@
-name: '🪲 Bug Report'
+name: '🪲 Report a bug'
 description: 'Report a bug that you have encountered'
 labels:
   - type:bug

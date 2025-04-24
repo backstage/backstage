@@ -1,4 +1,4 @@
-name: '📖 Documentation Issue'
+name: '📖 Report an issue in the documentation'
 description: 'Report an issue in the Backstage documentation'
 labels:
   - domain:docs
