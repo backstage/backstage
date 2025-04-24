@@ -193,7 +193,7 @@ export function LogLine({
               (highlight === highlightResultIndex
                 ? classes.textSelectedHighlight
                 : classes.textHighlight),
-            !!setRowHeight && classes.modifierTextWrap,
+            { [classes.textWrap]: !!setRowHeight },
           )}
         >
           <Linkify options={{ render: renderLink }}>{text}</Linkify>

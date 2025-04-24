@@ -50,8 +50,7 @@ export type LogViewerClassKey =
   | 'modifierBackgroundMagenta'
   | 'modifierBackgroundCyan'
   | 'modifierBackgroundWhite'
-  | 'modifierBackgroundGrey'
-  | 'modifierTextWrap';
+  | 'modifierBackgroundGrey';
 
 export const useStyles = makeStyles(
   theme => ({
@@ -168,7 +167,7 @@ export const useStyles = makeStyles(
     modifierBackgroundGrey: {
       background: colors.grey[500],
     },
-    modifierTextWrap: {
+    textWrap: {
       whiteSpace: 'pre-wrap',
       wordBreak: 'break-all',
     },
