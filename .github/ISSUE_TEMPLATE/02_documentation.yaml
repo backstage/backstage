@@ -3,7 +3,7 @@ description: 'Report an issue in the Backstage documentation'
 labels:
   - domain:docs
   - type:documentation
-  - status:needs-triage
+  - needs:triage
 body:
   - type: markdown
     attributes:
