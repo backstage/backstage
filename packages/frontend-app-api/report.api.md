@@ -34,6 +34,7 @@ export function createSpecializedApp(options?: {
   extensionFactoryMiddleware?:
     | ExtensionFactoryMiddleware
     | ExtensionFactoryMiddleware[];
+  flags?: SpecializedAppFlags;
 }): {
   apis: ApiHolder;
   tree: AppTree;
@@ -41,4 +42,9 @@ export function createSpecializedApp(options?: {
 
 // @public @deprecated (undocumented)
 export type FrontendFeature = FrontendFeature_2;
+
+// @public (undocumented)
+export type SpecializedAppFlags = {
+  allowUnknownExtensionConfig?: boolean;
+};
 ```

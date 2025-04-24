@@ -74,7 +74,7 @@ import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
-import { FrontendFeature, RouteInfo } from './types';
+import { FrontendFeature, RouteInfo, SpecializedAppFlags } from './types';
 import { matchRoutes } from 'react-router-dom';
 
 function deduplicateFeatures(
@@ -208,7 +208,7 @@ export function createSpecializedApp(options?: {
   extensionFactoryMiddleware?:
     | ExtensionFactoryMiddleware
     | ExtensionFactoryMiddleware[];
-  flags?: Record<string, boolean>;
+  flags?: SpecializedAppFlags;
 }): { apis: ApiHolder; tree: AppTree } {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []);

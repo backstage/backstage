@@ -28,3 +28,8 @@ export type RouteInfo = {
   routeParents: Map<RouteRef, RouteRef | undefined>;
   routeObjects: BackstageRouteObject[];
 };
+
+/** @public */
+export type SpecializedAppFlags = {
+  allowUnknownExtensionConfig?: boolean;
+};
