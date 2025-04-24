@@ -1,4 +1,4 @@
-name: '💡 Change Suggestion'
+name: '💡 Suggest a change'
 description: 'Suggest an idea for a new feature or change to Backstage'
 labels:
   - type:suggestion

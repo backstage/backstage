@@ -1,4 +1,4 @@
-name: '🚧 Maintenance Task'
+name: '🚧 Track a maintenance task'
 description: 'Track a maintenance task'
 labels:
   - type:maintenance
