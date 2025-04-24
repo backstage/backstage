@@ -177,7 +177,7 @@ export function LogLine({
 
   useEffect(() => {
     if (lineRef.current && setRowHeight) {
-      // lineNumber is 1-based, but height index is 0-based
+      // lineNumber is 1-based but height index is 0-based
       setRowHeight(line.lineNumber - 1, lineRef.current.offsetHeight + 5);
     }
   }, [line.lineNumber, setRowHeight]);
