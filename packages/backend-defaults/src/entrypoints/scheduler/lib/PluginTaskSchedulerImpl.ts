@@ -54,7 +54,7 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
     private readonly pluginId: string,
     private readonly databaseFactory: () => Promise<Knex>,
     private readonly logger: LoggerService,
-    rootLifecycle?: RootLifecycleService,
+    rootLifecycle: RootLifecycleService,
   ) {
     const meter = metrics.getMeter('default');
     this.counter = meter.createCounter('backend_tasks.task.runs.count', {
@@ -76,7 +76,7 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
       },
     );
     this.shutdownInitiated = new Promise(shutdownInitiated => {
-      rootLifecycle?.addShutdownHook(() => shutdownInitiated(true));
+      rootLifecycle.addShutdownHook(() => shutdownInitiated(true));
     });
   }
 

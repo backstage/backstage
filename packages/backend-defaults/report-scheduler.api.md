@@ -17,9 +17,9 @@ export class DefaultSchedulerService {
   static create(options: {
     database: DatabaseService;
     logger: LoggerService;
-    rootLifecycle?: RootLifecycleService;
-    httpRouter?: HttpRouterService;
-    pluginMetadata?: PluginMetadataService;
+    rootLifecycle: RootLifecycleService;
+    httpRouter: HttpRouterService;
+    pluginMetadata: PluginMetadataService;
   }): SchedulerService;
 }
 
