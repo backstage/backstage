@@ -101,6 +101,11 @@ export async function createRouter(
         tokenFactoryAlgorithm ??
         config.getOptionalString('auth.identityTokenAlgorithm'),
       userInfoDatabaseHandler,
+      omitClaimsFromToken: config.getOptionalBoolean(
+        'auth.omitIdentityTokenOwnershipClaim',
+      )
+        ? ['ent']
+        : [],
     });
   }
 

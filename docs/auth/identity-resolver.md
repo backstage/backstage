@@ -402,6 +402,50 @@ async signInResolver({ profile }, ctx) {
 }
 ```
 
+## Reducing the size of issued tokens
+
+By default the auth backend will issue user identity tokens that include the
+ownership references of the user in the `ent` claim of the JWT payload. This is
+done to make it easier and more efficient for consumers of the token to resolve
+ownership of the user. However, depending on the shape of your organization and
+how you resolve ownership claims, these tokens can grow quite large.
+
+To address this, the auth backend now supports the configuration flag
+`auth.omitIdentityTokenOwnershipClaim` that causes the `ent` claim to be omitted
+from the token. This can be set to `true` in the `app-config.yaml` file.
+
+```yaml title="in app-config.yaml"
+auth:
+  omitIdentityTokenOwnershipClaim: true
+```
+
+When this flag is set, the `ent` claim will no longer be present in the token,
+and consumers of the token will need to call the `/v1/userinfo` endpoint on the
+auth backend to fetch the ownership references of the user. However, there's usually no
+action required for consumers. Clients will still receive the full set
+of claims during authentication, and any plugin backends will already need to
+use the
+[`UserInfoService`](../backend-system/core-services/user-info.md) to
+access the ownership references from user credentials, which already calls the
+user info endpoint if necessary.
+
+When enabling this flag, it is important that any custom sign-in resolvers directly return the result of the sign-in method. For example, the following would not work:
+
+```ts
+const { token } = await ctx.issueToken({
+  claims: { sub: entityRef, ent: [entityRef] },
+});
+return { token }; // WARNING: This will not work
+```
+
+Instead, the sign-in resolver should directly return the result:
+
+```ts
+return ctx.issueToken({
+  claims: { sub: entityRef, ent: [entityRef] },
+});
+```
+
 ## Profile Transforms
 
 Similar to a custom sign-in resolver, you can also write a custom profile transform
