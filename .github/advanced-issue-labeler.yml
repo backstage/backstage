@@ -54,3 +54,5 @@ policy:
             keys: ['GitHub']
           - name: 'integration:gitlab'
             keys: ['GitLab']
+          - name: 'integration:other'
+            keys: ['Other']
