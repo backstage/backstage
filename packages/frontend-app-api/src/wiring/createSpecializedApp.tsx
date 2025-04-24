@@ -219,8 +219,11 @@ export function createSpecializedApp(options?: {
       builtinExtensions: [
         resolveExtensionDefinition(Root, { namespace: 'root' }),
       ],
-      parameters: readAppExtensionsConfig(config, features),
+      parameters: readAppExtensionsConfig(config),
       forbidden: new Set(['root']),
+      ignoreStaleExtensionConfig: config.getOptionalBoolean(
+        'app.ignoreStaleExtensionConfig',
+      ),
     }),
   );
 
