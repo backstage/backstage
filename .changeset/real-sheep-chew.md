@@ -1,5 +1,5 @@
 ---
-'@backstage/core-components': minor
+'@backstage/core-components': patch
 ---
 
-Fix the hidden sidebar's submenu when the sidebar is scrollable
+Fix the hidden sidebar's sub-menu when the sidebar is scrollable
