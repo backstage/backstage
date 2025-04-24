@@ -87,7 +87,8 @@ export function RealLogViewer(props: RealLogViewerProps) {
   function setRowHeight(index: number, size: number) {
     if (shouldTextWrap && listInstance) {
       (listInstance as VariableSizeList<AnsiLine[]>).resetAfterIndex(0);
-      heights.current = { ...heights.current, [index]: size };
+      // lineNumber is 1-based but index is 0-based
+      heights.current = { ...heights.current, [index - 1]: size };
     }
   }
 
