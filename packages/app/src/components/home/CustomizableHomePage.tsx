@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Page, Content } from '@backstage/core-components';
+import { Page, Content, Header } from '@backstage/core-components';
 import {
   HomePageCompanyLogo,
   TemplateBackstageLogo,
@@ -23,11 +23,39 @@ import {
   HomePageRandomJoke,
   HomePageTopVisited,
   HomePageRecentlyVisited,
+  WelcomeTitle,
+  HeaderWorldClock,
+  ClockConfig,
 } from '@backstage/plugin-home';
 import { HomePageSearchBar } from '@backstage/plugin-search';
 import Grid from '@material-ui/core/Grid';
 
 import { tools, useLogoStyles } from './shared';
+
+const clockConfigs: ClockConfig[] = [
+  {
+    label: 'NYC',
+    timeZone: 'America/New_York',
+  },
+  {
+    label: 'UTC',
+    timeZone: 'UTC',
+  },
+  {
+    label: 'STO',
+    timeZone: 'Europe/Stockholm',
+  },
+  {
+    label: 'TYO',
+    timeZone: 'Asia/Tokyo',
+  },
+];
+
+const timeFormat: Intl.DateTimeFormatOptions = {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+};
 
 const defaultConfig = [
   {
@@ -73,6 +101,12 @@ export const CustomizableHomePage = () => {
   return (
     <Page themeId="home">
       <Content>
+        <Header title={<WelcomeTitle />} pageTitleOverride="Home">
+          <HeaderWorldClock
+            clockConfigs={clockConfigs}
+            customTimeFormat={timeFormat}
+          />
+        </Header>
         <Grid container justifyContent="center">
           <HomePageCompanyLogo
             className={container}

@@ -98,11 +98,6 @@ const app = createApp({
       description: 'Preview the new Scaffolder Next',
       pluginId: '',
     },
-    {
-      name: 'customizable-home-page-preview',
-      description: 'Makes the home page customizable',
-      pluginId: '',
-    },
   ],
   components: {
     SignInPage: props => {
