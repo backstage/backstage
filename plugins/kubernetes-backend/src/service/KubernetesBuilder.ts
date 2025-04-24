@@ -488,7 +488,7 @@ export class KubernetesBuilder {
   ) {
     const clusterDetails = await clusterSupplier.getClusters(options);
 
-    this.env.logger.info(
+    this.env.logger.debug(
       `action=loadClusterDetails numOfClustersLoaded=${clusterDetails.length}`,
     );
 
