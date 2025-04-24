@@ -16,6 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
+import { FrontendFeature } from '../wiring';
 
 export interface ExtensionParameters {
   id: string;
@@ -26,12 +27,34 @@ export interface ExtensionParameters {
 
 const knownExtensionParameters = ['attachTo', 'disabled', 'config'];
 
+/**
+ * Returns a filtered list of extensions based on what is discovered in the
+ * provided features.
+ */
+export const filterExtensionsByFeatures = (
+  extensions: ExtensionParameters[],
+  features: FrontendFeature[],
+): ExtensionParameters[] => {
+  // Get a list of all extension IDs discovered in the provided features.
+  const discoveredExtensionIds = features.flatMap(feature =>
+    ('extensions' in feature && Array.isArray(feature.extensions)
+      ? feature.extensions
+      : []
+    ).map((extension: { id: string }) => extension.id),
+  );
+
+  return extensions.filter(extension =>
+    discoveredExtensionIds.includes(extension.id),
+  );
+};
+
 // Since we'll never merge arrays in config the config reader context
 // isn't too much of a help. Fall back to manual config reading logic
 // as the Config interface makes it quite hard for us otherwise.
 /** @internal */
 export function readAppExtensionsConfig(
   rootConfig: Config,
+  features: FrontendFeature[] = [],
 ): ExtensionParameters[] {
   const arr = rootConfig.getOptional('app.extensions');
   if (!Array.isArray(arr)) {
@@ -43,8 +66,11 @@ export function readAppExtensionsConfig(
     return [];
   }
 
-  return arr.map((arrayEntry, arrayIndex) =>
-    expandShorthandExtensionParameters(arrayEntry, arrayIndex),
+  return filterExtensionsByFeatures(
+    arr.map((arrayEntry, arrayIndex) =>
+      expandShorthandExtensionParameters(arrayEntry, arrayIndex),
+    ),
+    features,
   );
 }
 
