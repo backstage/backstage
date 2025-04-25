@@ -22,6 +22,4 @@
 
 export { catalogPlugin as default } from './service/CatalogPlugin';
 export * from './processors';
-export * from './processing';
-export * from './service';
 export * from './constants';
