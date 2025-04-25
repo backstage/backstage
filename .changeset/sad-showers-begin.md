@@ -2,7 +2,7 @@
 '@backstage/plugin-catalog-backend': major
 ---
 
-**BREAKING**: Removed all deprecated exports.
+**BREAKING**: Removed all deprecated exports, and removed support for the old backend system.
 
 The following removed exports are available from `@backstage/plugin-catalog-node`:
 
@@ -56,3 +56,9 @@ The following exports are removed without a direct replacement:
 - `DefaultCatalogCollatorFactoryOptions`
 - `LocationEntityProcessor`
 - `LocationEntityProcessorOptions`
+- `CatalogBuilder`
+- `CatalogEnvironment`
+- `CatalogPermissionRuleInput`
+- `CatalogProcessingEngine`
+- `createRandomProcessingInterval`
+- `ProcessingIntervalFunction`
