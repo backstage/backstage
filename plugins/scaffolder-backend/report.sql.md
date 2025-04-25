@@ -33,6 +33,7 @@
 | `spec`              | `text`                     | false    | -          | -                   |
 | `state`             | `text`                     | true     | -          | -                   |
 | `status`            | `text`                     | false    | -          | -                   |
+| `template_owner`    | `text`                     | true     | -          | -                   |
 | `workspace`         | `bytea`                    | true     | -          | -                   |
 
 ### Indices
