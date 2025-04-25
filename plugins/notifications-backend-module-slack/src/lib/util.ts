@@ -46,12 +46,10 @@ export function toSlackBlockKit(payload: NotificationPayload): KnownBlock[] {
   return [
     {
       type: 'section',
-      ...(description && {
-        text: {
-          type: 'mrkdwn',
-          text: description ?? 'No description provided',
-        },
-      }),
+      text: {
+        type: 'mrkdwn',
+        text: description ?? 'No description provided',
+      },
       accessory: {
         type: 'button',
         text: {
