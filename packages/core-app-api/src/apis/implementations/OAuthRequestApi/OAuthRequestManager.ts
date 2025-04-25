@@ -22,7 +22,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import { OAuthPendingRequests, PendingRequest } from './OAuthPendingRequests';
-import { BehaviorSubject } from '../../../lib/subjects';
+import { PublishSubject } from '../../../lib/subjects';
 
 /**
  * The OAuthRequestManager is an implementation of the OAuthRequestApi.
@@ -34,7 +34,7 @@ import { BehaviorSubject } from '../../../lib/subjects';
  * @public
  */
 export class OAuthRequestManager implements OAuthRequestApi {
-  private readonly subject = new BehaviorSubject<PendingOAuthRequest[]>([]);
+  private readonly subject = new PublishSubject<PendingOAuthRequest[]>();
   private currentRequests: PendingOAuthRequest[] = [];
   private handlerCount = 0;
 
