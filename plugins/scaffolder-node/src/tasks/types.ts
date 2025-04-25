@@ -57,6 +57,7 @@ export type SerializedTask = {
   spec: TaskSpec;
   status: TaskStatus;
   createdAt: string;
+  templateOwner?: string;
   lastHeartbeatAt?: string;
   createdBy?: string;
   secrets?: TaskSecrets;
@@ -110,7 +111,7 @@ export type TaskBrokerDispatchOptions = {
  * @public
  */
 export type TaskFilter = {
-  property: 'createdBy' | 'templateEntityRefs';
+  property: 'templateOwners';
   values: Array<string> | undefined;
 };
 

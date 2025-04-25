@@ -290,6 +290,7 @@ describe.each([
         const logger = loggerToWinstonLogger(mockServices.logger.mock());
         const databaseTaskStore = await DatabaseTaskStore.create({
           database: createDatabase(),
+          catalog: catalogClient,
         });
         taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
 
@@ -520,6 +521,7 @@ describe.each([
                 status: 'completed',
                 createdAt: '',
                 createdBy: '',
+                templateOwner: '',
               },
             ],
             totalTasks: 1,
@@ -556,6 +558,7 @@ describe.each([
                 status: 'completed',
                 createdAt: '',
                 createdBy: 'user:default/foo',
+                templateOwner: '',
               },
             ],
             totalTasks: 1,
@@ -590,34 +593,6 @@ describe.each([
             order: [{ order: 'desc', field: 'created_at' }],
           });
         });
-        it('disallows users from seeing tasks they do not own', async () => {
-          jest
-            .spyOn(permissionApi, 'authorizeConditional')
-            .mockImplementationOnce(async () => [
-              {
-                conditions: {
-                  resourceType: 'scaffolder-task',
-                  rule: 'HAS_CREATED_BY',
-                  params: { createdBy: ['user'] },
-                },
-                pluginId: 'scaffolder',
-                resourceType: 'scaffolder-task',
-                result: AuthorizeResult.CONDITIONAL,
-              },
-            ]);
-          const response = await request(app).get(
-            `/v2/tasks?createdBy=not-user`,
-          );
-          expect(taskBroker.list).toHaveBeenCalledWith({
-            filters: { createdBy: ['not-user'], status: undefined },
-            order: undefined,
-            pagination: { limit: undefined, offset: undefined },
-            permissionFilters: { property: 'createdBy', values: ['user'] },
-          });
-          expect(response.status).toBe(200);
-          expect(response.body.totalTasks).toBe(0);
-          expect(response.body.tasks).toEqual([]);
-        });
       });
 
       describe('GET /v2/tasks/:taskId', () => {
@@ -632,43 +607,13 @@ describe.each([
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
+            templateOwner: '',
           });
 
           const response = await request(app).get(`/v2/tasks/a-random-id`);
           expect(response.status).toEqual(200);
           expect(response.body.status).toBe('completed');
           expect(response.body.secrets).toBeUndefined();
-        });
-        it('disallows users from seeing tasks they do not own', async () => {
-          jest
-            .spyOn(permissionApi, 'authorizeConditional')
-            .mockImplementationOnce(async () => [
-              {
-                conditions: {
-                  resourceType: 'scaffolder-task',
-                  rule: 'HAS_CREATED_BY',
-                  params: { createdBy: ['user'] },
-                },
-                pluginId: 'scaffolder',
-                resourceType: 'scaffolder-task',
-                result: AuthorizeResult.CONDITIONAL,
-              },
-            ]);
-          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
-            id: 'a-random-id',
-            spec: {} as any,
-            status: 'completed',
-            createdAt: '',
-            secrets: {
-              backstageToken: token,
-              __initiatorCredentials: JSON.stringify(credentials),
-            },
-            createdBy: 'not-user',
-          });
-
-          const response = await request(app).get(`/v2/tasks/a-random-id`);
-          expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
-          expect(response.error).not.toBeFalsy();
         });
         it('disallows users from seeing runs of templates they do not own', async () => {
           jest
@@ -677,12 +622,9 @@ describe.each([
               {
                 conditions: {
                   resourceType: 'scaffolder-task',
-                  rule: 'HAS_TEMPLATE_ENTITY_REFS',
+                  rule: 'HAS_TEMPLATE_OWNERS',
                   params: {
-                    templateEntityRefs: [
-                      'template:deafult/foo',
-                      'template:default/bar',
-                    ],
+                    templateOwners: ['user'],
                   },
                 },
                 pluginId: 'scaffolder',
@@ -701,6 +643,7 @@ describe.each([
               backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
+            templateOwner: 'not-user',
           });
 
           const response = await request(app).get(`/v2/tasks/a-random-id`);
@@ -721,6 +664,7 @@ describe.each([
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
+            templateOwner: '',
           });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
@@ -811,6 +755,7 @@ describe.each([
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
+            templateOwner: '',
           });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
@@ -880,6 +825,7 @@ describe.each([
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
+            templateOwner: '',
           });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
@@ -948,6 +894,7 @@ describe.each([
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
+            templateOwner: '',
           });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
@@ -973,39 +920,6 @@ describe.each([
           });
           expect(subscriber!.closed).toBe(true);
         });
-        it('disallows users from seeing events for tasks they do not own', async () => {
-          jest
-            .spyOn(permissionApi, 'authorizeConditional')
-            .mockImplementationOnce(async () => [
-              {
-                conditions: {
-                  resourceType: 'scaffolder-task',
-                  rule: 'HAS_CREATED_BY',
-                  params: { createdBy: ['user'] },
-                },
-                pluginId: 'scaffolder',
-                resourceType: 'scaffolder-task',
-                result: AuthorizeResult.CONDITIONAL,
-              },
-            ]);
-          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
-            id: 'a-random-id',
-            spec: {} as any,
-            status: 'completed',
-            createdAt: '',
-            secrets: {
-              backstageToken: token,
-              __initiatorCredentials: JSON.stringify(credentials),
-            },
-            createdBy: 'not-user',
-          });
-
-          const response = await request(app).get(
-            `/v2/tasks/a-random-id/events`,
-          );
-          expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
-          expect(response.error).not.toBeFalsy();
-        });
         it('disallows users from seeing runs of templates they do not own', async () => {
           jest
             .spyOn(permissionApi, 'authorizeConditional')
@@ -1013,12 +927,9 @@ describe.each([
               {
                 conditions: {
                   resourceType: 'scaffolder-task',
-                  rule: 'HAS_TEMPLATE_ENTITY_REFS',
+                  rule: 'HAS_TEMPLATE_OWNERS',
                   params: {
-                    templateEntityRefs: [
-                      'template:deafult/foo',
-                      'template:default/bar',
-                    ],
+                    templateOwners: ['user'],
                   },
                 },
                 pluginId: 'scaffolder',
@@ -1037,6 +948,7 @@ describe.each([
               backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
+            templateOwner: 'not-user',
           });
 
           const response = await request(app).get(
@@ -1079,6 +991,7 @@ describe.each([
         const logger = loggerToWinstonLogger(mockServices.logger.mock());
         const databaseTaskStore = await DatabaseTaskStore.create({
           database: createDatabase(),
+          catalog: catalogClient,
         });
         taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
 
@@ -1541,6 +1454,7 @@ describe.each([
                 status: 'completed',
                 createdAt: '',
                 createdBy: '',
+                templateOwner: '',
               },
             ],
             totalTasks: 1,
@@ -1577,6 +1491,7 @@ describe.each([
                 status: 'completed',
                 createdAt: '',
                 createdBy: 'user:default/foo',
+                templateOwner: '',
               },
             ],
             totalTasks: 1,
@@ -1606,34 +1521,6 @@ describe.each([
             totalTasks: 1,
           });
         });
-        it('disallows users from seeing tasks they do not own', async () => {
-          jest
-            .spyOn(permissionApi, 'authorizeConditional')
-            .mockImplementationOnce(async () => [
-              {
-                conditions: {
-                  resourceType: 'scaffolder-task',
-                  rule: 'HAS_CREATED_BY',
-                  params: { createdBy: ['user'] },
-                },
-                pluginId: 'scaffolder',
-                resourceType: 'scaffolder-task',
-                result: AuthorizeResult.CONDITIONAL,
-              },
-            ]);
-          const response = await request(app).get(
-            `/v2/tasks?createdBy=not-user`,
-          );
-          expect(taskBroker.list).toHaveBeenCalledWith({
-            filters: { createdBy: ['not-user'], status: undefined },
-            order: undefined,
-            pagination: { limit: undefined, offset: undefined },
-            permissionFilters: { property: 'createdBy', values: ['user'] },
-          });
-          expect(response.status).toBe(200);
-          expect(response.body.totalTasks).toBe(0);
-          expect(response.body.tasks).toEqual([]);
-        });
       });
 
       describe('GET /v2/tasks/:taskId', () => {
@@ -1648,43 +1535,13 @@ describe.each([
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
+            templateOwner: '',
           });
 
           const response = await request(app).get(`/v2/tasks/a-random-id`);
           expect(response.status).toEqual(200);
           expect(response.body.status).toBe('completed');
           expect(response.body.secrets).toBeUndefined();
-        });
-        it('disallows users from seeing tasks they do not own', async () => {
-          jest
-            .spyOn(permissionApi, 'authorizeConditional')
-            .mockImplementationOnce(async () => [
-              {
-                conditions: {
-                  resourceType: 'scaffolder-task',
-                  rule: 'HAS_CREATED_BY',
-                  params: { createdBy: ['user'] },
-                },
-                pluginId: 'scaffolder',
-                resourceType: 'scaffolder-task',
-                result: AuthorizeResult.CONDITIONAL,
-              },
-            ]);
-          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
-            id: 'a-random-id',
-            spec: {} as any,
-            status: 'completed',
-            createdAt: '',
-            secrets: {
-              backstageToken: token,
-              __initiatorCredentials: JSON.stringify(credentials),
-            },
-            createdBy: 'not-user',
-          });
-
-          const response = await request(app).get(`/v2/tasks/a-random-id`);
-          expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
-          expect(response.error).not.toBeFalsy();
         });
         it('disallows users from seeing runs of templates they do not own', async () => {
           jest
@@ -1693,12 +1550,9 @@ describe.each([
               {
                 conditions: {
                   resourceType: 'scaffolder-task',
-                  rule: 'HAS_TEMPLATE_ENTITY_REFS',
+                  rule: 'HAS_TEMPLATE_OWNERS',
                   params: {
-                    templateEntityRefs: [
-                      'template:deafult/foo',
-                      'template:default/bar',
-                    ],
+                    templateOwners: ['user'],
                   },
                 },
                 pluginId: 'scaffolder',
@@ -1713,6 +1567,7 @@ describe.each([
             } as any,
             status: 'completed',
             createdAt: '',
+            templateOwner: 'not-user',
             secrets: {
               backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
@@ -1737,6 +1592,7 @@ describe.each([
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
+            templateOwner: '',
           });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
@@ -1827,6 +1683,7 @@ describe.each([
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
+            templateOwner: '',
           });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
@@ -1882,39 +1739,6 @@ describe.each([
 
           expect(subscriber!.closed).toBe(true);
         });
-        it('disallows users from seeing events for tasks they do not own', async () => {
-          jest
-            .spyOn(permissionApi, 'authorizeConditional')
-            .mockImplementationOnce(async () => [
-              {
-                conditions: {
-                  resourceType: 'scaffolder-task',
-                  rule: 'HAS_CREATED_BY',
-                  params: { createdBy: ['user'] },
-                },
-                pluginId: 'scaffolder',
-                resourceType: 'scaffolder-task',
-                result: AuthorizeResult.CONDITIONAL,
-              },
-            ]);
-          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
-            id: 'a-random-id',
-            spec: {} as any,
-            status: 'completed',
-            createdAt: '',
-            secrets: {
-              backstageToken: token,
-              __initiatorCredentials: JSON.stringify(credentials),
-            },
-            createdBy: 'not-user',
-          });
-
-          const response = await request(app).get(
-            `/v2/tasks/a-random-id/eventstream`,
-          );
-          expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
-          expect(response.error).not.toBeFalsy();
-        });
         it('disallows users from seeing runs of templates they do not own', async () => {
           jest
             .spyOn(permissionApi, 'authorizeConditional')
@@ -1922,12 +1746,9 @@ describe.each([
               {
                 conditions: {
                   resourceType: 'scaffolder-task',
-                  rule: 'HAS_TEMPLATE_ENTITY_REFS',
+                  rule: 'HAS_TEMPLATE_OWNERS',
                   params: {
-                    templateEntityRefs: [
-                      'template:deafult/foo',
-                      'template:default/bar',
-                    ],
+                    templateOwners: ['user'],
                   },
                 },
                 pluginId: 'scaffolder',
@@ -1942,6 +1763,7 @@ describe.each([
             } as any,
             status: 'completed',
             createdAt: '',
+            templateOwner: 'not-user',
             secrets: {
               backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
@@ -1968,6 +1790,7 @@ describe.each([
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
+            templateOwner: '',
           });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
@@ -2036,6 +1859,7 @@ describe.each([
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
+            templateOwner: '',
           });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
@@ -2061,39 +1885,6 @@ describe.each([
           });
           expect(subscriber!.closed).toBe(true);
         });
-        it('disallows users from seeing events for tasks they do not own', async () => {
-          jest
-            .spyOn(permissionApi, 'authorizeConditional')
-            .mockImplementationOnce(async () => [
-              {
-                conditions: {
-                  resourceType: 'scaffolder-task',
-                  rule: 'HAS_CREATED_BY',
-                  params: { createdBy: ['user'] },
-                },
-                pluginId: 'scaffolder',
-                resourceType: 'scaffolder-task',
-                result: AuthorizeResult.CONDITIONAL,
-              },
-            ]);
-          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
-            id: 'a-random-id',
-            spec: {} as any,
-            status: 'completed',
-            createdAt: '',
-            secrets: {
-              backstageToken: token,
-              __initiatorCredentials: JSON.stringify(credentials),
-            },
-            createdBy: 'not-user',
-          });
-
-          const response = await request(app).get(
-            `/v2/tasks/a-random-id/events`,
-          );
-          expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
-          expect(response.error).not.toBeFalsy();
-        });
         it('disallows users from seeing runs of templates they do not own', async () => {
           jest
             .spyOn(permissionApi, 'authorizeConditional')
@@ -2101,12 +1892,9 @@ describe.each([
               {
                 conditions: {
                   resourceType: 'scaffolder-task',
-                  rule: 'HAS_TEMPLATE_ENTITY_REFS',
+                  rule: 'HAS_TEMPLATE_OWNERS',
                   params: {
-                    templateEntityRefs: [
-                      'template:deafult/foo',
-                      'template:default/bar',
-                    ],
+                    templateOwners: ['user'],
                   },
                 },
                 pluginId: 'scaffolder',
@@ -2125,6 +1913,7 @@ describe.each([
               backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
+            templateOwner: 'not-user',
           });
 
           const response = await request(app).get(

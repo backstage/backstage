@@ -22,8 +22,7 @@ import {
   hasProperty,
   hasStringProperty,
   hasTag,
-  hasCreatedBy,
-  hasTemplateEntityRefs,
+  hasTemplateOwners,
 } from './rules';
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
@@ -528,81 +527,7 @@ describe('hasStringProperty', () => {
   });
 });
 
-describe('hasCreatedBy', () => {
-  describe('apply', () => {
-    const task: SerializedTask = {
-      id: 'a-random-id',
-      spec: {} as TaskSpec,
-      status: 'completed',
-      createdAt: '',
-      createdBy: 'user:default/user-1',
-    };
-    it('returns false when createdBy is an empty array', () => {
-      expect(
-        hasCreatedBy.apply(task, {
-          createdBy: [],
-        }),
-      ).toEqual(false);
-    });
-    it('returns false when createdBy is not matched (single user in createdBy)', () => {
-      expect(
-        hasCreatedBy.apply(task, {
-          createdBy: ['not-matched'],
-        }),
-      ).toEqual(false);
-    });
-    it('returns true when createdBy matches (single user in createdBy)', () => {
-      expect(
-        hasCreatedBy.apply(task, {
-          createdBy: ['user:default/user-1'],
-        }),
-      ).toEqual(true);
-    });
-    it('returns false when createdBy is not matched (multiple users in createdBy)', () => {
-      expect(
-        hasCreatedBy.apply(task, {
-          createdBy: [
-            'user:default/user-2',
-            'user:default/user-3',
-            'user:default/user-4',
-          ],
-        }),
-      ).toEqual(false);
-    });
-    it('returns true when createdBy matches (multiple users in createdBy)', () => {
-      expect(
-        hasCreatedBy.apply(task, {
-          createdBy: [
-            'user:default/user-1',
-            'user:default/user-2',
-            'user:default/user-3',
-          ],
-        }),
-      ).toEqual(true);
-    });
-  });
-  describe('toQuery', () => {
-    it('returns the correct query filter with values (single user in createdBy)', () => {
-      expect(
-        hasCreatedBy.toQuery({
-          createdBy: ['user:default/user-1'],
-        }),
-      ).toEqual({ property: 'createdBy', values: ['user:default/user-1'] });
-    });
-  });
-  it('returns the correct query filter with values (multiple users in createdBy)', () => {
-    expect(
-      hasCreatedBy.toQuery({
-        createdBy: ['user:default/user-1', 'user:default/user-2'],
-      }),
-    ).toEqual({
-      property: 'createdBy',
-      values: ['user:default/user-1', 'user:default/user-2'],
-    });
-  });
-});
-
-describe('hasTemplateEntityRefs', () => {
+describe('hasTemplateOwners', () => {
   describe('apply', () => {
     const task: SerializedTask = {
       id: 'a-random-id',
@@ -611,32 +536,33 @@ describe('hasTemplateEntityRefs', () => {
       } as TaskSpec,
       status: 'completed',
       createdAt: '',
+      templateOwner: 'template:default/test-1',
     };
-    it('returns false when templateEntityRefs is an empty array', () => {
+    it('returns false when templateOwners is an empty array', () => {
       expect(
-        hasTemplateEntityRefs.apply(task, {
-          templateEntityRefs: [],
+        hasTemplateOwners.apply(task, {
+          templateOwners: [],
         }),
       ).toEqual(false);
     });
-    it('returns false when templateEntityRef is not matched (single entityRef in templateEntityRefs)', () => {
+    it('returns false when templateOwner is not matched (single entityRef in templateOwners)', () => {
       expect(
-        hasTemplateEntityRefs.apply(task, {
-          templateEntityRefs: ['template:default/not-matched'],
+        hasTemplateOwners.apply(task, {
+          templateOwners: ['template:default/not-matched'],
         }),
       ).toEqual(false);
     });
-    it('returns true when templateEntityRef matches (single entityRef in templateEntityRefs)', () => {
+    it('returns true when templateOwner matches (single entityRef in templateOwners)', () => {
       expect(
-        hasTemplateEntityRefs.apply(task, {
-          templateEntityRefs: ['template:default/test-1'],
+        hasTemplateOwners.apply(task, {
+          templateOwners: ['template:default/test-1'],
         }),
       ).toEqual(true);
     });
-    it('returns false when templateEntityRefs is not matched (multiple entitRefs in templateEntityRefs)', () => {
+    it('returns false when templateOwners is not matched (multiple entitRefs in templateOwners)', () => {
       expect(
-        hasTemplateEntityRefs.apply(task, {
-          templateEntityRefs: [
+        hasTemplateOwners.apply(task, {
+          templateOwners: [
             'template:default/test-2',
             'template:default/test-3',
             'template:default/test-4',
@@ -644,10 +570,10 @@ describe('hasTemplateEntityRefs', () => {
         }),
       ).toEqual(false);
     });
-    it('returns true when templateEntityRefs matches (multiple entityRefs in templateEntityRefs)', () => {
+    it('returns true when templateOwners matches (multiple entityRefs in templateOwners)', () => {
       expect(
-        hasTemplateEntityRefs.apply(task, {
-          templateEntityRefs: [
+        hasTemplateOwners.apply(task, {
+          templateOwners: [
             'template:default/test-2',
             'template:default/test-1',
             'template:default/test-3',
@@ -657,27 +583,24 @@ describe('hasTemplateEntityRefs', () => {
     });
   });
   describe('toQuery', () => {
-    it('returns the correct query filter with values (single entityRef in templateEntityRefs)', () => {
+    it('returns the correct query filter with values (single entityRef in templateOwners)', () => {
       expect(
-        hasTemplateEntityRefs.toQuery({
-          templateEntityRefs: ['template:default/test-1'],
+        hasTemplateOwners.toQuery({
+          templateOwners: ['template:default/test-1'],
         }),
       ).toEqual({
-        property: 'templateEntityRefs',
+        property: 'templateOwners',
         values: ['template:default/test-1'],
       });
     });
   });
   it('returns the correct query filter with values (multiple entityRefs in templateEntityRefs)', () => {
     expect(
-      hasTemplateEntityRefs.toQuery({
-        templateEntityRefs: [
-          'template:default/test-1',
-          'template:default/test-2',
-        ],
+      hasTemplateOwners.toQuery({
+        templateOwners: ['template:default/test-1', 'template:default/test-2'],
       }),
     ).toEqual({
-      property: 'templateEntityRefs',
+      property: 'templateOwners',
       values: ['template:default/test-1', 'template:default/test-2'],
     });
   });

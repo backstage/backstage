@@ -518,6 +518,7 @@ export class DatabaseTaskStore implements TaskStore {
 // @public
 export type DatabaseTaskStoreOptions = {
   database: DatabaseService | Knex;
+  catalog: CatalogApi;
   events?: EventsService;
 };
 

@@ -91,7 +91,7 @@ export const scaffolderActionConditions: Conditions<{
 
 // @alpha
 export const scaffolderTaskConditions: Conditions<{
-  hasCreatedBy: PermissionRule<
+  hasTemplateOwners: PermissionRule<
     SerializedTask,
     {
       property: TaskFilter['property'];
@@ -99,18 +99,7 @@ export const scaffolderTaskConditions: Conditions<{
     },
     'scaffolder-task',
     {
-      createdBy: string[];
-    }
-  >;
-  hasTemplateEntityRefs: PermissionRule<
-    SerializedTask,
-    {
-      property: TaskFilter['property'];
-      values: any;
-    },
-    'scaffolder-task',
-    {
-      templateEntityRefs: string[];
+      templateOwners: string[];
     }
   >;
 }>;

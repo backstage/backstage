@@ -378,6 +378,7 @@ export async function createRouter(
     const databaseTaskStore = await DatabaseTaskStore.create({
       database,
       events: eventsService,
+      catalog: catalogClient,
     });
     taskBroker = new StorageTaskBroker(
       databaseTaskStore,

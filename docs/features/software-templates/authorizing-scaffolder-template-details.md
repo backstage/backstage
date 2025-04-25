@@ -176,7 +176,7 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 
 ### Authorizing scaffolder tasks
 
-The scaffolder plugin also exposes permissions that can restrict access to tasks, task logs, task creation, and task cancellation. This can be useful if you want to control who has access to these areas of the scaffolder. You can also restrict access to tasks to only their owners or admin users and allow template owners to view all runs of their templates.
+The scaffolder plugin also exposes permissions that can restrict access to tasks, task logs, task creation, and task cancellation. This can be useful if you want to control who has access to these areas of the scaffolder. You can also restrict access to tasks to allow template owners to view all runs of their templates.
 
 The following is a simple example of how to do this:
 
@@ -205,31 +205,6 @@ import { CatalogClient } from '@backstage/catalog-client';
 /* highlight-add-end */
 
 class ExamplePermissionPolicy implements PermissionPolicy {
-  private readonly catalogClient: CatalogClient;
-
-  constructor(catalogClient: CatalogClient) {
-    this.catalogClient = catalogClient;
-  }
-
-  // Fetches all templates owned by the user from the catalog API.
-  async getUserOwnedTemplates(userRef: string): Promise<string[]> {
-    if (!userRef) return [];
-
-    const response = await this.catalogClient.getEntities({
-      filter: {
-        kind: ['Template'],
-        'relations.ownedBy': [userRef],
-      },
-    });
-
-    return response.items.map(
-      item =>
-        `${item.kind.toLocaleLowerCase()}:${item.metadata.namespace}/${
-          item.metadata.name
-        }`,
-    );
-  }
-
   async handle(
     request: PolicyQuery,
     user?: PolicyQueryUser,
@@ -243,24 +218,15 @@ class ExamplePermissionPolicy implements PermissionPolicy {
         };
       }
 
-      // Retrieve templates that the user owns
-      const userOwnedTemplates = await this.getUserOwnedTemplates(
-        user?.info.userEntityRef || '',
+      // Allow users to read task runs of templates they own
+      return createScaffolderTaskConditionalDecision(
+        request.permission,
+        scaffolderTaskConditions.hasTemplateOwners({
+          templateOwners: user?.info.userEntityRef
+            ? [user?.info.userEntityRef]
+            : [],
+        }),
       );
-
-      // Allow users to read tasks they created or task runs of templates they own
-      return createScaffolderTaskConditionalDecision(request.permission, {
-        anyOf: [
-          scaffolderTaskConditions.hasCreatedBy({
-            createdBy: user?.info.userEntityRef
-              ? [user?.info.userEntityRef]
-              : [],
-          }),
-          scaffolderTaskConditions.hasTemplateEntityRefs({
-            templateEntityRefs: userOwnedTemplates,
-          }),
-        ],
-      });
     }
 
     if (isPermission(request.permission, taskCreatePermission)) {
@@ -278,17 +244,6 @@ class ExamplePermissionPolicy implements PermissionPolicy {
       };
     }
     if (isPermission(request.permission, taskCancelPermission)) {
-      // Allow spiderman to cancel only his tasks
-      if (user?.info.userEntityRef === 'user:default/spiderman') {
-        return createScaffolderTaskConditionalDecision(
-          request.permission,
-          scaffolderTaskConditions.hasCreatedBy({
-            createdBy: user?.info.userEntityRef
-              ? [user?.info.userEntityRef]
-              : [],
-          }),
-        );
-      }
       // Allow admin1 to cancel any task
       if (user?.info.userEntityRef === 'user:default/admin1') {
         return {
@@ -310,7 +265,6 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 
 In the provided example permission policy, we only grant the `spiderman` user permissions to perform/access the following actions/resources:
 
-- Read scaffolder tasks and their associated events/logs for tasks created by `spiderman`.
 - Read scaffolder task runs of templates owned by `spiderman`
 - Cancel ongoing scaffolder tasks created by `spiderman`.
 - Trigger software templates, which effectively creates new scaffolder tasks.
@@ -323,7 +277,6 @@ On the other hand, the `admin1` user is granted:
 
 All other users are granted permissions to perform/access the following actions/resources:
 
-- Read scaffolder tasks and their associated events/logs for tasks created by the user.
 - Read scaffolder task runs of the templates owned by the user
 
 Although the rules exported by the scaffolder are simple, combining them can help you achieve more complex use cases.

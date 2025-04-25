@@ -33,6 +33,7 @@ import ObservableImpl from 'zen-observable';
 import waitForExpect from 'wait-for-expect';
 import { mockServices } from '@backstage/backend-test-utils';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 jest.mock('./NunjucksWorkflowRunner');
 const MockedNunjucksWorkflowRunner =
@@ -52,6 +53,7 @@ async function createStore(): Promise<DatabaseTaskStore> {
   ).forPlugin('scaffolder');
   return await DatabaseTaskStore.create({
     database: manager,
+    catalog: catalogServiceMock.mock(),
   });
 }
 

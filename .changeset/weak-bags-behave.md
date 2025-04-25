@@ -6,4 +6,7 @@
 '@backstage/plugin-scaffolder': minor
 ---
 
-BREAKING : Added two new scaffolder rules for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on creators (`hasCreatedBy`) and granting template owners visibility into all runs of their templates (`hasTemplateEntityRefs`).
+BREAKING :
+
+- Added a new scaffolder rule `hasTemplateOwners` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as granting template owners visibility into all runs of their templates.
+- Added a new column `template_owner` to the `tasks` table

@@ -57,6 +57,7 @@ import {
 } from '@backstage/plugin-permission-node';
 import { TaskFilters } from '@backstage/plugin-scaffolder-node';
 import { compact } from 'lodash';
+import { CatalogApi } from '@backstage/catalog-client';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -71,6 +72,7 @@ export type RawDbTaskRow = {
   last_heartbeat_at?: string;
   created_at: string;
   created_by: string | null;
+  template_owner: string | null;
   secrets?: string | null;
   workspace?: Buffer;
 };
@@ -90,6 +92,7 @@ export type RawDbTaskEventRow = {
  */
 export type DatabaseTaskStoreOptions = {
   database: DatabaseService | Knex;
+  catalog: CatalogApi;
   events?: EventsService;
 };
 
@@ -126,16 +129,19 @@ const parseSqlDateToIsoString = <T>(input: T): T | string => {
 export class DatabaseTaskStore implements TaskStore {
   private readonly db: Knex;
   private readonly events?: EventsService;
+  private readonly catalogApi: CatalogApi;
 
   static async create(
     options: DatabaseTaskStoreOptions,
   ): Promise<DatabaseTaskStore> {
-    const { database } = options;
+    const { database, catalog } = options;
     const client = await this.getClient(database);
+
+    const catalogApi = catalog;
 
     await this.runMigrations(database, client);
 
-    return new DatabaseTaskStore(client, options.events);
+    return new DatabaseTaskStore(client, catalogApi, options.events);
   }
 
   private isRecoverableTask(spec: TaskSpec): boolean {
@@ -191,9 +197,14 @@ export class DatabaseTaskStore implements TaskStore {
     }
   }
 
-  private constructor(client: Knex, events?: EventsService) {
+  private constructor(
+    client: Knex,
+    catalog: CatalogApi,
+    events?: EventsService,
+  ) {
     this.db = client;
     this.events = events;
+    this.catalogApi = catalog;
   }
 
   private getState(task: RawDbTaskRow) {
@@ -224,24 +235,8 @@ export class DatabaseTaskStore implements TaskStore {
     if (this.isTaskFilter(filter)) {
       const values: string[] = compact(filter.values) ?? [];
 
-      if (filter.property === 'createdBy') {
-        query.whereIn('created_by', [...new Set(values)]);
-      }
-
-      if (filter.property === 'templateEntityRefs' && values.length > 0) {
-        const dbClient = this.db.client.config.client;
-        const placeholders = values.map(() => '?').join(', ');
-        if (dbClient === 'pg') {
-          query.whereRaw(
-            `spec::jsonb->'templateInfo'->>'entityRef' IN (${placeholders})`,
-            values,
-          );
-        } else if (dbClient === 'better-sqlite3') {
-          query.whereRaw(
-            `json_extract(spec, '$.templateInfo.entityRef') IN (${placeholders})`,
-            values,
-          );
-        }
+      if (filter.property === 'templateOwners') {
+        query.whereIn('template_owner', [...new Set(values)]);
       }
       return query;
     }
@@ -281,25 +276,16 @@ export class DatabaseTaskStore implements TaskStore {
       options ?? {};
     const queryBuilder = this.db<RawDbTaskRow & { count: number }>('tasks');
 
-    const createdByValues = flattenParams<string>(
-      createdBy,
-      filters?.createdBy,
-    );
+    if (permissionFilters) {
+      this.parseFilter(permissionFilters, queryBuilder, this.db);
+    }
 
-    const combinedPermissionFilters:
-      | PermissionCriteria<TaskFilters>
-      | undefined =
-      createdByValues.length > 0
-        ? {
-            allOf: [
-              { property: 'createdBy', values: createdByValues },
-              ...(permissionFilters ? [permissionFilters] : []),
-            ],
-          }
-        : permissionFilters;
-
-    if (combinedPermissionFilters) {
-      this.parseFilter(combinedPermissionFilters, queryBuilder, this.db);
+    if (createdBy || filters?.createdBy) {
+      const arr: string[] = flattenParams<string>(
+        createdBy,
+        filters?.createdBy,
+      );
+      queryBuilder.whereIn('created_by', [...new Set(arr)]);
     }
 
     if (status || filters?.status) {
@@ -334,14 +320,17 @@ export class DatabaseTaskStore implements TaskStore {
       countQuery,
     ]);
 
-    const tasks = results.map(result => ({
-      id: result.id,
-      spec: JSON.parse(result.spec),
-      status: result.status,
-      createdBy: result.created_by ?? undefined,
-      lastHeartbeatAt: parseSqlDateToIsoString(result.last_heartbeat_at),
-      createdAt: parseSqlDateToIsoString(result.created_at),
-    }));
+    const tasks = results.map(result => {
+      return {
+        id: result.id,
+        spec: JSON.parse(result.spec),
+        status: result.status,
+        createdBy: result.created_by ?? undefined,
+        templateOwner: result.template_owner ?? undefined,
+        lastHeartbeatAt: parseSqlDateToIsoString(result.last_heartbeat_at),
+        createdAt: parseSqlDateToIsoString(result.created_at),
+      };
+    });
 
     return { tasks, totalTasks: count };
   }
@@ -364,6 +353,7 @@ export class DatabaseTaskStore implements TaskStore {
         lastHeartbeatAt: parseSqlDateToIsoString(result.last_heartbeat_at),
         createdAt: parseSqlDateToIsoString(result.created_at),
         createdBy: result.created_by ?? undefined,
+        templateOwner: result.template_owner ?? undefined,
         secrets,
         state,
       };
@@ -376,11 +366,25 @@ export class DatabaseTaskStore implements TaskStore {
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult> {
     const taskId = uuid();
+    const templateEntityRef = options.spec.templateInfo?.entityRef;
+
+    let templateOwner: string | null = null;
+
+    if (templateEntityRef) {
+      const templateEntity = await this.catalogApi.getEntityByRef(
+        templateEntityRef,
+      );
+      templateOwner =
+        templateEntity?.relations?.find(r => r.type === 'ownedBy')?.targetRef ??
+        null;
+    }
+
     await this.db<RawDbTaskRow>('tasks').insert({
       id: taskId,
       spec: JSON.stringify(options.spec),
       secrets: options.secrets ? JSON.stringify(options.secrets) : undefined,
       created_by: options.createdBy ?? null,
+      template_owner: templateOwner,
       status: 'open',
     });
 
@@ -390,6 +394,7 @@ export class DatabaseTaskStore implements TaskStore {
         id: taskId,
         spec: options.spec,
         createdBy: options.createdBy,
+        template_owner: templateOwner,
         status: 'open',
       },
     });
@@ -432,6 +437,7 @@ export class DatabaseTaskStore implements TaskStore {
         lastHeartbeatAt: task.last_heartbeat_at,
         createdAt: task.created_at,
         createdBy: task.created_by ?? undefined,
+        templateOwner: task.template_owner ?? undefined,
         state: this.getState(task),
       };
 
@@ -520,6 +526,7 @@ export class DatabaseTaskStore implements TaskStore {
             lastHeartbeatAt: task.last_heartbeat_at,
             createdAt: task.created_at,
             createdBy: task.created_by,
+            templateOwner: task.template_owner,
             state: this.getState(task),
           },
         });

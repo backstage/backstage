@@ -142,52 +142,27 @@ export const createTaskPermissionRule = makeCreatePermissionRule<
   typeof RESOURCE_TYPE_SCAFFOLDER_TASK
 >();
 
-export const hasCreatedBy = createTaskPermissionRule({
-  name: 'HAS_CREATED_BY',
-  description: 'Allows tasks created by certain users to be accessible',
+export const hasTemplateOwners = createTaskPermissionRule({
+  name: 'HAS_TEMPLATE_OWNERS',
+  description: 'Match tasks with the given template owners',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
   paramsSchema: z.object({
-    createdBy: z
+    templateOwners: z
       .array(z.string())
       .describe(
-        'List of creater entity refs; only tasks created by these users will be viewable',
+        'List of template owners; only tasks related to the templates owned by these users will be viewable',
       ),
   }),
-  apply: (resource, { createdBy }) => {
-    if (!resource.createdBy) {
+  apply: (resource, { templateOwners }) => {
+    if (!resource.templateOwner) {
       return false;
     }
-    return createdBy.includes(resource.createdBy);
+    return templateOwners.includes(resource.templateOwner);
   },
-  toQuery: ({ createdBy }) => {
+  toQuery: ({ templateOwners }) => {
     return {
-      property: 'createdBy' as TaskFilter['property'],
-      values: createdBy,
-    };
-  },
-});
-
-export const hasTemplateEntityRefs = createTaskPermissionRule({
-  name: 'HAS_TEMPLATE_ENTITY_REFS',
-  description: 'Match tasks with the given template entity refs',
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
-  paramsSchema: z.object({
-    templateEntityRefs: z
-      .array(z.string())
-      .describe(
-        'List of template entity refs; only tasks related to these templates will be viewable',
-      ),
-  }),
-  apply: (resource, { templateEntityRefs }) => {
-    if (!resource.spec.templateInfo) {
-      return false;
-    }
-    return templateEntityRefs.includes(resource.spec.templateInfo.entityRef);
-  },
-  toQuery: ({ templateEntityRefs }) => {
-    return {
-      property: 'templateEntityRefs' as TaskFilter['property'],
-      values: templateEntityRefs,
+      property: 'templateOwners' as TaskFilter['property'],
+      values: templateOwners,
     };
   },
 });
@@ -199,4 +174,4 @@ export const scaffolderActionRules = {
   hasNumberProperty,
   hasStringProperty,
 };
-export const scaffolderTaskRules = { hasCreatedBy, hasTemplateEntityRefs };
+export const scaffolderTaskRules = { hasTemplateOwners };
