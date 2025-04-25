@@ -297,6 +297,12 @@ export function locationSpecToLocationEntity(opts: {
 // @public
 export function locationSpecToMetadataName(location: LocationSpec_2): string;
 
+// @public
+export function parseEntityYaml(
+  data: string | Buffer,
+  location: LocationSpec_2,
+): Iterable<CatalogProcessorResult>;
+
 // @public (undocumented)
 export type PlaceholderResolver = (
   params: PlaceholderResolverParams,

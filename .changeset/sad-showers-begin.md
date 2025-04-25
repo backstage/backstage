@@ -33,6 +33,7 @@ The following removed exports are available from `@backstage/plugin-catalog-node
 - `PlaceholderResolverParams`
 - `PlaceholderResolverRead`
 - `PlaceholderResolverResolveUrl`
+- `parseEntityYaml`
 
 The following removed exports are available from `@backstage/plugin-catalog-common`:
 

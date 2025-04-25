@@ -10,7 +10,6 @@ import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorCache } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
-import { CatalogProcessorResult } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
@@ -214,12 +213,6 @@ export class FileReaderProcessor implements CatalogProcessor {
     parser: CatalogProcessorParser,
   ): Promise<boolean>;
 }
-
-// @public (undocumented)
-export function parseEntityYaml(
-  data: Buffer,
-  location: LocationSpec,
-): Iterable<CatalogProcessorResult>;
 
 // @public
 export class PlaceholderProcessor implements CatalogProcessor {
