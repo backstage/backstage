@@ -1,0 +1,57 @@
+---
+'@backstage/plugin-catalog-backend': major
+---
+
+**BREAKING**: Removed all deprecated exports.
+
+The following removed exports are available from `@backstage/plugin-catalog-node`:
+
+- `locationSpecToMetadataName`
+- `locationSpecToLocationEntity`
+- `processingResult`
+- `EntitiesSearchFilter`
+- `EntityFilter`
+- `DeferredEntity`
+- `EntityRelationSpec`
+- `CatalogProcessor`
+- `CatalogProcessorParser`
+- `CatalogProcessorCache`
+- `CatalogProcessorEmit`
+- `CatalogProcessorLocationResult`
+- `CatalogProcessorEntityResult`
+- `CatalogProcessorRelationResult`
+- `CatalogProcessorErrorResult`
+- `CatalogProcessorRefreshKeysResult`
+- `CatalogProcessorResult`
+- `EntityProvider`
+- `EntityProviderConnection`
+- `EntityProviderMutation`
+- `AnalyzeOptions`
+- `LocationAnalyzer`
+- `ScmLocationAnalyzer`
+- `PlaceholderResolver`
+- `PlaceholderResolverParams`
+- `PlaceholderResolverRead`
+- `PlaceholderResolverResolveUrl`
+
+The following removed exports are available from `@backstage/plugin-catalog-common`:
+
+- `LocationSpec`
+- `AnalyzeLocationRequest`
+- `AnalyzeLocationResponse`
+- `AnalyzeLocationExistingEntity`
+- `AnalyzeLocationGenerateEntity`
+- `AnalyzeLocationEntityField`
+
+The following removed exports are instead implemented in the new backend system by `@backstage/plugin-search-backend-module-catalog`:
+
+- `defaultCatalogCollatorEntityTransformer`
+- `CatalogCollatorEntityTransformer`
+- `DefaultCatalogCollator`
+
+The following exports are removed without a direct replacement:
+
+- `DefaultCatalogCollatorFactory`
+- `DefaultCatalogCollatorFactoryOptions`
+- `LocationEntityProcessor`
+- `LocationEntityProcessorOptions`
