@@ -108,9 +108,7 @@ describe('JWKSHandler', () => {
         audience: 'backstage',
       },
     };
-    const jwksHandler = new JWKSHandler();
-
-    jwksHandler.add(new ConfigReader(validEntry));
+    const jwksHandler = new JWKSHandler([new ConfigReader(validEntry)]);
 
     const token = await factory.issueToken({
       claims: { sub: mockSubject },
@@ -139,10 +137,10 @@ describe('JWKSHandler', () => {
         audience: ['multiple-audiences', 'backstage'],
       },
     };
-    const jwksHandler = new JWKSHandler();
-
-    jwksHandler.add(new ConfigReader(invalidEntry));
-    jwksHandler.add(new ConfigReader(validEntry));
+    const jwksHandler = new JWKSHandler([
+      new ConfigReader(invalidEntry),
+      new ConfigReader(validEntry),
+    ]);
 
     const token = await factory.issueToken({
       claims: { sub: mockSubject },
@@ -169,10 +167,10 @@ describe('JWKSHandler', () => {
         audience: 'wrong',
       },
     };
-    const jwksHandler = new JWKSHandler();
-
-    jwksHandler.add(new ConfigReader(invalidEntry1));
-    jwksHandler.add(new ConfigReader(invalidEntry2));
+    const jwksHandler = new JWKSHandler([
+      new ConfigReader(invalidEntry1),
+      new ConfigReader(invalidEntry2),
+    ]);
 
     const token = await factory.issueToken({
       claims: { sub: mockSubject },
@@ -184,30 +182,26 @@ describe('JWKSHandler', () => {
   });
 
   it('rejects bad config', () => {
-    const jwksHandler = new JWKSHandler();
-
     expect(() => {
-      jwksHandler.add(
+      return new JWKSHandler([
         new ConfigReader({
-          options: {
-            url: 'https://exampl e.com/jwks',
-          },
+          options: { url: 'https://exampl e.com/jwks' },
         }),
-      );
+      ]);
     }).toThrow('Illegal JWKS URL, must be a set of non-space characters');
     expect(() => {
-      jwksHandler.add(
+      return new JWKSHandler([
         new ConfigReader({
           options: {
             url: 'https://example.com/jwks\n',
           },
         }),
-      );
+      ]);
     }).toThrow('Illegal JWKS URL, must be a set of non-space characters');
   });
 
   it('gracefully handles no added tokens', async () => {
-    const handler = new JWKSHandler();
+    const handler = new JWKSHandler([]);
     await expect(handler.verifyToken('ghi')).resolves.toBeUndefined();
   });
 
@@ -221,9 +215,7 @@ describe('JWKSHandler', () => {
         subjectPrefix: 'custom-prefix',
       },
     };
-    const jwksHandler = new JWKSHandler();
-
-    jwksHandler.add(new ConfigReader(validEntry));
+    const jwksHandler = new JWKSHandler([new ConfigReader(validEntry)]);
 
     const token = await factory.issueToken({
       claims: { sub: mockSubject },
@@ -237,15 +229,14 @@ describe('JWKSHandler', () => {
   });
 
   it('carries over access restrictions', async () => {
-    const jwksHandler = new JWKSHandler();
-    jwksHandler.add(
+    const jwksHandler = new JWKSHandler([
       new ConfigReader({
         options: {
           url: `${mockBaseUrl}/.well-known/jwks.json`,
         },
         accessRestrictions: [{ plugin: 'scaffolder', permission: 'do.it' }],
       }),
-    );
+    ]);
 
     const token = await factory.issueToken({ claims: { sub: mockSubject } });
 
