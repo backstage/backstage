@@ -1,0 +1,19 @@
+name: Automate issue labels
+on:
+  issues:
+    types:
+      - labeled
+
+jobs:
+  stale:
+    permissions:
+      issues: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Remove needs:triage label
+        uses: actions-ecosystem/action-remove-labels@v1
+        if: ${{ startsWith(github.event.label.name, 'priority:') || ( startsWith(github.event.label.name, 'needs:') && github.event.label.name != 'needs:triage' ) }}
+        with:
+          labels: needs:triage
