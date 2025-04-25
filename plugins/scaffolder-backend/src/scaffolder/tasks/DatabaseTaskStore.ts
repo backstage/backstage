@@ -344,22 +344,43 @@ export class DatabaseTaskStore implements TaskStore {
       throw new NotFoundError(`No task with id '${taskId}' found`);
     }
     try {
-      const spec = JSON.parse(result.spec);
-      const secrets = result.secrets ? JSON.parse(result.secrets) : undefined;
-      const state = this.getState(result);
-      return {
-        id: result.id,
-        spec,
-        status: result.status,
-        lastHeartbeatAt: parseSqlDateToIsoString(result.last_heartbeat_at),
-        createdAt: parseSqlDateToIsoString(result.created_at),
-        createdBy: result.created_by ?? undefined,
-        secrets,
-        state,
-      };
+      return this.parseTaskRow(result);
     } catch (error) {
       throw new Error(`Failed to parse spec of task '${taskId}', ${error}`);
     }
+  }
+
+  async getTasks(taskIds: string[]): Promise<SerializedTask[]> {
+    const results = await this.db<RawDbTaskRow>('tasks')
+      .whereIn('id', taskIds)
+      .select();
+
+    return results.map(result => {
+      try {
+        return this.parseTaskRow(result);
+      } catch (error) {
+        throw new Error(
+          `Failed to parse spec of task '${result.id}', ${error}`,
+        );
+      }
+    });
+  }
+
+  private parseTaskRow(result: RawDbTaskRow): SerializedTask {
+    const spec = JSON.parse(result.spec);
+    const secrets = result.secrets ? JSON.parse(result.secrets) : undefined;
+    const state = this.getState(result);
+
+    return {
+      id: result.id,
+      spec,
+      status: result.status,
+      lastHeartbeatAt: parseSqlDateToIsoString(result.last_heartbeat_at),
+      createdAt: parseSqlDateToIsoString(result.created_at),
+      createdBy: result.created_by ?? undefined,
+      secrets,
+      state,
+    };
   }
 
   async createTask(

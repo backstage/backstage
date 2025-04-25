@@ -110,6 +110,8 @@ export interface TaskStore {
 
   getTask(taskId: string): Promise<SerializedTask>;
 
+  getTasks(taskIds: string[]): Promise<SerializedTask[]>;
+
   claimTask(): Promise<SerializedTask | undefined>;
 
   completeTask(options: {
