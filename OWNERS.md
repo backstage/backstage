@@ -106,21 +106,6 @@ Scope: The Kubernetes plugin and the base it provides for other plugins to build
 | -------------- | ------------ | ---- | ---------------------------------------- | ------------ |
 | Matthew Clarke | Spotify      |      | [mclarke47](http://github.com/mclarke47) | mclarke#0725 |
 
-### Microsite
-
-Team: @backstage/microsite-maintainers
-
-Scope: The microsite at [backstage.io](https://backstage.io), excluding the documentation.
-
-| Name                 | Organization | Team          | GitHub                                          | Discord         |
-| -------------------- | ------------ | ------------- | ----------------------------------------------- | --------------- |
-| Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
-| Ben Lambert          | Spotify      | Cubic Belugas | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`     |
-| Camila Loiola        | Spotify      | Cubic Belugas | [camilaibs](http://github.com/camilaibs)        | `camilal#0226`  |
-| Fredrik Adelöw       | Spotify      | Cubic Belugas | [freben](https://github.com/freben)             | `freben#3926`   |
-| Mihai Tabara         | Spotify      | Cubic Belugas | [MihaiTabara](http://github.com/MihaiTabara)    | `mihait#3107`   |
-| Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
-
 ### Operations
 
 Team: @backstage/operations-maintainers
