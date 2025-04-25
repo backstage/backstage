@@ -38,7 +38,12 @@ export class JWKSHandler implements TokenHandler {
     allAccessRestrictions?: AccessRestrictionsMap;
   }> = [];
 
-  add(config: Config) {
+  constructor(configs: Config[]) {
+    for (const config of configs) {
+      this.add(config);
+    }
+  }
+  private add(config: Config) {
     if (!config.getString('options.url').match(/^\S+$/)) {
       throw new Error(
         'Illegal JWKS URL, must be a set of non-space characters',
