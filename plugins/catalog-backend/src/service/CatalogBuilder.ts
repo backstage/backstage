@@ -85,7 +85,6 @@ import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatal
 import {
   AnnotateLocationEntityProcessor,
   BuiltinKindsEntityProcessor,
-  CodeOwnersProcessor,
   FileReaderProcessor,
   PlaceholderProcessor,
   UrlReaderProcessor,
@@ -358,7 +357,6 @@ export class CatalogBuilder {
     return [
       new FileReaderProcessor(),
       new UrlReaderProcessor({ reader, logger, config }),
-      CodeOwnersProcessor.fromConfig(config, { logger, reader }),
       new AnnotateLocationEntityProcessor({ integrations }),
     ];
   }
