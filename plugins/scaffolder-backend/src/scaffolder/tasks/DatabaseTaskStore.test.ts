@@ -362,6 +362,7 @@ describe('DatabaseTaskStore', () => {
         createdAt: expect.any(String),
         lastHeartbeatAt: null,
         createdBy: 'me',
+        templateOwner: null,
       },
     });
   });
@@ -464,6 +465,7 @@ describe('DatabaseTaskStore', () => {
         createdAt: expect.any(String),
         lastHeartbeatAt: expect.any(String),
         createdBy: 'me',
+        templateOwner: null,
       },
     });
   });

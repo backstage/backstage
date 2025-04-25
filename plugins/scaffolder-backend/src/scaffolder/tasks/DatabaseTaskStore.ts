@@ -394,7 +394,7 @@ export class DatabaseTaskStore implements TaskStore {
         id: taskId,
         spec: options.spec,
         createdBy: options.createdBy,
-        template_owner: templateOwner,
+        templateOwner: templateOwner,
         status: 'open',
       },
     });
