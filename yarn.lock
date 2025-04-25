@@ -6032,8 +6032,6 @@ __metadata:
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
-    "@backstage/plugin-search-backend-module-catalog": "workspace:^"
-    "@backstage/plugin-search-common": "workspace:^"
     "@backstage/repo-tools": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
