@@ -34,7 +34,12 @@ export class StaticTokenHandler implements TokenHandler {
     }
   >();
 
-  add(config: Config) {
+  constructor(configs: Config[]) {
+    for (const config of configs) {
+      this.add(config);
+    }
+  }
+  private add(config: Config) {
     const token = config.getString('options.token');
     const subject = config.getString('options.subject');
     const allAccessRestrictions = readAccessRestrictionsFromConfig(config);

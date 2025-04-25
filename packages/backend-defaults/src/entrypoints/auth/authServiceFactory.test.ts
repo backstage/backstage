@@ -21,7 +21,6 @@ import {
 } from '@backstage/backend-test-utils';
 import {
   authServiceFactory,
-  externalTokenHandlersServiceRef,
   pluginTokenHandlerDecoratorServiceRef,
 } from './authServiceFactory';
 import { base64url, decodeJwt } from 'jose';
@@ -33,8 +32,7 @@ import { PluginTokenHandler } from './plugin/PluginTokenHandler';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { AccessRestrictionsMap, TokenHandler } from './external/types';
 import { Config } from '@backstage/config';
-// import { ExternalTokenHandler } from './external/ExternalTokenHandler';
-// import { TokenHandler } from './external/types';
+import { externalTokenTypeHandlersRef } from './external/ExternalTokenHandler';
 
 const server = setupServer();
 
@@ -504,10 +502,11 @@ describe('authServiceFactory', () => {
         }),
       ];
 
-      const customHandler = new (class CustomHandler implements TokenHandler {
-        add(options: Config): TokenHandler {
-          customAddEntry(options);
-          return this;
+      class CustomHandler implements TokenHandler {
+        constructor(options: Config[]) {
+          for (const option of options) {
+            customAddEntry(option);
+          }
         }
         async verifyToken(token: string): Promise<
           | {
@@ -521,16 +520,17 @@ describe('authServiceFactory', () => {
             subject: 'foo',
           };
         }
-      })();
+      }
 
       const customPluginTokenHandler = createServiceFactory({
-        service: externalTokenHandlersServiceRef,
+        service: externalTokenTypeHandlersRef,
         deps: {},
         async factory() {
           return {
-            custom: (options: Config) => {
-              customConfig(options);
-              return customHandler.add(options);
+            type: 'custom',
+            factory: (configs: Config[]) => {
+              customConfig(configs);
+              return new CustomHandler(configs);
             },
           };
         },
@@ -553,14 +553,16 @@ describe('authServiceFactory', () => {
       );
       expect(customLogic).toHaveBeenCalledWith('custom-token');
       expect(customConfig).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            options: expect.objectContaining({
-              [`custom-config`]: 'custom-config',
-              foo: 'bar',
+        expect.arrayContaining([
+          expect.objectContaining({
+            data: expect.objectContaining({
+              options: expect.objectContaining({
+                [`custom-config`]: 'custom-config',
+                foo: 'bar',
+              }),
             }),
           }),
-        }),
+        ]),
       );
     });
   });

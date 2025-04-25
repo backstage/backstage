@@ -23,9 +23,10 @@ export const authServiceFactory: ServiceFactory<
 >;
 
 // @public
-export const externalTokenHandlersServiceRef: ServiceRef<
+export const externalTokenTypeHandlersRef: ServiceRef<
   {
-    [configKey: string]: (config: Config) => TokenHandler;
+    type: string;
+    factory: (config: Config[]) => TokenHandler;
   },
   'plugin',
   'multiton'
@@ -63,8 +64,6 @@ export const pluginTokenHandlerDecoratorServiceRef: ServiceRef<
 
 // @public
 export interface TokenHandler {
-  // (undocumented)
-  add?(options: Config): TokenHandler;
   // (undocumented)
   verifyToken(token: string): Promise<
     | {
