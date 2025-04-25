@@ -15,6 +15,21 @@ Team: @backstage/maintainers
 
 These are the separate project areas of Backstage, each with their own project area maintainers
 
+### Auth
+
+Team: @backstage/auth-maintainers
+
+Scope: The Backstage auth plugin and modules, as well as client-side implementations.
+
+| Name                 | Organization | Team          | GitHub                                          | Discord         |
+| -------------------- | ------------ | ------------- | ----------------------------------------------- | --------------- |
+| Ben Lambert          | Spotify      | Cubic Belugas | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`     |
+| Camila Loiola        | Spotify      | Cubic Belugas | [camilaibs](http://github.com/camilaibs)        | `camilal#0226`  |
+| Fredrik Adelöw       | Spotify      | Cubic Belugas | [freben](https://github.com/freben)             | `freben#3926`   |
+| Mihai Tabara         | Spotify      | Cubic Belugas | [MihaiTabara](http://github.com/MihaiTabara)    | `mihait#3107`   |
+| Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
+| Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
+
 ### Catalog
 
 Team: @backstage/catalog-maintainers
@@ -40,6 +55,21 @@ Scope: The Backstage design system, component library, as well as surrounding to
 | ------------------- | ------------ | ------------- | --------------------------------------------- | ------------- |
 | Charles de Dreuille | Spotify      |               | [cdedreuille](https://github.com/cdedreuille) | `cdedreuille` |
 | Patrik Oldsberg     | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)           | `Rugvip`      |
+
+### Framework
+
+Team: @backstage/framework-maintainers
+
+Scope: The Backstage core framework, including all revisions of the frontend and backend systems, as well as the App plugin.
+
+| Name                 | Organization | Team          | GitHub                                          | Discord         |
+| -------------------- | ------------ | ------------- | ----------------------------------------------- | --------------- |
+| Ben Lambert          | Spotify      | Cubic Belugas | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`     |
+| Camila Loiola        | Spotify      | Cubic Belugas | [camilaibs](http://github.com/camilaibs)        | `camilal#0226`  |
+| Fredrik Adelöw       | Spotify      | Cubic Belugas | [freben](https://github.com/freben)             | `freben#3926`   |
+| Mihai Tabara         | Spotify      | Cubic Belugas | [MihaiTabara](http://github.com/MihaiTabara)    | `mihait#3107`   |
+| Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
+| Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
 
 ### Helm Charts
 
@@ -75,6 +105,36 @@ Scope: The Kubernetes plugin and the base it provides for other plugins to build
 | Name           | Organization | Team | GitHub                                   | Discord      |
 | -------------- | ------------ | ---- | ---------------------------------------- | ------------ |
 | Matthew Clarke | Spotify      |      | [mclarke47](http://github.com/mclarke47) | mclarke#0725 |
+
+### Microsite
+
+Team: @backstage/microsite-maintainers
+
+Scope: The microsite at [backstage.io](https://backstage.io), excluding the documentation.
+
+| Name                 | Organization | Team          | GitHub                                          | Discord         |
+| -------------------- | ------------ | ------------- | ----------------------------------------------- | --------------- |
+| Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
+| Ben Lambert          | Spotify      | Cubic Belugas | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`     |
+| Camila Loiola        | Spotify      | Cubic Belugas | [camilaibs](http://github.com/camilaibs)        | `camilal#0226`  |
+| Fredrik Adelöw       | Spotify      | Cubic Belugas | [freben](https://github.com/freben)             | `freben#3926`   |
+| Mihai Tabara         | Spotify      | Cubic Belugas | [MihaiTabara](http://github.com/MihaiTabara)    | `mihait#3107`   |
+| Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
+
+### Operations
+
+Team: @backstage/operations-maintainers
+
+Scope: The management and operation of the main Backstage repository and release process, along with the surrounding tooling.
+
+| Name                 | Organization | Team          | GitHub                                          | Discord         |
+| -------------------- | ------------ | ------------- | ----------------------------------------------- | --------------- |
+| Ben Lambert          | Spotify      | Cubic Belugas | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`     |
+| Camila Loiola        | Spotify      | Cubic Belugas | [camilaibs](http://github.com/camilaibs)        | `camilal#0226`  |
+| Fredrik Adelöw       | Spotify      | Cubic Belugas | [freben](https://github.com/freben)             | `freben#3926`   |
+| Mihai Tabara         | Spotify      | Cubic Belugas | [MihaiTabara](http://github.com/MihaiTabara)    | `mihait#3107`   |
+| Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
+| Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
 
 ### Permission Framework
 
@@ -116,6 +176,21 @@ Scope: The TechDocs plugin and related tooling
 | Jackson Chen    | Spotify      | ProTean | [PeaWarrior](https://github.com/PeaWarrior)       | `jacksonc#3322`    |
 | John Philip     | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | `john_philip#2399` |
 | Sydney Achinger | Spotify      | ProTean | [squid-ney](https://github.com/squid-ney)         | -                  |
+
+### Tooling
+
+Team: @backstage/tooling-maintainers
+
+Scope: All published Backstage CLI tools in the main `backstage` repository that do not belong to other areas, including `@backstage/cli` and `@backstage/repo-tools`.
+
+| Name                 | Organization | Team          | GitHub                                          | Discord         |
+| -------------------- | ------------ | ------------- | ----------------------------------------------- | --------------- |
+| Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
+| Ben Lambert          | Spotify      | Cubic Belugas | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`     |
+| Camila Loiola        | Spotify      | Cubic Belugas | [camilaibs](http://github.com/camilaibs)        | `camilal#0226`  |
+| Fredrik Adelöw       | Spotify      | Cubic Belugas | [freben](https://github.com/freben)             | `freben#3926`   |
+| Mihai Tabara         | Spotify      | Cubic Belugas | [MihaiTabara](http://github.com/MihaiTabara)    | `mihait#3107`   |
+| Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
 
 ## Incubating Project Areas
 
