@@ -14,7 +14,7 @@ policy:
           - name: 'area:design-system'
             keys: ['Design System']
           - name: 'area:documentation'
-            keys: ['Documentation']
+            keys: ['Documentation', 'Microsite']
           - name: 'area:events'
             keys: ['Events System']
           - name: 'area:home'
