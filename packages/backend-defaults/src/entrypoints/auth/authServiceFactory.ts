@@ -21,8 +21,8 @@ import {
 } from '@backstage/backend-plugin-api';
 import { DefaultAuthService } from './DefaultAuthService';
 import {
-  // DefaultExternalTokenHandler,
   ExternalTokenHandler,
+  externalTokenTypeHandlersRef,
 } from './external/ExternalTokenHandler';
 import {
   DefaultPluginTokenHandler,
@@ -30,8 +30,6 @@ import {
 } from './plugin/PluginTokenHandler';
 import { createPluginKeySource } from './plugin/keys/createPluginKeySource';
 import { UserTokenHandler } from './user/UserTokenHandler';
-import { TokenHandler } from './external/types';
-import { Config } from '@backstage/config';
 
 /**
  * @public
@@ -49,16 +47,6 @@ export const pluginTokenHandlerDecoratorServiceRef = createServiceRef<
         return impl => impl;
       },
     }),
-});
-/**
- * @public
- * This service is used to decorate the default plugin token handler with custom logic.
- */
-export const externalTokenHandlersServiceRef = createServiceRef<{
-  [configKey: string]: (config: Config) => TokenHandler;
-}>({
-  id: 'core.auth.externalTokenHandlers',
-  multiton: true,
 });
 
 /**
@@ -79,7 +67,7 @@ export const authServiceFactory = createServiceFactory({
     plugin: coreServices.pluginMetadata,
     database: coreServices.database,
     pluginTokenHandlerDecorator: pluginTokenHandlerDecoratorServiceRef,
-    externalTokenHandlers: externalTokenHandlersServiceRef,
+    externalTokenHandlers: externalTokenTypeHandlersRef,
   },
   async factory({
     config,
