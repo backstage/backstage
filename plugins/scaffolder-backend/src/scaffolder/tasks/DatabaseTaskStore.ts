@@ -216,7 +216,6 @@ export class DatabaseTaskStore implements TaskStore {
   ): Knex.QueryBuilder {
     // handle not criteria
     if (isNotCriteria(filter)) {
-      console.log(`reached here: ${JSON.stringify(filter)}`);
       return this.parseFilter(filter.not, query, db, !negate);
     }
 
@@ -289,8 +288,6 @@ export class DatabaseTaskStore implements TaskStore {
     if (combinedPermissionFilters) {
       this.parseFilter(combinedPermissionFilters, queryBuilder, this.db);
     }
-
-    console.log(`Parse FIlters: ${queryBuilder}`);
 
     if (status || filters?.status) {
       const arr: TaskStatus[] = flattenParams<TaskStatus>(
