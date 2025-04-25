@@ -204,6 +204,8 @@ export interface TaskBroker {
 
   get(taskId: string): Promise<SerializedTask>;
 
+  getTasks(taskIds: string[]): Promise<SerializedTask[]>;
+
   list?(options?: {
     filters?: {
       createdBy?: string | string[];

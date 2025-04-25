@@ -329,6 +329,8 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
+  getTasks(taskIds: string[]): Promise<SerializedTask_2[]>;
+  // (undocumented)
   getTaskState({ taskId }: { taskId: string }): Promise<
     | {
         state: JsonObject;
@@ -482,6 +484,8 @@ export interface TaskStore {
   emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
   // (undocumented)
   getTask(taskId: string): Promise<SerializedTask>;
+  // (undocumented)
+  getTasks(taskIds: string[]): Promise<SerializedTask[]>;
   // (undocumented)
   getTaskState?({ taskId }: { taskId: string }): Promise<
     | {

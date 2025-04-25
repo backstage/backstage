@@ -29,6 +29,7 @@ import {
   TaskBrokerDispatchOptions,
   TaskCompletionState,
   TaskContext,
+  TaskFilters,
   TaskSecrets,
   TaskStatus,
 } from '@backstage/plugin-scaffolder-node';
@@ -43,6 +44,7 @@ import ObservableImpl from 'zen-observable';
 import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
 import { readDuration } from './helper';
 import { InternalTaskSecrets, TaskStore } from './types';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
 type TaskState = {
   checkpoints: {
@@ -291,6 +293,7 @@ export class StorageTaskBroker implements TaskBroker {
       offset?: number;
     };
     order?: { order: 'asc' | 'desc'; field: string }[];
+    permissionFilters?: PermissionCriteria<TaskFilters>;
   }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }> {
     if (!this.storage.list) {
       throw new Error(
@@ -398,6 +401,13 @@ export class StorageTaskBroker implements TaskBroker {
    */
   async get(taskId: string): Promise<SerializedTask> {
     return this.storage.getTask(taskId);
+  }
+
+  /**
+   * {@inheritdoc TaskBroker.getTasks}
+   */
+  getTasks(taskIds: string[]): Promise<SerializedTask[]> {
+    return this.storage.getTasks(taskIds);
   }
 
   /**
