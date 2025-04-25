@@ -272,8 +272,6 @@ describe('DatabaseTaskStore', () => {
       permissionFilters: permissionFilters,
     });
 
-    console.log(JSON.stringify);
-
     expect(totalTasks).toBe(3);
 
     const createdByList = tasks.map(task => task.createdBy);
