@@ -19,6 +19,10 @@ import { base64url, decodeJwt, decodeProtectedHeader, jwtVerify } from 'jose';
 import { readAccessRestrictionsFromConfig } from './helpers';
 import { AccessRestrictionsMap, TokenHandler } from './types';
 
+export type LegacyConfigWrapper = {
+  legacy: boolean;
+  config: Config;
+};
 /**
  * Handles `type: legacy` access.
  *
@@ -32,6 +36,16 @@ export class LegacyTokenHandler implements TokenHandler {
       allAccessRestrictions?: AccessRestrictionsMap;
     };
   }>();
+
+  constructor(configs: (Config | LegacyConfigWrapper)[]) {
+    for (const config of configs) {
+      if (isLegacy(config)) {
+        this.addOld(config.config);
+        continue;
+      }
+      this.add(config);
+    }
+  }
 
   add(config: Config) {
     const allAccessRestrictions = readAccessRestrictionsFromConfig(config);
@@ -118,4 +132,10 @@ export class LegacyTokenHandler implements TokenHandler {
     // None of the signing keys matched
     return undefined;
   }
+}
+
+function isLegacy(
+  config: Config | LegacyConfigWrapper,
+): config is LegacyConfigWrapper {
+  return (config as LegacyConfigWrapper).legacy === true;
 }
