@@ -22,6 +22,8 @@ import {
   RequestValidator,
 } from '@backstage/plugin-events-node';
 import { verify } from '@octokit/webhooks-methods';
+import { createAppIdResolver } from '../util/createAppIdResolver';
+import { OctokitProviderService } from '../util/octokitProviderService';
 
 /**
  * Validates that the request received is the expected GitHub request
@@ -36,28 +38,30 @@ import { verify } from '@octokit/webhooks-methods';
  */
 export function createGithubSignatureValidator(
   config: Config,
+  octokitProvider: OctokitProviderService,
 ): RequestValidator | undefined {
-  const webhookSecrets = new Set<string>();
-
   const integrations = ScmIntegrations.fromConfig(config);
+
+  // GitHub App installation ID to secret
+  const githubAppSecrets = new Map<number, string>();
   for (const integration of integrations.github.list()) {
-    for (const app of integration.config.apps ?? []) {
-      if (app.webhookSecret) {
-        webhookSecrets.add(app.webhookSecret);
+    for (const { appId, webhookSecret } of integration.config.apps ?? []) {
+      if (appId && webhookSecret) {
+        githubAppSecrets.set(appId, webhookSecret);
       }
     }
   }
 
-  const moduleSecret = config.getOptionalString(
+  // A single optional secret for all GitHub events
+  const genericSecret = config.getOptionalString(
     'events.modules.github.webhookSecret',
   );
-  if (moduleSecret) {
-    webhookSecrets.add(moduleSecret);
-  }
 
-  if (webhookSecrets.size === 0) {
+  if (!genericSecret && githubAppSecrets.size === 0) {
     return undefined;
   }
+
+  const appIdResolver = createAppIdResolver(octokitProvider);
 
   return async (
     request: RequestDetails,
@@ -69,9 +73,19 @@ export function createGithubSignatureValidator(
 
     if (signature) {
       const body = request.raw.body.toString(request.raw.encoding);
-      for (const secret of webhookSecrets) {
-        if (await verify(secret, body, signature)) {
-          return; // OK
+
+      if (githubAppSecrets.size) {
+        const appId = await appIdResolver(request);
+        if (appId && githubAppSecrets.has(appId)) {
+          if (await verify(githubAppSecrets.get(appId)!, body, signature)) {
+            return;
+          }
+        }
+      }
+
+      if (genericSecret) {
+        if (await verify(genericSecret, body, signature)) {
+          return;
         }
       }
     }

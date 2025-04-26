@@ -22,6 +22,7 @@ import {
 } from '@backstage/plugin-events-node';
 import { sign } from '@octokit/webhooks-methods';
 import { createGithubSignatureValidator } from './createGithubSignatureValidator';
+import { OctokitProviderService } from '../util/octokitProviderService';
 
 class TestContext implements RequestValidationContext {
   #details?: Partial<RequestRejectionDetails>;
@@ -34,6 +35,10 @@ class TestContext implements RequestValidationContext {
     return this.#details;
   }
 }
+
+const octokitProvider = {
+  getOctokit: jest.fn(),
+} satisfies OctokitProviderService;
 
 describe('createGithubSignatureValidator', () => {
   const secret = 'valid-secret';
@@ -54,7 +59,7 @@ describe('createGithubSignatureValidator', () => {
           host: 'github.com',
           apps: [
             {
-              appId: 1,
+              appId: 7,
               privateKey: 'a',
               clientId: 'b',
               clientSecret: 'c',
@@ -65,8 +70,13 @@ describe('createGithubSignatureValidator', () => {
       ],
     },
   });
-  const payloadString = '{"test": "payload", "score": 5.0}';
-  const payload = JSON.parse(payloadString);
+  const payload = {
+    test: 'payload',
+    score: 5.0,
+    repository: { html_url: 'https://github.com/backstage/backstage' },
+    installation: { id: 70 },
+  };
+  const payloadString = JSON.stringify(payload);
   const payloadBuffer = Buffer.from(payloadString);
   const validSignature = sign({ secret, algorithm: 'sha256' }, payloadString);
 
@@ -84,16 +94,19 @@ describe('createGithubSignatureValidator', () => {
   };
 
   it('should return undefined if no secret is configured', async () => {
-    expect(createGithubSignatureValidator(configWithoutSecret)).toEqual(
-      undefined,
-    );
+    expect(
+      createGithubSignatureValidator(configWithoutSecret, octokitProvider),
+    ).toEqual(undefined);
   });
 
   it('secret configured, reject request without signature', async () => {
     const request = await requestWithSignature(undefined);
     const context = new TestContext();
 
-    const validator = createGithubSignatureValidator(configWithSecret);
+    const validator = createGithubSignatureValidator(
+      configWithSecret,
+      octokitProvider,
+    );
     await validator!(request, context);
 
     expect(context.details).not.toBeUndefined();
@@ -105,7 +118,10 @@ describe('createGithubSignatureValidator', () => {
     const request = await requestWithSignature('invalid signature');
     const context = new TestContext();
 
-    const validator = createGithubSignatureValidator(configWithSecret);
+    const validator = createGithubSignatureValidator(
+      configWithSecret,
+      octokitProvider,
+    );
     await validator!(request, context);
 
     expect(context.details).not.toBeUndefined();
@@ -117,7 +133,10 @@ describe('createGithubSignatureValidator', () => {
     const request = await requestWithSignature(await validSignature);
     const context = new TestContext();
 
-    const validator = createGithubSignatureValidator(configWithSecret);
+    const validator = createGithubSignatureValidator(
+      configWithSecret,
+      octokitProvider,
+    );
     await validator!(request, context);
 
     expect(context.details).toBeUndefined();
@@ -126,8 +145,20 @@ describe('createGithubSignatureValidator', () => {
   it('secret configured, accept request with valid signature defined in integrations', async () => {
     const request = await requestWithSignature(await validSignature);
     const context = new TestContext();
+    octokitProvider.getOctokit.mockResolvedValue({
+      rest: {
+        apps: {
+          getInstallation: async () => ({
+            data: { app_id: 7 },
+          }),
+        },
+      },
+    });
 
-    const validator = createGithubSignatureValidator(configWithAppSecret);
+    const validator = createGithubSignatureValidator(
+      configWithAppSecret,
+      octokitProvider,
+    );
     await validator!(request, context);
 
     expect(context.details).toBeUndefined();
