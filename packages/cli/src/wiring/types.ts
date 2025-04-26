@@ -27,10 +27,6 @@ export interface BackstageCommand {
        */
       usage: string;
       /**
-       * The usage string of the current command, without the program name, for example: "repo test"
-       */
-      usageWithoutProgram: string;
-      /**
        * The description provided for the command
        */
       description: string;
