@@ -48,9 +48,16 @@ Options:
   -h, --help
 
 Commands:
+  check
   docs
   help [command]
   schema
+```
+
+### `backstage-cli-alpha config check`
+
+```
+Usage: <none>
 ```
 
 ### `backstage-cli-alpha config docs`

@@ -17,6 +17,7 @@ import { createCliPlugin } from '../../wiring/factory';
 import yargs from 'yargs';
 import { Command } from 'commander';
 import { lazy } from '../../lib/lazy';
+import { Command as ClipanionCommand, runExit } from 'clipanion';
 
 export default createCliPlugin({
   pluginId: 'config',
@@ -95,6 +96,19 @@ export default createCliPlugin({
         const m =
           (await require('./commands/validate')) as typeof import('./commands/validate');
         await m.default(argv);
+      },
+    });
+    reg.addCommand({
+      path: ['config', 'check'],
+      description:
+        'Validate that the given configuration loads and matches schema',
+      execute: async ({ args, info }) => {
+        const { ValidateCommand } =
+          require('./commands/validate') as typeof import('./commands/validate');
+        ValidateCommand.usage = ClipanionCommand.Usage({
+          description: info.description,
+        });
+        runExit({ binaryName: info.usage }, ValidateCommand, args);
       },
     });
 
