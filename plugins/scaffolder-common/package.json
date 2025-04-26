@@ -70,7 +70,6 @@
     "cross-fetch": "^4.0.0",
     "json-schema": "^0.4.0",
     "msw": "^1.0.0",
-    "qs": "^6.9.4",
     "uri-template": "^2.0.0",
     "zen-observable": "^0.10.0"
   },
