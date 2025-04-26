@@ -4,16 +4,9 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventsService } from '@backstage/plugin-events-node';
-import { RequestValidator } from '@backstage/plugin-events-node';
 import { SubTopicEventRouter } from '@backstage/plugin-events-node';
-
-// @public
-export function createGithubSignatureValidator(
-  config: Config,
-): RequestValidator | undefined;
 
 // @public (undocumented)
 const _default: BackendFeature;

@@ -1,5 +1,7 @@
 ---
-'@backstage/plugin-events-backend-module-github': patch
+'@backstage/plugin-events-backend-module-github': minor
 ---
 
-Support webhook validation based on `integrations.github.[].apps.[].webhookSecret` too
+**BREAKING**: Removed the `createGithubSignatureValidator` export.
+
+Added support webhook validation based on `integrations.github.[].apps.[].webhookSecret`.

@@ -47,7 +47,11 @@
     "@backstage/config": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
-    "@octokit/webhooks-methods": "^3.0.0"
+    "@backstage/types": "workspace:^",
+    "@octokit/auth-callback": "^5.0.0",
+    "@octokit/webhooks-methods": "^3.0.0",
+    "lodash": "^4.17.21",
+    "octokit": "^3.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
