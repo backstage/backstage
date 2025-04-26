@@ -121,7 +121,6 @@ export class CliInitializer {
                 args: [...positionalArgs, ...args.unknown],
                 info: {
                   usage: [programName, ...node.command.path].join(' '),
-                  usageWithoutProgram: node.command.path.join(' '),
                   description: node.command.description,
                 },
               });

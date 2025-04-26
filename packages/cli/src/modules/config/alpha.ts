@@ -62,9 +62,9 @@ export default createCliPlugin({
             frontend: { type: 'boolean' },
             'with-secrets': { type: 'boolean' },
             format: { type: 'string' },
-            config: { type: 'string', array: true },
+            config: { type: 'string', array: true, default: [] },
           })
-          .usage(`$0 ${info.usageWithoutProgram}`, info.description)
+          .usage('$0', info.description)
           .help()
           .parse(args);
         const m =
