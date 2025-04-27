@@ -774,6 +774,25 @@ export function createFrontendPlugin<
   MakeSortedExtensionsMap<TExtensions[number], TId>
 >;
 
+// @public @deprecated (undocumented)
+export function createFrontendPlugin<
+  TId extends string,
+  TRoutes extends AnyRoutes = {},
+  TExternalRoutes extends AnyExternalRoutes = {},
+  TExtensions extends readonly ExtensionDefinition[] = [],
+>(
+  options: Omit<
+    PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
+    'pluginId'
+  > & {
+    id: string;
+  },
+): FrontendPlugin<
+  TRoutes,
+  TExternalRoutes,
+  MakeSortedExtensionsMap<TExtensions[number], TId>
+>;
+
 // @public
 export function createRouteRef<
   TParams extends
@@ -1495,7 +1514,7 @@ export interface PluginOptions<
   // (undocumented)
   featureFlags?: FeatureFlagConfig[];
   // (undocumented)
-  id: TId;
+  pluginId: TId;
   // (undocumented)
   routes?: TRoutes;
 }

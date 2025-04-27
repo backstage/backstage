@@ -41,7 +41,7 @@ import { apis } from './defaultApis';
 
 /** @public */
 export const appPlugin = createFrontendPlugin({
-  id: 'app',
+  pluginId: 'app',
   extensions: [
     ...apis,
     App,
