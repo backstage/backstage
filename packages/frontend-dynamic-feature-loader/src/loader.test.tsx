@@ -191,7 +191,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
     mocks.federation.get.mockReturnValue({
       default: createFrontendPlugin({
-        id: 'test-plugin',
+        pluginId: 'test-plugin',
         extensions: [],
       }),
     });
@@ -311,13 +311,13 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
     mocks.federation.get.mockReturnValueOnce({
       default: createFrontendPlugin({
-        id: 'plugin-1',
+        pluginId: 'plugin-1',
         extensions: [],
       }),
     });
     mocks.federation.get.mockReturnValueOnce({
       default: createFrontendPlugin({
-        id: 'plugin-2',
+        pluginId: 'plugin-2',
         extensions: [],
       }),
     });
@@ -428,13 +428,13 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
     mocks.federation.get.mockReturnValueOnce({
       default: createFrontendPlugin({
-        id: 'test-plugin',
+        pluginId: 'test-plugin',
         extensions: [],
       }),
     });
     mocks.federation.get.mockReturnValueOnce({
       default: createFrontendPlugin({
-        id: 'test-plugin-alpha',
+        pluginId: 'test-plugin-alpha',
         extensions: [],
       }),
     });
@@ -527,7 +527,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
     mocks.federation.get.mockReturnValueOnce({
       default: createFrontendPlugin({
-        id: 'test-plugin',
+        pluginId: 'test-plugin',
         extensions: [],
       }),
     });
@@ -591,7 +591,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
     mocks.federation.get.mockReturnValue({
       default: createFrontendPlugin({
-        id: 'test-plugin',
+        pluginId: 'test-plugin',
         extensions: [],
       }),
     });
@@ -640,7 +640,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
     mocks.federation.get.mockReturnValue({
       default: createFrontendPlugin({
-        id: 'test-plugin',
+        pluginId: 'test-plugin',
         extensions: [],
       }),
     });
@@ -746,7 +746,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
     mocks.federation.get.mockReturnValueOnce(undefined);
     mocks.federation.get.mockReturnValueOnce({
       default: createFrontendPlugin({
-        id: 'plugin-2',
+        pluginId: 'plugin-2',
         extensions: [],
       }),
     });
@@ -876,7 +876,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
     });
     mocks.federation.get.mockReturnValueOnce({
       default: createFrontendPlugin({
-        id: 'plugin-2',
+        pluginId: 'plugin-2',
         extensions: [],
       }),
     });
@@ -989,7 +989,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
     mocks.federation.get.mockReturnValueOnce({
       default: createFrontendPlugin({
-        id: 'plugin-2',
+        pluginId: 'plugin-2',
         extensions: [],
       }),
     });
@@ -1099,7 +1099,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
     mocks.federation.get.mockReturnValueOnce({
       default: createFrontendPlugin({
-        id: 'plugin-2',
+        pluginId: 'plugin-2',
         extensions: [],
       }),
     });
