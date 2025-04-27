@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CommandRegistry } from './CommandRegistry';
+import { OpaqueType } from '@internal/opaque';
 
 export interface BackstageCommand {
   path: string[];
@@ -22,26 +22,23 @@ export interface BackstageCommand {
   execute: (options: { args: string[] }) => Promise<void>;
 }
 
-export interface CliFeature {
-  $$type: '@backstage/CliFeature';
-}
+export type CliFeature = CliPlugin;
 
 export interface CliPlugin {
-  id: string;
-  init: (registry: CommandRegistry) => Promise<void>;
-  $$type: '@backstage/CliFeature';
+  readonly pluginId: string;
+  readonly $$type: '@backstage/CliPlugin';
 }
 
-/**
- * @public
- */
-export interface InternalCliPlugin extends CliFeature {
-  version: 'v1';
-  featureType: 'plugin';
-  description: string;
-  id: string;
-  init: (registry: CommandRegistry) => Promise<void>;
-}
-
-/** @internal */
-export type InternalCliFeature = InternalCliPlugin;
+export const OpaqueCliPlugin = OpaqueType.create<{
+  public: CliPlugin;
+  versions: {
+    readonly version: 'v1';
+    readonly description: string;
+    init: (registry: {
+      addCommand: (command: BackstageCommand) => void;
+    }) => Promise<void>;
+  };
+}>({
+  type: '@backstage/CliPlugin',
+  versions: ['v1'],
+});
