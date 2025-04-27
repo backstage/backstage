@@ -55,7 +55,7 @@ describe('createApp', () => {
       }),
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             ThemeBlueprint.make({
               name: 'derp',
@@ -84,7 +84,7 @@ describe('createApp', () => {
       configLoader: async () => ({ config: mockApis.config() }),
       features: [
         createFrontendPlugin({
-          id: duplicatedFeatureId,
+          pluginId: duplicatedFeatureId,
           extensions: [
             PageBlueprint.make({
               params: {
@@ -95,7 +95,7 @@ describe('createApp', () => {
           ],
         }),
         createFrontendPlugin({
-          id: duplicatedFeatureId,
+          pluginId: duplicatedFeatureId,
           extensions: [
             PageBlueprint.make({
               params: {
@@ -128,7 +128,7 @@ describe('createApp', () => {
         return {
           features: [
             createFrontendPlugin({
-              id: 'test',
+              pluginId: 'test',
               extensions: [
                 PageBlueprint.make({
                   params: {
@@ -193,7 +193,7 @@ describe('createApp', () => {
           ],
         }),
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           featureFlags: [{ name: 'test-1' }],
           extensions: [
             createExtension({
@@ -219,7 +219,7 @@ describe('createApp', () => {
           ],
         }),
         createFrontendPlugin({
-          id: 'other',
+          pluginId: 'other',
           featureFlags: [{ name: 'test-2' }],
           extensions: [],
         }),
@@ -241,7 +241,7 @@ describe('createApp', () => {
       features: [
         appPlugin,
         createFrontendPlugin({
-          id: 'my-plugin',
+          pluginId: 'my-plugin',
           extensions: [
             PageBlueprint.make({
               params: {
@@ -402,7 +402,7 @@ describe('createApp', () => {
       features: [
         appPlugin,
         createFrontendPlugin({
-          id: 'test-plugin',
+          pluginId: 'test-plugin',
           extensions: [
             PageBlueprint.make({
               name: 'test-page',

@@ -235,7 +235,7 @@ const techDocsNavItem = NavItemBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'techdocs',
+  pluginId: 'techdocs',
   extensions: [
     techDocsClientApi,
     techDocsStorageApi,

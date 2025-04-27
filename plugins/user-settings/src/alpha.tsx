@@ -68,7 +68,7 @@ export const settingsNavItem = NavItemBlueprint.make({
  * @alpha
  */
 export default createFrontendPlugin({
-  id: 'user-settings',
+  pluginId: 'user-settings',
   extensions: [userSettingsPage, settingsNavItem],
   routes: convertLegacyRouteRefs({
     root: settingsRouteRef,

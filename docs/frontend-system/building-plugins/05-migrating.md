@@ -42,7 +42,9 @@ In order to migrate the actual definition of the plugin you need to recreate the
   import { convertLegacyRouteRefs } from '@backstage/core-compat-api';
 
   export default createFrontendPlugin({
-    id: 'my-plugin',
+    // The plugin ID is now provided as `pluginId` instead of `id`
+    /* highlight-next-line */
+    pluginId: 'my-plugin',
     // bind all the extensions to the plugin
     /* highlight-next-line */
     extensions: [/* APIs will go here, but don't worry about those yet */],
@@ -138,7 +140,7 @@ Then add the `fooPage` extension to the plugin:
   import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
   export default createFrontendPlugin({
-    id: 'my-plugin',
+    pluginId: 'my-plugin',
     // bind all the extensions to the plugin
     /* highlight-remove-next-line */
     extensions: [],
@@ -229,7 +231,7 @@ Finally, let's add the `exampleWorkApi` extension to the plugin:
   import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
   export default createFrontendPlugin({
-    id: 'my-plugin',
+    pluginId: 'my-plugin',
     // bind all the extensions to the plugin
     /* highlight-remove-next-line */
     extensions: [fooPage],

@@ -219,7 +219,7 @@ Can be converted to the following plugin configuration:
 
 ```tsx
 createFrontendPlugin({
-  id: 'tech-radar',
+  pluginId: 'tech-radar',
   // ...
   featureFlags: [{ name: 'tech-radar' }],
   // ...

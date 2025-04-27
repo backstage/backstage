@@ -80,7 +80,7 @@ const workApi = ApiBlueprint.make({
  * @public
  */
 export default createFrontendPlugin({
-  id: 'example',
+  pluginId: 'example',
   extensions: [exampleWorkApi],
 });
 ```

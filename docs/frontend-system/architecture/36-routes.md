@@ -55,7 +55,7 @@ const catalogIndexPage = createPageExtension({
 });
 
 export default createFrontendPlugin({
-  id: 'catalog',
+  pluginId: 'catalog',
   // highlight-start
   routes: {
     index: indexRouteRef,
@@ -204,7 +204,7 @@ const catalogIndexPage = createPageExtension({
 });
 
 export default createFrontendPlugin({
-  id: 'catalog',
+  pluginId: 'catalog',
   routes: {
     index: indexRouteRef,
   },
@@ -411,7 +411,7 @@ const catalogIndexPage = createPageExtension({
 });
 
 export default createFrontendPlugin({
-  id: 'catalog',
+  pluginId: 'catalog',
   routes: {
     index: indexRouteRef,
     // highlight-next-line

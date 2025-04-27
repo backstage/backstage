@@ -304,7 +304,7 @@ export function collectLegacyRoutes(
   for (const [plugin, extensions] of pluginExtensions) {
     output.push(
       createFrontendPlugin({
-        id: plugin.getId(),
+        pluginId: plugin.getId(),
         extensions: [
           ...extensions,
           ...Array.from(plugin.getApis()).map(factory =>

@@ -72,7 +72,7 @@ const EntityUserProfileCard = EntityCardBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'org',
+  pluginId: 'org',
   extensions: [
     EntityGroupProfileCard,
     EntityMembersListCard,
