@@ -333,6 +333,8 @@ describe('KubernetesFanOutHandler', () => {
   });
 
   beforeEach(() => {
+    // Fake timers helps prevent k8s internals from firing after test teardown
+    jest.useFakeTimers();
     jest.resetAllMocks();
 
     fetchObjectsForService.mockImplementation((params: ObjectFetchParams) =>
