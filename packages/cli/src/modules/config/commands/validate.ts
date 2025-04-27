@@ -16,7 +16,8 @@
 
 import { OptionValues } from 'commander';
 import { loadCliConfig } from '../lib/config';
-import { Command, Option } from 'clipanion';
+import { BaseContext, Command, Option } from 'clipanion';
+import { BackstageCommandContext } from '../../../wiring/types';
 
 export default async (opts: OptionValues) => {
   await loadCliConfig({
@@ -29,7 +30,9 @@ export default async (opts: OptionValues) => {
   });
 };
 
-export class ValidateCommand extends Command {
+export class ValidateCommand extends Command<
+  BackstageCommandContext & BaseContext
+> {
   package = Option.String('--package', {
     description: 'Only load config schema that applies to the given package',
   });

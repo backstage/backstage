@@ -102,13 +102,13 @@ export default createCliPlugin({
       path: ['config', 'check'],
       description:
         'Validate that the given configuration loads and matches schema',
-      execute: async ({ args, info }) => {
+      execute: async ctx => {
         const { ValidateCommand } =
           require('./commands/validate') as typeof import('./commands/validate');
         ValidateCommand.usage = ClipanionCommand.Usage({
-          description: info.description,
+          description: ctx.info.description,
         });
-        runExit({ binaryName: info.usage }, ValidateCommand, args);
+        runExit({ binaryName: ctx.info.usage }, ValidateCommand, ctx.args, ctx);
       },
     });
 
