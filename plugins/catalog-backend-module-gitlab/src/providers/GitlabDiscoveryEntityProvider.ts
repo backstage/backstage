@@ -208,7 +208,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       );
     }
 
-    const locations = await this.GetLocations();
+    const locations = await this.getEntities();
 
     await this.connection.applyMutation({
       type: 'full',
@@ -226,7 +226,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
    *
    * @returns A list of location to be ingested
    */
-  private async GetLocations() {
+  private async getEntities() {
     let res: Result = {
       scanned: 0,
       matches: [],
@@ -238,15 +238,15 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       this.config.groupPatterns !== undefined &&
       this.config.groupPatterns.length > 0
     ) {
-      for (const pattern of this.config.groupPatterns) {
-        const groups = paginated<GitLabGroup>(
-          options => this.gitLabClient.listGroups(options),
-          {
-            page: 1,
-            per_page: 50,
-          },
-        );
+      const groups = paginated<GitLabGroup>(
+        options => this.gitLabClient.listGroups(options),
+        {
+          page: 1,
+          per_page: 50,
+        },
+      );
 
+      for (const pattern of this.config.groupPatterns) {
         for await (const group of groups) {
           if (
             pattern.test(group.full_path) &&
@@ -258,12 +258,15 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       }
 
       for (const group of groupToProcess.values()) {
-        const tmpRes = await this.GetProjectsToProcess(group.full_path);
+        const tmpRes = await this.getProjectsToProcess(group.full_path);
         res.scanned += tmpRes.scanned;
-        res.matches.push(...tmpRes.matches);
+        // merge both arrays safely
+        for (const project of tmpRes.matches) {
+          res.matches.push(project);
+        }
       }
     } else {
-      res = await this.GetProjectsToProcess(this.config.group);
+      res = await this.getProjectsToProcess(this.config.group);
     }
 
     const locations = this.deduplicateProjects(res.matches).map(p =>
@@ -299,7 +302,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
    * @param group - a full path of a GitLab group, can be empty
    * @returns An array of project to be processed and the number of project scanned
    */
-  private async GetProjectsToProcess(group: string) {
+  private async getProjectsToProcess(group: string) {
     const res: Result = {
       scanned: 0,
       matches: [],
