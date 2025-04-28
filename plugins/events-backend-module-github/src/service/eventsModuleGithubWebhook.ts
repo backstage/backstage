@@ -26,9 +26,9 @@ import { createGithubSignatureValidator } from '../http/createGithubSignatureVal
  * registering an HTTP POST ingress with request validator
  * which verifies the webhook signature based on a secret.
  *
- * @alpha
+ * @public
  */
-export const eventsModuleGithubWebhook = createBackendModule({
+export default createBackendModule({
   pluginId: 'events',
   moduleId: 'github-webhook',
   register(env) {
@@ -38,10 +38,13 @@ export const eventsModuleGithubWebhook = createBackendModule({
         events: eventsExtensionPoint,
       },
       async init({ config, events }) {
-        events.addHttpPostIngress({
-          topic: 'github',
-          validator: createGithubSignatureValidator(config),
-        });
+        const validator = createGithubSignatureValidator(config);
+        if (validator) {
+          events.addHttpPostIngress({
+            topic: 'github',
+            validator,
+          });
+        }
       },
     });
   },

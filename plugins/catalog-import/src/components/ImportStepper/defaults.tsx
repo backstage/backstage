@@ -21,7 +21,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import StepLabel from '@material-ui/core/StepLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
+import { ReactElement } from 'react';
 import { BackButton } from '../Buttons';
 import { asInputRef } from '../helpers';
 import { StepFinishImportLocation } from '../StepFinishImportLocation';
@@ -36,8 +36,8 @@ import { StepperApis } from '../types';
 import { ImportFlows, ImportState } from '../useImportState';
 
 export type StepConfiguration = {
-  stepLabel: React.ReactElement;
-  content: React.ReactElement;
+  stepLabel: ReactElement;
+  content: ReactElement;
 };
 
 /**

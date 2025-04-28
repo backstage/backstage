@@ -40,6 +40,7 @@ describe('createPublishGithubPullRequestAction', () => {
     createPullRequest: jest.Mock;
     rest: {
       pulls: { requestReviewers: jest.Mock };
+      issues: { addAssignees: jest.Mock };
     };
   };
   let config: Config;
@@ -71,6 +72,9 @@ describe('createPublishGithubPullRequestAction', () => {
       rest: {
         pulls: {
           requestReviewers: jest.fn(async (_: any) => ({ data: {} })),
+        },
+        issues: {
+          addAssignees: jest.fn(async (_: any) => ({ data: {} })),
         },
       },
     };
@@ -114,6 +118,9 @@ describe('createPublishGithubPullRequestAction', () => {
         rest: {
           pulls: {
             requestReviewers: jest.fn(async (_: any) => ({ data: {} })),
+          },
+          issues: {
+            addAssignees: jest.fn(async (_: any) => ({ data: {} })),
           },
         },
       };
@@ -419,6 +426,50 @@ describe('createPublishGithubPullRequestAction', () => {
 
       expect(fakeClient.createPullRequest).toHaveBeenCalled();
       expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('with assignees', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+
+    beforeEach(() => {
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+        assignees: ['user1', 'user2'],
+      };
+
+      mockDir.setContent({ [workspacePath]: {} });
+
+      ctx = createMockActionContext({ input, workspacePath });
+    });
+
+    it('creates a pull request and adds the assignees', async () => {
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalled();
+      expect(fakeClient.rest.issues.addAssignees).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        issue_number: 123,
+        assignees: ['user1', 'user2'],
+      });
+    });
+    it('creates outputs for the pull request url and number even if adding assignees fails', async () => {
+      fakeClient.rest.issues.addAssignees.mockImplementation(() => {
+        throw new Error('a random error');
+      });
+
+      await instance.handler(ctx);
+
+      expect(ctx.output).toHaveBeenCalledWith(
+        'remoteUrl',
+        'https://github.com/myorg/myrepo/pull/123',
+      );
+      expect(ctx.output).toHaveBeenCalledWith('pullRequestNumber', 123);
     });
   });
 

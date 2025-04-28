@@ -1,0 +1,81 @@
+.canon-TextField {
+  font-family: var(--canon-font-regular);
+  flex-direction: column;
+  width: 100%;
+  display: flex;
+}
+
+.canon-TextFieldLabel {
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-primary);
+  margin-bottom: var(--canon-space-1_5);
+}
+
+.canon-TextFieldDescription {
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-secondary);
+  padding-top: var(--canon-space-1_5);
+  margin: 0;
+}
+
+.canon-TextFieldError {
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-danger);
+  padding-top: var(--canon-space-1_5);
+  margin: 0;
+}
+
+.canon-TextFieldInput {
+  border-radius: var(--canon-radius-3);
+  border: 1px solid var(--canon-border);
+  padding: 0 var(--canon-space-4);
+  background-color: var(--canon-bg-surface-1);
+  font-size: var(--canon-font-size-3);
+  font-family: var(--canon-font-regular);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-primary);
+  width: 100%;
+  transition: border-color .2s ease-in-out, outline-color .2s ease-in-out;
+}
+
+.canon-TextFieldInput::placeholder {
+  color: var(--canon-fg-secondary);
+}
+
+.canon-TextFieldInput:hover {
+  border-color: var(--canon-border-hover);
+}
+
+.canon-TextFieldInput:focus-visible {
+  outline-color: var(--canon-border-pressed);
+  border-color: var(--canon-border-pressed);
+  outline-width: 0;
+}
+
+.canon-TextFieldInput[data-invalid] {
+  border-color: var(--canon-fg-danger);
+}
+
+.canon-TextFieldInput[data-disabled] {
+  opacity: .5;
+  cursor: not-allowed;
+  border: 1px solid var(--canon-border-disabled);
+}
+
+.canon-TextFieldInput[data-size="small"] {
+  height: 2rem;
+}
+
+.canon-TextFieldInput[data-size="medium"] {
+  height: 2.5rem;
+}
+
+.canon-TextFieldRequired {
+  color: var(--canon-fg-secondary);
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  margin-left: var(--canon-space-1);
+}

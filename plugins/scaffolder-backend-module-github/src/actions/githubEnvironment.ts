@@ -192,8 +192,10 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
         owner,
         repo,
       });
-
-      const client = new Octokit(octokitOptions);
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       const repositoryId = await ctx.checkpoint({
         key: `get.repo.${owner}.${repo}`,

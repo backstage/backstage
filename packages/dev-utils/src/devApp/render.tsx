@@ -47,7 +47,7 @@ import {
 } from '@backstage/integration-react';
 import Box from '@material-ui/core/Box';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import React, { ComponentType, PropsWithChildren, ReactNode } from 'react';
+import { ComponentType, PropsWithChildren, ReactNode } from 'react';
 import { createRoutesFromChildren, Route } from 'react-router-dom';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
 import 'react-dom';

@@ -19,4 +19,3 @@
  * @packageDocumentation
  */
 export { permissionPlugin as default } from './plugin';
-export * from './service';

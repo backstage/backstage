@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import React from 'react';
+import { ReactNode, ComponentType } from 'react';
 import {
   Content,
   ContentHeader,
@@ -38,9 +38,9 @@ export interface TemplateGroupProps {
     }[];
   }[];
   onSelected: (template: TemplateEntityV1beta3) => void;
-  title: React.ReactNode;
+  title: ReactNode;
   components?: {
-    CardComponent?: React.ComponentType<TemplateCardProps>;
+    CardComponent?: ComponentType<TemplateCardProps>;
   };
 }
 

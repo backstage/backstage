@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { fireEvent } from '@testing-library/react';
 import { capitalize } from 'lodash';
 import { Entity } from '@backstage/catalog-model';

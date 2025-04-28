@@ -17,7 +17,6 @@
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Link } from '@backstage/core-components';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
 
 export interface CardLinkProps {
   icon: IconComponent;

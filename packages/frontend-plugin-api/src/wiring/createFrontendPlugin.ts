@@ -51,7 +51,7 @@ export interface PluginOptions<
   TExternalRoutes extends AnyExternalRoutes,
   TExtensions extends readonly ExtensionDefinition[],
 > {
-  id: TId;
+  pluginId: TId;
   routes?: TRoutes;
   externalRoutes?: TExternalRoutes;
   extensions?: TExtensions;
@@ -70,7 +70,49 @@ export function createFrontendPlugin<
   TRoutes,
   TExternalRoutes,
   MakeSortedExtensionsMap<TExtensions[number], TId>
+>;
+/**
+ * @public
+ * @deprecated The `id` option is deprecated, use `pluginId` instead.
+ */
+export function createFrontendPlugin<
+  TId extends string,
+  TRoutes extends AnyRoutes = {},
+  TExternalRoutes extends AnyExternalRoutes = {},
+  TExtensions extends readonly ExtensionDefinition[] = [],
+>(
+  options: Omit<
+    PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
+    'pluginId'
+  > & { id: string },
+): FrontendPlugin<
+  TRoutes,
+  TExternalRoutes,
+  MakeSortedExtensionsMap<TExtensions[number], TId>
+>;
+export function createFrontendPlugin<
+  TId extends string,
+  TRoutes extends AnyRoutes = {},
+  TExternalRoutes extends AnyExternalRoutes = {},
+  TExtensions extends readonly ExtensionDefinition[] = [],
+>(
+  options:
+    | PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>
+    | (Omit<
+        PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
+        'pluginId'
+      > & { id: string }),
+): FrontendPlugin<
+  TRoutes,
+  TExternalRoutes,
+  MakeSortedExtensionsMap<TExtensions[number], TId>
 > {
+  const pluginId = 'pluginId' in options ? options.pluginId : options.id;
+  if (!pluginId) {
+    throw new Error(
+      "Either 'id' or 'pluginId' must be provided to createFrontendPlugin",
+    );
+  }
   const extensions = new Array<Extension<any>>();
   const extensionDefinitionsById = new Map<
     string,
@@ -79,11 +121,11 @@ export function createFrontendPlugin<
 
   for (const def of options.extensions ?? []) {
     const internal = OpaqueExtensionDefinition.toInternal(def);
-    const ext = resolveExtensionDefinition(def, { namespace: options.id });
+    const ext = resolveExtensionDefinition(def, { namespace: pluginId });
     extensions.push(ext);
     extensionDefinitionsById.set(ext.id, {
       ...internal,
-      namespace: options.id,
+      namespace: pluginId,
     });
   }
 
@@ -96,14 +138,14 @@ export function createFrontendPlugin<
     );
     // TODO(Rugvip): This could provide some more information about the kind + name of the extensions
     throw new Error(
-      `Plugin '${options.id}' provided duplicate extensions: ${duplicates.join(
+      `Plugin '${pluginId}' provided duplicate extensions: ${duplicates.join(
         ', ',
       )}`,
     );
   }
 
   return OpaqueFrontendPlugin.createInstance('v1', {
-    id: options.id,
+    id: pluginId,
     routes: options.routes ?? ({} as TRoutes),
     externalRoutes: options.externalRoutes ?? ({} as TExternalRoutes),
     featureFlags: options.featureFlags ?? [],
@@ -112,28 +154,29 @@ export function createFrontendPlugin<
       const ext = extensionDefinitionsById.get(id);
       if (!ext) {
         throw new Error(
-          `Attempted to get non-existent extension '${id}' from plugin '${options.id}'`,
+          `Attempted to get non-existent extension '${id}' from plugin '${pluginId}'`,
         );
       }
       return ext;
     },
     toString() {
-      return `Plugin{id=${options.id}}`;
+      return `Plugin{id=${pluginId}}`;
     },
     withOverrides(overrides) {
       const overriddenExtensionIds = new Set(
         overrides.extensions.map(
-          e => resolveExtensionDefinition(e, { namespace: options.id }).id,
+          e => resolveExtensionDefinition(e, { namespace: pluginId }).id,
         ),
       );
       const nonOverriddenExtensions = (options.extensions ?? []).filter(
         e =>
           !overriddenExtensionIds.has(
-            resolveExtensionDefinition(e, { namespace: options.id }).id,
+            resolveExtensionDefinition(e, { namespace: pluginId }).id,
           ),
       );
       return createFrontendPlugin({
         ...options,
+        pluginId,
         extensions: [...nonOverriddenExtensions, ...overrides.extensions],
       });
     },

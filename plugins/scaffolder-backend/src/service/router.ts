@@ -1115,7 +1115,7 @@ export async function createRouter(
 
       res.status(200).json({ results });
     })
-    .get('/v2/template-extensions', async (_req, res) => {
+    .get('/v2/templating-extensions', async (_req, res) => {
       res.status(200).json({
         filters: {
           ...extractFilterMetadata(createDefaultFilters({ integrations })),

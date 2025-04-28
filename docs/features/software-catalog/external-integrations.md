@@ -53,9 +53,7 @@ Some defining traits of entity providers:
 
 ### Creating an Entity Provider
 
-The recommended way of instantiating the catalog backend classes is to use the
-`CatalogBuilder`, as illustrated in the
-[example backend here](https://github.com/backstage/backstage/blob/master/packages/backend-legacy/src/plugins/catalog.ts).
+The recommended way of instantiating the catalog backend classes is to use the `CatalogBuilder`.
 We will create a new
 [`EntityProvider`](https://github.com/backstage/backstage/blob/master/plugins/catalog-node/src/api/provider.ts)
 subclass that can be added to this catalog builder.
@@ -72,7 +70,7 @@ putting all extensions like this in a backend module package of their own in the
 `plugins` folder of your Backstage repo:
 
 ```sh
-yarn new --select backend-module --option pluginId=catalog
+yarn new --select backend-plugin-module --option pluginId=catalog
 ```
 
 The class will have this basic structure:
@@ -637,9 +635,7 @@ does so!
 
 ### Creating a Catalog Data Reader Processor
 
-The recommended way of instantiating the catalog backend classes is to use the
-`CatalogBuilder`, as illustrated in the
-[example backend here](https://github.com/backstage/backstage/blob/master/packages/backend-legacy/src/plugins/catalog.ts).
+The recommended way of instantiating the catalog backend classes is to use the `CatalogBuilder`.
 We will create a new
 [`CatalogProcessor`](https://github.com/backstage/backstage/blob/master/plugins/catalog-node/src/api/processor.ts)
 subclass that can be added to this catalog builder.

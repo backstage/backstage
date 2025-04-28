@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { SelectComponent as Select, SelectProps } from './Select';
 
 export default {

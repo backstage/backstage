@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ChangeEvent } from 'react';
 import { InfoCard } from '@backstage/core-components';
 import List from '@material-ui/core/List';
 import Grid from '@material-ui/core/Grid';
@@ -30,7 +30,7 @@ export function AdvancedSettings() {
     'off',
   );
 
-  const toggleValue = (ev: React.ChangeEvent<HTMLInputElement>) => {
+  const toggleValue = (ev: ChangeEvent<HTMLInputElement>) => {
     setValue(ev.currentTarget.checked ? 'on' : 'off');
   };
 

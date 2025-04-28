@@ -1,0 +1,9 @@
+---
+title: SendGrid Scaffolder Action
+author: CodeVerse-GP
+authorUrl: https://github.com/CodeVerse-GP
+category: Scaffolder
+description: A Backstage scaffolder action to send emails using SendGrid.
+documentation: https://github.com/CodeVerse-GP/scaffolder-backend-module-sendgrid#readme
+npmPackageName: '@codeverse-gp/scaffolder-backend-module-sendgrid'
+addedDate: '2025-04-18'

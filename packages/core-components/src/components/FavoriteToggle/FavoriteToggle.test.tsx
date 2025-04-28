@@ -15,7 +15,6 @@
  */
 import { renderInTestApp } from '@backstage/test-utils';
 import { FavoriteToggle } from './FavoriteToggle';
-import React from 'react';
 import userEvent from '@testing-library/user-event';
 
 describe('<FavoriteToggle />', () => {

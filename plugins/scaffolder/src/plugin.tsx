@@ -71,6 +71,7 @@ import {
   editorRouteRef,
   customFieldsRouteRef,
   templateFormRouteRef,
+  templatingExtensionsRouteRef,
 } from './routes';
 import {
   MyGroupsPicker,
@@ -126,6 +127,7 @@ export const scaffolderPlugin = createPlugin({
     editor: editorRouteRef,
     customFields: customFieldsRouteRef,
     templateForm: templateFormRouteRef,
+    templatingExtensions: templatingExtensionsRouteRef,
   },
   externalRoutes: {
     registerComponent: registerComponentRouteRef,

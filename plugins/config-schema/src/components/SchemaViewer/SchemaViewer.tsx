@@ -17,7 +17,6 @@
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import { Schema } from 'jsonschema';
-import React from 'react';
 import { SchemaView } from '../SchemaView';
 import { SchemaBrowser } from '../SchemaBrowser';
 import { ScrollTargetsProvider } from '../ScrollTargetsContext/ScrollTargetsContext';

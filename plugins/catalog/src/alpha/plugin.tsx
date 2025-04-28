@@ -34,10 +34,11 @@ import navItems from './navItems';
 import entityCards from './entityCards';
 import entityContents from './entityContents';
 import searchResultItems from './searchResultItems';
+import contextMenuItems from './contextMenuItems';
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'catalog',
+  pluginId: 'catalog',
   routes: convertLegacyRouteRefs({
     catalogIndex: rootRouteRef,
     catalogEntity: entityRouteRef,
@@ -55,6 +56,7 @@ export default createFrontendPlugin({
     ...navItems,
     ...entityCards,
     ...entityContents,
+    ...contextMenuItems,
     ...searchResultItems,
   ],
 });

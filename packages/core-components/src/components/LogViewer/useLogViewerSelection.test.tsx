@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { PropsWithChildren } from 'react';
 import { act, renderHook } from '@testing-library/react';
 import { TestApiProvider, MockErrorApi } from '@backstage/test-utils';
 import { errorApiRef } from '@backstage/core-plugin-api';
@@ -40,7 +40,7 @@ const lines = [
 describe('useLogViewerSelection', () => {
   it('should manage a selection', () => {
     const rendered = renderHook(() => useLogViewerSelection(lines), {
-      wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider apis={[[errorApiRef, new MockErrorApi()]]}>
           {children}
         </TestApiProvider>

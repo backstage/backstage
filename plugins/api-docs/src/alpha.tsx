@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import Grid from '@material-ui/core/Grid';
 
 import {
@@ -228,7 +227,7 @@ const apiDocsApisEntityContent = EntityContentBlueprint.make({
 });
 
 export default createFrontendPlugin({
-  id: 'api-docs',
+  pluginId: 'api-docs',
   routes: {
     root: convertLegacyRouteRef(rootRoute),
   },
@@ -249,3 +248,5 @@ export default createFrontendPlugin({
     apiDocsApisEntityContent,
   ],
 });
+
+export { apiDocsTranslationRef } from './translation';
