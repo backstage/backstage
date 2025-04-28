@@ -170,4 +170,21 @@ export interface Config {
       };
     };
   };
+  auth?: {
+    providers?: {
+      /**
+       * Microsoft Entra Id configuration
+       */
+      microsoft?: {
+        [authEnv: string]: {
+          /**
+           * Microsoft Entra Id scope required to obtain the authentication token
+           *
+           * @visibility frontend
+           */
+          scope: string;
+        };
+      };
+    };
+  };
 }
