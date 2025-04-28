@@ -165,6 +165,7 @@ export async function createRouter(
       .get('/entities', async (req, res) => {
         const auditorEvent = await auditor?.createEvent({
           eventId: 'entity-fetch',
+          severityLevel: 'medium',
           request: req,
           meta: {
             queryType: 'all',
@@ -263,6 +264,7 @@ export async function createRouter(
       .get('/entities/by-query', async (req, res) => {
         const auditorEvent = await auditor?.createEvent({
           eventId: 'entity-fetch',
+          severityLevel: 'medium',
           request: req,
           meta: {
             queryType: 'by-query',
@@ -316,6 +318,7 @@ export async function createRouter(
 
         const auditorEvent = await auditor?.createEvent({
           eventId: 'entity-fetch',
+          severityLevel: 'medium',
           request: req,
           meta: {
             queryType: 'by-uid',
@@ -390,6 +393,7 @@ export async function createRouter(
 
         const auditorEvent = await auditor?.createEvent({
           eventId: 'entity-fetch',
+          severityLevel: 'medium',
           request: req,
           meta: {
             queryType: 'by-name',
@@ -425,6 +429,7 @@ export async function createRouter(
 
           const auditorEvent = await auditor?.createEvent({
             eventId: 'entity-fetch',
+            severityLevel: 'medium',
             request: req,
             meta: {
               actionType: 'ancestry',
@@ -461,6 +466,7 @@ export async function createRouter(
       .post('/entities/by-refs', async (req, res) => {
         const auditorEvent = await auditor?.createEvent({
           eventId: 'entity-fetch',
+          severityLevel: 'medium',
           request: req,
           meta: {
             queryType: 'by-refs',
