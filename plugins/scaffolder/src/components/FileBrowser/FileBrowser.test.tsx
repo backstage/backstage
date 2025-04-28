@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FileEntry, parseFileEntires } from './FileBrowser';
+import { FileEntry, parseFileEntries } from './FileBrowser';
 
 function dir(path: string, ...children: FileEntry[]): FileEntry {
   return {
@@ -33,62 +33,62 @@ function file(path: string): FileEntry {
   };
 }
 
-describe('parseFileEntires', () => {
+describe('parseFileEntries', () => {
   it('parses an empty list', () => {
-    expect(parseFileEntires([])).toEqual([]);
+    expect(parseFileEntries([])).toEqual([]);
   });
 
   it('parses a single file', () => {
-    expect(parseFileEntires(['a.txt'])).toEqual([file('a.txt')]);
-    expect(parseFileEntires(['a/b.txt'])).toEqual([dir('a', file('a/b.txt'))]);
-    expect(parseFileEntires(['a/b/c.txt'])).toEqual([
+    expect(parseFileEntries(['a.txt'])).toEqual([file('a.txt')]);
+    expect(parseFileEntries(['a/b.txt'])).toEqual([dir('a', file('a/b.txt'))]);
+    expect(parseFileEntries(['a/b/c.txt'])).toEqual([
       dir('a', dir('a/b', file('a/b/c.txt'))),
     ]);
   });
 
   it('parses multiple files', () => {
-    expect(parseFileEntires(['a.txt', 'b.txt'])).toEqual([
+    expect(parseFileEntries(['a.txt', 'b.txt'])).toEqual([
       file('a.txt'),
       file('b.txt'),
     ]);
-    expect(parseFileEntires(['a.txt', 'a/b.txt'])).toEqual([
+    expect(parseFileEntries(['a.txt', 'a/b.txt'])).toEqual([
       dir('a', file('a/b.txt')),
       file('a.txt'),
     ]);
-    expect(parseFileEntires(['a.txt', 'a/b.txt', 'a/c.txt'])).toEqual([
+    expect(parseFileEntries(['a.txt', 'a/b.txt', 'a/c.txt'])).toEqual([
       dir('a', file('a/b.txt'), file('a/c.txt')),
       file('a.txt'),
     ]);
-    expect(parseFileEntires(['a.txt', 'a/b/c.txt', 'a/b/d.txt'])).toEqual([
+    expect(parseFileEntries(['a.txt', 'a/b/c.txt', 'a/b/d.txt'])).toEqual([
       dir('a', dir('a/b', file('a/b/c.txt'), file('a/b/d.txt'))),
       file('a.txt'),
     ]);
   });
 
   it('throws an error on invalid filenames', () => {
-    expect(() => parseFileEntires([''])).toThrow(`Invalid path part: ''`);
-    expect(() => parseFileEntires(['/'])).toThrow(`Invalid path part: ''`);
-    expect(() => parseFileEntires(['a/'])).toThrow(`Invalid path part: ''`);
-    expect(() => parseFileEntires(['/a.txt'])).toThrow(`Invalid path part: ''`);
-    expect(() => parseFileEntires(['a//a.txt'])).toThrow(
+    expect(() => parseFileEntries([''])).toThrow(`Invalid path part: ''`);
+    expect(() => parseFileEntries(['/'])).toThrow(`Invalid path part: ''`);
+    expect(() => parseFileEntries(['a/'])).toThrow(`Invalid path part: ''`);
+    expect(() => parseFileEntries(['/a.txt'])).toThrow(`Invalid path part: ''`);
+    expect(() => parseFileEntries(['a//a.txt'])).toThrow(
       `Invalid path part: ''`,
     );
   });
 
   it('throws an error on conflicting directory and filenames', () => {
-    expect(() => parseFileEntires(['a', 'a'])).toThrow(
+    expect(() => parseFileEntries(['a', 'a'])).toThrow(
       `Duplicate filename at 'a'`,
     );
-    expect(() => parseFileEntires(['a', 'a/b'])).toThrow(
+    expect(() => parseFileEntries(['a', 'a/b'])).toThrow(
       `Duplicate filename at 'a'`,
     );
-    expect(() => parseFileEntires(['a/b', 'a'])).toThrow(
+    expect(() => parseFileEntries(['a/b', 'a'])).toThrow(
       `Duplicate filename at 'a'`,
     );
-    expect(() => parseFileEntires(['a/b', 'a/b/c'])).toThrow(
+    expect(() => parseFileEntries(['a/b', 'a/b/c'])).toThrow(
       `Duplicate filename at 'a/b'`,
     );
-    expect(() => parseFileEntires(['a/b/c', 'a/b/c'])).toThrow(
+    expect(() => parseFileEntries(['a/b/c', 'a/b/c'])).toThrow(
       `Duplicate filename at 'a/b/c'`,
     );
   });
