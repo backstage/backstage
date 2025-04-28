@@ -19,9 +19,11 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { SecretInput } from './SecretInput';
 import { renderInTestApp } from '@backstage/test-utils';
+import { ScaffolderRJSFFormProps as FormProps } from '@backstage/plugin-scaffolder-react';
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import validator from '@rjsf/validator-ajv8';
 import { fireEvent, act, waitFor } from '@testing-library/react';
+import { merge, set } from 'lodash';
 
 describe('<SecretInput />', () => {
   const SecretsComponent = () => {
@@ -72,5 +74,53 @@ describe('<SecretInput />', () => {
       },
       { timeout: 500 },
     );
+  });
+
+  describe.each([
+    {
+      from: 'absent',
+    },
+    {
+      from: 'schema',
+      descriptionPath: 'schema.description',
+    },
+    {
+      from: 'ui options',
+      descriptionPath: 'uiSchema[ui:description]',
+    },
+  ])('SecretInput description: $from', ({ from, descriptionPath }) => {
+    const customDescription = 'Custom SecretInput description';
+
+    it(`Presents ${from} description`, async () => {
+      const override = {};
+      if (descriptionPath) {
+        set(override, descriptionPath, customDescription);
+      }
+      const props = merge(
+        {
+          validator,
+          schema: {
+            properties: { myKey: { type: 'string', title: 'secret' } },
+          },
+          uiSchema: {
+            myKey: {
+              'ui:field': 'Secret',
+            },
+          },
+          fields: {
+            Secret: SecretInput,
+          },
+        },
+        override,
+      ) as unknown as FormProps<any>;
+
+      const { queryByText } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Form {...props} />
+          <SecretsComponent />
+        </SecretsContextProvider>,
+      );
+      expect(queryByText(customDescription) === null).toBe(!descriptionPath);
+    });
   });
 });
