@@ -6882,7 +6882,6 @@ __metadata:
   resolution: "@backstage/plugin-kubernetes-node@workspace:plugins/kubernetes-node"
   dependencies:
     "@backstage/backend-app-api": "workspace:^"
-    "@backstage/backend-common": "npm:^0.25.0"
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
