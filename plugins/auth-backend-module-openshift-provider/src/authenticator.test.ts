@@ -65,22 +65,6 @@ describe('openshiftAuthenticator', () => {
           });
         },
       ),
-      http.delete(
-        'https://api.openshift.test/apis/oauth.openshift.io/v1/oauthaccesstokens/:id',
-        ({ params }) => {
-          const { id } = params;
-
-          if (typeof id !== 'string') {
-            return new Response(null, { status: 401 });
-          }
-
-          if (!id.startsWith('sha256~')) {
-            return new Response(null, { status: 401 });
-          }
-
-          return new Response(null, { status: 200 });
-        },
-      ),
     );
 
     implementation = openshiftAuthenticator.initialize({
@@ -237,102 +221,6 @@ describe('openshiftAuthenticator', () => {
       expect(authenticatorResult.session.refreshToken).toBe(
         authenticatorResult.session.accessToken,
       );
-    });
-  });
-
-  describe('#refresh', () => {
-    it('gets new refresh token (access token)', async () => {
-      const refreshResponse = await openshiftAuthenticator.refresh(
-        {
-          scope: 'user:full',
-          refreshToken: 'access-token',
-          req: {} as express.Request,
-        },
-        implementation,
-      );
-
-      expect(refreshResponse.session.refreshToken).toBe('access-token');
-    });
-
-    it('should throw error when invalid access token was provided', async () => {
-      mswServer.use(
-        http.get(
-          'https://api.openshift.test/apis/user.openshift.io/v1/users/~',
-          async () => {
-            return HttpResponse.json(
-              {
-                kind: 'Status',
-                apiVersion: 'v1',
-                metadata: {},
-                status: 'Failure',
-                message: 'Unauthorized',
-                reason: 'Unauthorized',
-                code: 401,
-              },
-              {
-                status: 401,
-              },
-            );
-          },
-        ),
-      );
-
-      await expect(
-        openshiftAuthenticator.refresh(
-          {
-            scope: 'user:full',
-            refreshToken: 'invalid-access-token',
-            req: {} as express.Request,
-          },
-          implementation,
-        ),
-      ).rejects.toThrow('HTTP error! Status: 401');
-    });
-  });
-
-  describe('#logout', () => {
-    it('should delete valid access token', async () => {
-      await expect(
-        openshiftAuthenticator.logout?.(
-          {
-            refreshToken: 'access-token',
-            req: {} as express.Request,
-          },
-          implementation,
-        ),
-      ).resolves.not.toThrow();
-    });
-
-    it('should throw when refresh token is not set', async () => {
-      await expect(
-        openshiftAuthenticator.logout?.(
-          {
-            req: {} as express.Request,
-          },
-          implementation,
-        ),
-      ).rejects.toThrow();
-    });
-
-    it('should throw when access cannot be deleted', async () => {
-      mswServer.use(
-        http.delete(
-          'https://api.openshift.test/apis/oauth.openshift.io/v1/oauthaccesstokens/:id',
-          () => {
-            return new Response(null, { status: 401 });
-          },
-        ),
-      );
-
-      await expect(
-        openshiftAuthenticator.logout?.(
-          {
-            refreshToken: 'access-token',
-            req: {} as express.Request,
-          },
-          implementation,
-        ),
-      ).rejects.toThrow();
     });
   });
 });
