@@ -88,7 +88,7 @@ export function RealLogViewer(props: RealLogViewerProps) {
     if (shouldTextWrap && listInstance) {
       (listInstance as VariableSizeList<AnsiLine[]>).resetAfterIndex(0);
       // lineNumber is 1-based but index is 0-based
-      heights.current = { ...heights.current, [index - 1]: size };
+      heights.current[index - 1] = size;
     }
   }
 
