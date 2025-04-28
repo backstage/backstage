@@ -5,5 +5,5 @@ authorUrl: https://github.com/anuragpachauri
 category: Infrastructure
 description: A plugin showing linode resource based on tag in relation to an entity in the catalog.
 documentation: https://github.com/anuragpachauri/backstageMain/tree/main/plugins/linode-resource
-npmPackageName: 'https://www.npmjs.com/package/@anuragpachauri/linode-resource'
+npmPackageName: '@anuragpachauri/linode-resource'
 addedDate: '2025-04-09'
