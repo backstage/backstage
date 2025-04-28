@@ -25,6 +25,7 @@ import { TechDocsReaderPage } from './plugin';
 import { TechDocsReaderPageContent } from './reader/components/TechDocsReaderPageContent';
 import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
 import { useEntityPageTechDocsRedirect } from './search/hooks/useTechDocsLocation';
+import { getEntityRootTechDocsPath } from './helpers';
 
 type EntityPageDocsProps = {
   entity: Entity;
@@ -52,12 +53,15 @@ export const EntityPageDocs = ({
     }
   }
 
+  const defaultPath = getEntityRootTechDocsPath(entity);
+
   return (
     <TechDocsReaderPage entityRef={entityRef}>
       <TechDocsReaderPageSubheader />
       <TechDocsReaderPageContent
         withSearch={withSearch}
         searchResultUrlMapper={searchResultUrlMapper}
+        defaultPath={defaultPath}
       />
     </TechDocsReaderPage>
   );

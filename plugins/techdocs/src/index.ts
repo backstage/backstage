@@ -46,6 +46,7 @@ export {
   LegacyEmbeddedDocsRouter as EmbeddedDocsRouter,
   Router,
 } from './Router';
+export { buildTechDocsURL, getEntityRootTechDocsPath } from './helpers';
 
 export type { TechDocsSearchResultListItemProps } from './search/components/TechDocsSearchResultListItem';
 
@@ -69,3 +70,5 @@ export type {
 };
 
 export * from './overridableComponents';
+
+export type { TechDocsRouteFunc } from './helpers';

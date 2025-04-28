@@ -115,6 +115,20 @@ the TechDocs in the TechDocs page or needing multiple builds of the same docs.
 
 This is for situations where you have complex systems where they share a single repo, and likely a single TechDoc location.
 
+### backstage.io/techdocs-entity-path
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/techdocs-entity: component:default/example
+    backstage.io/techdocs-entity-path: /path/to/this/component
+```
+
+The value of this annotation informs of the path to this components TechDocs within an external entity that owns the TechDocs.
+In conjunction with [backstage.io/techdocs-entity](#backstageiotechdocs-entity) this allows for deep linking into the TechDocs of
+another entity, not just linking to the root of another entities TechDocs.
+
 ### backstage.io/view-url, backstage.io/edit-url
 
 ```yaml

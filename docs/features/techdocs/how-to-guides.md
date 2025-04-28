@@ -942,6 +942,35 @@ metadata:
     backstage.io/techdocs-entity: system:default/example
 ```
 
+### Deep linking into another components TechDocs
+
+In addition to linking to another component's TechDocs the `backstage.io/techdocs-entity-path` annotation can be used to link to a
+specific page within another component's TechDocs.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: example
+  namespace: default
+  title: Example
+  description: This is the parent entity
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: example-platfrom
+  title: Example Application Platform
+  namespace: default
+  description: This is the child entity
+  annotations:
+    backstage.io/techdocs-entity: system:default/example
+    backstage.io/techdocs-entity-path: /path/to/component/docs
+```
+
 ## How to resolve broken links from moved or renamed pages in your documentation site
 
 TechDocs supports using the [mkdocs-redirects](https://github.com/mkdocs/mkdocs-redirects/tree/master) plugin to create a redirect map for any TechDocs site. This allows broken links from renamed or moved pages in your site to be redirected to their specified replacement.

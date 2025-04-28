@@ -16,10 +16,8 @@
 import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_LOCATION,
-  CompoundEntityRef,
   DEFAULT_NAMESPACE,
   stringifyEntityRef,
-  parseEntityRef,
 } from '@backstage/catalog-model';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -66,6 +64,7 @@ import { taskCreatePermission } from '@backstage/plugin-scaffolder-common/alpha'
 import { usePermission } from '@backstage/plugin-permission-react';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { buildTechDocsURL } from '@backstage/plugin-techdocs';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
@@ -135,19 +134,6 @@ export function AboutCard(props: AboutCardProps) {
   const entityMetadataEditUrl =
     entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
 
-  let techdocsRef: CompoundEntityRef | undefined;
-
-  if (entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]) {
-    try {
-      techdocsRef = parseEntityRef(
-        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION],
-      );
-      // not a fan of this but we don't care if the parseEntityRef fails
-    } catch {
-      techdocsRef = undefined;
-    }
-  }
-
   const viewInSource: IconLinkVerticalProps = {
     label: t('aboutCard.viewSource'),
     disabled: !entitySourceLocation,
@@ -162,19 +148,7 @@ export function AboutCard(props: AboutCardProps) {
         entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
       ) || !viewTechdocLink,
     icon: <DocsIcon />,
-    href:
-      viewTechdocLink &&
-      (techdocsRef
-        ? viewTechdocLink({
-            namespace: techdocsRef.namespace || DEFAULT_NAMESPACE,
-            kind: techdocsRef.kind,
-            name: techdocsRef.name,
-          })
-        : viewTechdocLink({
-            namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
-            kind: entity.kind,
-            name: entity.metadata.name,
-          })),
+    href: buildTechDocsURL(entity, viewTechdocLink),
   };
 
   const subHeaderLinks = [viewInSource, viewInTechDocs];
