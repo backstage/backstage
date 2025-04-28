@@ -661,6 +661,77 @@ export interface Config {
           };
         }
       | {
+          store: 'valkey';
+          /**
+           * A valkey connection string in the form `redis://user:pass@host:port`.
+           * @visibility secret
+           */
+          connection: string;
+          /** An optional default TTL (in milliseconds, if given as a number). */
+          defaultTtl?: number | HumanDuration | string;
+          valkey?: {
+            /**
+             * An optional Valkey client configuration.  These options are passed to the `@keyv/valkey` client.
+             */
+            client?: {
+              /**
+               * Namespace for the current instance.
+               */
+              namespace?: string;
+              /**
+               * Separator to use between namespace and key.
+               */
+              keyPrefixSeparator?: string;
+              /**
+               * Number of keys to delete in a single batch.
+               */
+              clearBatchSize?: number;
+              /**
+               * Enable Unlink instead of using Del for clearing keys. This is more performant but may not be supported by all Redis versions.
+               */
+              useUnlink?: boolean;
+              /**
+               * Whether to allow clearing all keys when no namespace is set.
+               * If set to true and no namespace is set, iterate() will return all keys.
+               * Defaults to `false`.
+               */
+              noNamespaceAffectsAll?: boolean;
+            };
+            /**
+             * An optional Valkey cluster (redis cluster under the hood) configuration.
+             */
+            cluster?: {
+              /**
+               * Cluster configuration options to be passed to the `@keyv/valkey` client (and node-redis under the hood)
+               * https://github.com/redis/node-redis/blob/master/docs/clustering.md
+               *
+               * @visibility secret
+               */
+              rootNodes: Array<object>;
+              /**
+               * Cluster node default configuration options to be passed to the `@keyv/redis` client (and node-redis under the hood)
+               * https://github.com/redis/node-redis/blob/master/docs/clustering.md
+               *
+               * @visibility secret
+               */
+              defaults?: Partial<object>;
+              /**
+               * When `true`, `.connect()` will only discover the cluster topology, without actually connecting to all the nodes.
+               * Useful for short-term or PubSub-only connections.
+               */
+              minimizeConnections?: boolean;
+              /**
+               * When `true`, distribute load by executing readonly commands (such as `GET`, `GEOSEARCH`, etc.) across all cluster nodes. When `false`, only use master nodes.
+               */
+              useReplicas?: boolean;
+              /**
+               * The maximum number of times a command will be redirected due to `MOVED` or `ASK` errors.
+               */
+              maxCommandRedirections?: number;
+            };
+          };
+        }
+      | {
           store: 'memcache';
           /**
            * A memcache connection string in the form `user:pass@host:port`.
