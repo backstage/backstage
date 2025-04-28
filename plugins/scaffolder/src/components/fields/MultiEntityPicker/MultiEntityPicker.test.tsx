@@ -30,6 +30,7 @@ import { MultiEntityPickerProps } from './schema';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { merge, set } from 'lodash';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -845,6 +846,61 @@ describe('<MultiEntityPicker />', () => {
         'user:default/user-a',
         'group:default/squad-b',
       ]);
+    });
+  });
+
+  describe.each([
+    {
+      from: 'default',
+    },
+    {
+      from: 'schema',
+      descriptionPath: 'schema.description',
+    },
+    {
+      from: 'ui options',
+      descriptionPath: 'uiSchema[ui:description]',
+    },
+  ])('MultiEntityPicker description: $from', ({ from, descriptionPath }) => {
+    const customDescription = 'Custom MultiEntityPicker description';
+
+    it(`Presents ${from} description`, async () => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+      };
+      const override = {};
+      if (descriptionPath) {
+        set(override, descriptionPath, customDescription);
+      }
+      props = merge(
+        {
+          onChange,
+          schema,
+          required: true,
+          uiSchema,
+          rawErrors,
+          formData,
+        },
+        override,
+      ) as unknown as FieldProps<any>;
+
+      const { queryByText } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+      expect(queryByText(customDescription) === null).toBe(!descriptionPath);
     });
   });
 });

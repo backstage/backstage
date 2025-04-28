@@ -30,7 +30,6 @@ import {
   EntityRefPresentationSnapshot,
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
 import Autocomplete, {
   AutocompleteChangeReason,
 } from '@material-ui/lab/Autocomplete';
@@ -44,6 +43,7 @@ import {
   MultiEntityPickerFilterQuery,
 } from './schema';
 import { VirtualizedListbox } from '../VirtualizedListbox';
+import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
 
 export { MultiEntityPickerSchema } from './schema';
 
@@ -60,6 +60,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     rawErrors,
     formData,
     idSchema,
+    errors,
   } = props;
 
   const catalogFilter = buildCatalogFilter(uiSchema);
@@ -144,10 +145,12 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   }, [entities, onChange, required, allowArbitraryValues]);
 
   return (
-    <FormControl
-      margin="normal"
+    <ScaffolderField
+      rawErrors={rawErrors}
+      rawDescription={uiSchema['ui:description'] ?? description}
       required={required}
-      error={rawErrors?.length > 0 && !formData}
+      disabled={isDisabled}
+      errors={errors}
     >
       <Autocomplete
         multiple
@@ -182,7 +185,6 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
             label={title}
             disabled={isDisabled}
             margin="dense"
-            helperText={description}
             FormHelperTextProps={{
               margin: 'dense',
               style: { marginLeft: 0 },
@@ -197,7 +199,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
         )}
         ListboxComponent={VirtualizedListbox}
       />
-    </FormControl>
+    </ScaffolderField>
   );
 };
 
