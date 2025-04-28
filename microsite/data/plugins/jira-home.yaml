@@ -5,5 +5,5 @@ authorUrl: https://github.com/anuragpachauri
 category: Infrastructure
 description: A plugin showing jira tickets on home page.
 documentation: https://github.com/anuragpachauri/backstageMain/tree/main/plugins/jira-home
-npmPackageName: 'https://www.npmjs.com/package/@anuragpachauri/jira-home'
+npmPackageName: '@anuragpachauri/jira-home'
 addedDate: '2025-04-09'
