@@ -15,7 +15,7 @@
  */
 
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
 

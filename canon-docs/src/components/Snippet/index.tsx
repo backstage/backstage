@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, CSSProperties } from 'react';
 import { CodeBlock } from '../CodeBlock';
 import { Collapsible } from '@base-ui-components/react/collapsible';
 import styles from './styles.module.css';
@@ -10,6 +10,7 @@ interface SnippetProps {
   px?: number;
   py?: number;
   open?: boolean;
+  height?: CSSProperties['height'];
 }
 
 export const Snippet = ({
@@ -19,10 +20,11 @@ export const Snippet = ({
   px = 2,
   py = 2,
   open = false,
+  height = 'auto',
 }: SnippetProps) => {
   return (
     <Collapsible.Root className={styles.container} defaultOpen={open}>
-      <div className={styles.preview}>
+      <div className={styles.preview} style={{ height }}>
         <div
           className={`${styles.previewContent} ${styles[align]}`}
           style={{ padding: `${py}rem ${px}rem` }}

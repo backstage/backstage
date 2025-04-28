@@ -232,11 +232,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
             taskId,
             taskInstanceId: uuid.v4(),
           });
-          try {
-            await this.refresh(logger);
-          } catch (error) {
-            logger.error(`${this.getProviderName()} refresh failed`, error);
-          }
+          await this.refresh(logger);
         },
       });
     };

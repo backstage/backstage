@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Link } from '@backstage/core-components';
 import {
   createFrontendPlugin,
@@ -132,7 +131,7 @@ const ExternalPage = PageBlueprint.make({
 });
 
 export const pagesPlugin = createFrontendPlugin({
-  id: 'pages',
+  pluginId: 'pages',
   // routes: {
   //   index: indexRouteRef,
   //   // reference in config:

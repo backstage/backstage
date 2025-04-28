@@ -27,6 +27,11 @@ yarn --cwd packages/backend add \
 In your `packages/backend/src` folder, create an `instrumentation.js` file.
 
 ```typescript title="in packages/backend/src/instrumentation.js"
+// Prevent from running more than once (due to worker threads)
+if (!require('node:worker_threads').isMainThread) {
+  return;
+}
+
 const { NodeSDK } = require('@opentelemetry/sdk-node');
 const {
   getNodeAutoInstrumentations,
@@ -62,7 +67,7 @@ For local development, you can add the required flag in your `packages/backend/p
   ...
 ```
 
-You can now start your Backstage instance as usual, using `yarn dev`.
+You can now start your Backstage instance as usual, using `yarn start`.
 
 ## Production Setup
 

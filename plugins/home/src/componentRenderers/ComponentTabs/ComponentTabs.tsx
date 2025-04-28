@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState } from 'react';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { InfoCard } from '@backstage/core-components';
@@ -27,7 +27,7 @@ type TabType = {
 export const ComponentTabs = (props: { title: string; tabs: TabType[] }) => {
   const { title, tabs } = props;
 
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
 
   const handleChange = (_event: any, newValue: number) => {
     setValue(newValue);

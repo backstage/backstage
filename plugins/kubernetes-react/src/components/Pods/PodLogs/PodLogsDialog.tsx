@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-
 import SubjectIcon from '@material-ui/icons/Subject';
 
 import { KubernetesDialog } from '../../KubernetesDialog';

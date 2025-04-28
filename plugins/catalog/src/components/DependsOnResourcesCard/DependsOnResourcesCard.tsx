@@ -20,7 +20,6 @@ import {
   TableColumn,
   TableOptions,
 } from '@backstage/core-components';
-import React from 'react';
 import {
   asResourceEntities,
   componentEntityHelpLink,

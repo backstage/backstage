@@ -1,5 +1,139 @@
 # @backstage/cli
 
+## 0.32.1-next.0
+
+### Patch Changes
+
+- 5cd3c54: Updated dependency `react-refresh` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
+## 0.32.0
+
+### Minor Changes
+
+- a47fd39: Removes default React imports from template files, aligning with the requirements for the upcoming React 19 migration. Introduces a new ESLint rule to disallow `import React from 'react'` and `import * as React from 'react'`.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 65b584c: Internal update to move the `new` and `create-github-app` to their own module.
+- c7254ae: Internal update to move the `clean`, `pre/postpack` and `fix` commands into their own separate module.
+
+### Patch Changes
+
+- 4ea76f7: Bump @module-federation/enhanced ^0.9.0 to fix GHSA-593f-38f6-jp5m
+- 87a5cb4: Fixed an issue causing the `repo lint` command to fail when the `--max-warnings` option was used.
+- 6969f79: Avoid trailing `/*` when automatically adding imports for package with multiple entry points.
+- 98b7131: Update the `to do` plugin template to stop using the deprecated catalog alpha service reference.
+  If you start seeing the `should create TODO item with catalog information` test failing, you have two options to fix this:
+  Update the test to mock the legacy alpha catalog service, or migrate the `TODO` plugin backend to use the new catalog service reference.
+  We recommend the second option, see [this](https://github.com/backstage/backstage/pull/29450/files/267115d0436009443ca68ac84e7dcc646c9c938d#diff-47e01aeb12dd55fab9e697f810be21a8d08d39c37df1b078f6d0894f9bad5a1b) pull request for an example of how to do the migration.
+- d5c4fed: make certificate strings optional for Dev environments
+- d83f3f4: Resolved a problem where the `start` command did not correctly handle multiple `--require` flags, ensuring all specified modules are now properly loaded.
+- d2091c6: Added a new `repo start` command to replace the existing pattern of using `yarn dev` scripts. The `repo start` command runs the app and/or backend package in the repo by default, but will also fall back to running other individual frontend or backend packages or even plugin dev entry points if the can be uniquely selected.
+
+  The goal of this change is to reduce the number of different necessary scripts and align on `yarn start` being the only command needed for local development, similar to how `repo test` handles testing in the repo. It also opens up for more powerful options, like the `--plugin <pluginId>` flag that runs the dev entry point of the selected plugin.
+
+  The new script is installed as follows, replacing the existing `yarn start` script:
+
+  ```json
+  {
+    "scripts": {
+      "start": "backstage-cli repo start"
+    }
+  }
+  ```
+
+  In order to help users migrate in existing projects, it is recommended to add the following scripts to the root `package.json`:
+
+  ```json
+  {
+    "scripts": {
+      "dev": "echo \"Use 'yarn start' instead\"",
+      "start-backend": "echo \"Use 'yarn start backend' instead\""
+    }
+  }
+  ```
+
+  For more information, run `yarn start --help` once the new command is installed.
+
+- 918c883: Included a reference to the JSX transform guide in the warning about using the default React import.
+- Updated dependencies
+  - @backstage/integration@1.16.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.0
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
+## 0.32.0-next.2
+
+### Minor Changes
+
+- a47fd39: Removes default React imports from template files, aligning with the requirements for the upcoming React 19 migration. Introduces a new ESLint rule to disallow `import React from 'react'` and `import * as React from 'react'`.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+### Patch Changes
+
+- 6969f79: Avoid trailing `/*` when automatically adding imports for package with multiple entry points.
+- 98b7131: Update the `to do` plugin template to stop using the deprecated catalog alpha service reference.
+  If you start seeing the `should create TODO item with catalog information` test failing, you have two options to fix this:
+  Update the test to mock the legacy alpha catalog service, or migrate the `TODO` plugin backend to use the new catalog service reference.
+  We recommend the second option, see [this](https://github.com/backstage/backstage/pull/29450/files/267115d0436009443ca68ac84e7dcc646c9c938d#diff-47e01aeb12dd55fab9e697f810be21a8d08d39c37df1b078f6d0894f9bad5a1b) pull request for an example of how to do the migration.
+- d5c4fed: make certificate strings optional for Dev environments
+- d2091c6: Added a new `repo start` command to replace the existing pattern of using `yarn dev` scripts. The `repo start` command runs the app and/or backend package in the repo by default, but will also fall back to running other individual frontend or backend packages or even plugin dev entry points if the can be uniquely selected.
+
+  The goal of this change is to reduce the number of different necessary scripts and align on `yarn start` being the only command needed for local development, similar to how `repo test` handles testing in the repo. It also opens up for more powerful options, like the `--plugin <pluginId>` flag that runs the dev entry point of the selected plugin.
+
+  The new script is installed as follows, replacing the existing `yarn start` script:
+
+  ```json
+  {
+    "scripts": {
+      "start": "backstage-cli repo start"
+    }
+  }
+  ```
+
+  In order to help users migrate in existing projects, it is recommended to add the following scripts to the root `package.json`:
+
+  ```json
+  {
+    "scripts": {
+      "dev": "echo \"Use 'yarn start' instead\"",
+      "start-backend": "echo \"Use 'yarn start backend' instead\""
+    }
+  }
+  ```
+
+  For more information, run `yarn start --help` once the new command is installed.
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.0
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
 ## 0.32.0-next.1
 
 ### Patch Changes

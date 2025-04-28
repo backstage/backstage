@@ -1,0 +1,10 @@
+---
+title: Infisical
+author: Infisical
+authorUrl: https://infisical.com/
+category: Security
+description: Visualize and manage the secrets stored in your Infisical instance
+documentation: https://github.com/Infisical/infisical-backstage-plugin
+iconUrl: https://avatars.githubusercontent.com/u/107880645?s=200&v=4
+npmPackageName: '@infisical/backstage-plugin-infisical'
+addedDate: '2025-04-11'

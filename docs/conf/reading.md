@@ -141,15 +141,7 @@ from `@backstage/core-plugin-api`.
 
 ## Accessing ConfigApi in Backend Plugins
 
-### Old Backend System
-
-In the old backend system plugins, the configuration is passed in via options from the main
-backend package. See for example
-[packages/backend-legacy/src/plugins/auth.ts](https://github.com/backstage/backstage/blob/244eef851f5aa19f91c7c9b5c12d5df95cf482ca/packages/backend/src/plugins/auth.ts#L23).
-
-### New Backend System
-
-In the new backend system, plugins are able to directly access config through dependencies. You can access config like so,
+In the backend system, plugins are able to directly access config through dependencies. You can access config like so,
 
 ```ts title="plugins/your-plugin-backend/src/plugin.ts"
 export const yourPlugin = createBackendPlugin({
@@ -175,3 +167,7 @@ export const yourPlugin = createBackendPlugin({
   },
 });
 ```
+
+### Old Backend System
+
+In the old backend system plugins, the configuration is passed in via options from the main backend package.

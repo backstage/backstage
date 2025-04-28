@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Button from '@material-ui/core/Button';
-import React from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';

@@ -18,7 +18,7 @@ import { errorApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import { ReactNode } from 'react';
 import { AnalyzeResult, catalogImportApiRef } from '../../api/';
 import { StepInitAnalyzeUrl } from './StepInitAnalyzeUrl';
 
@@ -33,7 +33,7 @@ describe('<StepInitAnalyzeUrl />', () => {
     error$: jest.fn(),
   };
 
-  const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+  const Wrapper = ({ children }: { children?: ReactNode }) => (
     <TestApiProvider
       apis={[
         [catalogImportApiRef, catalogImportApi],

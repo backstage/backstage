@@ -1,5 +1,75 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.7.1-next.0
+
+### Patch Changes
+
+- 6579c2c: Use action context logger in Octokit client
+- b2b654c: Added optional assignees parameter to `publish:github:pull-request` action
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/plugin-scaffolder-node@0.8.2-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.7.0
+
+### Minor Changes
+
+- c761cf5: **BREAKING** The `publish:github` scaffolder action now defaults to initializing with a branch named "main" instead of "master" when creating new repositories.
+
+  If you or your organization have relied on all new github repositories having a default branch name of "master" you **must** set the `defaultBranch: 'master'` in your existing templates that feature the `publish:github` scaffolder action.
+
+  To keep using the name "master" for your new github repos, these are the **required** changes:
+
+  ```diff
+      - id: publish
+        name: Publish
+        action: publish:github
+        input:
+          allowedHosts: ['github.com']
+          description: This is ${{ parameters.name }}
+          repoUrl: ${{ parameters.repoUrl }}
+  +       defaultBranch: 'master'
+  ```
+
+### Patch Changes
+
+- 1af427a: Made "github:autolinks:create" action idempotent
+- 79dc5ac: Made "github:deployKey:create" action idempotent
+- 411c879: Add support to github:repo:create to allow branch updates
+- 180ea6e: Made "github:branch-protection:create" action idempotent
+- 0be1a1e: Made "publish:github" action idempotent
+- a833f0f: Made "github:actions:dispatch" action idempotent
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/integration@1.16.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.6.2-next.2
+
+### Patch Changes
+
+- 411c879: Add support to github:repo:create to allow branch updates
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-node@0.8.1-next.1
+
 ## 0.6.2-next.1
 
 ### Patch Changes

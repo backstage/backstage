@@ -21,7 +21,7 @@ import {
   useEntity,
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
+import { useMemo } from 'react';
 import { createSpecApiTypeColumn } from './presets';
 import {
   CodeSnippet,
@@ -33,14 +33,8 @@ import {
   TableOptions,
   WarningPanel,
 } from '@backstage/core-components';
-
-const presetColumns: TableColumn<ApiEntity>[] = [
-  EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
-  EntityTable.columns.createOwnerColumn(),
-  createSpecApiTypeColumn(),
-  EntityTable.columns.createSpecLifecycleColumn(),
-  EntityTable.columns.createMetadataDescriptionColumn(),
-];
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { apiDocsTranslationRef } from '../../translation';
 
 /**
  * @public
@@ -51,9 +45,19 @@ export const HasApisCard = (props: {
   columns?: TableColumn<ApiEntity>[];
   tableOptions?: TableOptions;
 }) => {
+  const { t } = useTranslationRef(apiDocsTranslationRef);
+  const presetColumns: TableColumn<ApiEntity>[] = useMemo(() => {
+    return [
+      EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
+      EntityTable.columns.createOwnerColumn(),
+      createSpecApiTypeColumn(t),
+      EntityTable.columns.createSpecLifecycleColumn(),
+      EntityTable.columns.createMetadataDescriptionColumn(),
+    ];
+  }, [t]);
   const {
     variant = 'gridItem',
-    title = 'APIs',
+    title = t('hasApisCard.title'),
     columns = presetColumns,
     tableOptions = {},
   } = props;
@@ -76,7 +80,7 @@ export const HasApisCard = (props: {
       <InfoCard variant={variant} title={title}>
         <WarningPanel
           severity="error"
-          title="Could not load APIs"
+          title={t('hasApisCard.error.title')}
           message={<CodeSnippet text={`${error}`} language="text" />}
         />
       </InfoCard>
@@ -90,12 +94,13 @@ export const HasApisCard = (props: {
       emptyContent={
         <div style={{ textAlign: 'center' }}>
           <Typography variant="body1">
-            This {entity.kind.toLocaleLowerCase('en-US')} does not contain any
-            APIs.
+            {t('hasApisCard.emptyContent.title', {
+              entity: entity.kind.toLocaleLowerCase('en-US'),
+            })}
           </Typography>
           <Typography variant="body2">
             <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api">
-              Learn how to change this.
+              {t('apisCardHelpLinkTitle')}
             </Link>
           </Typography>
         </div>

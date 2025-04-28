@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { JSX, ReactNode } from 'react';
+import { JSX, lazy, ReactNode, Suspense } from 'react';
 import {
   ConfigApi,
   coreExtensionData,
@@ -123,11 +123,11 @@ export function createApp(options?: CreateAppOptions): {
 
   return {
     createRoot() {
-      const LazyApp = React.lazy(appLoader);
+      const LazyApp = lazy(appLoader);
       return (
-        <React.Suspense fallback={suspenseFallback}>
+        <Suspense fallback={suspenseFallback}>
           <LazyApp />
-        </React.Suspense>
+        </Suspense>
       );
     },
   };

@@ -18,6 +18,7 @@ import { CommandRegistry } from './CommandRegistry';
 export interface BackstageCommand {
   path: string[];
   description: string;
+  deprecated?: boolean;
   execute: (options: { args: string[] }) => Promise<void>;
 }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import usePrevious from 'react-use/esm/usePrevious';
 import qs from 'qs';
 import { useLocation, useOutlet } from 'react-router-dom';

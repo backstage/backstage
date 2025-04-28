@@ -1,0 +1,10 @@
+.canon-CollapsiblePanel {
+  height: var(--collapsible-panel-height);
+  transition: all .15s ease-out;
+  display: flex;
+  overflow: hidden;
+
+  &[data-starting-style], &[data-ending-style] {
+    height: 0;
+  }
+}

@@ -165,7 +165,9 @@ const Community = () => {
           <BannerSectionGrid
             header={
               <>
-                <h2 className="text--primary">Offical Backstage Initiatives</h2>
+                <h2 className="text--primary">
+                  Official Backstage Initiatives
+                </h2>
 
                 <h1>Stay tuned to the latest developments</h1>
               </>

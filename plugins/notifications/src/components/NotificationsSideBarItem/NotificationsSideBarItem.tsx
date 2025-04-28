@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNotificationsApi } from '../../hooks';
 import { Link, SidebarItem } from '@backstage/core-components';
 import NotificationsIcon from '@material-ui/icons/Notifications';
@@ -111,14 +111,14 @@ export const NotificationsSidebarItem = (props?: {
   );
   const notificationsApi = useApi(notificationsApiRef);
   const alertApi = useApi(alertApiRef);
-  const [unreadCount, setUnreadCount] = React.useState(0);
+  const [unreadCount, setUnreadCount] = useState(0);
   const notificationsRoute = useRouteRef(rootRouteRef)();
   // TODO: Do we want to add long polling in case signals are not available
   const { lastSignal } = useSignal<NotificationSignal>('notifications');
   const { sendWebNotification, requestUserPermission } = useWebNotifications(
     webNotificationsEnabled,
   );
-  const [refresh, setRefresh] = React.useState(false);
+  const [refresh, setRefresh] = useState(false);
   const { setNotificationCount } = useTitleCounter();
 
   const getSnackbarProperties = useCallback(

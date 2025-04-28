@@ -25,7 +25,6 @@ import {
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { EntityProcessingErrorsPanel } from './EntityProcessingErrorsPanel';
 
 describe('<EntityProcessErrors />', () => {

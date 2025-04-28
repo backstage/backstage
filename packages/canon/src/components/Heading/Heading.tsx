@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import clsx from 'clsx';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 
@@ -45,11 +45,8 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
     return (
       <Component
         ref={ref}
-        className={clsx(
-          'canon-Heading',
-          responsiveVariant && `canon-Heading--variant-${responsiveVariant}`,
-          className,
-        )}
+        className={clsx('canon-Heading', className)}
+        data-variant={responsiveVariant}
         {...restProps}
       >
         {children}

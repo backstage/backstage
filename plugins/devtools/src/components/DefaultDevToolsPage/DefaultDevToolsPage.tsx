@@ -22,7 +22,6 @@ import {
 import { ConfigContent } from '../Content/ConfigContent';
 import { DevToolsLayout } from '../DevToolsLayout';
 import { InfoContent } from '../Content/InfoContent';
-import React from 'react';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 
 /** @public */

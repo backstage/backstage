@@ -15,7 +15,7 @@
  */
 
 import { Descriptor, Project, structUtils } from '@yarnpkg/core';
-import { getPackageVersion } from '../util';
+import { getCurrentBackstageVersion, getPackageVersion } from '../util';
 import { PROTOCOL } from '../constants';
 
 export const reduceDependency = async (
@@ -24,12 +24,18 @@ export const reduceDependency = async (
 ) => {
   const range = structUtils.parseRange(dependency.range);
 
-  if (range.protocol === PROTOCOL) {
-    return structUtils.makeDescriptor(
-      dependency,
-      `npm:^${await getPackageVersion(dependency, project.configuration)}`,
+  if (range.protocol !== PROTOCOL) {
+    return dependency;
+  }
+
+  if (range.selector !== '^') {
+    throw new Error(
+      `Invalid backstage: version range found: ${dependency.range}`,
     );
   }
 
-  return dependency;
+  return structUtils.bindDescriptor(dependency, {
+    backstage: getCurrentBackstageVersion(),
+    npm: await getPackageVersion(dependency, project.configuration),
+  });
 };

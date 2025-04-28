@@ -9,7 +9,7 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -49,11 +49,7 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
         | ConfigurableExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
@@ -64,11 +60,7 @@ const _default: FrontendPlugin<
           >;
       inputs: {
         providerSettings: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >,
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
           {
             singleton: true;
             optional: true;
@@ -114,6 +106,18 @@ export const settingsNavItem: ExtensionDefinition<{
 export const userSettingsTranslationRef: TranslationRef<
   'user-settings',
   {
+    readonly 'featureFlags.title': 'Feature Flags';
+    readonly 'featureFlags.description': 'Please refresh the page when toggling feature flags';
+    readonly 'featureFlags.filterTitle': 'Filter';
+    readonly 'featureFlags.clearFilter': 'Clear filter';
+    readonly 'featureFlags.emptyFlags.title': 'No Feature Flags';
+    readonly 'featureFlags.emptyFlags.action.title': 'An example for how to add a feature flag is highlighted below:';
+    readonly 'featureFlags.emptyFlags.action.readMoreButtonTitle': 'Read More';
+    readonly 'featureFlags.emptyFlags.description': 'Feature Flags make it possible for plugins to register features in Backstage for users to opt into. You can use this to split out logic in your code for manual A/B testing, etc.';
+    readonly 'featureFlags.flagItem.title.disable': 'Disable';
+    readonly 'featureFlags.flagItem.title.enable': 'Enable';
+    readonly 'featureFlags.flagItem.subtitle.registeredInApplication': 'Registered in the application';
+    readonly 'featureFlags.flagItem.subtitle.registeredInPlugin': 'Registered in {{pluginId}} plugin';
     readonly 'languageToggle.select': 'Select language {{language}}';
     readonly 'languageToggle.title': 'Language';
     readonly 'languageToggle.description': 'Change the language';
@@ -124,6 +128,32 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly 'themeToggle.names.dark': 'Dark';
     readonly 'themeToggle.names.light': 'Light';
     readonly 'themeToggle.selectAuto': 'Select Auto Theme';
+    readonly 'signOutMenu.title': 'Sign Out';
+    readonly 'signOutMenu.moreIconTitle': 'more';
+    readonly 'pinToggle.title': 'Pin Sidebar';
+    readonly 'pinToggle.description': 'Prevent the sidebar from collapsing';
+    readonly 'pinToggle.ariaLabelTitle': 'Pin Sidebar Switch';
+    readonly 'pinToggle.switchTitles.unpin': 'Unpin Sidebar';
+    readonly 'pinToggle.switchTitles.pin': 'Pin Sidebar';
+    readonly 'identityCard.title': 'Backstage Identity';
+    readonly 'identityCard.noIdentityTitle': 'No Backstage Identity';
+    readonly 'identityCard.userEntity': 'User Entity';
+    readonly 'identityCard.ownershipEntities': 'Ownership Entities';
+    readonly 'defaultProviderSettings.description': 'Provides authentication towards {{provider}} APIs and identities';
+    readonly 'emptyProviders.title': 'No Authentication Providers';
+    readonly 'emptyProviders.action.title': 'Open app-config.yaml and make the changes as highlighted below:';
+    readonly 'emptyProviders.action.readMoreButtonTitle': 'Read More';
+    readonly 'emptyProviders.description': 'You can add Authentication Providers to Backstage which allows you to use these providers to authenticate yourself.';
+    readonly 'providerSettingsItem.title.signIn': 'Sign in to {{title}}';
+    readonly 'providerSettingsItem.title.signOut': 'Sign out from {{title}}';
+    readonly 'providerSettingsItem.buttonTitle.signIn': 'Sign in';
+    readonly 'providerSettingsItem.buttonTitle.signOut': 'Sign out';
+    readonly 'authProviders.title': 'Available Providers';
+    readonly 'defaultSettingsPage.tabsTitle.featureFlags': 'Feature Flags';
+    readonly 'defaultSettingsPage.tabsTitle.authProviders': 'Authentication Providers';
+    readonly 'defaultSettingsPage.tabsTitle.general': 'General';
+    readonly 'settingsLayout.title': 'Settings';
+    readonly sidebarTitle: 'Settings';
   }
 >;
 

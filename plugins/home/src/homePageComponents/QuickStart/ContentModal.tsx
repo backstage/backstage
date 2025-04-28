@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { JSX, useState } from 'react';
 import { Link } from '@backstage/core-components';
 import Modal from '@material-ui/core/Modal';
 import Box from '@material-ui/core/Box';
@@ -22,8 +22,8 @@ import Box from '@material-ui/core/Box';
 import { useStyles } from './styles';
 
 export type ContentModalProps = {
-  modalContent: React.JSX.Element;
-  linkContent: string | React.JSX.Element;
+  modalContent: JSX.Element;
+  linkContent: string | JSX.Element;
 };
 
 export const ContentModal = (props: ContentModalProps) => {

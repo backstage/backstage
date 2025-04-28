@@ -25,7 +25,7 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import React from 'react';
+import { ReactNode, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { StarredEntityListItem } from '../../components/StarredEntityListItem/StarredEntityListItem';
 import { makeStyles } from '@material-ui/core/styles';
@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
  * @public
  */
 export type StarredEntitiesProps = {
-  noStarredEntitiesMessage?: React.ReactNode | undefined;
+  noStarredEntitiesMessage?: ReactNode | undefined;
   groupByKind?: boolean;
 };
 
@@ -62,7 +62,7 @@ export const Content = ({
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const { starredEntities, toggleStarredEntity } = useStarredEntities();
-  const [activeTab, setActiveTab] = React.useState(0);
+  const [activeTab, setActiveTab] = useState(0);
 
   // Grab starred entities from catalog to ensure they still exist and also retrieve display titles
   const entities = useAsync(async () => {

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IconNames } from '../Icon';
+
 import type { ButtonOwnProps } from './Button.props';
+import { ReactElement } from 'react';
 
 /**
  * Properties for {@link Button}
@@ -43,10 +44,10 @@ export interface ButtonProps
   /**
    * Optional icon to display at the start of the button
    */
-  iconStart?: IconNames;
+  iconStart?: ReactElement;
 
   /**
    * Optional icon to display at the end of the button
    */
-  iconEnd?: IconNames;
+  iconEnd?: ReactElement;
 }

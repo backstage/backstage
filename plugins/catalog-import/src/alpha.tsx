@@ -33,7 +33,6 @@ import {
   scmAuthApiRef,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import React from 'react';
 import { CatalogImportClient, catalogImportApiRef } from './api';
 import { rootRouteRef } from './plugin';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -87,7 +86,7 @@ const catalogImportApi = ApiBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'catalog-import',
+  pluginId: 'catalog-import',
   extensions: [catalogImportApi, catalogImportPage],
   routes: {
     importPage: convertLegacyRouteRef(rootRouteRef),

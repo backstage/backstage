@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { ApiProvider } from '@backstage/core-app-api';
 import { mockApis, TestApiRegistry } from '@backstage/test-utils';
 import { act, renderHook, waitFor } from '@testing-library/react';
