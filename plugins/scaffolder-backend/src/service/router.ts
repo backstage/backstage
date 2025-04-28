@@ -136,6 +136,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 
 /**
+
  * RouterOptions
  */
 export interface RouterOptions {
@@ -366,7 +367,6 @@ export async function createRouter(
         resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
         permissions: scaffolderTaskPermissions,
         rules: taskRules,
-        getResources: resourceRefs => taskBroker.getTasks(resourceRefs),
       },
     ],
     permissions: scaffolderPermissions,

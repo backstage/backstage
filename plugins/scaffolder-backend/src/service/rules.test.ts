@@ -586,7 +586,7 @@ describe('hasCreatedBy', () => {
         hasCreatedBy.toQuery({
           createdBy: ['user:default/user-1'],
         }),
-      ).toEqual({ property: 'createdBy', values: ['user:default/user-1'] });
+      ).toEqual({ key: 'created_by', values: ['user:default/user-1'] });
     });
   });
   it('returns the correct query filter with values (multiple users in createdBy)', () => {
@@ -595,7 +595,7 @@ describe('hasCreatedBy', () => {
         createdBy: ['user:default/user-1', 'user:default/user-2'],
       }),
     ).toEqual({
-      property: 'createdBy',
+      key: 'created_by',
       values: ['user:default/user-1', 'user:default/user-2'],
     });
   });

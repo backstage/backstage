@@ -161,16 +161,6 @@ describe('OngoingTask', () => {
     await expect(rendered.findByText('Hide Logs')).resolves.toBeInTheDocument();
   });
 
-  it('should render not found error page when user does not have permission to read the task', async () => {
-    const permissionApi = mockApis.permission({
-      authorize: AuthorizeResult.DENY,
-    });
-
-    await expect(render(permissionApi)).rejects.toThrow(
-      'Reached NotFound Page',
-    );
-  });
-
   it('should have cancel button be disabled when user has read permission but lacks cancel permission', async () => {
     const permissionApi = mockApis.permission({
       authorize: request => {

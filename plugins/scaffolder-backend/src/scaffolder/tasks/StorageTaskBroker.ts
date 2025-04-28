@@ -404,13 +404,6 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   /**
-   * {@inheritdoc TaskBroker.getTasks}
-   */
-  getTasks(taskIds: string[]): Promise<SerializedTask[]> {
-    return this.storage.getTasks(taskIds);
-  }
-
-  /**
    * {@inheritdoc TaskBroker.event$}
    */
   event$(options: {

@@ -205,7 +205,7 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   private isTaskFilter(filter: any): filter is TaskFilter {
-    return filter.hasOwnProperty('property');
+    return filter.hasOwnProperty('key');
   }
 
   private parseFilter(
@@ -214,20 +214,16 @@ export class DatabaseTaskStore implements TaskStore {
     db: Knex,
     negate: boolean = false,
   ): Knex.QueryBuilder {
-    // handle not criteria
     if (isNotCriteria(filter)) {
       return this.parseFilter(filter.not, query, db, !negate);
     }
 
     if (this.isTaskFilter(filter)) {
       const values: string[] = compact(filter.values) ?? [];
-
-      if (filter.property === 'createdBy') {
-        if (negate) {
-          query.whereNotIn('created_by', [...new Set(values)]);
-        } else {
-          query.whereIn('created_by', [...new Set(values)]);
-        }
+      if (negate) {
+        query.whereNotIn(filter.key, values);
+      } else {
+        query.whereIn(filter.key, values);
       }
 
       return query;
@@ -279,7 +275,7 @@ export class DatabaseTaskStore implements TaskStore {
       createdByValues.length > 0
         ? {
             allOf: [
-              { property: 'createdBy', values: createdByValues },
+              { key: 'created_by', values: createdByValues },
               ...(permissionFilters ? [permissionFilters] : []),
             ],
           }
@@ -345,22 +341,6 @@ export class DatabaseTaskStore implements TaskStore {
     } catch (error) {
       throw new Error(`Failed to parse spec of task '${taskId}', ${error}`);
     }
-  }
-
-  async getTasks(taskIds: string[]): Promise<SerializedTask[]> {
-    const results = await this.db<RawDbTaskRow>('tasks')
-      .whereIn('id', taskIds)
-      .select();
-
-    return results.map(result => {
-      try {
-        return this.parseTaskRow(result);
-      } catch (error) {
-        throw new Error(
-          `Failed to parse spec of task '${result.id}', ${error}`,
-        );
-      }
-    });
   }
 
   private parseTaskRow(result: RawDbTaskRow): SerializedTask {

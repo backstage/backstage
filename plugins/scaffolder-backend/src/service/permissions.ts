@@ -27,7 +27,6 @@ import {
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import {
   SerializedTask,
-  TaskFilter,
 } from '@backstage/plugin-scaffolder-node';
 
 /**
@@ -82,8 +81,8 @@ export type TaskPermissionRuleInput<
 > = PermissionRule<
   SerializedTask,
   {
-    property: TaskFilter['property'];
-    values: any;
+    key: string;
+    values?: string[];
   },
   typeof RESOURCE_TYPE_SCAFFOLDER_TASK,
   TParams

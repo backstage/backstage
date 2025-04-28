@@ -46,7 +46,7 @@ import {
   TaskSteps,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { useAsync } from '@react-hookz/web';
-import { usePermission} from '@backstage/plugin-permission-react';
+import { usePermission } from '@backstage/plugin-permission-react';
 import {
   taskCancelPermission,
   taskCreatePermission,
