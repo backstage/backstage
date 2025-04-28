@@ -3576,6 +3576,7 @@ __metadata:
     "@google-cloud/storage": "npm:^7.0.0"
     "@keyv/memcache": "npm:^2.0.1"
     "@keyv/redis": "npm:^4.0.1"
+    "@keyv/valkey": "npm:^1.0.1"
     "@manypkg/get-packages": "npm:^1.1.3"
     "@octokit/rest": "npm:^19.0.3"
     "@opentelemetry/api": "npm:^1.9.0"
@@ -3772,6 +3773,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@keyv/memcache": "npm:^2.0.1"
     "@keyv/redis": "npm:^4.0.1"
+    "@keyv/valkey": "npm:^1.0.1"
     "@types/express": "npm:^4.17.6"
     "@types/express-serve-static-core": "npm:^4.17.5"
     "@types/jest": "npm:*"
@@ -10912,6 +10914,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@iovalkey/commands@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@iovalkey/commands@npm:0.1.0"
+  checksum: 10/9226ad4b26b8b3bf8446f4aa95bc0ae45bef0d15af7f087a3484e7f4f50f3f8741ba03f4355ebc3b2982d47a2960cb7f39bb83f33256c258fe1ae34bccbc71e1
+  languageName: node
+  linkType: hard
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -11419,6 +11428,15 @@ __metadata:
   dependencies:
     buffer: "npm:^6.0.3"
   checksum: 10/6a42a5778a6b4542f6903ba7e6a17c5bd116441798d75c95fba9908c76c7606db527fad710b5c54abc6175e49b1bbaaafe3b836ad4b91e1af701394134f1d504
+  languageName: node
+  linkType: hard
+
+"@keyv/valkey@npm:^1.0.1":
+  version: 1.0.3
+  resolution: "@keyv/valkey@npm:1.0.3"
+  dependencies:
+    iovalkey: "npm:^0.3.1"
+  checksum: 10/ff6ba62e4d19c426e45a1437fe215ed2baddc58e811d97507dd75ead0058c3105d679c8c7c4241ddf732abe56320357c2e568c014620e50d7c0eaef1f2528b88
   languageName: node
   linkType: hard
 
@@ -32752,6 +32770,23 @@ __metadata:
     redis-parser: "npm:^3.0.0"
     standard-as-callback: "npm:^2.1.0"
   checksum: 10/9043b812ac58065e80c759d130602cc64490fcaeaacf93723453fda04c7ba61dab0e2f50380eacb045592378ededf44f270c0d43e13e3e8b8d7c5a8d7fecb823
+  languageName: node
+  linkType: hard
+
+"iovalkey@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "iovalkey@npm:0.3.1"
+  dependencies:
+    "@iovalkey/commands": "npm:^0.1.0"
+    cluster-key-slot: "npm:^1.1.0"
+    debug: "npm:^4.3.4"
+    denque: "npm:^2.1.0"
+    lodash.defaults: "npm:^4.2.0"
+    lodash.isarguments: "npm:^3.1.0"
+    redis-errors: "npm:^1.2.0"
+    redis-parser: "npm:^3.0.0"
+    standard-as-callback: "npm:^2.1.0"
+  checksum: 10/afe5e0218810d902263dca2b22dd4501fb74698111f1850804d0948bd6a97793a7f5006757f9b6e8c8131bac6bd532d07ad971e7776bed7f6dc1f6e471706c53
   languageName: node
   linkType: hard
 
