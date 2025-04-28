@@ -167,7 +167,7 @@ export interface TaskBroker {
 
   retry?(taskId: string): Promise<void>;
 
-  claim(): Promise<TaskContext>;
+  claim(abort: AbortSignal): Promise<TaskContext>;
 
   recoverTasks?(): Promise<void>;
 

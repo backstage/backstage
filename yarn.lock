@@ -7450,6 +7450,7 @@ __metadata:
     strip-ansi: "npm:^7.1.0"
     supertest: "npm:^7.0.0"
     tar: "npm:^6.1.12"
+    trace: "npm:^3.2.0"
     triple-beam: "npm:^1.4.1"
     uuid: "npm:^11.0.0"
     wait-for-expect: "npm:^3.0.2"
@@ -43938,6 +43939,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"stack-chain@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "stack-chain@npm:2.0.0"
+  checksum: 10/1ab6aafa6c0d4194d4cf15eac9e4121492da79596268eed6d9101e91e2cea1c5998638faf74968b7aed1ff5f76b35e7390cdd56c156cca4a8f02244716786ae8
+  languageName: node
+  linkType: hard
+
 "stack-generator@npm:^2.0.5":
   version: 2.0.5
   resolution: "stack-generator@npm:2.0.5"
@@ -45417,6 +45425,15 @@ __metadata:
   version: 0.0.3
   resolution: "tr46@npm:0.0.3"
   checksum: 10/8f1f5aa6cb232f9e1bdc86f485f916b7aa38caee8a778b378ffec0b70d9307873f253f5cbadbe2955ece2ac5c83d0dc14a77513166ccd0a0c7fe197e21396695
+  languageName: node
+  linkType: hard
+
+"trace@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "trace@npm:3.2.0"
+  dependencies:
+    stack-chain: "npm:^2.0.0"
+  checksum: 10/f4c054d669663d18aaa857dad8448767001406c80ed9faa945aa78f544e2081471dc1eaf5cb878d1c8c6785d1106f1a89000256e34a1b368fe3a947b0471e27d
   languageName: node
   linkType: hard
 

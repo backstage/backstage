@@ -305,6 +305,7 @@ export class StorageTaskBroker implements TaskBroker {
   private async registerCancellable(
     taskId: string,
     abortController: AbortController,
+    shutdown: AbortSignal,
   ) {
     let shouldUnsubscribe = false;
     const subscription = this.event$({ taskId, after: undefined }).subscribe({
@@ -326,6 +327,9 @@ export class StorageTaskBroker implements TaskBroker {
           subscription.unsubscribe();
         }
       },
+    });
+    shutdown?.addEventListener('abort', () => {
+      subscription.unsubscribe();
     });
   }
 
@@ -353,12 +357,12 @@ export class StorageTaskBroker implements TaskBroker {
   /**
    * {@inheritdoc TaskBroker.claim}
    */
-  async claim(): Promise<TaskContext> {
+  async claim(signal: AbortSignal): Promise<TaskContext> {
     for (;;) {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
         const abortController = new AbortController();
-        await this.registerCancellable(pendingTask.id, abortController);
+        await this.registerCancellable(pendingTask.id, abortController, signal);
         return TaskManager.create(
           {
             taskId: pendingTask.id,
@@ -376,7 +380,7 @@ export class StorageTaskBroker implements TaskBroker {
         );
       }
 
-      await this.waitForDispatch();
+      await this.waitForDispatch(signal);
     }
   }
 
@@ -474,8 +478,15 @@ export class StorageTaskBroker implements TaskBroker {
     );
   }
 
-  private waitForDispatch() {
-    return this.deferredDispatch;
+  private async waitForDispatch(signal: AbortSignal): Promise<void> {
+    const aborted = createDeferred();
+    function onAborted() {
+      signal.removeEventListener('abort', onAborted);
+      aborted.reject(new Error('Aborted'));
+    }
+    signal.addEventListener('abort', onAborted);
+
+    await Promise.race([this.deferredDispatch, aborted]);
   }
 
   private signalDispatch() {

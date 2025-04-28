@@ -128,6 +128,7 @@
     "esbuild": "^0.25.0",
     "strip-ansi": "^7.1.0",
     "supertest": "^7.0.0",
+    "trace": "^3.2.0",
     "wait-for-expect": "^3.0.2"
   },
   "configSchema": "config.d.ts"

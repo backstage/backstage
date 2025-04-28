@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import 'trace';
 import { Settings } from 'luxon';
 
 Settings.defaultLocale = 'en';

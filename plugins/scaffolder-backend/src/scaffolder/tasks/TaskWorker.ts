@@ -88,10 +88,10 @@ export class TaskWorker {
   private taskQueue: PQueue;
   private logger: Logger | undefined;
   private auditor: AuditorService | undefined;
-  private stopWorkers: boolean;
+  private shutdown: AbortController;
 
   private constructor(private readonly options: TaskWorkerOptions) {
-    this.stopWorkers = false;
+    this.shutdown = new AbortController();
     this.logger = options.logger;
     this.auditor = options.auditor;
     this.taskQueue = new PQueue({
@@ -145,24 +145,28 @@ export class TaskWorker {
 
   start() {
     (async () => {
-      while (!this.stopWorkers) {
-        await setTimeout(10000);
+      while (!this.shutdown.signal.aborted) {
         await this.recoverTasks();
+        await setTimeout(10000);
       }
     })();
     (async () => {
-      while (!this.stopWorkers) {
+      while (!this.shutdown.signal.aborted) {
         await this.onReadyToClaimTask();
-        if (!this.stopWorkers) {
-          const task = await this.options.taskBroker.claim();
-          void this.taskQueue.add(() => this.runOneTask(task));
+        if (!this.shutdown.signal.aborted) {
+          const task = await this.options.taskBroker.claim(
+            this.shutdown.signal,
+          );
+          if (task) {
+            void this.taskQueue.add(() => this.runOneTask(task));
+          }
         }
       }
     })();
   }
 
   async stop() {
-    this.stopWorkers = true;
+    this.shutdown.abort();
     if (this.options?.gracefulShutdown) {
       while (this.taskQueue.size > 0) {
         await setTimeout(1000);

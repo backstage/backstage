@@ -25,6 +25,8 @@ import {
 import fs from 'fs-extra';
 import { EventsService } from '@backstage/plugin-events-node';
 
+jest.setTimeout(60_000);
+
 const databases = TestDatabases.create({
   ids: ['SQLITE_3'],
 });

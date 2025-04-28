@@ -30,14 +30,21 @@ describe('StorageTaskBroker', () => {
   const databases = TestDatabases.create({
     ids: ['SQLITE_3'],
   });
+  let abortControlle: AbortController;
+  let abortSignal: AbortSignal;
 
-  beforeAll(async () => {
-    const knex = await databases.init('SQLITE_3');
-    const manager = mockServices.database({ knex });
-
+  beforeEach(async () => {
     storage = await DatabaseTaskStore.create({
-      database: manager,
+      database: mockServices.database({
+        knex: await databases.init('SQLITE_3'),
+      }),
     });
+    abortControlle = new AbortController();
+    abortSignal = abortControlle.signal;
+  });
+
+  afterEach(async () => {
+    abortControlle.abort();
   });
 
   const emptyTaskSpec = { spec: { steps: [] } as unknown as TaskSpec };
@@ -47,17 +54,18 @@ describe('StorageTaskBroker', () => {
   };
 
   const logger = loggerToWinstonLogger(mockServices.logger.mock());
+
   it('should claim a dispatched work item', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     await broker.dispatch(emptyTaskSpec);
-    await expect(broker.claim()).resolves.toEqual(
+    await expect(broker.claim(abortSignal)).resolves.toEqual(
       expect.any(TaskManager as any),
     );
   });
 
   it('should wait for a dispatched work item', async () => {
     const broker = new StorageTaskBroker(storage, logger);
-    const promise = broker.claim();
+    const promise = broker.claim(abortSignal);
 
     await expect(Promise.race([promise, 'waiting'])).resolves.toBe('waiting');
 
@@ -71,9 +79,9 @@ describe('StorageTaskBroker', () => {
     await broker.dispatch({ spec: { steps: [{ id: 'b' }] } as TaskSpec });
     await broker.dispatch({ spec: { steps: [{ id: 'c' }] } as TaskSpec });
 
-    const taskA = await broker.claim();
-    const taskB = await broker.claim();
-    const taskC = await broker.claim();
+    const taskA = await broker.claim(abortSignal);
+    const taskB = await broker.claim(abortSignal);
+    const taskC = await broker.claim(abortSignal);
     expect(taskA).toEqual(expect.any(TaskManager as any));
     expect(taskB).toEqual(expect.any(TaskManager as any));
     expect(taskC).toEqual(expect.any(TaskManager as any));
@@ -85,14 +93,14 @@ describe('StorageTaskBroker', () => {
   it('should store secrets', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     await broker.dispatch(emptyTaskWithFakeSecretsSpec);
-    const task = await broker.claim();
+    const task = await broker.claim(abortSignal);
     expect(task.secrets).toEqual(fakeSecrets);
   }, 10000);
 
   it('should complete a task', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const dispatchResult = await broker.dispatch(emptyTaskSpec);
-    const task = await broker.claim();
+    const task = await broker.claim(abortSignal);
     await task.complete('completed');
     const taskRow = await storage.getTask(dispatchResult.taskId);
     expect(taskRow.status).toBe('completed');
@@ -101,7 +109,7 @@ describe('StorageTaskBroker', () => {
   it('should remove secrets after picking up a task', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const dispatchResult = await broker.dispatch(emptyTaskWithFakeSecretsSpec);
-    await broker.claim();
+    await broker.claim(abortSignal);
 
     const taskRow = await storage.getTask(dispatchResult.taskId);
     expect(taskRow.secrets).toBeUndefined();
@@ -110,7 +118,7 @@ describe('StorageTaskBroker', () => {
   it('should fail a task', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const dispatchResult = await broker.dispatch(emptyTaskSpec);
-    const task = await broker.claim();
+    const task = await broker.claim(abortSignal);
     await task.complete('failed');
     const taskRow = await storage.getTask(dispatchResult.taskId);
     expect(taskRow.status).toBe('failed');
@@ -135,7 +143,7 @@ describe('StorageTaskBroker', () => {
           }
         });
     });
-    const task = await broker1.claim();
+    const task = await broker1.claim(abortSignal);
     await task.emitLog('log 1');
     await task.emitLog('log 2');
     await task.emitLog('log 3');
@@ -166,7 +174,7 @@ describe('StorageTaskBroker', () => {
   it('should heartbeat', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const { taskId } = await broker.dispatch(emptyTaskSpec);
-    const task = await broker.claim();
+    const task = await broker.claim(abortSignal);
 
     const initialTask = await storage.getTask(taskId);
 
@@ -184,7 +192,7 @@ describe('StorageTaskBroker', () => {
   it('should be update the status to failed if heartbeat fails', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const { taskId } = await broker.dispatch(emptyTaskSpec);
-    const task = await broker.claim();
+    const task = await broker.claim(abortSignal);
 
     jest
       .spyOn((task as any).storage, 'heartbeatTask')
@@ -218,7 +226,7 @@ describe('StorageTaskBroker', () => {
           id: taskId,
         }),
       ]),
-      totalTasks: 13,
+      totalTasks: 1,
     });
   });
 
@@ -244,16 +252,26 @@ describe('StorageTaskBroker', () => {
       createdBy: 'user:default/foo',
     });
 
-    const promise = broker.list({
-      filters: { status: ['open'] },
-    });
-    await expect(promise).resolves.toEqual({
+    await expect(
+      broker.list({
+        filters: { status: ['open'] },
+      }),
+    ).resolves.toEqual({
       tasks: expect.arrayContaining([
         expect.objectContaining({
           id: taskId,
         }),
       ]),
-      totalTasks: 3,
+      totalTasks: 1,
+    });
+
+    await expect(
+      broker.list({
+        filters: { status: ['cancelled'] },
+      }),
+    ).resolves.toEqual({
+      tasks: [],
+      totalTasks: 0,
     });
   });
 
@@ -265,7 +283,7 @@ describe('StorageTaskBroker', () => {
       createdBy: 'user:default/foo',
     });
 
-    const taskA = await broker.claim();
+    const taskA = await broker.claim(abortSignal);
     await taskA.updateCheckpoint?.({
       key: 'repo.create',
       status: 'success',
