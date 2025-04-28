@@ -23,7 +23,7 @@ import {
 } from '@backstage/catalog-model';
 import {
   CodeSnippet,
-  FavoriteToggleIcon,
+  Table,
   TableColumn,
   TableProps,
   WarningPanel,
@@ -48,6 +48,7 @@ import { CursorPaginatedCatalogTable } from './CursorPaginatedCatalogTable';
 import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha';
+import { FavoriteToggleIcon } from '@backstage/core-components';
 
 /**
  * Props for {@link CatalogTable}.
@@ -202,12 +203,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
     ...tableOptions,
   };
 
-  if (paginationMode !== 'cursor' && paginationMode !== 'offset') {
-    entities.sort(refCompare);
-  }
-
-  const rows = entities.map(toEntityRow);
-
   if (paginationMode === 'cursor') {
     return (
       <CursorPaginatedCatalogTable
@@ -218,24 +213,45 @@ export const CatalogTable = (props: CatalogTableProps) => {
         actions={actions}
         subtitle={subtitle}
         options={options}
-        data={rows}
+        data={entities.map(toEntityRow)}
         next={pageInfo?.next}
         prev={pageInfo?.prev}
       />
     );
+  } else if (paginationMode === 'offset') {
+    return (
+      <OffsetPaginatedCatalogTable
+        columns={tableColumns}
+        emptyContent={emptyContent}
+        isLoading={loading}
+        title={title}
+        actions={actions}
+        subtitle={subtitle}
+        options={options}
+        data={entities.map(toEntityRow)}
+      />
+    );
   }
 
-  // else use offset paging
+  const rows = entities.sort(refCompare).map(toEntityRow);
+  const pageSize = 20;
+  const showPagination = rows.length > pageSize;
+
   return (
-    <OffsetPaginatedCatalogTable
-      columns={tableColumns}
-      emptyContent={emptyContent}
+    <Table<CatalogTableRow>
       isLoading={loading}
+      columns={tableColumns}
+      options={{
+        paging: showPagination,
+        pageSize: pageSize,
+        pageSizeOptions: [20, 50, 100],
+        ...options,
+      }}
       title={title}
+      data={rows}
       actions={actions}
       subtitle={subtitle}
-      options={options}
-      data={rows}
+      emptyContent={emptyContent}
     />
   );
 };

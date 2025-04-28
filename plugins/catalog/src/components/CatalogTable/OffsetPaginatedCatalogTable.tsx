@@ -28,24 +28,19 @@ export function OffsetPaginatedCatalogTable(
   props: TableProps<CatalogTableRow>,
 ) {
   const { columns, data, options, ...restProps } = props;
-  const { setLimit, setOffset, limit, totalItems, offset, paginationMode } =
-    useEntityList();
-  const clientPagination = paginationMode === 'none';
+  const { setLimit, setOffset, limit, totalItems, offset } = useEntityList();
 
   const [page, setPage] = useState(
     offset && limit ? Math.floor(offset / limit) : 0,
   );
 
   useEffect(() => {
-    if (clientPagination || !setOffset) {
-      return;
+    if (totalItems && page * limit >= totalItems) {
+      setOffset!(Math.max(0, totalItems - limit));
+    } else {
+      setOffset!(Math.max(0, page * limit));
     }
-    let newOffset = page * limit;
-    if (totalItems && newOffset >= totalItems) {
-      newOffset = totalItems - limit;
-    }
-    setOffset(Math.max(0, newOffset));
-  }, [setOffset, page, limit, totalItems, clientPagination]);
+  }, [setOffset, page, limit, totalItems]);
 
   return (
     <Table
@@ -60,14 +55,10 @@ export function OffsetPaginatedCatalogTable(
       components={{
         Toolbar: CatalogTableToolbar,
       }}
-      {...(clientPagination
-        ? {}
-        : {
-            page,
-            onPageChange: setPage,
-            onRowsPerPageChange: setLimit,
-            totalCount: totalItems,
-          })}
+      page={page}
+      onPageChange={setPage}
+      onRowsPerPageChange={setLimit}
+      totalCount={totalItems}
       {...restProps}
     />
   );
