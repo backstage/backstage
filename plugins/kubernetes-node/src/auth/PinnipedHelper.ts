@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { ClusterDetails } from '@backstage/plugin-kubernetes-node';
 import * as https from 'https';
 import fetch, { RequestInit } from 'node-fetch';
-import { Logger } from 'winston';
 
 /**
  *
@@ -50,7 +50,7 @@ export type PinnipedParameters = {
  * @public
  */
 export class PinnipedHelper {
-  constructor(private readonly logger: Logger) {}
+  constructor(private readonly logger: LoggerService) {}
 
   public async tokenCredentialRequest(
     clusterDetails: ClusterDetails,
