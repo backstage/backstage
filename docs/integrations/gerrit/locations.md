@@ -11,7 +11,7 @@ or registered with the
 [catalog-import](https://github.com/backstage/backstage/tree/master/plugins/catalog-import)
 plugin.
 
-Gerrit 3.9+ supports inline editing via URL. the integration enables this by default, following Gerrit's [official URL pattern](https://gerrit-review.googlesource.com/Documentation/user-inline-edit.html#create_from_url) for inline edits.
+Gerrit 3.9+ supports inline editing via URL. The integration enables this by default, following Gerrit's [official URL pattern](https://gerrit-review.googlesource.com/Documentation/user-inline-edit.html#create_from_url) for inline edits.
 
 ## Configuration
 
