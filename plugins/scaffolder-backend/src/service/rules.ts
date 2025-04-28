@@ -27,7 +27,7 @@ import {
   TemplateParametersV1beta3,
 } from '@backstage/plugin-scaffolder-common';
 
-import { SerializedTask, TaskFilter } from '@backstage/plugin-scaffolder-node';
+import { SerializedTask } from '@backstage/plugin-scaffolder-node';
 
 import { z } from 'zod';
 import { JsonObject, JsonPrimitive } from '@backstage/types';
@@ -136,7 +136,7 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
 export const createTaskPermissionRule = makeCreatePermissionRule<
   SerializedTask,
   {
-    property: TaskFilter['property'];
+    key: string;
     values: any;
   },
   typeof RESOURCE_TYPE_SCAFFOLDER_TASK
@@ -161,7 +161,7 @@ export const hasCreatedBy = createTaskPermissionRule({
   },
   toQuery: ({ createdBy }) => {
     return {
-      property: 'createdBy' as TaskFilter['property'],
+      key: 'created_by',
       values: createdBy,
     };
   },

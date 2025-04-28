@@ -617,7 +617,7 @@ describe.each([
             filters: { createdBy: ['not-user'], status: undefined },
             order: undefined,
             pagination: { limit: undefined, offset: undefined },
-            permissionFilters: { property: 'createdBy', values: ['user'] },
+            permissionFilters: { key: 'created_by', values: ['user'] },
           });
           expect(response.status).toBe(200);
           expect(response.body.totalTasks).toBe(0);
@@ -1558,7 +1558,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             filters: { createdBy: ['not-user'], status: undefined },
             order: undefined,
             pagination: { limit: undefined, offset: undefined },
-            permissionFilters: { property: 'createdBy', values: ['user'] },
+            permissionFilters: { key: 'created_by', values: ['user'] },
           });
           expect(response.status).toBe(200);
           expect(response.body.totalTasks).toBe(0);

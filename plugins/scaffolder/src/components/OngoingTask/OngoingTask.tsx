@@ -41,10 +41,7 @@ import {
   TaskSteps,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { useAsync } from '@react-hookz/web';
-import {
-  usePermission,
-  RequirePermission,
-} from '@backstage/plugin-permission-react';
+import { usePermission } from '@backstage/plugin-permission-react';
 import {
   taskCancelPermission,
   taskCreatePermission,
@@ -208,120 +205,118 @@ export const OngoingTask = (props: {
   const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
 
   return (
-    <RequirePermission permission={taskReadPermission} resourceRef={taskId}>
-      <Page themeId="website">
-        <Header
-          pageTitleOverride={
-            presentation
-              ? t('ongoingTask.pageTitle.hasTemplateName', {
-                  templateName: presentation.primaryTitle,
-                })
-              : t('ongoingTask.pageTitle.noTemplateName')
-          }
-          title={
-            <div>
-              {t('ongoingTask.title')}{' '}
-              <code>{presentation ? presentation.primaryTitle : ''}</code>
-            </div>
-          }
-          subtitle={t('ongoingTask.subtitle', { taskId: taskId as string })}
-        >
-          <ContextMenu
-            cancelEnabled={cancelEnabled}
-            canRetry={canRetry}
-            isRetryableTask={isRetryableTask}
-            logsVisible={logsVisible}
-            buttonBarVisible={buttonBarVisible}
-            onStartOver={startOver}
-            onRetry={triggerRetry}
-            onToggleLogs={setLogVisibleState}
-            onToggleButtonBar={setButtonBarVisibleState}
-            taskId={taskId}
-          />
-        </Header>
-        <Content className={classes.contentWrapper}>
-          {taskStream.error ? (
-            <Box paddingBottom={2}>
-              <ErrorPanel
-                error={taskStream.error}
-                titleFormat="markdown"
-                title={taskStream.error.message}
-              />
-            </Box>
-          ) : null}
-
+    <Page themeId="website">
+      <Header
+        pageTitleOverride={
+          presentation
+            ? t('ongoingTask.pageTitle.hasTemplateName', {
+                templateName: presentation.primaryTitle,
+              })
+            : t('ongoingTask.pageTitle.noTemplateName')
+        }
+        title={
+          <div>
+            {t('ongoingTask.title')}{' '}
+            <code>{presentation ? presentation.primaryTitle : ''}</code>
+          </div>
+        }
+        subtitle={t('ongoingTask.subtitle', { taskId: taskId as string })}
+      >
+        <ContextMenu
+          cancelEnabled={cancelEnabled}
+          canRetry={canRetry}
+          isRetryableTask={isRetryableTask}
+          logsVisible={logsVisible}
+          buttonBarVisible={buttonBarVisible}
+          onStartOver={startOver}
+          onRetry={triggerRetry}
+          onToggleLogs={setLogVisibleState}
+          onToggleButtonBar={setButtonBarVisibleState}
+          taskId={taskId}
+        />
+      </Header>
+      <Content className={classes.contentWrapper}>
+        {taskStream.error ? (
           <Box paddingBottom={2}>
-            <TaskSteps
-              steps={steps}
-              activeStep={activeStep}
-              isComplete={taskStream.completed}
-              isError={Boolean(taskStream.error)}
+            <ErrorPanel
+              error={taskStream.error}
+              titleFormat="markdown"
+              title={taskStream.error.message}
             />
           </Box>
+        ) : null}
 
-          <Outputs output={taskStream.output} />
+        <Box paddingBottom={2}>
+          <TaskSteps
+            steps={steps}
+            activeStep={activeStep}
+            isComplete={taskStream.completed}
+            isError={Boolean(taskStream.error)}
+          />
+        </Box>
 
-          {buttonBarVisible ? (
-            <Box paddingBottom={2}>
-              <Paper>
-                <Box padding={2}>
-                  <div className={classes.buttonBar}>
-                    <Button
-                      className={classes.cancelButton}
-                      disabled={
-                        !cancelEnabled ||
-                        (cancelStatus !== 'not-executed' && !isRetryableTask) ||
-                        !canCancelTask
-                      }
-                      onClick={triggerCancel}
-                      data-testid="cancel-button"
-                    >
-                      {t('ongoingTask.cancelButtonTitle')}
-                    </Button>
-                    {isRetryableTask && (
-                      <Button
-                        className={classes.retryButton}
-                        disabled={cancelEnabled || !canRetry}
-                        onClick={triggerRetry}
-                        data-testid="retry-button"
-                      >
-                        {t('ongoingTask.retryButtonTitle')}
-                      </Button>
-                    )}
-                    <Button
-                      className={classes.logsVisibilityButton}
-                      color="primary"
-                      variant="outlined"
-                      onClick={() => setLogVisibleState(!logsVisible)}
-                    >
-                      {logsVisible
-                        ? t('ongoingTask.hideLogsButtonTitle')
-                        : t('ongoingTask.showLogsButtonTitle')}
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      disabled={cancelEnabled || !canStartOver}
-                      onClick={startOver}
-                      data-testid="start-over-button"
-                    >
-                      {t('ongoingTask.startOverButtonTitle')}
-                    </Button>
-                  </div>
-                </Box>
-              </Paper>
-            </Box>
-          ) : null}
+        <Outputs output={taskStream.output} />
 
-          {logsVisible ? (
-            <Paper style={{ height: '100%' }}>
-              <Box padding={2} height="100%">
-                <TaskLogStream logs={taskStream.stepLogs} />
+        {buttonBarVisible ? (
+          <Box paddingBottom={2}>
+            <Paper>
+              <Box padding={2}>
+                <div className={classes.buttonBar}>
+                  <Button
+                    className={classes.cancelButton}
+                    disabled={
+                      !cancelEnabled ||
+                      (cancelStatus !== 'not-executed' && !isRetryableTask) ||
+                      !canCancelTask
+                    }
+                    onClick={triggerCancel}
+                    data-testid="cancel-button"
+                  >
+                    {t('ongoingTask.cancelButtonTitle')}
+                  </Button>
+                  {isRetryableTask && (
+                    <Button
+                      className={classes.retryButton}
+                      disabled={cancelEnabled || !canRetry}
+                      onClick={triggerRetry}
+                      data-testid="retry-button"
+                    >
+                      {t('ongoingTask.retryButtonTitle')}
+                    </Button>
+                  )}
+                  <Button
+                    className={classes.logsVisibilityButton}
+                    color="primary"
+                    variant="outlined"
+                    onClick={() => setLogVisibleState(!logsVisible)}
+                  >
+                    {logsVisible
+                      ? t('ongoingTask.hideLogsButtonTitle')
+                      : t('ongoingTask.showLogsButtonTitle')}
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={cancelEnabled || !canStartOver}
+                    onClick={startOver}
+                    data-testid="start-over-button"
+                  >
+                    {t('ongoingTask.startOverButtonTitle')}
+                  </Button>
+                </div>
               </Box>
             </Paper>
-          ) : null}
-        </Content>
-      </Page>
-    </RequirePermission>
+          </Box>
+        ) : null}
+
+        {logsVisible ? (
+          <Paper style={{ height: '100%' }}>
+            <Box padding={2} height="100%">
+              <TaskLogStream logs={taskStream.stepLogs} />
+            </Box>
+          </Paper>
+        ) : null}
+      </Content>
+    </Page>
   );
 };

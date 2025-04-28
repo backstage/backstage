@@ -263,7 +263,7 @@ describe('DatabaseTaskStore', () => {
 
     const permissionFilters: PermissionCriteria<TaskFilters> = {
       not: {
-        property: 'createdBy',
+        key: 'created_by',
         values: ['user:default/three', 'user:default/four'],
       },
     };
