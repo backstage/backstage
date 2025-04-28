@@ -6577,9 +6577,14 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/integration": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@octokit/auth-callback": "npm:^5.0.0"
     "@octokit/webhooks-methods": "npm:^3.0.0"
+    lodash: "npm:^4.17.21"
+    octokit: "npm:^3.0.0"
   languageName: unknown
   linkType: soft
 
@@ -12847,6 +12852,13 @@ __metadata:
     universal-github-app-jwt: "npm:^1.1.1"
     universal-user-agent: "npm:^6.0.0"
   checksum: 10/eb5ca1280daa024a303f2999ac7ac72f8dd5a4da78495fdc3e57a78afb69335f467c0f4c967d3928599bad298558076b76627fbaa2f5ebb2b649c28675141e6c
+  languageName: node
+  linkType: hard
+
+"@octokit/auth-callback@npm:^5.0.0":
+  version: 5.0.1
+  resolution: "@octokit/auth-callback@npm:5.0.1"
+  checksum: 10/afa2fd71e1cc238c4fc09a1a8cc3b5c8d2f231aecdb8f8be2384857cde893aa4ac697f7c6aa0b61e4d5fa1f00d41fb349ceffb938977c02ee317d5432247f6ef
   languageName: node
   linkType: hard
 
