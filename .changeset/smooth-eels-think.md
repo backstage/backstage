@@ -1,5 +1,6 @@
 ---
 '@backstage/plugin-techdocs': minor
+'@backstage/plugin-techdocs-react': minor
 '@backstage/plugin-catalog': minor
 '@backstage/plugin-techdocs-common': patch
 ---

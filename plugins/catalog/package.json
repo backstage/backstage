@@ -72,7 +72,7 @@
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-search-react": "workspace:^",
-    "@backstage/plugin-techdocs": "workspace:^",
+    "@backstage/plugin-techdocs-react": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.12.2",

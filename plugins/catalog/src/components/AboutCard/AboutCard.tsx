@@ -64,7 +64,7 @@ import { taskCreatePermission } from '@backstage/plugin-scaffolder-common/alpha'
 import { usePermission } from '@backstage/plugin-permission-react';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { buildTechDocsURL } from '@backstage/plugin-techdocs';
+import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 

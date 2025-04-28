@@ -20,12 +20,12 @@ import {
   parseEntityRef,
 } from '@backstage/catalog-model';
 import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common';
+import { getEntityRootTechDocsPath } from '@backstage/plugin-techdocs-react';
 
 import { TechDocsReaderPage } from './plugin';
 import { TechDocsReaderPageContent } from './reader/components/TechDocsReaderPageContent';
 import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
 import { useEntityPageTechDocsRedirect } from './search/hooks/useTechDocsLocation';
-import { getEntityRootTechDocsPath } from './helpers';
 
 type EntityPageDocsProps = {
   entity: Entity;

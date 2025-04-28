@@ -52,4 +52,9 @@ export {
   useShadowRootElements,
   useShadowRootSelection,
 } from './hooks';
-export { toLowercaseEntityRefMaybe } from './helpers';
+export {
+  toLowercaseEntityRefMaybe,
+  getEntityRootTechDocsPath,
+  buildTechDocsURL,
+} from './helpers';
+export type { TechDocsRouteFunc } from './helpers';
