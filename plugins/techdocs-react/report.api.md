@@ -15,7 +15,14 @@ import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { MemoExoticComponent } from 'react';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
+import { RouteFunc } from '@backstage/core-plugin-api';
 import { SetStateAction } from 'react';
+
+// @public
+export const buildTechDocsURL: (
+  entity: Entity,
+  routeFunc: TechDocsRouteFunc | undefined,
+) => string | undefined;
 
 // @public
 export function createTechDocsAddonExtension(
@@ -26,6 +33,9 @@ export function createTechDocsAddonExtension(
 export function createTechDocsAddonExtension<TComponentProps>(
   options: TechDocsAddonOptions<TComponentProps>,
 ): Extension<(props: TComponentProps) => JSX.Element | null>;
+
+// @public
+export function getEntityRootTechDocsPath(entity: Entity): string;
 
 // @public
 export const SHADOW_DOM_STYLE_LOAD_EVENT = 'TECH_DOCS_SHADOW_DOM_STYLE_LOAD';
@@ -121,6 +131,13 @@ export type TechDocsReaderPageValue = {
   setSubtitle: Dispatch<SetStateAction<string>>;
   onReady?: () => void;
 };
+
+// @public
+export type TechDocsRouteFunc = RouteFunc<{
+  namespace: string;
+  kind: string;
+  name: string;
+}>;
 
 // @public
 export const TechDocsShadowDom: (
