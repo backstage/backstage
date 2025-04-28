@@ -30,9 +30,11 @@ import {
   ScaffolderApi,
   useTemplateSecrets,
   ScaffolderRJSFField,
+  ScaffolderRJSFFormProps as FormProps,
 } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { merge, set } from 'lodash';
 
 describe('RepoUrlPicker', () => {
   const mockScaffolderApi: Partial<ScaffolderApi> = {
@@ -415,6 +417,54 @@ describe('RepoUrlPicker', () => {
           repoWrite: true,
         },
       });
+    });
+  });
+
+  describe.each([
+    {
+      from: 'absent',
+    },
+    {
+      from: 'schema',
+      descriptionPath: 'schema.description',
+    },
+    {
+      from: 'ui options',
+      descriptionPath: 'uiSchema[ui:description]',
+    },
+  ])('RepoUrlPicker description: $from', ({ from, descriptionPath }) => {
+    const customDescription = 'Custom RepoUrlPicker description';
+
+    it(`Presents ${from} description`, async () => {
+      const override = {};
+      if (descriptionPath) {
+        set(override, descriptionPath, customDescription);
+      }
+      const props = merge(
+        {
+          validator,
+          schema: { type: 'string' },
+          uiSchema: { 'ui:field': 'RepoUrlPicker' },
+          fields: {
+            RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+          },
+        },
+        override,
+      ) as unknown as FormProps<any>;
+      const { queryByText } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApi],
+            [scmAuthApiRef, {}],
+            [scaffolderApiRef, mockScaffolderApi],
+          ]}
+        >
+          <SecretsContextProvider>
+            <Form {...props} />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+      expect(queryByText(customDescription) === null).toBe(!descriptionPath);
     });
   });
 });
