@@ -3,7 +3,7 @@ title: Azure Resource
 author: Anurag Pachauri
 authorUrl: https://github.com/anuragpachauri
 category: Infrastructure
-description: A plugin showing jira tickets on home page.
+description: A plugin showing jira tickets on home page of backstage.
 documentation: https://github.com/anuragpachauri/backstageMain/tree/main/plugins/jira-home
 npmPackageName: '@anuragpachauri/jira-home'
 addedDate: '2025-04-09'
