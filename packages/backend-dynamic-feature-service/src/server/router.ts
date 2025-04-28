@@ -121,8 +121,10 @@ export async function createRouter({
       }
 
       const getAdditionalRemoteInfo =
+        providedResolver?.getAdditionalRemoteInfo ??
         providedResolver?.getAdditionaRemoteInfo ??
-        defaultResolver.getAdditionaRemoteInfo;
+        defaultResolver.getAdditionalRemoteInfo ??
+        defaultResolver?.getAdditionaRemoteInfo;
       const getRemoteEntryType =
         providedResolver?.getRemoteEntryType ??
         defaultResolver.getRemoteEntryType;

@@ -558,7 +558,7 @@ Require stack:
             for: () => ({
               assetsPathFromPackage: 'dist-alternate',
               getRemoteEntryType: () => 'javascript',
-              getAdditionaRemoteInfo: manifest => ({
+              getAdditionalRemoteInfo: manifest => ({
                 type: (manifest as any).metaData.remoteEntry.type,
               }),
               overrideExposedModules: exposedModules =>
