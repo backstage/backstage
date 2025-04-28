@@ -187,7 +187,7 @@ export function registerCommands(program: Command) {
     )
     .option(
       '-o, --omit-messages <messageCodes>',
-      'select some message code to be omited on the API Extractor (comma separated values i.e ae-cyclic-inherit-doc,ae-missing-getter )',
+      'select some message code to be omitted on the API Extractor (comma separated values i.e ae-cyclic-inherit-doc,ae-missing-getter )',
     )
     .option(
       '--validate-release-tags',
