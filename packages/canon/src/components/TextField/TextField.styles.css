@@ -26,6 +26,10 @@
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-primary);
   margin-bottom: var(--canon-space-1_5);
+  cursor: pointer;
+}
+.canon-TextFieldLabel[data-disabled] {
+  cursor: default;
 }
 
 .canon-TextFieldDescription {
