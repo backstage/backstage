@@ -53,9 +53,6 @@ export const createMockActionContext = <
     task: {
       id: 'mock-task-id',
     },
-    user: {
-      ref: credentials.principal.userEntityRef,
-    },
   };
 
   const createDefaultWorkspace = () => ({
