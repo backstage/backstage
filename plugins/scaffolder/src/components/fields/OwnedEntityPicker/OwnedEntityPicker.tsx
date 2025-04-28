@@ -24,6 +24,7 @@ import { OwnedEntityPickerProps } from './schema';
 import { EntityPickerProps } from '../EntityPicker/schema';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import { MarkdownContent } from '@backstage/core-components';
 
 export { OwnedEntityPickerSchema } from './schema';
 
@@ -59,7 +60,11 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
             {...params}
             label={title}
             margin="dense"
-            helperText={description}
+            helperText={
+              <MarkdownContent
+                content={uiSchema['ui:description'] ?? description}
+              />
+            }
             FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
             variant="outlined"
             required={required}
