@@ -19,7 +19,19 @@ export interface BackstageCommand {
   path: string[];
   description: string;
   deprecated?: boolean;
-  execute: (options: { args: string[] }) => Promise<void>;
+  execute: (context: {
+    args: string[];
+    info: {
+      /**
+       * The usage string of the current command, for example: "backstage-cli repo test"
+       */
+      usage: string;
+      /**
+       * The description provided for the command
+       */
+      description: string;
+    };
+  }) => Promise<void>;
 }
 
 export interface CliFeature {

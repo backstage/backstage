@@ -62,9 +62,11 @@ export class CliInitializer {
   async run() {
     await this.#doInit();
 
+    const programName = 'backstage-cli';
+
     const program = new Command();
     program
-      .name('backstage-cli')
+      .name(programName)
       .version(version)
       .allowUnknownOption(true)
       .allowExcessArguments(true);
@@ -117,6 +119,10 @@ export class CliInitializer {
               }
               await node.command.execute({
                 args: [...positionalArgs, ...args.unknown],
+                info: {
+                  usage: [programName, ...node.command.path].join(' '),
+                  description: node.command.description,
+                },
               });
               process.exit(0);
             } catch (error) {
