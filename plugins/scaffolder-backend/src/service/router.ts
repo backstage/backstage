@@ -471,6 +471,34 @@ export async function createRouter(
     permissions: scaffolderPermissions,
   });
 
+  const replaceMaskedSecrets = (obj: any, schema: any, secretObj: any) => {
+    if (!obj || typeof obj !== 'object') return;
+
+    Object.entries(obj).forEach(([key, value]) => {
+      if (typeof value === 'object') {
+        replaceMaskedSecrets(value, schema?.properties?.[key], secretObj);
+      } else {
+        const fieldSchema = schema?.properties?.[key];
+        if (secretObj?.[key] !== undefined && fieldSchema) {
+          const isSecretField =
+            fieldSchema['ui:widget'] === 'password' ||
+            fieldSchema['ui:field'] === 'Secret';
+          if (isSecretField) obj[key] = secretObj[key];
+        }
+      }
+    });
+  };
+
+  const validateWithSecrets = (
+    formValues: any,
+    parameterSchema: TemplateParametersV1beta3,
+    secrets: any,
+  ) => {
+    const valuesCopy = structuredClone(formValues);
+    replaceMaskedSecrets(valuesCopy, parameterSchema, secrets);
+    return validate(valuesCopy, parameterSchema);
+  };
+
   router.use(permissionIntegrationRouter);
 
   router
@@ -604,46 +632,6 @@ export async function createRouter(
         );
 
         for (const parameters of [template.spec.parameters ?? []].flat()) {
-          const validateWithSecrets = (
-            formValues: any,
-            parameterSchema: TemplateParametersV1beta3,
-            secrets: any,
-          ) => {
-            const valuesCopy = structuredClone(formValues);
-            console.log('parameters', parameterSchema);
-
-            const replaceMaskedSecrets = (
-              obj: any,
-              schema: any,
-              secretObj: any,
-            ) => {
-              if (!obj || typeof obj !== 'object') return;
-              console.log('secretObj', secretObj);
-
-              Object.entries(obj).forEach(([key, value]) => {
-                if (typeof value === 'object') {
-                  replaceMaskedSecrets(
-                    value,
-                    schema?.properties?.[key],
-                    secretObj,
-                  );
-                } else {
-                  const fieldSchema = schema?.properties?.[key];
-                  if (secretObj?.[key] !== undefined && fieldSchema) {
-                    const isSecretField =
-                      fieldSchema['ui:widget'] === 'password' ||
-                      fieldSchema['ui:field'] === 'Secret';
-                    if (isSecretField) obj[key] = secretObj[key];
-                  }
-                }
-              });
-            };
-
-            replaceMaskedSecrets(valuesCopy, parameters, secrets);
-
-            return validate(valuesCopy, parameters);
-          };
-
           const result = validateWithSecrets(
             values,
             parameters,
