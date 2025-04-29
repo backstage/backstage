@@ -18,7 +18,11 @@ import {
   NotificationPayload,
   NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
-import { ChatPostMessageArguments, KnownBlock } from '@slack/web-api';
+import {
+  ChatPostMessageArguments,
+  KnownBlock,
+  WebClient,
+} from '@slack/web-api';
 
 export function toChatPostMessageArgs(options: {
   channel: string;
@@ -91,4 +95,37 @@ function getColor(severity: NotificationSeverity | undefined) {
     default:
       return '#00A699'; // Neutral color
   }
+}
+
+/**
+ * Utility to replace Slack user IDs in a string with their display names
+ * @param text - The text containing Slack user IDs (e.g. "Hello <@U12345678>!")
+ * @param slackClient - Slack Web API client
+ * @returns Promise<string> - Text with user IDs replaced by display names
+ */
+export async function replaceSlackUserIds(
+  text: string,
+  slackClient: WebClient,
+): Promise<string> {
+  // Regex that matches Slack user mentions (<@U12345678>)
+  const userIdRegex = /<@([A-Z0-9]+)>/g;
+  const userIds = [...text.matchAll(userIdRegex)].map(match => match[1]);
+  const uniqueUserIds = new Set(userIds);
+
+  const displayNamesMap = new Map<string, string>();
+
+  for (const userId of uniqueUserIds) {
+    try {
+      const result = await slackClient.users.info({ user: userId });
+      const displayName = result?.user?.profile?.display_name || userId;
+      displayNamesMap.set(userId, displayName);
+    } catch (error) {
+      console.error(`Error fetching user info for ${userId}:`, error);
+      displayNamesMap.set(userId, userId);
+    }
+  }
+
+  return text.replace(userIdRegex, (_, userId) => {
+    return displayNamesMap.get(userId) ?? userId;
+  });
 }

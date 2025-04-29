@@ -39,7 +39,7 @@ import { ChatPostMessageArguments, WebClient } from '@slack/web-api';
 import DataLoader from 'dataloader';
 import pThrottle from 'p-throttle';
 import { ANNOTATION_SLACK_BOT_NOTIFY } from './constants';
-import { toChatPostMessageArgs } from './util';
+import { replaceSlackUserIds, toChatPostMessageArgs } from './util';
 
 export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly logger: LoggerService;
@@ -138,6 +138,22 @@ export class SlackNotificationProcessor implements NotificationProcessor {
 
   getName(): string {
     return 'SlackNotificationProcessor';
+  }
+
+  async preProcess(
+    notification: Notification,
+    _options: NotificationSendOptions,
+  ): Promise<Notification> {
+    const { description } = notification.payload;
+    if (!description) return notification;
+
+    return {
+      ...notification,
+      payload: {
+        ...notification.payload,
+        description: await replaceSlackUserIds(description, this.slack),
+      },
+    };
   }
 
   async processOptions(
