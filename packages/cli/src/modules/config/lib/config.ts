@@ -31,10 +31,12 @@ type Options = {
   fullVisibility?: boolean;
   strict?: boolean;
   watch?: (newFrontendAppConfigs: AppConfig[]) => void;
+  filterDependencies?: (depName: string) => boolean;
 };
 
 export async function loadCliConfig(options: Options) {
   const targetDir = options.targetDir ?? paths.targetDir;
+  const filterDependencies = options.filterDependencies ?? (() => true);
 
   // Consider all packages in the monorepo when loading in config
   const { packages } = await getPackages(targetDir);
@@ -49,7 +51,7 @@ export async function loadCliConfig(options: Options) {
           if (node.name === '@backstage/cli') {
             return undefined;
           }
-          return node.localDependencies.keys();
+          return [...node.localDependencies.keys()].filter(filterDependencies);
         }),
       );
     } else {
@@ -62,6 +64,7 @@ export async function loadCliConfig(options: Options) {
 
   const schema = await loadConfigSchema({
     dependencies: localPackageNames,
+    filterDependencies,
     // Include the package.json in the project root if it exists
     packagePaths: [paths.resolveTargetRoot('package.json')],
     noUndeclaredProperties: options.strict,

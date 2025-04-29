@@ -43,6 +43,7 @@ const req =
 export async function collectConfigSchemas(
   packageNames: string[],
   packagePaths: string[],
+  filterDependencies: (depName: string) => boolean = () => true,
 ): Promise<ConfigSchemaPackageEntry[]> {
   const schemas = new Array<ConfigSchemaPackageEntry>();
   const tsSchemaPaths = new Array<{ packageName: string; path: string }>();
@@ -141,9 +142,9 @@ export async function collectConfigSchemas(
     }
 
     await Promise.all(
-      depNames.map(depName =>
-        processItem({ name: depName, parentPath: pkgPath }),
-      ),
+      depNames
+        .filter(filterDependencies)
+        .map(depName => processItem({ name: depName, parentPath: pkgPath })),
     );
   }
 
