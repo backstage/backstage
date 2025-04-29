@@ -81,7 +81,7 @@ export class CacheManager {
 
     if (config.has('backend.cache.useRedisSets')) {
       logger?.warn(
-        "The 'backend.cache.useRedisSets' configuration key is deprecated and no longer has any effect. The underlying '@keyv/redis' and '@keyv/redis' libraries no longer support redis sets.",
+        "The 'backend.cache.useRedisSets' configuration key is deprecated and no longer has any effect. The underlying '@keyv/redis' and '@keyv/valkey' libraries no longer support redis sets.",
       );
     }
 
