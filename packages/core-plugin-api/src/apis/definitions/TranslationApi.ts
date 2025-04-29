@@ -17,6 +17,7 @@
 import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
 import { Expand, ExpandRecursive, Observable } from '@backstage/types';
 import { TranslationRef } from '../../translation';
+import { ReactNode } from 'react';
 
 /**
  * Base translation options.
@@ -63,6 +64,10 @@ type I18nextFormatMap = {
   list: {
     type: string[];
     options: Intl.ListFormatOptions;
+  };
+  jsx: {
+    type: ReactNode;
+    options: {};
   };
 };
 
@@ -279,7 +284,7 @@ type CollectOptions<
  */
 type OptionArgs<TOptions extends {}> = keyof TOptions extends never
   ? [options?: BaseOptions]
-  : [options: BaseOptions & TOptions];
+  : [options: Expand<BaseOptions & TOptions>];
 
 /**
  * @ignore
@@ -299,19 +304,40 @@ type TranslationFunctionOptions<
   >
 >;
 
-/** @alpha */
-export interface TranslationFunction<
+/**
+ * @ignore
+ * Evaluates to `true` if any of the replacements for the given key in the
+ * provided set of messages uses the `jsx` format.
+ */
+type HasJsxFormat<
+  TKey extends keyof TMessages,
   TMessages extends { [key in string]: string },
-> {
-  <TKey extends keyof CollapsedMessages<TMessages>>(
-    key: TKey,
-    ...[args]: TranslationFunctionOptions<
-      NestedMessageKeys<TKey, CollapsedMessages<TMessages>>,
-      PluralKeys<TMessages>,
-      CollapsedMessages<TMessages>
-    >
-  ): CollapsedMessages<TMessages>[TKey];
-}
+> = UnionToIntersection<
+  ReplaceFormatsFromMessage<TMessages[NestedMessageKeys<TKey, TMessages>]>
+> extends infer IFormatMap
+  ? 'jsx' extends IFormatMap[keyof IFormatMap]
+    ? true
+    : false
+  : never;
+
+/** @alpha */
+export type TranslationFunction<TMessages extends { [key in string]: string }> =
+  CollapsedMessages<TMessages> extends infer IMessages extends {
+    [key in string]: string;
+  }
+    ? {
+        <TKey extends keyof IMessages>(
+          key: TKey,
+          ...[args]: TranslationFunctionOptions<
+            NestedMessageKeys<TKey, IMessages>,
+            PluralKeys<TMessages>,
+            IMessages
+          >
+        ): HasJsxFormat<TKey, IMessages> extends true
+          ? ReactNode
+          : IMessages[TKey];
+      }
+    : never;
 
 /** @alpha */
 export type TranslationSnapshot<TMessages extends { [key in string]: string }> =
