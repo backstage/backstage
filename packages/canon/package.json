@@ -41,7 +41,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@base-ui-components/react": "^1.0.0-alpha.7",
+    "@base-ui-components/react": "1.0.0-alpha.7",
     "@remixicon/react": "^4.6.0",
     "@tanstack/react-table": "^8.21.3",
     "clsx": "^2.1.1"
