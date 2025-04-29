@@ -70,6 +70,7 @@ const CopyToClipboardButton = ({ text }: CopyToClipboardButtonProps) => {
         style={{ color: 'inherit', position: 'absolute' }}
         className="md-clipboard md-icon"
         onClick={handleClick}
+        aria-label="Copy to clipboard"
       >
         <CopyToClipboardIcon />
       </IconButton>
