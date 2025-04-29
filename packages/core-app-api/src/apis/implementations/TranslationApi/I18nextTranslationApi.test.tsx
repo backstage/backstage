@@ -548,10 +548,8 @@ describe('I18nextTranslationApi', () => {
       expect(
         render(
           snapshot.t('jsx', {
-            replace: {
-              hello: <h1>Hello</h1>,
-              world: <h6>World</h6>,
-            },
+            hello: <h1>Hello</h1>,
+            world: <h6>World</h6>,
           }),
         ).container.textContent,
       ).toBe('Hello, World!');
@@ -564,6 +562,14 @@ describe('I18nextTranslationApi', () => {
           }),
         ).container.textContent,
       ).toBe('world, hello!');
+
+      expect(() =>
+        snapshot.t('jsx', {
+          world: <h6>World</h6>,
+        } as any),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"Translation options did not provide a JSX node for interpolation key 'hello'"`,
+      );
     });
 
     it('should support jsx formatting with nested interpolations', () => {

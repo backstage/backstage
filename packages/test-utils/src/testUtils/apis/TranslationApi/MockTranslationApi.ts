@@ -16,7 +16,6 @@
 
 import {
   TranslationApi,
-  TranslationFunction,
   TranslationRef,
   TranslationSnapshot,
 } from '@backstage/core-plugin-api/alpha';
@@ -27,6 +26,8 @@ import { Observable } from '@backstage/types';
 // Internal import to avoid code duplication, this will lead to duplication in build output
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalTranslationRef } from '../../../../../core-plugin-api/src/translation/TranslationRef';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { JsxInterpolator } from '../../../../../core-app-api/src/apis/implementations/TranslationApi/I18nextTranslationApi';
 
 const DEFAULT_LANGUAGE = 'en';
 
@@ -55,14 +56,19 @@ export class MockTranslationApi implements TranslationApi {
       throw new Error('i18next was unexpectedly not initialized');
     }
 
-    return new MockTranslationApi(i18n);
+    const interpolator = JsxInterpolator.create({ marker: '123456' });
+    i18n.services.formatter?.add('jsx', interpolator.format);
+
+    return new MockTranslationApi(i18n, interpolator);
   }
 
   #i18n: I18n;
+  #interpolator: JsxInterpolator;
   #registeredRefs = new Set<string>();
 
-  private constructor(i18n: I18n) {
+  private constructor(i18n: I18n, interpolator: JsxInterpolator) {
     this.#i18n = i18n;
+    this.#interpolator = interpolator;
   }
 
   getTranslation<TMessages extends { [key in string]: string }>(
@@ -81,10 +87,9 @@ export class MockTranslationApi implements TranslationApi {
       );
     }
 
-    const t = this.#i18n.getFixedT(
-      null,
-      internalRef.id,
-    ) as TranslationFunction<TMessages>;
+    const t = this.#interpolator.wrapT<TMessages>(
+      this.#i18n.getFixedT(null, internalRef.id) as any,
+    );
 
     return {
       ready: true,

@@ -7,6 +7,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { Expand } from '@backstage/types';
 import { ExpandRecursive } from '@backstage/types';
 import { Observable } from '@backstage/types';
+import { ReactNode } from 'react';
 import { TranslationMessages as TranslationMessages_2 } from '@backstage/core-plugin-api/alpha';
 import { TranslationRef as TranslationRef_2 } from '@backstage/core-plugin-api/alpha';
 
@@ -94,21 +95,26 @@ export type TranslationApi = {
 export const translationApiRef: ApiRef<TranslationApi>;
 
 // @alpha (undocumented)
-export interface TranslationFunction<
+export type TranslationFunction<
   TMessages extends {
     [key in string]: string;
   },
-> {
-  // (undocumented)
-  <TKey extends keyof CollapsedMessages<TMessages>>(
-    key: TKey,
-    ...[args]: TranslationFunctionOptions<
-      NestedMessageKeys<TKey, CollapsedMessages<TMessages>>,
-      PluralKeys<TMessages>,
-      CollapsedMessages<TMessages>
-    >
-  ): CollapsedMessages<TMessages>[TKey];
+> = CollapsedMessages<TMessages> extends infer IMessages extends {
+  [key in string]: string;
 }
+  ? {
+      <TKey extends keyof IMessages>(
+        key: TKey,
+        ...[args]: TranslationFunctionOptions<
+          NestedMessageKeys<TKey, IMessages>,
+          PluralKeys<TMessages>,
+          IMessages
+        >
+      ): HasJsxFormat<TKey, IMessages> extends true
+        ? ReactNode
+        : IMessages[TKey];
+    }
+  : never;
 
 // @alpha
 export interface TranslationMessages<
