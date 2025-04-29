@@ -56,12 +56,11 @@ Commands:
 ### `backstage-cli-alpha config docs`
 
 ```
-Usage: <none>
+Usage: backstage-cli config docs [options]
 
 Options:
-  --help
-  --package
-  --version
+  --package <name>
+  -h, --help
 ```
 
 ### `backstage-cli-alpha config schema`

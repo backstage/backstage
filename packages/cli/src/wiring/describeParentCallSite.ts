@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-import { describeParentCallSite } from './describeParentCallSite';
-import { BackstageCommand, CliPlugin, OpaqueCliPlugin } from './types';
-
-export function createCliPlugin(options: {
-  pluginId: string;
-  init: (registry: {
-    addCommand: (command: BackstageCommand) => void;
-  }) => Promise<void>;
-}): CliPlugin {
-  return OpaqueCliPlugin.createInstance('v1', {
-    pluginId: options.pluginId,
-    init: options.init,
-    description: `created at '${describeParentCallSite()}'`,
-  });
-}
+// Single re-export to avoid doing this import in multiple places, but still
+// avoid duplicate declarations because this one is a bit tricky.
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+export { describeParentCallSite } from '../../../frontend-plugin-api/src/routing/describeParentCallSite';
