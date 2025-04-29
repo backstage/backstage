@@ -21,6 +21,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import { makeStyles } from '@material-ui/core/styles';
@@ -135,7 +137,14 @@ export function InspectEntityDialog(props: {
       PaperProps={{ className: classes.fullHeightDialog }}
     >
       <DialogTitle id="entity-inspector-dialog-title">
-        {t('inspectEntityDialog.title')}
+        <Box display="flex" alignItems="center">
+          <Box flexGrow={1}>{t('inspectEntityDialog.title')}</Box>
+          <Box>
+            <IconButton onClick={props.onClose}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </Box>
       </DialogTitle>
       <DialogContent dividers>
         <div className={classes.root}>
