@@ -131,24 +131,26 @@ export function createFetchTemplateAction(options: {
       },
     },
     supportsDryRun: true,
-    handler: createTemplateActionHandler({
-      resolveTemplate: async ctx => {
-        ctx.logger.info('Fetching template content from remote URL');
+    handler: ctx =>
+      createTemplateActionHandler({
+        ctx,
+        resolveTemplate: async () => {
+          ctx.logger.info('Fetching template content from remote URL');
 
-        const workDir = await ctx.createTemporaryDirectory();
-        const templateDir = resolveSafeChildPath(workDir, 'template');
+          const workDir = await ctx.createTemporaryDirectory();
+          const templateDir = resolveSafeChildPath(workDir, 'template');
 
-        await fetchContents({
-          baseUrl: ctx.templateInfo?.baseUrl,
-          fetchUrl: ctx.input.url,
-          outputPath: templateDir,
-          token: ctx.input.token,
-          ...options,
-        });
+          await fetchContents({
+            baseUrl: ctx.templateInfo?.baseUrl,
+            fetchUrl: ctx.input.url,
+            outputPath: templateDir,
+            token: ctx.input.token,
+            ...options,
+          });
 
-        return templateDir;
-      },
-      ...options,
-    }),
+          return templateDir;
+        },
+        ...options,
+      }),
   });
 }

@@ -16,7 +16,6 @@
 import { ScmIntegrations } from '@backstage/integration';
 import {
   ActionContext,
-  TemplateActionOptions,
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
@@ -36,19 +35,21 @@ export type TemplateFileActionInput = {
   lstripBlocks?: boolean;
 };
 
-export function createTemplateFileActionHandler<
+export async function createTemplateFileActionHandler<
   I extends TemplateFileActionInput = TemplateFileActionInput,
 >(options: {
-  resolveTemplateFile: (ctx: ActionContext<I, any, any>) => Promise<string>;
+  ctx: ActionContext<I, any, any>;
+  resolveTemplateFile: () => Promise<string>;
   integrations: ScmIntegrations;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-}): TemplateActionOptions<I>['handler'] {
+}) {
   const {
     resolveTemplateFile,
     integrations,
     additionalTemplateFilters,
     additionalTemplateGlobals: templateGlobals,
+    ctx,
   } = options;
 
   const templateFilters = {
@@ -56,45 +57,43 @@ export function createTemplateFileActionHandler<
     ...additionalTemplateFilters,
   };
 
-  return async (ctx: ActionContext<I, any, any>) => {
-    const outputPath = resolveSafeChildPath(
-      ctx.workspacePath,
-      ctx.input.targetPath,
-    );
+  const outputPath = resolveSafeChildPath(
+    ctx.workspacePath,
+    ctx.input.targetPath,
+  );
 
-    if (fs.existsSync(outputPath) && !ctx.input.replace) {
-      ctx.logger.info(
-        `File ${ctx.input.targetPath} already exists in workspace, not replacing.`,
-      );
-      return;
-    }
-    const filePath = await resolveTemplateFile(ctx);
-
-    const { cookiecutterCompat, values } = ctx.input;
-    const context = {
-      [cookiecutterCompat ? 'cookiecutter' : 'values']: values,
-    };
-
+  if (fs.existsSync(outputPath) && !ctx.input.replace) {
     ctx.logger.info(
-      `Processing template file with input values`,
-      ctx.input.values,
+      `File ${ctx.input.targetPath} already exists in workspace, not replacing.`,
     );
+    return;
+  }
+  const filePath = await resolveTemplateFile();
 
-    const renderTemplate = await SecureTemplater.loadRenderer({
-      cookiecutterCompat,
-      templateFilters,
-      templateGlobals,
-      nunjucksConfigs: {
-        trimBlocks: ctx.input.trimBlocks,
-        lstripBlocks: ctx.input.lstripBlocks,
-      },
-    });
-
-    const contents = await fs.readFile(filePath, 'utf-8');
-    const result = renderTemplate(contents, context);
-    await fs.ensureDir(path.dirname(outputPath));
-    await fs.outputFile(outputPath, result);
-
-    ctx.logger.info(`Template file has been written to ${outputPath}`);
+  const { cookiecutterCompat, values } = ctx.input;
+  const context = {
+    [cookiecutterCompat ? 'cookiecutter' : 'values']: values,
   };
+
+  ctx.logger.info(
+    `Processing template file with input values`,
+    ctx.input.values,
+  );
+
+  const renderTemplate = await SecureTemplater.loadRenderer({
+    cookiecutterCompat,
+    templateFilters,
+    templateGlobals,
+    nunjucksConfigs: {
+      trimBlocks: ctx.input.trimBlocks,
+      lstripBlocks: ctx.input.lstripBlocks,
+    },
+  });
+
+  const contents = await fs.readFile(filePath, 'utf-8');
+  const result = renderTemplate(contents, context);
+  await fs.ensureDir(path.dirname(outputPath));
+  await fs.outputFile(outputPath, result);
+
+  ctx.logger.info(`Template file has been written to ${outputPath}`);
 }
