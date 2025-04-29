@@ -1,5 +1,17 @@
 # @backstage/canon
 
+## 0.4.0-next.1
+
+### Minor Changes
+
+- ea36f74: **Breaking Change** Icons on Button and IconButton now need to be imported and placed like this: <Button iconStart={<ChevronDownIcon />} />
+
+### Patch Changes
+
+- 720033c: For improved a11y, clicking a Select component label now focuses the Select trigger element, and the TextField component's label is now styled to indicate it's interactive.
+- 206ffbe: Fixed an issue with Canon's DataTable.Pagination component showing the wrong number for the "to" count.
+- 72d019d: Removed various typos
+
 ## 0.3.2-next.0
 
 ### Patch Changes

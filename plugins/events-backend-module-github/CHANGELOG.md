@@ -1,5 +1,23 @@
 # @backstage/plugin-events-backend-module-github
 
+## 0.4.0-next.1
+
+### Minor Changes
+
+- ae249fc: **BREAKING**: Removed the `createGithubSignatureValidator` export.
+
+  Added support webhook validation based on `integrations.github.[].apps.[].webhookSecret`.
+
+### Patch Changes
+
+- c7ef81c: Correct README installation instructions.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+
 ## 0.3.1-next.0
 
 ### Patch Changes
