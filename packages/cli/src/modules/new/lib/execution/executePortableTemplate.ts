@@ -16,7 +16,7 @@
 
 import { assertError } from '@backstage/errors';
 import { addCodeownersEntry } from '../codeowners';
-import { Task } from '../../../../lib/tasks';
+import { Task } from '../tasks';
 import {
   PortableTemplate,
   PortableTemplateConfig,
