@@ -6,8 +6,8 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { Expand } from '@backstage/types';
 import { ExpandRecursive } from '@backstage/types';
+import { JSX as JSX_2 } from 'react';
 import { Observable } from '@backstage/types';
-import { ReactNode } from 'react';
 import { TranslationMessages as TranslationMessages_2 } from '@backstage/core-plugin-api/alpha';
 import { TranslationRef as TranslationRef_2 } from '@backstage/core-plugin-api/alpha';
 
@@ -108,11 +108,19 @@ export type TranslationFunction<
         ...[args]: TranslationFunctionOptions<
           NestedMessageKeys<TKey, IMessages>,
           PluralKeys<TMessages>,
-          IMessages
+          IMessages,
+          string
         >
-      ): HasJsxFormat<TKey, IMessages> extends true
-        ? ReactNode
-        : IMessages[TKey];
+      ): IMessages[TKey];
+      <TKey extends keyof IMessages>(
+        key: TKey,
+        ...[args]: TranslationFunctionOptions<
+          NestedMessageKeys<TKey, IMessages>,
+          PluralKeys<TMessages>,
+          IMessages,
+          string | JSX_2.Element
+        >
+      ): JSX_2.Element;
     }
   : never;
 

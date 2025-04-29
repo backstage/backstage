@@ -42,6 +42,8 @@ export class MockTranslationApi implements TranslationApi {
       supportedLngs: [DEFAULT_LANGUAGE],
       interpolation: {
         escapeValue: false,
+        // Used for the JsxInterpolator format hook
+        alwaysFormat: true,
       },
       ns: [],
       defaultNS: false,
@@ -56,8 +58,7 @@ export class MockTranslationApi implements TranslationApi {
       throw new Error('i18next was unexpectedly not initialized');
     }
 
-    const interpolator = JsxInterpolator.create({ marker: '123456' });
-    i18n.services.formatter?.add('jsx', interpolator.format);
+    const interpolator = JsxInterpolator.fromI18n(i18n);
 
     return new MockTranslationApi(i18n, interpolator);
   }
@@ -88,7 +89,7 @@ export class MockTranslationApi implements TranslationApi {
     }
 
     const t = this.#interpolator.wrapT<TMessages>(
-      this.#i18n.getFixedT(null, internalRef.id) as any,
+      this.#i18n.getFixedT(null, internalRef.id),
     );
 
     return {

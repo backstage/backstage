@@ -23,7 +23,13 @@ import {
   TranslationResource,
   TranslationSnapshot,
 } from '@backstage/core-plugin-api/alpha';
-import { createInstance as createI18n, type i18n as I18n } from 'i18next';
+import {
+  createInstance as createI18n,
+  FormatFunction,
+  Interpolator,
+  TFunction,
+  type i18n as I18n,
+} from 'i18next';
 import ObservableImpl from 'zen-observable';
 
 // Internal import to avoid code duplication, this will lead to duplication in build output
@@ -39,7 +45,7 @@ import {
 } from '../../../../../core-plugin-api/src/translation/TranslationRef';
 import { Observable } from '@backstage/types';
 import { DEFAULT_LANGUAGE } from '../AppLanguageApi/AppLanguageSelector';
-import { createElement, Fragment, ReactNode } from 'react';
+import { createElement, Fragment, ReactNode, isValidElement } from 'react';
 
 /** @alpha */
 export interface I18nextTranslationApiOptions {
@@ -139,47 +145,80 @@ class ResourceLoader {
 }
 
 /**
- * A helper for implementing the `jsx` format that allows `ReactNode`s to be
- * interpolated into translation messages.
+ * A helper for implementing JSX interpolation
  */
 export class JsxInterpolator {
+  readonly #setFormatHook: (hook: FormatFunction) => void;
   readonly #marker: string;
   readonly #pattern: RegExp;
 
-  static create(options?: { marker?: string }) {
+  static fromI18n(i18n: I18n) {
+    const interpolator = i18n.services.interpolator as Interpolator & {
+      format: FormatFunction;
+    };
+    const originalFormat = interpolator.format;
+
+    let formatHook: FormatFunction | undefined;
+
+    // This is the only way to override the format function of the interpolator
+    // without overriding the default formatters. See the behavior here:
+    // https://github.com/i18next/i18next/blob/c633121e57e2b6024080142d78027842bf2a6e5e/src/i18next.js#L120-L125
+    interpolator.format = (value, format, lng, formatOpts) => {
+      if (format) {
+        return originalFormat(value, format, lng, formatOpts);
+      }
+      return formatHook?.(value, format, lng, formatOpts) ?? value;
+    };
+
     return new JsxInterpolator(
-      options?.marker ?? Math.random().toString(36).substring(2, 8),
+      // Using a random marker to ensure it can't be misused
+      Math.random().toString(36).substring(2, 8),
+      hook => {
+        formatHook = hook;
+      },
     );
   }
 
-  private constructor(marker: string) {
+  private constructor(
+    marker: string,
+    setFormatHook: (hook: FormatFunction) => void,
+  ) {
+    this.#setFormatHook = setFormatHook;
     this.#marker = marker;
     this.#pattern = new RegExp(`\\$${marker}\\(([^)]+)\\)`);
   }
 
-  format = (
-    _value: unknown,
-    _lng: string | undefined,
-    formatOptions: { interpolationkey: string },
-  ) => `$${this.#marker}(${btoa(formatOptions.interpolationkey)})`;
-
   wrapT<TMessages extends { [key in string]: string }>(
-    originalT: TranslationFunction<TMessages>,
+    originalT: TFunction,
   ): TranslationFunction<TMessages> {
-    return ((...args) => {
+    return ((key, options) => {
+      let elementsMap: Map<string, ReactNode> | undefined = undefined;
+
+      // There's no way to override the format hook via the translation function
+      // options, event though types indicate that it might be possible.
+      // Instead, override the format function hook before every invocation and
+      // rely on synchronous execution.
+      this.#setFormatHook(value => {
+        if (isValidElement(value)) {
+          if (!elementsMap) {
+            elementsMap = new Map();
+          }
+          const elementKey = elementsMap.size.toString();
+          elementsMap.set(elementKey, value);
+
+          return `$${this.#marker}(${elementKey})`;
+        }
+        return value;
+      });
+
       // Overriding the return options is not allowed via TranslationFunction,
       // so this will always be a string
-      const result = originalT(...args);
-
-      const options = args[1];
-      if (!options) {
+      const result = originalT(key, options as any) as unknown as string;
+      if (!elementsMap) {
         return result;
       }
 
       const split = result.split(this.#pattern);
-      if (split.length === 1) {
-        return split[0];
-      }
 
       return createElement(
         Fragment,
@@ -189,14 +228,7 @@ export class JsxInterpolator {
             if (index % 2 === 0) {
               return part;
             }
-
-            const interpolationKey = atob(part);
-            if (interpolationKey in options) {
-              return (options as any)[interpolationKey] as ReactNode;
-            }
-            throw new Error(
-              `Translation options did not provide a JSX node for interpolation key '${interpolationKey}'`,
-            );
+            return elementsMap?.get(part);
           })
           .filter(Boolean),
       );
@@ -214,6 +246,8 @@ export class I18nextTranslationApi implements TranslationApi {
       supportedLngs: languages,
       interpolation: {
         escapeValue: false,
+        // Used for the JsxInterpolator format hook
+        alwaysFormat: true,
       },
       ns: [],
       defaultNS: false,
@@ -228,12 +262,7 @@ export class I18nextTranslationApi implements TranslationApi {
       throw new Error('i18next was unexpectedly not initialized');
     }
 
-    if (!i18n.services.formatter) {
-      throw new Error('i18next was unexpectedly missing formatter');
-    }
-
-    const interpolator = JsxInterpolator.create();
-    i18n.services.formatter.add('jsx', interpolator.format);
+    const interpolator = JsxInterpolator.fromI18n(i18n);
 
     const { language: initialLanguage } = options.languageApi.getLanguage();
     if (initialLanguage !== DEFAULT_LANGUAGE) {
@@ -380,7 +409,7 @@ export class I18nextTranslationApi implements TranslationApi {
     }
 
     const unwrappedT = this.#i18n.getFixedT(null, internalRef.id);
-    const t = this.#jsxInterpolator.wrapT<TMessages>(unwrappedT as any);
+    const t = this.#jsxInterpolator.wrapT<TMessages>(unwrappedT);
 
     return {
       ready: true,
