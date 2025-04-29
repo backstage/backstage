@@ -29,6 +29,7 @@ import { CancelTask200Response } from '../models/CancelTask200Response.model';
 import { DryRun200Response } from '../models/DryRun200Response.model';
 import { DryRunRequest } from '../models/DryRunRequest.model';
 import { ListTasksResponse } from '../models/ListTasksResponse.model';
+import { ListTemplatingExtensionsResponse } from '../models/ListTemplatingExtensionsResponse.model';
 import { RetryRequest } from '../models/RetryRequest.model';
 import { Scaffold201Response } from '../models/Scaffold201Response.model';
 import { ScaffolderScaffoldOptions } from '../models/ScaffolderScaffoldOptions.model';
@@ -111,6 +112,10 @@ export type ListTasks = {
     status?: Array<string>;
   };
 };
+/**
+ * @public
+ */
+export type ListTemplatingExtensions = {};
 /**
  * @public
  */
@@ -333,6 +338,29 @@ export class DefaultApiClient {
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,
     });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'GET',
+    });
+  }
+
+  /**
+   * Returns a structure describing the available templating extensions.
+   */
+  public async listTemplatingExtensions(
+    // @ts-ignore
+    request: ListTemplatingExtensions,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<ListTemplatingExtensionsResponse>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/v2/templating-extensions`;
+
+    const uri = parser.parse(uriTemplate).expand({});
 
     return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {

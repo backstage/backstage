@@ -18,7 +18,7 @@ import { FieldExtensionOptions as FieldExtensionOptions_2 } from '@backstage/plu
 import { FieldSchema as FieldSchema_2 } from '@backstage/plugin-scaffolder-react';
 import { FieldValidation } from '@rjsf/utils';
 import { FormProps } from '@backstage/plugin-scaffolder-react';
-import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LayoutOptions as LayoutOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { LayoutTemplate as LayoutTemplate_2 } from '@backstage/plugin-scaffolder-react';
 import { ListActionsResponse as ListActionsResponse_2 } from '@backstage/plugin-scaffolder-common';

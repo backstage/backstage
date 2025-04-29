@@ -25,13 +25,8 @@ export type Action = {
   examples?: ActionExample[];
 };
 
-// @public
-export interface ActionExample {
-  // (undocumented)
-  description: string;
-  // (undocumented)
-  example: string;
-}
+// @public @deprecated
+export type ActionExample = ScaffolderUsageExample;
 
 // @public
 export const isTemplateEntityV1beta3: (
@@ -40,6 +35,15 @@ export const isTemplateEntityV1beta3: (
 
 // @public
 export type ListActionsResponse = Array<Action>;
+
+// @public
+export type ListTemplatingExtensionsResponse = {
+  filters: Record<string, TemplateFilter>;
+  globals: {
+    functions: Record<string, TemplateGlobalFunction>;
+    values: Record<string, TemplateGlobalValue>;
+  };
+};
 
 // @public
 export type LogEvent = {
@@ -109,6 +113,9 @@ export interface ScaffolderApi {
     tasks: ScaffolderTask[];
     totalTasks?: number;
   }>;
+  listTemplatingExtensions?(
+    options?: ScaffolderRequestOptions,
+  ): Promise<ListTemplatingExtensionsResponse>;
   retry?(
     {
       secrets,
@@ -205,6 +212,9 @@ export class ScaffolderClient implements ScaffolderApi {
     tasks: ScaffolderTask[];
     totalTasks?: number;
   }>;
+  listTemplatingExtensions(
+    options?: ScaffolderRequestOptions,
+  ): Promise<ListTemplatingExtensionsResponse>;
   retry?(
     {
       secrets,
@@ -359,6 +369,13 @@ export const ScaffolderTaskStatus: {
   Skipped: ScaffolderTaskStatus;
 };
 
+// @public
+export type ScaffolderUsageExample = {
+  description?: string;
+  example: string;
+  notes?: string;
+};
+
 // @public (undocumented)
 export type TaskEventType = 'cancelled' | 'completion' | 'log' | 'recovered';
 
@@ -447,6 +464,33 @@ export interface TemplateEntityV1beta3 extends Entity {
 
 // @public
 export const templateEntityV1beta3Validator: KindValidator;
+
+// @public
+export type TemplateFilter = {
+  description?: string;
+  schema?: {
+    input?: JSONSchema7;
+    arguments?: JSONSchema7[];
+    output?: JSONSchema7;
+  };
+  examples?: ScaffolderUsageExample[];
+};
+
+// @public
+export type TemplateGlobalFunction = {
+  description?: string;
+  schema?: {
+    arguments?: JSONSchema7[];
+    output?: JSONSchema7;
+  };
+  examples?: ScaffolderUsageExample[];
+};
+
+// @public
+export type TemplateGlobalValue = {
+  description?: string;
+  value: JsonValue;
+};
 
 // @public
 export type TemplateInfo = {
