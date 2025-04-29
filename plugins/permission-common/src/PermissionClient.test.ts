@@ -285,7 +285,7 @@ describe('PermissionClient', () => {
           {
             id: expect.any(String),
             permission: mockPermission,
-            resourceRefs: ['foo:bar', 'foo:car', 'foo:baz'],
+            resourceRef: ['foo:bar', 'foo:car', 'foo:baz'],
           },
           {
             id: expect.any(String),
@@ -453,7 +453,7 @@ describe('PermissionClient', () => {
               attributes: {},
               resourceType: 'foo',
             },
-            resourceRefs: ['foo:bar', 'foo:car'],
+            resourceRef: ['foo:bar', 'foo:car'],
             id: expect.any(String),
           },
           {
@@ -471,7 +471,7 @@ describe('PermissionClient', () => {
               attributes: {},
               resourceType: 'foo',
             },
-            resourceRefs: ['r2', 'r1'],
+            resourceRef: ['r2', 'r1'],
             id: expect.any(String),
           },
         ],

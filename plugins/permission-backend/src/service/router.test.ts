@@ -154,7 +154,7 @@ describe('createRouter', () => {
       });
     });
 
-    it('calls the permission policy with batched resourceRefs', async () => {
+    it('calls the permission policy with batched resourceRef as an array', async () => {
       policy.handle.mockResolvedValueOnce({
         result: AuthorizeResult.CONDITIONAL,
         pluginId: 'test-plugin',
@@ -181,7 +181,7 @@ describe('createRouter', () => {
                 attributes: {},
                 resourceType: 'test-resource-1',
               },
-              resourceRefs: ['resource:1', 'resource:2'],
+              resourceRef: ['resource:1', 'resource:2'],
             },
             {
               id: '234',
@@ -202,7 +202,7 @@ describe('createRouter', () => {
             conditions: { params: ['abc'], rule: 'test-rule' },
             id: '123',
             pluginId: 'test-plugin',
-            resourceRefs: ['resource:1', 'resource:2'],
+            resourceRef: ['resource:1', 'resource:2'],
             resourceType: 'test-resource-1',
             result: 'CONDITIONAL',
           },
@@ -611,7 +611,7 @@ describe('createRouter', () => {
         });
       });
 
-      it('leaves conditional results without resourceRefs unchanged', async () => {
+      it('leaves conditional results without resourceRef unchanged', async () => {
         policy.handle
           .mockResolvedValueOnce({
             result: AuthorizeResult.CONDITIONAL,
@@ -881,79 +881,7 @@ describe('createRouter', () => {
         items: [
           {
             id: '123',
-            // resource ref should be a string
             resourceRef: ['resource:1'],
-            permission: {
-              type: 'resource',
-              name: 'test.permission',
-              attributes: {},
-              resourceType: 'test-resource-1',
-            },
-          },
-        ],
-      },
-      {
-        items: [
-          {
-            id: '123',
-            resourceRef: ['resource:1'],
-            permission: {
-              type: 'resource',
-              name: 'test.permission',
-              attributes: {},
-              resourceType: 'test-resource-1',
-            },
-          },
-        ],
-      },
-      {
-        items: [
-          {
-            id: '123',
-            resourceRefs: 'resource:1',
-            permission: {
-              type: 'resource',
-              name: 'test.permission',
-              attributes: {},
-              resourceType: 'test-resource-1',
-            },
-          },
-        ],
-      },
-      {
-        items: [
-          {
-            id: '123',
-            resourceRefs: [],
-            permission: {
-              type: 'resource',
-              name: 'test.permission',
-              attributes: {},
-              resourceType: 'test-resource-1',
-            },
-          },
-        ],
-      },
-      {
-        items: [
-          {
-            id: '123',
-            resourceRefs: ['resource:1'],
-            resourceRef: 'resource:1',
-            permission: {
-              type: 'resource',
-              name: 'test.permission',
-              attributes: {},
-              resourceType: 'test-resource-1',
-            },
-          },
-        ],
-      },
-      {
-        items: [
-          {
-            id: '123',
-            resourceRefs: ['resource:1'],
             permission: {
               type: 'basic',
               name: 'test.permission',
@@ -966,16 +894,17 @@ describe('createRouter', () => {
         items: [
           {
             id: '123',
-            resourceRef: 'resource:1',
+            resourceRef: [],
             permission: {
-              type: 'basic',
+              type: 'resource',
               name: 'test.permission',
               attributes: {},
+              resourceType: 'test-resource-1',
             },
           },
         ],
       },
-    ])('returns a 400 error for invalid request %#', async requestBody => {
+    ])('returns a 400 error for invalid request %o', async requestBody => {
       const response = await request(app).post('/authorize').send(requestBody);
 
       expect(response.status).toEqual(400);
@@ -1017,7 +946,7 @@ describe('createRouter', () => {
       );
     });
 
-    it(`returns a 400 error if the request doesn't contain resourceRef or resourceRefs for credentials not issued by a service`, async () => {
+    it(`returns a 400 error if the request doesn't contain resourceRef for credentials not issued by a service`, async () => {
       policy.handle.mockResolvedValueOnce({
         result: AuthorizeResult.CONDITIONAL,
         pluginId: 'test-plugin',

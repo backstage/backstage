@@ -58,22 +58,12 @@ const permissionCriteriaSchema: z.ZodSchema<
 
 const applyConditionsRequestSchema = z.object({
   items: z.array(
-    z.union([
-      z.object({
-        id: z.string(),
-        resourceRef: z.string(),
-        resourceRefs: z.undefined().optional(),
-        resourceType: z.string(),
-        conditions: permissionCriteriaSchema,
-      }),
-      z.object({
-        id: z.string(),
-        resourceRef: z.undefined().optional(),
-        resourceRefs: z.array(z.string()),
-        resourceType: z.string(),
-        conditions: permissionCriteriaSchema,
-      }),
-    ]),
+    z.object({
+      id: z.string(),
+      resourceRef: z.union([z.string(), z.array(z.string()).nonempty()]),
+      resourceType: z.string(),
+      conditions: permissionCriteriaSchema,
+    }),
   ),
 });
 
@@ -83,20 +73,11 @@ const applyConditionsRequestSchema = z.object({
  *
  * @public
  */
-export type ApplyConditionsRequestEntry = IdentifiedPermissionMessage<
-  | {
-      resourceRef: string;
-      resourceRefs?: undefined;
-      resourceType: string;
-      conditions: PermissionCriteria<PermissionCondition>;
-    }
-  | {
-      resourceRef?: undefined;
-      resourceRefs: string[];
-      resourceType: string;
-      conditions: PermissionCriteria<PermissionCondition>;
-    }
->;
+export type ApplyConditionsRequestEntry = IdentifiedPermissionMessage<{
+  resourceRef: string | string[];
+  resourceType: string;
+  conditions: PermissionCriteria<PermissionCondition>;
+}>;
 
 /**
  * A batch of {@link ApplyConditionsRequestEntry} objects.
@@ -536,7 +517,7 @@ export function createPermissionIntegrationRouter<
           requestedType,
           requests
             .filter(r => r.resourceType === requestedType)
-            .map(i => i.resourceRefs ?? [i.resourceRef])
+            .map(i => i.resourceRef)
             .flat(),
         );
       }
@@ -544,8 +525,8 @@ export function createPermissionIntegrationRouter<
       res.json({
         items: requests.map(request => ({
           id: request.id,
-          result: request.resourceRefs
-            ? request.resourceRefs.map(resourceRef =>
+          result: Array.isArray(request.resourceRef)
+            ? request.resourceRef.map(resourceRef =>
                 authorizeResult(
                   request.conditions,
                   resourcesByType[request.resourceType][resourceRef],

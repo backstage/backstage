@@ -38,20 +38,11 @@ export type ApplyConditionsRequest = {
 };
 
 // @public
-export type ApplyConditionsRequestEntry = IdentifiedPermissionMessage<
-  | {
-      resourceRef: string;
-      resourceRefs?: undefined;
-      resourceType: string;
-      conditions: PermissionCriteria<PermissionCondition>;
-    }
-  | {
-      resourceRef?: undefined;
-      resourceRefs: string[];
-      resourceType: string;
-      conditions: PermissionCriteria<PermissionCondition>;
-    }
->;
+export type ApplyConditionsRequestEntry = IdentifiedPermissionMessage<{
+  resourceRef: string | string[];
+  resourceType: string;
+  conditions: PermissionCriteria<PermissionCondition>;
+}>;
 
 // @public
 export type ApplyConditionsResponse = {
