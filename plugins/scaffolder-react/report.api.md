@@ -4,7 +4,6 @@
 
 ```ts
 import { Action as Action_2 } from '@backstage/plugin-scaffolder-common';
-import { ActionExample as ActionExample_2 } from '@backstage/plugin-scaffolder-common';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
@@ -25,6 +24,7 @@ import { IChangeEvent } from '@rjsf/core';
 import { IdSchema } from '@rjsf/utils';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { ListActionsResponse as ListActionsResponse_2 } from '@backstage/plugin-scaffolder-common';
 import { ListTemplatingExtensionsResponse as ListTemplatingExtensionsResponse_2 } from '@backstage/plugin-scaffolder-common';
 import { LogEvent as LogEvent_2 } from '@backstage/plugin-scaffolder-common';
@@ -48,8 +48,12 @@ import { ScaffolderStreamLogsOptions as ScaffolderStreamLogsOptions_2 } from '@b
 import { ScaffolderTask as ScaffolderTask_2 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderTaskOutput as ScaffolderTaskOutput_2 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderTaskStatus as ScaffolderTaskStatus_2 } from '@backstage/plugin-scaffolder-common';
+import { ScaffolderUsageExample as ScaffolderUsageExample_2 } from '@backstage/plugin-scaffolder-common';
 import { StrictRJSFSchema } from '@rjsf/utils';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-common';
+import { TemplateGlobalFunction as TemplateGlobalFunction_2 } from '@backstage/plugin-scaffolder-common';
+import { TemplateGlobalValue as TemplateGlobalValue_2 } from '@backstage/plugin-scaffolder-common';
 import { TemplateParameterSchema as TemplateParameterSchema_2 } from '@backstage/plugin-scaffolder-common';
 import { TemplatesType } from '@rjsf/utils';
 import { UIOptionsType } from '@rjsf/utils';
@@ -61,7 +65,7 @@ import { z } from 'zod';
 export type Action = Action_2;
 
 // @public @deprecated
-export type ActionExample = ActionExample_2;
+export type ActionExample = ScaffolderUsageExample;
 
 // @public
 export function createScaffolderFieldExtension<
@@ -171,7 +175,8 @@ export type LayoutTemplate<T = any> = NonNullable<
 export type ListActionsResponse = ListActionsResponse_2;
 
 // @public @deprecated
-export type ListTemplatingExtensionsResponse = ListTemplatingExtensionsResponse_2;
+export type ListTemplatingExtensionsResponse =
+  ListTemplatingExtensionsResponse_2;
 
 // @public @deprecated
 export type LogEvent = LogEvent_2;
@@ -366,12 +371,8 @@ export type ScaffolderTaskOutput = ScaffolderTaskOutput_2;
 // @public @deprecated
 export type ScaffolderTaskStatus = ScaffolderTaskStatus_2;
 
-// @public
-export type ScaffolderUsageExample = {
-  description?: string;
-  example: string;
-  notes?: string;
-};
+// @public @deprecated
+export type ScaffolderUsageExample = ScaffolderUsageExample_2;
 
 // @public
 export interface ScaffolderUseTemplateSecrets {
@@ -404,32 +405,14 @@ export type TaskStream = {
   output?: ScaffolderTaskOutput;
 };
 
-// @public
-export type TemplateFilter = {
-  description?: string;
-  schema?: {
-    input?: JSONSchema7;
-    arguments?: JSONSchema7[];
-    output?: JSONSchema7;
-  };
-  examples?: ScaffolderUsageExample[];
-};
+// @public @deprecated
+export type TemplateFilter = TemplateFilter_2;
 
-// @public
-export type TemplateGlobalFunction = {
-  description?: string;
-  schema?: {
-    arguments?: JSONSchema7[];
-    output?: JSONSchema7;
-  };
-  examples?: ScaffolderUsageExample[];
-};
+// @public @deprecated
+export type TemplateGlobalFunction = TemplateGlobalFunction_2;
 
-// @public
-export type TemplateGlobalValue = {
-  description?: string;
-  value: JsonValue;
-};
+// @public @deprecated
+export type TemplateGlobalValue = TemplateGlobalValue_2;
 
 // @public (undocumented)
 export type TemplateGroupFilter = {

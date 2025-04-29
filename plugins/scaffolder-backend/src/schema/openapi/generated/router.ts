@@ -370,6 +370,38 @@ export const spec = {
         description:
           'The response shape for the `listTasks` call to the `scaffolder-backend`',
       },
+      ListTemplatingExtensionsResponse: {
+        type: 'object',
+        properties: {
+          filters: {
+            type: 'object',
+            additionalProperties: {
+              $ref: '#/components/schemas/TemplateFilter',
+            },
+          },
+          globals: {
+            type: 'object',
+            properties: {
+              functions: {
+                type: 'object',
+                additionalProperties: {
+                  $ref: '#/components/schemas/TemplateGlobalFunction',
+                },
+              },
+              values: {
+                type: 'object',
+                additionalProperties: {
+                  $ref: '#/components/schemas/TemplateGlobalValue',
+                },
+              },
+            },
+            required: ['functions', 'values'],
+          },
+        },
+        required: ['filters', 'globals'],
+        description:
+          'The response shape for the `listTemplatingExtensions` call to the `scaffolder-backend`',
+      },
       ScaffolderScaffoldOptions: {
         type: 'object',
         properties: {
@@ -390,6 +422,22 @@ export const spec = {
         required: ['templateRef', 'values'],
         description:
           'The input options to the `scaffold` method of the `ScaffolderClient`.',
+      },
+      ScaffolderUsageExample: {
+        type: 'object',
+        properties: {
+          description: {
+            type: 'string',
+          },
+          example: {
+            type: 'string',
+          },
+          notes: {
+            type: 'string',
+          },
+        },
+        required: ['example'],
+        description: 'A single scaffolder usage example',
       },
       SerializedFile: {
         type: 'object',
@@ -519,6 +567,84 @@ export const spec = {
           'skipped',
         ],
         description: 'The status of each step of the Task',
+      },
+      TemplateGlobalFunction: {
+        type: 'object',
+        properties: {
+          description: {
+            type: 'string',
+          },
+          schema: {
+            type: 'object',
+            properties: {
+              arguments: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/JsonObject',
+                },
+              },
+              output: {
+                $ref: '#/components/schemas/JsonObject',
+              },
+            },
+          },
+          "'examples'": {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/ScaffolderUsageExample',
+            },
+          },
+        },
+        description:
+          'The response shape for a single global function in the `listTemplatingExtensions` call to the `scaffolder-backend`',
+      },
+      TemplateGlobalValue: {
+        type: 'object',
+        properties: {
+          description: {
+            type: 'string',
+          },
+          value: {
+            type: 'object',
+            nullable: true,
+          },
+        },
+        required: ['value'],
+        description:
+          'The response shape for a single global value in the `listTemplatingExtensions` call to the `scaffolder-backend`',
+      },
+      TemplateFilter: {
+        type: 'object',
+        properties: {
+          description: {
+            type: 'string',
+          },
+          schema: {
+            type: 'object',
+            properties: {
+              input: {
+                $ref: '#/components/schemas/JsonObject',
+              },
+              arguments: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/JsonObject',
+                },
+              },
+              output: {
+                $ref: '#/components/schemas/JsonObject',
+              },
+            },
+          },
+          "'examples'": {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/ScaffolderUsageExample',
+            },
+          },
+        },
+        description:
+          'The response shape for a single filter in the `listTemplatingExtensions` call to the `scaffolder-backend`',
       },
       TemplateParameterSchema: {
         type: 'object',
@@ -1155,6 +1281,32 @@ export const spec = {
             },
           },
         ],
+      },
+    },
+    '/v2/templating-extensions': {
+      get: {
+        operationId: 'ListTemplatingExtensions',
+        description:
+          'Returns a structure describing the available templating extensions.',
+        responses: {
+          '200': {
+            description: 'Ok',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/ListTemplatingExtensionsResponse',
+                },
+              },
+            },
+          },
+        },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
+        parameters: [],
       },
     },
   },

@@ -355,15 +355,15 @@ export class ScaffolderClient implements ScaffolderApi {
     );
   }
 
-  async listTemplatingExtensions(): Promise<ListTemplatingExtensionsResponse> {
-    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
-    const response = await this.fetchApi.fetch(
-      `${baseUrl}/v2/templating-extensions`,
+  /**
+   * {@inheritdoc ScaffolderApi.listTemplatingExtensions}
+   */
+  async listTemplatingExtensions(
+    options?: ScaffolderRequestOptions,
+  ): Promise<ListTemplatingExtensionsResponse> {
+    return await this.requestRequired(
+      await this.apiClient.listTemplatingExtensions(null as any, options),
     );
-    if (!response.ok) {
-      throw ResponseError.fromResponse(response);
-    }
-    return response.json();
   }
 
   /**
