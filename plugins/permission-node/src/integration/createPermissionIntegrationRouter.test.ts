@@ -567,7 +567,7 @@ describe('createPermissionIntegrationRouter', () => {
       });
     });
 
-    describe('batched requests with resourceRefs', () => {
+    describe('batched requests with resourceRef as an array', () => {
       let response: Response;
 
       beforeEach(async () => {
@@ -587,7 +587,7 @@ describe('createPermissionIntegrationRouter', () => {
             items: [
               {
                 id: '123',
-                resourceRefs: [
+                resourceRef: [
                   'default:test/resource-1',
                   'default:test/resource-2',
                 ],

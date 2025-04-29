@@ -76,19 +76,13 @@ const evaluatePermissionRequestSchema = z.union([
   z.object({
     id: z.string(),
     resourceRef: z.undefined().optional(),
-    resourceRefs: z.undefined().optional(),
     permission: basicPermissionSchema,
   }),
   z.object({
     id: z.string(),
-    resourceRef: z.string().optional(),
-    resourceRefs: z.undefined().optional(),
-    permission: resourcePermissionSchema,
-  }),
-  z.object({
-    id: z.string(),
-    resourceRef: z.undefined().optional(),
-    resourceRefs: z.array(z.string()).nonempty().optional(),
+    resourceRef: z
+      .union([z.string(), z.array(z.string()).nonempty()])
+      .optional(),
     permission: resourcePermissionSchema,
   }),
 ]);
@@ -178,14 +172,6 @@ const handleRequest = async (
             );
           }
 
-          if (request.resourceRefs) {
-            return applyConditionsLoaderFor(decision.pluginId).load({
-              id: request.id,
-              resourceRefs: request.resourceRefs,
-              ...decision,
-            });
-          }
-
           if (!request.resourceRef) {
             return {
               id: request.id,
@@ -265,9 +251,7 @@ export async function createRouter(
         if (
           body.items.some(
             r =>
-              isResourcePermission(r.permission) &&
-              r.resourceRef === undefined &&
-              r.resourceRefs === undefined,
+              isResourcePermission(r.permission) && r.resourceRef === undefined,
           )
         ) {
           throw new InputError(

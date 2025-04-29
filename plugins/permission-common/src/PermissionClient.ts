@@ -210,12 +210,12 @@ export class PermissionClient implements PermissionEvaluator {
       if (isResourcePermission(permission)) {
         request[permission.name] ||= {
           permission,
-          resourceRefs: [],
+          resourceRef: [],
           id: uuid.v4(),
         };
 
         if (resourceRef) {
-          request[permission.name].resourceRefs?.push(resourceRef);
+          request[permission.name].resourceRef?.push(resourceRef);
         }
       } else {
         request[permission.name] ||= {
@@ -231,10 +231,15 @@ export class PermissionClient implements PermissionEvaluator {
       options,
     );
 
+    const responsesById = parsedResponse.items.reduce((acc, r) => {
+      acc[r.id] = r;
+      return acc;
+    }, {} as Record<string, (typeof parsedResponse)['items'][number]>);
+
     return queries.map(query => {
       const { id } = request[query.permission.name];
 
-      const item = parsedResponse.items.find(i => i.id === id)!;
+      const item = responsesById[id];
       return {
         result: query.resourceRef ? item.result.shift()! : item.result[0],
       };
@@ -278,7 +283,7 @@ export class PermissionClient implements PermissionEvaluator {
 export type BatchedAuthorizePermissionRequest = IdentifiedPermissionMessage<
   | {
       permission: BasicPermission;
-      resourceRefs?: undefined;
+      resourceRef?: undefined;
     }
-  | { permission: ResourcePermission; resourceRefs: string[] }
+  | { permission: ResourcePermission; resourceRef: string[] }
 >;
