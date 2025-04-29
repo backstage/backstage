@@ -1,5 +1,19 @@
 # @backstage/plugin-app
 
+## 0.1.9-next.1
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/integration-react@1.2.7-next.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-react@0.4.34-next.0
+
 ## 0.1.9-next.0
 
 ### Patch Changes
