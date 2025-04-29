@@ -508,6 +508,7 @@ utils
 Valentina
 validator
 validators
+Valkey
 varchar
 vite
 VMware
