@@ -1,5 +1,26 @@
 # @backstage/cli
 
+## 0.32.1-next.1
+
+### Patch Changes
+
+- d649df0: Internal code cleanup
+- 9aaec54: Internal refactor of opaque type handling.
+- 9285385: Added `info` object to the context of the alpha CLI.
+- 6cc9507: Updated dependency `@octokit/request` to `^8.0.0`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
 ## 0.32.1-next.0
 
 ### Patch Changes
