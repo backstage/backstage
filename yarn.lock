@@ -40555,12 +40555,12 @@ __metadata:
   linkType: hard
 
 "portfinder@npm:^1.0.28, portfinder@npm:^1.0.32":
-  version: 1.0.36
-  resolution: "portfinder@npm:1.0.36"
+  version: 1.0.37
+  resolution: "portfinder@npm:1.0.37"
   dependencies:
     async: "npm:^3.2.6"
     debug: "npm:^4.3.6"
-  checksum: 10/2f70c1090dd8fa1c5db36add08d416f56455ec57600c245ca5f19cf034a10357c603f89db63a34d52f07fcedc7d8b2c7d12a4bb04458b1c57850e50f557aadcb
+  checksum: 10/0d9addb4b28451319bc95feb7af6c060188e176199eebd1b66ef7ea460102e546aedcd6dc7039c5942812c9696218403106e2a45b66a8c551888fc18830b0014
   languageName: node
   linkType: hard
 
