@@ -65,13 +65,12 @@ export function createWorkspaceTemplateFileAction(options: {
       },
     },
     supportsDryRun: true,
-    handler: createTemplateFileActionHandler({
-      resolveTemplateFile: async ctx =>
-        resolveSafeChildPath(
-          ctx.workspacePath,
-          (ctx.input as any as { sourcePath: string }).sourcePath,
-        ),
-      ...options,
-    }),
+    handler: ctx =>
+      createTemplateFileActionHandler({
+        ctx,
+        resolveTemplateFile: async () =>
+          resolveSafeChildPath(ctx.workspacePath, ctx.input.sourcePath),
+        ...options,
+      }),
   });
 }

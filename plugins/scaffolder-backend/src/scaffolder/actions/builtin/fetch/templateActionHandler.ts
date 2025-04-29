@@ -21,7 +21,6 @@ import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import {
   ActionContext,
-  TemplateActionOptions,
   TemplateFilter,
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
@@ -50,19 +49,21 @@ export type TemplateActionInput = {
   lstripBlocks?: boolean;
 };
 
-export function createTemplateActionHandler<
-  I extends TemplateActionInput = TemplateActionInput,
+export async function createTemplateActionHandler<
+  I extends TemplateActionInput,
 >(options: {
-  resolveTemplate: (ctx: ActionContext<I, any, any>) => Promise<string>;
+  ctx: ActionContext<I, any, any>;
+  resolveTemplate: () => Promise<string>;
   integrations: ScmIntegrations;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-}): TemplateActionOptions<I>['handler'] {
+}) {
   const {
     resolveTemplate,
     integrations,
     additionalTemplateFilters,
     additionalTemplateGlobals: templateGlobals,
+    ctx,
   } = options;
 
   const templateFilters = {
@@ -70,134 +71,128 @@ export function createTemplateActionHandler<
     ...additionalTemplateFilters,
   };
 
-  return async (ctx: ActionContext<I, any, any>) => {
-    const { outputDir, copyOnlyPatterns, renderFilename, extension } =
-      resolveTemplateActionSettings(ctx);
+  const { outputDir, copyOnlyPatterns, renderFilename, extension } =
+    resolveTemplateActionSettings(ctx);
 
-    const templateDir = await resolveTemplate(ctx);
+  const templateDir = await resolveTemplate();
 
-    if (isChildPath(templateDir, outputDir)) {
-      throw new InputError('targetPath must not be within template path');
-    }
+  if (isChildPath(templateDir, outputDir)) {
+    throw new InputError('targetPath must not be within template path');
+  }
 
-    ctx.logger.info('Listing files and directories in template');
-    const allEntriesInTemplate = await globby(`**/*`, {
+  ctx.logger.info('Listing files and directories in template');
+  const allEntriesInTemplate = await globby(`**/*`, {
+    cwd: templateDir,
+    dot: true,
+    onlyFiles: false,
+    markDirectories: true,
+    followSymbolicLinks: false,
+  });
+
+  const nonTemplatedEntries = new Set(
+    await globby(copyOnlyPatterns || [], {
       cwd: templateDir,
       dot: true,
       onlyFiles: false,
       markDirectories: true,
       followSymbolicLinks: false,
-    });
+    }),
+  );
 
-    const nonTemplatedEntries = new Set(
-      await globby(copyOnlyPatterns || [], {
-        cwd: templateDir,
-        dot: true,
-        onlyFiles: false,
-        markDirectories: true,
-        followSymbolicLinks: false,
-      }),
-    );
+  // Cookiecutter prefixes all parameters in templates with
+  // `cookiecutter.`. To replicate this, we wrap our parameters
+  // in an object with a `cookiecutter` property when compat
+  // mode is enabled.
+  const { cookiecutterCompat, values } = ctx.input;
+  const context = {
+    [cookiecutterCompat ? 'cookiecutter' : 'values']: values,
+  };
 
-    // Cookiecutter prefixes all parameters in templates with
-    // `cookiecutter.`. To replicate this, we wrap our parameters
-    // in an object with a `cookiecutter` property when compat
-    // mode is enabled.
-    const { cookiecutterCompat, values } = ctx.input;
-    const context = {
-      [cookiecutterCompat ? 'cookiecutter' : 'values']: values,
-    };
+  ctx.logger.info(
+    `Processing ${allEntriesInTemplate.length} template files/directories with input values`,
+    ctx.input.values,
+  );
 
-    ctx.logger.info(
-      `Processing ${allEntriesInTemplate.length} template files/directories with input values`,
-      ctx.input.values,
-    );
+  const renderTemplate = await SecureTemplater.loadRenderer({
+    cookiecutterCompat: ctx.input.cookiecutterCompat,
+    templateFilters,
+    templateGlobals,
+    nunjucksConfigs: {
+      trimBlocks: ctx.input.trimBlocks,
+      lstripBlocks: ctx.input.lstripBlocks,
+    },
+  });
 
-    const renderTemplate = await SecureTemplater.loadRenderer({
-      cookiecutterCompat: ctx.input.cookiecutterCompat,
-      templateFilters,
-      templateGlobals,
-      nunjucksConfigs: {
-        trimBlocks: ctx.input.trimBlocks,
-        lstripBlocks: ctx.input.lstripBlocks,
-      },
-    });
+  for (const location of allEntriesInTemplate) {
+    let renderContents: boolean;
 
-    for (const location of allEntriesInTemplate) {
-      let renderContents: boolean;
-
-      let localOutputPath = location;
-      if (extension) {
-        renderContents = extname(localOutputPath) === extension;
-        if (renderContents) {
-          localOutputPath = localOutputPath.slice(0, -extension.length);
-        }
-        // extension is mutual exclusive with copyWithoutRender/copyWithoutTemplating,
-        // therefore the output path is always rendered.
+    let localOutputPath = location;
+    if (extension) {
+      renderContents = extname(localOutputPath) === extension;
+      if (renderContents) {
+        localOutputPath = localOutputPath.slice(0, -extension.length);
+      }
+      // extension is mutual exclusive with copyWithoutRender/copyWithoutTemplating,
+      // therefore the output path is always rendered.
+      localOutputPath = renderTemplate(localOutputPath, context);
+    } else {
+      renderContents = !nonTemplatedEntries.has(location);
+      // The logic here is a bit tangled because it depends on two variables.
+      // If renderFilename is true, which means copyWithoutTemplating is used,
+      // then the path is always rendered.
+      // If renderFilename is false, which means copyWithoutRender is used,
+      // then matched file/directory won't be processed, same as before.
+      if (renderFilename) {
         localOutputPath = renderTemplate(localOutputPath, context);
       } else {
-        renderContents = !nonTemplatedEntries.has(location);
-        // The logic here is a bit tangled because it depends on two variables.
-        // If renderFilename is true, which means copyWithoutTemplating is used,
-        // then the path is always rendered.
-        // If renderFilename is false, which means copyWithoutRender is used,
-        // then matched file/directory won't be processed, same as before.
-        if (renderFilename) {
-          localOutputPath = renderTemplate(localOutputPath, context);
-        } else {
-          localOutputPath = renderContents
-            ? renderTemplate(localOutputPath, context)
-            : localOutputPath;
-        }
-      }
-
-      if (containsSkippedContent(localOutputPath)) {
-        continue;
-      }
-
-      const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
-      if (fs.existsSync(outputPath) && !ctx.input.replace) {
-        continue;
-      }
-
-      if (!renderContents && !extension) {
-        ctx.logger.info(
-          `Copying file/directory ${location} without processing.`,
-        );
-      }
-
-      if (location.endsWith('/')) {
-        ctx.logger.info(
-          `Writing directory ${location} to template output path.`,
-        );
-        await fs.ensureDir(outputPath);
-      } else {
-        const inputFilePath = resolveSafeChildPath(templateDir, location);
-        const stats = await fs.promises.lstat(inputFilePath);
-
-        if (stats.isSymbolicLink() || (await isBinaryFile(inputFilePath))) {
-          ctx.logger.info(
-            `Copying file binary or symbolic link at ${location}, to template output path.`,
-          );
-          await fs.copy(inputFilePath, outputPath);
-        } else {
-          const statsObj = await fs.stat(inputFilePath);
-          ctx.logger.info(
-            `Writing file ${location} to template output path with mode ${statsObj.mode}.`,
-          );
-          const inputFileContents = await fs.readFile(inputFilePath, 'utf-8');
-          await fs.outputFile(
-            outputPath,
-            renderContents
-              ? renderTemplate(inputFileContents, context)
-              : inputFileContents,
-            { mode: statsObj.mode },
-          );
-        }
+        localOutputPath = renderContents
+          ? renderTemplate(localOutputPath, context)
+          : localOutputPath;
       }
     }
-    ctx.logger.info(`Template result written to ${outputDir}`);
-  };
+
+    if (containsSkippedContent(localOutputPath)) {
+      continue;
+    }
+
+    const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
+    if (fs.existsSync(outputPath) && !ctx.input.replace) {
+      continue;
+    }
+
+    if (!renderContents && !extension) {
+      ctx.logger.info(`Copying file/directory ${location} without processing.`);
+    }
+
+    if (location.endsWith('/')) {
+      ctx.logger.info(`Writing directory ${location} to template output path.`);
+      await fs.ensureDir(outputPath);
+    } else {
+      const inputFilePath = resolveSafeChildPath(templateDir, location);
+      const stats = await fs.promises.lstat(inputFilePath);
+
+      if (stats.isSymbolicLink() || (await isBinaryFile(inputFilePath))) {
+        ctx.logger.info(
+          `Copying file binary or symbolic link at ${location}, to template output path.`,
+        );
+        await fs.copy(inputFilePath, outputPath);
+      } else {
+        const statsObj = await fs.stat(inputFilePath);
+        ctx.logger.info(
+          `Writing file ${location} to template output path with mode ${statsObj.mode}.`,
+        );
+        const inputFileContents = await fs.readFile(inputFilePath, 'utf-8');
+        await fs.outputFile(
+          outputPath,
+          renderContents
+            ? renderTemplate(inputFileContents, context)
+            : inputFileContents,
+          { mode: statsObj.mode },
+        );
+      }
+    }
+  }
+  ctx.logger.info(`Template result written to ${outputDir}`);
 }
 
 function resolveTemplateActionSettings<I extends TemplateActionInput>(

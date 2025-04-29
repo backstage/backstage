@@ -95,24 +95,26 @@ export function createFetchTemplateFileAction(options: {
       },
     },
     supportsDryRun: true,
-    handler: createTemplateFileActionHandler({
-      resolveTemplateFile: async ctx => {
-        ctx.logger.info('Fetching template file content from remote URL');
+    handler: ctx =>
+      createTemplateFileActionHandler({
+        ctx,
+        resolveTemplateFile: async () => {
+          ctx.logger.info('Fetching template file content from remote URL');
 
-        const workDir = await ctx.createTemporaryDirectory();
-        // Write to a tmp file, render the template, then copy to workspace.
-        const tmpFilePath = path.join(workDir, 'tmp');
+          const workDir = await ctx.createTemporaryDirectory();
+          // Write to a tmp file, render the template, then copy to workspace.
+          const tmpFilePath = path.join(workDir, 'tmp');
 
-        await fetchFile({
-          baseUrl: ctx.templateInfo?.baseUrl,
-          fetchUrl: ctx.input.url,
-          outputPath: tmpFilePath,
-          token: ctx.input.token,
-          ...options,
-        });
-        return tmpFilePath;
-      },
-      ...options,
-    }),
+          await fetchFile({
+            baseUrl: ctx.templateInfo?.baseUrl,
+            fetchUrl: ctx.input.url,
+            outputPath: tmpFilePath,
+            token: ctx.input.token,
+            ...options,
+          });
+          return tmpFilePath;
+        },
+        ...options,
+      }),
   });
 }
