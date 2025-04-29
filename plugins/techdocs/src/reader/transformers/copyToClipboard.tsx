@@ -67,7 +67,7 @@ const CopyToClipboardButton = ({ text }: CopyToClipboardButtonProps) => {
       leaveDelay={1000}
     >
       <IconButton
-        style={{ color: 'inherit', position: 'absolute' }}
+        style={{ position: 'absolute' }}
         className="md-clipboard md-icon"
         onClick={handleClick}
         aria-label="Copy to clipboard"
