@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-node-test-utils': minor
+'@backstage/plugin-scaffolder-node-test-utils': patch
 ---
 
 Include optional `user` in `createMockActionContext`
