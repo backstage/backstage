@@ -148,7 +148,7 @@ Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugi
 
 Team: @backstage/documentation-maintainers
 
-Scope: The Backstage Documentation
+Scope: The Backstage Documentation and Microsite, excluding the plugins listing
 
 | Name            | Organization  | GitHub                                                | Discord       |
 | --------------- | ------------- | ----------------------------------------------------- | ------------- |
