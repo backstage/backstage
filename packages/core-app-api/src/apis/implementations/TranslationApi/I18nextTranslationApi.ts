@@ -138,6 +138,72 @@ class ResourceLoader {
   }
 }
 
+/**
+ * A helper for implementing the `jsx` format that allows `ReactNode`s to be
+ * interpolated into translation messages.
+ */
+export class JsxInterpolator {
+  readonly #marker: string;
+  readonly #pattern: RegExp;
+
+  static create(options?: { marker?: string }) {
+    return new JsxInterpolator(
+      options?.marker ?? Math.random().toString(36).substring(2, 8),
+    );
+  }
+
+  private constructor(marker: string) {
+    this.#marker = marker;
+    this.#pattern = new RegExp(`\\$${marker}\\(([^)]+)\\)`);
+  }
+
+  format = (
+    _value: unknown,
+    _lng: string | undefined,
+    formatOptions: { interpolationkey: string },
+  ) => `$${this.#marker}(${btoa(formatOptions.interpolationkey)})`;
+
+  wrapT<TMessages extends { [key in string]: string }>(
+    originalT: TranslationFunction<TMessages>,
+  ): TranslationFunction<TMessages> {
+    return ((...args) => {
+      // Overriding the return options is not allowed via TranslationFunction,
+      // so this will always be a string
+      const result = originalT(...args);
+
+      const options = args[1];
+      if (!options) {
+        return result;
+      }
+
+      const split = result.split(this.#pattern);
+      if (split.length === 1) {
+        return split[0];
+      }
+
+      return createElement(
+        Fragment,
+        null,
+        ...split
+          .map((part, index) => {
+            if (index % 2 === 0) {
+              return part;
+            }
+
+            const interpolationKey = atob(part);
+            if (interpolationKey in options) {
+              return (options as any)[interpolationKey] as ReactNode;
+            }
+            throw new Error(
+              `Translation options did not provide a JSX node for interpolation key '${interpolationKey}'`,
+            );
+          })
+          .filter(Boolean),
+      );
+    }) as TranslationFunction<TMessages>;
+  }
+}
+
 /** @alpha */
 export class I18nextTranslationApi implements TranslationApi {
   static create(options: I18nextTranslationApiOptions) {
@@ -166,16 +232,8 @@ export class I18nextTranslationApi implements TranslationApi {
       throw new Error('i18next was unexpectedly missing formatter');
     }
 
-    const elementMarker = Math.random().toString(36).substring(2, 8);
-    const elementMarkerPattern = new RegExp(`\\$${elementMarker}\\(([^)]+)\\)`);
-    i18n.services.formatter.add(
-      'jsx',
-      (
-        _value: ReactNode,
-        _lng: string | undefined,
-        formatOptions: { interpolationkey: string },
-      ) => `$${elementMarker}(${btoa(formatOptions.interpolationkey)})`,
-    );
+    const interpolator = JsxInterpolator.create();
+    i18n.services.formatter.add('jsx', interpolator.format);
 
     const { language: initialLanguage } = options.languageApi.getLanguage();
     if (initialLanguage !== DEFAULT_LANGUAGE) {
@@ -214,7 +272,7 @@ export class I18nextTranslationApi implements TranslationApi {
       i18n,
       loader,
       options.languageApi.getLanguage().language,
-      elementMarkerPattern,
+      interpolator,
     );
 
     options.languageApi.language$().subscribe(({ language }) => {
@@ -227,7 +285,7 @@ export class I18nextTranslationApi implements TranslationApi {
   #i18n: I18n;
   #loader: ResourceLoader;
   #language: string;
-  #elementMarkerPattern: RegExp;
+  #jsxInterpolator: JsxInterpolator;
 
   /** Keep track of which refs we have registered default resources for */
   #registeredRefs = new Set<string>();
@@ -238,12 +296,12 @@ export class I18nextTranslationApi implements TranslationApi {
     i18n: I18n,
     loader: ResourceLoader,
     language: string,
-    elementMarkerPattern: RegExp,
+    jsxInterpolator: JsxInterpolator,
   ) {
     this.#i18n = i18n;
     this.#loader = loader;
     this.#language = language;
-    this.#elementMarkerPattern = elementMarkerPattern;
+    this.#jsxInterpolator = jsxInterpolator;
   }
 
   getTranslation<TMessages extends { [key in string]: string }>(
@@ -322,38 +380,7 @@ export class I18nextTranslationApi implements TranslationApi {
     }
 
     const unwrappedT = this.#i18n.getFixedT(null, internalRef.id);
-
-    const t = ((key: string, options?: any) => {
-      // Overriding the return options is not allowed via TranslationFunction,
-      // so this will always be a string
-      const result = unwrappedT(key, options) as unknown as string;
-
-      const split = result.split(this.#elementMarkerPattern);
-      if (split.length === 1) {
-        return split[0];
-      }
-
-      return createElement(
-        Fragment,
-        null,
-        ...split
-          .map((part, index) => {
-            if (index % 2 === 0) {
-              return part;
-            }
-
-            const interpolationKey = atob(part);
-            const container = options.replace ?? options;
-            if (interpolationKey in container) {
-              return container[interpolationKey];
-            }
-            throw new Error(
-              `Translation options did not provide a JSX node for interpolation key '${interpolationKey}'`,
-            );
-          })
-          .filter(Boolean),
-      );
-    }) as TranslationFunction<TMessages>;
+    const t = this.#jsxInterpolator.wrapT<TMessages>(unwrappedT as any);
 
     return {
       ready: true,

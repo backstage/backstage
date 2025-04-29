@@ -104,6 +104,8 @@ describe('MockTranslationApi', () => {
       relativeSecondsShort:
         '= {{ x, relativeTime(range: second; style: short) }}',
       list: '= {{ x, list }}',
+      jsx: '={{ x, jsx }}',
+      nestedJsx: '<$t(jsx)>',
     });
 
     expect(snapshot.t('plain', { x: '5' })).toBe('= 5');
@@ -146,6 +148,19 @@ describe('MockTranslationApi', () => {
     expect(snapshot.t('list', { x: ['a'] })).toBe('= a');
     expect(snapshot.t('list', { x: ['a', 'b'] })).toBe('= a and b');
     expect(snapshot.t('list', { x: ['a', 'b', 'c'] })).toBe('= a, b, and c');
+    expect(snapshot.t('jsx', { x: 'hello' })).toMatchInlineSnapshot(`
+      <React.Fragment>
+        =
+        hello
+      </React.Fragment>
+    `);
+    expect(snapshot.t('nestedJsx', { x: 'hello' })).toMatchInlineSnapshot(`
+      <React.Fragment>
+        &lt;=
+        hello
+        &gt;
+      </React.Fragment>
+    `);
   });
 
   it('should support plurals', () => {
