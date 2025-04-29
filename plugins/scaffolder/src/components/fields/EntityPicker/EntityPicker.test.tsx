@@ -28,6 +28,8 @@ import { EntityPickerProps } from './schema';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { scaffolderTranslationRef } from '../../../translation';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -889,6 +891,130 @@ describe('<EntityPicker />', () => {
 
       // Verify that the handleChange function was called with undefined
       expect(onChange).toHaveBeenCalledWith(undefined);
+    });
+  });
+
+  describe('EntityPicker description', () => {
+    const description = {
+      fromSchema: 'EntityPicker description from schema',
+      fromUiSchema: 'EntityPicker description from uiSchema',
+    } as { fromSchema: string; fromUiSchema: string; default?: string };
+
+    beforeEach(() => {
+      const RealWrapper = Wrapper;
+      Wrapper = ({ children }: { children?: ReactNode }) => {
+        const { t } = useTranslationRef(scaffolderTranslationRef);
+        description.default = t('fields.entityPicker.description');
+        return <RealWrapper>{children}</RealWrapper>;
+      };
+    });
+    it('presents default description', async () => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      expect(getByText(description.default!)).toBeInTheDocument();
+      expect(queryByText(description.fromSchema)).toBe(null);
+      expect(queryByText(description.fromUiSchema)).toBe(null);
+    });
+
+    it('presents schema description', async () => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+      };
+      props = {
+        onChange,
+        schema: {
+          ...schema,
+          description: description.fromSchema,
+        },
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      expect(queryByText(description.default!)).toBe(null);
+      expect(getByText(description.fromSchema)).toBeInTheDocument();
+      expect(queryByText(description.fromUiSchema)).toBe(null);
+    });
+
+    it('presents uiSchema description', async () => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+        'ui:description': description.fromUiSchema,
+      };
+      props = {
+        onChange,
+        schema: {
+          ...schema,
+          description: description.fromSchema,
+        },
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      expect(queryByText(description.default!)).toBe(null);
+      expect(queryByText(description.fromSchema)).toBe(null);
+      expect(getByText(description.fromUiSchema)).toBeInTheDocument();
     });
   });
 });
