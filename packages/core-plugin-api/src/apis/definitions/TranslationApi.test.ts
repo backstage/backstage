@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ReactNode } from 'react';
 import { TranslationFunction } from './TranslationApi';
 
 function unused(..._any: any[]) {}
@@ -171,24 +172,28 @@ describe('TranslationFunction', () => {
       datetime: '{{x, dateTime}}';
       relativeTimeOptions: '{{x, relativeTime(quarter)}}';
       list: '{{x, list}}';
+      jsx: '{{x, jsx}}';
+      jsxNested: '$t(jsx)';
     }>;
     expect(f).toBeDefined();
 
-    f('none', { replace: { x: 'x' } });
-    f('number', { x: 1 });
+    f('none', { replace: { x: 'x' } }) satisfies string;
+    f('number', { x: 1 }) satisfies string;
     f('number', {
       replace: { x: 1 },
       formatParams: { x: { minimumFractionDigits: 2 } },
-    });
-    f('numberOptions', { x: 1 });
-    f('currency', { replace: { x: 1 } });
-    f('datetime', { x: new Date() });
-    f('relativeTimeOptions', { replace: { x: 1 } });
+    }) satisfies string;
+    f('numberOptions', { x: 1 }) satisfies string;
+    f('currency', { replace: { x: 1 } }) satisfies string;
+    f('datetime', { x: new Date() }) satisfies string;
+    f('relativeTimeOptions', { replace: { x: 1 } }) satisfies string;
     f('relativeTimeOptions', {
       replace: { x: 1 },
       formatParams: { x: { style: 'short' } },
-    });
-    f('list', { replace: { x: ['a', 'b', 'c'] } });
+    }) satisfies string;
+    f('list', { replace: { x: ['a', 'b', 'c'] } }) satisfies string;
+    f('jsx', { replace: { x: '' } }) satisfies ReactNode;
+    f('jsxNested', { replace: { x: '' } }) satisfies ReactNode;
     // @ts-expect-error
     f('none', { x: 1 });
     // @ts-expect-error
@@ -208,6 +213,10 @@ describe('TranslationFunction', () => {
     });
     // @ts-expect-error
     f('list', { x: [1, 2, 3] });
+    // @ts-expect-error
+    f('jsx', { x: Symbol('not-a-node') });
+    // @ts-expect-error
+    f('jsxNested', { x: Symbol('not-a-node') });
   });
 
   it('should support nesting', () => {

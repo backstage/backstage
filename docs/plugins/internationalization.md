@@ -147,6 +147,43 @@ export const myPluginTranslationRef = createTranslationRef({
 });
 ```
 
+#### React Nodes
+
+In addition to the default formats that `i18next` supports, you can also use the `jsx` format to specify that an interpolated value is a `ReactNode`.
+
+For example, you might define the following messages:
+
+```ts title="define the message"
+export const myPluginTranslationRef = createTranslationRef({
+  id: 'plugin.my-plugin',
+  messages: {
+    entityPage: {
+      redirect:
+        'The entity you are looking for has been moved to {{link, jsx}}.',
+      newLocation: 'new location',
+    },
+  },
+});
+```
+
+Which can be used within a component like this:
+
+```tsx title="use within a component"
+const { t } = useTranslationRef(myPluginTranslationRef);
+
+return (
+  <div>
+    {t('entityPage.redirect', {
+      link: <a href="/new-location">{t('entityPage.newLocation')}</a>,
+    })}
+  </div>
+);
+```
+
+Note that whenever you use the `jsx` format in a message, the return value from the `t` function will be a `ReactNode`.
+
+When overriding a message you must always keep the `jsx` format for any interpolated values that use it in the original message.
+
 ## For an application developer overwrite plugin messages
 
 Step 1: Create translation resources

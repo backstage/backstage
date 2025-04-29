@@ -39,6 +39,7 @@ import {
 } from '../../../../../core-plugin-api/src/translation/TranslationRef';
 import { Observable } from '@backstage/types';
 import { DEFAULT_LANGUAGE } from '../AppLanguageApi/AppLanguageSelector';
+import { createElement, Fragment, ReactNode } from 'react';
 
 /** @alpha */
 export interface I18nextTranslationApiOptions {
@@ -161,6 +162,21 @@ export class I18nextTranslationApi implements TranslationApi {
       throw new Error('i18next was unexpectedly not initialized');
     }
 
+    if (!i18n.services.formatter) {
+      throw new Error('i18next was unexpectedly missing formatter');
+    }
+
+    const elementMarker = Math.random().toString(36).substring(2, 8);
+    const elementMarkerPattern = new RegExp(`\\$${elementMarker}\\(([^)]+)\\)`);
+    i18n.services.formatter.add(
+      'jsx',
+      (
+        _value: ReactNode,
+        _lng: string | undefined,
+        formatOptions: { interpolationkey: string },
+      ) => `$${elementMarker}(${btoa(formatOptions.interpolationkey)})`,
+    );
+
     const { language: initialLanguage } = options.languageApi.getLanguage();
     if (initialLanguage !== DEFAULT_LANGUAGE) {
       i18n.changeLanguage(initialLanguage);
@@ -198,6 +214,7 @@ export class I18nextTranslationApi implements TranslationApi {
       i18n,
       loader,
       options.languageApi.getLanguage().language,
+      elementMarkerPattern,
     );
 
     options.languageApi.language$().subscribe(({ language }) => {
@@ -210,16 +227,23 @@ export class I18nextTranslationApi implements TranslationApi {
   #i18n: I18n;
   #loader: ResourceLoader;
   #language: string;
+  #elementMarkerPattern: RegExp;
 
   /** Keep track of which refs we have registered default resources for */
   #registeredRefs = new Set<string>();
   /** Notify observers when language changes */
   #languageChangeListeners = new Set<() => void>();
 
-  private constructor(i18n: I18n, loader: ResourceLoader, language: string) {
+  private constructor(
+    i18n: I18n,
+    loader: ResourceLoader,
+    language: string,
+    elementMarkerPattern: RegExp,
+  ) {
     this.#i18n = i18n;
     this.#loader = loader;
     this.#language = language;
+    this.#elementMarkerPattern = elementMarkerPattern;
   }
 
   getTranslation<TMessages extends { [key in string]: string }>(
@@ -297,10 +321,39 @@ export class I18nextTranslationApi implements TranslationApi {
       return { ready: false };
     }
 
-    const t = this.#i18n.getFixedT(
-      null,
-      internalRef.id,
-    ) as TranslationFunction<TMessages>;
+    const unwrappedT = this.#i18n.getFixedT(null, internalRef.id);
+
+    const t = ((key: string, options?: any) => {
+      // Overriding the return options is not allowed via TranslationFunction,
+      // so this will always be a string
+      const result = unwrappedT(key, options) as unknown as string;
+
+      const split = result.split(this.#elementMarkerPattern);
+      if (split.length === 1) {
+        return split[0];
+      }
+
+      return createElement(
+        Fragment,
+        null,
+        ...split
+          .map((part, index) => {
+            if (index % 2 === 0) {
+              return part;
+            }
+
+            const interpolationKey = atob(part);
+            const container = options.replace ?? options;
+            if (interpolationKey in container) {
+              return container[interpolationKey];
+            }
+            throw new Error(
+              `Translation options did not provide a JSX node for interpolation key '${interpolationKey}'`,
+            );
+          })
+          .filter(Boolean),
+      );
+    }) as TranslationFunction<TMessages>;
 
     return {
       ready: true,
