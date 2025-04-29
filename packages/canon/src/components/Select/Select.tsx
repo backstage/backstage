@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, useId } from 'react';
+import { forwardRef, useCallback, useId, useRef, MouseEvent } from 'react';
 import { Select as SelectPrimitive } from '@base-ui-components/react/select';
 import { Icon } from '../Icon';
 import clsx from 'clsx';
@@ -45,10 +45,27 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
   const descriptionId = useId();
   const errorId = useId();
 
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  const handleLabelClick = useCallback(
+    (e: MouseEvent<HTMLLabelElement>) => {
+      if (!props.disabled && triggerRef.current) {
+        e.preventDefault();
+        triggerRef.current.focus();
+      }
+    },
+    [props.disabled],
+  );
+
   return (
     <div className={clsx('canon-Select', className)} style={style} ref={ref}>
       {label && (
-        <label className="canon-SelectLabel" htmlFor={selectId}>
+        <label
+          className="canon-SelectLabel"
+          htmlFor={selectId}
+          onClick={handleLabelClick}
+          data-disabled={props.disabled ? true : undefined}
+        >
           {label}
           {required && (
             <span aria-hidden="true" className="canon-SelectRequired">
@@ -59,6 +76,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
       )}
       <SelectPrimitive.Root {...rest}>
         <SelectPrimitive.Trigger
+          ref={triggerRef}
           id={selectId}
           className="canon-SelectTrigger"
           data-size={responsiveSize}
