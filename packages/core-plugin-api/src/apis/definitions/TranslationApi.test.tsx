@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
+import { JSX } from 'react';
 import { TranslationFunction } from './TranslationApi';
 
-function unused(..._any: any[]) {}
+// This is a weak assertion, don't reuse unless you know the drawbacks
+function expectType<T>(value: T) {
+  return value;
+}
 
 describe('TranslationFunction', () => {
   it('should infer plurals', () => {
-    const f = (() => {}) as TranslationFunction<{
+    const f = (() => {}) as unknown as TranslationFunction<{
       key_one: 'one';
       key_other: 'other';
       thingCount_one: '{{count}} thing';
@@ -30,11 +33,11 @@ describe('TranslationFunction', () => {
     }>;
     expect(f).toBeDefined();
 
-    f('foo');
+    expectType<string>(f('foo'));
     // @ts-expect-error
     f('foo', { count: 1 });
 
-    f('key', { count: 1 });
+    expectType<string>(f('key', { count: 1 }));
     // @ts-expect-error
     f('key');
     // @ts-expect-error
@@ -48,7 +51,7 @@ describe('TranslationFunction', () => {
     // @ts-expect-error
     f('key_other', { count: 6 });
 
-    f('thingCount', { count: 1 });
+    expectType<string>(f('thingCount', { count: 1 }));
     // @ts-expect-error
     f('thingCount');
     // @ts-expect-error
@@ -62,14 +65,13 @@ describe('TranslationFunction', () => {
     // @ts-expect-error
     f('thingCount_other', { count: 6 });
 
-    const x1: 'one' | 'other' = f('key', { count: 6 });
+    expectType<'one' | 'other'>(f('key', { count: 6 }));
     // @ts-expect-error
-    const x2: 'one' = f('key', { count: 6 });
-    unused(x1, x2);
+    expectType<'one'>(f('key', { count: 6 }));
   });
 
   it('should infer interpolation params', () => {
-    const f = (() => {}) as TranslationFunction<{
+    const f = (() => {}) as unknown as TranslationFunction<{
       none: '=';
       simple: '= {{bar}}';
       multiple: '= {{bar   }} {{   baz}}';
@@ -79,7 +81,11 @@ describe('TranslationFunction', () => {
 
     // @ts-expect-error
     f('none', { replace: { unknown: 1 } });
-    f('simple', { bar: '' });
+    expectType<string>(f('simple', { bar: '' }));
+    // @ts-expect-error
+    expectType<string>(f('simple', { bar: <div /> }));
+    expectType<JSX.Element>(f('simple', { bar: <div /> }));
+    expectType<JSX.Element>(f('simple', { replace: { bar: <div /> } }));
     // @ts-expect-error
     f('simple');
     // @ts-expect-error
@@ -88,7 +94,10 @@ describe('TranslationFunction', () => {
     f('simple', { replace: {} });
     // @ts-expect-error
     f('simple', { replace: { wrong: '' } });
-    f('multiple', { bar: '', baz: '' });
+    expectType<string>(f('multiple', { bar: '', baz: '' }));
+    expectType<JSX.Element>(f('multiple', { bar: <div />, baz: '' }));
+    expectType<JSX.Element>(f('multiple', { bar: '', baz: <div /> }));
+    expectType<JSX.Element>(f('multiple', { bar: <div />, baz: <div /> }));
     // @ts-expect-error
     f('multiple', { bar: '' });
     // @ts-expect-error
@@ -99,7 +108,12 @@ describe('TranslationFunction', () => {
     f('multiple', {});
     // @ts-expect-error
     f('multiple', { replace: {} });
-    f('deep', { replace: { x: { y: '', z: '' }, a: { b: { c: '' } } } });
+    expectType<string>(
+      f('deep', { replace: { x: { y: '', z: '' }, a: { b: { c: '' } } } }),
+    );
+    expectType<JSX.Element>(
+      f('deep', { replace: { x: { y: '', z: '' }, a: { b: { c: <div /> } } } }),
+    );
     // @ts-expect-error
     f('deep');
     // @ts-expect-error
@@ -115,7 +129,7 @@ describe('TranslationFunction', () => {
   });
 
   it('should infer interpolation params with count', () => {
-    const f = (() => {}) as TranslationFunction<{
+    const f = (() => {}) as unknown as TranslationFunction<{
       simple_one: '= {{bar}}';
       simple_other: '= {{bar}}';
       multiple_one: '= {{   bar}} {{baz   }}';
@@ -164,7 +178,7 @@ describe('TranslationFunction', () => {
   });
 
   it('should support formatting', () => {
-    const f = (() => {}) as TranslationFunction<{
+    const f = (() => {}) as unknown as TranslationFunction<{
       none: '{{x}}';
       number: '{{x, number}}';
       numberOptions: '{{x, number(minimumFractionDigits: 2)}}';
@@ -172,28 +186,24 @@ describe('TranslationFunction', () => {
       datetime: '{{x, dateTime}}';
       relativeTimeOptions: '{{x, relativeTime(quarter)}}';
       list: '{{x, list}}';
-      jsx: '{{x, jsx}}';
-      jsxNested: '$t(jsx)';
     }>;
     expect(f).toBeDefined();
 
-    f('none', { replace: { x: 'x' } }) satisfies string;
-    f('number', { x: 1 }) satisfies string;
+    f('none', { replace: { x: 'x' } });
+    f('number', { x: 1 });
     f('number', {
       replace: { x: 1 },
       formatParams: { x: { minimumFractionDigits: 2 } },
-    }) satisfies string;
-    f('numberOptions', { x: 1 }) satisfies string;
-    f('currency', { replace: { x: 1 } }) satisfies string;
-    f('datetime', { x: new Date() }) satisfies string;
-    f('relativeTimeOptions', { replace: { x: 1 } }) satisfies string;
+    });
+    f('numberOptions', { x: 1 });
+    f('currency', { replace: { x: 1 } });
+    f('datetime', { x: new Date() });
+    f('relativeTimeOptions', { replace: { x: 1 } });
     f('relativeTimeOptions', {
       replace: { x: 1 },
       formatParams: { x: { style: 'short' } },
-    }) satisfies string;
-    f('list', { replace: { x: ['a', 'b', 'c'] } }) satisfies string;
-    f('jsx', { replace: { x: '' } }) satisfies ReactNode;
-    f('jsxNested', { replace: { x: '' } }) satisfies ReactNode;
+    });
+    f('list', { replace: { x: ['a', 'b', 'c'] } });
     // @ts-expect-error
     f('none', { x: 1 });
     // @ts-expect-error
@@ -213,14 +223,10 @@ describe('TranslationFunction', () => {
     });
     // @ts-expect-error
     f('list', { x: [1, 2, 3] });
-    // @ts-expect-error
-    f('jsx', { x: Symbol('not-a-node') });
-    // @ts-expect-error
-    f('jsxNested', { x: Symbol('not-a-node') });
   });
 
   it('should support nesting', () => {
-    const f = (() => {}) as TranslationFunction<{
+    const f = (() => {}) as unknown as TranslationFunction<{
       simple: '$t(foo)';
       nested: '$t(bar)';
       nestedCount: '$t(qux)';
@@ -255,7 +261,7 @@ describe('TranslationFunction', () => {
   });
 
   it('should limit nesting depth', () => {
-    const f = (() => {}) as TranslationFunction<{
+    const f = (() => {}) as unknown as TranslationFunction<{
       a: '$t(b) {{a}}';
       b: '$t(c) {{b}}';
       c: '$t(d) {{c}}';

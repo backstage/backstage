@@ -2,4 +2,4 @@
 '@backstage/test-utils': patch
 ---
 
-Added support for `jsx` interpolation format for the `MockTranslationApi`.
+Added support for interpolating JSX elements with the `MockTranslationApi`.

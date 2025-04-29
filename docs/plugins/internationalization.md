@@ -147,9 +147,9 @@ export const myPluginTranslationRef = createTranslationRef({
 });
 ```
 
-#### React Nodes
+#### JSX Elements
 
-In addition to the default formats that `i18next` supports, you can also use the `jsx` format to specify that an interpolated value is a `ReactNode`.
+The translation API supports interpolation of JSX elements by passing them directly as values to the translation function. If any of the provided interpolation values are JSX elements, the translation function will return a JSX element instead of a string.
 
 For example, you might define the following messages:
 
@@ -158,9 +158,10 @@ export const myPluginTranslationRef = createTranslationRef({
   id: 'plugin.my-plugin',
   messages: {
     entityPage: {
-      redirect:
-        'The entity you are looking for has been moved to {{link, jsx}}.',
-      newLocation: 'new location',
+      redirect: {
+        message: 'The entity you are looking for has been moved to {{link}}.',
+        link: 'new location',
+      },
     },
   },
 });
@@ -173,16 +174,14 @@ const { t } = useTranslationRef(myPluginTranslationRef);
 
 return (
   <div>
-    {t('entityPage.redirect', {
-      link: <a href="/new-location">{t('entityPage.newLocation')}</a>,
+    {t('entityPage.redirect.message', {
+      link: <a href="/new-location">{t('entityPage.redirect.link')}</a>,
     })}
   </div>
 );
 ```
 
-Note that whenever you use the `jsx` format in a message, the return value from the `t` function will be a `ReactNode`.
-
-When overriding a message you must always keep the `jsx` format for any interpolated values that use it in the original message.
+The return type of the outer `t` function will be a `JSX.Element`, with the underlying value being a React fragment of the different parts of the message.
 
 ## For an application developer overwrite plugin messages
 

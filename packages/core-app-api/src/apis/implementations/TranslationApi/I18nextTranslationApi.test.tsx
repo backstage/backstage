@@ -540,9 +540,13 @@ describe('I18nextTranslationApi', () => {
       expect(snapshot.t('derpWithCount', { count: 0 })).toBe('0 derps');
     });
 
-    it('should support jsx formatting', () => {
+    it('should support jsx interpolation', () => {
       const snapshot = snapshotWithMessages({
-        jsx: '{{ hello, jsx }}, {{ world, jsx }}!',
+        jsx: '{{ hello }}, {{ world }}!',
+        jsxMultiple: '{{ hello }} | {{ hello }}',
+        jsxNested: '$t(foo), $t(bar)',
+        foo: 'foo={{ foo }}',
+        bar: 'bar={{ bar }}',
       });
 
       expect(
@@ -563,25 +567,26 @@ describe('I18nextTranslationApi', () => {
         ).container.textContent,
       ).toBe('world, hello!');
 
-      expect(() =>
-        snapshot.t('jsx', {
-          world: <h6>World</h6>,
-        } as any),
-      ).toThrowErrorMatchingInlineSnapshot(
-        `"Translation options did not provide a JSX node for interpolation key 'hello'"`,
-      );
-    });
-
-    it('should support jsx formatting with nested interpolations', () => {
-      const snapshot = snapshotWithMessages({
-        message: '$t(foo), $t(bar)',
-        foo: 'foo={{ foo, jsx }}',
-        bar: 'bar={{ bar, jsx }}',
-      });
+      // Missing value
+      expect(
+        render(
+          snapshot.t('jsx', {
+            hello: <h1>hello</h1>,
+          } as any),
+        ).container.textContent,
+      ).toBe('hello, {{ world }}!');
 
       expect(
         render(
-          snapshot.t('message', {
+          snapshot.t('jsxMultiple', {
+            hello: <h1>hello</h1>,
+          } as any),
+        ).container.textContent,
+      ).toBe('hello | hello');
+
+      expect(
+        render(
+          snapshot.t('jsxNested', {
             foo: (
               <div>
                 f<span>oo</span>
