@@ -16,20 +16,13 @@
 import { z as zod } from 'zod';
 import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
 
-const createEntityQueryFilterExpressionSchema = (z: typeof zod) =>
+export const createEntityQueryFilterExpressionSchema = (z: typeof zod) =>
   z.record(
     z
       .string()
       .or(z.object({ exists: z.boolean().optional() }))
       .or(z.array(z.string())),
   );
-
-/**
- * @public
- * @deprecated
- */
-export const entityQueryFilterExpressionSchema =
-  createEntityQueryFilterExpressionSchema(zod);
 
 /**
  * @public
