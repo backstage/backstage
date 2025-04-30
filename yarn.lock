@@ -10343,14 +10343,14 @@ __metadata:
   linkType: hard
 
 "@google-cloud/cloud-sql-connector@npm:^1.4.0":
-  version: 1.7.1
-  resolution: "@google-cloud/cloud-sql-connector@npm:1.7.1"
+  version: 1.8.0
+  resolution: "@google-cloud/cloud-sql-connector@npm:1.8.0"
   dependencies:
-    "@googleapis/sqladmin": "npm:^27.0.0"
+    "@googleapis/sqladmin": "npm:^28.0.0"
     gaxios: "npm:^6.1.1"
     google-auth-library: "npm:^9.2.0"
     p-throttle: "npm:^7.0.0"
-  checksum: 10/fd573b7d6da59d9a15ddead8eb879787b550813cc7c1ab558cc2996d9e741005b5cb341ec57681e4c29b681de77a3e121251140d520f0ef1514f52b89e765275
+  checksum: 10/a2cd85beb822a37e1eaabd556e2f540f89c41a1614e520b8c120b8107d7edb3c335dcbf62fc34dd8973ae091a2a06882780ae6510c45f2b702a59df4953ba427
   languageName: node
   linkType: hard
 
@@ -10452,12 +10452,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@googleapis/sqladmin@npm:^27.0.0":
-  version: 27.0.0
-  resolution: "@googleapis/sqladmin@npm:27.0.0"
+"@googleapis/sqladmin@npm:^28.0.0":
+  version: 28.0.0
+  resolution: "@googleapis/sqladmin@npm:28.0.0"
   dependencies:
     googleapis-common: "npm:^7.0.0"
-  checksum: 10/cf1512bf163bb22c617e9e9c92340832c8eefcfcf4662c45b10dfa303c565df0560afcffe6ddec4e1ee114687e626362d829f3f3b02fc393d87e69a2de50b32e
+  checksum: 10/ee4074b63d45276e0513a75b461bbf3d39abcb894e5eb660f0f28a9d0665c6638079958f04cb171767c69bcbb324ecdd2033199e6ecff61bf10d6a09adecdd16
   languageName: node
   linkType: hard
 
