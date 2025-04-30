@@ -19,6 +19,7 @@ export { AppRootElementBlueprint } from './AppRootElementBlueprint';
 export { AppRootWrapperBlueprint } from './AppRootWrapperBlueprint';
 export { IconBundleBlueprint } from './IconBundleBlueprint';
 export { NavItemBlueprint } from './NavItemBlueprint';
+export { NavComponentBlueprint } from './NavComponentBlueprint';
 export { NavLogoBlueprint } from './NavLogoBlueprint';
 export { PageBlueprint } from './PageBlueprint';
 export { RouterBlueprint } from './RouterBlueprint';

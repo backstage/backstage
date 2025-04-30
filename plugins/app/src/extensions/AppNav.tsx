@@ -21,6 +21,7 @@ import {
   useRouteRef,
   NavItemBlueprint,
   NavLogoBlueprint,
+  NavComponentBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -80,11 +81,23 @@ const SidebarNavItem = (
   return <SidebarItem to={link()} icon={Icon} text={title} />;
 };
 
+const SidebarNavComponent = (
+  props: (typeof NavComponentBlueprint.dataRefs.target)['T'],
+) => {
+  const { Component, routeRef, args } = props;
+  const link = useRouteRef(routeRef);
+  if (!link) {
+    return null;
+  }
+  return <Component to={link()} {...args} />;
+};
+
 export const AppNav = createExtension({
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {
     items: createExtensionInput([NavItemBlueprint.dataRefs.target]),
+    components: createExtensionInput([NavComponentBlueprint.dataRefs.target]),
     logos: createExtensionInput([NavLogoBlueprint.dataRefs.logoElements], {
       singleton: true,
       optional: true,
@@ -101,7 +114,13 @@ export const AppNav = createExtension({
         {inputs.items.map((item, index) => (
           <SidebarNavItem
             {...item.get(NavItemBlueprint.dataRefs.target)}
-            key={index}
+            key={`item-${index}`}
+          />
+        ))}
+        {inputs.components.map((ci, index) => (
+          <SidebarNavComponent
+            {...ci.get(NavComponentBlueprint.dataRefs.target)}
+            key={`component-${index}`}
           />
         ))}
       </Sidebar>,

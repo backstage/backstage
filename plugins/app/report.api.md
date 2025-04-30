@@ -100,6 +100,21 @@ const appPlugin: FrontendPlugin<
             optional: false;
           }
         >;
+        components: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            {
+              Component: ComponentType<any>;
+              routeRef: RouteRef<AnyRouteRefParams>;
+              args?: Record<string, any>;
+            },
+            'core.nav-component.target',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
         logos: ExtensionInput<
           ConfigurableExtensionDataRef<
             {

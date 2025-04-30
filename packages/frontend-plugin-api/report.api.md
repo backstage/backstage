@@ -1387,6 +1387,40 @@ export { identityApiRef };
 export { microsoftAuthApiRef };
 
 // @public
+export const NavComponentBlueprint: ExtensionBlueprint<{
+  kind: 'nav-component';
+  name: undefined;
+  params: {
+    Component: ComponentType<any>;
+    routeRef: RouteRef<AnyRouteRefParams>;
+    args?: Record<string, any>;
+  };
+  output: ConfigurableExtensionDataRef<
+    {
+      Component: ComponentType<any>;
+      routeRef: RouteRef<AnyRouteRefParams>;
+      args?: Record<string, any>;
+    },
+    'core.nav-component.target',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    target: ConfigurableExtensionDataRef<
+      {
+        Component: ComponentType<any>;
+        routeRef: RouteRef<AnyRouteRefParams>;
+        args?: Record<string, any>;
+      },
+      'core.nav-component.target',
+      {}
+    >;
+  };
+}>;
+
+// @public
 export const NavItemBlueprint: ExtensionBlueprint<{
   kind: 'nav-item';
   name: undefined;
