@@ -180,7 +180,7 @@ export const examples: TemplateExample[] = [
 ];
 ```
 
-Add the example to the `createTemplateAction` under the object property `examples`:
+Add the example to `createTemplateAction` by including the `examples` property:
 
 ```ts
 return createTemplateAction({
