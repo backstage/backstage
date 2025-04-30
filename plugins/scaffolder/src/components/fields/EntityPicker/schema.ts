@@ -16,15 +16,20 @@
 import { z as zod } from 'zod';
 import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
 
+const createEntityQueryFilterExpressionSchema = (z: typeof zod) =>
+  z.record(
+    z
+      .string()
+      .or(z.object({ exists: z.boolean().optional() }))
+      .or(z.array(z.string())),
+  );
+
 /**
  * @public
+ * @deprecated
  */
-export const entityQueryFilterExpressionSchema = zod.record(
-  zod
-    .string()
-    .or(zod.object({ exists: zod.boolean().optional() }))
-    .or(zod.array(zod.string())),
-);
+export const entityQueryFilterExpressionSchema =
+  createEntityQueryFilterExpressionSchema(zod);
 
 /**
  * @public
@@ -58,9 +63,9 @@ export const EntityPickerFieldSchema = makeFieldSchema({
         .describe(
           'The default namespace. Options with this namespace will not be prefixed.',
         ),
-      catalogFilter: z
-        .array(entityQueryFilterExpressionSchema)
-        .or(entityQueryFilterExpressionSchema)
+      catalogFilter: (t => t.or(t.array()))(
+        createEntityQueryFilterExpressionSchema(z),
+      )
         .optional()
         .describe('List of key-value filter expression for entities'),
     }),
@@ -81,7 +86,7 @@ export type EntityPickerProps = typeof EntityPickerFieldSchema.TProps;
 export const EntityPickerSchema = EntityPickerFieldSchema.schema;
 
 export type EntityPickerFilterQuery = zod.TypeOf<
-  typeof entityQueryFilterExpressionSchema
+  ReturnType<typeof createEntityQueryFilterExpressionSchema>
 >;
 
 export type EntityPickerFilterQueryValue =
