@@ -183,7 +183,19 @@ export const examples: TemplateExample[] = [
 Add the example to the `createTemplateAction` under the object property `examples`:
 
 ```ts
-return createTemplateAction<{ contents: string; filename: string }>({id: 'acme:file:create', description: 'Create an Acme file', examples, ...});
+return createTemplateAction({
+  id: 'acme:file:create',
+  description: 'Create an Acme file',
+  schema: {
+    input: {
+      contents: d => d.string().describe('The contents of the file'),
+      filename: d =>
+        d.string().describe('The filename of the file that will be created'),
+    },
+  },
+  examples: examples,
+  // ...rest of the action configuration
+});
 ```
 
 ### The context object
