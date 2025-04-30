@@ -193,7 +193,7 @@ return createTemplateAction({
         d.string().describe('The filename of the file that will be created'),
     },
   },
-  examples: examples,
+  examples,
   // ...rest of the action configuration
 });
 ```
