@@ -64,7 +64,7 @@ export const OriginRow = (props: {
         )}
       </NoBorderTableCell>
       <NoBorderTableCell>{formatOriginName(origin.id)}</NoBorderTableCell>
-      <NoBorderTableCell>*</NoBorderTableCell>
+      <NoBorderTableCell>all</NoBorderTableCell>
       {settings.channels.map(ch => (
         <NoBorderTableCell key={ch.id} align="center">
           <Tooltip
