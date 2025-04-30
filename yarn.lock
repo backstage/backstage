@@ -38692,8 +38692,8 @@ __metadata:
   linkType: hard
 
 "node-mocks-http@npm:^1.0.0":
-  version: 1.16.2
-  resolution: "node-mocks-http@npm:1.16.2"
+  version: 1.17.0
+  resolution: "node-mocks-http@npm:1.17.0"
   dependencies:
     accepts: "npm:^1.3.7"
     content-disposition: "npm:^0.5.3"
@@ -38713,7 +38713,7 @@ __metadata:
       optional: true
     "@types/node":
       optional: true
-  checksum: 10/63269343071c389795c418468a167d92aa13eda3936aaa79f8159025e01502ec982469fd11f04395b7ad2241d2f4fd65ca84eac29973c4d941d86a4ba2e56f90
+  checksum: 10/7b8e0db30df8dacc957b352e4553635ed9c212a0e307ed486b5cb93cb7653c82a8b5bbe6a99ba016e1f390b3a2f5ef9388831b6cf1a4e43f014c0070c3292df3
   languageName: node
   linkType: hard
 
