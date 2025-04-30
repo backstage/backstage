@@ -13,45 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { entityQueryFilterExpressionSchema } from '../EntityPicker/schema';
-import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
+import { EntityPickerFieldSchema } from '../EntityPicker/schema';
 
 /**
  * @public
  */
-export const OwnedEntityPickerFieldSchema = makeFieldSchema({
-  output: z => z.string(),
-  uiOptions: z =>
-    z.object({
-      allowedKinds: z
-        .array(z.string())
-        .optional()
-        .describe(
-          'DEPRECATED: Use `catalogFilter` instead. List of kinds of entities to derive options from',
-        ),
-      defaultKind: z
-        .string()
-        .optional()
-        .describe(
-          'The default entity kind. Options of this kind will not be prefixed.',
-        ),
-      allowArbitraryValues: z
-        .boolean()
-        .optional()
-        .describe('Whether to allow arbitrary user input. Defaults to true'),
-      defaultNamespace: z
-        .union([z.string(), z.literal(false)])
-        .optional()
-        .describe(
-          'The default namespace. Options with this namespace will not be prefixed.',
-        ),
-      catalogFilter: z
-        .array(entityQueryFilterExpressionSchema)
-        .or(entityQueryFilterExpressionSchema)
-        .optional()
-        .describe('List of key-value filter expression for entities'),
-    }),
-});
+export const OwnedEntityPickerFieldSchema = EntityPickerFieldSchema;
 
 /**
  * The input props that can be specified under `ui:options` for the

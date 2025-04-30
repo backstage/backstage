@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { entityQueryFilterExpressionSchema } from '../EntityPicker/schema';
 import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
+import { createEntityQueryFilterExpressionSchema } from '../EntityPicker/schema';
 
 /**
  * @public
@@ -43,9 +43,9 @@ export const OwnerPickerFieldSchema = makeFieldSchema({
         .describe(
           'The default namespace. Options with this namespace will not be prefixed.',
         ),
-      catalogFilter: z
-        .array(entityQueryFilterExpressionSchema)
-        .or(entityQueryFilterExpressionSchema)
+      catalogFilter: (t => t.or(t.array()))(
+        createEntityQueryFilterExpressionSchema(z),
+      )
         .optional()
         .describe('List of key-value filter expression for entities'),
     }),
@@ -61,6 +61,6 @@ export type OwnerPickerUiOptions = NonNullable<
   (typeof OwnerPickerFieldSchema.TProps.uiSchema)['ui:options']
 >;
 
-export type OwnerPickerProps = typeof OwnerPickerFieldSchema.type;
+export type OwnerPickerProps = typeof OwnerPickerFieldSchema.TProps;
 
 export const OwnerPickerSchema = OwnerPickerFieldSchema.schema;
