@@ -210,6 +210,55 @@ describe('readLdapUsers', () => {
     );
   });
 
+  it('should allow skipping memberOf', async () => {
+    client.getVendor.mockResolvedValue(DefaultLdapVendor);
+    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
+      await fn(searchEntry({ memberOf: ['x', 'y', 'z'] }));
+    });
+
+    client.getVendor.mockResolvedValue(DefaultLdapVendor);
+    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
+      await fn(
+        searchEntry({
+          uid: ['uid-value'],
+          description: ['description-value'],
+          cn: ['cn-value'],
+          mail: ['mail-value'],
+          avatarUrl: ['avatarUrl-value'],
+          memberOf: ['x', 'y', 'z'],
+          customDN: ['dn-value'],
+          customUUID: ['uuid-value'],
+        }),
+      );
+    });
+    const config: UserConfig[] = [
+      {
+        dn: 'ddd',
+        options: {},
+        parsing: {
+          skipMemberOf: true,
+        },
+        map: {
+          rdn: 'uid',
+          name: 'uid',
+          description: 'description',
+          displayName: 'cn',
+          email: 'mail',
+          picture: 'avatarUrl',
+          memberOf: 'memberOf',
+        },
+      },
+    ];
+
+    const vendorConfig: VendorConfig = {
+      dnAttributeName: 'customDN',
+      uuidAttributeName: 'customUUID',
+    };
+
+    const { userMemberOf } = await readLdapUsers(client, config, vendorConfig);
+    expect(userMemberOf.size).toBe(0);
+  });
+
   it('transfers all attributes from Microsoft Active Directory', async () => {
     client.getVendor.mockResolvedValue(ActiveDirectoryVendor);
     client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
@@ -727,6 +776,54 @@ describe('readLdapGroups', () => {
     expect(groupMemberOf).toEqual(
       new Map([['dn-value', new Set(['x', 'y', 'z'])]]),
     );
+  });
+
+  it('should allow skipping members', async () => {
+    client.getVendor.mockResolvedValue(DefaultLdapVendor);
+    client.searchStreaming.mockImplementation(async (_dn, _opts, fn) => {
+      await fn(
+        searchEntry({
+          cn: ['cn-value'],
+          description: ['description-value'],
+          tt: ['type-value'],
+          mail: ['mail-value'],
+          avatarUrl: ['avatarUrl-value'],
+          memberOf: ['x', 'y', 'z'],
+          member: ['e', 'f', 'g'],
+          customDN: ['dn-value'],
+          customUUID: ['uuid-value'],
+        }),
+      );
+    });
+    const config: GroupConfig[] = [
+      {
+        dn: 'ddd',
+        options: {},
+        parsing: {
+          skipMembers: true,
+        },
+        map: {
+          rdn: 'cn',
+          name: 'cn',
+          description: 'description',
+          displayName: 'cn',
+          email: 'mail',
+          picture: 'avatarUrl',
+          type: 'tt',
+          memberOf: 'memberOf',
+          members: 'member',
+        },
+      },
+    ];
+
+    const vendorConfig: VendorConfig = {
+      dnAttributeName: 'customDN',
+      uuidAttributeName: 'customUUID',
+    };
+
+    const { groupMember } = await readLdapGroups(client, config, vendorConfig);
+
+    expect(groupMember.size).toBe(0);
   });
 
   it('can process a list of GroupConfigs', async () => {

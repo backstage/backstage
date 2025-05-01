@@ -94,6 +94,17 @@ export interface Config {
                   };
             };
             /**
+             * Additional parsing config
+             */
+            parsing?: {
+              /**
+               * Whether to skip the memberOf attribute on the users to power the relations of users and groups
+               *
+               * @default false
+               */
+              skipMemberOf?: boolean;
+            };
+            /**
              * JSON paths (on a.b.c form) and hard coded values to set on those
              * paths.
              *
@@ -172,6 +183,17 @@ export interface Config {
                     pageSize?: number;
                     pagePause?: boolean;
                   };
+            };
+            /**
+             * Additional parsing config
+             */
+            parsing?: {
+              /**
+               * Whether to skip the memberOf attribute on the users to power the relations of users and groups
+               *
+               * @default false
+               */
+              skipMemberOf?: boolean;
             };
             /**
              * JSON paths (on a.b.c form) and hard coded values to set on those
@@ -257,6 +279,17 @@ export interface Config {
                     pageSize?: number;
                     pagePause?: boolean;
                   };
+            };
+            /**
+             * Additional parsing config
+             */
+            parsing?: {
+              /**
+               * Whether to skip the member attributes on the groups to power the relations of users and groups
+               *
+               * @default false
+               */
+              skipMembers?: boolean;
             };
             /**
              * JSON paths (on a.b.c form) and hard coded values to set on those
@@ -347,6 +380,17 @@ export interface Config {
                     pageSize?: number;
                     pagePause?: boolean;
                   };
+            };
+            /**
+             * Additional parsing config
+             */
+            parsing?: {
+              /**
+               * Whether to skip the member attributes on the groups to power the relations of users and groups
+               *
+               * @default false
+               */
+              skipMembers?: boolean;
             };
             /**
              * JSON paths (on a.b.c form) and hard coded values to set on those
@@ -509,6 +553,17 @@ export interface Config {
                       };
                 };
                 /**
+                 * Additional parsing config
+                 */
+                parsing?: {
+                  /**
+                   * Whether to skip the memberOf attribute on the users to power the relations of users and groups
+                   *
+                   * @default false
+                   */
+                  skipMemberOf?: boolean;
+                };
+                /**
                  * JSON paths (on a.b.c form) and hard coded values to set on those
                  * paths.
                  *
@@ -587,6 +642,17 @@ export interface Config {
                         pageSize?: number;
                         pagePause?: boolean;
                       };
+                };
+                /**
+                 * Additional parsing config
+                 */
+                parsing?: {
+                  /**
+                   * Whether to skip the memberOf attribute on the users to power the relations of users and groups
+                   *
+                   * @default false
+                   */
+                  skipMemberOf?: boolean;
                 };
                 /**
                  * JSON paths (on a.b.c form) and hard coded values to set on those
@@ -672,6 +738,17 @@ export interface Config {
                         pageSize?: number;
                         pagePause?: boolean;
                       };
+                };
+                /**
+                 * Additional parsing config
+                 */
+                parsing?: {
+                  /**
+                   * Whether to skip the member attributes on the groups to power the relations of users and groups
+                   *
+                   * @default false
+                   */
+                  skipMembers?: boolean;
                 };
                 /**
                  * JSON paths (on a.b.c form) and hard coded values to set on those
@@ -762,6 +839,17 @@ export interface Config {
                         pageSize?: number;
                         pagePause?: boolean;
                       };
+                };
+                /**
+                 * Additional parsing config
+                 */
+                parsing?: {
+                  /**
+                   * Whether to skip the member attributes on the groups to power the relations of users and groups
+                   *
+                   * @default false
+                   */
+                  skipMembers?: boolean;
                 };
                 /**
                  * JSON paths (on a.b.c form) and hard coded values to set on those
@@ -922,11 +1010,21 @@ export interface Config {
                   };
             };
             /**
+             * Additional parsing config
+             */
+            parsing?: {
+              /**
+               * Whether to skip the memberOf attribute on the users to power the relations of users and groups
+               *
+               * @default false
+               */
+              skipMemberOf?: boolean;
+            };
+            /**
              * JSON paths (on a.b.c form) and hard coded values to set on those
              * paths.
              *
              * This can be useful for example if you want to hard code a
-             * namespace or similar on the generated entities.
              */
             set?: { [key: string]: JsonValue };
             /**
@@ -1006,6 +1104,18 @@ export interface Config {
                   };
             };
             /**
+             * Additional parsing config
+             */
+            parsing?: {
+              /**
+               * Whether to skip the member attributes on the groups to power the relations of users and groups
+               *
+               * @default false
+               */
+              skipMembers?: boolean;
+            };
+            /**
+             * @default false
              * JSON paths (on a.b.c form) and hard coded values to set on those
              * paths.
              *
