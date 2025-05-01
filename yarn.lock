@@ -45847,12 +45847,12 @@ __metadata:
   linkType: hard
 
 "supertest@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "supertest@npm:7.0.0"
+  version: 7.1.0
+  resolution: "supertest@npm:7.1.0"
   dependencies:
     methods: "npm:^1.1.2"
     superagent: "npm:^9.0.1"
-  checksum: 10/73bf2a37e13856a1b3e6a37b9df5cec8e506aa0360a5f5ecd989d1f4b0edf168883e306012e81e371d5252c17d4c7bef4ba30633dbf3877cbf52fc7af51cca9b
+  checksum: 10/20069f739a44821dfa4f7f397b9086ef31a358366331138f97945eedb2e231796e7c55b032125d3bd12f9839f089fbb809893dbc0f98edc57e12333b9f42b726
   languageName: node
   linkType: hard
 
