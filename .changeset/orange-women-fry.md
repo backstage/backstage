@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-react': patch
 ---
 
-A new `filter` param has been added to the EntityContextMenuItemBlueprint to make it easier to determine if a menu item should appear for a given entity. The `filter` param is a function which accepts an entity and returns a boolean.
+A new `filter` parameter has been added to `EntityContextMenuItemBlueprint` to make it easier to configure which entities a menu item should appear for. The `filter` parameter is a function which accepts an entity and returns a boolean.
