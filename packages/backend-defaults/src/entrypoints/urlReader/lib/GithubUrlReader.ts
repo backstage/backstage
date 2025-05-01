@@ -154,7 +154,7 @@ export class GithubUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceReadTreeOptions,
   ): Promise<UrlReaderServiceReadTreeResponse> {
-    const repoDetails = await this.getRepoDetails(url);
+    const repoDetails = await this.getRepoDetails(url, options);
     const commitSha = repoDetails.commitSha;
 
     if (options?.etag && options.etag === commitSha) {
@@ -212,7 +212,7 @@ export class GithubUrlReader implements UrlReaderService {
       }
     }
 
-    const repoDetails = await this.getRepoDetails(url);
+    const repoDetails = await this.getRepoDetails(url, options);
     const commitSha = repoDetails.commitSha;
 
     if (options?.etag && options.etag === commitSha) {
@@ -320,7 +320,10 @@ export class GithubUrlReader implements UrlReaderService {
     }));
   }
 
-  private async getRepoDetails(url: string): Promise<{
+  private async getRepoDetails(
+    url: string,
+    options?: { token?: string },
+  ): Promise<{
     commitSha: string;
     repo: {
       archive_url: string;
@@ -330,9 +333,7 @@ export class GithubUrlReader implements UrlReaderService {
     const parsed = parseGitUrl(url);
     const { ref, full_name } = parsed;
 
-    const credentials = await this.deps.credentialsProvider.getCredentials({
-      url,
-    });
+    const credentials = await this.getCredentials(url, options);
     const { headers } = credentials;
 
     const commitStatus: GhCombinedCommitStatusResponse = await this.fetchJson(
