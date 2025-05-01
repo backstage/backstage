@@ -744,6 +744,7 @@ export type IconNames =
   | 'chevron-left'
   | 'chevron-right'
   | 'chevron-up'
+  | 'close'
   | 'cloud'
   | 'code'
   | 'discord'
@@ -759,6 +760,7 @@ export type IconNames =
   | 'heart'
   | 'moon'
   | 'plus'
+  | 'search'
   | 'sidebar-fold'
   | 'sidebar-unfold'
   | 'sparkling'
@@ -1219,7 +1221,9 @@ export interface TextFieldProps
   description?: string;
   error?: string | null;
   label?: string;
+  leftElementProps?: React.ComponentPropsWithoutRef<'div'>;
   name: string;
+  rightElementProps?: React.ComponentPropsWithoutRef<'div'>;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 
