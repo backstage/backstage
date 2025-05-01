@@ -26,6 +26,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { useEntityContextMenu } from '../../hooks/useEntityContextMenu';
 import type { Entity } from '@backstage/catalog-model';
 import { useEntity } from '../../hooks/useEntity';
+
 /** @alpha */
 export type UseProps = () =>
   | {

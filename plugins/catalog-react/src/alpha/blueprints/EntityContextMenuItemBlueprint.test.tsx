@@ -13,7 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  createExtensionTester,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/frontend-test-utils';
 import { EntityContextMenuItemBlueprint } from './EntityContextMenuItemBlueprint';
+import { screen, waitFor } from '@testing-library/react';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+
+jest.mock('../../hooks/useEntityContextMenu', () => ({
+  useEntityContextMenu: () => ({
+    onMenuClose: jest.fn(),
+  }),
+}));
 
 describe('EntityContextMenuItemBlueprint', () => {
   const data = [
@@ -63,5 +76,64 @@ describe('EntityContextMenuItemBlueprint', () => {
         "version": "v2",
       }
     `);
+  });
+
+  it('should filter items based on the filter function', async () => {
+    const extension = EntityContextMenuItemBlueprint.make({
+      name: 'test',
+      params: {
+        icon: <span>Icon</span>,
+        filter: e => e.kind.toLowerCase() === 'component',
+        useProps: () => ({
+          title: 'Test',
+          onClick: () => {},
+        }),
+      },
+    });
+
+    renderInTestApp(
+      <EntityProvider
+        entity={{
+          apiVersion: 'v1',
+          kind: 'API',
+          metadata: { name: 'test' },
+        }}
+      >
+        <ul>{createExtensionTester(extension).reactElement()}</ul>
+      </EntityProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByText('Test')).not.toBeInTheDocument();
+    });
+  });
+
+  it('should render a menu item', async () => {
+    const extension = EntityContextMenuItemBlueprint.make({
+      name: 'test',
+      params: {
+        icon: <span>Icon</span>,
+        useProps: () => ({
+          title: 'Test',
+          onClick: () => {},
+        }),
+      },
+    });
+
+    renderInTestApp(
+      <EntityProvider
+        entity={{
+          apiVersion: 'v1',
+          kind: 'Component',
+          metadata: { name: 'test' },
+        }}
+      >
+        <ul>{createExtensionTester(extension).reactElement()}</ul>
+      </EntityProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Test')).toBeInTheDocument();
+    });
   });
 });
