@@ -343,6 +343,7 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
 export type EntityContextMenuItemParams = {
   useProps: UseProps;
   icon: JSX_2.Element;
+  filter?: (entity: Entity) => boolean;
 };
 
 // @alpha (undocumented)

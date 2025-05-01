@@ -16,7 +16,6 @@
 import {
   createExtensionTester,
   renderInTestApp,
-  TestApiProvider,
 } from '@backstage/frontend-test-utils';
 import { EntityContextMenuItemBlueprint } from './EntityContextMenuItemBlueprint';
 import { screen, waitFor } from '@testing-library/react';
