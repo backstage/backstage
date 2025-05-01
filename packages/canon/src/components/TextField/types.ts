@@ -49,4 +49,14 @@ export interface TextFieldProps
    * The error message of the text field
    */
   error?: string | null;
+
+  /**
+   * Props for an element to render on the left of the input
+   */
+  leftElementProps?: React.ComponentPropsWithoutRef<'div'>;
+
+  /**
+   * Props for an element to render on the right of the input
+   */
+  rightElementProps?: React.ComponentPropsWithoutRef<'div'>;
 }

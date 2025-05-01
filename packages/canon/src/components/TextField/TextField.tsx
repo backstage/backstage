@@ -33,6 +33,8 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       required,
       style,
       disabled,
+      leftElementProps,
+      rightElementProps,
       ...rest
     } = props;
 
@@ -57,12 +59,31 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
             )}
           </Field.Label>
         )}
-        <Field.Control
-          className="canon-TextFieldInput"
-          data-size={responsiveSize}
-          required={required}
-          {...rest}
-        />
+        <div className="canon-TextFieldInputWrapper" data-size={responsiveSize}>
+          {leftElementProps ? (
+            <div
+              {...leftElementProps}
+              className={clsx(
+                'canon-TextFieldInputLeftElement',
+                leftElementProps.className,
+              )}
+            />
+          ) : null}
+          <Field.Control
+            className="canon-TextFieldInput"
+            required={required}
+            {...rest}
+          />
+          {rightElementProps ? (
+            <div
+              {...rightElementProps}
+              className={clsx(
+                'canon-TextFieldInputRightElement',
+                rightElementProps.className,
+              )}
+            />
+          ) : null}
+        </div>
         {description && (
           <Field.Description className="canon-TextFieldDescription">
             {description}

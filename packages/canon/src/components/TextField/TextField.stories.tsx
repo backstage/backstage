@@ -15,8 +15,27 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
+import type { ComponentPropsWithoutRef } from 'react';
 import { TextField } from './TextField';
 import { Flex } from '../Flex';
+import { Icon } from '../Icon';
+
+const CloseButton = (props: ComponentPropsWithoutRef<'button'>) => {
+  return (
+    <button
+      {...props}
+      style={{
+        padding: 0,
+        background: 'none',
+        border: 'none',
+        verticalAlign: 'middle',
+        ...props.style,
+      }}
+    >
+      <Icon name="close" style={{ display: 'block' }} />
+    </button>
+  );
+};
 
 const meta = {
   title: 'Components/TextField',
@@ -107,5 +126,36 @@ export const WithErrorAndDescription: Story = {
     ...WithLabel.args,
     error: 'Invalid URL',
     description: 'Description',
+  },
+};
+
+export const WithLeftAndRightElements: Story = {
+  args: {
+    ...WithLabel.args,
+    placeholder: 'Search...',
+    leftElementProps: {
+      children: <Icon name="search" style={{ display: 'block' }} />,
+    },
+    rightElementProps: {
+      children: <CloseButton />,
+    },
+  },
+};
+
+export const WithLeftAndRightElementsAndHelpText: Story = {
+  args: {
+    ...WithLeftAndRightElements.args,
+    error: 'Failed to search',
+    description: 'Enter some text to search',
+  },
+};
+
+export const DisabledWithLeftAndRightElements: Story = {
+  args: {
+    ...WithLeftAndRightElements.args,
+    disabled: true,
+    rightElementProps: {
+      children: <CloseButton />,
+    },
   },
 };
