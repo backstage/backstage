@@ -37,7 +37,7 @@ describe('myPlugin', () => {
       features: [
         myPlugin(),
         mockServices.rootConfig.factory({ data: fakeConfig }),
-        mockLogger,
+        mockLogger.factory,
       ],
     });
 
