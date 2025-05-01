@@ -155,7 +155,7 @@ export const DisabledWithLeftAndRightElements: Story = {
     ...WithLeftAndRightElements.args,
     disabled: true,
     rightElementProps: {
-      children: <CloseButton />,
+      children: <CloseButton disabled style={{ cursor: 'inherit' }} />,
     },
   },
 };

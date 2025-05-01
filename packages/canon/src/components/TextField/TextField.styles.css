@@ -53,23 +53,23 @@
 .canon-TextFieldInputWrapper {
   display: flex;
   align-items: center;
+  padding: 0 var(--canon-space-3);
   border-radius: var(--canon-radius-3);
   border: 1px solid var(--canon-border);
   background-color: var(--canon-bg-surface-1);
 }
 
 .canon-TextFieldInputLeftElement {
-  padding-left: var(--canon-space-4);
+  padding-right: var(--canon-space-1);
 }
 
 .canon-TextFieldInputRightElement {
-  padding-right: var(--canon-space-4);
+  padding-left: var(--canon-space-1);
 }
 
 .canon-TextFieldInput {
   border: none;
   background: none;
-  padding: 0 var(--canon-space-4);
   font-size: var(--canon-font-size-3);
   font-family: var(--canon-font-regular);
   font-weight: var(--canon-font-weight-regular);
