@@ -24,7 +24,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { useEntityContextMenu } from '../../hooks/useEntityContextMenu';
-
+import type { Entity } from '@backstage/catalog-model';
+import { useEntity } from '../../hooks/useEntity';
 /** @alpha */
 export type UseProps = () =>
   | {
@@ -42,6 +43,7 @@ export type UseProps = () =>
 export type EntityContextMenuItemParams = {
   useProps: UseProps;
   icon: JSX.Element;
+  filter?: (entity: Entity) => boolean;
 };
 
 /** @alpha */
@@ -53,6 +55,7 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
     const loader = async () => {
       const Component = () => {
         const { onMenuClose } = useEntityContextMenu();
+        const { entity } = useEntity();
         const { title, ...menuItemProps } = params.useProps();
         let handleClick = undefined;
 
@@ -65,6 +68,10 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
               onMenuClose();
             }
           };
+        }
+
+        if (entity && params.filter && !params.filter(entity)) {
+          return null;
         }
 
         return (
