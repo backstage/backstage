@@ -77,7 +77,7 @@ describe('EntityContextMenuItemBlueprint', () => {
     `);
   });
 
-  it('should filter items based on the filter function', async () => {
+  it('should exclude items based on the filter function', async () => {
     const extension = EntityContextMenuItemBlueprint.make({
       name: 'test',
       params: {
@@ -104,6 +104,36 @@ describe('EntityContextMenuItemBlueprint', () => {
 
     await waitFor(() => {
       expect(screen.queryByText('Test')).not.toBeInTheDocument();
+    });
+  });
+
+  it('should include items based on the filter function', async () => {
+    const extension = EntityContextMenuItemBlueprint.make({
+      name: 'test',
+      params: {
+        icon: <span>Icon</span>,
+        filter: e => e.kind.toLowerCase() === 'component',
+        useProps: () => ({
+          title: 'Test',
+          onClick: () => {},
+        }),
+      },
+    });
+
+    renderInTestApp(
+      <EntityProvider
+        entity={{
+          apiVersion: 'v1',
+          kind: 'Component',
+          metadata: { name: 'test' },
+        }}
+      >
+        <ul>{createExtensionTester(extension).reactElement()}</ul>
+      </EntityProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Test')).toBeInTheDocument();
     });
   });
 
