@@ -15,27 +15,8 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import type { ComponentPropsWithoutRef } from 'react';
 import { TextField } from './TextField';
 import { Flex } from '../Flex';
-import { Icon } from '../Icon';
-
-const CloseButton = (props: ComponentPropsWithoutRef<'button'>) => {
-  return (
-    <button
-      {...props}
-      style={{
-        padding: 0,
-        background: 'none',
-        border: 'none',
-        verticalAlign: 'middle',
-        ...props.style,
-      }}
-    >
-      <Icon name="close" style={{ display: 'block' }} />
-    </button>
-  );
-};
 
 const meta = {
   title: 'Components/TextField',
@@ -129,33 +110,34 @@ export const WithErrorAndDescription: Story = {
   },
 };
 
-export const WithLeftAndRightElements: Story = {
+export const WithIcon: Story = {
   args: {
     ...WithLabel.args,
     placeholder: 'Search...',
-    leftElementProps: {
-      children: <Icon name="search" style={{ display: 'block' }} />,
-    },
-    rightElementProps: {
-      children: <CloseButton />,
-    },
+    icon: 'search',
   },
 };
 
-export const WithLeftAndRightElementsAndHelpText: Story = {
+export const DisabledWithIcon: Story = {
   args: {
-    ...WithLeftAndRightElements.args,
-    error: 'Failed to search',
-    description: 'Enter some text to search',
-  },
-};
-
-export const DisabledWithLeftAndRightElements: Story = {
-  args: {
-    ...WithLeftAndRightElements.args,
+    ...WithIcon.args,
     disabled: true,
-    rightElementProps: {
-      children: <CloseButton disabled style={{ cursor: 'inherit' }} />,
-    },
+  },
+};
+
+export const WithOnClear: Story = {
+  args: {
+    ...WithLabel.args,
+    placeholder: 'Search...',
+    type: 'search',
+    onClear: () => null,
+  },
+};
+
+export const DisabledWithOnClear: Story = {
+  args: {
+    ...WithOnClear.args,
+    defaultValue: 'Testing',
+    disabled: true,
   },
 };

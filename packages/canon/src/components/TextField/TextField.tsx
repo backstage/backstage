@@ -20,6 +20,7 @@ import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
 
 import type { TextFieldProps } from './types';
+import { Icon } from '../Icon';
 
 /** @public */
 export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
@@ -33,8 +34,8 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       required,
       style,
       disabled,
-      leftElementProps,
-      rightElementProps,
+      icon,
+      onClear,
       ...rest
     } = props;
 
@@ -60,29 +61,21 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           </Field.Label>
         )}
         <div className="canon-TextFieldInputWrapper" data-size={responsiveSize}>
-          {leftElementProps ? (
-            <div
-              {...leftElementProps}
-              className={clsx(
-                'canon-TextFieldInputLeftElement',
-                leftElementProps.className,
-              )}
-            />
-          ) : null}
+          {icon && <Icon className="canon-TextFieldInputIcon" name={icon} />}
           <Field.Control
             className="canon-TextFieldInput"
             required={required}
             {...rest}
           />
-          {rightElementProps ? (
-            <div
-              {...rightElementProps}
-              className={clsx(
-                'canon-TextFieldInputRightElement',
-                rightElementProps.className,
-              )}
-            />
-          ) : null}
+          {onClear && (
+            <button
+              className="canon-TextFieldClearButton"
+              disabled={disabled}
+              onClick={onClear}
+            >
+              <Icon className="canon-TextFieldClearButtonIcon" name="close" />
+            </button>
+          )}
         </div>
         {description && (
           <Field.Description className="canon-TextFieldDescription">

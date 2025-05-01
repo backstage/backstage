@@ -1220,10 +1220,10 @@ export interface TextFieldProps
   className?: string;
   description?: string;
   error?: string | null;
+  icon?: IconNames;
   label?: string;
-  leftElementProps?: React.ComponentPropsWithoutRef<'div'>;
   name: string;
-  rightElementProps?: React.ComponentPropsWithoutRef<'div'>;
+  onClear?: React.MouseEventHandler<HTMLButtonElement>;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 

@@ -15,6 +15,7 @@
  */
 
 import type { Breakpoint } from '../../types';
+import type { IconNames } from '../Icon';
 
 /** @public */
 export interface TextFieldProps
@@ -51,12 +52,12 @@ export interface TextFieldProps
   error?: string | null;
 
   /**
-   * Props for an element to render on the left of the input
+   * An icon to render before the input
    */
-  leftElementProps?: React.ComponentPropsWithoutRef<'div'>;
+  icon?: IconNames;
 
   /**
-   * Props for an element to render on the right of the input
+   * Handler to call when the clear button is pressed
    */
-  rightElementProps?: React.ComponentPropsWithoutRef<'div'>;
+  onClear?: React.MouseEventHandler<HTMLButtonElement>;
 }

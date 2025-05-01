@@ -35,6 +35,7 @@
 }
 
 .canon-TextFieldInputWrapper {
+  padding: 0 var(--canon-space-3);
   border-radius: var(--canon-radius-3);
   border: 1px solid var(--canon-border);
   background-color: var(--canon-bg-surface-1);
@@ -42,16 +43,15 @@
   display: flex;
 }
 
-.canon-TextFieldInputLeftElement {
-  padding-left: var(--canon-space-4);
-}
-
-.canon-TextFieldInputRightElement {
-  padding-right: var(--canon-space-4);
+.canon-TextFieldInputIcon {
+  padding-right: var(--canon-space-1);
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--canon-fg-primary);
+  display: block;
 }
 
 .canon-TextFieldInput {
-  padding: 0 var(--canon-space-4);
   font-size: var(--canon-font-size-3);
   font-family: var(--canon-font-regular);
   font-weight: var(--canon-font-weight-regular);
@@ -64,11 +64,31 @@
   transition: border-color .2s ease-in-out, outline-color .2s ease-in-out;
 }
 
+.canon-TextFieldInput[type="search"]::-webkit-search-cancel-button, .canon-TextFieldInput[type="search"]::-webkit-search-decoration {
+  appearance: none;
+}
+
+.canon-TextFieldClearButton {
+  padding: 0 0 0 var(--canon-space-1);
+  vertical-align: middle;
+  background: none;
+  border: none;
+  display: none;
+}
+
+.canon-TextFieldInput[data-filled] + .canon-TextFieldClearButton {
+  display: inline-block;
+}
+
+.canon-TextFieldClearButtonIcon {
+  display: block;
+}
+
 .canon-TextFieldInput::placeholder {
   color: var(--canon-fg-secondary);
 }
 
-.canon-TextFieldInput:focus-visible {
+.canon-TextFieldInput[data-focused] {
   outline-color: var(--canon-border-pressed);
   outline-width: 0;
 }
@@ -77,18 +97,22 @@
   border-color: var(--canon-border-hover);
 }
 
-.canon-TextFieldInputWrapper:has( > .canon-TextFieldInput:focus-visible) {
+.canon-TextField[data-focused] .canon-TextFieldInputWrapper {
   border-color: var(--canon-border-pressed);
 }
 
-.canon-TextFieldInputWrapper:has(.canon-TextFieldInput[data-invalid]) {
+.canon-TextField[data-invalid] .canon-TextFieldInputWrapper {
   border-color: var(--canon-fg-danger);
 }
 
-.canon-TextFieldInputWrapper:has(.canon-TextFieldInput[data-disabled]) {
+.canon-TextField[data-disabled] .canon-TextFieldInputWrapper {
   opacity: .5;
   cursor: not-allowed;
   border: 1px solid var(--canon-border-disabled);
+}
+
+.canon-TextField[data-disabled] .canon-TextFieldClearButton {
+  cursor: inherit;
 }
 
 .canon-TextFieldInputWrapper[data-size="small"] {
