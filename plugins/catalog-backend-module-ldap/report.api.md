@@ -52,6 +52,9 @@ export function defaultUserTransformer(
 export type GroupConfig = {
   dn: string;
   options: SearchOptions;
+  parsing?: {
+    skipMembers?: boolean;
+  };
   set?: {
     [path: string]: JsonValue;
   };
@@ -249,6 +252,9 @@ export type TLSConfig = {
 export type UserConfig = {
   dn: string;
   options: SearchOptions;
+  parsing?: {
+    skipMemberOf?: boolean;
+  };
   set?: {
     [path: string]: JsonValue;
   };
