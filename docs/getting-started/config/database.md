@@ -153,6 +153,9 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: <secret>
+      # If you want to set a timezone you can use the following environment variables, this is handy when trying to figure out when scheduled tasks will run!
+      # TZ: Europe/Stockholm
+      # PGTZ: Europe/Stockholm
     ports:
       - 5432:5432
 ```
