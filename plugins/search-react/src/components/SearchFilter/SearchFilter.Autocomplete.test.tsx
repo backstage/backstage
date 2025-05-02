@@ -418,7 +418,7 @@ describe('SearchFilter.Autocomplete', () => {
         expect(screen.getByTestId(`${name}-filter-spy`)).toHaveTextContent('');
       });
     });
-    
+
     it('allows typing a value and shows suggestions', async () => {
       render(
         <TestApiProvider
