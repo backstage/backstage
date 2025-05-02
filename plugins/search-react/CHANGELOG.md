@@ -1,5 +1,69 @@
 # @backstage/plugin-search-react
 
+## 1.9.0-next.0
+
+### Minor Changes
+
+- 611c941: Allow search filters to provide labels and values separately, and not only values
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.18-next.0
+
+## 1.8.8
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/theme@0.6.5
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.8.8-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/theme@0.6.5-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.8.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.17
+
 ## 1.8.7
 
 ### Patch Changes

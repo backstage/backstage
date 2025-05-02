@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   createFrontendPlugin,
   PageBlueprint,
@@ -87,7 +86,7 @@ const CatalogGraphPage = PageBlueprint.makeWithOverrides({
 });
 
 export default createFrontendPlugin({
-  id: 'catalog-graph',
+  pluginId: 'catalog-graph',
   routes: {
     catalogGraph: convertLegacyRouteRef(catalogGraphRouteRef),
   },

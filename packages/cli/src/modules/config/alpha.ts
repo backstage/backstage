@@ -40,22 +40,21 @@ export default createCliPlugin({
     reg.addCommand({
       path: ['config', 'docs'],
       description: 'Browse the configuration reference documentation',
-      execute: async ({ args }) => {
-        const argv = await yargs
-          .options({
-            package: { type: 'string' },
-          })
-          .help()
-          .parse(args);
-        const m =
-          (await require('./commands/docs')) as typeof import('./commands/docs');
-        await m.default(argv);
+      execute: async ({ args, info }) => {
+        await new Command(info.usage)
+          .option(
+            '--package <name>',
+            'Only include the schema that applies to the given package',
+          )
+          .description(info.description)
+          .action(lazy(() => import('./commands/docs'), 'default'))
+          .parseAsync(args, { from: 'user' });
       },
     });
     reg.addCommand({
       path: ['config:print'],
       description: 'Print the app configuration for the current package',
-      execute: async ({ args }) => {
+      execute: async ({ args, info }) => {
         const argv = await yargs
           .options({
             package: { type: 'string' },
@@ -63,8 +62,9 @@ export default createCliPlugin({
             frontend: { type: 'boolean' },
             'with-secrets': { type: 'boolean' },
             format: { type: 'string' },
-            config: { type: 'string', array: true },
+            config: { type: 'string', array: true, default: [] },
           })
+          .usage('$0', info.description)
           .help()
           .parse(args);
         const m =
@@ -94,6 +94,42 @@ export default createCliPlugin({
           .parse(args);
         const m =
           (await require('./commands/validate')) as typeof import('./commands/validate');
+        await m.default(argv);
+      },
+    });
+
+    reg.addCommand({
+      path: ['config:schema'],
+      description: 'Print the JSON schema for the given configuration',
+      execute: async ({ args }) => {
+        const argv = await yargs
+          .options({
+            package: { type: 'string' },
+            format: { type: 'string' },
+            merge: { type: 'boolean' },
+            'no-merge': { type: 'boolean' },
+          })
+          .help()
+          .parse(args);
+        const m = await import('./commands/schema');
+        await m.default(argv);
+      },
+    });
+
+    reg.addCommand({
+      path: ['config', 'schema'],
+      description: 'Print the JSON schema for the given configuration',
+      execute: async ({ args }) => {
+        const argv = await yargs
+          .options({
+            package: { type: 'string' },
+            format: { type: 'string' },
+            merge: { type: 'boolean' },
+            'no-merge': { type: 'boolean' },
+          })
+          .help()
+          .parse(args);
+        const m = await import('./commands/schema');
         await m.default(argv);
       },
     });

@@ -1,5 +1,79 @@
 # @backstage/plugin-app
 
+## 0.1.9-next.1
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/integration-react@1.2.7-next.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-react@0.4.34-next.0
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.2.7-next.0
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/theme@0.6.5
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-react@0.4.33
+
+## 0.1.8
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/integration-react@1.2.6
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/plugin-permission-react@0.4.33
+  - @backstage/theme@0.6.5
+  - @backstage/types@1.2.1
+
+## 0.1.8-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/integration-react@1.2.6-next.1
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/plugin-permission-react@0.4.33-next.0
+  - @backstage/theme@0.6.5-next.0
+  - @backstage/types@1.2.1
+
+## 0.1.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/integration-react@1.2.6-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-react@0.4.32
+
 ## 0.1.7
 
 ### Patch Changes

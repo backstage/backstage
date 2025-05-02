@@ -1,5 +1,51 @@
 # @backstage/plugin-catalog-backend-module-logs
 
+## 0.1.10-next.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@2.0.0-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.32.2-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-events-node@0.4.11-next.0
+
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.32.1
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/plugin-events-node@0.4.10
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.32.1-next.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/plugin-events-node@0.4.9
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.32.1-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/plugin-events-node@0.4.9
+
 ## 0.1.8
 
 ### Patch Changes

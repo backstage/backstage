@@ -26,7 +26,7 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import SaveIcon from '@material-ui/icons/Save';
 import { useKeyboardEvent } from '@react-hookz/web';
 import CodeMirror from '@uiw/react-codemirror';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useDirectoryEditor } from './DirectoryEditorContext';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';

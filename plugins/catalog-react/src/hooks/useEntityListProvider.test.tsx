@@ -26,12 +26,13 @@ import {
 import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { catalogApiRef } from '../api';
 import { MockStarredEntitiesApi, starredEntitiesApiRef } from '../apis';
 import {
   EntityKindFilter,
+  EntityOwnerFilter,
   EntityTextFilter,
   EntityTypeFilter,
   EntityUserFilter,
@@ -298,6 +299,48 @@ describe('<EntityListProvider />', () => {
 
     expect(result.current.pageInfo).toBeUndefined();
   });
+
+  it('should omit owners filter when kind is "user"', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    act(() => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('user', 'User'),
+        owners: new EntityOwnerFilter(['user:default/guest']),
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.getEntities).toHaveBeenCalled();
+    });
+
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
+      filter: { kind: 'user' },
+    });
+  });
+
+  it('should omit owners filter when kind is "group"', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    act(() => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('group', 'Group'),
+        owners: new EntityOwnerFilter(['group:default/team-a']),
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.getEntities).toHaveBeenCalled();
+    });
+
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
+      filter: { kind: 'group' },
+    });
+  });
 });
 
 describe('<EntityListProvider pagination />', () => {
@@ -552,6 +595,52 @@ describe('<EntityListProvider pagination />', () => {
         });
       });
     });
+
+    it('should omit owners filter when kind is "user"', async () => {
+      const { result } = renderHook(() => useEntityList(), {
+        wrapper: createWrapper({ pagination }),
+      });
+
+      act(() => {
+        result.current.updateFilters({
+          kind: new EntityKindFilter('user', 'User'),
+          owners: new EntityOwnerFilter(['user:default/guest']),
+        });
+      });
+
+      await waitFor(() => {
+        expect(mockCatalogApi.queryEntities).toHaveBeenCalled();
+      });
+
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: { kind: 'user' },
+        }),
+      );
+    });
+
+    it('should omit owners filter when kind is "group"', async () => {
+      const { result } = renderHook(() => useEntityList(), {
+        wrapper: createWrapper({ pagination }),
+      });
+
+      act(() => {
+        result.current.updateFilters({
+          kind: new EntityKindFilter('group', 'Group'),
+          owners: new EntityOwnerFilter(['group:default/team-a']),
+        });
+      });
+
+      await waitFor(() => {
+        expect(mockCatalogApi.queryEntities).toHaveBeenCalled();
+      });
+
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: { kind: 'group' },
+        }),
+      );
+    });
   });
 });
 
@@ -800,5 +889,51 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
     await waitFor(() => {
       expect(result.current.error).toBeDefined();
     });
+  });
+
+  it('should omit owners filter when kind is "user"', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    act(() => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('user', 'User'),
+        owners: new EntityOwnerFilter(['user:default/guest']),
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalled();
+    });
+
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filter: { kind: 'user' },
+      }),
+    );
+  });
+
+  it('should omit owners filter when kind is "group"', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    act(() => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('group', 'Group'),
+        owners: new EntityOwnerFilter(['group:default/team-a']),
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalled();
+    });
+
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filter: { kind: 'group' },
+      }),
+    );
   });
 });

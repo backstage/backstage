@@ -1,5 +1,79 @@
 # @backstage/frontend-test-utils
 
+## 0.3.2-next.1
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/plugin-app@0.1.9-next.1
+  - @backstage/frontend-app-api@0.11.2-next.1
+  - @backstage/test-utils@1.7.8-next.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/frontend-app-api@0.11.2-next.0
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/test-utils@1.7.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-app@0.1.9-next.0
+
+## 0.3.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/frontend-app-api@0.11.1
+  - @backstage/test-utils@1.7.7
+  - @backstage/plugin-app@0.1.8
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.1-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/frontend-app-api@0.11.1-next.1
+  - @backstage/test-utils@1.7.7-next.0
+  - @backstage/plugin-app@0.1.8-next.1
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/plugin-app@0.1.8-next.0
+  - @backstage/frontend-app-api@0.11.1-next.0
+  - @backstage/config@1.3.2
+  - @backstage/test-utils@1.7.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.3.0
 
 ### Minor Changes

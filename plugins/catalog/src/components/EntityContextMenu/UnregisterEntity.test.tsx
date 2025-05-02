@@ -22,10 +22,10 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
-import * as React from 'react';
+import { ReactNode } from 'react';
 import { UnregisterEntity } from './UnregisterEntity';
 
-function render(children: React.ReactNode) {
+function render(children: ReactNode) {
   return renderInTestApp(
     <TestApiProvider apis={[[permissionApiRef, mockApis.permission()]]}>
       <EntityProvider

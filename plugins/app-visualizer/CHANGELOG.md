@@ -1,5 +1,50 @@
 # @backstage/plugin-app-visualizer
 
+## 0.1.19-next.0
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/core-plugin-api@1.10.6
+
+## 0.1.18
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+
+## 0.1.18-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+
+## 0.1.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/core-plugin-api@1.10.5
+
 ## 0.1.17
 
 ### Patch Changes

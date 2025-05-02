@@ -55,8 +55,8 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'oauthRequestDialog.rejectAll': 'Reject All';
     readonly 'supportButton.title': 'Support';
     readonly 'supportButton.close': 'Close';
-    readonly 'alertDisplay.message_one': '({{ count }} older message)';
-    readonly 'alertDisplay.message_other': '({{ count }} older messages)';
+    readonly 'alertDisplay.message_one': '({{ count }} newer message)';
+    readonly 'alertDisplay.message_other': '({{ count }} newer messages)';
     readonly 'autoLogout.stillTherePrompt.title': 'Logging out due to inactivity';
     readonly 'autoLogout.stillTherePrompt.buttonText': "Yes! Don't log me out";
     readonly 'proxiedSignInPage.title': 'You do not appear to be signed in. Please try reloading the browser page.';

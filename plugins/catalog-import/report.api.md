@@ -6,6 +6,7 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
+import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { Controller } from 'react-hook-form';
@@ -14,14 +15,15 @@ import { Entity } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { FieldErrors } from 'react-hook-form';
 import { InfoCardVariants } from '@backstage/core-components';
-import { JSX as JSX_2 } from 'react';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { NestedValue } from 'react-hook-form';
+import { ReactElement } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmAuthApi } from '@backstage/integration-react';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SubmitHandler } from 'react-hook-form';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';
-import { UnpackNestedValue } from 'react-hook-form';
 import { UseFormProps } from 'react-hook-form';
 import { UseFormReturn } from 'react-hook-form';
 
@@ -45,7 +47,7 @@ export type AnalyzeResult =
 // @public
 export const AutocompleteTextField: <TFieldValue extends string>(
   props: AutocompleteTextFieldProps<TFieldValue>,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export interface AutocompleteTextFieldProps<TFieldValue extends string> {
@@ -54,7 +56,7 @@ export interface AutocompleteTextFieldProps<TFieldValue extends string> {
   // (undocumented)
   errors?: FieldErrors;
   // (undocumented)
-  helperText?: React_2.ReactNode;
+  helperText?: ReactNode;
   // (undocumented)
   loading?: boolean;
   // (undocumented)
@@ -66,7 +68,7 @@ export interface AutocompleteTextFieldProps<TFieldValue extends string> {
   // (undocumented)
   required?: boolean;
   // (undocumented)
-  rules?: React_2.ComponentProps<typeof Controller>['rules'];
+  rules?: ComponentProps<typeof Controller>['rules'];
   // (undocumented)
   textFieldProps?: Omit<TextFieldProps, 'required' | 'fullWidth'>;
 }
@@ -146,21 +148,21 @@ export function defaultGenerateStepper(
 ): StepperProvider;
 
 // @public
-export const DefaultImportPage: () => React_2.JSX.Element;
+export const DefaultImportPage: () => JSX_2.Element;
 
 // @public
 export const EntityListComponent: (
   props: EntityListComponentProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export interface EntityListComponentProps {
   // (undocumented)
   collapsed?: boolean;
   // (undocumented)
-  firstListItem?: React_2.ReactElement;
+  firstListItem?: ReactElement;
   // (undocumented)
-  locationListItemIcon: (target: string) => React_2.ReactElement;
+  locationListItemIcon: (target: string) => ReactElement;
   // (undocumented)
   locations: Array<{
     target: string;
@@ -180,9 +182,7 @@ export type ImportFlows =
   | 'no-location';
 
 // @public
-export const ImportInfoCard: (
-  props: ImportInfoCardProps,
-) => React_2.JSX.Element;
+export const ImportInfoCard: (props: ImportInfoCardProps) => JSX_2.Element;
 
 // @public
 export interface ImportInfoCardProps {
@@ -205,7 +205,7 @@ export type ImportState = State & {
 };
 
 // @public
-export const ImportStepper: (props: ImportStepperProps) => React_2.JSX.Element;
+export const ImportStepper: (props: ImportStepperProps) => JSX_2.Element;
 
 // @public
 export interface ImportStepperProps {
@@ -223,7 +223,7 @@ export interface ImportStepperProps {
 // @public
 export const PreparePullRequestForm: <TFieldValues extends Record<string, any>>(
   props: PreparePullRequestFormProps<TFieldValues>,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export type PreparePullRequestFormProps<
@@ -237,7 +237,7 @@ export type PreparePullRequestFormProps<
     > & {
       values: TFieldValues;
     },
-  ) => React_2.ReactNode;
+  ) => ReactNode;
 };
 
 // @public
@@ -266,7 +266,7 @@ export type PrepareResult =
 // @public
 export const PreviewCatalogInfoComponent: (
   props: PreviewCatalogInfoComponentProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export interface PreviewCatalogInfoComponentProps {
@@ -284,7 +284,7 @@ export interface PreviewCatalogInfoComponentProps {
 // @public
 export const PreviewPullRequestComponent: (
   props: PreviewPullRequestComponentProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export interface PreviewPullRequestComponentProps {
@@ -302,7 +302,7 @@ export interface PreviewPullRequestComponentProps {
 // @public
 export const StepInitAnalyzeUrl: (
   props: StepInitAnalyzeUrlProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export interface StepInitAnalyzeUrlProps {
@@ -326,7 +326,7 @@ export interface StepInitAnalyzeUrlProps {
 // @public
 export const StepPrepareCreatePullRequest: (
   props: StepPrepareCreatePullRequestProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export interface StepPrepareCreatePullRequestProps {
@@ -358,8 +358,19 @@ export interface StepPrepareCreatePullRequestProps {
       groups: string[];
       groupsLoading: boolean;
     },
-  ) => React_2.ReactNode;
+  ) => ReactNode;
 }
+
+// @public @deprecated
+export type UnpackNestedValue<T> = T extends NestedValue<infer U>
+  ? U
+  : T extends Date | FileList | File | Blob
+  ? T
+  : T extends object
+  ? {
+      [K in keyof T]: UnpackNestedValue<T[K]>;
+    }
+  : T;
 
 // Warnings were encountered during analysis:
 //

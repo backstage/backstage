@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
+import { ReactElement } from 'react';
 
 export const PendingIcon = ({
   className,
@@ -22,7 +22,7 @@ export const PendingIcon = ({
 }: {
   className: string;
   dataTestId: string;
-}): React.ReactElement => {
+}): ReactElement => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

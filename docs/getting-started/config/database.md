@@ -111,7 +111,7 @@ If you opt for the second option of replacing the entire string, take care to no
 [Start the Backstage app](../index.md#2-run-the-backstage-app):
 
 ```shell
-yarn dev
+yarn start
 ```
 
 After the Backstage frontend launches, you should notice that nothing has changed. This is a good sign. If everything is setup correctly above, this means that the data is flowing from the demo data files directly into your database!
@@ -153,6 +153,9 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: <secret>
+      # If you want to set a timezone you can use the following environment variables, this is handy when trying to figure out when scheduled tasks will run!
+      # TZ: Europe/Stockholm
+      # PGTZ: Europe/Stockholm
     ports:
       - 5432:5432
 ```

@@ -87,6 +87,8 @@ describe('PluginTaskSchedulerJanitor', () => {
             current_run_ticket: null,
             current_run_started_at: null,
             current_run_expires_at: null,
+            last_run_ended_at: expect.anything(),
+            last_run_error_json: expect.stringContaining('Task timed out'),
           }),
         );
       });

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useVersionedContext } from '@backstage/version-bridge';
 import { ReactNode } from 'react';
 import { BackwardsCompatProvider } from './BackwardsCompatProvider';

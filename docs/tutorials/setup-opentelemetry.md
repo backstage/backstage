@@ -27,21 +27,26 @@ yarn --cwd packages/backend add \
 In your `packages/backend/src` folder, create an `instrumentation.js` file.
 
 ```typescript title="in packages/backend/src/instrumentation.js"
-const { NodeSDK } = require('@opentelemetry/sdk-node');
-const {
-  getNodeAutoInstrumentations,
-} = require('@opentelemetry/auto-instrumentations-node');
-const { PrometheusExporter } = require('@opentelemetry/exporter-prometheus');
+// Prevent from running more than once (due to worker threads)
+const { isMainThread } = require('node:worker_threads');
 
-// By default exports the metrics on localhost:9464/metrics
-const prometheus = new PrometheusExporter();
-const sdk = new NodeSDK({
-  // You can add a traceExporter field here too
-  metricReader: prometheus,
-  instrumentations: [getNodeAutoInstrumentations()],
-});
+if (isMainThread) {
+  const { NodeSDK } = require('@opentelemetry/sdk-node');
+  const {
+    getNodeAutoInstrumentations,
+  } = require('@opentelemetry/auto-instrumentations-node');
+  const { PrometheusExporter } = require('@opentelemetry/exporter-prometheus');
 
-sdk.start();
+  // By default exports the metrics on localhost:9464/metrics
+  const prometheus = new PrometheusExporter();
+  const sdk = new NodeSDK({
+    // You can add a traceExporter field here too
+    metricReader: prometheus,
+    instrumentations: [getNodeAutoInstrumentations()],
+  });
+
+  sdk.start();
+}
 ```
 
 You probably won't need all of the instrumentation inside `getNodeAutoInstrumentations()` so make sure to
@@ -62,7 +67,7 @@ For local development, you can add the required flag in your `packages/backend/p
   ...
 ```
 
-You can now start your Backstage instance as usual, using `yarn dev`.
+You can now start your Backstage instance as usual, using `yarn start`.
 
 ## Production Setup
 

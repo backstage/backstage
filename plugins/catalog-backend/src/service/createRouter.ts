@@ -65,9 +65,6 @@ import {
 
 /**
  * Options used by {@link createRouter}.
- *
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
  */
 export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;

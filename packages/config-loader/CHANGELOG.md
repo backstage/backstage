@@ -1,5 +1,16 @@
 # @backstage/config-loader
 
+## 1.10.1-next.0
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 1.10.0
 
 ### Minor Changes

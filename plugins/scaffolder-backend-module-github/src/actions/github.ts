@@ -65,6 +65,7 @@ export function createPublishGithubAction(options: {
     squashMergeCommitMessage?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
     allowMergeCommit?: boolean;
     allowAutoMerge?: boolean;
+    allowUpdateBranch?: boolean;
     sourcePath?: string;
     bypassPullRequestAllowances?:
       | {
@@ -156,6 +157,7 @@ export function createPublishGithubAction(options: {
           squashMergeCommitMessage: inputProps.squashMergeCommitMessage,
           allowRebaseMerge: inputProps.allowRebaseMerge,
           allowAutoMerge: inputProps.allowAutoMerge,
+          allowUpdateBranch: inputProps.allowUpdateBranch,
           sourcePath: inputProps.sourcePath,
           collaborators: inputProps.collaborators,
           hasProjects: inputProps.hasProjects,
@@ -197,7 +199,7 @@ export function createPublishGithubAction(options: {
         requiredConversationResolution = false,
         requireLastPushApproval = false,
         repoVisibility = 'private',
-        defaultBranch = 'master',
+        defaultBranch = 'main',
         protectDefaultBranch = true,
         protectEnforceAdmins = true,
         deleteBranchOnMerge = false,
@@ -210,6 +212,7 @@ export function createPublishGithubAction(options: {
         squashMergeCommitMessage = 'COMMIT_MESSAGES',
         allowRebaseMerge = true,
         allowAutoMerge = false,
+        allowUpdateBranch = false,
         collaborators,
         hasProjects = undefined,
         hasWiki = undefined,
@@ -239,7 +242,10 @@ export function createPublishGithubAction(options: {
         owner,
         repo,
       });
-      const client = new Octokit(octokitOptions);
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       const { remoteUrl, repoContentsUrl } = await ctx.checkpoint({
         key: `create.github.repo.${owner}.${repo}`,
@@ -258,6 +264,7 @@ export function createPublishGithubAction(options: {
             squashMergeCommitMessage,
             allowRebaseMerge,
             allowAutoMerge,
+            allowUpdateBranch,
             access,
             collaborators,
             hasProjects,

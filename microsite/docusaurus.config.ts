@@ -123,6 +123,11 @@ const config: Config = {
         },
         blog: {
           path: 'blog',
+          // Gets rid of the following:
+          // Warning:  Some blog authors used in "2024-12-18-backstage-wrapped-2024.mdx" are not defined in "authors.yml":
+          // - {"name":"Patrik Oldsberg, Spotify & Ben Lambert, Spotify","key":null,"page":null}
+          // Note that we recommend to declare authors once in a "authors.yml" file and reference them by key in blog posts front matter to avoid author info duplication.
+          onInlineAuthors: 'ignore',
         },
         theme: {
           customCss: 'src/theme/customTheme.scss',
@@ -301,11 +306,6 @@ const config: Config = {
     languageTabs: [
       {
         highlight: 'javascript',
-        language: 'nodejs',
-        logoClass: 'nodejs',
-      },
-      {
-        highlight: 'javascript',
         language: 'javascript',
         logoClass: 'javascript',
       },
@@ -453,7 +453,7 @@ const config: Config = {
             },
             {
               label: 'Adopting',
-              to: 'https://backstage.spotify.com',
+              to: 'https://backstage.io/docs/getting-started/',
             },
             {
               label: 'Subscribe to our newsletter',
@@ -468,18 +468,6 @@ const config: Config = {
         {
           title: 'More',
           items: [
-            {
-              label: 'Open Source @ Spotify',
-              to: 'https://spotify.github.io/',
-            },
-            {
-              label: 'Spotify Engineering Blog',
-              to: 'https://engineering.atspotify.com/',
-            },
-            {
-              label: 'Spotify for Developers',
-              to: 'https://developer.spotify.com/',
-            },
             {
               label: 'GitHub',
               to: 'https://github.com/backstage/',

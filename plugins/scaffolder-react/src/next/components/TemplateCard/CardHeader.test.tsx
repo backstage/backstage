@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { fireEvent } from '@testing-library/react';
 import { CardHeader } from './CardHeader';
 import { ThemeProvider } from '@material-ui/core/styles';

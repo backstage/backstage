@@ -339,6 +339,7 @@ export const createPublishGithubPullRequestAction: (
     sourcePath?: string;
     token?: string;
     reviewers?: string[];
+    assignees?: string[];
     teamReviewers?: string[];
     commitMessage?: string;
     update?: boolean;

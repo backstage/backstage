@@ -1,5 +1,33 @@
 # @backstage/plugin-proxy-backend
 
+## 0.6.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-proxy-node@0.1.4-next.1
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-proxy-node@0.1.4-next.0
+  - @backstage/types@1.2.1
+
+## 0.6.1
+
+### Patch Changes
+
+- 9b5b744: Fixed handling of proxied SSE connections when the upstream server closes the connection
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-proxy-node@0.1.3
+
 ## 0.6.0
 
 ### Minor Changes

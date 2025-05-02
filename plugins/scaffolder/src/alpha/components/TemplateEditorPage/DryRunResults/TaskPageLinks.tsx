@@ -18,7 +18,6 @@ import { parseEntityRef } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import Box from '@material-ui/core/Box';
 import LanguageIcon from '@material-ui/icons/Language';
-import React from 'react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { IconLink } from './IconLink';
 import { IconComponent, useApp, useRouteRef } from '@backstage/core-plugin-api';

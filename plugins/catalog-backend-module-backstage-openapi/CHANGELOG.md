@@ -1,5 +1,55 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.5.2-next.1
+
+### Patch Changes
+
+- d385854: Do not swallow errors; instead allow them to bubble up to the task scheduler for better tracking and logging.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/backend-openapi-utils@0.5.3-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.5.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.17.0-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/backend-openapi-utils@0.5.3-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/backend-openapi-utils@0.5.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3-next.0
+  - @backstage/backend-openapi-utils@0.5.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.5.0
 
 ### Minor Changes

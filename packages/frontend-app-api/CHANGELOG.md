@@ -1,5 +1,84 @@
 # @backstage/frontend-app-api
 
+## 0.11.2-next.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/frontend-defaults@0.2.2-next.1
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.16.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.11.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.16.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-defaults@0.2.2-next.0
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.11.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/frontend-defaults@0.2.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/core-app-api@1.16.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.11.1-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/frontend-defaults@0.2.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/core-app-api@1.16.1-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.11.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/frontend-defaults@0.2.1-next.0
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.16.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.11.0
 
 ### Minor Changes

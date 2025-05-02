@@ -22,7 +22,7 @@ be mapped to user identities within Backstage.
 
 ## Quick Start
 
-> See [providers](../reference/plugin-auth-backend.providers.md)
+> See [the auth docs](./index.md)
 > for a full list of auth providers and their built-in sign-in resolvers.
 
 Backstage projects created with `npx @backstage/create-app` come configured with a

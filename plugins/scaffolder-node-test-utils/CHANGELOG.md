@@ -1,5 +1,56 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.2.2-next.1
+
+### Patch Changes
+
+- b27c48d: Include optional `user` in `createMockActionContext`
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/plugin-scaffolder-node@0.8.2-next.1
+  - @backstage/backend-test-utils@1.5.0-next.1
+  - @backstage/types@1.2.1
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.5.0-next.0
+  - @backstage/plugin-scaffolder-node@0.8.2-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/types@1.2.1
+
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/backend-test-utils@1.4.0
+  - @backstage/types@1.2.1
+
+## 0.2.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/backend-test-utils@1.3.2-next.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-node@0.8.1-next.1
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1-next.1
+  - @backstage/backend-test-utils@1.3.2-next.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/types@1.2.1
+
 ## 0.2.1-next.0
 
 ### Patch Changes

@@ -17,7 +17,6 @@
 import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { screen, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
 import { searchApiRef } from '../../api';
 import { SearchContextProvider, useSearch } from '../../context';

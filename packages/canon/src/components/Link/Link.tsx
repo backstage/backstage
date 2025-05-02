@@ -14,42 +14,39 @@
  * limitations under the License.
  */
 
-import React, { forwardRef } from 'react';
+import { useRef, forwardRef } from 'react';
+import { useRender } from '@base-ui-components/react/use-render';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
 
 import type { LinkProps } from './types';
 
 /** @public */
-export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
+export const Link = forwardRef<HTMLElement, LinkProps>((props, ref) => {
   const {
-    children,
+    className,
     variant = 'body',
     weight = 'regular',
-    style,
-    className,
+    render = <a />,
     ...restProps
   } = props;
 
-  // Get the responsive values for the variant and weight
   const responsiveVariant = useResponsiveValue(variant);
   const responsiveWeight = useResponsiveValue(weight);
+  const internalRef = useRef<HTMLElement | null>(null);
 
-  return (
-    <a
-      ref={ref}
-      className={clsx(
-        'canon-Link',
-        responsiveVariant && `canon-Link--variant-${responsiveVariant}`,
-        responsiveWeight && `canon-Link--weight-${responsiveWeight}`,
-        className,
-      )}
-      style={style}
-      {...restProps}
-    >
-      {children}
-    </a>
-  );
+  const { renderElement } = useRender({
+    render,
+    props: {
+      className: clsx('canon-Link', className),
+      ['data-variant']: responsiveVariant,
+      ['data-weight']: responsiveWeight,
+      ...restProps,
+    },
+    refs: [ref, internalRef],
+  });
+
+  return renderElement();
 });
 
 Link.displayName = 'Link';

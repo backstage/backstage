@@ -26,7 +26,7 @@ import {
 } from '@backstage/cli-node';
 import { paths } from '../../../../lib/paths';
 import { runWorkerQueueThreads } from '../../../../lib/parallel';
-import { createScriptOptionsParser } from '../../../../commands/repo/optionsParser';
+import { createScriptOptionsParser } from '../../../../lib/optionsParser';
 import { SuccessCache } from '../../../../lib/cache/SuccessCache';
 
 function depCount(pkg: BackstagePackageJson) {

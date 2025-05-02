@@ -49,6 +49,7 @@ export async function getGitLabFileFetchUrl(
  * Gets the request options necessary to make requests to a given provider.
  *
  * @param config - The relevant provider config
+ * @param token - An optional auth token to use for communicating with GitLab. By default uses the integration token
  * @public
  */
 export function getGitLabRequestOptions(

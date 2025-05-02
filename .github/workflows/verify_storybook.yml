@@ -37,7 +37,7 @@ jobs:
           fetch-depth: 0 # Required to retrieve git history
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -54,7 +54,7 @@ jobs:
 
       - run: yarn --cwd packages/canon build-storybook
 
-      - uses: chromaui/action@c93e0bc3a63aa176e14a75b61a31847cbfdd341c # v11
+      - uses: chromaui/action@e8cc4c31775280b175a3c440076c00d19a9014d7 # v11
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks

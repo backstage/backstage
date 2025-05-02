@@ -1,5 +1,72 @@
 # @backstage/plugin-catalog-node
 
+## 1.17.0-next.1
+
+### Minor Changes
+
+- a459f17: Added `parseEntityYaml` from `@backstage/plugin-catalog-backend`, to make it more easily usable by custom plugins and modules
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+
+## 1.17.0-next.0
+
+### Minor Changes
+
+- 1a003ff: Add `getLocations` method to `CatalogApi` and `CatalogClient`. This method calls the [`GET /locations`](https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-locations) endpoint from the catalog backend.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-permission-node@0.9.2-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.16.3
+
+### Patch Changes
+
+- 2c5598c: Adds documentation for the CatalogProcessingExtensionPoint functions.
+- 98b7131: Use a different ID for the deprecated alpha version of the catalog service, as it has a different type definition and cannot be used interchangeably with the non-alpha version.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/plugin-permission-node@0.9.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.16.3-next.0
+
+### Patch Changes
+
+- 98b7131: Use a different ID for the deprecated alpha version of the catalog service, as it has a different type definition and cannot be used interchangeably with the non-alpha version.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.9.0
+
 ## 1.16.1
 
 ### Patch Changes

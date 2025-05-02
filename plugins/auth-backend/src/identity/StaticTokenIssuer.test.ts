@@ -18,6 +18,8 @@ import { createLocalJWKSet, jwtVerify } from 'jose';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { StaticKeyStore } from './StaticKeyStore';
 import { mockServices } from '@backstage/backend-test-utils';
+import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
+import { omit } from 'lodash';
 
 const logger = mockServices.logger.mock();
 const entityRef = stringifyEntityRef({
@@ -27,63 +29,67 @@ const entityRef = stringifyEntityRef({
 });
 
 describe('StaticTokenIssuer', () => {
-  it('should issue valid tokens signed by the first listed key', async () => {
-    const staticKeyStore = {
-      listKeys: () => {
-        return Promise.resolve({
-          items: [
-            {
-              createdAt: new Date(),
-              key: {
-                kty: 'EC',
-                x: 'vrJVK0vSV4LRwdUXA55pb3rruB92ZoUEY72HTvjIP9w',
-                y: 'UmyzoVoTERJPOE9Kvdf5t797FquRMxyFsNc0R0IrCmc',
-                crv: 'P-256',
-                kid: '1',
-                alg: 'ES256',
-                use: 'sig',
-              },
-            },
-            {
-              createdAt: new Date(),
-              key: {
-                kty: 'EC',
-                x: 'vrJVK0vSV4LRwdUXA55pb3rruB92ZoUEY72HTvjIP9w',
-                y: 'UmyzoVoTERJPOE9Kvdf5t797FquRMxyFsNc0R0IrCmc',
-                crv: 'P-256',
-                kid: '2',
-                alg: 'ES256',
-                use: 'sig',
-              },
-            },
-          ],
-        });
-      },
-      getPrivateKey: (kid: string) => {
-        expect(kid).toEqual('1');
-        return {
-          kty: 'EC',
-          x: 'vrJVK0vSV4LRwdUXA55pb3rruB92ZoUEY72HTvjIP9w',
-          y: 'UmyzoVoTERJPOE9Kvdf5t797FquRMxyFsNc0R0IrCmc',
-          crv: 'P-256',
-          d: 'R8Ja2ppMEgOm1KeYKpje00U1luybndt6yC263vcgeKo',
-          kid: '1',
-          alg: 'ES256',
-        };
-      },
-    };
+  const mockUserInfoDatabaseHandler = {
+    addUserInfo: jest.fn().mockResolvedValue(undefined),
+  } as unknown as UserInfoDatabaseHandler;
 
+  const staticKeyStore = {
+    listKeys: () => {
+      return Promise.resolve({
+        items: [
+          {
+            createdAt: new Date(),
+            key: {
+              kty: 'EC',
+              x: 'vrJVK0vSV4LRwdUXA55pb3rruB92ZoUEY72HTvjIP9w',
+              y: 'UmyzoVoTERJPOE9Kvdf5t797FquRMxyFsNc0R0IrCmc',
+              crv: 'P-256',
+              kid: '1',
+              alg: 'ES256',
+              use: 'sig',
+            },
+          },
+          {
+            createdAt: new Date(),
+            key: {
+              kty: 'EC',
+              x: 'vrJVK0vSV4LRwdUXA55pb3rruB92ZoUEY72HTvjIP9w',
+              y: 'UmyzoVoTERJPOE9Kvdf5t797FquRMxyFsNc0R0IrCmc',
+              crv: 'P-256',
+              kid: '2',
+              alg: 'ES256',
+              use: 'sig',
+            },
+          },
+        ],
+      });
+    },
+    getPrivateKey: (kid: string) => {
+      expect(kid).toEqual('1');
+      return {
+        kty: 'EC',
+        x: 'vrJVK0vSV4LRwdUXA55pb3rruB92ZoUEY72HTvjIP9w',
+        y: 'UmyzoVoTERJPOE9Kvdf5t797FquRMxyFsNc0R0IrCmc',
+        crv: 'P-256',
+        d: 'R8Ja2ppMEgOm1KeYKpje00U1luybndt6yC263vcgeKo',
+        kid: '1',
+        alg: 'ES256',
+      };
+    },
+  };
+
+  it('should issue valid tokens signed by the first listed key', async () => {
     const keyDurationSeconds = 86400;
-    const options = {
-      logger,
-      issuer: 'my-issuer',
-      sessionExpirationSeconds: keyDurationSeconds,
-    };
     const issuer = new StaticTokenIssuer(
-      options,
+      {
+        logger,
+        issuer: 'my-issuer',
+        sessionExpirationSeconds: keyDurationSeconds,
+        userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
+      },
       staticKeyStore as unknown as StaticKeyStore,
     );
-    const token = await issuer.issueToken({
+    const { token } = await issuer.issueToken({
       claims: {
         sub: entityRef,
         ent: [entityRef],
@@ -98,6 +104,7 @@ describe('StaticTokenIssuer', () => {
     expect(verifyResult.protectedHeader).toEqual({
       kid: '1',
       alg: 'ES256',
+      typ: 'vnd.backstage.user',
     });
     expect(verifyResult.payload).toEqual({
       iss: 'my-issuer',
@@ -107,9 +114,62 @@ describe('StaticTokenIssuer', () => {
       'x-fancy-claim': 'my special claim',
       iat: expect.any(Number),
       exp: expect.any(Number),
+      uip: expect.any(String),
     });
     expect(verifyResult.payload.exp).toBe(
       verifyResult.payload.iat! + keyDurationSeconds,
     );
+    expect(mockUserInfoDatabaseHandler.addUserInfo).toHaveBeenCalledWith({
+      claims: omit(verifyResult.payload, ['aud', 'iat', 'iss', 'uip']),
+    });
+  });
+
+  it('should issue valid tokens with omitted claims', async () => {
+    const keyDurationSeconds = 86400;
+    const issuer = new StaticTokenIssuer(
+      {
+        logger,
+        issuer: 'my-issuer',
+        sessionExpirationSeconds: keyDurationSeconds,
+        userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
+        omitClaimsFromToken: ['ent'],
+      },
+      staticKeyStore as unknown as StaticKeyStore,
+    );
+    const { token } = await issuer.issueToken({
+      claims: {
+        sub: entityRef,
+        ent: [entityRef],
+        'x-fancy-claim': 'my special claim',
+        aud: 'this value will be overridden',
+      },
+    });
+
+    const { keys } = await issuer.listPublicKeys();
+    const keyStore = createLocalJWKSet({ keys: keys });
+    const verifyResult = await jwtVerify(token, keyStore);
+    expect(verifyResult.protectedHeader).toEqual({
+      kid: '1',
+      alg: 'ES256',
+      typ: 'vnd.backstage.user',
+    });
+    expect(verifyResult.payload).toEqual({
+      iss: 'my-issuer',
+      aud: 'backstage',
+      sub: entityRef,
+      'x-fancy-claim': 'my special claim',
+      iat: expect.any(Number),
+      exp: expect.any(Number),
+      uip: expect.any(String),
+    });
+    expect(verifyResult.payload.exp).toBe(
+      verifyResult.payload.iat! + keyDurationSeconds,
+    );
+    expect(mockUserInfoDatabaseHandler.addUserInfo).toHaveBeenCalledWith({
+      claims: {
+        ...omit(verifyResult.payload, ['aud', 'iat', 'iss', 'uip']),
+        ent: [entityRef],
+      },
+    });
   });
 });

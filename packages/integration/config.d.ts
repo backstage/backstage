@@ -51,12 +51,13 @@ export interface Config {
 
       /**
        * The credentials to use for requests. If multiple credentials are specified the first one that matches the organization is used.
-       * If not organization matches the first credential without an organization is used.
+       * If no organization matches the first credential without an organization is used.
        *
        * If no credentials are specified at all, either a default credential (for Azure DevOps) or anonymous access (for Azure DevOps Server) is used.
        * @deepVisibility secret
        */
       credentials?: {
+        organizations?: string[];
         clientId?: string;
         clientSecret?: string;
         tenantId?: string;
@@ -239,7 +240,7 @@ export interface Config {
          * The secret used for webhooks
          * @visibility secret
          */
-        webhookSecret: string;
+        webhookSecret?: string;
         /**
          * The client ID to use
          */

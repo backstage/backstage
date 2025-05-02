@@ -1,5 +1,182 @@
 # @backstage/plugin-catalog-backend
 
+## 2.0.0-next.1
+
+### Major Changes
+
+- 90ab044: **BREAKING**: Removed all deprecated exports, and removed support for the old backend system.
+
+  It also removes the `CodeOwnersProcessor` from the default set of processors, because it is expensive to run and has vague semantics. You need to update your backend to add it to the `catalogProcessingExtensionPoint` if you wish to continue using it.
+
+  The following removed exports are available from `@backstage/plugin-catalog-node`:
+
+  - `locationSpecToMetadataName`
+  - `locationSpecToLocationEntity`
+  - `processingResult`
+  - `EntitiesSearchFilter`
+  - `EntityFilter`
+  - `DeferredEntity`
+  - `EntityRelationSpec`
+  - `CatalogProcessor`
+  - `CatalogProcessorParser`
+  - `CatalogProcessorCache`
+  - `CatalogProcessorEmit`
+  - `CatalogProcessorLocationResult`
+  - `CatalogProcessorEntityResult`
+  - `CatalogProcessorRelationResult`
+  - `CatalogProcessorErrorResult`
+  - `CatalogProcessorRefreshKeysResult`
+  - `CatalogProcessorResult`
+  - `EntityProvider`
+  - `EntityProviderConnection`
+  - `EntityProviderMutation`
+  - `AnalyzeOptions`
+  - `LocationAnalyzer`
+  - `ScmLocationAnalyzer`
+  - `PlaceholderResolver`
+  - `PlaceholderResolverParams`
+  - `PlaceholderResolverRead`
+  - `PlaceholderResolverResolveUrl`
+  - `parseEntityYaml`
+
+  The following removed exports are available from `@backstage/plugin-catalog-common`:
+
+  - `LocationSpec`
+  - `AnalyzeLocationRequest`
+  - `AnalyzeLocationResponse`
+  - `AnalyzeLocationExistingEntity`
+  - `AnalyzeLocationGenerateEntity`
+  - `AnalyzeLocationEntityField`
+
+  The following removed exports are instead implemented in the new backend system by `@backstage/plugin-search-backend-module-catalog`:
+
+  - `defaultCatalogCollatorEntityTransformer`
+  - `CatalogCollatorEntityTransformer`
+  - `DefaultCatalogCollator`
+
+  The following exports are removed without a direct replacement:
+
+  - `DefaultCatalogCollatorFactory`
+  - `DefaultCatalogCollatorFactoryOptions`
+  - `LocationEntityProcessor`
+  - `LocationEntityProcessorOptions`
+  - `CatalogBuilder`
+  - `CatalogEnvironment`
+  - `CatalogPermissionRuleInput`
+  - `CatalogProcessingEngine`
+  - `createRandomProcessingInterval`
+  - `ProcessingIntervalFunction`
+
+### Minor Changes
+
+- 6c9b88e: **BREAKING ALPHA**: You can no longer import the catalog plugin from the `/alpha` export; please use the regular root default export instead.
+- d88b922: Adds the ability to disable the default entity processors using a new boolean app config item `catalog.disableDefaultProcessors`.
+
+### Patch Changes
+
+- 0e710fc: This patch addresses an issue identified in Backstage when configured with a MySQL database. If an entity of type location
+  (e..all.yaml) has more than 70 referenced entities, clicking "Refresh" does not update the referenced entities as expected. This occurs because the TEXT type in MySQL has a limit of 65,535 bytes, which is insufficient to store all the referenced entities, causing the refresh operation to fail.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/backend-openapi-utils@0.5.3-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-events-node@0.4.11-next.1
+
+## 1.32.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-events-node@0.4.11-next.0
+  - @backstage/plugin-permission-node@0.9.2-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.3.4-next.0
+  - @backstage/backend-openapi-utils@0.5.3-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.32.1
+
+### Patch Changes
+
+- 7cc4995: Fix for duplicate results in `queryEntities` when providing an `orderField` parameter
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/integration@1.16.3
+  - @backstage/plugin-permission-node@0.9.1
+  - @backstage/plugin-search-backend-module-catalog@0.3.3
+  - @backstage/backend-openapi-utils@0.5.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-events-node@0.4.10
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.32.1-next.1
+
+### Patch Changes
+
+- 7cc4995: Fix for duplicate results in `queryEntities` when providing an `orderField` parameter
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.3.3-next.0
+  - @backstage/backend-openapi-utils@0.5.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.32.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/backend-openapi-utils@0.5.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-module-catalog@0.3.2
+  - @backstage/plugin-search-common@1.2.17
+
 ## 1.32.0
 
 ### Minor Changes

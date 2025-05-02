@@ -1,5 +1,64 @@
 # @backstage/plugin-techdocs-react
 
+## 1.2.17-next.0
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/version-bridge@1.0.11
+
+## 1.2.16
+
+### Patch Changes
+
+- 0e9f7fe: Fix catalog entity docs page not loading due to multiple addons data attachment in the New Frontend System.
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/version-bridge@1.0.11
+
+## 1.2.16-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/version-bridge@1.0.11
+
+## 1.2.16-next.0
+
+### Patch Changes
+
+- 0e9f7fe: Fix catalog entity docs page not loading due to multiple addons data attachment in the New Frontend System.
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/version-bridge@1.0.11
+
 ## 1.2.15
 
 ### Patch Changes

@@ -1,5 +1,62 @@
 # @backstage/core-components
 
+## 0.17.2-next.0
+
+### Patch Changes
+
+- e0d1025: `LogViewer` now supports a `textWrap` prop that wraps log lines to the next line for overflowing content instead of using horizontal scroll
+- bb84534: Fix the hidden sidebar's sub-menu when the sidebar is scrollable
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 5d7bad4: Fixed the messaging in the `AlertDisplay` where it was claiming that there were older messages available rather than newer.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/theme@0.6.5
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.1-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/theme@0.6.5-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.1-next.0
+
+### Patch Changes
+
+- 5d7bad4: Fixed the messaging in the `AlertDisplay` where it was claiming that there were older messages available rather than newer.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.4
+  - @backstage/version-bridge@1.0.11
+
 ## 0.17.0
 
 ### Minor Changes

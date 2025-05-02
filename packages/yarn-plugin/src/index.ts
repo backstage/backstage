@@ -24,6 +24,7 @@
 import { Plugin, Hooks, semverUtils, YarnVersion } from '@yarnpkg/core';
 import { Hooks as PackHooks } from '@yarnpkg/plugin-pack';
 import { beforeWorkspacePacking, reduceDependency } from './handlers';
+import { BackstageNpmResolver } from './resolvers';
 
 // All dependencies of the yarn plugin are bundled during the build. Chalk
 // triples the size of the plugin bundle when included, so we avoid the
@@ -48,6 +49,7 @@ const plugin: Plugin<Hooks & PackHooks> = {
     reduceDependency,
     beforeWorkspacePacking,
   },
+  resolvers: [BackstageNpmResolver],
 };
 
 export default plugin;

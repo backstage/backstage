@@ -1,5 +1,97 @@
 # @backstage/plugin-notifications-backend
 
+## 0.5.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/plugin-signals-node@0.1.20-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.15-next.1
+
+## 0.5.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.6.3-next.0
+  - @backstage/plugin-events-node@0.4.11-next.0
+  - @backstage/plugin-notifications-node@0.2.15-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-node@0.1.20-next.0
+
+## 0.5.5
+
+### Patch Changes
+
+- 9a6080e: Allow throttling notification sending not to block the system with huge amount of receiving users
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/plugin-auth-node@0.6.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.10
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.14
+  - @backstage/plugin-signals-node@0.1.19
+
+## 0.5.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.13
+  - @backstage/plugin-signals-node@0.1.18
+
+## 0.5.5-next.0
+
+### Patch Changes
+
+- 9a6080e: Allow throttling notification sending not to block the system with huge amount of receiving users
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.13
+  - @backstage/plugin-signals-node@0.1.18
+
 ## 0.5.4
 
 ### Patch Changes

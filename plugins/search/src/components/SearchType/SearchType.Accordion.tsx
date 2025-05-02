@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { cloneElement, Fragment, useEffect, useState } from 'react';
+import { cloneElement, Fragment, useEffect, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { searchApiRef, useSearch } from '@backstage/plugin-search-react';
 import Accordion from '@material-ui/core/Accordion';

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { ComponentType, PropsWithChildren } from 'react';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 

@@ -21,7 +21,6 @@ describe('GitlabEventRouter', () => {
   const events = new TestEventsService();
   const eventRouter = new GitlabEventRouter({ events: events });
   const topic = 'gitlab';
-  const eventPayload = { event_name: 'test_type', test: 'payload' };
   const metadata = {};
 
   beforeEach(() => {
@@ -36,7 +35,7 @@ describe('GitlabEventRouter', () => {
     expect(events.subscribed[0].topics).toEqual([topic]);
   });
 
-  it('no $.event_name', () => {
+  it('no $.event_name and no $.object_kind', () => {
     eventRouter.onEvent({
       topic,
       eventPayload: { invalid: 'payload' },
@@ -46,11 +45,45 @@ describe('GitlabEventRouter', () => {
     expect(events.published).toEqual([]);
   });
 
-  it('with $.event_name', () => {
+  it('with $.event_name and no $.object_kind', () => {
+    const eventPayload = {
+      event_name: 'type_from_event_name',
+      test: 'payload',
+    };
+
     eventRouter.onEvent({ topic, eventPayload, metadata });
 
     expect(events.published.length).toBe(1);
-    expect(events.published[0].topic).toEqual('gitlab.test_type');
+    expect(events.published[0].topic).toEqual('gitlab.type_from_event_name');
+    expect(events.published[0].eventPayload).toEqual(eventPayload);
+    expect(events.published[0].metadata).toEqual(metadata);
+  });
+
+  it('with $.object_kind and no $.event_name', () => {
+    const eventPayload = {
+      object_kind: 'type_from_object_kind',
+      test: 'payload',
+    };
+
+    eventRouter.onEvent({ topic, eventPayload, metadata });
+
+    expect(events.published.length).toBe(1);
+    expect(events.published[0].topic).toEqual('gitlab.type_from_object_kind');
+    expect(events.published[0].eventPayload).toEqual(eventPayload);
+    expect(events.published[0].metadata).toEqual(metadata);
+  });
+
+  it('with $.event_name and $.object_kind', () => {
+    const eventPayload = {
+      event_name: 'type_from_event_name',
+      object_kind: 'type_from_object_kind',
+      test: 'payload',
+    };
+
+    eventRouter.onEvent({ topic, eventPayload, metadata });
+
+    expect(events.published.length).toBe(1);
+    expect(events.published[0].topic).toEqual('gitlab.type_from_object_kind');
     expect(events.published[0].eventPayload).toEqual(eventPayload);
     expect(events.published[0].metadata).toEqual(metadata);
   });
