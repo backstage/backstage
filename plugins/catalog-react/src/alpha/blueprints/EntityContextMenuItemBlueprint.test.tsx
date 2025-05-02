@@ -20,6 +20,7 @@ import {
 import { EntityContextMenuItemBlueprint } from './EntityContextMenuItemBlueprint';
 import { screen, waitFor } from '@testing-library/react';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { Entity } from '@backstage/catalog-model';
 
 jest.mock('../../hooks/useEntityContextMenu', () => ({
   useEntityContextMenu: () => ({
@@ -47,6 +48,25 @@ describe('EntityContextMenuItemBlueprint', () => {
     },
   ];
 
+  const filterTestCases = [
+    {
+      params: { filter: 'kind:component' },
+      config: undefined,
+    },
+    {
+      params: { filter: (e: Entity) => e.kind.toLowerCase() === 'component' },
+      config: undefined,
+    },
+    {
+      params: {},
+      config: { filter: 'kind:component' },
+    },
+    {
+      params: {},
+      config: { filter: { kind: 'component' } },
+    },
+  ];
+
   it.each(data)('should return an extension with sane defaults', params => {
     const extension = EntityContextMenuItemBlueprint.make({
       name: 'test',
@@ -61,7 +81,138 @@ describe('EntityContextMenuItemBlueprint', () => {
           "id": "page:catalog/entity",
           "input": "contextMenuItems",
         },
-        "configSchema": undefined,
+        "configSchema": {
+          "parse": [Function],
+          "schema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "additionalProperties": false,
+            "properties": {
+              "filter": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": [
+                              "string",
+                              "number",
+                              "boolean",
+                            ],
+                          },
+                          {
+                            "items": {
+                              "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0",
+                            },
+                            "type": "array",
+                          },
+                        ],
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "$all": {
+                            "items": {
+                              "$ref": "#/properties/filter/anyOf/1",
+                            },
+                            "type": "array",
+                          },
+                        },
+                        "required": [
+                          "$all",
+                        ],
+                        "type": "object",
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "$any": {
+                            "items": {
+                              "$ref": "#/properties/filter/anyOf/1",
+                            },
+                            "type": "array",
+                          },
+                        },
+                        "required": [
+                          "$any",
+                        ],
+                        "type": "object",
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "$not": {
+                            "$ref": "#/properties/filter/anyOf/1",
+                          },
+                        },
+                        "required": [
+                          "$not",
+                        ],
+                        "type": "object",
+                      },
+                      {
+                        "additionalProperties": {
+                          "anyOf": [
+                            {
+                              "$ref": "#/properties/filter/anyOf/1/anyOf/0",
+                            },
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "$exists": {
+                                  "type": "boolean",
+                                },
+                              },
+                              "required": [
+                                "$exists",
+                              ],
+                              "type": "object",
+                            },
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "$in": {
+                                  "items": {
+                                    "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0",
+                                  },
+                                  "type": "array",
+                                },
+                              },
+                              "required": [
+                                "$in",
+                              ],
+                              "type": "object",
+                            },
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "$contains": {
+                                  "$ref": "#/properties/filter/anyOf/1",
+                                },
+                              },
+                              "required": [
+                                "$contains",
+                              ],
+                              "type": "object",
+                            },
+                          ],
+                        },
+                        "propertyNames": {
+                          "pattern": "^(?!\\$).*$",
+                        },
+                        "type": "object",
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+            "type": "object",
+          },
+        },
         "disabled": false,
         "factory": [Function],
         "inputs": {},
@@ -77,65 +228,71 @@ describe('EntityContextMenuItemBlueprint', () => {
     `);
   });
 
-  it('should exclude items based on the filter function', async () => {
-    const extension = EntityContextMenuItemBlueprint.make({
-      name: 'test',
-      params: {
-        icon: <span>Icon</span>,
-        filter: e => e.kind.toLowerCase() === 'component',
-        useProps: () => ({
-          title: 'Test',
-          onClick: () => {},
-        }),
-      },
-    });
+  it.each(filterTestCases)(
+    'should exclude items based on the filter',
+    async ({ params, config }) => {
+      const extension = EntityContextMenuItemBlueprint.make({
+        name: 'test',
+        params: {
+          icon: <span>Icon</span>,
+          ...params,
+          useProps: () => ({
+            title: 'Test',
+            onClick: () => {},
+          }),
+        },
+      });
 
-    renderInTestApp(
-      <EntityProvider
-        entity={{
-          apiVersion: 'v1',
-          kind: 'API',
-          metadata: { name: 'test' },
-        }}
-      >
-        <ul>{createExtensionTester(extension).reactElement()}</ul>
-      </EntityProvider>,
-    );
+      renderInTestApp(
+        <EntityProvider
+          entity={{
+            apiVersion: 'v1',
+            kind: 'API',
+            metadata: { name: 'test' },
+          }}
+        >
+          <ul>{createExtensionTester(extension, { config }).reactElement()}</ul>
+        </EntityProvider>,
+      );
 
-    await waitFor(() => {
-      expect(screen.queryByText('Test')).not.toBeInTheDocument();
-    });
-  });
+      await waitFor(() => {
+        expect(screen.queryByText('Test')).not.toBeInTheDocument();
+      });
+    },
+  );
 
-  it('should include items based on the filter function', async () => {
-    const extension = EntityContextMenuItemBlueprint.make({
-      name: 'test',
-      params: {
-        icon: <span>Icon</span>,
-        filter: e => e.kind.toLowerCase() === 'component',
-        useProps: () => ({
-          title: 'Test',
-          onClick: () => {},
-        }),
-      },
-    });
+  it.each(filterTestCases)(
+    'should include items based on the filter',
+    async ({ params, config }) => {
+      const extension = EntityContextMenuItemBlueprint.make({
+        name: 'test',
+        params: {
+          icon: <span>Icon</span>,
+          ...params,
+          useProps: () => ({
+            title: 'Test',
+            onClick: () => {},
+          }),
+        },
+      });
 
-    renderInTestApp(
-      <EntityProvider
-        entity={{
-          apiVersion: 'v1',
-          kind: 'Component',
-          metadata: { name: 'test' },
-        }}
-      >
-        <ul>{createExtensionTester(extension).reactElement()}</ul>
-      </EntityProvider>,
-    );
+      renderInTestApp(
+        <EntityProvider
+          entity={{
+            apiVersion: 'v1',
+            kind: 'Component',
+            metadata: { name: 'test' },
+          }}
+        >
+          <ul>{createExtensionTester(extension, { config }).reactElement()}</ul>
+        </EntityProvider>,
+      );
 
-    await waitFor(() => {
-      expect(screen.getByText('Test')).toBeInTheDocument();
-    });
-  });
+      await waitFor(() => {
+        expect(screen.getByText('Test')).toBeInTheDocument();
+      });
+    },
+  );
 
   it('should render a menu item', async () => {
     const extension = EntityContextMenuItemBlueprint.make({

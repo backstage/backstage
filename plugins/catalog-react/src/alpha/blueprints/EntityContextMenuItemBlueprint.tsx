@@ -24,9 +24,16 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { useEntityContextMenu } from '../../hooks/useEntityContextMenu';
+import { EntityPredicate } from '../predicates';
 import type { Entity } from '@backstage/catalog-model';
 import { useEntity } from '../../hooks/useEntity';
-
+import {
+  entityFilterExpressionDataRef,
+  entityFilterFunctionDataRef,
+} from './extensionData';
+import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
+import { resolveEntityFilterData } from './resolveEntityFilterData';
+import { buildFilterFn } from '../filter/FilterWrapper';
 /** @alpha */
 export type UseProps = () =>
   | {
@@ -44,7 +51,7 @@ export type UseProps = () =>
 export type EntityContextMenuItemParams = {
   useProps: UseProps;
   icon: JSX.Element;
-  filter?: (entity: Entity) => boolean;
+  filter?: string | EntityPredicate | ((entity: Entity) => boolean);
 };
 
 /** @alpha */
@@ -52,7 +59,33 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
   kind: 'entity-context-menu-item',
   attachTo: { id: 'page:catalog/entity', input: 'contextMenuItems' },
   output: [coreExtensionData.reactElement],
-  *factory(params: EntityContextMenuItemParams, { node }) {
+  config: {
+    schema: {
+      filter: z =>
+        z.union([z.string(), createEntityPredicateSchema(z)]).optional(),
+    },
+  },
+  *factory(params: EntityContextMenuItemParams, { node, config }) {
+    const resolvedFilterData = [];
+
+    for (const resolved of resolveEntityFilterData(
+      params.filter,
+      config,
+      node,
+    )) {
+      resolvedFilterData.push(resolved);
+    }
+
+    const resolvedFilter = resolvedFilterData.pop();
+    const filter = buildFilterFn(
+      resolvedFilter?.id === entityFilterFunctionDataRef.id
+        ? resolvedFilter.value
+        : undefined,
+      resolvedFilter?.id === entityFilterExpressionDataRef.id
+        ? resolvedFilter.value
+        : undefined,
+    );
+
     const loader = async () => {
       const Component = () => {
         const { onMenuClose } = useEntityContextMenu();
@@ -71,7 +104,7 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
           };
         }
 
-        if (entity && params.filter && !params.filter(entity)) {
+        if (entity && !filter(entity)) {
           return null;
         }
 
