@@ -3802,7 +3802,7 @@ __metadata:
   resolution: "@backstage/canon@workspace:packages/canon"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@base-ui-components/react": "npm:^1.0.0-alpha.7"
+    "@base-ui-components/react": "npm:1.0.0-alpha.7"
     "@remixicon/react": "npm:^4.6.0"
     "@storybook/addon-essentials": "npm:^8.6.12"
     "@storybook/addon-interactions": "npm:^8.6.12"
@@ -9067,7 +9067,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@base-ui-components/react@npm:^1.0.0-alpha.7":
+"@base-ui-components/react@npm:1.0.0-alpha.7":
   version: 1.0.0-alpha.7
   resolution: "@base-ui-components/react@npm:1.0.0-alpha.7"
   dependencies:
