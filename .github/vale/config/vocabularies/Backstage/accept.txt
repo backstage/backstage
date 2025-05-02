@@ -252,6 +252,7 @@ makefile
 Matomo
 md
 memcache
+memoization
 memoize
 memoized
 microservice
