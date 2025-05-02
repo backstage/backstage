@@ -544,6 +544,7 @@
   color: var(--canon-fg-primary);
   margin-bottom: var(--canon-space-1_5);
   cursor: pointer;
+  margin-right: auto;
 }
 
 .canon-TextFieldLabel[data-disabled] {
