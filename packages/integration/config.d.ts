@@ -183,6 +183,11 @@ export interface Config {
        */
       cloneUrl?: string;
       /**
+       * Disable the edit url feature.
+       * @visibility frontend
+       */
+      disableEditUrl?: boolean;
+      /**
        * The username to use for authenticated requests.
        * @visibility secret
        */
