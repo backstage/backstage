@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useId, forwardRef } from 'react';
-import { Input } from '@base-ui-components/react/input';
+import { Field } from '@base-ui-components/react/field';
+import { forwardRef } from 'react';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
 
@@ -39,56 +39,41 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
     // Get the responsive value for the variant
     const responsiveSize = useResponsiveValue(size);
 
-    // Generate unique IDs for accessibility
-    const inputId = useId();
-    const descriptionId = useId();
-    const errorId = useId();
-
     return (
-      <div
+      <Field.Root
         className={clsx('canon-TextField', className)}
+        disabled={disabled}
+        invalid={!!error}
         style={style}
         ref={ref}
       >
         {label && (
-          <label
-            className="canon-TextFieldLabel"
-            htmlFor={inputId}
-            data-disabled={disabled}
-          >
+          <Field.Label className="canon-TextFieldLabel">
             {label}
             {required && (
               <span aria-hidden="true" className="canon-TextFieldRequired">
                 (Required)
               </span>
             )}
-          </label>
+          </Field.Label>
         )}
-        <Input
-          id={inputId}
+        <Field.Control
           className="canon-TextFieldInput"
           data-size={responsiveSize}
-          aria-labelledby={label ? inputId : undefined}
-          aria-describedby={clsx({
-            [descriptionId]: description,
-            [errorId]: error,
-          })}
-          data-invalid={error}
           required={required}
-          disabled={disabled}
           {...rest}
         />
         {description && (
-          <p className="canon-TextFieldDescription" id={descriptionId}>
+          <Field.Description className="canon-TextFieldDescription">
             {description}
-          </p>
+          </Field.Description>
         )}
         {error && (
-          <p className="canon-TextFieldError" id={errorId} role="alert">
+          <Field.Error className="canon-TextFieldError" role="alert" forceShow>
             {error}
-          </p>
+          </Field.Error>
         )}
-      </div>
+      </Field.Root>
     );
   },
 );
