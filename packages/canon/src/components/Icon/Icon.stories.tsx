@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Icon } from './Icon';
 import { IconProvider } from './provider';
@@ -45,11 +44,11 @@ export const Default: Story = {
 
 export const WithCustomIcon: Story = {
   args: {
-    name: 'arrowDown',
+    name: 'arrow-down',
   },
   decorators: [
     Story => (
-      <IconProvider overrides={{ arrowDown: () => <div>Custom Icon</div> }}>
+      <IconProvider overrides={{ 'arrow-down': () => <div>Custom Icon</div> }}>
         <Story />
       </IconProvider>
     ),

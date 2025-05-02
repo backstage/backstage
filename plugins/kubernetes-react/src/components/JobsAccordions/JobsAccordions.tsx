@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext } from 'react';
+import { ReactNode, useContext } from 'react';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Grid from '@material-ui/core/Grid';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { V1Job, V1Pod } from '@kubernetes/client-node';
+import type { V1Job, V1Pod } from '@kubernetes/client-node';
 import { PodsTable } from '../Pods';
 import { JobDrawer } from './JobsDrawer';
 import { getOwnedResources } from '../../utils/owner';
@@ -37,18 +37,18 @@ import {
  */
 export type JobsAccordionsProps = {
   jobs: V1Job[];
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type JobAccordionProps = {
   job: V1Job;
   ownedPods: V1Pod[];
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type JobSummaryProps = {
   job: V1Job;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 const JobSummary = ({ job }: JobSummaryProps) => {

@@ -25,9 +25,10 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import Grid from '@material-ui/core/Grid';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
-import React from 'react';
 import { ImportInfoCard } from '../ImportInfoCard';
 import { ImportStepper } from '../ImportStepper';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { catalogImportTranslationRef } from '../../translation';
 
 /**
  * The default catalog import page.
@@ -35,6 +36,7 @@ import { ImportStepper } from '../ImportStepper';
  * @public
  */
 export const DefaultImportPage = () => {
+  const { t } = useTranslationRef(catalogImportTranslationRef);
   const theme = useTheme();
   const configApi = useApi(configApiRef);
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -54,7 +56,7 @@ export const DefaultImportPage = () => {
 
   return (
     <Page themeId="home">
-      <Header title="Register an existing component" />
+      <Header title={t('pageTitle')} />
       <Content>
         <ContentHeader title={`Start tracking your component in ${appTitle}`}>
           <SupportButton>{supportTitle}</SupportButton>

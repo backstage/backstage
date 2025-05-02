@@ -14,61 +14,9 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import { Config } from '@backstage/config';
-import { PluginCacheManager, TokenManager } from '@backstage/backend-common';
-import { Router } from 'express';
-import { IdentityApi } from '@backstage/plugin-auth-node';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import {
-  EventBroker,
-  EventsService,
-  HttpPostIngressOptions,
-} from '@backstage/plugin-events-node';
-
-import {
-  BackendFeature,
-  UrlReaderService,
-  SchedulerService,
-  SchedulerServiceTaskRunner,
-  DatabaseService,
-  DiscoveryService,
-} from '@backstage/backend-plugin-api';
+import { BackendFeature } from '@backstage/backend-plugin-api';
 import { PackagePlatform, PackageRole } from '@backstage/cli-node';
-import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { IndexBuilder } from '@backstage/plugin-search-backend-node';
-import { EventsBackend } from '@backstage/plugin-events-backend';
-import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { ScannedPluginPackage } from '../scanner';
-
-/**
- * @public
- *
- * @deprecated
- *
- * Support for the legacy backend system will be removed in the future.
- *
- * When adding a legacy plugin installer entrypoint in your plugin,
- * you should always take the opportunity to also implement support
- * for the new backend system if not already done.
- *
- */
-export type LegacyPluginEnvironment = {
-  logger: Logger;
-  cache: PluginCacheManager;
-  database: DatabaseService;
-  config: Config;
-  reader: UrlReaderService;
-  discovery: DiscoveryService;
-  tokenManager: TokenManager;
-  permissions: PermissionEvaluator;
-  scheduler: SchedulerService;
-  identity: IdentityApi;
-  eventBroker: EventBroker;
-  events: EventsService;
-  pluginProvider: BackendPluginProvider;
-};
 
 /**
  * @public
@@ -130,9 +78,7 @@ export interface BackendDynamicPlugin extends BaseDynamicPlugin {
 /**
  * @public
  */
-export type BackendDynamicPluginInstaller =
-  | LegacyBackendPluginInstaller
-  | NewBackendPluginInstaller;
+export type BackendDynamicPluginInstaller = NewBackendPluginInstaller;
 
 /**
  * @public
@@ -141,41 +87,6 @@ export interface NewBackendPluginInstaller {
   kind: 'new';
 
   install(): BackendFeature | BackendFeature[];
-}
-
-/**
- * @public
- * @deprecated
- *
- * Support for the legacy backend system will be removed in the future.
- *
- * When adding a legacy plugin installer entrypoint in your plugin,
- * you should always take the opportunity to also implement support
- * for the new backend system if not already done.
- *
- */
-export interface LegacyBackendPluginInstaller {
-  kind: 'legacy';
-
-  router?: {
-    pluginID: string;
-    createPlugin(env: LegacyPluginEnvironment): Promise<Router>;
-  };
-
-  catalog?(builder: CatalogBuilder, env: LegacyPluginEnvironment): void;
-  scaffolder?(env: LegacyPluginEnvironment): TemplateAction<any>[];
-  search?(
-    indexBuilder: IndexBuilder,
-    schedule: SchedulerServiceTaskRunner,
-    env: LegacyPluginEnvironment,
-  ): void;
-  events?(
-    eventsBackend: EventsBackend,
-    env: LegacyPluginEnvironment,
-  ): HttpPostIngressOptions[];
-  permissions?: {
-    policy?: PermissionPolicy;
-  };
 }
 
 /**

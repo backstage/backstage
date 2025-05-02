@@ -1,0 +1,101 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.canon-TextField {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--canon-font-regular);
+  width: 100%;
+}
+
+.canon-TextFieldLabel {
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-primary);
+  margin-bottom: var(--canon-space-1_5);
+  cursor: pointer;
+}
+.canon-TextFieldLabel[data-disabled] {
+  cursor: default;
+}
+
+.canon-TextFieldDescription {
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-secondary);
+  margin: 0;
+  padding-top: var(--canon-space-1_5);
+}
+
+.canon-TextFieldError {
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-danger);
+  margin: 0;
+  padding-top: var(--canon-space-1_5);
+}
+
+.canon-TextFieldInput {
+  border-radius: var(--canon-radius-3);
+  border: 1px solid var(--canon-border);
+  padding: 0 var(--canon-space-4);
+  background-color: var(--canon-bg-surface-1);
+  font-size: var(--canon-font-size-3);
+  font-family: var(--canon-font-regular);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-primary);
+  transition: border-color 0.2s ease-in-out, outline-color 0.2s ease-in-out;
+  width: 100%;
+}
+
+.canon-TextFieldInput::placeholder {
+  color: var(--canon-fg-secondary);
+}
+
+.canon-TextFieldInput:hover {
+  border-color: var(--canon-border-hover);
+}
+
+.canon-TextFieldInput:focus-visible {
+  outline-color: var(--canon-border-pressed);
+  outline-width: 0px;
+  border-color: var(--canon-border-pressed);
+}
+
+.canon-TextFieldInput[data-invalid] {
+  border-color: var(--canon-fg-danger);
+}
+
+.canon-TextFieldInput[data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border: 1px solid var(--canon-border-disabled);
+}
+
+.canon-TextFieldInput[data-size='small'] {
+  height: 2rem;
+}
+
+.canon-TextFieldInput[data-size='medium'] {
+  height: 2.5rem;
+}
+
+.canon-TextFieldRequired {
+  color: var(--canon-fg-secondary);
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  margin-left: var(--canon-space-1);
+}

@@ -21,7 +21,6 @@ import {
 import { useTheme as useV5Theme } from '@mui/material/styles';
 import { makeStyles as makeV5Styles } from '@mui/styles';
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 import { UnifiedThemeProvider } from './UnifiedThemeProvider';
 import { themes } from './themes';
 

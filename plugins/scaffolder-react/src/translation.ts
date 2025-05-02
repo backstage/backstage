@@ -29,6 +29,7 @@ export const scaffolderReactTranslationRef = createTranslationRef({
       editorLabel: 'Manage Templates',
       actionsLabel: 'Installed Actions',
       tasksLabel: 'Task List',
+      templatingExtensionsLabel: 'Templating Extensions',
     },
     stepper: {
       backButtonText: 'Back',
@@ -43,6 +44,9 @@ export const scaffolderReactTranslationRef = createTranslationRef({
     templateCard: {
       noDescription: 'No description',
       chooseButtonText: 'Choose',
+    },
+    cardHeader: {
+      detailBtnTitle: 'Show template entity details',
     },
     templateOutputs: {
       title: 'Text Output',

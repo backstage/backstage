@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { ResponseErrorPanel } from '../ResponseErrorPanel';
 import { ErrorPanelProps } from '../ErrorPanel';
 

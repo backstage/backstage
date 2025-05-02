@@ -15,7 +15,6 @@
  */
 
 import { useEntity } from '@backstage/plugin-catalog-react';
-import React from 'react';
 import {
   InfoCard,
   InfoCardVariants,

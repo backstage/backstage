@@ -1,5 +1,14 @@
 # yarn-plugin-backstage
 
+## 0.0.5-next.0
+
+### Patch Changes
+
+- fd70d86: Add both `npm:` and `backstage:` ranges to the lockfile to ensure compatibility with tools that parse the lockfile and ensure dependencies stay locked when building dist workspaces.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/release-manifests@0.0.12
+
 ## 0.0.4
 
 ### Patch Changes

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { ReactNode } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
@@ -85,7 +85,7 @@ export function toLegacyPlugin(
 // TODO: Currently a very naive implementation, may need some more work
 function toNewPlugin(plugin: LegacyBackstagePlugin): NewFrontendPlugin {
   return createNewPlugin({
-    id: plugin.getId(),
+    pluginId: plugin.getId(),
   });
 }
 

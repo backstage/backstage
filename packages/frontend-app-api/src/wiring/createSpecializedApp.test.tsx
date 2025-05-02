@@ -31,7 +31,6 @@ import {
 import { screen, render } from '@testing-library/react';
 import { createSpecializedApp } from './createSpecializedApp';
 import { mockApis, TestApiRegistry } from '@backstage/test-utils';
-import React from 'react';
 import {
   configApiRef,
   createApiFactory,
@@ -39,13 +38,14 @@ import {
 } from '@backstage/core-plugin-api';
 import { MemoryRouter } from 'react-router-dom';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
+import { Fragment } from 'react';
 
 describe('createSpecializedApp', () => {
   it('should render the root app', () => {
     const app = createSpecializedApp({
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             createExtension({
               attachTo: { id: 'root', input: 'app' },
@@ -66,7 +66,7 @@ describe('createSpecializedApp', () => {
     const app = createSpecializedApp({
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             createExtension({
               attachTo: { id: 'root', input: 'app' },
@@ -78,7 +78,7 @@ describe('createSpecializedApp', () => {
           ],
         }),
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             createExtension({
               attachTo: { id: 'root', input: 'app' },
@@ -102,7 +102,7 @@ describe('createSpecializedApp', () => {
       config: mockApis.config({ data: { test: 'foo' } }),
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             createExtension({
               attachTo: { id: 'root', input: 'app' },
@@ -128,7 +128,7 @@ describe('createSpecializedApp', () => {
     const app = createSpecializedApp({
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           featureFlags: [{ name: 'a' }, { name: 'b' }],
           extensions: [
             createExtension({
@@ -244,13 +244,13 @@ describe('createSpecializedApp', () => {
     `);
   });
 
-  it('should intitialize the APIs in the correct order to allow for overrides', () => {
+  it('should initialize the APIs in the correct order to allow for overrides', () => {
     const mockAnalyticsApi = jest.fn(() => ({ captureEvent: jest.fn() }));
 
     const app = createSpecializedApp({
       features: [
         createFrontendPlugin({
-          id: 'first',
+          pluginId: 'first',
           extensions: [
             ApiBlueprint.make({
               params: {
@@ -266,7 +266,7 @@ describe('createSpecializedApp', () => {
           ],
         }),
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           featureFlags: [{ name: 'a' }, { name: 'b' }],
           extensions: [
             createExtension({
@@ -321,7 +321,7 @@ describe('createSpecializedApp', () => {
       ]),
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             createExtension({
               attachTo: { id: 'root', input: 'app' },
@@ -368,7 +368,7 @@ describe('createSpecializedApp', () => {
     const { tree } = createSpecializedApp({
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             createExtension({
               attachTo: { id: 'root', input: 'app' },
@@ -446,7 +446,7 @@ describe('createSpecializedApp', () => {
     const extRouteRef = createExternalRouteRef();
 
     const pluginA = createFrontendPlugin({
-      id: 'a',
+      pluginId: 'a',
       externalRoutes: {
         ext: extRouteRef,
       },
@@ -464,9 +464,9 @@ describe('createSpecializedApp', () => {
                 <ApiProvider apis={apis}>
                   <MemoryRouter>
                     {inputs.children.map(i => (
-                      <React.Fragment key={i.node.spec.id}>
+                      <Fragment key={i.node.spec.id}>
                         {i.get(coreExtensionData.reactElement)}
-                      </React.Fragment>
+                      </Fragment>
                     ))}
                   </MemoryRouter>
                 </ApiProvider>,
@@ -489,7 +489,7 @@ describe('createSpecializedApp', () => {
       ],
     });
     const pluginB = createFrontendPlugin({
-      id: 'b',
+      pluginId: 'b',
       routes: {
         root: routeRef,
       },
@@ -531,7 +531,7 @@ describe('createSpecializedApp', () => {
     createSpecializedApp({
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             createExtension({
               name: 'root',
@@ -611,7 +611,7 @@ describe('createSpecializedApp', () => {
     const app = createSpecializedApp({
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             createExtension({
               attachTo: { id: 'root', input: 'app' },

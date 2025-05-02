@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { makeStyles } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles/withStyles';
 import {
   CATALOG_FILTER_EXISTS,
   catalogApiRef,
-  CatalogApi,
   useEntityOwnership,
   EntityListProvider,
 } from '@backstage/plugin-catalog-react';
@@ -72,8 +71,8 @@ export interface PanelProps {
   options?: TableOptions<DocsTableRow>;
   linkContent?: string | JSX.Element;
   linkDestination?: (entity: Entity) => string | undefined;
-  PageWrapper?: React.FC;
-  CustomHeader?: React.FC;
+  PageWrapper?: FC;
+  CustomHeader?: FC;
 }
 
 /**
@@ -146,7 +145,7 @@ export const CustomDocsPanel = ({
     );
   });
 
-  const Header: React.FC =
+  const Header: FC =
     config.panelProps?.CustomHeader ||
     (() => (
       <ContentHeader title={config.title} description={config.description}>
@@ -182,13 +181,13 @@ export const CustomDocsPanel = ({
 export type TechDocsCustomHomeProps = {
   tabsConfig: TabsConfig;
   filter?: EntityFilterQuery;
-  CustomPageWrapper?: React.FC;
+  CustomPageWrapper?: FC;
 };
 
 export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
   const { tabsConfig, filter, CustomPageWrapper } = props;
   const [selectedTab, setSelectedTab] = useState<number>(0);
-  const catalogApi: CatalogApi = useApi(catalogApiRef);
+  const catalogApi = useApi(catalogApiRef);
 
   const {
     value: entities,

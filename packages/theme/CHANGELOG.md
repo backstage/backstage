@@ -1,5 +1,27 @@
 # @backstage/theme
 
+## 0.6.6-next.0
+
+### Patch Changes
+
+- 1b14572: Show arrow when MuiTableSortLabel receives focus
+
+## 0.6.5
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
 ## 0.6.4
 
 ### Patch Changes

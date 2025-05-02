@@ -88,6 +88,11 @@ export namespace mockCredentials {
   }
   export function user(
     userEntityRef?: string,
+    options?: {
+      actor?: {
+        subject: string;
+      };
+    },
   ): BackstageCredentials<BackstageUserPrincipal>;
   export namespace user {
     export function header(userEntityRef?: string): string;
@@ -95,7 +100,14 @@ export namespace mockCredentials {
     export function invalidHeader(): string;
     // (undocumented)
     export function invalidToken(): string;
-    export function token(userEntityRef?: string): string;
+    export function token(
+      userEntityRef?: string,
+      options?: {
+        actor?: {
+          subject: string;
+        };
+      },
+    ): string;
   }
 }
 
@@ -210,14 +222,17 @@ export namespace mockServices {
         partialImpl?: Partial<DiscoveryService> | undefined,
       ) => ServiceMock<DiscoveryService>;
   }
+  export function events(): EventsService;
   // (undocumented)
   export namespace events {
-    const // (undocumented)
-      factory: () => ServiceFactory<EventsService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<EventsService> | undefined,
-      ) => ServiceMock<EventsService>;
+    const factory: () => ServiceFactory<
+      EventsService,
+      'plugin',
+      'singleton' | 'multiton'
+    >;
+    const mock: (
+      partialImpl?: Partial<EventsService> | undefined,
+    ) => ServiceMock<EventsService>;
   }
   export function httpAuth(options?: {
     pluginId?: string;
@@ -455,7 +470,7 @@ export interface TestBackendOptions<TExtensionPoints extends any[]> {
 }
 
 // @public
-export type TestCacheId = 'MEMORY' | 'REDIS_7' | 'MEMCACHED_1';
+export type TestCacheId = 'MEMORY' | 'REDIS_7' | 'VALKEY_8' | 'MEMCACHED_1';
 
 // @public
 export class TestCaches {

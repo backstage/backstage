@@ -24,9 +24,9 @@ import { IdSchema } from '@rjsf/utils';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
-import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { Ref } from 'react';
 import { Registry } from '@rjsf/utils';
@@ -55,11 +55,8 @@ export type Action = {
   examples?: ActionExample[];
 };
 
-// @public
-export type ActionExample = {
-  description: string;
-  example: string;
-};
+// @public @deprecated
+export type ActionExample = ScaffolderUsageExample;
 
 // @public
 export function createScaffolderFieldExtension<
@@ -169,6 +166,15 @@ export type LayoutTemplate<T = any> = NonNullable<
 export type ListActionsResponse = Array<Action>;
 
 // @public
+export type ListTemplatingExtensionsResponse = {
+  filters: Record<string, TemplateFilter>;
+  globals: {
+    functions: Record<string, TemplateGlobalFunction>;
+    values: Record<string, TemplateGlobalValue>;
+  };
+};
+
+// @public
 export type LogEvent = {
   type: 'log' | 'completion' | 'cancelled' | 'recovered';
   body: {
@@ -241,6 +247,7 @@ export interface ScaffolderApi {
     tasks: ScaffolderTask[];
     totalTasks?: number;
   }>;
+  listTemplatingExtensions?(): Promise<ListTemplatingExtensionsResponse>;
   retry?(taskId: string): Promise<void>;
   scaffold(
     options: ScaffolderScaffoldOptions,
@@ -305,9 +312,7 @@ export interface ScaffolderGetIntegrationsListResponse {
 }
 
 // @public
-export const ScaffolderLayouts: React_2.ComponentType<
-  React_2.PropsWithChildren<{}>
->;
+export const ScaffolderLayouts: ComponentType<PropsWithChildren<{}>>;
 
 // @public (undocumented)
 export type ScaffolderOutputLink = {
@@ -493,6 +498,13 @@ export type ScaffolderTaskStatus =
   | 'skipped';
 
 // @public
+export type ScaffolderUsageExample = {
+  description?: string;
+  example: string;
+  notes?: string;
+};
+
+// @public
 export interface ScaffolderUseTemplateSecrets {
   // (undocumented)
   secrets: Record<string, string>;
@@ -505,7 +517,7 @@ export const SecretsContextProvider: (
   props: PropsWithChildren<{
     initialSecrets?: Record<string, string>;
   }>,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export type TaskStream = {
@@ -521,6 +533,33 @@ export type TaskStream = {
     [stepId in string]: ScaffolderStep;
   };
   output?: ScaffolderTaskOutput;
+};
+
+// @public
+export type TemplateFilter = {
+  description?: string;
+  schema?: {
+    input?: JSONSchema7;
+    arguments?: JSONSchema7[];
+    output?: JSONSchema7;
+  };
+  examples?: ScaffolderUsageExample[];
+};
+
+// @public
+export type TemplateGlobalFunction = {
+  description?: string;
+  schema?: {
+    arguments?: JSONSchema7[];
+    output?: JSONSchema7;
+  };
+  examples?: ScaffolderUsageExample[];
+};
+
+// @public
+export type TemplateGlobalValue = {
+  description?: string;
+  value: JsonValue;
 };
 
 // @public (undocumented)

@@ -60,6 +60,6 @@ See more command options in the AutoCannon documentation.
 Profiling the frontend can be done by using the `React DevTools` extension for Chrome or Firefox.
 The extension is available for download from the Chrome Web Store or the Firefox Add-ons website.
 
-To start profiling, start the application with `yarn dev` and open inspector in the browser. In the
+To start profiling, start the application with `yarn start` and open inspector in the browser. In the
 `Profiler` tab (far to the right), click the `Start profiling` button to start recording. After
 you have recorded some data by navigating through the page, click the `Stop profiling` button to stop the recording.

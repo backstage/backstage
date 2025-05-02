@@ -15,7 +15,6 @@
  */
 
 import Star from '@material-ui/icons/Star';
-import React from 'react';
 import { ProviderSettingsItem } from './ProviderSettingsItem';
 import {
   githubAuthApiRef,
@@ -28,18 +27,23 @@ import {
   atlassianAuthApiRef,
   oneloginAuthApiRef,
 } from '@backstage/core-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 /** @public */
 export const DefaultProviderSettings = (props: {
   configuredProviders: string[];
 }) => {
   const { configuredProviders } = props;
+  const { t } = useTranslationRef(userSettingsTranslationRef);
   return (
     <>
       {configuredProviders.includes('google') && (
         <ProviderSettingsItem
           title="Google"
-          description="Provides authentication towards Google APIs and identities"
+          description={t('defaultProviderSettings.description', {
+            provider: 'Google',
+          })}
           apiRef={googleAuthApiRef}
           icon={Star}
         />
@@ -47,7 +51,9 @@ export const DefaultProviderSettings = (props: {
       {configuredProviders.includes('microsoft') && (
         <ProviderSettingsItem
           title="Microsoft"
-          description="Provides authentication towards Microsoft APIs and identities"
+          description={t('defaultProviderSettings.description', {
+            provider: 'Microsoft',
+          })}
           apiRef={microsoftAuthApiRef}
           icon={Star}
         />
@@ -55,7 +61,9 @@ export const DefaultProviderSettings = (props: {
       {configuredProviders.includes('github') && (
         <ProviderSettingsItem
           title="GitHub"
-          description="Provides authentication towards GitHub APIs"
+          description={t('defaultProviderSettings.description', {
+            provider: 'GitHub',
+          })}
           apiRef={githubAuthApiRef}
           icon={Star}
         />
@@ -63,7 +71,9 @@ export const DefaultProviderSettings = (props: {
       {configuredProviders.includes('gitlab') && (
         <ProviderSettingsItem
           title="GitLab"
-          description="Provides authentication towards GitLab APIs"
+          description={t('defaultProviderSettings.description', {
+            provider: 'GitLab',
+          })}
           apiRef={gitlabAuthApiRef}
           icon={Star}
         />
@@ -71,7 +81,9 @@ export const DefaultProviderSettings = (props: {
       {configuredProviders.includes('okta') && (
         <ProviderSettingsItem
           title="Okta"
-          description="Provides authentication towards Okta APIs"
+          description={t('defaultProviderSettings.description', {
+            provider: 'Okta',
+          })}
           apiRef={oktaAuthApiRef}
           icon={Star}
         />
@@ -79,7 +91,9 @@ export const DefaultProviderSettings = (props: {
       {configuredProviders.includes('bitbucket') && (
         <ProviderSettingsItem
           title="Bitbucket"
-          description="Provides authentication towards Bitbucket APIs"
+          description={t('defaultProviderSettings.description', {
+            provider: 'Bitbucket',
+          })}
           apiRef={bitbucketAuthApiRef}
           icon={Star}
         />
@@ -87,7 +101,9 @@ export const DefaultProviderSettings = (props: {
       {configuredProviders.includes('onelogin') && (
         <ProviderSettingsItem
           title="OneLogin"
-          description="Provides authentication towards OneLogin APIs"
+          description={t('defaultProviderSettings.description', {
+            provider: 'OneLogin',
+          })}
           apiRef={oneloginAuthApiRef}
           icon={Star}
         />
@@ -95,7 +111,9 @@ export const DefaultProviderSettings = (props: {
       {configuredProviders.includes('atlassian') && (
         <ProviderSettingsItem
           title="Atlassian"
-          description="Provides authentication towards Atlassian APIs"
+          description={t('defaultProviderSettings.description', {
+            provider: 'Atlassian',
+          })}
           apiRef={atlassianAuthApiRef}
           icon={Star}
         />
@@ -103,7 +121,9 @@ export const DefaultProviderSettings = (props: {
       {configuredProviders.includes('bitbucketServer') && (
         <ProviderSettingsItem
           title="Bitbucket Server"
-          description="Provides authentication towards Bitbucket Server APIs"
+          description={t('defaultProviderSettings.description', {
+            provider: 'Bitbucket Server',
+          })}
           apiRef={bitbucketServerAuthApiRef}
           icon={Star}
         />

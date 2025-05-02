@@ -22,7 +22,7 @@ import {
   CreatedTemplateGlobal,
   CreatedTemplateGlobalFunction,
   CreatedTemplateGlobalValue,
-  TemplateGlobalFunctionSchema,
+  ZodFunctionSchema,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { JsonValue } from '@backstage/types';
 import { Schema } from 'jsonschema';
@@ -63,8 +63,12 @@ type ExportFilterSchema = {
  * Converts a Zod function schema to JSON schema
  */
 function convertZodFunctionToJsonSchema(
-  t: ReturnType<TemplateGlobalFunctionSchema<any, any>>,
+  t: ReturnType<ZodFunctionSchema<any, any>>,
 ): ExportFunctionSchema {
+  if (!('parameters' in t) || !('returnType' in t)) {
+    throw new Error('Invalid Zod function schema');
+  }
+
   const args = (t.parameters().items as ZodType[]).map(
     zt => zodToJsonSchema(zt) as Schema,
   );
@@ -142,7 +146,9 @@ export function extractFilterMetadata(
 
       if (filter.schema) {
         metadata.schema = convertToFilterSchema(
-          convertZodFunctionToJsonSchema(filter.schema(z)),
+          convertZodFunctionToJsonSchema(
+            filter.schema(z) as z.ZodFunction<any, any>,
+          ),
         );
       }
 
@@ -167,10 +173,7 @@ export function extractFilterMetadata(
  */
 function isGlobalFunction(
   global: CreatedTemplateGlobal,
-): global is CreatedTemplateGlobalFunction<
-  TemplateGlobalFunctionSchema<any, any> | undefined,
-  any
-> {
+): global is CreatedTemplateGlobalFunction<any, any> {
   return 'fn' in global;
 }
 
@@ -194,10 +197,15 @@ export function extractGlobalFunctionMetadata(
 
     for (const global of globals) {
       if (isGlobalFunction(global)) {
-        const metadata: any = {
-          description: global.description,
-          examples: global.examples,
-        };
+        const metadata: any = {};
+
+        if (global.description) {
+          metadata.description = global.description;
+        }
+
+        if (global.examples) {
+          metadata.examples = global.examples;
+        }
 
         if (global.schema) {
           metadata.schema = convertZodFunctionToJsonSchema(global.schema(z));

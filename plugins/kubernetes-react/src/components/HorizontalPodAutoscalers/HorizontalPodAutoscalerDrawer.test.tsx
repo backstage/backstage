@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen } from '@testing-library/react';
 import * as hpas from './__fixtures__/horizontalpodautoscalers.json';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';

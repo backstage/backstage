@@ -11,8 +11,8 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { EvaluatePermissionRequest } from '@backstage/plugin-permission-common';
 import { EvaluatePermissionResponse } from '@backstage/plugin-permission-common';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Permission } from '@backstage/plugin-permission-common';
-import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
@@ -66,7 +66,7 @@ export const PermissionedRoute: (
         resourceRef: string | undefined;
       }
   ),
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export function RequirePermission(

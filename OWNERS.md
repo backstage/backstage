@@ -41,6 +41,18 @@ Scope: The Backstage design system, component library, as well as surrounding to
 | Charles de Dreuille | Spotify      |               | [cdedreuille](https://github.com/cdedreuille) | `cdedreuille` |
 | Patrik Oldsberg     | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)           | `Rugvip`      |
 
+### Helm Charts
+
+Team: @backstage/helm-chart-maintainers
+
+Scope: The Backstage [Helm Chart(s)](https://github.com/backstage/charts).
+
+| Name                 | Organization | Team | GitHub                                   | Discord        |
+| -------------------- | ------------ | ---- | ---------------------------------------- | -------------- |
+| Andrew Block         | Red Hat      |      | [sabre1041](http://github.com/sabre1041) | sabre1041#2622 |
+| Tom Coufal           | Red Hat      |      | [tumido](http://github.com/tumido)       | Tumi#4346      |
+| Vincenzo Scamporlino | Spotify      |      | [vinzscam](http://github.com/vinzscam)   | vinzscam#6944  |
+
 ### Home
 
 Team: @backstage/home-maintainers
@@ -53,30 +65,6 @@ Scope: The Backstage home page and information architecture
 | Emma Indal               | Spotify      | Infinite Buck$ | [emmaindal](http://github.com/emmaindal) | emmaindal#7503    |
 | Djamaile Rahamat         | Spotify      | Infinite Buck$ | [djamaile](http://github.com/djamaile)   | dyoqi             |
 | Raghunandan Balachandran | Spotify      | Infinite Buck$ | [soapraj](http://github.com/soapraj)     | raghunandanb#1114 |
-
-### Search
-
-Team: @backstage/search-maintainers
-
-Scope: The Backstage Search plugin
-
-| Name            | Organization | Team    | GitHub                                            | Discord          |
-| --------------- | ------------ | ------- | ------------------------------------------------- | ---------------- |
-| Alex Lorenzi    | Spotify      | ProTean | [AlexLorenzi](https://github.com/AlexLorenzi)     | alexlorenzi      |
-| John Philip     | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | john_philip#2399 |
-| Morgan Da Costa | Spotify      | ProTean | [morgandc](https://github.com/morgandc)           | -                |
-
-### Helm Charts
-
-Team: @backstage/helm-chart-maintainers
-
-Scope: The Backstage [Helm Chart(s)](https://github.com/backstage/charts).
-
-| Name                 | Organization | Team | GitHub                                   | Discord        |
-| -------------------- | ------------ | ---- | ---------------------------------------- | -------------- |
-| Andrew Block         | Red Hat      |      | [sabre1041](http://github.com/sabre1041) | sabre1041#2622 |
-| Tom Coufal           | Red Hat      |      | [tumido](http://github.com/tumido)       | Tumi#4346      |
-| Vincenzo Scamporlino | Spotify      |      | [vinzscam](http://github.com/vinzscam)   | vinzscam#6944  |
 
 ### Kubernetes
 
@@ -103,6 +91,18 @@ Scope: The Permission Framework and plugins integrating with the permission fram
 | Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
 | Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
 
+### Search
+
+Team: @backstage/search-maintainers
+
+Scope: The Backstage Search plugin
+
+| Name            | Organization | Team    | GitHub                                            | Discord          |
+| --------------- | ------------ | ------- | ------------------------------------------------- | ---------------- |
+| Alex Lorenzi    | Spotify      | ProTean | [AlexLorenzi](https://github.com/AlexLorenzi)     | alexlorenzi      |
+| John Philip     | Spotify      | ProTean | [johnphilip283](https://github.com/johnphilip283) | john_philip#2399 |
+| Morgan Da Costa | Spotify      | ProTean | [morgandc](https://github.com/morgandc)           | -                |
+
 ### TechDocs
 
 Team: @backstage/techdocs-maintainers
@@ -121,6 +121,16 @@ Scope: The TechDocs plugin and related tooling
 
 These incubating project areas have shared ownership with @backstage/maintainers.
 
+### Auditor
+
+Team: @backstage/auditor-maintainers
+
+Scope: The auditor core service, along with auditor usage in the main repository
+
+| Name         | Organization | GitHub                                          | Discord        |
+| ------------ | ------------ | ----------------------------------------------- | -------------- |
+| Paul Schultz | Red Hat      | [schultzp2020](https://github.com/schultzp2020) | `schultzp2020` |
+
 ### Community Plugins
 
 Team: @backstage/community-plugins-maintainers
@@ -133,6 +143,18 @@ Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugi
 | Bethany Griggs       | Red Hat      | [BethGriggs](https://github.com/BethGriggs) | `bethgriggs` |
 | Kashish Mittal       | Red Hat      | [04kash](https://github.com/04kash)         | `kashh._.`   |
 | Vincenzo Scamporlino | Spotify      | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
+
+### Documentation
+
+Team: @backstage/documentation-maintainers
+
+Scope: The Backstage Documentation and Microsite, excluding the plugins listing
+
+| Name            | Organization  | GitHub                                                | Discord       |
+| --------------- | ------------- | ----------------------------------------------------- | ------------- |
+| Andre Wanlin    | Spotify       | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
+| Aramis Sennyey  | DoorDash      | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
+| Peter Macdonald | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)           | `parsifal`    |
 
 ### Events
 
@@ -173,28 +195,6 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | Name                | Organization | GitHub                                | Discord          |
 | ------------------- | ------------ | ------------------------------------- | ---------------- |
 | Bogdan Nechyporenko | Bol.com      | [acierto](https://github.com/acierto) | `bogdan_haarlem` |
-
-### Auditor
-
-Team: @backstage/auditor-maintainers
-
-Scope: The auditor core service, along with auditor usage in the main repository
-
-| Name         | Organization | GitHub                                          | Discord        |
-| ------------ | ------------ | ----------------------------------------------- | -------------- |
-| Paul Schultz | Red Hat      | [schultzp2020](https://github.com/schultzp2020) | `schultzp2020` |
-
-### Documentation
-
-Team: @backstage/documentation-maintainers
-
-Scope: The Backstage Documentation
-
-| Name            | Organization  | GitHub                                                | Discord       |
-| --------------- | ------------- | ----------------------------------------------------- | ------------- |
-| Andre Wanlin    | Spotify       | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
-| Aramis Sennyey  | DoorDash      | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
-| Peter Macdonald | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)           | `parsifal`    |
 
 ## Sponsors
 

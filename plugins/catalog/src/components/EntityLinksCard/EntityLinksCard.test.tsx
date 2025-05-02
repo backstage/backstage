@@ -18,7 +18,6 @@ import { Entity, EntityLink } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { EntityLinksCard } from './EntityLinksCard';
 
 describe('EntityLinksCard', () => {

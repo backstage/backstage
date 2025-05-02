@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, Theme } from '@material-ui/core/styles';
@@ -280,7 +278,7 @@ export const searchNavItem = NavItemBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'search',
+  pluginId: 'search',
   extensions: [searchApi, searchPage, searchNavItem],
   routes: convertLegacyRouteRefs({
     root: rootRouteRef,

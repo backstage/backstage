@@ -416,8 +416,6 @@ In your front-end application, locate the `src` folder. We suggest creating the 
 ```tsx title="customIcons.tsx"
 import { SvgIcon, SvgIconProps } from '@material-ui/core';
 
-import React from 'react';
-
 export const ExampleIcon = (props: SvgIconProps) => (
   <SvgIcon {...props} viewBox="0 0 24 24">
     <path

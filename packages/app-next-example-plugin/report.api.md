@@ -7,7 +7,8 @@ import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
@@ -25,11 +26,7 @@ const examplePlugin: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
         | ConfigurableExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
@@ -50,7 +47,7 @@ const examplePlugin: FrontendPlugin<
 export default examplePlugin;
 
 // @public (undocumented)
-export const ExampleSidebarItem: () => React_2.JSX.Element;
+export const ExampleSidebarItem: () => JSX_3.Element;
 
 // (No @packageDocumentation comment for this package)
 ```

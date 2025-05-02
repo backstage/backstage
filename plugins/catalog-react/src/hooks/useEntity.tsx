@@ -20,7 +20,7 @@ import {
   createVersionedValueMap,
   useVersionedContext,
 } from '@backstage/version-bridge';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 /** @public */
 export type EntityLoadingStatus<TEntity extends Entity = Entity> = {

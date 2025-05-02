@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Theme, makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import { ItemCardHeader } from '@backstage/core-components';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { FavoriteEntity } from '@backstage/plugin-catalog-react';
+import { TemplateDetailButton } from './TemplateDetailButton.tsx';
 
 const useStyles = makeStyles<
   Theme,
@@ -34,6 +34,9 @@ const useStyles = makeStyles<
   subtitleWrapper: {
     display: 'flex',
     justifyContent: 'space-between',
+  },
+  detailIcon: {
+    color: ({ cardFontColor }) => cardFontColor,
   },
 }));
 
@@ -66,7 +69,14 @@ export const CardHeader = (props: CardHeaderProps) => {
     <div className={styles.subtitleWrapper}>
       <div>{type}</div>
       <div>
-        <FavoriteEntity entity={props.template} style={{ padding: 0 }} />
+        <TemplateDetailButton
+          className={styles.detailIcon}
+          template={props.template}
+        />
+        <FavoriteEntity
+          entity={props.template}
+          style={{ padding: 0, marginLeft: 6 }}
+        />
       </div>
     </div>
   );

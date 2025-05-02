@@ -78,6 +78,13 @@ export type MicrosoftGraphProviderConfig = {
    * E.g. "manager".
    */
   userExpand?: string;
+
+  /**
+   * The path to the users endpoint. Defaults to "/users".
+   *
+   * E.g. "/users"
+   */
+  userPath?: string;
   /**
    * The filter to apply to extract users by groups memberships.
    *
@@ -90,6 +97,14 @@ export type MicrosoftGraphProviderConfig = {
    * E.g. "\"displayName:-team\"" would only match groups which contain '-team'
    */
   userGroupMemberSearch?: string;
+
+  /**
+   * The path to the groups endpoint. Defaults to "/groups".
+   *
+   * E.g. "/groups"
+   */
+  userGroupMemberPath?: string;
+
   /**
    * The "expand" argument to apply to groups.
    *
@@ -115,6 +130,13 @@ export type MicrosoftGraphProviderConfig = {
    * E.g. ["id", "displayName", "description"]
    */
   groupSelect?: string[];
+
+  /**
+   * The path to the groups endpoint. Defaults to "/groups".
+   *
+   * E.g. "/groups"
+   */
+  groupPath?: string;
 
   /**
    * Whether to ingest groups that are members of the found/filtered/searched groups.
@@ -292,12 +314,14 @@ export function readProviderConfig(
   const userExpand = config.getOptionalString('user.expand');
   const userFilter = config.getOptionalString('user.filter');
   const userSelect = config.getOptionalStringArray('user.select');
+  const userPath = config.getOptionalString('user.path') ?? 'users';
   const loadUserPhotos = config.getOptionalBoolean('user.loadPhotos');
 
   const groupExpand = config.getOptionalString('group.expand');
   const groupFilter = config.getOptionalString('group.filter');
   const groupSearch = config.getOptionalString('group.search');
   const groupSelect = config.getOptionalStringArray('group.select');
+  const groupPath = config.getOptionalString('group.path') ?? 'groups';
   const groupIncludeSubGroups = config.getOptionalBoolean(
     'group.includeSubGroups',
   );
@@ -317,6 +341,7 @@ export function readProviderConfig(
   const userGroupMemberSearch = config.getOptionalString(
     'userGroupMember.search',
   );
+  const userGroupMemberPath = config.getOptionalString('userGroupMember.path');
 
   if (userFilter && userGroupMemberFilter) {
     throw new Error(
@@ -353,15 +378,18 @@ export function readProviderConfig(
     userExpand,
     userFilter,
     userSelect,
+    userPath,
     loadUserPhotos,
     groupExpand,
     groupFilter,
     groupSearch,
     groupSelect,
+    groupPath,
     groupIncludeSubGroups,
     queryMode,
     userGroupMemberFilter,
     userGroupMemberSearch,
+    userGroupMemberPath,
     schedule,
   };
 }

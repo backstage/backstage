@@ -86,7 +86,6 @@ There is one more detail that we need to deal with before moving on. The `app.cr
 
 ```tsx title="in packages/app/src/index.tsx"
 import '@backstage/cli/asset-types';
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 // highlight-remove-next-line
 import App from './App';
@@ -220,7 +219,7 @@ Can be converted to the following plugin configuration:
 
 ```tsx
 createFrontendPlugin({
-  id: 'tech-radar',
+  pluginId: 'tech-radar',
   // ...
   featureFlags: [{ name: 'tech-radar' }],
   // ...

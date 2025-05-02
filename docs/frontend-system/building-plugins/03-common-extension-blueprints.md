@@ -10,7 +10,7 @@ description: Extension blueprints provided by the frontend system and core featu
 
 This section covers many of the [extension blueprints](../architecture/23-extension-blueprints.md) available at your disposal when building Backstage frontend plugins.
 
-## Built-in extension blueprints
+## Extension blueprints in `@backstage/frontend-plugin-api`
 
 These are the [extension blueprints](../architecture/23-extension-blueprints.md) provided by the Backstage frontend framework itself.
 
@@ -46,18 +46,26 @@ Icon bundle extensions provide the ability to replace or provide new icons to th
 
 Translation extension provide custom translation messages for the app. They can be used both to override the default english messages to custom ones, as well as provide translations for additional languages.
 
-## Core feature extension blueprints
+## Extension blueprints in `@backstage/plugin-catalog-react/alpha`
 
-These are the [extension blueprints](../architecture/23-extension-blueprints.md) provided by the Backstage core feature plugins.
+These are the [extension blueprints](../architecture/23-extension-blueprints.md) provided by the Catalog plugin.
 
-### EntityCard - [Reference](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md)
+### EntityCard - [Example](https://github.com/backstage/backstage/blob/75e79518eafc6e6eb55585f166667418419662de/plugins/org/src/alpha.tsx#L27-L36)
 
 Creates entity cards to be displayed on the entity pages of the catalog plugin. Exported as `EntityCardBlueprint`.
 
-### EntityContent - [Reference](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md)
+Avoid using `convertLegacyEntityCardExtension` from `@backstage/core-compat-api` to convert legacy entity card extensions to the new system. Instead, use the `EntityCardBlueprint` directly. The legacy converter is only intended to help adapt 3rd party plugins that you don't control, and doesn't produce as good results as using the blueprint directly.
+
+### EntityContent - [Example](https://github.com/backstage/backstage/blob/cd71065a02bed740011daee96a865108a785dff6/plugins/kubernetes/src/alpha/entityContents.tsx#L22-L34)
 
 Creates entity content to be displayed on the entity pages of the catalog plugin. Exported as `EntityContentBlueprint`.
 
-### SearchResultListItem - [Reference](https://github.com/backstage/backstage/blob/master/plugins/search-react/report-alpha.api.md)
+Avoid using `convertLegacyEntityContentExtension` from `@backstage/core-compat-api` to convert legacy entity content extensions to the new system. Instead, use the `EntityContentBlueprint` directly. The legacy converter is only intended to help adapt 3rd party plugins that you don't control, and doesn't produce as good results as using the blueprint directly.
+
+## Extension blueprints in `@backstage/plugin-search-react/alpha`
+
+These are the [extension blueprints](../architecture/23-extension-blueprints.md) provided by the Search plugin.
+
+### SearchResultListItem - [Example](https://github.com/backstage/backstage/blob/8cb9a85596a5417a004811ffa429527b17ce9b72/plugins/catalog/src/alpha/searchResultItems.tsx#L19-L27)
 
 Creates search result list items for different types of search results, to be displayed in search result lists. Exported as `SearchResultListItemBlueprint`.

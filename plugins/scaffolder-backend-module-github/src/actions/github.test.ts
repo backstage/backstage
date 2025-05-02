@@ -54,6 +54,9 @@ const initRepoAndPushMocked = initRepoAndPush as jest.Mock<
   Promise<{ commitHash: string }>
 >;
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
   rest: {
     users: {
@@ -81,11 +84,7 @@ const mockOctokit = {
   request: jest.fn(),
 };
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 describe('publish:github', () => {
@@ -114,6 +113,7 @@ describe('publish:github', () => {
   });
 
   beforeEach(() => {
+    octokitMock.mockImplementation(() => mockOctokit);
     initRepoAndPushMocked.mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     });
@@ -125,7 +125,7 @@ describe('publish:github', () => {
       githubCredentialsProvider,
     });
 
-    // restore real implmentation
+    // restore real implementation
     (entityRefToName as jest.Mock).mockImplementation(
       realFamiliarizeEntityName,
     );
@@ -138,6 +138,20 @@ describe('publish:github', () => {
   });
 
   afterEach(jest.resetAllMocks);
+
+  it('should pass context logger to Octokit client', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'Organization' },
+    });
+
+    mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+
+    await action.handler(mockContext);
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
+  });
 
   it('should fail to create if the team is not found in the org', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({
@@ -189,6 +203,12 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      custom_properties: undefined,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: undefined,
       visibility: 'private',
     });
 
@@ -211,6 +231,12 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      custom_properties: undefined,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: undefined,
       visibility: 'public',
     });
 
@@ -234,6 +260,7 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
       visibility: 'private',
     });
 
@@ -258,10 +285,13 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      customElements: undefined,
       visibility: 'private',
-      has_wiki: true,
-      has_projects: true,
-      has_issues: true,
+      has_wiki: undefined,
+      has_projects: undefined,
+      has_issues: undefined,
+      homepage: 'https://example.com',
     });
 
     await action.handler({
@@ -285,10 +315,13 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      custom_properties: undefined,
       visibility: 'private',
-      has_wiki: false,
-      has_projects: false,
-      has_issues: false,
+      has_wiki: undefined,
+      has_projects: undefined,
+      has_issues: undefined,
+      homepage: 'https://example.com',
     });
 
     await action.handler({
@@ -314,11 +347,13 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      custom_properties: undefined,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: 'https://example.com',
       visibility: 'private',
-      custom_properties: {
-        foo: 'bar',
-        foo2: 'bar2',
-      },
     });
   });
 
@@ -345,6 +380,11 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: undefined,
     });
 
     await action.handler({
@@ -367,6 +407,11 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: undefined,
     });
 
     await action.handler({
@@ -390,6 +435,10 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
     });
 
     await action.handler({
@@ -414,9 +463,10 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      has_wiki: true,
-      has_projects: true,
-      has_issues: true,
+      allow_update_branch: false,
+      has_wiki: undefined,
+      has_projects: undefined,
+      has_issues: undefined,
     });
 
     await action.handler({
@@ -441,9 +491,11 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      has_wiki: false,
-      has_projects: false,
-      has_issues: false,
+      allow_update_branch: false,
+      has_wiki: undefined,
+      has_projects: undefined,
+      has_issues: undefined,
+      homepage: 'https://example.com',
     });
 
     // Custom properties on user repos should be ignored
@@ -471,6 +523,11 @@ describe('publish:github', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      has_issues: undefined,
+      has_projects: undefined,
+      has_wiki: undefined,
+      homepage: 'https://example.com',
     });
   });
 
@@ -491,7 +548,7 @@ describe('publish:github', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',
@@ -570,7 +627,7 @@ describe('publish:github', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',
@@ -615,7 +672,7 @@ describe('publish:github', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'Test commit message',
@@ -1036,7 +1093,7 @@ describe('publish:github', () => {
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://github.com/html/url/blob/master',
+      'https://github.com/html/url/blob/main',
     );
   });
 
@@ -1088,7 +1145,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1118,7 +1175,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1147,7 +1204,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1175,7 +1232,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1264,7 +1321,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1295,7 +1352,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1329,7 +1386,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1364,7 +1421,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1400,7 +1457,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1436,7 +1493,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1473,7 +1530,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1503,7 +1560,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: {
         users: ['user'],
@@ -1535,7 +1592,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: {
         teams: ['team'],
@@ -1567,7 +1624,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: {
         apps: ['app'],
@@ -1601,7 +1658,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: {
         users: ['user'],
@@ -1637,7 +1694,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: {
         users: ['user1', 'user2'],
@@ -1724,7 +1781,7 @@ describe('publish:github', () => {
         client: mockOctokit,
         repoName: 'repo',
         logger: mockContext.logger,
-        defaultBranch: 'master',
+        defaultBranch: 'main',
         requireCodeOwnerReviews: false,
         bypassPullRequestAllowances: undefined,
         requiredApprovingReviewCount: 1,
@@ -1753,7 +1810,7 @@ describe('publish:github', () => {
         client: mockOctokit,
         repoName: 'repo',
         logger: mockContext.logger,
-        defaultBranch: 'master',
+        defaultBranch: 'main',
         requireCodeOwnerReviews: false,
         bypassPullRequestAllowances: undefined,
         requiredApprovingReviewCount: 1,
@@ -1782,7 +1839,7 @@ describe('publish:github', () => {
         client: mockOctokit,
         repoName: 'repo',
         logger: mockContext.logger,
-        defaultBranch: 'master',
+        defaultBranch: 'main',
         requireCodeOwnerReviews: false,
         bypassPullRequestAllowances: undefined,
         requiredApprovingReviewCount: 1,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react';
 
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -53,7 +53,7 @@ const mockEntityMetadata: Entity = {
 };
 
 const mockTechDocsMetadata: TechDocsMetadata = {
-  site_name: 'test-componnet',
+  site_name: 'test-component',
   site_description: 'this is a test component',
 };
 
@@ -75,7 +75,7 @@ const wrapper = ({
 }: {
   entityRef?: CompoundEntityRef;
   config?: JsonObject;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => (
   <ThemeProvider theme={lightTheme}>
     <TestApiProvider

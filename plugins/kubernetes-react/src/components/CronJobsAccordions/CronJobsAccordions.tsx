@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext } from 'react';
+import { ReactNode, useContext } from 'react';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { V1CronJob, V1Job } from '@kubernetes/client-node';
+import type { V1CronJob, V1Job } from '@kubernetes/client-node';
 import { JobsAccordions } from '../JobsAccordions';
 import { CronJobDrawer } from './CronJobsDrawer';
 import { getOwnedResources } from '../../utils/owner';
@@ -34,18 +34,18 @@ import { humanizeCron } from '../../utils/crons';
  * @public
  */
 export type CronJobsAccordionsProps = {
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type CronJobAccordionProps = {
   cronJob: V1CronJob;
   ownedJobs: V1Job[];
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type CronJobSummaryProps = {
   cronJob: V1CronJob;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 const CronJobSummary = ({ cronJob }: CronJobSummaryProps) => {

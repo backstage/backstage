@@ -21,7 +21,7 @@ import {
   RequestDetails,
 } from '@backstage/plugin-events-node';
 import { sign } from '@octokit/webhooks-methods';
-import { eventsModuleGithubWebhook } from './eventsModuleGithubWebhook';
+import eventsModuleGithubWebhook from './eventsModuleGithubWebhook';
 
 describe('eventsModuleGithubWebhook', () => {
   const secret = 'valid-secret';
@@ -41,6 +41,27 @@ describe('eventsModuleGithubWebhook', () => {
       },
     } as RequestDetails;
   };
+
+  it('should not add ingress if validator is undefined', async () => {
+    let addedIngress: HttpPostIngressOptions | undefined;
+    const extensionPoint = {
+      addHttpPostIngress: (ingress: any) => {
+        addedIngress = ingress;
+      },
+    };
+
+    await startTestBackend({
+      extensionPoints: [[eventsExtensionPoint, extensionPoint]],
+      features: [
+        eventsModuleGithubWebhook,
+        mockServices.rootConfig.factory({
+          data: {},
+        }),
+      ],
+    });
+
+    expect(addedIngress).toBeUndefined();
+  });
 
   it('should be correctly wired and set up', async () => {
     let addedIngress: HttpPostIngressOptions | undefined;

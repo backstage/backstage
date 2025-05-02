@@ -83,6 +83,7 @@ spec:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: 'main'
 
     - id: register
       name: Register
@@ -251,7 +252,7 @@ spec:
   type: service
 
   parameters:
-    - title: Authenticaion
+    - title: Authentication
       description: Provide authentication for the resource
       required:
         - username
@@ -561,7 +562,7 @@ catalogFilter:
     metadata.annotations.github.com/team-slug: { exists: true }
 ```
 
-#### Custom validation messages
+### Custom validation messages
 
 You may specify custom JSON Schema validation messages as supported by the
 [ajv-errors](https://github.com/ajv-validator/ajv-errors) plugin library to [ajv](https://github.com/ajv-validator/ajv).

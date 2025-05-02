@@ -1,0 +1,51 @@
+.canon-MenuPositioner {
+  outline: 0;
+}
+
+.canon-MenuPopup {
+  padding: var(--canon-space-2);
+  background-color: var(--canon-bg-surface-1);
+  border: 1px solid var(--canon-border);
+  color: var(--canon-fg-primary);
+  transform-origin: var(--transform-origin);
+  border-radius: .375rem;
+  outline: none;
+  max-width: 340px;
+  transition: transform .15s, opacity .15s;
+  overflow: hidden;
+
+  &[data-starting-style], &[data-ending-style] {
+    opacity: 0;
+    transform: scale(.9);
+  }
+}
+
+.canon-MenuItem {
+  cursor: default;
+  user-select: none;
+  gap: var(--canon-space-2);
+  color: var(--canon-fg-primary);
+  border-radius: var(--canon-radius-2);
+  padding: var(--canon-space-2) var(--canon-space-2);
+  padding-right: var(--canon-space-4);
+  cursor: pointer;
+  outline: 0;
+  text-decoration: none;
+  display: flex;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &[data-highlighted] {
+    z-index: 0;
+    background-color: var(--canon-bg-tint-hover);
+    position: relative;
+  }
+}
+
+.canon-MenuSeparator {
+  background-color: var(--color-gray-200);
+  height: 1px;
+  margin: .375rem 1rem;
+}

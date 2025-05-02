@@ -339,6 +339,7 @@ export const createPublishGithubPullRequestAction: (
     sourcePath?: string;
     token?: string;
     reviewers?: string[];
+    assignees?: string[];
     teamReviewers?: string[];
     commitMessage?: string;
     update?: boolean;
@@ -529,7 +530,7 @@ export interface RouterOptions {
   // (undocumented)
   additionalTemplateFilters?:
     | Record<string, TemplateFilter_2>
-    | CreatedTemplateFilter[];
+    | CreatedTemplateFilter<any, any>[];
   // (undocumented)
   additionalTemplateGlobals?:
     | Record<string, TemplateGlobal_2>

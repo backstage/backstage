@@ -8,12 +8,11 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
 import { NotificationSettings } from '@backstage/plugin-notifications-common';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
-import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableProps } from '@backstage/core-components';
 
@@ -136,7 +135,7 @@ export const NotificationsSidebarItem: (props?: {
   text?: string;
   disableHighlight?: boolean;
   noTrack?: boolean;
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const NotificationsTable: ({
@@ -152,7 +151,7 @@ export const NotificationsTable: ({
   page,
   pageSize,
   totalCount,
-}: NotificationsTableProps) => React_2.JSX.Element;
+}: NotificationsTableProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type NotificationsTableProps = Pick<
@@ -208,7 +207,7 @@ export function useNotificationsApi<T>(
 // @public (undocumented)
 export const UserNotificationSettingsCard: (props: {
   originNames?: Record<string, string>;
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // (No @packageDocumentation comment for this package)
 ```
