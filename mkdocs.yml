@@ -74,7 +74,6 @@ nav:
           - Template Extensions: 'features/software-templates/template-extensions.md'
           - Migrating from v1beta2 to v1beta3 templates: 'features/software-templates/migrating-from-v1beta2-to-v1beta3.md'
           - Dry Run Testing: 'features/software-templates/dry-run-testing.md'
-          - Template Extensions: 'features/software-templates/template-extensions.md'
       - Backstage Search:
           - Overview: 'features/search/README.md'
           - Getting Started: 'features/search/getting-started.md'
