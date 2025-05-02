@@ -26,7 +26,7 @@ import {
   EntityContentLayoutBlueprint,
   EntityContentLayoutProps,
 } from '@backstage/plugin-catalog-react/alpha';
-import { buildFilterFn } from './filter/FilterWrapper';
+import { buildFilterFn } from '@backstage/plugin-catalog-react/alpha';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
 export const catalogOverviewEntityContent =
