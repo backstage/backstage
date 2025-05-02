@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs-react
 
+## 1.2.17-next.0
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/version-bridge@1.0.11
+
 ## 1.2.16
 
 ### Patch Changes

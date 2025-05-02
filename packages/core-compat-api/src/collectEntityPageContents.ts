@@ -30,7 +30,7 @@ import { normalizeRoutePath } from './normalizeRoutePath';
 const ENTITY_SWITCH_KEY = 'core.backstage.entitySwitch';
 const ENTITY_ROUTE_KEY = 'plugin.catalog.entityLayoutRoute';
 
-// Placeholder to make sure internal types here are consitent
+// Placeholder to make sure internal types here are consistent
 type Entity = { apiVersion: string; kind: string };
 
 type EntityFilter = (entity: Entity, ctx: { apis: ApiHolder }) => boolean;

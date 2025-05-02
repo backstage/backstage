@@ -198,7 +198,7 @@ export function renderInTestApp(
 
   const features: FrontendFeature[] = [
     createFrontendPlugin({
-      id: 'test',
+      pluginId: 'test',
       extensions,
     }),
     appPluginOverride,

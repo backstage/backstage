@@ -1,5 +1,37 @@
 # @backstage/plugin-api-docs
 
+## 0.12.7-next.1
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/core-compat-api@0.4.2-next.1
+  - @backstage/plugin-catalog@1.29.1-next.1
+  - @backstage/plugin-catalog-react@1.18.0-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-permission-react@0.4.34-next.0
+
+## 0.12.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/plugin-catalog@1.29.1-next.0
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.33
+
 ## 0.12.6
 
 ### Patch Changes

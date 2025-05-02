@@ -1,5 +1,53 @@
 # @backstage/backend-defaults
 
+## 0.10.0-next.1
+
+### Minor Changes
+
+- d385854: **BREAKING**: The `DefaultSchedulerService` constructor options now requires `RootLifecycleService`, `HttpRouterService`, and `PluginMetadataService` fields.
+
+  The scheduler will register a REST API for listing and triggering tasks. Please see [the scheduler documentation](https://backstage.io/docs/backend-system/core-services/scheduler) for more details about this API.
+
+### Patch Changes
+
+- acea1d4: update documentation
+- 72d019d: Removed various typos
+- c6bc67d: Added Valkey support alongside Redis in backend-defaults cache clients, using the new Keyv Valkey package. Also extended backend-test-utils to support Valkey in tests.
+- 36f77e9: Bug fix: Pass user provided token through to gitlab url resolvers
+- Updated dependencies
+  - @backstage/backend-app-api@1.2.3-next.1
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/backend-app-api@1.2.3-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.0
+  - @backstage/plugin-auth-node@0.6.3-next.0
+  - @backstage/plugin-events-node@0.4.11-next.0
+  - @backstage/plugin-permission-node@0.9.2-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+
 ## 0.9.0
 
 ### Minor Changes

@@ -15,6 +15,8 @@ yarn.lock                                         @backstage/maintainers @backst
 /docs/dls                                         @backstage/design-system-maintainers
 /docs/features/techdocs                           @backstage/techdocs-maintainers
 /docs/plugins/integrating-search-into-plugins.md  @backstage/search-maintainers
+/microsite                                        @backstage/documentation-maintainers
+/microsite/data/plugins                           @backstage/maintainers
 /packages/cli/src/commands/onboard                @backstage/sharks
 /packages/backend-openapi-utils                   @backstage/maintainers @backstage/reviewers @backstage/openapi-tooling-maintainers
 /packages/canon                                   @backstage/design-system-maintainers

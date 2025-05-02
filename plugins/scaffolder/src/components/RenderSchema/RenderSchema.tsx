@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 import { MarkdownContent } from '@backstage/core-components';
-import {
-  TranslationFunction,
-  TranslationRef,
-  useTranslationRef,
-} from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
 import Collapse from '@material-ui/core/Collapse';
@@ -48,6 +44,7 @@ import {
 import { FC, JSX, cloneElement, Fragment } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
 import { SchemaRenderContext, SchemaRenderStrategy } from './types';
+import { TranslationMessages } from '../TemplatingExtensionsPage/types';
 
 const getTypes = (properties: JSONSchema7) => {
   if (!properties.type) {
@@ -149,13 +146,9 @@ type RenderColumn = (
   context: SchemaRenderContext,
 ) => JSX.Element;
 
-type Xlate<R> = R extends TranslationRef<any, infer M>
-  ? TranslationFunction<M>
-  : never;
-
 type Column = {
   key: string;
-  title: (t: Xlate<typeof scaffolderTranslationRef>) => string;
+  title: (t: TranslationMessages<typeof scaffolderTranslationRef>) => string;
   render: RenderColumn;
   className?: keyof ReturnType<typeof useColumnStyles>;
 };

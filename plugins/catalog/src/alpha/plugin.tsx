@@ -38,7 +38,7 @@ import contextMenuItems from './contextMenuItems';
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'catalog',
+  pluginId: 'catalog',
   routes: convertLegacyRouteRefs({
     catalogIndex: rootRouteRef,
     catalogEntity: entityRouteRef,

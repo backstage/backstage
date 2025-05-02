@@ -1,5 +1,18 @@
 # @backstage/plugin-signals
 
+## 0.0.19-next.0
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.12
+
 ## 0.0.18
 
 ### Patch Changes

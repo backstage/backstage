@@ -69,7 +69,7 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Initializes a GitLab repository with aditional settings.',
+    description: 'Initializes a GitLab repository with additional settings.',
     example: yaml.stringify({
       steps: [
         {

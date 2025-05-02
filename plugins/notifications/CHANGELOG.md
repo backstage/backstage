@@ -1,5 +1,36 @@
 # @backstage/plugin-notifications
 
+## 0.5.5-next.1
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/core-compat-api@0.4.2-next.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-react@0.0.12
+
+## 0.5.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/theme@0.6.5
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-react@0.0.12
+
 ## 0.5.4
 
 ### Patch Changes

@@ -81,7 +81,7 @@ function createTestExtension(options: {
 
 function routeInfoFromExtensions(extensions: ExtensionDefinition[]) {
   const plugin = createFrontendPlugin({
-    id: 'test',
+    pluginId: 'test',
     extensions,
   });
 

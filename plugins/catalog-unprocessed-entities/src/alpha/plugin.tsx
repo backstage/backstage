@@ -73,7 +73,7 @@ export const catalogUnprocessedEntitiesNavItem = NavItemBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'catalog-unprocessed-entities',
+  pluginId: 'catalog-unprocessed-entities',
   routes: {
     root: convertLegacyRouteRef(rootRouteRef),
   },

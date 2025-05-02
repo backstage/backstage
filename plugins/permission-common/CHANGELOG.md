@@ -1,5 +1,19 @@
 # @backstage/plugin-permission-common
 
+## 0.9.0-next.0
+
+### Minor Changes
+
+- 4da2965: Fixed an issue causing the `PermissionClient` to exhaust the request body size limit too quickly when making many requests.
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.8.4
 
 ### Patch Changes
