@@ -1,7 +1,7 @@
 ---
-id: template-extensions
-title: Template Extensions
-description: Template extensions system
+id: templating-extensions
+title: Templating Extensions
+description: Templating extensions system
 ---
 
 Backstage templating is powered by [Nunjucks][]. The basics:
@@ -117,7 +117,7 @@ may be any combination of filters, global functions and global values. With the
 new backend you would use a scaffolder plugin module for this; later we will
 demonstrate the analogous approach with the old backend.
 
-## Streamlining Template Extension Module Creation with the Backstage CLI
+## Streamlining Templating Extension Module Creation with the Backstage CLI
 
 The creation of a "template environment customization" module in Backstage can
 be accelerated using the Backstage CLI.
