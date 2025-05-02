@@ -863,8 +863,12 @@ const _default: FrontendPlugin<
     'entity-context-menu-item:catalog/copy-entity-url': ExtensionDefinition<{
       kind: 'entity-context-menu-item';
       name: 'copy-entity-url';
-      config: {};
-      configInput: {};
+      config: {
+        filter: EntityPredicate | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+      };
       output: ConfigurableExtensionDataRef<
         JSX_2.Element,
         'core.reactElement',
@@ -876,8 +880,12 @@ const _default: FrontendPlugin<
     'entity-context-menu-item:catalog/inspect-entity': ExtensionDefinition<{
       kind: 'entity-context-menu-item';
       name: 'inspect-entity';
-      config: {};
-      configInput: {};
+      config: {
+        filter: EntityPredicate | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+      };
       output: ConfigurableExtensionDataRef<
         JSX_2.Element,
         'core.reactElement',
@@ -889,8 +897,12 @@ const _default: FrontendPlugin<
     'entity-context-menu-item:catalog/unregister-entity': ExtensionDefinition<{
       kind: 'entity-context-menu-item';
       name: 'unregister-entity';
-      config: {};
-      configInput: {};
+      config: {
+        filter: EntityPredicate | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+      };
       output: ConfigurableExtensionDataRef<
         JSX_2.Element,
         'core.reactElement',

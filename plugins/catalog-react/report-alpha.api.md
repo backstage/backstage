@@ -17,6 +17,12 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha
+export function buildFilterFn(
+  filterFunction?: (entity: Entity) => boolean,
+  filterExpression?: string,
+): (entity: Entity) => boolean;
+
+// @alpha
 export const CatalogFilterBlueprint: ExtensionBlueprint<{
   kind: 'catalog-filter';
   name: undefined;
@@ -334,8 +340,12 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
   params: EntityContextMenuItemParams;
   output: ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
   inputs: {};
-  config: {};
-  configInput: {};
+  config: {
+    filter: EntityPredicate | undefined;
+  };
+  configInput: {
+    filter?: EntityPredicate | undefined;
+  };
   dataRefs: never;
 }>;
 
@@ -343,7 +353,7 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
 export type EntityContextMenuItemParams = {
   useProps: UseProps;
   icon: JSX_2.Element;
-  filter?: (entity: Entity) => boolean;
+  filter?: string | EntityPredicate | ((entity: Entity) => boolean);
 };
 
 // @alpha (undocumented)
