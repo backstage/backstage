@@ -94,6 +94,52 @@ describe('MockTranslationApi', () => {
     expect(snapshot.t('foo', { qux: 'Deep' })).toBe('Foo Nested Baz Deep');
   });
 
+  it('should support jsx interpolation', () => {
+    const snapshot = snapshotWithMessages({
+      empty: 'derp',
+      jsx: '={{ x }}',
+      jsxNested: '={{ x.y.z }}',
+      jsxDeep: '<$t(jsx)>',
+    });
+
+    expect(snapshot.t('jsx', { x: <h1>hello</h1> })).toMatchInlineSnapshot(`
+      <React.Fragment>
+        =
+        <h1>
+          hello
+        </h1>
+      </React.Fragment>
+    `);
+    expect(snapshot.t('jsx', { replace: { x: <h1>hello</h1> } }))
+      .toMatchInlineSnapshot(`
+      <React.Fragment>
+        =
+        <h1>
+          hello
+        </h1>
+      </React.Fragment>
+    `);
+    expect(
+      snapshot.t('jsxNested', { replace: { x: { y: { z: <h1>hello</h1> } } } }),
+    ).toMatchInlineSnapshot(`
+      <React.Fragment>
+        =
+        <h1>
+          hello
+        </h1>
+      </React.Fragment>
+    `);
+    expect(snapshot.t('jsxDeep', { x: <h1>hello</h1> })).toMatchInlineSnapshot(`
+      <React.Fragment>
+        &lt;=
+        <h1>
+          hello
+        </h1>
+        &gt;
+      </React.Fragment>
+    `);
+  });
+
   it('should support formatting', () => {
     const snapshot = snapshotWithMessages({
       plain: '= {{ x }}',

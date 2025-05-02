@@ -23,6 +23,7 @@ import {
 import { Observable } from '@backstage/types';
 import { AppLanguageSelector } from '../AppLanguageApi';
 import { I18nextTranslationApi } from './I18nextTranslationApi';
+import { render } from '@testing-library/react';
 
 const plainRef = createTranslationRef({
   id: 'plain',
@@ -537,6 +538,68 @@ describe('I18nextTranslationApi', () => {
       expect(snapshot.t('derpWithCount', { count: 1 })).toBe('1 derp');
       expect(snapshot.t('derpWithCount', { count: 2 })).toBe('2 derps');
       expect(snapshot.t('derpWithCount', { count: 0 })).toBe('0 derps');
+    });
+
+    it('should support jsx interpolation', () => {
+      const snapshot = snapshotWithMessages({
+        jsx: '{{ hello }}, {{ world }}!',
+        jsxMultiple: '{{ hello }} | {{ hello }}',
+        jsxNested: '$t(foo), $t(bar)',
+        foo: 'foo={{ foo }}',
+        bar: 'bar={{ bar }}',
+      });
+
+      expect(
+        render(
+          snapshot.t('jsx', {
+            hello: <h1>Hello</h1>,
+            world: <h6>World</h6>,
+          }),
+        ).container.textContent,
+      ).toBe('Hello, World!');
+
+      expect(
+        render(
+          snapshot.t('jsx', {
+            hello: <h1>world</h1>,
+            world: <h6>hello</h6>,
+          }),
+        ).container.textContent,
+      ).toBe('world, hello!');
+
+      // Missing value
+      expect(
+        render(
+          snapshot.t('jsx', {
+            hello: <h1>hello</h1>,
+          } as any),
+        ).container.textContent,
+      ).toBe('hello, {{ world }}!');
+
+      expect(
+        render(
+          snapshot.t('jsxMultiple', {
+            hello: <h1>hello</h1>,
+          } as any),
+        ).container.textContent,
+      ).toBe('hello | hello');
+
+      expect(
+        render(
+          snapshot.t('jsxNested', {
+            foo: (
+              <div>
+                f<span>oo</span>
+              </div>
+            ),
+            bar: (
+              <div>
+                <b>b</b>a<span>r</span>
+              </div>
+            ),
+          }),
+        ).container.textContent,
+      ).toBe('foo=foo, bar=bar');
     });
   });
 });
