@@ -269,6 +269,10 @@ const config: Config = {
             from: '/docs/plugins/url-reader/',
             to: '/docs/backend-system/core-services/url-reader',
           },
+          {
+            from: '/docs/features/software-templates/template-extensions/',
+            to: '/docs/features/software-templates/templating-extensions',
+          },
         ],
       }),
     [
