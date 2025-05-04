@@ -89,6 +89,7 @@ export const CustomHomepageGrid: (
 export type CustomHomepageGridProps = {
   children?: ReactNode;
   config?: LayoutConfiguration[];
+  title?: string;
   rowHeight?: number;
   breakpoints?: Record<Breakpoint, number>;
   cols?: Record<Breakpoint, number>;
