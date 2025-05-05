@@ -19,11 +19,11 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import {
+  TestDatabases,
   mockServices,
   startTestBackend,
-  TestDatabases,
 } from '@backstage/backend-test-utils';
-import catalog from '@backstage/plugin-catalog-backend';
+import catalogBackend from '@backstage/plugin-catalog-backend';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import request from 'supertest';
 import { createMockEntityProvider } from '../__fixtures__/createMockEntityProvider';
@@ -56,7 +56,8 @@ describe('createRouter', () => {
             await createRouter({
               knexPromise: dbPromise,
               signal: new AbortController().signal,
-              pollFrequency: { milliseconds: 100 },
+              blockDuration: { milliseconds: 3000 },
+              blockPollFrequency: { milliseconds: 100 },
             }),
           );
         },
@@ -73,7 +74,7 @@ describe('createRouter', () => {
       const backend = await startTestBackend({
         features: [
           mockServices.database.factory({ knex }),
-          catalog,
+          catalogBackend,
           provider,
           router,
         ],
@@ -110,10 +111,11 @@ describe('createRouter', () => {
       // Blocking request on empty data blocks
       let blocked = request(backend.server)
         .get('/api/catalog/history/v1/events')
-        .query({ block: true });
+        .query({ block: true })
+        .then(r => r);
 
       // Eventually add an entity
-      await new Promise(r => setTimeout(r, 100));
+      await new Promise(r => setTimeout(r, 200));
       provider.addEntity({
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -183,7 +185,7 @@ describe('createRouter', () => {
         .query({ cursor: response.body.pageInfo.cursor });
 
       // Eventually modify the previously addded entity
-      await new Promise(r => setTimeout(r, 100));
+      await new Promise(r => setTimeout(r, 200));
       provider.addEntity({
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -323,10 +325,11 @@ describe('createRouter', () => {
           block: true,
           afterEventId: 'last',
           entityRef: 'component:default/foo',
-        });
+        })
+        .then(r => r);
 
       // Soon after, remove the entity
-      await new Promise(r => setTimeout(r, 100));
+      await new Promise(r => setTimeout(r, 2000));
       provider.removeEntity('component:default/foo');
 
       // Shortly after removing the entity, the blocking request should resolve

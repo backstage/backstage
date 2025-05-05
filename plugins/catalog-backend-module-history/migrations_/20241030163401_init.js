@@ -174,6 +174,53 @@ exports.up = async function up(knex) {
       END;
       `,
     );
+  } else if (knex.client.config.client.includes('mysql')) {
+    await knex.schema.raw(
+      `
+      CREATE TRIGGER final_entities_change_history_inserted
+      AFTER INSERT ON final_entities
+      FOR EACH ROW
+      IF NEW.final_entity IS NOT NULL THEN
+        INSERT INTO module_history__events (event_at, event_type, entity_ref, entity_id, entity_json) VALUES (
+          CURRENT_TIMESTAMP,
+          'entity_created',
+          NEW.entity_ref,
+          NEW.entity_id,
+          NEW.final_entity
+        );
+      END IF;
+      `,
+    );
+    await knex.schema.raw(
+      `
+      CREATE TRIGGER final_entities_change_history_updated
+      AFTER UPDATE ON final_entities
+      FOR EACH ROW
+      IF IFNULL(NEW.final_entity,'') <> IFNULL(OLD.final_entity,'') THEN
+        INSERT INTO module_history__events (event_at, event_type, entity_ref, entity_id, entity_json) VALUES (
+          CURRENT_TIMESTAMP,
+          IF(OLD.final_entity IS NULL,'entity_created','entity_updated'),
+          NEW.entity_ref,
+          NEW.entity_id,
+          NEW.final_entity
+        );
+      END IF;
+      `,
+    );
+    await knex.schema.raw(
+      `
+      CREATE TRIGGER final_entities_change_history_deleted
+      AFTER DELETE ON final_entities
+      FOR EACH ROW
+      INSERT INTO module_history__events (event_at, event_type, entity_ref, entity_id, entity_json) VALUES (
+        CURRENT_TIMESTAMP,
+        'entity_deleted',
+        OLD.entity_ref,
+        OLD.entity_id,
+        OLD.final_entity
+      );
+      `,
+    );
   }
 };
 
@@ -187,7 +234,10 @@ exports.down = async function down(knex) {
       `DROP TRIGGER final_entities_change_history ON final_entities;`,
     );
     await knex.schema.raw(`DROP FUNCTION final_entities_change_history();`);
-  } else if (knex.client.config.client.includes('sqlite')) {
+  } else if (
+    knex.client.config.client.includes('sqlite') ||
+    knex.client.config.client.includes('mysql')
+  ) {
     await knex.schema.raw(
       `DROP TRIGGER final_entities_change_history_inserted;`,
     );

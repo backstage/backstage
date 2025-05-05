@@ -19,11 +19,11 @@ import {
   mockServices,
   startTestBackend,
 } from '@backstage/backend-test-utils';
-import { Entity } from '@backstage/catalog-model';
-import fs from 'fs';
-import waitFor from 'wait-for-expect';
-import { Knex } from 'knex';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import catalogBackend from '@backstage/plugin-catalog-backend';
+import fs from 'fs';
+import { Knex } from 'knex';
+import waitFor from 'wait-for-expect';
 import { createMockEntityProvider } from '../__fixtures__/createMockEntityProvider';
 import { DB_MIGRATIONS_TABLE } from './migrations';
 
@@ -65,7 +65,6 @@ describe('migrations', () => {
       const knex = await databases.init(databaseId);
       const mockProvider = createMockEntityProvider();
 
-      const entityRef = 'component:default/foo';
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -79,6 +78,7 @@ describe('migrations', () => {
           lifecycle: 'experimental',
         },
       };
+      const entityRef = stringifyEntityRef(entity);
 
       await startTestBackend({
         features: [
@@ -101,7 +101,7 @@ describe('migrations', () => {
           knex('module_history__events').orderBy('id'),
         ).resolves.toEqual([
           {
-            id: expect.anything(),
+            id: '1',
             event_at: expect.anything(),
             event_type: 'entity_created',
             entity_ref: entityRef,
@@ -120,7 +120,7 @@ describe('migrations', () => {
           knex('module_history__events').orderBy('id'),
         ).resolves.toEqual([
           {
-            id: expect.anything(),
+            id: '1',
             event_at: expect.anything(),
             event_type: 'entity_created',
             entity_ref: entityRef,
@@ -128,7 +128,7 @@ describe('migrations', () => {
             entity_json: expect.stringContaining('"owner":"me"'),
           },
           {
-            id: expect.anything(),
+            id: '2',
             event_at: expect.anything(),
             event_type: 'entity_updated',
             entity_ref: entityRef,
@@ -147,7 +147,7 @@ describe('migrations', () => {
         knex('module_history__events').orderBy('id'),
       ).resolves.toEqual([
         {
-          id: expect.anything(),
+          id: '1',
           event_at: expect.anything(),
           event_type: 'entity_created',
           entity_ref: entityRef,
@@ -155,7 +155,7 @@ describe('migrations', () => {
           entity_json: expect.stringContaining('"owner":"me"'),
         },
         {
-          id: expect.anything(),
+          id: '2',
           event_at: expect.anything(),
           event_type: 'entity_updated',
           entity_ref: entityRef,
@@ -165,14 +165,14 @@ describe('migrations', () => {
       ]);
 
       // Expect that a deletion of the final entity leads to an event
-      await mockProvider.removeEntity(entityRef);
+      mockProvider.removeEntity(entityRef);
 
       await waitFor(async () => {
         await expect(
           knex('module_history__events').orderBy('id'),
         ).resolves.toEqual([
           {
-            id: expect.anything(),
+            id: '1',
             event_at: expect.anything(),
             event_type: 'entity_created',
             entity_ref: entityRef,
@@ -180,7 +180,7 @@ describe('migrations', () => {
             entity_json: expect.stringContaining('"owner":"me"'),
           },
           {
-            id: expect.anything(),
+            id: '2',
             event_at: expect.anything(),
             event_type: 'entity_updated',
             entity_ref: entityRef,
@@ -188,7 +188,7 @@ describe('migrations', () => {
             entity_json: expect.stringContaining('"owner":"you"'),
           },
           {
-            id: expect.anything(),
+            id: '3',
             event_at: expect.anything(),
             event_type: 'entity_deleted',
             entity_ref: entityRef,
