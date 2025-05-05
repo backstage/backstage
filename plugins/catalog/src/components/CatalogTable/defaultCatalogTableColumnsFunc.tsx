@@ -29,6 +29,12 @@ export const defaultCatalogTableColumnsFunc: CatalogTableColumnsFunc = ({
 
   return [
     columnFactories.createTitleColumn({ hidden: true }),
+    {
+      title: 'Display Name',
+      field: 'entity.spec.profile.displayName',
+      hidden: true,
+      searchable: true,
+    },
     columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
     ...createEntitySpecificColumns(),
   ];
