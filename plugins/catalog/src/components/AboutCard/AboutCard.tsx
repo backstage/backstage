@@ -66,10 +66,11 @@ import { taskCreatePermission } from '@backstage/plugin-scaffolder-common/alpha'
 import { usePermission } from '@backstage/plugin-permission-react';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-
-const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
-
-const TECHDOCS_EXTERNAL_ANNOTATION = 'backstage.io/techdocs-entity';
+import {
+  TECHDOCS_ANNOTATION,
+  TECHDOCS_EXTERNAL_ANNOTATION,
+  TECHDOCS_REDIRECT_ANNOTATION,
+} from '@backstage/plugin-techdocs-common';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -148,6 +149,25 @@ export function AboutCard(props: AboutCardProps) {
     }
   }
 
+  let techdocsHref: string | undefined;
+  if (viewTechdocLink) {
+    if (techdocsRef) {
+      techdocsHref = viewTechdocLink({
+        namespace: techdocsRef.namespace || DEFAULT_NAMESPACE,
+        kind: techdocsRef.kind,
+        name: techdocsRef.name,
+      });
+    } else {
+      techdocsHref = entity.metadata.annotations?.[TECHDOCS_ANNOTATION]
+        ? viewTechdocLink({
+            namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+            kind: entity.kind,
+            name: entity.metadata.name,
+          })
+        : entity.metadata.annotations?.[TECHDOCS_REDIRECT_ANNOTATION];
+    }
+  }
+
   const viewInSource: IconLinkVerticalProps = {
     label: t('aboutCard.viewSource'),
     disabled: !entitySourceLocation,
@@ -156,25 +176,9 @@ export function AboutCard(props: AboutCardProps) {
   };
   const viewInTechDocs: IconLinkVerticalProps = {
     label: t('aboutCard.viewTechdocs'),
-    disabled:
-      !(
-        entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
-        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
-      ) || !viewTechdocLink,
+    disabled: !techdocsHref,
     icon: <DocsIcon />,
-    href:
-      viewTechdocLink &&
-      (techdocsRef
-        ? viewTechdocLink({
-            namespace: techdocsRef.namespace || DEFAULT_NAMESPACE,
-            kind: techdocsRef.kind,
-            name: techdocsRef.name,
-          })
-        : viewTechdocLink({
-            namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
-            kind: entity.kind,
-            name: entity.metadata.name,
-          })),
+    href: techdocsHref,
   };
 
   const subHeaderLinks = [viewInSource, viewInTechDocs];
