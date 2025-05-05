@@ -231,11 +231,8 @@ jobs:
         run: yarn docusaurus docs:version stable
         working-directory: microsite
 
-      - name: clear API reference
-        run: rm -r docs/reference
-
-      - name: clear OpenAPI reference
-        run: find ./docs -name '*.api.mdx' -type f -delete
+      - name: clear generated docs
+        run: git clean -fdx docs/
 
       # Next docs
       - name: checkout master

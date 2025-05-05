@@ -88,7 +88,7 @@ export class CliInitializer {
         );
       } else {
         argParser
-          .command(node.name)
+          .command(node.name, { hidden: !!node.command.deprecated })
           .description(node.command.description)
           .helpOption(false)
           .allowUnknownOption(true)

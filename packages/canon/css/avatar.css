@@ -1,0 +1,49 @@
+.canon-AvatarRoot {
+  vertical-align: middle;
+  user-select: none;
+  color: var(--canon-fg-primary);
+  background-color: var(--canon-bg-surface-2);
+  border-radius: 100%;
+  justify-content: center;
+  align-items: center;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1;
+  display: inline-flex;
+  overflow: hidden;
+}
+
+.canon-AvatarRoot[data-size="small"] {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.canon-AvatarRoot[data-size="medium"] {
+  width: 2rem;
+  height: 2rem;
+}
+
+.canon-AvatarRoot[data-size="large"] {
+  width: 3rem;
+  height: 3rem;
+}
+
+.canon-AvatarImage {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.canon-AvatarFallback {
+  width: 100%;
+  height: 100%;
+  font-size: var(--canon-font-size-3);
+  font-weight: var(--canon-font-weight-regular);
+  box-shadow: inset 0 0 0 1px var(--canon-border);
+  border-radius: var(--canon-radius-full);
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}

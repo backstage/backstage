@@ -65,9 +65,9 @@ describe('createGithubSignatureValidator', () => {
     } as RequestDetails;
   };
 
-  it('no secret configured, throw error', async () => {
-    expect(() => createGithubSignatureValidator(configWithoutSecret)).toThrow(
-      "Missing required config value at 'events.modules.github.webhookSecret'",
+  it('should return undefined if no secret is configured', async () => {
+    expect(createGithubSignatureValidator(configWithoutSecret)).toEqual(
+      undefined,
     );
   });
 
@@ -76,7 +76,7 @@ describe('createGithubSignatureValidator', () => {
     const context = new TestContext();
 
     const validator = createGithubSignatureValidator(configWithSecret);
-    await validator(request, context);
+    await validator!(request, context);
 
     expect(context.details).not.toBeUndefined();
     expect(context.details?.status).toBe(403);
@@ -88,7 +88,7 @@ describe('createGithubSignatureValidator', () => {
     const context = new TestContext();
 
     const validator = createGithubSignatureValidator(configWithSecret);
-    await validator(request, context);
+    await validator!(request, context);
 
     expect(context.details).not.toBeUndefined();
     expect(context.details?.status).toBe(403);
@@ -100,7 +100,7 @@ describe('createGithubSignatureValidator', () => {
     const context = new TestContext();
 
     const validator = createGithubSignatureValidator(configWithSecret);
-    await validator(request, context);
+    await validator!(request, context);
 
     expect(context.details).toBeUndefined();
   });

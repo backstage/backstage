@@ -56,6 +56,7 @@ const useStyles = makeStyles<
     minWidth: 0,
   },
   summaryArea: {
+    minWidth: 0,
     margin: theme.spacing(1.5), // To counteract MUI negative grid margin
   },
   summaryCard: {
@@ -145,7 +146,7 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
         ) : null}
         {summaryCards.length > 0 ? (
           <div className={classes.summaryArea}>
-            <HorizontalScrollGrid>
+            <HorizontalScrollGrid scrollStep={400} scrollSpeed={100}>
               {summaryCards.map(card => (
                 <div className={classes.summaryCard}>{card.element}</div>
               ))}

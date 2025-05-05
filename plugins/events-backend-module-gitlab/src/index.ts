@@ -21,5 +21,16 @@
  * @packageDocumentation
  */
 
+import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+
+export default createBackendFeatureLoader({
+  loader() {
+    return [
+      import('./service/eventsModuleGitlabEventRouter'),
+      import('./service/eventsModuleGitlabWebhook'),
+    ];
+  },
+});
+
 export { createGitlabTokenValidator } from './http/createGitlabTokenValidator';
 export { GitlabEventRouter } from './router/GitlabEventRouter';

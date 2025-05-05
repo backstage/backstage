@@ -49,6 +49,7 @@ export const catalogOverviewEntityContent =
       return originalFactory({
         defaultPath: '/',
         defaultTitle: 'Overview',
+        defaultGroup: 'overview',
         loader: async () => {
           const LazyDefaultLayoutComponent = reactLazy(() =>
             import('./DefaultEntityContentLayout').then(m => ({

@@ -18,7 +18,6 @@ import {
   BitbucketServerIntegrationConfig,
   getBitbucketServerRequestOptions,
 } from '@backstage/integration';
-import pThrottle from 'p-throttle';
 import {
   BitbucketServerDefaultBranch,
   BitbucketServerRepository,
@@ -26,18 +25,6 @@ import {
 import { BitbucketServerProject } from './types';
 import { NotFoundError } from '@backstage/errors';
 import { ResponseError } from '@backstage/errors';
-
-// 1 per second
-const throttle = pThrottle({
-  limit: 1,
-  interval: 1000,
-});
-
-const throttledFetch = throttle(
-  async (url: RequestInfo, options?: RequestInit) => {
-    return await fetch(url, options);
-  },
-);
 
 /**
  * A client for interacting with a Bitbucket Server instance
@@ -83,7 +70,7 @@ export class BitbucketServerClient {
     repo: string;
     path: string;
   }): Promise<Response> {
-    return throttledFetch(
+    return fetch(
       `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}/raw/${options.path}`,
       getBitbucketServerRequestOptions(this.config),
     );
@@ -94,7 +81,7 @@ export class BitbucketServerClient {
     repo: string;
   }): Promise<BitbucketServerRepository> {
     const request = `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}`;
-    const response = await throttledFetch(
+    const response = await fetch(
       request,
       getBitbucketServerRequestOptions(this.config),
     );
@@ -163,17 +150,16 @@ export class BitbucketServerClient {
   }
 
   private async request(req: Request): Promise<Response> {
-    return throttledFetch(
-      req,
-      getBitbucketServerRequestOptions(this.config),
-    ).then((response: Response) => {
-      if (!response.ok) {
-        throw new Error(
-          `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${response.status} - ${response.statusText}`,
-        );
-      }
-      return response;
-    });
+    return fetch(req, getBitbucketServerRequestOptions(this.config)).then(
+      (response: Response) => {
+        if (!response.ok) {
+          throw new Error(
+            `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${response.status} - ${response.statusText}`,
+          );
+        }
+        return response;
+      },
+    );
   }
 }
 

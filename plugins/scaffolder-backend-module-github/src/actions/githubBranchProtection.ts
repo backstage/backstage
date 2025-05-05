@@ -128,7 +128,10 @@ export function createGithubBranchProtectionAction(options: {
         owner,
         repo,
       });
-      const client = new Octokit(octokitOptions);
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       const defaultBranch = await ctx.checkpoint({
         key: `read.default.branch.${owner}.${repo}`,

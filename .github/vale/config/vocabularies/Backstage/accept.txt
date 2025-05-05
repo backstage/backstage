@@ -173,6 +173,7 @@ graphviz
 Hackathons
 haproxy
 hardcoded
+hardcoding
 Harness
 harness
 Helidon
@@ -534,3 +535,4 @@ zsh
 scrollable
 severities
 intellij
+tsconfig

@@ -12,6 +12,7 @@ import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Context } from 'react';
 import { Entity } from '@backstage/catalog-model';
+import { EntityOrderQuery } from '@backstage/catalog-client';
 import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
@@ -197,6 +198,7 @@ export type DefaultEntityFilters = {
   orphan?: EntityOrphanFilter;
   error?: EntityErrorFilter;
   namespace?: EntityNamespaceFilter;
+  order?: EntityOrderFilter;
 };
 
 // @public
@@ -407,6 +409,17 @@ export interface EntityNamespacePickerProps {
 }
 
 // @public
+export class EntityOrderFilter implements EntityFilter {
+  constructor(values: [string, 'asc' | 'desc'][]);
+  // (undocumented)
+  getOrderFilters(): EntityOrderQuery;
+  // (undocumented)
+  toQueryValue(): string[];
+  // (undocumented)
+  readonly values: [string, 'asc' | 'desc'][];
+}
+
+// @public
 export class EntityOrphanFilter implements EntityFilter {
   constructor(value: boolean);
   // (undocumented)
@@ -524,10 +537,18 @@ export interface EntityRefPresentationSnapshot {
 }
 
 // @public
-export function entityRouteParams(entity: Entity): {
+export function entityRouteParams(
+  entityOrRef: Entity | CompoundEntityRef | string,
+  options?: EntityRouteParamsOptions,
+): {
   readonly kind: string;
   readonly namespace: string;
   readonly name: string;
+};
+
+// @public
+export type EntityRouteParamsOptions = {
+  encodeParams?: boolean;
 };
 
 // @public

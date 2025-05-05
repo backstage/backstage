@@ -1,5 +1,36 @@
 # @backstage/plugin-devtools
 
+## 0.1.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/plugin-devtools-common@0.1.15
+  - @backstage/plugin-permission-react@0.4.33
+
+## 0.1.26
+
+### Patch Changes
+
+- e655f62: Updated `README.md` to use `yarn start` instead of `yarn dev`.
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/core-compat-api@0.4.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/plugin-permission-react@0.4.33
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-devtools-common@0.1.15
+
 ## 0.1.26-next.2
 
 ### Patch Changes

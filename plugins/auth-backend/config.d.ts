@@ -85,66 +85,10 @@ export interface Config {
     };
 
     /**
-     * The available auth-provider options and attributes
-     * @additionalProperties true
+     * The backstage token expiration.
      */
-    providers?: {
-      /** @visibility frontend */
-      saml?: {
-        entryPoint: string;
-        logoutUrl?: string;
-        issuer: string;
-        /**
-         * @visibility secret
-         */
-        cert: string;
-        audience?: string;
-        /**
-         * @visibility secret
-         */
-        privateKey?: string;
-        authnContext?: string[];
-        identifierFormat?: string;
-        /**
-         * @visibility secret
-         */
-        decryptionPvk?: string;
-        signatureAlgorithm?: 'sha256' | 'sha512';
-        digestAlgorithm?: string;
-        acceptedClockSkewMs?: number;
-      };
-      /** @visibility frontend */
-      auth0?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          domain: string;
-          callbackUrl?: string;
-          audience?: string;
-          connection?: string;
-          connectionScope?: string;
-        };
-      };
-      /** @visibility frontend */
-      onelogin?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          issuer: string;
-          callbackUrl?: string;
-        };
-      };
-      /**
-       * The backstage token expiration.
-       */
-      backstageTokenExpiration?: HumanDuration | string;
-    };
+    backstageTokenExpiration?: HumanDuration | string;
+
     /**
      * Additional app origins to allow for authenticating
      */

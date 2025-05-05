@@ -166,7 +166,7 @@ export type LayoutTemplate<T = any> = NonNullable<
 export type ListActionsResponse = Array<Action>;
 
 // @public
-export type ListTemplateExtensionsResponse = {
+export type ListTemplatingExtensionsResponse = {
   filters: Record<string, TemplateFilter>;
   globals: {
     functions: Record<string, TemplateGlobalFunction>;
@@ -247,7 +247,7 @@ export interface ScaffolderApi {
     tasks: ScaffolderTask[];
     totalTasks?: number;
   }>;
-  listTemplateExtensions?(): Promise<ListTemplateExtensionsResponse>;
+  listTemplatingExtensions?(): Promise<ListTemplatingExtensionsResponse>;
   retry?(taskId: string): Promise<void>;
   scaffold(
     options: ScaffolderScaffoldOptions,

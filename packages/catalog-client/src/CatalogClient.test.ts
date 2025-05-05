@@ -24,6 +24,7 @@ import {
   QueryEntitiesResponse,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
+import { GetLocations200ResponseInner } from './schema/openapi';
 
 const server = setupServer();
 const token = 'fake-token';
@@ -590,6 +591,88 @@ describe('CatalogClient', () => {
           name: 'missing',
         }),
       ).resolves.toBeUndefined();
+    });
+  });
+
+  describe('getLocations', () => {
+    const defaultResponse = [
+      {
+        data: {
+          id: '42',
+          type: 'url',
+          target: 'https://example.com',
+        },
+      },
+      {
+        data: {
+          id: '43',
+          type: 'url',
+          target: 'https://example.com',
+        },
+      },
+    ] satisfies GetLocations200ResponseInner[];
+
+    beforeEach(() => {
+      server.use(
+        rest.get(`${mockBaseUrl}/locations`, (_, res, ctx) => {
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+    });
+
+    it('should return locations from correct endpoint', async () => {
+      const response = await client.getLocations({}, { token });
+      expect(response).toEqual({
+        items: [
+          {
+            id: '42',
+            type: 'url',
+            target: 'https://example.com',
+          },
+          {
+            id: '43',
+            type: 'url',
+            target: 'https://example.com',
+          },
+        ],
+      });
+    });
+
+    it('should return empty list with empty result', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/locations`, (_, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+
+      const response = await client.getLocations({}, { token });
+      expect(response).toEqual({ items: [] });
+    });
+
+    it('should forward token', async () => {
+      expect.assertions(1);
+
+      server.use(
+        rest.get(`${mockBaseUrl}/locations`, (req, res, ctx) => {
+          expect(req.headers.get('authorization')).toBe(`Bearer ${token}`);
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+
+      await client.getLocations({}, { token });
+    });
+
+    it('should not forward token if omitted', async () => {
+      expect.assertions(1);
+
+      server.use(
+        rest.get(`${mockBaseUrl}/locations`, (req, res, ctx) => {
+          expect(req.headers.get('authorization')).toBeNull();
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+
+      await client.getLocations();
     });
   });
 

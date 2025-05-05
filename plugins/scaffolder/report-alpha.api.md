@@ -41,6 +41,7 @@ const _default: FrontendPlugin<
     actions: SubRouteRef<undefined>;
     listTasks: SubRouteRef<undefined>;
     edit: SubRouteRef<undefined>;
+    templatingExtensions: SubRouteRef<undefined>;
   },
   {
     registerComponent: ExternalRouteRef<undefined>;
@@ -367,6 +368,26 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'renderSchema.tableCell.type': 'Type';
     readonly 'renderSchema.tableCell.title': 'Title';
     readonly 'renderSchema.tableCell.description': 'Description';
+    readonly 'templatingExtensions.content.values.title': 'Values';
+    readonly 'templatingExtensions.content.values.notAvailable': 'There are no global template values defined.';
+    readonly 'templatingExtensions.content.emptyState.title': 'No information to display';
+    readonly 'templatingExtensions.content.emptyState.description': 'There are no templating extensions available or there was an issue communicating with the backend.';
+    readonly 'templatingExtensions.content.filters.title': 'Filters';
+    readonly 'templatingExtensions.content.filters.schema.input': 'Input';
+    readonly 'templatingExtensions.content.filters.schema.output': 'Output';
+    readonly 'templatingExtensions.content.filters.schema.arguments': 'Arguments';
+    readonly 'templatingExtensions.content.filters.examples': 'Examples';
+    readonly 'templatingExtensions.content.filters.notAvailable': 'There are no template filters defined.';
+    readonly 'templatingExtensions.content.filters.metadataAbsent': 'Filter metadata unavailable';
+    readonly 'templatingExtensions.content.searchFieldPlaceholder': 'Search for an extension';
+    readonly 'templatingExtensions.content.functions.title': 'Functions';
+    readonly 'templatingExtensions.content.functions.schema.output': 'Output';
+    readonly 'templatingExtensions.content.functions.schema.arguments': 'Arguments';
+    readonly 'templatingExtensions.content.functions.examples': 'Examples';
+    readonly 'templatingExtensions.content.functions.notAvailable': 'There are no global template functions defined.';
+    readonly 'templatingExtensions.title': 'Templating Extensions';
+    readonly 'templatingExtensions.subtitle': 'This is the collection of available templating extensions';
+    readonly 'templatingExtensions.pageTitle': 'Templating Extensions';
     readonly 'templateTypePicker.title': 'Categories';
     readonly 'templateIntroPage.title': 'Manage Templates';
     readonly 'templateIntroPage.subtitle': 'Edit, preview, and try out templates, forms, and custom fields';
@@ -413,8 +434,8 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateListPage.pageTitle': 'Create a new component';
     readonly 'templateListPage.templateGroups.defaultTitle': 'Templates';
     readonly 'templateListPage.templateGroups.otherTitle': 'Other Templates';
-    readonly 'templateListPage.contentHeader.registerExistingButtonTitle': 'Register Existing Component';
     readonly 'templateListPage.contentHeader.supportButtonTitle': 'Create new software components using standard templates. Different templates create different kinds of components (services, websites, documentation, ...).';
+    readonly 'templateListPage.contentHeader.registerExistingButtonTitle': 'Register Existing Component';
     readonly 'templateListPage.additionalLinksForEntity.viewTechDocsTitle': 'View TechDocs';
     readonly 'templateWizardPage.title': 'Create a new component';
     readonly 'templateWizardPage.subtitle': 'Create new software components using standard templates in your organization';
@@ -422,6 +443,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateWizardPage.pageContextMenu.editConfigurationTitle': 'Edit Configuration';
     readonly 'templateEditorToolbar.customFieldExplorerTooltip': 'Custom Fields Explorer';
     readonly 'templateEditorToolbar.installedActionsDocumentationTooltip': 'Installed Actions Documentation';
+    readonly 'templateEditorToolbar.templatingExtensionsDocumentationTooltip': 'Templating Extensions Documentation';
     readonly 'templateEditorToolbar.addToCatalogButton': 'Publish';
     readonly 'templateEditorToolbar.addToCatalogDialogTitle': 'Publish changes';
     readonly 'templateEditorToolbar.addToCatalogDialogContent.stepsIntroduction': 'Follow the instructions below to create or update a template:';
@@ -447,6 +469,7 @@ export type TemplateListPageProps = {
     editor?: boolean;
     actions?: boolean;
     tasks?: boolean;
+    templatingExtensions?: boolean;
   };
   headerOptions?: {
     pageTitleOverride?: string;

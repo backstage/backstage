@@ -19,6 +19,7 @@ import { GetEntityAncestorsRequest } from '@backstage/catalog-client';
 import { GetEntityAncestorsResponse } from '@backstage/catalog-client';
 import { GetEntityFacetsRequest } from '@backstage/catalog-client';
 import { GetEntityFacetsResponse } from '@backstage/catalog-client';
+import { GetLocationsResponse } from '@backstage/catalog-client';
 import { JsonValue } from '@backstage/types';
 import { Location as Location_2 } from '@backstage/catalog-client';
 import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
@@ -163,6 +164,11 @@ export interface CatalogService {
     locationRef: string,
     options: CatalogServiceRequestOptions,
   ): Promise<Location_2 | undefined>;
+  // (undocumented)
+  getLocations(
+    request: {} | undefined,
+    options: CatalogServiceRequestOptions,
+  ): Promise<GetLocationsResponse>;
   // (undocumented)
   queryEntities(
     request: QueryEntitiesRequest | undefined,

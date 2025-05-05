@@ -1,5 +1,41 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.4.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.25.0-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.6.3-next.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+
+## 0.4.2
+
+### Patch Changes
+
+- 7495edf: Added custom timeout setting for oidc provider
+
+  Here is an example of how to use a custom timeout with the configuration:
+
+  ```yaml
+  auth:
+    oidc:
+      production:
+        clientId: ${AUTH_GOOGLE_CLIENT_ID}
+        clientSecret: ${AUTH_GOOGLE_CLIENT_SECRET}
+        timeout:
+          seconds: 30
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.24.5
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/plugin-auth-node@0.6.2
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+
 ## 0.4.2-next.2
 
 ### Patch Changes

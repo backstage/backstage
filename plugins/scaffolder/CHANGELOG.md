@@ -1,5 +1,86 @@
 # @backstage/plugin-scaffolder
 
+## 1.31.0-next.0
+
+### Minor Changes
+
+- 4235e87: add templating extensions page
+
+### Patch Changes
+
+- 92c3658: Full support in EntityPicker (and derivatives) for default EntityPresentationApi
+- d7da01d: Fix EntityPicker field to render description as markdown, matching other form components in the system.
+- 36ae651: Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+  - @backstage/plugin-scaffolder-react@1.16.0-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/integration-react@1.2.7-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.33
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.30.0
+
+### Minor Changes
+
+- 76681a5: **BREAKING ALPHA**: Extract out schema rendering components into their own Component. This means that the translation keys have changed for `actionsPage.content.tableCell.*`. They have moved to their own root key `renderSchema.*` instead.
+
+  ```diff
+  ...
+  -        tableCell: {
+  -          name: 'Name',
+  -          title: 'Title',
+  -          description: 'Description',
+  -          type: 'Type',
+  -        },
+  -        noRowsDescription: 'No schema defined',
+  ...
+  +    renderSchema: {
+  +      tableCell: {
+  +        name: 'Name',
+  +        title: 'Title',
+  +        description: 'Description',
+  +        type: 'Type',
+  +      },
+  +      undefined: 'No schema defined',
+  +    },
+  ```
+
+- 5890016: add api to retrieve template extensions info from scaffolder-backend
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 407eba1: Tweaked template editor tooltip to mention HTTPS requirement.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.17.0
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/integration-react@1.2.6
+  - @backstage/core-compat-api@0.4.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/plugin-permission-react@0.4.33
+  - @backstage/plugin-scaffolder-react@1.15.0
+  - @backstage/integration@1.16.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-scaffolder-common@1.5.10
+
 ## 1.30.0-next.2
 
 ### Minor Changes

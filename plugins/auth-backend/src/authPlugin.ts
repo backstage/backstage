@@ -24,7 +24,7 @@ import {
   AuthProviderFactory,
   authProvidersExtensionPoint,
 } from '@backstage/plugin-auth-node';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { createRouter } from './service/router';
 
 /**
@@ -66,8 +66,7 @@ export const authPlugin = createBackendPlugin({
         database: coreServices.database,
         discovery: coreServices.discovery,
         auth: coreServices.auth,
-        httpAuth: coreServices.httpAuth,
-        catalogApi: catalogServiceRef,
+        catalog: catalogServiceRef,
       },
       async init({
         httpRouter,
@@ -76,8 +75,7 @@ export const authPlugin = createBackendPlugin({
         database,
         discovery,
         auth,
-        httpAuth,
-        catalogApi,
+        catalog,
       }) {
         const router = await createRouter({
           logger,
@@ -85,10 +83,8 @@ export const authPlugin = createBackendPlugin({
           database,
           discovery,
           auth,
-          httpAuth,
-          catalogApi,
+          catalog,
           providerFactories: Object.fromEntries(providers),
-          disableDefaultProviderFactories: true,
           ownershipResolver,
         });
         httpRouter.addAuthPolicy({
