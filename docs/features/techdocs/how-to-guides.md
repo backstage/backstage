@@ -942,10 +942,10 @@ metadata:
     backstage.io/techdocs-entity: system:default/example
 ```
 
-### Deep linking into another components TechDocs
+### Deep linking into TechDocs
 
-In addition to linking to another component's TechDocs the `backstage.io/techdocs-entity-path` annotation can be used to link to a
-specific page within another component's TechDocs.
+The `backstage.io/techdocs-entity-path` annotation can be use to deep link into a specific page within the components TechDocs.
+This can be used in conjunction with `backstage.io/techdocs-entity` or standalone.
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
