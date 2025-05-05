@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-react
 
+## 1.18.0-next.1
+
+### Patch Changes
+
+- 6d7f0d5: Fixed an issue causing entities of kind user and group to be empty when an owner was selected
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/frontend-test-utils@0.3.2-next.1
+  - @backstage/core-compat-api@0.4.2-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/integration-react@1.2.7-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-permission-react@0.4.34-next.0
+
 ## 1.18.0-next.0
 
 ### Minor Changes

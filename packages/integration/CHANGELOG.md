@@ -1,5 +1,14 @@
 # @backstage/integration
 
+## 1.16.4-next.1
+
+### Patch Changes
+
+- acea1d4: update documentation
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 1.16.4-next.0
 
 ### Patch Changes

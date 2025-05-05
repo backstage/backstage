@@ -70,7 +70,7 @@ putting all extensions like this in a backend module package of their own in the
 `plugins` folder of your Backstage repo:
 
 ```sh
-yarn new --select backend-module --option pluginId=catalog
+yarn new --select backend-plugin-module --option pluginId=catalog
 ```
 
 The class will have this basic structure:

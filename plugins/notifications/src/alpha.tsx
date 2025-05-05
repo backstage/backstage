@@ -53,7 +53,7 @@ const api = ApiBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'notifications',
+  pluginId: 'notifications',
   routes: convertLegacyRouteRefs({
     root: rootRouteRef,
   }),

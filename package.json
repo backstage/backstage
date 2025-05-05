@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.39.0-next.0",
+  "version": "1.39.0-next.1",
   "backstage": {
     "cli": {
       "new": {
@@ -55,6 +55,7 @@
     "start:microsite": "cd microsite/ && yarn start",
     "start:next": "yarn start example-app-next example-backend",
     "storybook": "yarn ./storybook run storybook",
+    "sync-issue-templates": "node ./.github/ISSUE_TEMPLATE/sync.js",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
     "test": "NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' backstage-cli repo test",
@@ -113,7 +114,8 @@
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
     "@types/global-agent": "^2.1.3",
-    "@useoptic/optic": "^1.0.0"
+    "@useoptic/optic": "^1.0.0",
+    "yaml": "^2.7.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:*",

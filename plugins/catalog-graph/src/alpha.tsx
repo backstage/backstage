@@ -86,7 +86,7 @@ const CatalogGraphPage = PageBlueprint.makeWithOverrides({
 });
 
 export default createFrontendPlugin({
-  id: 'catalog-graph',
+  pluginId: 'catalog-graph',
   routes: {
     catalogGraph: convertLegacyRouteRef(catalogGraphRouteRef),
   },

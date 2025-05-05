@@ -20,7 +20,12 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
-import { Entity, parseEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  isUserEntity,
+  parseEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import { Notification } from '@backstage/plugin-notifications-common';
@@ -255,7 +260,11 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     const response = await this.catalog.getEntitiesByRefs(
       {
         entityRefs: entityRefs.slice(),
-        fields: [`metadata.annotations.${ANNOTATION_SLACK_BOT_NOTIFY}`],
+        fields: [
+          `kind`,
+          `spec.profile.email`,
+          `metadata.annotations.${ANNOTATION_SLACK_BOT_NOTIFY}`,
+        ],
       },
       {
         token,
@@ -278,7 +287,42 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       throw new NotFoundError(`Entity not found: ${entityRef}`);
     }
 
-    return entity?.metadata?.annotations?.[ANNOTATION_SLACK_BOT_NOTIFY];
+    const slackId = await this.resolveSlackId(entity);
+    return slackId;
+  }
+
+  private async resolveSlackId(entity: Entity): Promise<string | undefined> {
+    // First try to get Slack ID from annotations
+    const slackId = entity.metadata?.annotations?.[ANNOTATION_SLACK_BOT_NOTIFY];
+    if (slackId) {
+      return slackId;
+    }
+
+    // If no Slack ID in annotations and entity is a User, try to find by email
+    if (isUserEntity(entity)) {
+      return this.findSlackIdByEmail(entity);
+    }
+
+    return undefined;
+  }
+
+  private async findSlackIdByEmail(
+    entity: UserEntity,
+  ): Promise<string | undefined> {
+    const email = entity.spec?.profile?.email;
+    if (!email) {
+      return undefined;
+    }
+
+    try {
+      const user = await this.slack.users.lookupByEmail({ email });
+      return user.user?.id;
+    } catch (error) {
+      this.logger.warn(
+        `Failed to lookup Slack user by email ${email}: ${error}`,
+      );
+      return undefined;
+    }
   }
 
   async sendNotification(args: ChatPostMessageArguments): Promise<void> {

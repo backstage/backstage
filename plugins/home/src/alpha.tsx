@@ -67,6 +67,6 @@ const homePage = PageBlueprint.makeWithOverrides({
  * @alpha
  */
 export default createFrontendPlugin({
-  id: 'home',
+  pluginId: 'home',
   extensions: [homePage],
 });

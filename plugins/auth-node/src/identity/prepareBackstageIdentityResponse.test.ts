@@ -44,6 +44,30 @@ describe('prepareBackstageIdentityResponse', () => {
     });
   });
 
+  it('uses the identity in the result if present', () => {
+    jest.spyOn(Date, 'now').mockReturnValue(5000);
+
+    const token = mkToken({ sub: 'k:ns/n', ent: ['k:ns/o'], exp: 1005 });
+    expect(
+      prepareBackstageIdentityResponse({
+        token,
+        identity: {
+          type: 'user',
+          userEntityRef: 'k:ns/other',
+          ownershipEntityRefs: ['k:ns/group1', 'k:ns/group2'],
+        },
+      }),
+    ).toEqual({
+      token,
+      expiresInSeconds: 1000,
+      identity: {
+        type: 'user',
+        userEntityRef: 'k:ns/other',
+        ownershipEntityRefs: ['k:ns/group1', 'k:ns/group2'],
+      },
+    });
+  });
+
   it('should reject tokens without subject', () => {
     const token = mkToken({});
     expect(() =>

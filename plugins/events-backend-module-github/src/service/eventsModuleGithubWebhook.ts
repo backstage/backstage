@@ -20,6 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { createGithubSignatureValidator } from '../http/createGithubSignatureValidator';
+import { octokitProviderServiceRef } from '../util/octokitProviderService';
 
 /**
  * Module for the events-backend plugin,
@@ -36,9 +37,13 @@ export default createBackendModule({
       deps: {
         config: coreServices.rootConfig,
         events: eventsExtensionPoint,
+        octokitProvider: octokitProviderServiceRef,
       },
-      async init({ config, events }) {
-        const validator = createGithubSignatureValidator(config);
+      async init({ config, events, octokitProvider }) {
+        const validator = createGithubSignatureValidator(
+          config,
+          octokitProvider,
+        );
         if (validator) {
           events.addHttpPostIngress({
             topic: 'github',

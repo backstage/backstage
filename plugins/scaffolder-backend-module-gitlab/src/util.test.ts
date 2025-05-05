@@ -351,7 +351,7 @@ describe('checkEpicScope', () => {
 });
 
 describe('convertDate', () => {
-  it('should convert a valid input date with miliseconds to an ISO string', () => {
+  it('should convert a valid input date with milliseconds to an ISO string', () => {
     const inputDate = '1970-01-01T12:00:00.000Z';
     const defaultDate = '1978-10-09T12:00:00Z';
 

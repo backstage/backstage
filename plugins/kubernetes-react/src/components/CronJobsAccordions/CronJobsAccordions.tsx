@@ -20,7 +20,7 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { V1CronJob, V1Job } from '@kubernetes/client-node';
+import type { V1CronJob, V1Job } from '@kubernetes/client-node';
 import { JobsAccordions } from '../JobsAccordions';
 import { CronJobDrawer } from './CronJobsDrawer';
 import { getOwnedResources } from '../../utils/owner';
