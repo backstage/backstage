@@ -60,10 +60,10 @@ export async function initializeDatabaseAfterCatalog(options: {
 
   const knex = await options.database.getClient();
 
-  const client = knex.client.config.client;
-  if (!client.includes('pg') && !client.includes('sqlite')) {
-    throw new Error(`Feature not supported for database ${client}`);
-  }
+  // const client = knex.client.config.client;
+  // if (!client.includes('pg') && !client.includes('sqlite')) {
+  //   throw new Error(`Feature not supported for database ${client}`);
+  // }
 
   if (options.database.migrations?.skip !== true) {
     await applyDatabaseMigrations(knex);

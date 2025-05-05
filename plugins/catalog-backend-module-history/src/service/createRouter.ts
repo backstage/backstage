@@ -15,41 +15,29 @@
  */
 
 import { InputError } from '@backstage/errors';
+import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Request } from 'express';
 import { Knex } from 'knex';
-import { z } from 'zod';
+import { getMaxId } from '../database/getMaxId';
 import {
   readEventsTableRows,
   ReadEventsTableRowsOptions,
 } from '../database/readEventsTableRows';
 import { createOpenApiRouter, EndpointMap } from '../schema/openapi';
-import { getMaxId } from '../database/getMaxId';
-import { durationToMilliseconds, HumanDuration } from '@backstage/types';
-
-const cursorSchema = z.object({
-  version: z.literal(1),
-  afterEventId: z.string().optional(),
-  entityRef: z.string().optional(),
-  entityId: z.string().optional(),
-  order: z.enum(['asc', 'desc']),
-  limit: z.number().positive().int(),
-  block: z.boolean(),
-});
-
-type Cursor = z.TypeOf<typeof cursorSchema>;
+import { Cursor, parseCursor, stringifyCursor } from './cursor';
 
 export async function createRouter(options: {
   knexPromise: Promise<Knex>;
   signal: AbortSignal;
-  pollFrequency?: HumanDuration;
   blockDuration?: HumanDuration;
+  blockPollFrequency?: HumanDuration;
 }) {
   const router = await createOpenApiRouter();
-  const pollFrequencyMs = durationToMilliseconds(
-    options.pollFrequency ?? { seconds: 1 },
-  );
   const blockDurationMs = durationToMilliseconds(
     options.blockDuration ?? { seconds: 10 },
+  );
+  const blockPollFrequencyMs = durationToMilliseconds(
+    options.blockPollFrequency ?? { seconds: 1 },
   );
 
   router.get('/history/v1/events', async (req, res) => {
@@ -71,7 +59,7 @@ export async function createRouter(options: {
       const deadline = Date.now() + blockDurationMs;
       while (Date.now() < deadline) {
         await new Promise<void>(resolve => {
-          const timer = setTimeout(done, pollFrequencyMs);
+          const timer = setTimeout(done, blockPollFrequencyMs);
           req.on('close', done);
           options.signal.addEventListener('abort', done);
           function done() {
@@ -120,7 +108,7 @@ export async function createRouter(options: {
           entityJson: row.entityJson,
         })),
         pageInfo: {
-          cursor: nextCursor ? writeResponseCursorInfo(nextCursor) : undefined,
+          cursor: nextCursor ? stringifyCursor(nextCursor) : undefined,
         },
       }),
     );
@@ -143,11 +131,7 @@ async function readGetEventsQuery(
 
   if (request.query.cursor) {
     try {
-      const cursor = cursorSchema.parse(
-        JSON.parse(
-          Buffer.from(request.query.cursor, 'base64url').toString('utf-8'),
-        ),
-      );
+      const cursor = parseCursor(request.query.cursor);
       readOptions = {
         afterEventId: cursor.afterEventId,
         entityRef: cursor.entityRef,
@@ -184,8 +168,4 @@ async function readGetEventsQuery(
     readOptions,
     block,
   };
-}
-
-function writeResponseCursorInfo(cursor: Cursor) {
-  return Buffer.from(JSON.stringify(cursor), 'utf-8').toString('base64url');
 }
