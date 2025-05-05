@@ -16,6 +16,7 @@
 
 import {
   ApiBlueprint,
+  NavComponentBlueprint,
   PageBlueprint,
   createApiFactory,
   createFrontendPlugin,
@@ -29,6 +30,7 @@ import {
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
 import { NotificationsClient, notificationsApiRef } from './api';
+import { NotificationsSidebarItem } from './components';
 
 const page = PageBlueprint.make({
   params: {
@@ -52,12 +54,34 @@ const api = ApiBlueprint.make({
   },
 });
 
+const navBarComponent = NavComponentBlueprint.makeWithOverrides({
+  config: {
+    schema: {
+      webNotificationsEnabled: z => z.boolean().optional(),
+      titleCounterEnabled: z => z.boolean().optional(),
+      snackbarEnabled: z => z.boolean().optional(),
+      snackbarAutoHideDuration: z => z.number().optional(),
+      className: z => z.string().optional(),
+      text: z => z.string().optional(),
+      disableHighlight: z => z.boolean().optional(),
+      noTrack: z => z.boolean().optional(),
+    },
+  },
+  factory(originalFactory, context) {
+    return originalFactory({
+      Component: (props: Parameters<typeof NotificationsSidebarItem>[0]) =>
+        compatWrapper(<NotificationsSidebarItem {...props} />),
+      routeRef: convertLegacyRouteRef(rootRouteRef),
+      args: context.config,
+    });
+  },
+});
+
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'notifications',
   routes: convertLegacyRouteRefs({
     root: rootRouteRef,
   }),
-  // TODO(Rugvip): Nav item (i.e. NotificationsSidebarItem) currently needs to be installed manually
-  extensions: [page, api],
+  extensions: [page, api, navBarComponent],
 });

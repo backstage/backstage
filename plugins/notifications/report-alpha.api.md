@@ -4,9 +4,12 @@
 
 ```ts
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
+import { AnyExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
+import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
@@ -31,6 +34,53 @@ const _default: FrontendPlugin<
       inputs: {};
       params: {
         factory: AnyApiFactory;
+      };
+    }>;
+    'nav-component:notifications': ExtensionDefinition<{
+      config: {
+        webNotificationsEnabled: boolean | undefined;
+        titleCounterEnabled: boolean | undefined;
+        snackbarEnabled: boolean | undefined;
+        snackbarAutoHideDuration: number | undefined;
+        className: string | undefined;
+        text: string | undefined;
+        disableHighlight: boolean | undefined;
+        noTrack: boolean | undefined;
+      };
+      configInput: {
+        text?: string | undefined;
+        className?: string | undefined;
+        noTrack?: boolean | undefined;
+        disableHighlight?: boolean | undefined;
+        webNotificationsEnabled?: boolean | undefined;
+        titleCounterEnabled?: boolean | undefined;
+        snackbarEnabled?: boolean | undefined;
+        snackbarAutoHideDuration?: number | undefined;
+      };
+      output: ConfigurableExtensionDataRef<
+        {
+          Component: ComponentType<any>;
+          routeRef: RouteRef<AnyRouteRefParams>;
+          args?: Record<string, any>;
+        },
+        'core.nav-component.target',
+        {}
+      >;
+      inputs: {
+        [x: string]: ExtensionInput<
+          AnyExtensionDataRef,
+          {
+            optional: boolean;
+            singleton: boolean;
+          }
+        >;
+      };
+      kind: 'nav-component';
+      name: undefined;
+      params: {
+        Component: ComponentType<any>;
+        routeRef: RouteRef<AnyRouteRefParams>;
+        args?: Record<string, any>;
       };
     }>;
     'page:notifications': ExtensionDefinition<{
