@@ -19,6 +19,7 @@ import { isDockerDisabledForTests } from '../util/isDockerDisabledForTests';
 import { connectToExternalMemcache, startMemcachedContainer } from './memcache';
 import { connectToExternalRedis, startRedisContainer } from './redis';
 import { Instance, TestCacheId, TestCacheProperties, allCaches } from './types';
+import { connectToExternalValkey, startValkeyContainer } from './valkey';
 
 /**
  * Encapsulates the creation of ephemeral test cache instances for use inside
@@ -156,6 +157,8 @@ export class TestCaches {
         return this.initMemcached(properties);
       case 'redis':
         return this.initRedis(properties);
+      case 'valkey':
+        return this.initValkey(properties);
       case 'memory':
         return {
           store: 'memory',
@@ -194,6 +197,19 @@ export class TestCaches {
     }
 
     return await startRedisContainer(properties.dockerImageName!);
+  }
+
+  private async initValkey(properties: TestCacheProperties): Promise<Instance> {
+    // Use the connection string if provided
+    const envVarName = properties.connectionStringEnvironmentVariableName;
+    if (envVarName) {
+      const connectionString = process.env[envVarName];
+      if (connectionString) {
+        return connectToExternalValkey(connectionString);
+      }
+    }
+
+    return await startValkeyContainer(properties.dockerImageName!);
   }
 
   private async shutdown() {

@@ -9358,14 +9358,14 @@
   height: 32px;
 }
 
-.canon-Button[data-size="small"] .canon-ButtonIcon {
+.canon-ButtonIcon[data-size="small"], .canon-ButtonIcon[data-size="small"] svg {
   width: 1rem;
   height: 1rem;
 }
 
-.canon-Button[data-size="medium"] .canon-ButtonIcon {
-  width: 1.5rem;
-  height: 1.5rem;
+.canon-ButtonIcon[data-size="medium"], .canon-ButtonIcon[data-size="medium"] svg {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .canon-CollapsiblePanel {
@@ -9745,14 +9745,14 @@
   height: 32px;
 }
 
-.canon-IconButton[data-size="small"] .canon-IconButtonIcon {
+.canon-IconButtonIcon[data-size="small"], .canon-IconButtonIcon[data-size="small"] svg {
   width: 1rem;
   height: 1rem;
 }
 
-.canon-IconButton[data-size="medium"] .canon-IconButtonIcon {
-  width: 1.5rem;
-  height: 1.5rem;
+.canon-IconButtonIcon[data-size="medium"], .canon-IconButtonIcon[data-size="medium"] svg {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .canon-TextField {
@@ -9767,6 +9767,11 @@
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-primary);
   margin-bottom: var(--canon-space-1_5);
+  cursor: pointer;
+}
+
+.canon-TextFieldLabel[data-disabled] {
+  cursor: default;
 }
 
 .canon-TextFieldDescription {
@@ -10060,6 +10065,11 @@
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-primary);
   margin-bottom: var(--canon-space-1_5);
+  cursor: pointer;
+}
+
+.canon-SelectLabel[data-disabled] {
+  cursor: default;
 }
 
 .canon-SelectDescription {

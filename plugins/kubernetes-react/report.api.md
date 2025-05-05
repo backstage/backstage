@@ -22,8 +22,8 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { GroupedResponses } from '@backstage/plugin-kubernetes-common';
 import { IContainer } from 'kubernetes-models/v1';
 import { IContainerStatus } from 'kubernetes-models/v1';
-import { IIoK8sApimachineryPkgApisMetaV1ObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
-import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
+import type { IIoK8sApimachineryPkgApisMetaV1ObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
+import type { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import { JsonObject } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
@@ -34,11 +34,11 @@ import { Pod } from 'kubernetes-models/v1';
 import { Pod as Pod_2 } from 'kubernetes-models/v1/Pod';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { ReactNode } from 'react';
-import { TypeMeta } from '@kubernetes-models/base';
-import { V1Job } from '@kubernetes/client-node';
-import { V1ObjectMeta } from '@kubernetes/client-node';
-import { V1Pod } from '@kubernetes/client-node';
-import { V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
+import type { TypeMeta } from '@kubernetes-models/base';
+import type { V1Job } from '@kubernetes/client-node';
+import type { V1ObjectMeta } from '@kubernetes/client-node';
+import type { V1Pod } from '@kubernetes/client-node';
+import type { V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { WorkloadsByEntityRequest } from '@backstage/plugin-kubernetes-common';
 
 // @public (undocumented)
@@ -282,6 +282,12 @@ export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
 
 // @public (undocumented)
 export const GroupedResponsesContext: Context<GroupedResponses>;
+
+// @public (undocumented)
+export class HeadlampClusterLinksFormatter implements ClusterLinksFormatter {
+  // (undocumented)
+  formatClusterLink(options: ClusterLinksFormatterOptions): Promise<URL>;
+}
 
 // @public (undocumented)
 export const HorizontalPodAutoscalerDrawer: (props: {

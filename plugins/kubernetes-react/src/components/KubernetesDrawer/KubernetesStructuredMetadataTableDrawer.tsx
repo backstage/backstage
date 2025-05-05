@@ -25,7 +25,7 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Close from '@material-ui/icons/Close';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import { V1ObjectMeta } from '@kubernetes/client-node';
+import type { V1ObjectMeta } from '@kubernetes/client-node';
 import { withStyles } from '@material-ui/core/styles';
 import {
   LinkButton as BackstageButton,

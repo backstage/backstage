@@ -85,7 +85,7 @@ export function toLegacyPlugin(
 // TODO: Currently a very naive implementation, may need some more work
 function toNewPlugin(plugin: LegacyBackstagePlugin): NewFrontendPlugin {
   return createNewPlugin({
-    id: plugin.getId(),
+    pluginId: plugin.getId(),
   });
 }
 

@@ -154,6 +154,95 @@ describe('createRouter', () => {
       });
     });
 
+    it('calls the permission policy with batched resourceRef as an array', async () => {
+      policy.handle.mockResolvedValueOnce({
+        result: AuthorizeResult.CONDITIONAL,
+        pluginId: 'test-plugin',
+        resourceType: 'test-resource-1',
+        conditions: { rule: 'test-rule', params: ['abc'] },
+      });
+
+      mockApplyConditions.mockResolvedValueOnce([
+        {
+          id: '123',
+          result: [AuthorizeResult.ALLOW, AuthorizeResult.DENY],
+        },
+      ]);
+
+      const response = await request(app)
+        .post('/authorize')
+        .send({
+          items: [
+            {
+              id: '123',
+              permission: {
+                type: 'resource',
+                name: 'test.permission1',
+                attributes: {},
+                resourceType: 'test-resource-1',
+              },
+              resourceRef: ['resource:1', 'resource:2'],
+            },
+            {
+              id: '234',
+              permission: {
+                type: 'basic',
+                name: 'test.permission2',
+                attributes: {},
+              },
+            },
+          ],
+        });
+
+      expect(mockApplyConditions).toHaveBeenCalledWith(
+        'test-plugin',
+        expect.any(Object),
+        [
+          {
+            conditions: { params: ['abc'], rule: 'test-rule' },
+            id: '123',
+            pluginId: 'test-plugin',
+            resourceRef: ['resource:1', 'resource:2'],
+            resourceType: 'test-resource-1',
+            result: 'CONDITIONAL',
+          },
+        ],
+      );
+
+      expect(response.status).toEqual(200);
+
+      expect(policy.handle).toHaveBeenCalledWith(
+        {
+          permission: {
+            type: 'resource',
+            name: 'test.permission1',
+            attributes: {},
+            resourceType: 'test-resource-1',
+          },
+        },
+        undefined,
+      );
+      expect(policy.handle).toHaveBeenCalledWith(
+        {
+          permission: {
+            type: 'basic',
+            name: 'test.permission2',
+            attributes: {},
+          },
+        },
+        undefined,
+      );
+
+      expect(policy.handle).toHaveBeenCalledTimes(2);
+
+      expect(response.body).toEqual({
+        items: [
+          { id: '123', result: [AuthorizeResult.ALLOW, AuthorizeResult.DENY] },
+          { id: '234', result: AuthorizeResult.DENY },
+        ],
+      });
+    });
+
     it('resolves identity from the Authorization header', async () => {
       const response = await request(app)
         .post('/authorize')
@@ -522,7 +611,7 @@ describe('createRouter', () => {
         });
       });
 
-      it('leaves conditional results without resourceRefs unchanged', async () => {
+      it('leaves conditional results without resourceRef unchanged', async () => {
         policy.handle
           .mockResolvedValueOnce({
             result: AuthorizeResult.CONDITIONAL,
@@ -792,8 +881,20 @@ describe('createRouter', () => {
         items: [
           {
             id: '123',
-            // resource ref should be a string
             resourceRef: ['resource:1'],
+            permission: {
+              type: 'basic',
+              name: 'test.permission',
+              attributes: {},
+            },
+          },
+        ],
+      },
+      {
+        items: [
+          {
+            id: '123',
+            resourceRef: [],
             permission: {
               type: 'resource',
               name: 'test.permission',
@@ -803,17 +904,11 @@ describe('createRouter', () => {
           },
         ],
       },
-    ])('returns a 400 error for invalid request %#', async requestBody => {
+    ])('returns a 400 error for invalid request %o', async requestBody => {
       const response = await request(app).post('/authorize').send(requestBody);
 
       expect(response.status).toEqual(400);
-      expect(response.body).toEqual(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message: expect.stringMatching(/invalid/i),
-          }),
-        }),
-      );
+      expect(response.body.error.name).toEqual('InputError');
     });
 
     it('returns a 500 error if the policy returns a different resourceType', async () => {

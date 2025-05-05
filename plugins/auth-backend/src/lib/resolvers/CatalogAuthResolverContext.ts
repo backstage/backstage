@@ -77,8 +77,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
   ) {}
 
   async issueToken(params: TokenParams) {
-    const token = await this.tokenIssuer.issueToken(params);
-    return { token };
+    return await this.tokenIssuer.issueToken(params);
   }
 
   async findCatalogUser(query: AuthResolverCatalogUserQuery) {
@@ -147,13 +146,12 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
       entity,
     );
 
-    const token = await this.tokenIssuer.issueToken({
+    return await this.tokenIssuer.issueToken({
       claims: {
         sub: stringifyEntityRef(entity),
         ent: ownershipEntityRefs,
       },
     });
-    return { token };
   }
 
   async resolveOwnershipEntityRefs(

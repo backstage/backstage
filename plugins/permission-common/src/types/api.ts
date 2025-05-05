@@ -176,6 +176,7 @@ export type EvaluatePermissionRequest = {
 /**
  * A batch of requests sent to the permission backend.
  * @public
+ * @deprecated This type is not used and it will be removed in the future
  */
 export type EvaluatePermissionRequestBatch =
   PermissionMessageBatch<EvaluatePermissionRequest>;

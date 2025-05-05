@@ -60,13 +60,18 @@ describe('TokenFactory', () => {
     });
 
     await expect(factory.listPublicKeys()).resolves.toEqual({ keys: [] });
-    const token = await factory.issueToken({
+    const { token, identity } = await factory.issueToken({
       claims: {
         sub: entityRef,
         ent: [entityRef],
         'x-fancy-claim': 'my special claim',
         aud: 'this value will be overridden',
       },
+    });
+    expect(identity).toEqual({
+      type: 'user',
+      userEntityRef: entityRef,
+      ownershipEntityRefs: [entityRef],
     });
 
     const { keys } = await factory.listPublicKeys();
@@ -137,10 +142,10 @@ describe('TokenFactory', () => {
       userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
     });
 
-    const token1 = await factory.issueToken({
+    const { token: token1 } = await factory.issueToken({
       claims: { sub: entityRef },
     });
-    const token2 = await factory.issueToken({
+    const { token: token2 } = await factory.issueToken({
       claims: { sub: entityRef },
     });
     expect(jwtKid(token1)).toBe(jwtKid(token2));
@@ -159,7 +164,7 @@ describe('TokenFactory', () => {
       keys: [],
     });
 
-    const token3 = await factory.issueToken({
+    const { token: token3 } = await factory.issueToken({
       claims: { sub: entityRef },
     });
     expect(jwtKid(token3)).not.toBe(jwtKid(token2));
@@ -236,7 +241,7 @@ describe('TokenFactory', () => {
       userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
     });
 
-    const token = await factory.issueToken({
+    const { token } = await factory.issueToken({
       claims: { sub: entityRef, ent: [entityRef] },
     });
 

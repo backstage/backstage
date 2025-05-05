@@ -81,6 +81,12 @@ export async function createRouter(
     await authDb.get(),
   );
 
+  const omitClaimsFromToken = config.getOptionalBoolean(
+    'auth.omitIdentityTokenOwnershipClaim',
+  )
+    ? ['ent']
+    : [];
+
   let tokenIssuer: TokenIssuer;
   if (keyStore instanceof StaticKeyStore) {
     tokenIssuer = new StaticTokenIssuer(
@@ -88,6 +94,8 @@ export async function createRouter(
         logger: logger.child({ component: 'token-factory' }),
         issuer: authUrl,
         sessionExpirationSeconds: backstageTokenExpiration,
+        userInfoDatabaseHandler,
+        omitClaimsFromToken,
       },
       keyStore as StaticKeyStore,
     );
@@ -101,6 +109,7 @@ export async function createRouter(
         tokenFactoryAlgorithm ??
         config.getOptionalString('auth.identityTokenAlgorithm'),
       userInfoDatabaseHandler,
+      omitClaimsFromToken,
     });
   }
 

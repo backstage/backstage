@@ -43,6 +43,15 @@ export interface Config {
      */
     identityTokenAlgorithm?: string;
 
+    /**
+     * Whether to omit the entity ownership references (`ent`) claim from the
+     * identity token. If this is enabled the `ent` claim will only be available
+     * via the user info endpoint and the `UserInfoService`.
+     *
+     * Defaults to `false`.
+     */
+    omitIdentityTokenOwnershipClaim?: boolean;
+
     /** To control how to store JWK data in auth-backend */
     keyStore?: {
       provider?: 'database' | 'memory' | 'firestore' | 'static';

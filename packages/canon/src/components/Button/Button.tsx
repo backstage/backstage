@@ -15,7 +15,6 @@
  */
 
 import { forwardRef } from 'react';
-import { Icon } from '../Icon';
 import clsx from 'clsx';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 
@@ -50,9 +49,25 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         style={style}
         {...rest}
       >
-        {iconStart && <Icon name={iconStart} className="canon-ButtonIcon" />}
+        {iconStart && (
+          <span
+            className="canon-ButtonIcon"
+            aria-hidden="true"
+            data-size={responsiveSize}
+          >
+            {iconStart}
+          </span>
+        )}
         {children}
-        {iconEnd && <Icon name={iconEnd} className="canon-ButtonIcon" />}
+        {iconEnd && (
+          <span
+            className="canon-ButtonIcon"
+            aria-hidden="true"
+            data-size={responsiveSize}
+          >
+            {iconEnd}
+          </span>
+        )}
       </button>
     );
   },

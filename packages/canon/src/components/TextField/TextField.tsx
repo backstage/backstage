@@ -32,6 +32,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       error,
       required,
       style,
+      disabled,
       ...rest
     } = props;
 
@@ -50,7 +51,11 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
         ref={ref}
       >
         {label && (
-          <label className="canon-TextFieldLabel" htmlFor={inputId}>
+          <label
+            className="canon-TextFieldLabel"
+            htmlFor={inputId}
+            data-disabled={disabled}
+          >
             {label}
             {required && (
               <span aria-hidden="true" className="canon-TextFieldRequired">
@@ -70,6 +75,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           })}
           data-invalid={error}
           required={required}
+          disabled={disabled}
           {...rest}
         />
         {description && (

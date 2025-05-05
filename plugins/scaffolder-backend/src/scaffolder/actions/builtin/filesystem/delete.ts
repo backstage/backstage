@@ -61,6 +61,7 @@ export const createFilesystemDeleteAction = () => {
         const resolvedPaths = await globby(safeFilepath, {
           cwd: ctx.workspacePath,
           absolute: true,
+          dot: true,
         });
 
         for (const filepath of resolvedPaths) {
