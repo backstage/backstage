@@ -158,6 +158,10 @@ describe('SlackNotificationProcessor', () => {
           blocks: [
             {
               type: 'section',
+              text: {
+                text: 'No description provided',
+                type: 'mrkdwn',
+              },
               accessory: {
                 type: 'button',
                 text: {
@@ -229,6 +233,10 @@ describe('SlackNotificationProcessor', () => {
             blocks: [
               {
                 type: 'section',
+                text: {
+                  text: 'No description provided',
+                  type: 'mrkdwn',
+                },
                 accessory: {
                   type: 'button',
                   text: {
