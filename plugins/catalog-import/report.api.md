@@ -6,6 +6,7 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
+import { catalogImportTranslationRef } from '@backstage/plugin-catalog-import/alpha';
 import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConfigApi } from '@backstage/core-plugin-api';
@@ -24,6 +25,7 @@ import { ScmAuthApi } from '@backstage/integration-react';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SubmitHandler } from 'react-hook-form';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';
+import { TranslationFunction } from '@backstage/core-plugin-api/alpha';
 import { UseFormProps } from 'react-hook-form';
 import { UseFormReturn } from 'react-hook-form';
 
@@ -145,6 +147,7 @@ export { catalogImportPlugin as plugin };
 export function defaultGenerateStepper(
   flow: ImportFlows,
   defaults: StepperProvider,
+  t: TranslationFunction<typeof catalogImportTranslationRef.T>,
 ): StepperProvider;
 
 // @public
@@ -213,6 +216,7 @@ export interface ImportStepperProps {
   generateStepper?: (
     flow: ImportFlows,
     defaults: StepperProvider,
+    t: TranslationFunction<typeof catalogImportTranslationRef.T>,
   ) => StepperProvider;
   // (undocumented)
   initialUrl?: string;

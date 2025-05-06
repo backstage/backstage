@@ -92,3 +92,5 @@ export default createFrontendPlugin({
     importPage: convertLegacyRouteRef(rootRouteRef),
   },
 });
+
+export { catalogImportTranslationRef } from './translation';
