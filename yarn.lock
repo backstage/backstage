@@ -20415,12 +20415,12 @@ __metadata:
   linkType: hard
 
 "@types/inquirer@npm:^8.1.3":
-  version: 8.2.10
-  resolution: "@types/inquirer@npm:8.2.10"
+  version: 8.2.11
+  resolution: "@types/inquirer@npm:8.2.11"
   dependencies:
     "@types/through": "npm:*"
     rxjs: "npm:^7.2.0"
-  checksum: 10/d7c0c5ec95af583191942ac33f8af2eb1fe839da6b4560277a8c251fa289f2dd3a5d14850baf910343700646200258ecff89dc9e1d57df29c16a1082d91a5ae3
+  checksum: 10/3648c8b76fa9d49e1b4e06a42ab5df00e4fdf9e498056b73d0154dcf46388f8ba034a80d7a45fcae7e7c6499ba24376bd4772ad4dfd3a7a9763413b4ee1ab393
   languageName: node
   linkType: hard
 
