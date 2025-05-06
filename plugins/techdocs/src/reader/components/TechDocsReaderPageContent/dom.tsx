@@ -229,6 +229,13 @@ export const useTechDocsReaderDom = (
                 transformedElement
                   ?.querySelector(`[id="${parsedUrl.hash.slice(1)}"]`)
                   ?.scrollIntoView();
+
+                // Focus first focusable element in the target section
+                (
+                  transformedElement
+                    ?.querySelector(`[id="${parsedUrl.hash.slice(1)}"]`)
+                    ?.querySelector('a, button, [tabindex]') as HTMLElement
+                )?.focus();
               }
             } else {
               if (modifierActive) {

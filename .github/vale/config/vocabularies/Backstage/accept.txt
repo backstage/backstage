@@ -173,6 +173,7 @@ graphviz
 Hackathons
 haproxy
 hardcoded
+hardcoding
 Harness
 harness
 Helidon
@@ -507,6 +508,7 @@ utils
 Valentina
 validator
 validators
+Valkey
 varchar
 vite
 VMware
@@ -534,3 +536,4 @@ zsh
 scrollable
 severities
 intellij
+tsconfig

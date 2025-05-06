@@ -317,7 +317,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
         }
       }
 
-      let reviewerIds: number[] | undefined = undefined; // Explicitly set to undefined. Strangely, passing an empty array to the API will result the other options being undefined also being explicity passed to the Gitlab API call (e.g. assigneeId)
+      let reviewerIds: number[] | undefined = undefined; // Explicitly set to undefined. Strangely, passing an empty array to the API will result the other options being undefined also being explicitly passed to the Gitlab API call (e.g. assigneeId)
       if (reviewers !== undefined) {
         reviewerIds = (
           await Promise.all(
@@ -414,20 +414,39 @@ which uses additional API calls in order to detect whether to 'create', 'update'
               execute_filemode: file.executable,
             }));
 
-      let createBranch: boolean;
-      if (actions.length) {
-        createBranch = true;
-      } else {
-        try {
-          await api.Branches.show(repoID, branchName);
-          createBranch = false;
-          ctx.logger.info(
-            `Using existing branch ${branchName} without modification.`,
-          );
-        } catch (e) {
-          createBranch = true;
+      let createBranch = actions.length > 0;
+
+      try {
+        const branch = await api.Branches.show(repoID, branchName);
+        if (createBranch) {
+          const mergeRequests = await api.MergeRequests.all({
+            projectId: repoID,
+            source_branch: branchName,
+          });
+
+          if (mergeRequests.length > 0) {
+            // If an open MR exists, include the MR link in the error message
+            throw new InputError(
+              `The branch creation failed because the branch already exists at: ${branch.web_url}. Additionally, there is a Merge Request for this branch: ${mergeRequests[0].web_url}`,
+            );
+          } else {
+            // If no open MR, just notify about the existing branch
+            throw new InputError(
+              `The branch creation failed because the branch already exists at: ${branch.web_url}.`,
+            );
+          }
         }
+
+        ctx.logger.info(
+          `Using existing branch ${branchName} without modification.`,
+        );
+      } catch (e) {
+        if (e instanceof InputError) {
+          throw e;
+        }
+        createBranch = true;
       }
+
       if (createBranch) {
         try {
           await api.Branches.create(repoID, branchName, String(targetBranch));
@@ -439,6 +458,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
           );
         }
       }
+
       await ctx.checkpoint({
         key: `commit.to.${repoID}.${branchName}`,
         fn: async () => {

@@ -28,9 +28,9 @@ import { createGitlabTokenValidator } from '../http/createGitlabTokenValidator';
  *
  * Registers the `GitlabEventRouter`.
  *
- * @alpha
+ * @public
  */
-export const eventsModuleGitlabWebhook = createBackendModule({
+export default createBackendModule({
   pluginId: 'events',
   moduleId: 'gitlab-webhook',
   register(env) {
@@ -40,10 +40,13 @@ export const eventsModuleGitlabWebhook = createBackendModule({
         events: eventsExtensionPoint,
       },
       async init({ config, events }) {
-        events.addHttpPostIngress({
-          topic: 'gitlab',
-          validator: createGitlabTokenValidator(config),
-        });
+        const validator = createGitlabTokenValidator(config);
+        if (validator) {
+          events.addHttpPostIngress({
+            topic: 'gitlab',
+            validator: createGitlabTokenValidator(config),
+          });
+        }
       },
     });
   },

@@ -18,9 +18,11 @@ Commands:
   config:docs
   config:print
   config:schema
+  create-github-app
   help [command]
   info
   migrate [command]
+  new
   package [command]
   repo [command]
   versions:bump
@@ -54,12 +56,11 @@ Commands:
 ### `backstage-cli-alpha config docs`
 
 ```
-Usage: <none>
+Usage: backstage-cli config docs [options]
 
 Options:
-  --help
-  --package
-  --version
+  --package <name>
+  -h, --help
 ```
 
 ### `backstage-cli-alpha config schema`
@@ -132,6 +133,15 @@ Options:
   --version
 ```
 
+### `backstage-cli-alpha create-github-app`
+
+```
+Usage: program [options] <github-org>
+
+Options:
+  -h, --help
+```
+
 ### `backstage-cli-alpha info`
 
 ```
@@ -201,6 +211,23 @@ Options:
 Usage: program [options]
 
 Options:
+  -h, --help
+```
+
+### `backstage-cli-alpha new`
+
+```
+Usage: program [options]
+
+Options:
+  --baseVersion <version>
+  --license <license>
+  --no-private
+  --npm-registry <URL>
+  --option <name>=<value>
+  --scope <scope>
+  --select <name>
+  --skip-install
   -h, --help
 ```
 

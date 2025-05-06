@@ -4,8 +4,7 @@ title: Writing Templates
 description: Details around creating your own custom Software Templates
 ---
 
-Templates are stored in the **Software Catalog** under a kind `Template`. You
-can create your own templates with a small `yaml` definition which describes the
+You can create your own templates with a small `yaml` definition which describes the
 template and its metadata, along with some input variables that your template
 will need, and then a list of actions which are then executed by the scaffolding
 service.
@@ -83,6 +82,7 @@ spec:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: 'main'
 
     - id: register
       name: Register
@@ -251,7 +251,7 @@ spec:
   type: service
 
   parameters:
-    - title: Authenticaion
+    - title: Authentication
       description: Provide authentication for the resource
       required:
         - username

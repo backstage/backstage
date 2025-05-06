@@ -1,5 +1,65 @@
 # @backstage/backend-app-api
 
+## 1.2.3-next.1
+
+### Patch Changes
+
+- 729a7d6: Added a configuration to permit backend plugin module failures on startup:
+
+  ```yaml
+  backend:
+    ...
+    startup:
+      plugins:
+        plugin-x:
+          modules:
+            module-y:
+              onPluginModuleBootFailure: continue
+  ```
+
+  This configuration permits `plugin-x` with `module-y` to fail on startup. Omitting the
+  `onPluginModuleBootFailure` configuration matches the previous behavior, wherein any
+  individual plugin module failure is forwarded to the plugin and aborts backend startup.
+
+  The default can also be changed, so that continuing on failure is the default
+  unless otherwise specified:
+
+  ```yaml
+  backend:
+    startup:
+      default:
+        onPluginModuleBootFailure: continue
+      plugins:
+        catalog:
+          modules:
+            github:
+              onPluginModuleBootFailure: abort
+  ```
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 1.2.1
 
 ### Patch Changes

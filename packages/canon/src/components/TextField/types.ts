@@ -15,6 +15,7 @@
  */
 
 import type { Breakpoint } from '../../types';
+import type { IconNames } from '../Icon';
 
 /** @public */
 export interface TextFieldProps
@@ -49,4 +50,14 @@ export interface TextFieldProps
    * The error message of the text field
    */
   error?: string | null;
+
+  /**
+   * An icon to render before the input
+   */
+  icon?: IconNames;
+
+  /**
+   * Handler to call when the clear button is pressed
+   */
+  onClear?: React.MouseEventHandler<HTMLButtonElement>;
 }

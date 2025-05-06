@@ -256,7 +256,7 @@ export type GitlabProviderConfig = {
   membership?: boolean;
 
   /**
-   * Optional comma seperated list of topics to filter projects by, as specified in the GitLab API documentation:
+   * Optional comma separated list of topics to filter projects by, as specified in the GitLab API documentation:
    * https://docs.gitlab.com/api/projects/#list-projects
    */
   topics?: string;

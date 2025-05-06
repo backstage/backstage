@@ -199,7 +199,7 @@ export function createPublishGithubAction(options: {
         requiredConversationResolution = false,
         requireLastPushApproval = false,
         repoVisibility = 'private',
-        defaultBranch = 'master',
+        defaultBranch = 'main',
         protectDefaultBranch = true,
         protectEnforceAdmins = true,
         deleteBranchOnMerge = false,
@@ -242,7 +242,10 @@ export function createPublishGithubAction(options: {
         owner,
         repo,
       });
-      const client = new Octokit(octokitOptions);
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       const { remoteUrl, repoContentsUrl } = await ctx.checkpoint({
         key: `create.github.repo.${owner}.${repo}`,

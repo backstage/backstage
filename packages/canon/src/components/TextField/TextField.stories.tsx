@@ -95,17 +95,49 @@ export const Responsive: Story = {
   },
 };
 
-export const withError: Story = {
+export const WithError: Story = {
   args: {
     ...WithLabel.args,
     error: 'Invalid URL',
   },
 };
 
-export const withErrorAndDescription: Story = {
+export const WithErrorAndDescription: Story = {
   args: {
     ...WithLabel.args,
     error: 'Invalid URL',
     description: 'Description',
+  },
+};
+
+export const WithIcon: Story = {
+  args: {
+    ...WithLabel.args,
+    placeholder: 'Search...',
+    icon: 'search',
+  },
+};
+
+export const DisabledWithIcon: Story = {
+  args: {
+    ...WithIcon.args,
+    disabled: true,
+  },
+};
+
+export const WithOnClear: Story = {
+  args: {
+    ...WithLabel.args,
+    placeholder: 'Search...',
+    type: 'search',
+    onClear: () => null,
+  },
+};
+
+export const DisabledWithOnClear: Story = {
+  args: {
+    ...WithOnClear.args,
+    defaultValue: 'Testing',
+    disabled: true,
   },
 };

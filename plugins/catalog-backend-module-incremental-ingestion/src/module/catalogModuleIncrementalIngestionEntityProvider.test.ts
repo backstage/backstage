@@ -72,6 +72,5 @@ describe('catalogModuleIncrementalIngestionEntityProvider', () => {
     expect(addEntityProvider.mock.calls[0][0].getProviderName()).toBe(
       'provider1',
     );
-    expect(httpRouterMock.use).toHaveBeenCalledTimes(1);
   });
 });

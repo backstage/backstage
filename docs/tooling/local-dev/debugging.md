@@ -52,25 +52,28 @@ The resulting log should now have more information available for debugging:
 
 ### VSCode
 
-In your `launch.json`, add a new entry with the following,
+In your `.vscode/launch.json`, add a new entry with the following,
 
 ```jsonc
 {
-   "name": "Start Backend",
-   "type": "node",
-   "request": "launch",
-   "cwd": "${workspaceFolder}",
-   "runtimeExecutable": "yarn",
-   "args": [
-      "start-backend",
-      "--inspect"
-   ],
-   "skipFiles": [
-      "<node_internals>/**"
-   ],
-   "console": "integratedTerminal"
-},
+  "configurations": [
+    {
+      "name": "Start Backstage", // The name of this configuration, displayed in the Run and Debug panel.
+      "type": "node", // Specifies that this is a Node.js debugging configuration.
+      "request": "launch", // Indicates that the debugger should launch the application (as opposed to attaching to an already running process).
+      "cwd": "${workspaceFolder}", // Sets the current working directory to the root of the workspace.
+      "runtimeExecutable": "yarn", // Specifies the runtime to execute the application. In this case, it uses `yarn` to run the script.
+      "args": ["start", "--inspect"], // Arguments passed to the `yarn` command. Here, it runs `yarn start` with the `--inspect` flag to enable debugging.
+      "skipFiles": ["<node_internals>/**"], // Tells the debugger to skip stepping into Node.js internal files during debugging.
+      "console": "integratedTerminal" // Specifies that the debugger should use the integrated terminal for input/output.
+    }
+  ]
+}
 ```
+
+You can add multiple configurations for different purposes.
+
+See the [VSCode docs](https://code.visualstudio.com/docs/debugtest/debugging-configuration) for more information.
 
 ### WebStorm
 

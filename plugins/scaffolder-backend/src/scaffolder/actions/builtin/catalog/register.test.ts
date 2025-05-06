@@ -250,7 +250,7 @@ describe('catalog:register', () => {
     );
   });
 
-  it('should not return entityRef if there are no entites', async () => {
+  it('should not return entityRef if there are no entities', async () => {
     catalogClient.addLocation
       .mockResolvedValueOnce({
         location: null as any,

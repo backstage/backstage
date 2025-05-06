@@ -21,7 +21,7 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { V1Pod, V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
+import type { V1Pod, V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { PodsTable } from '../../Pods';
 import { HorizontalPodAutoscalerDrawer } from '../../HorizontalPodAutoscalers';
 import { RolloutDrawer } from './RolloutDrawer';

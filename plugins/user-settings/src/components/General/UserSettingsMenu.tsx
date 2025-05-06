@@ -26,6 +26,8 @@ import {
   errorApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
 /** @public */
 export const UserSettingsMenu = () => {
@@ -33,6 +35,7 @@ export const UserSettingsMenu = () => {
   const identityApi = useApi(identityApiRef);
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<undefined | HTMLElement>(undefined);
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   const handleOpen = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -48,7 +51,7 @@ export const UserSettingsMenu = () => {
     <>
       <IconButton
         data-testid="user-settings-menu"
-        aria-label="more"
+        aria-label={t('signOutMenu.moreIconTitle')}
         onClick={handleOpen}
       >
         <MoreVertIcon />
@@ -63,7 +66,7 @@ export const UserSettingsMenu = () => {
           <ListItemIcon>
             <SignOutIcon />
           </ListItemIcon>
-          Sign Out
+          {t('signOutMenu.title')}
         </MenuItem>
       </Menu>
     </>

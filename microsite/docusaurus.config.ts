@@ -453,7 +453,7 @@ const config: Config = {
             },
             {
               label: 'Adopting',
-              to: 'https://backstage.spotify.com',
+              to: 'https://backstage.io/docs/getting-started/',
             },
             {
               label: 'Subscribe to our newsletter',
@@ -468,18 +468,6 @@ const config: Config = {
         {
           title: 'More',
           items: [
-            {
-              label: 'Open Source @ Spotify',
-              to: 'https://spotify.github.io/',
-            },
-            {
-              label: 'Spotify Engineering Blog',
-              to: 'https://engineering.atspotify.com/',
-            },
-            {
-              label: 'Spotify for Developers',
-              to: 'https://developer.spotify.com/',
-            },
             {
               label: 'GitHub',
               to: 'https://github.com/backstage/',

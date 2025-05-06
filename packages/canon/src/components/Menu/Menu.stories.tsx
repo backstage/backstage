@@ -17,6 +17,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Menu } from './Menu';
 import { Button } from '../Button';
+import { Icon } from '../Icon';
 
 const meta = {
   title: 'Components/Menu',
@@ -32,7 +33,12 @@ export const Default: Story = {
       <>
         <Menu.Trigger
           render={props => (
-            <Button {...props} size="small">
+            <Button
+              {...props}
+              size="medium"
+              variant="secondary"
+              iconEnd={<Icon name="chevron-down" />}
+            >
               Menu
             </Button>
           )}
@@ -40,9 +46,10 @@ export const Default: Story = {
         <Menu.Portal>
           <Menu.Positioner sideOffset={8} align="start">
             <Menu.Popup>
-              <Menu.Item>Item 1</Menu.Item>
-              <Menu.Item>Item 2</Menu.Item>
-              <Menu.Item>Item 3</Menu.Item>
+              <Menu.Item>Settings</Menu.Item>
+              <Menu.Item>Invite new members</Menu.Item>
+              <Menu.Item>Download app</Menu.Item>
+              <Menu.Item>Log out</Menu.Item>
             </Menu.Popup>
           </Menu.Positioner>
         </Menu.Portal>
@@ -55,5 +62,12 @@ export const Open: Story = {
   args: {
     ...Default.args,
     open: true,
+  },
+};
+
+export const OpenOnHover: Story = {
+  args: {
+    ...Default.args,
+    openOnHover: true,
   },
 };

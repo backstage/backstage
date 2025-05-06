@@ -1,5 +1,30 @@
 # @backstage/plugin-auth-backend-module-github-provider
 
+## 0.3.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- 5cdfe05: Added missing types package
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.6.3-next.0
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/plugin-auth-node@0.6.2
+
 ## 0.3.1
 
 ### Patch Changes

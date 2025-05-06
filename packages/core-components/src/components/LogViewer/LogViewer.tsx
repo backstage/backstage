@@ -34,6 +34,10 @@ export interface LogViewerProps {
    */
   text: string;
   /**
+   * Determines if the overflow text should be wrapped or shown via a single line in a horizontal scrollbar.
+   */
+  textWrap?: boolean;
+  /**
    * Styling overrides for classes within the LogViewer component.
    */
   classes?: {

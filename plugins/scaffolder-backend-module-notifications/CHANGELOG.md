@@ -1,5 +1,47 @@
 # @backstage/plugin-scaffolder-backend-module-notifications
 
+## 0.1.10-next.2
+
+### Patch Changes
+
+- b60253d: Change notification send scaffolder action to use native zod schemas
+- Updated dependencies
+  - @backstage/plugin-notifications-node@0.2.15-next.1
+  - @backstage/plugin-scaffolder-node@0.8.2-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/plugin-notifications-common@0.0.8
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/plugin-scaffolder-node@0.8.2-next.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.15-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.2-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-notifications-node@0.2.15-next.0
+  - @backstage/plugin-notifications-common@0.0.8
+
+## 0.1.9
+
+### Patch Changes
+
+- 25a7675: Made "notification:send" action idempotent
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.14
+
 ## 0.1.9-next.1
 
 ### Patch Changes

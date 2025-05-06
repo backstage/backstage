@@ -1,5 +1,69 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.48-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/test-utils@1.7.8-next.1
+  - @backstage/core-app-api@1.16.2-next.0
+  - @backstage/plugin-techdocs@1.12.6-next.2
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/plugin-catalog@1.29.1-next.2
+  - @backstage/integration-react@1.2.7-next.2
+  - @backstage/plugin-catalog-react@1.18.0-next.2
+  - @backstage/plugin-search-react@1.9.0-next.1
+  - @backstage/plugin-techdocs-react@1.2.17-next.1
+
+## 1.0.48-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.12.6-next.1
+  - @backstage/plugin-catalog@1.29.1-next.1
+  - @backstage/plugin-search-react@1.9.0-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.1
+  - @backstage/plugin-techdocs-react@1.2.17-next.0
+  - @backstage/test-utils@1.7.8-next.0
+  - @backstage/integration-react@1.2.7-next.1
+  - @backstage/core-app-api@1.16.1
+  - @backstage/core-plugin-api@1.10.6
+
+## 1.0.48-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+  - @backstage/integration-react@1.2.7-next.0
+  - @backstage/plugin-techdocs@1.12.6-next.0
+  - @backstage/core-app-api@1.16.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/test-utils@1.7.7
+  - @backstage/plugin-catalog@1.29.1-next.0
+  - @backstage/plugin-search-react@1.8.8
+  - @backstage/plugin-techdocs-react@1.2.16
+
+## 1.0.47
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.29.0
+  - @backstage/plugin-techdocs-react@1.2.16
+  - @backstage/plugin-catalog-react@1.17.0
+  - @backstage/integration-react@1.2.6
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/core-app-api@1.16.1
+  - @backstage/plugin-search-react@1.8.8
+  - @backstage/test-utils@1.7.7
+  - @backstage/plugin-techdocs@1.12.5
+
 ## 1.0.47-next.2
 
 ### Patch Changes

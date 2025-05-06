@@ -43,6 +43,8 @@ submitting them. You'll find the website sources under [/microsite](https://gith
 with instructions for building and locally serving the website in the
 [README](/microsite#readme).
 
+For additional information and helpful guidelines on how to contribute to the documentation, check out these [Documentation Guidelines](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#documentation-guidelines)!
+
 ### Contribute to Storybook
 
 We think the best way to ensure different plugins provide a consistent experience is through a solid set of reusable UI/UX components. Backstage uses [Storybook](http://backstage.io/storybook).

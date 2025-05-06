@@ -1,5 +1,72 @@
 # @backstage/create-app
 
+## 0.6.2-next.2
+
+### Patch Changes
+
+- 8448948: Removed `lerna-debug.log*` pattern from `.gitignore` as Lerna was removed from the package in version `@backstage/create-app@0.5.19`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.2-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.1
+
+### Patch Changes
+
+- 5590536: Bumped create-app version.
+- 2fc663a: Bumped create-app version.
+- edabbd6: Updated the root `package.json` in the template to use the new `backstage-cli repo start` command.
+
+  The `yarn dev` command is now redundant and has been removed from the template. We recommend existing projects to add these or similar scripts to help redirect users:
+
+  ```json
+  {
+    "scripts": {
+      "dev": "echo \"Use 'yarn start' instead\"",
+      "start-backend": "echo \"Use 'yarn start backend' instead\""
+    }
+  }
+  ```
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- c761cf5: **BREAKING** The `publish:github` scaffolder action now defaults to initializing with a branch named "main" instead of "master" when creating new repositories.
+
+  If you or your organization have relied on all new github repositories having a default branch name of "master" you **must** set the `defaultBranch: 'master'` in your existing templates that feature the `publish:github` scaffolder action.
+
+  To keep using the name "master" for your new github repos, these are the **required** changes:
+
+  ```diff
+      - id: publish
+        name: Publish
+        action: publish:github
+        input:
+          allowedHosts: ['github.com']
+          description: This is ${{ parameters.name }}
+          repoUrl: ${{ parameters.repoUrl }}
+  +       defaultBranch: 'master'
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.6.1-next.2
 
 ### Patch Changes

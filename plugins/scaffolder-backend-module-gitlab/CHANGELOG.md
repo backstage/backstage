@@ -1,5 +1,57 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.9.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/plugin-scaffolder-node@0.8.2-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/errors@1.2.7
+
+## 0.9.1-next.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/plugin-scaffolder-node@0.8.2-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- d15355c: If the commit action is not `create` log a more appropriate error message to the end user advising that the files they're trying to modify might not exist
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/plugin-scaffolder-node@0.8.2-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.9.0
+
+### Minor Changes
+
+- d86ce21: Added additional feedback in case branch is already created
+
+### Patch Changes
+
+- 003dc15: Updated the path field in the `gitlab:group:ensureExists` action to support also strings with multiple segments (e.g. `group/subgroup`)
+- 19e23da: Adds more context to the `gitlab:repo:push` `commitAction` property for the installed actions section in the scaffolder
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/integration@1.16.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.8.2-next.1
 
 ### Patch Changes

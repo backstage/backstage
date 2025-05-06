@@ -131,7 +131,7 @@ const ExternalPage = PageBlueprint.make({
 });
 
 export const pagesPlugin = createFrontendPlugin({
-  id: 'pages',
+  pluginId: 'pages',
   // routes: {
   //   index: indexRouteRef,
   //   // reference in config:

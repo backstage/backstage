@@ -47,6 +47,7 @@ export class CacheManager {
    */
   private readonly storeFactories = {
     redis: this.createRedisStoreFactory(),
+    valkey: this.createValkeyStoreFactory(),
     memcache: this.createMemcacheStoreFactory(),
     memory: this.createMemoryStoreFactory(),
   };
@@ -80,7 +81,7 @@ export class CacheManager {
 
     if (config.has('backend.cache.useRedisSets')) {
       logger?.warn(
-        "The 'backend.cache.useRedisSets' configuration key is deprecated and no longer has any effect. The underlying '@keyv/redis' library no longer supports redis sets.",
+        "The 'backend.cache.useRedisSets' configuration key is deprecated and no longer has any effect. The underlying '@keyv/redis' and '@keyv/valkey' libraries no longer support redis sets.",
       );
     }
 
@@ -111,7 +112,7 @@ export class CacheManager {
   /**
    * Parse store-specific options from configuration.
    *
-   * @param store - The cache store type ('redis', 'memcache', or 'memory')
+   * @param store - The cache store type ('redis', 'valkey', 'memcache', or 'memory')
    * @param config - The configuration service
    * @param logger - Optional logger for warnings
    * @returns The parsed store options
@@ -123,7 +124,10 @@ export class CacheManager {
   ): CacheStoreOptions | undefined {
     const storeConfigPath = `backend.cache.${store}`;
 
-    if (store === 'redis' && config.has(storeConfigPath)) {
+    if (
+      (store === 'redis' || store === 'valkey') &&
+      config.has(storeConfigPath)
+    ) {
       return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
     }
 
@@ -242,6 +246,41 @@ export class CacheManager {
         // Always provide an error handler to avoid stopping the process
         stores[pluginId].on('error', (err: Error) => {
           this.logger?.error('Failed to create redis cache client', err);
+          this.errorHandler?.(err);
+        });
+      }
+      return new Keyv({
+        namespace: pluginId,
+        ttl: defaultTtl,
+        store: stores[pluginId],
+        emitErrors: false,
+        useKeyPrefix: false,
+      });
+    };
+  }
+
+  private createValkeyStoreFactory(): StoreFactory {
+    const KeyvValkey = require('@keyv/valkey').default;
+    const { createCluster } = require('@keyv/valkey');
+    const stores: Record<string, typeof KeyvValkey> = {};
+
+    return (pluginId, defaultTtl) => {
+      if (!stores[pluginId]) {
+        const valkeyOptions = this.storeOptions?.client || {
+          keyPrefixSeparator: ':',
+        };
+        if (this.storeOptions?.cluster) {
+          // Create a Valkey cluster (Redis cluster under the hood)
+          const cluster = createCluster(this.storeOptions?.cluster);
+          stores[pluginId] = new KeyvValkey(cluster, valkeyOptions);
+        } else {
+          // Create a regular Valkey connection
+          stores[pluginId] = new KeyvValkey(this.connection, valkeyOptions);
+        }
+
+        // Always provide an error handler to avoid stopping the process
+        stores[pluginId].on('error', (err: Error) => {
+          this.logger?.error('Failed to create valkey cache client', err);
           this.errorHandler?.(err);
         });
       }

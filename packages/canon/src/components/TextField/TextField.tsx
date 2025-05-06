@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { useId, forwardRef } from 'react';
-import { Input } from '@base-ui-components/react/input';
+import { Field } from '@base-ui-components/react/field';
+import { forwardRef } from 'react';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
 
 import type { TextFieldProps } from './types';
+import { Icon } from '../Icon';
 
 /** @public */
 export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
@@ -32,59 +33,61 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       error,
       required,
       style,
+      disabled,
+      icon,
+      onClear,
       ...rest
     } = props;
 
     // Get the responsive value for the variant
     const responsiveSize = useResponsiveValue(size);
 
-    // Generate unique IDs for accessibility
-    const inputId = useId();
-    const descriptionId = useId();
-    const errorId = useId();
-
     return (
-      <div
+      <Field.Root
         className={clsx('canon-TextField', className)}
+        disabled={disabled}
+        invalid={!!error}
         style={style}
         ref={ref}
       >
         {label && (
-          <label className="canon-TextField--label" htmlFor={inputId}>
+          <Field.Label className="canon-TextFieldLabel">
             {label}
             {required && (
-              <span aria-hidden="true" className="canon-TextField--required">
+              <span aria-hidden="true" className="canon-TextFieldRequired">
                 (Required)
               </span>
             )}
-          </label>
+          </Field.Label>
         )}
-        <Input
-          id={inputId}
-          className={clsx('canon-TextField--input', {
-            'canon-TextField--input-size-small': responsiveSize === 'small',
-            'canon-TextField--input-size-medium': responsiveSize === 'medium',
-          })}
-          aria-labelledby={label ? inputId : undefined}
-          aria-describedby={clsx({
-            [descriptionId]: description,
-            [errorId]: error,
-          })}
-          data-invalid={error}
-          required={required}
-          {...rest}
-        />
+        <div className="canon-TextFieldInputWrapper" data-size={responsiveSize}>
+          {icon && <Icon className="canon-TextFieldInputIcon" name={icon} />}
+          <Field.Control
+            className="canon-TextFieldInput"
+            required={required}
+            {...rest}
+          />
+          {onClear && (
+            <button
+              className="canon-TextFieldClearButton"
+              disabled={disabled}
+              onClick={onClear}
+            >
+              <Icon className="canon-TextFieldClearButtonIcon" name="close" />
+            </button>
+          )}
+        </div>
         {description && (
-          <p className="canon-TextField--description" id={descriptionId}>
+          <Field.Description className="canon-TextFieldDescription">
             {description}
-          </p>
+          </Field.Description>
         )}
         {error && (
-          <p className="canon-TextField--error" id={errorId} role="alert">
+          <Field.Error className="canon-TextFieldError" role="alert" forceShow>
             {error}
-          </p>
+          </Field.Error>
         )}
-      </div>
+      </Field.Root>
     );
   },
 );

@@ -1,5 +1,114 @@
 # @backstage/backend-defaults
 
+## 0.10.0-next.2
+
+### Patch Changes
+
+- 0e7a640: The `GithubUrlReader` will now use the token from `options` when fetching repo details
+- Updated dependencies
+  - @backstage/integration-aws-node@0.1.16-next.0
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/backend-app-api@1.2.3-next.1
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+
+## 0.10.0-next.1
+
+### Minor Changes
+
+- d385854: **BREAKING**: The `DefaultSchedulerService` constructor options now requires `RootLifecycleService`, `HttpRouterService`, and `PluginMetadataService` fields.
+
+  The scheduler will register a REST API for listing and triggering tasks. Please see [the scheduler documentation](https://backstage.io/docs/backend-system/core-services/scheduler) for more details about this API.
+
+### Patch Changes
+
+- acea1d4: update documentation
+- 72d019d: Removed various typos
+- c6bc67d: Added Valkey support alongside Redis in backend-defaults cache clients, using the new Keyv Valkey package. Also extended backend-test-utils to support Valkey in tests.
+- 36f77e9: Bug fix: Pass user provided token through to gitlab url resolvers
+- Updated dependencies
+  - @backstage/backend-app-api@1.2.3-next.1
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/backend-app-api@1.2.3-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.0
+  - @backstage/plugin-auth-node@0.6.3-next.0
+  - @backstage/plugin-events-node@0.4.11-next.0
+  - @backstage/plugin-permission-node@0.9.2-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+
+## 0.9.0
+
+### Minor Changes
+
+- 1daedce: Remove Throttle of Bitbucket Server API calls
+- 01edf6e: Allow pass through of redis client and cluster options to Cache core service
+- cf4eb13: Added `actor` property to `BackstageUserPrincipal` containing the subject of the last service (if any) who performed authentication on behalf of the user.
+
+### Patch Changes
+
+- 7c6740e: Implemented SRV lookup support in the default `HostDiscovery`. You can now specify internal URLs on the form `http+srv://some-srv-name/api/{{pluginId}}` and they will be resolved in real time.
+- 939116c: Added an optional `backend.trustProxy` app config value, which sets the
+  corresponding [Express.js `trust proxy`](https://expressjs.com/en/guide/behind-proxies.html) setting. This lets
+  you easily configure proxy trust without making a custom `configure` callback
+  for the `rootHttpRouter` service.
+
+  If you already are using a custom `configure` callback, and if that also _does not_ call `applyDefaults()`, you may want to add the following to it:
+
+  ```ts
+  const trustProxy = config.getOptional('backend.trustProxy');
+  if (trustProxy !== undefined) {
+    app.set('trust proxy', trustProxy);
+  }
+  ```
+
+- 175528c: Adds `backend.auditor.severityLogLevelMappings` to map severity levels to log levels.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/integration@1.16.3
+  - @backstage/backend-app-api@1.2.2
+  - @backstage/plugin-auth-node@0.6.2
+  - @backstage/plugin-permission-node@0.9.1
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.10
+
 ## 0.9.0-next.2
 
 ### Patch Changes

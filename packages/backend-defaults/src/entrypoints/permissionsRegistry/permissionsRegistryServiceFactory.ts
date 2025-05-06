@@ -23,6 +23,8 @@ import {
   PermissionResourceRef,
   createPermissionIntegrationRouter,
 } from '@backstage/plugin-permission-node';
+import { NotAllowedError } from '@backstage/errors';
+import Router from 'express-promise-router';
 
 function assertRefPluginId(ref: PermissionResourceRef, pluginId: string) {
   if (ref.pluginId !== pluginId) {
@@ -44,14 +46,34 @@ function assertRefPluginId(ref: PermissionResourceRef, pluginId: string) {
 export const permissionsRegistryServiceFactory = createServiceFactory({
   service: coreServices.permissionsRegistry,
   deps: {
+    auth: coreServices.auth,
+    httpAuth: coreServices.httpAuth,
     lifecycle: coreServices.lifecycle,
     httpRouter: coreServices.httpRouter,
     pluginMetadata: coreServices.pluginMetadata,
   },
-  async factory({ httpRouter, lifecycle, pluginMetadata }) {
+  async factory({ auth, httpAuth, httpRouter, lifecycle, pluginMetadata }) {
     const router = createPermissionIntegrationRouter();
+
     const pluginId = pluginMetadata.getId();
 
+    const applyConditionMiddleware = Router();
+    applyConditionMiddleware.use(
+      '/.well-known/backstage/permissions/apply-conditions',
+      async (req, _res, next) => {
+        const credentials = await httpAuth.credentials(req, {
+          allow: ['user', 'service'],
+        });
+        if (
+          auth.isPrincipal(credentials, 'user') &&
+          !credentials.principal.actor
+        ) {
+          throw new NotAllowedError();
+        }
+        next();
+      },
+    );
+    httpRouter.use(applyConditionMiddleware);
     httpRouter.use(router);
 
     let started = false;

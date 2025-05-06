@@ -54,6 +54,9 @@ const initRepoAndPushMocked = initRepoAndPush as jest.Mock<
   Promise<{ commitHash: string }>
 >;
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
   rest: {
     users: {
@@ -81,11 +84,7 @@ const mockOctokit = {
   request: jest.fn(),
 };
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 describe('publish:github', () => {
@@ -114,6 +113,7 @@ describe('publish:github', () => {
   });
 
   beforeEach(() => {
+    octokitMock.mockImplementation(() => mockOctokit);
     initRepoAndPushMocked.mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     });
@@ -125,7 +125,7 @@ describe('publish:github', () => {
       githubCredentialsProvider,
     });
 
-    // restore real implmentation
+    // restore real implementation
     (entityRefToName as jest.Mock).mockImplementation(
       realFamiliarizeEntityName,
     );
@@ -138,6 +138,20 @@ describe('publish:github', () => {
   });
 
   afterEach(jest.resetAllMocks);
+
+  it('should pass context logger to Octokit client', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'Organization' },
+    });
+
+    mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+
+    await action.handler(mockContext);
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
+  });
 
   it('should fail to create if the team is not found in the org', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({
@@ -534,7 +548,7 @@ describe('publish:github', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',
@@ -613,7 +627,7 @@ describe('publish:github', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',
@@ -658,7 +672,7 @@ describe('publish:github', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'Test commit message',
@@ -1079,7 +1093,7 @@ describe('publish:github', () => {
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://github.com/html/url/blob/master',
+      'https://github.com/html/url/blob/main',
     );
   });
 
@@ -1131,7 +1145,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1161,7 +1175,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1190,7 +1204,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1218,7 +1232,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1307,7 +1321,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1338,7 +1352,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1372,7 +1386,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1407,7 +1421,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1443,7 +1457,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1479,7 +1493,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1516,7 +1530,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
@@ -1546,7 +1560,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: {
         users: ['user'],
@@ -1578,7 +1592,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: {
         teams: ['team'],
@@ -1610,7 +1624,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: {
         apps: ['app'],
@@ -1644,7 +1658,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: {
         users: ['user'],
@@ -1680,7 +1694,7 @@ describe('publish:github', () => {
       client: mockOctokit,
       repoName: 'repo',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       bypassPullRequestAllowances: {
         users: ['user1', 'user2'],
@@ -1767,7 +1781,7 @@ describe('publish:github', () => {
         client: mockOctokit,
         repoName: 'repo',
         logger: mockContext.logger,
-        defaultBranch: 'master',
+        defaultBranch: 'main',
         requireCodeOwnerReviews: false,
         bypassPullRequestAllowances: undefined,
         requiredApprovingReviewCount: 1,
@@ -1796,7 +1810,7 @@ describe('publish:github', () => {
         client: mockOctokit,
         repoName: 'repo',
         logger: mockContext.logger,
-        defaultBranch: 'master',
+        defaultBranch: 'main',
         requireCodeOwnerReviews: false,
         bypassPullRequestAllowances: undefined,
         requiredApprovingReviewCount: 1,
@@ -1825,7 +1839,7 @@ describe('publish:github', () => {
         client: mockOctokit,
         repoName: 'repo',
         logger: mockContext.logger,
-        defaultBranch: 'master',
+        defaultBranch: 'main',
         requireCodeOwnerReviews: false,
         bypassPullRequestAllowances: undefined,
         requiredApprovingReviewCount: 1,

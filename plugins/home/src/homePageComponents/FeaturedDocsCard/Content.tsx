@@ -25,7 +25,6 @@ import {
 } from '@backstage/core-components';
 import {
   catalogApiRef,
-  CatalogApi,
   EntityDisplayName,
 } from '@backstage/plugin-catalog-react';
 import { useApi } from '@backstage/core-plugin-api';
@@ -91,7 +90,7 @@ export const Content = (props: FeaturedDocsCardProps): JSX.Element => {
     props;
   const linkText = subLinkText || 'LEARN MORE';
   const styles = useStyles();
-  const catalogApi: CatalogApi = useApi(catalogApiRef);
+  const catalogApi = useApi(catalogApiRef);
   const {
     value: entities,
     loading,
