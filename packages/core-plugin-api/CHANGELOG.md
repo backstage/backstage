@@ -1,5 +1,16 @@
 # @backstage/core-plugin-api
 
+## 1.10.7-next.0
+
+### Patch Changes
+
+- 73f6cc3: The `TranslationApi` now supports interpolation of JSX elements by passing them directly as values to the translation function. If any of the provided interpolation values are JSX elements, the translation function will return a JSX element instead of a string.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 1.10.6
 
 ### Patch Changes
