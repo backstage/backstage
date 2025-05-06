@@ -25,7 +25,7 @@ setup process, allowing you to focus on your actions' unique functionality.
 Start by using the `yarn backstage-cli new` command to generate a scaffolder module. This command sets up the necessary
 boilerplate code, providing a smooth start:
 
-```
+```sh
 $ yarn backstage-cli new
 ? What do you want to create?
   plugin-common - A new isomorphic common plugin package
@@ -33,8 +33,6 @@ $ yarn backstage-cli new
   plugin-react - A new web library plugin package
 > scaffolder-module - An module exporting custom actions for @backstage/plugin-scaffolder-backend
 ```
-
-You can find a [list](../../tooling/cli/03-commands.md) of all commands provided by the Backstage CLI.
 
 When prompted, select the option to generate a scaffolder module. This creates a solid foundation for your custom
 action. Enter the name of the module you wish to create, and the CLI will generate the required files and directory
@@ -87,7 +85,7 @@ for reference.
 
 The `createTemplateAction` takes an object which specifies the following:
 
-- `id` - A unique ID for your custom action. We encourage you to namespace these
+- `id` - A **unique** ID for your custom action. We encourage you to namespace these
   in some way so that they won't collide with future built-in actions that we
   may ship with the `scaffolder-backend` plugin.
 - `description` - An optional field to describe the purpose of the action. This will populate in the `/create/actions`
@@ -151,9 +149,6 @@ Also feel free to use your company name to namespace them if you prefer too, for
 Prefer to use `camelCase` over `snake_case` or `kebab-case` for these actions if possible, which leads to better reading
 and writing of template entity definitions.
 
-> We're aware that there are some exceptions to this, but try to follow as close as possible. We'll be working on
-> migrating these in the repository over time too.
-
 ### Adding a TemplateExample
 
 A TemplateExample is a predefined structure that can be used to create custom actions in your software templates. It
@@ -185,9 +180,23 @@ export const examples: TemplateExample[] = [
 ];
 ```
 
-Add the example to the `createTemplateAction` under the object property `examples`:
+Add the example to `createTemplateAction` by including the `examples` property:
 
-`return createTemplateAction<{ contents: string; filename: string }>({id: 'acme:file:create', description: 'Create an Acme file', examples, ...};`
+```ts
+return createTemplateAction({
+  id: 'acme:file:create',
+  description: 'Create an Acme file',
+  schema: {
+    input: {
+      contents: d => d.string().describe('The contents of the file'),
+      filename: d =>
+        d.string().describe('The filename of the file that will be created'),
+    },
+  },
+  examples,
+  // ...rest of the action configuration
+});
+```
 
 ### The context object
 
@@ -275,9 +284,7 @@ env.registerInit({
 
 ### Using Checkpoints in Custom Actions (Experimental)
 
-Idempotent action could be achieved via the usage of checkpoints.
-
-Example:
+Idempotent action could be achieved via the usage of checkpoints, for example:
 
 ```ts title="plugins/my-company-scaffolder-actions-plugin/src/vendor/my-custom-action.ts"
 const res = await ctx.checkpoint?.({
@@ -305,78 +312,9 @@ If you'll preserve the same key, and you'll try to restart the affected task, it
 The cached result will not match with the expected updated return type.
 By changing the key, you'll invalidate the cache of the checkpoint.
 
-### Register Custom Actions with the Legacy Backend System
+## Contributed Community Actions
 
-Once you have your Custom Action ready for usage with the scaffolder, you'll
-need to pass this into the `scaffolder-backend` `createRouter` function. You
-should have something similar to the below in
-`packages/backend/src/plugins/scaffolder.ts`
+You can find a list of community-contributed and open-source actions by:
 
-```ts
-return await createRouter({
-  catalogClient,
-  logger: env.logger,
-  config: env.config,
-  database: env.database,
-  reader: env.reader,
-});
-```
-
-There's another property you can pass here, which is an array of `actions` which
-will set the available actions that the scaffolder has access to.
-
-```ts
-import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
-import { ScmIntegrations } from '@backstage/integration';
-import { createNewFileAction } from './scaffolder/actions/custom';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
-  const integrations = ScmIntegrations.fromConfig(env.config);
-
-  const builtInActions = createBuiltinActions({
-    integrations,
-    catalogClient,
-    config: env.config,
-    reader: env.reader,
-  });
-
-  const actions = [...builtInActions, createNewFileAction()];
-
-  return createRouter({
-    actions,
-    catalogClient: catalogClient,
-    logger: env.logger,
-    config: env.config,
-    database: env.database,
-    reader: env.reader,
-  });
-}
-```
-
-## List of custom action packages
-
-Here is a list of Open Source custom actions that you can add to your Backstage
-scaffolder backend:
-
-| Name                     | Package                                                                                                                                         | Owner                                                        |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| Yeoman                   | [plugin-scaffolder-backend-module-yeoman](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-yeoman)                     | [Backstage](https://backstage.io)                            |
-| Cookiecutter             | [plugin-scaffolder-backend-module-cookiecutter](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-cookiecutter)         | [Backstage](https://backstage.io)                            |
-| Rails                    | [plugin-scaffolder-backend-module-rails](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-rails)                       | [Backstage](https://backstage.io)                            |
-| HTTP requests            | [scaffolder-backend-module-http-request](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-http-request)                        | [Roadie](https://roadie.io)                                  |
-| Utility actions          | [scaffolder-backend-module-utils](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-utils)                                      | [Roadie](https://roadie.io)                                  |
-| AWS cli actions          | [scaffolder-backend-module-aws](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-aws)                                          | [Roadie](https://roadie.io)                                  |
-| Scaffolder .NET Actions  | [plugin-scaffolder-dotnet-backend](https://www.npmjs.com/package/@plusultra/plugin-scaffolder-dotnet-backend)                                   | [Alef Carlos](https://github.com/alefcarlos)                 |
-| Scaffolder Git Actions   | [plugin-scaffolder-git-actions](https://www.npmjs.com/package/@mdude2314/backstage-plugin-scaffolder-git-actions)                               | [Drew Hill](https://github.com/arhill05)                     |
-| Azure Pipeline Actions   | [scaffolder-backend-module-azure-pipelines](https://www.npmjs.com/package/@parfuemerie-douglas/scaffolder-backend-module-azure-pipelines)       | [Parfümerie Douglas](https://github.com/Parfuemerie-Douglas) |
-| Azure Repository Actions | [scaffolder-backend-module-azure-repositories](https://www.npmjs.com/package/@parfuemerie-douglas/scaffolder-backend-module-azure-repositories) | [Parfümerie Douglas](https://github.com/Parfuemerie-Douglas) |
-| Snyk Import Project      | [plugin-scaffolder-backend-module-snyk](https://www.npmjs.com/package/@ma11hewthomas/plugin-scaffolder-backend-module-snyk)                     | [Matthew Thomas](https://github.com/Ma11hewThomas)           |
-| JSON Merge Actions       | [plugin-scaffolder-json-merge-actions](https://www.npmjs.com/package/@mdude2314/backstage-plugin-scaffolder-json-merge-actions)                 | [Drew Hill](https://github.com/arhill05)                     |
-| NPM Actions              | [plugin-scaffolder-npm-actions](https://www.npmjs.com/package/@mdude2314/backstage-plugin-scaffolder-npm-actions)                               | [Drew Hill](https://github.com/arhill05)                     |
-| Slack Actions            | [plugin-scaffolder-backend-module-slack](https://www.npmjs.com/package/@mdude2314/backstage-plugin-scaffolder-backend-module-slack)             | [Drew Hill](https://github.com/arhill05)                     |
-| Microsoft Teams Actions  | [plugin-scaffolder-backend-module-ms-teams](https://www.npmjs.com/package/@grvpandey11/backstage-plugin-scaffolder-backend-module-ms-teams)     | [Gaurav Pandey](https://github.com/grvpandey11)              |
-
-Have fun! 🚀
+- Going to the [Backstage Plugin Directory](https://backstage.io/plugins/) and filter by `scaffolder`!
+- Checking out the [Community Plugins Repo](https://github.com/backstage/community-plugins)!
