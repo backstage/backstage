@@ -137,12 +137,13 @@ Team: @backstage/community-plugins-maintainers
 
 Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugins repository](https://github.com/backstage/community-plugins)
 
-| Name                 | Organization | GitHub                                      | Discord      |
-| -------------------- | ------------ | ------------------------------------------- | ------------ |
-| André Wanlin         | Spotify      | [awanlin](https://github.com/awanlin)       | `ahhhndre`   |
-| Bethany Griggs       | Red Hat      | [BethGriggs](https://github.com/BethGriggs) | `bethgriggs` |
-| Kashish Mittal       | Red Hat      | [04kash](https://github.com/04kash)         | `kashh._.`   |
-| Vincenzo Scamporlino | Spotify      | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
+| Name                 | Organization  | GitHub                                      | Discord      |
+| -------------------- | ------------- | ------------------------------------------- | ------------ |
+| André Wanlin         | Spotify       | [awanlin](https://github.com/awanlin)       | `ahhhndre`   |
+| Bethany Griggs       | Red Hat       | [BethGriggs](https://github.com/BethGriggs) | `bethgriggs` |
+| Kashish Mittal       | Red Hat       | [04kash](https://github.com/04kash)         | `kashh._.`   |
+| Vincenzo Scamporlino | Spotify       | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
+| Peter Macdonald      | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M) | `parsifal`   |
 
 ### Documentation
 
