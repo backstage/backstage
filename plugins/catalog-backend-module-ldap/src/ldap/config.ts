@@ -120,7 +120,7 @@ export type UserConfig = {
     picture?: string;
     // The name of the attribute that shall be used for the values of the
     // spec.memberOf field of the entity. Defaults to "memberOf".
-    memberOf: string;
+    memberOf: string | null;
   };
 };
 
@@ -168,10 +168,10 @@ export type GroupConfig = {
     picture?: string;
     // The name of the attribute that shall be used for the values of the
     // spec.parent field of the entity. Defaults to "memberOf".
-    memberOf: string;
+    memberOf: string | null;
     // The name of the attribute that shall be used for the values of the
     // spec.children field of the entity. Defaults to "member".
-    members: string;
+    members: string | null;
   };
 };
 
