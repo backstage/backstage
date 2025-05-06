@@ -83,7 +83,7 @@ addHook(
     process.send?.({ type: 'watch', path: filename });
     return code;
   },
-  { extensions: ['.js', '.tsx', '.cjs'], ignoreNodeModules: true },
+  { extensions: ['.js', '.jsx', '.cjs'], ignoreNodeModules: true },
 );
 
 // Register module hooks, used by "type": "module" in package.json, .mjs and
