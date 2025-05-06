@@ -120,7 +120,7 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
 
     const counts = await Promise.all(
       definedTypes
-        .map(_t => _t.value)
+        .map(type => type.value)
         .map(async type => {
           const { numberOfResults } = await searchApi.query({
             term,
@@ -165,7 +165,7 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
         >
           {expanded
             ? t('searchType.accordion.collapse')
-            : definedTypes.filter(_t => _t.value === selected)[0]!.name}
+            : definedTypes.filter(type => type.value === selected)[0]!.name}
         </AccordionSummary>
         <AccordionDetails classes={{ root: classes.accordionDetails }}>
           <List
