@@ -6,20 +6,11 @@ description: Documentation on Architecture overview
 
 ## Terminology
 
-Backstage is constructed out of three parts. We separate Backstage in this way
-because we see three groups of contributors that work with Backstage in three
-different ways.
+Backstage is organized into three main components, each catering to different groups of contributors who interact with Backstage in distinct ways.
 
-- Core - Base functionality built by core developers in the open source project.
-- App - The app is an instance of a Backstage app that is deployed and tweaked.
-  The app ties together core functionality with additional plugins. The app is
-  built and maintained by app developers, usually a productivity team within a
-  company.
-- Plugins - Additional functionality to make your Backstage app useful for your
-  company. Plugins can be specific to a company or open sourced and reusable. At
-  Spotify we have over 100 plugins built by over 50 different teams. It has been
-  very powerful to get contributions from various infrastructure teams added
-  into a single unified developer experience.
+- Core - This includes the base functionality developed by core developers within the open-source project.
+- App - The app represents a deployed instance of a Backstage application, customized and maintained by app developers, typically a productivity team within an organization. It integrates core functionalities with additional plugins.
+- Plugins - These provide additional functionalities to enhance the usefulness of your Backstage app. Plugins can be company-specific or open-sourced and reusable. At Spotify, we have over 100 plugins created by more than 50 different teams, significantly enriching the unified developer experience by incorporating contributions from various infrastructure teams.
 
 ## Overview
 
