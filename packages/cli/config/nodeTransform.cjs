@@ -65,12 +65,17 @@ addHook(
         parser: {
           syntax: 'typescript',
         },
+        transform: {
+          react: {
+            runtime: 'automatic',
+          },
+        },
       },
     });
     process.send?.({ type: 'watch', path: filename });
     return transformed.code;
   },
-  { extensions: ['.ts', '.cts'], ignoreNodeModules: true },
+  { extensions: ['.ts', '.tsx', '.cts'], ignoreNodeModules: true },
 );
 
 addHook(
@@ -78,7 +83,7 @@ addHook(
     process.send?.({ type: 'watch', path: filename });
     return code;
   },
-  { extensions: ['.js', '.cjs'], ignoreNodeModules: true },
+  { extensions: ['.js', '.tsx', '.cjs'], ignoreNodeModules: true },
 );
 
 // Register module hooks, used by "type": "module" in package.json, .mjs and
