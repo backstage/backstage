@@ -744,6 +744,7 @@ export type IconNames =
   | 'chevron-left'
   | 'chevron-right'
   | 'chevron-up'
+  | 'close'
   | 'cloud'
   | 'code'
   | 'discord'
@@ -759,6 +760,7 @@ export type IconNames =
   | 'heart'
   | 'moon'
   | 'plus'
+  | 'search'
   | 'sidebar-fold'
   | 'sidebar-unfold'
   | 'sparkling'
@@ -1218,8 +1220,10 @@ export interface TextFieldProps
   className?: string;
   description?: string;
   error?: string | null;
+  icon?: IconNames;
   label?: string;
   name: string;
+  onClear?: React.MouseEventHandler<HTMLButtonElement>;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 
