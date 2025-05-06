@@ -1,5 +1,16 @@
 # @backstage/core-app-api
 
+## 1.16.2-next.0
+
+### Patch Changes
+
+- 73f6cc3: Updated `I18nextTranslationApi` to support interpolation of JSX elements.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 1.16.1
 
 ### Patch Changes

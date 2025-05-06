@@ -1,5 +1,13 @@
 # @backstage/canon
 
+## 0.4.0-next.2
+
+### Patch Changes
+
+- 6189bfd: Added new icon and onClear props to the TextField to make it easier to accessorize inputs.
+- 97b25a1: Pin version of @base-ui-components/react.
+- 185d3a8: Use the Field component from Base UI within the TextField.
+
 ## 0.4.0-next.1
 
 ### Minor Changes
