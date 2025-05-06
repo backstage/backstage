@@ -207,6 +207,17 @@ exports.up = async function up(knex) {
       END IF;
       `,
     );
+    // https://dev.mysql.com/doc/refman/8.4/en/create-trigger.html
+    // Since triggers do not get called for foreign key actions,
+    // we must implement the cascade in terms of another trigger.
+    await knex.schema.raw(
+      `
+      CREATE TRIGGER refresh_state_delete_cascade
+      BEFORE DELETE ON refresh_state
+      FOR EACH ROW
+      DELETE FROM final_entities WHERE entity_id = OLD.entity_id;
+      `,
+    );
     await knex.schema.raw(
       `
       CREATE TRIGGER final_entities_change_history_deleted
@@ -234,16 +245,24 @@ exports.down = async function down(knex) {
       `DROP TRIGGER final_entities_change_history ON final_entities;`,
     );
     await knex.schema.raw(`DROP FUNCTION final_entities_change_history();`);
-  } else if (
-    knex.client.config.client.includes('sqlite') ||
-    knex.client.config.client.includes('mysql')
-  ) {
+  } else if (knex.client.config.client.includes('sqlite')) {
     await knex.schema.raw(
       `DROP TRIGGER final_entities_change_history_inserted;`,
     );
     await knex.schema.raw(
       `DROP TRIGGER final_entities_change_history_updated;`,
     );
+    await knex.schema.raw(
+      `DROP TRIGGER final_entities_change_history_deleted;`,
+    );
+  } else if (knex.client.config.client.includes('mysql')) {
+    await knex.schema.raw(
+      `DROP TRIGGER final_entities_change_history_inserted;`,
+    );
+    await knex.schema.raw(
+      `DROP TRIGGER final_entities_change_history_updated;`,
+    );
+    await knex.schema.raw(`DROP TRIGGER refresh_state_delete_cascade;`);
     await knex.schema.raw(
       `DROP TRIGGER final_entities_change_history_deleted;`,
     );

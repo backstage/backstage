@@ -1,0 +1,95 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { TypedRouter } from '@backstage/backend-openapi-utils';
+import { InputError } from '@backstage/errors';
+import { ReadEventsTableRowsOptions } from '../../database/readEventsTableRows';
+import { EndpointMap } from '../../schema/openapi';
+import { parseCursor, stringifyCursor } from './GetEvents.utils';
+import { GetEventsModel } from './GetEvents.model';
+
+export function bindGetEventsEndpoint(
+  router: TypedRouter<EndpointMap>,
+  model: GetEventsModel,
+): void {
+  router.get('/history/v1/events', async (req, res) => {
+    let readOptions: ReadEventsTableRowsOptions;
+    let block: boolean = false;
+
+    if (req.query.cursor) {
+      try {
+        const cursor = parseCursor(req.query.cursor);
+        readOptions = {
+          afterEventId: cursor.afterEventId,
+          entityRef: cursor.entityRef,
+          entityId: cursor.entityId,
+          order: cursor.order,
+          limit: cursor.limit,
+        };
+        block = cursor.block;
+      } catch {
+        throw new InputError('Invalid cursor');
+      }
+    } else {
+      readOptions = {
+        afterEventId: req.query.afterEventId,
+        entityRef: req.query.entityRef,
+        entityId: req.query.entityId,
+        order: req.query.order ?? 'asc',
+        limit: req.query.limit ?? 100,
+      };
+      block = req.query.block ?? false;
+    }
+
+    if (!Number.isSafeInteger(readOptions.limit) || readOptions.limit < 1) {
+      throw new InputError('Invalid limit, expected a positive integer');
+    } else if (!['asc', 'desc'].includes(readOptions.order)) {
+      throw new InputError('Invalid order, expected "asc" or "desc"');
+    }
+
+    const result = await model.readEventsNonblocking({
+      readOptions,
+      block,
+    });
+
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'no-store');
+
+    if (result.events.length === 0 && result.cursor) {
+      res.status(202);
+      res.flushHeaders();
+      await model.blockUntilDataIsReady({
+        readOptions,
+      });
+    }
+
+    res.end(
+      JSON.stringify({
+        items: result.events.map(row => ({
+          id: row.id,
+          eventAt: row.eventAt.toISOString(),
+          eventType: row.eventType,
+          entityRef: row.entityRef,
+          entityId: row.entityId,
+          entityJson: row.entityJson,
+        })),
+        pageInfo: {
+          cursor: result.cursor ? stringifyCursor(result.cursor) : undefined,
+        },
+      }),
+    );
+  });
+}

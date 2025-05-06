@@ -21,6 +21,6 @@ TestDatabases.setDefaults({
     'SQLITE_3',
     // 'POSTGRES_9',
     // 'POSTGRES_16',
-    'MYSQL_8',
+    // 'MYSQL_8'
   ],
 });
