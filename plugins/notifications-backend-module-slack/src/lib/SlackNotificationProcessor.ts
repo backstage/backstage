@@ -236,8 +236,11 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     }
 
     // Prepare outbound messages
+    const formattedPayload = await this.formatPayloadDescriptionForSlack(
+      options.payload,
+    );
     const outbound = destinations.map(channel =>
-      toChatPostMessageArgs({ channel, payload: options.payload }),
+      toChatPostMessageArgs({ channel, payload: formattedPayload }),
     );
 
     // Log debug info
@@ -247,6 +250,15 @@ export class SlackNotificationProcessor implements NotificationProcessor {
 
     // Send notifications
     await this.sendNotifications(outbound);
+  }
+
+  private async formatPayloadDescriptionForSlack(
+    payload: Notification['payload'],
+  ) {
+    return {
+      ...payload,
+      description: await this.replaceUserRefsWithSlackIds(payload.description),
+    };
   }
 
   async getEntities(
@@ -272,6 +284,44 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     );
 
     return response.items;
+  }
+
+  async replaceUserRefsWithSlackIds(
+    text?: string,
+  ): Promise<string | undefined> {
+    if (!text) return undefined;
+
+    // Match user entity refs like "<@user:default/billy>"
+    const userRefRegex = /<@(user:[^>]+)>/gi;
+    const matches = [...text.matchAll(userRefRegex)];
+
+    if (matches.length === 0) return text;
+
+    const uniqueUserRefs = new Set(
+      matches.map(match => match[1].toLowerCase()),
+    );
+
+    const slackIdMap = new Map<string, string>();
+
+    await Promise.all(
+      [...uniqueUserRefs].map(async userRef => {
+        try {
+          const slackId = await this.getSlackNotificationTarget(userRef);
+          if (slackId) {
+            slackIdMap.set(userRef, `<@${slackId}>`);
+          }
+        } catch (error) {
+          this.logger.warn(
+            `Failed to resolve Slack ID for user ref "${userRef}": ${error}`,
+          );
+        }
+      }),
+    );
+
+    return text.replace(userRefRegex, (match, userRef) => {
+      const slackId = slackIdMap.get(userRef.toLowerCase());
+      return slackId ?? match;
+    });
   }
 
   async getSlackNotificationTarget(
