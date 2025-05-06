@@ -59,7 +59,7 @@ components:
       required: false
       schema:
         type: integer
-        minimum: 0
+        minimum: 1
     order:
       name: order
       in: query

@@ -45,7 +45,7 @@ export const spec = {
         name: 'afterEventId',
         in: 'query',
         description:
-          'Return events that are after (newer if ordered ascending or older if ordered decending) but not equal to the given event ID.\n',
+          'Return events that are after (newer if ordered ascending or older if ordered decending) but not equal to the given event ID. Use the special value "last" to start reading from the very end of the events list. This is typically only usable in "asc" order and with "block" set to true.\n',
         required: false,
         schema: {
           type: 'string',
@@ -93,7 +93,7 @@ export const spec = {
         required: false,
         schema: {
           type: 'integer',
-          minimum: 0,
+          minimum: 1,
         },
       },
       order: {

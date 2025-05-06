@@ -26,6 +26,7 @@ import { Knex } from 'knex';
 import waitFor from 'wait-for-expect';
 import { createMockEntityProvider } from '../__fixtures__/createMockEntityProvider';
 import { DB_MIGRATIONS_TABLE } from './migrations';
+import { EventsTableRow } from './tables';
 
 const migrationsDir = `${__dirname}/../../migrations_`;
 const migrationsFiles = fs.readdirSync(migrationsDir).sort();
@@ -65,6 +66,17 @@ describe('migrations', () => {
       const knex = await databases.init(databaseId);
       const mockProvider = createMockEntityProvider();
 
+      function rows(): Promise<EventsTableRow[]> {
+        return knex('module_history__events')
+          .orderBy('id')
+          .then(r =>
+            r.map(row => ({
+              ...row,
+              id: String(row.id),
+            })),
+          );
+      }
+
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -97,9 +109,7 @@ describe('migrations', () => {
       mockProvider.addEntity(entity);
 
       await waitFor(async () => {
-        await expect(
-          knex('module_history__events').orderBy('id'),
-        ).resolves.toEqual([
+        await expect(rows()).resolves.toEqual([
           {
             id: '1',
             event_at: expect.anything(),
@@ -116,9 +126,7 @@ describe('migrations', () => {
       mockProvider.addEntity(entity);
 
       await waitFor(async () => {
-        await expect(
-          knex('module_history__events').orderBy('id'),
-        ).resolves.toEqual([
+        await expect(rows()).resolves.toEqual([
           {
             id: '1',
             event_at: expect.anything(),
@@ -143,9 +151,7 @@ describe('migrations', () => {
         .update({ stitch_ticket: 'NEW VALUE' })
         .where({ entity_id: 'my-id' });
 
-      await expect(
-        knex('module_history__events').orderBy('id'),
-      ).resolves.toEqual([
+      await expect(rows()).resolves.toEqual([
         {
           id: '1',
           event_at: expect.anything(),
@@ -168,9 +174,7 @@ describe('migrations', () => {
       mockProvider.removeEntity(entityRef);
 
       await waitFor(async () => {
-        await expect(
-          knex('module_history__events').orderBy('id'),
-        ).resolves.toEqual([
+        await expect(rows()).resolves.toEqual([
           {
             id: '1',
             event_at: expect.anything(),
