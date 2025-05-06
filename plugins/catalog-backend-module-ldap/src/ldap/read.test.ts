@@ -235,9 +235,7 @@ describe('readLdapUsers', () => {
       {
         dn: 'ddd',
         options: {},
-        parsing: {
-          skipMemberOf: true,
-        },
+
         map: {
           rdn: 'uid',
           name: 'uid',
@@ -245,7 +243,7 @@ describe('readLdapUsers', () => {
           displayName: 'cn',
           email: 'mail',
           picture: 'avatarUrl',
-          memberOf: 'memberOf',
+          memberOf: null,
         },
       },
     ];
@@ -799,9 +797,6 @@ describe('readLdapGroups', () => {
       {
         dn: 'ddd',
         options: {},
-        parsing: {
-          skipMembers: true,
-        },
         map: {
           rdn: 'cn',
           name: 'cn',
@@ -811,7 +806,7 @@ describe('readLdapGroups', () => {
           picture: 'avatarUrl',
           type: 'tt',
           memberOf: 'memberOf',
-          members: 'member',
+          members: null,
         },
       },
     ];
