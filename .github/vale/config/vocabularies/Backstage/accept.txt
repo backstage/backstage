@@ -89,6 +89,7 @@ CVEs
 daemonsets
 Datadog
 dataflow
+dataloader
 dayjs
 debounce
 debounces
