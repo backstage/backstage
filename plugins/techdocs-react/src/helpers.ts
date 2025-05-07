@@ -17,8 +17,8 @@
 import { Config } from '@backstage/config';
 import {
   CompoundEntityRef,
-  DEFAULT_NAMESPACE,
   Entity,
+  getCompoundEntityRef,
   parseEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -88,9 +88,7 @@ export const buildTechDocsURL = (
     return undefined;
   }
 
-  let namespace = entity.metadata.namespace || DEFAULT_NAMESPACE;
-  let kind = entity.kind;
-  let name = entity.metadata.name;
+  let { namespace, kind, name } = getCompoundEntityRef(entity);
 
   if (entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]) {
     try {
