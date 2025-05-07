@@ -48,6 +48,7 @@
   width: 1.5rem;
   height: 1.5rem;
   color: var(--canon-fg-primary);
+  flex-shrink: 0;
   display: block;
 }
 
