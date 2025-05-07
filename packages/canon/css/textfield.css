@@ -48,6 +48,7 @@
   width: 1.5rem;
   height: 1.5rem;
   color: var(--canon-fg-primary);
+  flex-shrink: 0;
   display: block;
 }
 
@@ -61,7 +62,12 @@
   cursor: inherit;
   background: none;
   border: none;
+  padding: 0;
   transition: border-color .2s ease-in-out, outline-color .2s ease-in-out;
+}
+
+.canon-TextFieldInput:not([data-filled]):has( + .canon-TextFieldClearButton) {
+  padding-right: 1.25rem;
 }
 
 .canon-TextFieldInput[type="search"]::-webkit-search-cancel-button, .canon-TextFieldInput[type="search"]::-webkit-search-decoration {
@@ -69,10 +75,12 @@
 }
 
 .canon-TextFieldClearButton {
-  padding: 0 0 0 var(--canon-space-1);
+  margin-left: var(--canon-space-1);
   vertical-align: middle;
+  color: var(--canon-fg-primary);
   background: none;
   border: none;
+  padding: 0;
   display: none;
 }
 
