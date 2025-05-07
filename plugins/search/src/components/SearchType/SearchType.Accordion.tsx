@@ -31,6 +31,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import AllIcon from '@material-ui/icons/FontDownload';
 import useAsync from 'react-use/esm/useAsync';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   icon: {
@@ -83,6 +85,7 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
   const searchApi = useApi(searchApiRef);
   const [expanded, setExpanded] = useState(true);
   const { defaultValue, name, showCounts, types: givenTypes } = props;
+  const { t } = useTranslationRef(searchTranslationRef);
 
   const toggleExpanded = () => setExpanded(prevState => !prevState);
   const handleClick = (type: string) => {
@@ -103,7 +106,7 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
   const definedTypes = [
     {
       value: '',
-      name: 'All',
+      name: t('searchType.accordion.allTitle'),
       icon: <AllIcon />,
     },
     ...givenTypes,
@@ -117,7 +120,7 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
 
     const counts = await Promise.all(
       definedTypes
-        .map(t => t.value)
+        .map(type => type.value)
         .map(async type => {
           const { numberOfResults } = await searchApi.query({
             term,
@@ -130,9 +133,10 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
           return [
             type,
             numberOfResults !== undefined
-              ? `${
-                  numberOfResults >= 10000 ? `>10000` : numberOfResults
-                } results`
+              ? t('searchType.accordion.numberOfResults', {
+                  number:
+                    numberOfResults >= 10000 ? `>10000` : `${numberOfResults}`,
+                })
               : ' -- ',
           ];
         }),
@@ -160,8 +164,8 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
           IconButtonProps={{ size: 'small' }}
         >
           {expanded
-            ? 'Collapse'
-            : definedTypes.filter(t => t.value === selected)[0]!.name}
+            ? t('searchType.accordion.collapse')
+            : definedTypes.filter(type => type.value === selected)[0]!.name}
         </AccordionSummary>
         <AccordionDetails classes={{ root: classes.accordionDetails }}>
           <List
