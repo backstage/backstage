@@ -2,4 +2,4 @@
 '@backstage/canon': patch
 ---
 
-Use correct colour token for TextField clear button icon and prevent layout shift as it is hidden or shown.
+Use correct colour token for TextField clear button icon, prevent layout shift whenever it is hidden or shown and properly size focus area around it. Also stop leading icon shrinking when used together.
