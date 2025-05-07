@@ -195,7 +195,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
 
   const actions = props.actions || defaultActions;
   const options: TableProps['options'] = {
-    paginationPosition: 'both',
     actionsColumnIndex: -1,
     loadingType: 'linear' as const,
     showEmptyDataSourceMessage: !loading,

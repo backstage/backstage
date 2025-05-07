@@ -2,7 +2,4 @@
 '@backstage/plugin-catalog': minor
 ---
 
-Harmonize `CatalogTable`
-
-- Show pagination text for `OffsetPagination`
-- Do not show paging if there is only one page
+Show the pagination text for the offset-paginated catalog table, and remove the pagination bar from the top of the `CatalogTable` when pagination is enabled.
