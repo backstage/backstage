@@ -5942,6 +5942,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-catalog-backend-module-gitea@workspace:^, @backstage/plugin-catalog-backend-module-gitea@workspace:plugins/catalog-backend-module-gitea":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-gitea@workspace:plugins/catalog-backend-module-gitea"
+  dependencies:
+    "@backstage/backend-common": "npm:^0.25.0"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-catalog-common": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    p-limit: "npm:^6.2.0"
+    uui: "npm:^1.0.7"
+    uuid: "npm:^11.1.0"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org"
@@ -29878,6 +29897,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-gitea": "workspace:^"
     "@backstage/plugin-catalog-backend-module-openapi": "workspace:^"
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
@@ -39739,6 +39759,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"p-limit@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "p-limit@npm:6.2.0"
+  dependencies:
+    yocto-queue: "npm:^1.1.1"
+  checksum: 10/70e8df3e5f1c173c9bd9fa8390a3c5c2797505240ae42973536992b1f5f59a922153c2f35ff1bf36fb72a0f025b0f13fca062a4233e830adad446960d56b4d84
+  languageName: node
+  linkType: hard
+
 "p-locate@npm:^3.0.0":
   version: 3.0.0
   resolution: "p-locate@npm:3.0.0"
@@ -48011,6 +48040,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"uui@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "uui@npm:1.0.7"
+  checksum: 10/eaf5613dcda8dd4f2dc470332e3d01434ac5e3ac7bb738b6fc62589c1eabb92b485e35e8e42067ccbb900f01a9533fc76cc9b41b8817de271006fb9ba5cf95af
+  languageName: node
+  linkType: hard
+
 "uuid@npm:8.3.2, uuid@npm:^8.0.0, uuid@npm:^8.3.0, uuid@npm:^8.3.2":
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"
@@ -48029,7 +48065,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^11.0.0, uuid@npm:^11.0.2, uuid@npm:^11.0.3":
+"uuid@npm:^11.0.0, uuid@npm:^11.0.2, uuid@npm:^11.0.3, uuid@npm:^11.1.0":
   version: 11.1.0
   resolution: "uuid@npm:11.1.0"
   bin:
@@ -49268,6 +49304,13 @@ __metadata:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: 10/f77b3d8d00310def622123df93d4ee654fc6a0096182af8bd60679ddcdfb3474c56c6c7190817c84a2785648cdee9d721c0154eb45698c62176c322fb46fc700
+  languageName: node
+  linkType: hard
+
+"yocto-queue@npm:^1.1.1":
+  version: 1.2.1
+  resolution: "yocto-queue@npm:1.2.1"
+  checksum: 10/0843d6c2c0558e5c06e98edf9c17942f25c769e21b519303a5c2adefd5b738c9b2054204dc856ac0cd9d134b1bc27d928ce84fd23c9e2423b7e013d5a6f50577
   languageName: node
   linkType: hard
 
