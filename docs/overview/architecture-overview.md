@@ -267,14 +267,14 @@ require a database to work with.
 The Backstage backend and its built-in plugins are based on the
 [Knex](http://knexjs.org/) library, and set up a separate logical database per
 plugin. This gives great isolation and lets them perform migrations and evolve
-separate from each other.
+separately from each other.
 
-The Knex library supports a multitude of databases, but Backstage is at the time
-of writing tested primarily against two of them: SQLite, which is mainly used as
+The Knex library supports a multitude of databases, but Backstage at this time
+of writing is tested primarily against two of them: SQLite, which is mainly used as
 an in-memory mock/test database, and PostgreSQL, which is the preferred
 production database. Other databases such as the MySQL variants are reported to
 work but
-[aren't tested as fully](https://github.com/backstage/backstage/issues/2460)
+[aren't fully tested](https://github.com/backstage/backstage/issues/2460)
 yet.
 
 ## Cache
