@@ -9832,11 +9832,12 @@
 }
 
 .canon-TextFieldClearButton {
-  padding: 0 0 0 var(--canon-space-1);
+  margin-left: var(--canon-space-1);
   vertical-align: middle;
   color: var(--canon-fg-primary);
   background: none;
   border: none;
+  padding: 0;
   display: none;
 }
 

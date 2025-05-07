@@ -93,7 +93,8 @@
 
 .canon-TextFieldClearButton {
   display: none;
-  padding: 0 0 0 var(--canon-space-1);
+  padding: 0;
+  margin-left: var(--canon-space-1);
   background: none;
   border: none;
   vertical-align: middle;
