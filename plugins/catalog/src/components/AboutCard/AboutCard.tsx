@@ -65,10 +65,10 @@ import { usePermission } from '@backstage/plugin-permission-react';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
-
-const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
-
-const TECHDOCS_EXTERNAL_ANNOTATION = 'backstage.io/techdocs-entity';
+import {
+  TECHDOCS_ANNOTATION,
+  TECHDOCS_EXTERNAL_ANNOTATION,
+} from '@backstage/plugin-techdocs-common';
 
 const useStyles = makeStyles({
   gridItemCard: {
