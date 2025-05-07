@@ -47,7 +47,6 @@ export function OffsetPaginatedCatalogTable(
       columns={columns}
       data={data}
       options={{
-        paginationPosition: 'both',
         pageSizeOptions: [5, 10, 20, 50, 100],
         pageSize: limit,
         emptyRowsWhenPaging: false,
@@ -57,14 +56,9 @@ export function OffsetPaginatedCatalogTable(
         Toolbar: CatalogTableToolbar,
       }}
       page={page}
-      onPageChange={newPage => {
-        setPage(newPage);
-      }}
-      onRowsPerPageChange={pageSize => {
-        setLimit(pageSize);
-      }}
+      onPageChange={setPage}
+      onRowsPerPageChange={setLimit}
       totalCount={totalItems}
-      localization={{ pagination: { labelDisplayedRows: '' } }}
       {...restProps}
     />
   );
