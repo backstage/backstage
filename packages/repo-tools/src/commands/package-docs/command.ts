@@ -158,23 +158,22 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
     }
   }
 
-  const { stdout, stderr } = await execAsync(
-    [
-      cliPaths.resolveTargetRoot('node_modules/.bin/typedoc'),
-      '--entryPointStrategy',
-      'merge',
-      ...generatedPackageDirs.flatMap(pkg => [
-        '--entryPoints',
-        `dist-types/${pkg}/docs.json`,
-      ]),
-      ...HIGHLIGHT_LANGUAGES.flatMap(e => ['--highlightLanguages', e]),
-      '--out',
-      cliPaths.resolveTargetRoot('type-docs'),
-    ].join(' '),
-    {
-      cwd: cliPaths.targetRoot,
-    },
-  );
+  const typedocPath = cliPaths.resolveTargetRoot('node_modules/.bin/typedoc');
+  const args = [
+    '--entryPointStrategy',
+    'merge',
+    ...generatedPackageDirs.flatMap(pkg => [
+      '--entryPoints',
+      `dist-types/${pkg}/docs.json`,
+    ]),
+    ...HIGHLIGHT_LANGUAGES.flatMap(e => ['--highlightLanguages', e]),
+    '--out',
+    cliPaths.resolveTargetRoot('type-docs'),
+  ];
+
+  const { stdout, stderr } = await execAsync(typedocPath, args, {
+    cwd: cliPaths.targetRoot,
+  });
 
   console.log(stdout);
   console.error(stderr);
