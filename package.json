@@ -150,7 +150,7 @@
     "shx": "^0.4.0",
     "sloc": "^0.3.1",
     "sort-package-json": "^2.8.0",
-    "typedoc": "^0.27.6",
+    "typedoc": "^0.28.0",
     "typescript": "~5.6.0"
   },
   "packageManager": "yarn@4.8.1",
