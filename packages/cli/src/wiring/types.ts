@@ -15,24 +15,32 @@
  */
 import { CommandRegistry } from './CommandRegistry';
 
-export interface BackstageCommand {
+export interface BackstageCommandContext {
+  /**
+   * The arguments passed to the command
+   */
+  args: string[];
+  /**
+   * General information relevant to the command
+   */
+  info: {
+    /**
+     * The usage string of the current command, for example: "backstage-cli repo test"
+     */
+    usage: string;
+    /**
+     * The description provided for the command
+     */
+    description: string;
+  };
+}
+
+export type BackstageCommand = {
   path: string[];
   description: string;
   deprecated?: boolean;
-  execute: (context: {
-    args: string[];
-    info: {
-      /**
-       * The usage string of the current command, for example: "backstage-cli repo test"
-       */
-      usage: string;
-      /**
-       * The description provided for the command
-       */
-      description: string;
-    };
-  }) => Promise<void>;
-}
+  execute(context: BackstageCommandContext): Promise<void>;
+};
 
 export interface CliFeature {
   $$type: '@backstage/CliFeature';
