@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import path from 'path';
-import { paths } from '../paths';
+import { paths } from '../../../../lib/paths';
 
 const TEAM_ID_RE = /^@[-\w]+\/[-\w]+$/;
 const USER_ID_RE = /^@[-\w]+$/;
