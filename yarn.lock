@@ -49322,11 +49322,11 @@ __metadata:
   linkType: hard
 
 "zod-validation-error@npm:^3.0.3, zod-validation-error@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "zod-validation-error@npm:3.4.0"
+  version: 3.4.1
+  resolution: "zod-validation-error@npm:3.4.1"
   peerDependencies:
-    zod: ^3.18.0
-  checksum: 10/b98b1bbba14a3bb31649a1566c8c5a5213ec70dcaa2cbb1e89db00d56648a446225b35a8f6768471730d7013f4f141cd70c2b9740d69e6433ebfa148aecdac2f
+    zod: ^3.24.4
+  checksum: 10/4975aacc1a931acdbaa3eeaf92fc89a210c6fd14a260d17688ec6302ce478c268c008c61bcdeab51c76191ac627e580f319775a7862be7b9c54c94f2f7cb6ed2
   languageName: node
   linkType: hard
 
