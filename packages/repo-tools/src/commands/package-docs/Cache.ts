@@ -46,7 +46,6 @@ export class PackageDocsCache {
     });
     const map = new Map<string, CacheEntry>();
     for (const file of cacheFiles) {
-      console.log(file);
       const pkg = dirname(file);
       const cache = await readFile(workerPath.join(cacheDir, file), 'utf-8');
       const cacheJson = JSON.parse(cache);
@@ -113,7 +112,6 @@ export class PackageDocsCache {
 
     const targetDir = cliPaths.resolveTargetRoot(restoreTo);
     await mkdirp(targetDir);
-    console.log(contentsDir, targetDir);
     await cp(contentsDir, targetDir, { recursive: true });
   }
 
