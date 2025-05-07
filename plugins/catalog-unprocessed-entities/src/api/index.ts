@@ -58,6 +58,10 @@ export interface CatalogUnprocessedEntitiesApi {
    * Deletes an entity from the refresh_state table
    */
   delete(entityId: string): Promise<void>;
+  /**
+   * Refreshes an entity
+   */
+  refresh(entityRef: string): Promise<void>;
 }
 
 /**
@@ -92,6 +96,18 @@ export class CatalogUnprocessedEntitiesClient
   async delete(entityId: string): Promise<void> {
     await this.fetch(`entities/unprocessed/delete/${entityId}`, {
       method: 'DELETE',
+    });
+  }
+
+  async refresh(entityRef: string): Promise<void> {
+    await this.fetch(`refresh`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        entityRef,
+      }),
     });
   }
 }

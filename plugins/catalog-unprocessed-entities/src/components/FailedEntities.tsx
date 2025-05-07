@@ -34,7 +34,9 @@ import { EntityDialog } from './EntityDialog';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
 import useAsync from 'react-use/esm/useAsync';
 import DeleteIcon from '@material-ui/icons/Delete';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import { DeleteEntityConfirmationDialog } from './DeleteEntityConfirmationDialog';
+import { RefreshEntityConfirmationDialog } from './RefreshEntityConfirmationDialog';
 
 const useStyles = makeStyles((theme: Theme) => ({
   errorBox: {
@@ -121,7 +123,10 @@ export const FailedEntities = () => {
   const [selectedEntityRef, setSelectedEntityRef] = useState<
     string | undefined
   >(undefined);
-  const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
+  const [deleteConfirmationDialogOpen, setDeleteConfirmationDialogOpen] =
+    useState(false);
+  const [refreshConfirmationDialogOpen, setRefreshConfirmationDialogOpen] =
+    useState(false);
 
   if (loading) {
     return <Progress />;
@@ -139,10 +144,22 @@ export const FailedEntities = () => {
   }) => {
     setSelectedEntityId(entityId);
     setSelectedEntityRef(entityRef);
-    setConfirmationDialogOpen(true);
+    setDeleteConfirmationDialogOpen(true);
   };
 
-  const cleanUpAfterRemoval = async () => {
+  const handleRefresh = ({
+    entityId,
+    entityRef,
+  }: {
+    entityId: string;
+    entityRef: string;
+  }) => {
+    setSelectedEntityId(entityId);
+    setSelectedEntityRef(entityRef);
+    setRefreshConfirmationDialogOpen(true);
+  };
+
+  const deleteEntity = async () => {
     try {
       if (selectedEntityId) {
         await unprocessedEntityApi.delete(selectedEntityId);
@@ -157,7 +174,25 @@ export const FailedEntities = () => {
         severity: 'error',
       });
     }
-    setConfirmationDialogOpen(false);
+    setDeleteConfirmationDialogOpen(false);
+  };
+
+  const refreshEntity = async () => {
+    try {
+      if (selectedEntityId) {
+        await unprocessedEntityApi.refresh(selectedEntityRef!);
+        alertApi.post({
+          message: `Entity ${selectedEntityRef} has been refreshed`,
+          severity: 'success',
+        });
+      }
+    } catch (e) {
+      alertApi.post({
+        message: `Ran into an issue when refreshing ${selectedEntityRef}. Please try again later.`,
+        severity: 'error',
+      });
+    }
+    setRefreshConfirmationDialogOpen(false);
   };
 
   const columns: TableColumn[] = [
@@ -225,17 +260,30 @@ export const FailedEntities = () => {
         const { entity_id, entity_ref } = rowData as UnprocessedEntity;
 
         return (
-          <IconButton
-            aria-label="delete"
-            onClick={() =>
-              handleDelete({
-                entityId: entity_id,
-                entityRef: entity_ref,
-              })
-            }
-          >
-            <DeleteIcon fontSize="small" data-testid="delete-icon" />
-          </IconButton>
+          <>
+            <IconButton
+              aria-label="delete"
+              onClick={() =>
+                handleDelete({
+                  entityId: entity_id,
+                  entityRef: entity_ref,
+                })
+              }
+            >
+              <DeleteIcon fontSize="small" data-testid="delete-icon" />
+            </IconButton>
+            <IconButton
+              aria-label="refresh"
+              onClick={() =>
+                handleRefresh({
+                  entityId: entity_id,
+                  entityRef: entity_ref,
+                })
+              }
+            >
+              <RefreshIcon fontSize="small" data-testid="refresh-icon" />
+            </IconButton>
+          </>
         );
       },
     },
@@ -278,9 +326,14 @@ export const FailedEntities = () => {
         }}
       />
       <DeleteEntityConfirmationDialog
-        open={confirmationDialogOpen}
-        onClose={() => setConfirmationDialogOpen(false)}
-        onConfirm={cleanUpAfterRemoval}
+        open={deleteConfirmationDialogOpen}
+        onClose={() => setDeleteConfirmationDialogOpen(false)}
+        onConfirm={deleteEntity}
+      />
+      <RefreshEntityConfirmationDialog
+        open={refreshConfirmationDialogOpen}
+        onClose={() => setRefreshConfirmationDialogOpen(false)}
+        onConfirm={refreshEntity}
       />
     </>
   );
