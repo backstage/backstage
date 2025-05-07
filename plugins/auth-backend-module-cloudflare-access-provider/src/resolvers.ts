@@ -56,7 +56,7 @@ export namespace cloudflareAccessSignInResolvers {
             {
               dangerousEntityRefFallback:
                 options?.dangerouslyAllowSignInWithoutUserInCatalog
-                  ? { name: profile.email }
+                  ? { entityRef: { name: profile.email } }
                   : undefined,
             },
           );

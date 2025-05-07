@@ -142,13 +142,15 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
   async signInWithCatalogUser(
     query: AuthResolverCatalogUserQuery,
     options?: {
-      dangerousEntityRefFallback?:
-        | string
-        | {
-            kind?: string;
-            namespace?: string;
-            name: string;
-          };
+      dangerousEntityRefFallback?: {
+        entityRef:
+          | string
+          | {
+              kind?: string;
+              namespace?: string;
+              name: string;
+            };
+      };
     },
   ) {
     try {
@@ -165,21 +167,14 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
         },
       });
     } catch (error) {
-      if (error?.name !== 'NotFoundError') {
+      if (
+        error?.name !== 'NotFoundError' ||
+        !options?.dangerousEntityRefFallback
+      ) {
         throw error;
       }
-      if (!options?.dangerousEntityRefFallback) {
-        this.logger.error(
-          'Failed to sign-in, unable to resolve user identity. For non-production environments, manually provision the user or disable the user provisioning requirement by setting the dangerouslyAllowSignInWithoutUserInCatalog option.',
-        );
-
-        throw new Error(
-          'Failed to sign-in, unable to resolve user identity. Please verify that your catalog contains the expected User entities that would match your configured sign-in resolver.',
-        );
-      }
-
       const userEntityRef = stringifyEntityRef(
-        parseEntityRef(options.dangerousEntityRefFallback, {
+        parseEntityRef(options.dangerousEntityRefFallback.entityRef, {
           defaultKind: 'User',
           defaultNamespace: DEFAULT_NAMESPACE,
         }),

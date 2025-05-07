@@ -53,7 +53,7 @@ export namespace gcpIapSignInResolvers {
           {
             dangerousEntityRefFallback:
               options?.dangerouslyAllowSignInWithoutUserInCatalog
-                ? { name: email }
+                ? { entityRef: { name: email } }
                 : undefined,
           },
         );
@@ -83,7 +83,7 @@ export namespace gcpIapSignInResolvers {
           {
             dangerousEntityRefFallback:
               options?.dangerouslyAllowSignInWithoutUserInCatalog
-                ? { name: userId }
+                ? { entityRef: { name: userId } }
                 : undefined,
           },
         );

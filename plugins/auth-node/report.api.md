@@ -111,13 +111,15 @@ export type AuthResolverContext = {
   signInWithCatalogUser(
     query: AuthResolverCatalogUserQuery,
     options?: {
-      dangerousEntityRefFallback?:
-        | string
-        | {
-            kind?: string;
-            namespace?: string;
-            name: string;
-          };
+      dangerousEntityRefFallback?: {
+        entityRef:
+          | string
+          | {
+              kind?: string;
+              namespace?: string;
+              name: string;
+            };
+      };
     },
   ): Promise<BackstageSignInResult>;
   resolveOwnershipEntityRefs(entity: Entity): Promise<{

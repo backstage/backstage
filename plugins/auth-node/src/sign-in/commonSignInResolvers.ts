@@ -74,7 +74,7 @@ export namespace commonSignInResolvers {
                   {
                     dangerousEntityRefFallback:
                       options?.dangerouslyAllowSignInWithoutUserInCatalog
-                        ? { name: noPlusEmail }
+                        ? { entityRef: { name: noPlusEmail } }
                         : undefined,
                   },
                 );
@@ -122,7 +122,7 @@ export namespace commonSignInResolvers {
             {
               dangerousEntityRefFallback:
                 options?.dangerouslyAllowSignInWithoutUserInCatalog
-                  ? { name: localPart }
+                  ? { entityRef: { name: localPart } }
                   : undefined,
             },
           );
