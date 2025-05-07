@@ -3,8 +3,9 @@ kind: Component
 metadata:
   name: backstage-frontend-dynamic-feature-loader
   title: '@backstage/frontend-dynamic-feature-loader'
-  description: Backstage frontend feature loader to load new frontend system plugins exposed as module federation remotes.
+  description: Backstage frontend feature loader to load new frontend system
+    plugins exposed as module federation remotes.
 spec:
   lifecycle: experimental
   type: backstage-web-library
-  owner: maintainers
+  owner: framework-maintainers
