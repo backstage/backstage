@@ -62,4 +62,8 @@ backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(import('./instanceMetadata'));
 
 backend.add(import('@backstage/plugin-events-backend-module-google-pubsub'));
+
+// Server Side Rendering example
+backend.add(import('@backstage/plugin-ssr-backend'));
+
 backend.start();
