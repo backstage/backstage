@@ -90,3 +90,42 @@ function getColor(severity: NotificationSeverity | undefined) {
       return '#00A699'; // Neutral color
   }
 }
+
+// Simple expiry map for the data loader, which only expects a map that implements set, get, and delete and clear
+export class ExpiryMap<K, V> extends Map<K, V> {
+  #ttlMs: number;
+  #timestamps: Map<K, number> = new Map();
+
+  constructor(ttlMs: number) {
+    super();
+    this.#ttlMs = ttlMs;
+  }
+
+  set(key: K, value: V) {
+    const result = super.set(key, value);
+    this.#timestamps.set(key, Date.now());
+    return result;
+  }
+
+  get(key: K) {
+    if (!this.has(key)) {
+      return undefined;
+    }
+    const timestamp = this.#timestamps.get(key)!;
+    if (Date.now() - timestamp > this.#ttlMs) {
+      this.delete(key);
+      return undefined;
+    }
+    return super.get(key);
+  }
+
+  delete(key: K) {
+    this.#timestamps.delete(key);
+    return super.delete(key);
+  }
+
+  clear() {
+    this.#timestamps.clear();
+    return super.clear();
+  }
+}
