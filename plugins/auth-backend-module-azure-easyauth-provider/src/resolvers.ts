@@ -47,7 +47,7 @@ export namespace azureEasyAuthSignInResolvers {
           {
             dangerousEntityRefFallback:
               options?.dangerouslyAllowSignInWithoutUserInCatalog
-                ? { name: id }
+                ? { entityRef: { name: id } }
                 : undefined,
           },
         );

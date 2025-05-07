@@ -59,7 +59,7 @@ export namespace bitbucketServerSignInResolvers {
             {
               dangerousEntityRefFallback:
                 options?.dangerouslyAllowSignInWithoutUserInCatalog
-                  ? { name: profile.email }
+                  ? { entityRef: { name: profile.email } }
                   : undefined,
             },
           );

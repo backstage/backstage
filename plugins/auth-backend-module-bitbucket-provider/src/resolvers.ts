@@ -59,7 +59,7 @@ export namespace bitbucketSignInResolvers {
             {
               dangerousEntityRefFallback:
                 options?.dangerouslyAllowSignInWithoutUserInCatalog
-                  ? { name: id }
+                  ? { entityRef: { name: id } }
                   : undefined,
             },
           );
@@ -101,7 +101,7 @@ export namespace bitbucketSignInResolvers {
             {
               dangerousEntityRefFallback:
                 options?.dangerouslyAllowSignInWithoutUserInCatalog
-                  ? { name: username }
+                  ? { entityRef: { name: username } }
                   : undefined,
             },
           );

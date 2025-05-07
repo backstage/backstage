@@ -46,7 +46,7 @@ export namespace oauth2ProxySignInResolvers {
             {
               dangerousEntityRefFallback:
                 options?.dangerouslyAllowSignInWithoutUserInCatalog
-                  ? { name }
+                  ? { entityRef: { name } }
                   : undefined,
             },
           );

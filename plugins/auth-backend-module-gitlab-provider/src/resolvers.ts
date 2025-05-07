@@ -56,7 +56,7 @@ export namespace gitlabSignInResolvers {
           {
             dangerousEntityRefFallback:
               options?.dangerouslyAllowSignInWithoutUserInCatalog
-                ? { name: id }
+                ? { entityRef: { name: id } }
                 : undefined,
           },
         );

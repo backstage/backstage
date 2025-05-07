@@ -52,7 +52,11 @@ export namespace awsAlbSignInResolvers {
             {
               dangerousEntityRefFallback:
                 options?.dangerouslyAllowSignInWithoutUserInCatalog
-                  ? { name: info.result.fullProfile.emails[0].value }
+                  ? {
+                      entityRef: {
+                        name: info.result.fullProfile.emails[0].value,
+                      },
+                    }
                   : undefined,
             },
           );

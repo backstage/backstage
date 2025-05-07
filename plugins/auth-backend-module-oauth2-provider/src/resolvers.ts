@@ -56,7 +56,7 @@ export namespace oauth2SignInResolvers {
           {
             dangerousEntityRefFallback:
               options?.dangerouslyAllowSignInWithoutUserInCatalog
-                ? { name: id }
+                ? { entityRef: { name: id } }
                 : undefined,
           },
         );

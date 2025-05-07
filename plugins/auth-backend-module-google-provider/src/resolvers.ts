@@ -57,7 +57,7 @@ export namespace googleSignInResolvers {
           {
             dangerousEntityRefFallback:
               options?.dangerouslyAllowSignInWithoutUserInCatalog
-                ? { name: profile.email }
+                ? { entityRef: { name: profile.email } }
                 : undefined,
           },
         );

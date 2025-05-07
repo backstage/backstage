@@ -57,7 +57,7 @@ export namespace microsoftSignInResolvers {
           {
             dangerousEntityRefFallback:
               options?.dangerouslyAllowSignInWithoutUserInCatalog
-                ? { name: profile.email }
+                ? { entityRef: { name: profile.email } }
                 : undefined,
           },
         );
@@ -96,7 +96,7 @@ export namespace microsoftSignInResolvers {
             {
               dangerousEntityRefFallback:
                 options?.dangerouslyAllowSignInWithoutUserInCatalog
-                  ? { name: id }
+                  ? { entityRef: { name: id } }
                   : undefined,
             },
           );

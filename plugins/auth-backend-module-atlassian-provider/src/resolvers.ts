@@ -54,7 +54,7 @@ export namespace atlassianSignInResolvers {
           {
             dangerousEntityRefFallback:
               options?.dangerouslyAllowSignInWithoutUserInCatalog
-                ? { name: id }
+                ? { entityRef: { name: id } }
                 : undefined,
           },
         );
