@@ -7,12 +7,12 @@ emails or content on the backend
 
 ## Installation
 
-This plugin is installed via the `@backstage/plugin-ssr-backend` package. To install it to your backend package, run the
+This plugin is installed via the `@backstage/plugin-ssr-poc-backend` package. To install it to your backend package, run the
 following command:
 
 ```bash
 # From your root directory
-yarn --cwd packages/backend add @backstage/plugin-ssr-backend
+yarn --cwd packages/backend add @backstage/plugin-ssr-poc-backend
 ```
 
 Then add the plugin to your backend in `packages/backend/src/index.ts`:
@@ -20,7 +20,7 @@ Then add the plugin to your backend in `packages/backend/src/index.ts`:
 ```ts
 const backend = createBackend();
 // ...
-backend.add(import('@backstage/plugin-ssr-backend'));
+backend.add(import('@backstage/plugin-ssr-poc-backend'));
 ```
 
 ## Development

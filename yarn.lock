@@ -8559,9 +8559,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-ssr-backend@workspace:^, @backstage/plugin-ssr-backend@workspace:plugins/ssr-backend":
+"@backstage/plugin-ssr-poc-backend@workspace:^, @backstage/plugin-ssr-poc-backend@workspace:plugins/ssr-poc-backend":
   version: 0.0.0-use.local
-  resolution: "@backstage/plugin-ssr-backend@workspace:plugins/ssr-backend"
+  resolution: "@backstage/plugin-ssr-poc-backend@workspace:plugins/ssr-poc-backend"
   dependencies:
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
@@ -8571,16 +8571,25 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@types/express": "npm:^4.17.6"
-    "@types/react": "npm:*"
-    "@types/react-dom": "npm:*"
+    "@types/react": "npm:^18.0.0"
+    "@types/react-dom": "npm:^18"
     "@types/supertest": "npm:^2.0.8"
     express: "npm:^4.17.1"
     express-promise-router: "npm:^4.1.0"
+    react: "npm:^18.0.2"
+    react-dom: "npm:^18.0.2"
+    react-router-dom: "npm:^6.3.0"
     supertest: "npm:^6.2.4"
     zod: "npm:^3.22.4"
   peerDependencies:
-    react: "*"
-    react-dom: "*"
+    "@types/react": ^17.0.0 || ^18.0.0
+    "@types/react-dom": ^18
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    react-router-dom: ^6.3.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -29925,7 +29934,7 @@ __metadata:
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-signals-backend": "workspace:^"
-    "@backstage/plugin-ssr-backend": "workspace:^"
+    "@backstage/plugin-ssr-poc-backend": "workspace:^"
     "@backstage/plugin-techdocs-backend": "workspace:^"
     "@opentelemetry/auto-instrumentations-node": "npm:^0.54.0"
     "@opentelemetry/exporter-prometheus": "npm:^0.54.0"

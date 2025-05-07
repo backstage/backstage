@@ -63,7 +63,7 @@ backend.add(import('./instanceMetadata'));
 
 backend.add(import('@backstage/plugin-events-backend-module-google-pubsub'));
 
-// Server Side Rendering example
-backend.add(import('@backstage/plugin-ssr-backend'));
+// Server Side Rendering POC
+backend.add(import('@backstage/plugin-ssr-poc-backend'));
 
 backend.start();

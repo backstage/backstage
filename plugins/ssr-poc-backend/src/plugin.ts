@@ -20,12 +20,12 @@ import {
 import { createRouter } from './router';
 
 /**
- * ssrPlugin backend plugin
+ * ssrPocPlugin backend plugin
  *
  * @public
  */
-export const ssrPlugin = createBackendPlugin({
-  pluginId: 'ssr',
+export const ssrPocPlugin = createBackendPlugin({
+  pluginId: 'ssr-poc',
   register(env) {
     env.registerInit({
       deps: {
