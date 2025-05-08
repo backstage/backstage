@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.11.5-next.2
+
+### Patch Changes
+
+- e253d1d: Improves error reporting for missing metadata.name in LDAP catalog provider.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+
 ## 0.11.5-next.1
 
 ### Patch Changes

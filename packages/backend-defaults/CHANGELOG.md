@@ -1,5 +1,25 @@
 # @backstage/backend-defaults
 
+## 0.10.0-next.2
+
+### Patch Changes
+
+- 0e7a640: The `GithubUrlReader` will now use the token from `options` when fetching repo details
+- Updated dependencies
+  - @backstage/integration-aws-node@0.1.16-next.0
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/backend-app-api@1.2.3-next.1
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+
 ## 0.10.0-next.1
 
 ### Minor Changes

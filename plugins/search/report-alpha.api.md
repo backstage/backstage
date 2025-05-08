@@ -15,6 +15,7 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchFilterExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
 const _default: FrontendPlugin<
@@ -246,6 +247,20 @@ export const searchPage: ExtensionDefinition<{
     routeRef?: RouteRef;
   };
 }>;
+
+// @alpha (undocumented)
+export const searchTranslationRef: TranslationRef<
+  'search',
+  {
+    readonly 'searchModal.viewFullResults': 'View Full Results';
+    readonly 'searchType.tabs.allTitle': 'All';
+    readonly 'searchType.allResults': 'All Results';
+    readonly 'searchType.accordion.collapse': 'Collapse';
+    readonly 'searchType.accordion.allTitle': 'All';
+    readonly 'searchType.accordion.numberOfResults': '{{number}} results';
+    readonly 'sidebarSearchModal.title': 'Search';
+  }
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

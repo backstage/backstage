@@ -5,7 +5,7 @@ description: Explains how to add a resource permission check to a Backstage plug
 ---
 
 :::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./03-adding-a-resource-permission-check--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/permissions/plugin-authors/03-adding-a-resource-permission-check--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
 :::
 
 When performing updates (or other operations) on specific [resources](../../references/glossary.md#resource-permission-plugin), the permissions framework allows for the decision to be based on characteristics of the resource itself. This means that it's possible to write policies that (for example) allow the operation for users that own a resource, and deny the operation otherwise.
@@ -125,7 +125,10 @@ $ yarn workspace @internal/plugin-todo-list-backend add zod
 Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append the following code:
 
 ```typescript title="plugins/todo-list-backend/src/service/rules.ts"
-import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
+import {
+  createPermissionResourceRef,
+  createPermissionRule,
+} from '@backstage/plugin-permission-node';
 import { TODO_LIST_RESOURCE_TYPE } from '@internal/plugin-todo-list-common';
 import { z } from 'zod';
 import { Todo, TodoFilter } from './todos';
@@ -135,13 +138,13 @@ export const todoListPermissionResourceRef = createPermissionResourceRef<
   TodoFilter
 >().with({
   pluginId: 'todolist',
-  type: TODO_LIST_RESOURCE_TYPE,
+  resourceType: TODO_LIST_RESOURCE_TYPE,
 });
 
 export const isOwner = createPermissionRule({
   name: 'IS_OWNER',
   description: 'Should allow only if the todo belongs to the user',
-  resourceType: todoListPermissionResourceRef,
+  resourceRef: todoListPermissionResourceRef,
   paramsSchema: z.object({
     userId: z.string().describe('User ID to match on the resource'),
   }),

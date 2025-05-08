@@ -544,6 +544,7 @@
   color: var(--canon-fg-primary);
   margin-bottom: var(--canon-space-1_5);
   cursor: pointer;
+  margin-right: auto;
 }
 
 .canon-TextFieldLabel[data-disabled] {
@@ -566,48 +567,100 @@
   margin: 0;
 }
 
-.canon-TextFieldInput {
+.canon-TextFieldInputWrapper {
+  padding: 0 var(--canon-space-3);
   border-radius: var(--canon-radius-3);
   border: 1px solid var(--canon-border);
-  padding: 0 var(--canon-space-4);
   background-color: var(--canon-bg-surface-1);
+  align-items: center;
+  display: flex;
+}
+
+.canon-TextFieldInputIcon {
+  padding-right: var(--canon-space-1);
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--canon-fg-primary);
+  flex-shrink: 0;
+  display: block;
+}
+
+.canon-TextFieldInput {
   font-size: var(--canon-font-size-3);
   font-family: var(--canon-font-regular);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-primary);
   width: 100%;
+  height: 100%;
+  cursor: inherit;
+  background: none;
+  border: none;
+  padding: 0;
   transition: border-color .2s ease-in-out, outline-color .2s ease-in-out;
+}
+
+.canon-TextFieldInput:not([data-filled]):has( + .canon-TextFieldClearButton) {
+  padding-right: 1.25rem;
+}
+
+.canon-TextFieldInput[type="search"]::-webkit-search-cancel-button, .canon-TextFieldInput[type="search"]::-webkit-search-decoration {
+  appearance: none;
+}
+
+.canon-TextFieldClearButton {
+  margin-left: var(--canon-space-1);
+  vertical-align: middle;
+  color: var(--canon-fg-primary);
+  background: none;
+  border: none;
+  padding: 0;
+  display: none;
+}
+
+.canon-TextFieldInput[data-filled] + .canon-TextFieldClearButton {
+  display: inline-block;
+}
+
+.canon-TextFieldClearButtonIcon {
+  display: block;
 }
 
 .canon-TextFieldInput::placeholder {
   color: var(--canon-fg-secondary);
 }
 
-.canon-TextFieldInput:hover {
-  border-color: var(--canon-border-hover);
-}
-
-.canon-TextFieldInput:focus-visible {
+.canon-TextFieldInput[data-focused] {
   outline-color: var(--canon-border-pressed);
-  border-color: var(--canon-border-pressed);
   outline-width: 0;
 }
 
-.canon-TextFieldInput[data-invalid] {
+.canon-TextFieldInputWrapper:has( > .canon-TextFieldInput:hover) {
+  border-color: var(--canon-border-hover);
+}
+
+.canon-TextField[data-focused] .canon-TextFieldInputWrapper {
+  border-color: var(--canon-border-pressed);
+}
+
+.canon-TextField[data-invalid] .canon-TextFieldInputWrapper {
   border-color: var(--canon-fg-danger);
 }
 
-.canon-TextFieldInput[data-disabled] {
+.canon-TextField[data-disabled] .canon-TextFieldInputWrapper {
   opacity: .5;
   cursor: not-allowed;
   border: 1px solid var(--canon-border-disabled);
 }
 
-.canon-TextFieldInput[data-size="small"] {
+.canon-TextField[data-disabled] .canon-TextFieldClearButton {
+  cursor: inherit;
+}
+
+.canon-TextFieldInputWrapper[data-size="small"] {
   height: 2rem;
 }
 
-.canon-TextFieldInput[data-size="medium"] {
+.canon-TextFieldInputWrapper[data-size="medium"] {
   height: 2.5rem;
 }
 

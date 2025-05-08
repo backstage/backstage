@@ -39,19 +39,21 @@ These labels indicate which part of Backstage an issue or pull request relates t
 - `area:auditor` - Auditor service and it's use in plugins.
 - `area:auth` - Authentication and 3rd party authorization.
 - `area:catalog` - The Catalog plugin and the Software Catalog model and integrations.
-- `area:core` - The core Backstage framework.
 - `area:design-system` - The Canon design system and library.
 - `area:documentation` - Documentation for adopters, users, and developers.
 - `area:events` - The Events system and integrations for other plugins.
+- `area:framework` - The core Backstage framework.
 - `area:home` - The Home plugin and the main page of the Backstage site.
 - `area:kubernetes` - The Kubernetes plugin and integrations for other plugins.
 - `area:microsite` - The microsite at [backstage.io](https://backstage.io), excluding the documentation.
 - `area:notifications` - The Notifications plugin and integrations for other plugins.
 - `area:openapi-tooling` - The OpenAPI tooling it's use in plugins.
+- `area:operations` - The management and operations of the main Backstage repository.
 - `area:permission` - The Permissions system and permission integrations from other plugins.
 - `area:scaffolder` - The Scaffolder plugin that powers Software Templates.
 - `area:search` - The Search plugin and search integrations for other plugins.
 - `area:techdocs` - The TechDocs plugin.
+- `area:tooling` - The Backstage CLI and repository tooling.
 
 ## Integration Labels - `integration:*`
 

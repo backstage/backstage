@@ -988,6 +988,34 @@ describe('defaultUserTransformer', () => {
       },
     });
   });
+
+  it('throws and includes message when uid (metadata.name) is missing', async () => {
+    const config: UserConfig = {
+      dn: 'ddd',
+      options: {},
+      map: {
+        rdn: 'uid',
+        name: 'uid',
+        displayName: 'cn',
+        email: 'mail',
+        memberOf: 'memberOf',
+      },
+      set: {},
+    };
+
+    const entry = searchEntry({
+      description: ['description-value'],
+      cn: ['cn-value'],
+      mail: ['mail-value'],
+      memberOf: ['x', 'y', 'z'],
+    });
+
+    await expect(
+      defaultUserTransformer(DefaultLdapVendor, config, entry),
+    ).rejects.toThrow(
+      "User syncing failed: missing 'uid' attribute, consider applying a user filter to skip processing users with incomplete data.",
+    );
+  });
 });
 
 describe('defaultGroupTransformer', () => {
@@ -1072,6 +1100,38 @@ describe('defaultGroupTransformer', () => {
         profile: { displayName: 'cn-value', email: 'mail-value' },
       },
     });
+  });
+
+  it('throws and includes message when cn (metadata.name) is missing', async () => {
+    const config: GroupConfig = {
+      dn: 'ddd',
+      options: {},
+      map: {
+        rdn: 'cn',
+        name: 'cn',
+        displayName: 'cn',
+        email: 'mail',
+        description: 'description',
+        type: 'type',
+        members: 'members',
+        memberOf: 'memberOf',
+      },
+    };
+
+    const entry = searchEntry({
+      description: ['description-value'],
+      mail: ['mail-value'],
+      avatarUrl: ['avatarUrl-value'],
+      memberOf: ['x', 'y', 'z'],
+      entryDN: ['dn-value'],
+      entryUUID: ['uuid-value'],
+    });
+
+    await expect(
+      defaultGroupTransformer(DefaultLdapVendor, config, entry),
+    ).rejects.toThrow(
+      "Group syncing failed: missing 'cn' attribute, consider applying a group filter to skip processing groups with incomplete data.",
+    );
   });
 });
 

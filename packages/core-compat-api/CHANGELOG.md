@@ -1,5 +1,15 @@
 # @backstage/core-compat-api
 
+## 0.4.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/plugin-catalog-react@1.18.0-next.2
+  - @backstage/version-bridge@1.0.11
+
 ## 0.4.2-next.1
 
 ### Patch Changes

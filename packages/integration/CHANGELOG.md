@@ -1,5 +1,19 @@
 # @backstage/integration
 
+## 1.17.0-next.2
+
+### Minor Changes
+
+- f134cea: Implement Edit URL feature for Gerrit 3.9+.
+
+  It's possible to disable the edit url by adding the `disableEditUrl: true` config in the Gerrit integration.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 1.16.4-next.1
 
 ### Patch Changes
