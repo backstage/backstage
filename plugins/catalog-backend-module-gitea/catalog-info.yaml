@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: backstage-plugin-catalog-backend-module-gitea
   title: '@backstage/plugin-catalog-backend-module-gitea'
-  description: The gitea backend module for the catalog plugin.
+  description: The gitea backend module for the catalog plugin provide by intive.com
 spec:
   lifecycle: experimental
   type: backstage-backend-plugin-module
