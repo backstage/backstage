@@ -135,9 +135,13 @@ export interface Config {
                */
               host?: string;
               /**
-               * (Optional) Name of your organization account/workspace.
+               * (Required, unless `app` is set) Name of your organization account/workspace.
                */
               organization?: string;
+              /**
+               * (Required, unless `organization` is set) Name of your GitHub App.
+               */
+              app?: string;
               /**
                * (Optional) Path where to look for `catalog-info.yaml` files.
                * You can use wildcards - `*` or `**` - to search the path and/or the filename
