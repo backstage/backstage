@@ -15,6 +15,7 @@
  */
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { parseRepoUrl } from './util';
+import { mapValues } from 'lodash';
 
 const queryString = (
   params: Partial<
@@ -216,6 +217,30 @@ describe('scaffolder action utils', () => {
         expect(
           parseRepoUrl(`${host}${queryString({ owner, repo })}`, integrations),
         ).toMatchObject({ host, owner, repo });
+      });
+      it('trims leading and trailing / from params', () => {
+        const [host, owner, organization, workspace, project, repo] = [
+          'anywhere',
+          'anyone',
+          'anything',
+          'anyway',
+          'anyhow',
+          'any',
+        ];
+        const junkedUp = mapValues(
+          { owner, organization, workspace, project, repo },
+          v => `//${v}//`,
+        );
+        return expect(
+          parseRepoUrl(`${host}${queryString(junkedUp)}`, integrations),
+        ).toMatchObject({
+          host,
+          owner,
+          organization,
+          workspace,
+          project,
+          repo,
+        });
       });
     });
   });
