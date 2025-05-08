@@ -5942,6 +5942,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-catalog-backend-module-gitea@workspace:plugins/catalog-backend-module-gitea":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-gitea@workspace:plugins/catalog-backend-module-gitea"
+  dependencies:
+    "@backstage/backend-common": "npm:^0.25.0"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-catalog-common": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    p-limit: "npm:^3.0.2"
+    uuid: "npm:^11.0.0"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-github-org@workspace:plugins/catalog-backend-module-github-org"
