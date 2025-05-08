@@ -45,6 +45,7 @@ import {
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { parseLastModified } from './util';
+import isGlob from 'is-glob';
 
 export type GhRepoResponse =
   RestEndpointMethodTypes['repos']['get']['response']['data'];
@@ -186,7 +187,7 @@ export class GithubUrlReader implements UrlReaderService {
     const { filepath } = parseGitUrl(url);
 
     // If it's a direct URL we use readUrl instead
-    if (!filepath?.match(/[*?]/)) {
+    if (!isGlob(filepath)) {
       try {
         const data = await this.readUrl(url, options);
 
