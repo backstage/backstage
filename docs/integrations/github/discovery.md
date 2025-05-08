@@ -148,7 +148,7 @@ If you do so, `default` will be used as provider ID.
 - **`catalogPath`** _(optional)_:
   Default: `/catalog-info.yaml`.
   Path where to look for `catalog-info.yaml` files.
-  You can use wildcards - `*` or `**` - to search the path and/or the filename.
+  You can use wildcards - `*`, `**` or a glob pattern supported by [`minimatch`](https://github.com/isaacs/minimatch) - to search the path and/or the filename.
   Wildcards cannot be used if the `validateLocationsExist` option is set to `true`.
 - **`filters`** _(optional)_:
   - **`branch`** _(optional)_:
