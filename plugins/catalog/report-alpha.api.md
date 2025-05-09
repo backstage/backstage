@@ -869,11 +869,22 @@ const _default: FrontendPlugin<
       configInput: {
         filter?: EntityPredicate | undefined;
       };
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output:
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >;
       inputs: {};
       params: EntityContextMenuItemParams;
     }>;
@@ -886,11 +897,22 @@ const _default: FrontendPlugin<
       configInput: {
         filter?: EntityPredicate | undefined;
       };
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output:
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >;
       inputs: {};
       params: EntityContextMenuItemParams;
     }>;
@@ -903,11 +925,22 @@ const _default: FrontendPlugin<
       configInput: {
         filter?: EntityPredicate | undefined;
       };
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      output:
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >;
       inputs: {};
       params: EntityContextMenuItemParams;
     }>;
@@ -1057,7 +1090,21 @@ const _default: FrontendPlugin<
           }
         >;
         contextMenuItems: ExtensionInput<
-          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'catalog.entity-filter-expression',
+              {
+                optional: true;
+              }
+            >,
           {
             singleton: false;
             optional: false;

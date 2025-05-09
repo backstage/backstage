@@ -220,6 +220,24 @@ describe('EntityContextMenuItemBlueprint', () => {
         "name": "test",
         "output": [
           [Function],
+          {
+            "$$type": "@backstage/ExtensionDataRef",
+            "config": {
+              "optional": true,
+            },
+            "id": "catalog.entity-filter-function",
+            "optional": [Function],
+            "toString": [Function],
+          },
+          {
+            "$$type": "@backstage/ExtensionDataRef",
+            "config": {
+              "optional": true,
+            },
+            "id": "catalog.entity-filter-expression",
+            "optional": [Function],
+            "toString": [Function],
+          },
         ],
         "override": [Function],
         "toString": [Function],

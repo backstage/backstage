@@ -338,7 +338,22 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
   kind: 'entity-context-menu-item';
   name: undefined;
   params: EntityContextMenuItemParams;
-  output: ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+  output:
+    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ConfigurableExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >;
   inputs: {};
   config: {
     filter: EntityPredicate | undefined;
@@ -346,7 +361,18 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
   configInput: {
     filter?: EntityPredicate | undefined;
   };
-  dataRefs: never;
+  dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
+      {}
+    >;
+  };
 }>;
 
 // @alpha (undocumented)

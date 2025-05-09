@@ -26,14 +26,12 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { useEntityContextMenu } from '../../hooks/useEntityContextMenu';
 import { EntityPredicate } from '../predicates';
 import type { Entity } from '@backstage/catalog-model';
-import { useEntity } from '../../hooks/useEntity';
 import {
   entityFilterExpressionDataRef,
   entityFilterFunctionDataRef,
 } from './extensionData';
 import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
-import { buildFilterFn } from '../filter/FilterWrapper';
 /** @alpha */
 export type UseProps = () =>
   | {
@@ -58,7 +56,15 @@ export type EntityContextMenuItemParams = {
 export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
   kind: 'entity-context-menu-item',
   attachTo: { id: 'page:catalog/entity', input: 'contextMenuItems' },
-  output: [coreExtensionData.reactElement],
+  output: [
+    coreExtensionData.reactElement,
+    entityFilterFunctionDataRef.optional(),
+    entityFilterExpressionDataRef.optional(),
+  ],
+  dataRefs: {
+    filterFunction: entityFilterFunctionDataRef,
+    filterExpression: entityFilterExpressionDataRef,
+  },
   config: {
     schema: {
       filter: z =>
@@ -66,30 +72,9 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
     },
   },
   *factory(params: EntityContextMenuItemParams, { node, config }) {
-    const resolvedFilterData = [];
-
-    for (const resolved of resolveEntityFilterData(
-      params.filter,
-      config,
-      node,
-    )) {
-      resolvedFilterData.push(resolved);
-    }
-
-    const resolvedFilter = resolvedFilterData.pop();
-    const filter = buildFilterFn(
-      resolvedFilter?.id === entityFilterFunctionDataRef.id
-        ? resolvedFilter.value
-        : undefined,
-      resolvedFilter?.id === entityFilterExpressionDataRef.id
-        ? resolvedFilter.value
-        : undefined,
-    );
-
     const loader = async () => {
       const Component = () => {
         const { onMenuClose } = useEntityContextMenu();
-        const { entity } = useEntity();
         const { title, ...menuItemProps } = params.useProps();
         let handleClick = undefined;
 
@@ -104,10 +89,6 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
           };
         }
 
-        if (entity && !filter(entity)) {
-          return null;
-        }
-
         return (
           <MenuItem {...menuItemProps} onClick={handleClick}>
             <ListItemIcon>{params.icon}</ListItemIcon>
@@ -120,5 +101,7 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
     };
 
     yield coreExtensionData.reactElement(ExtensionBoundary.lazy(node, loader));
+
+    yield* resolveEntityFilterData(params.filter, config, node);
   },
 });
