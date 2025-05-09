@@ -136,7 +136,6 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 
 /**
-
  * RouterOptions
  */
 export interface RouterOptions {

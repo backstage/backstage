@@ -111,7 +111,7 @@ export type TaskBrokerDispatchOptions = {
  */
 export type TaskFilter = {
   key: string;
-  values?: Array<string> | undefined;
+  values?: string[];
 };
 
 /**
