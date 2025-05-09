@@ -65,8 +65,8 @@ describe('InfinispanStoreFactory', () => {
       logger,
     );
 
-    const keyv1 = factory('plugin1', 1000);
-    const keyv2 = factory('plugin2', 2000);
+    factory('plugin1', 1000);
+    factory('plugin2', 2000);
 
     // Both instances should use the same underlying client
     expect(infinispan.client).toHaveBeenCalledTimes(1);

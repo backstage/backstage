@@ -191,7 +191,7 @@ export async function startInfinispanContainer(
           serverName: 'infinispan',
         },
         cacheName: 'backstage',
-        version: '2.9',
+        version: 2.9,
       },
     );
 
