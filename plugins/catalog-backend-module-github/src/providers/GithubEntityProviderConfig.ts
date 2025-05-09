@@ -37,12 +37,13 @@ export type GithubEntityProviderConfig = {
   catalogPath: string;
   organization: string;
   host: string;
-  filters?: {
+  filters: {
     repository?: RegExp;
     branch?: string;
     topic?: GithubTopicFilters;
-    allowForks?: boolean;
+    allowForks: boolean;
     visibility?: string[];
+    includeArchived: boolean;
   };
   validateLocationsExist: boolean;
   schedule?: SchedulerServiceTaskScheduleDefinition;
@@ -90,6 +91,8 @@ function readProviderConfig(
   const topicFilterExclude = config?.getOptionalStringArray(
     'filters.topic.exclude',
   );
+  const includeArchived =
+    config.getOptionalBoolean('filters.includeArchived') ?? false;
   const validateLocationsExist =
     config?.getOptionalBoolean('validateLocationsExist') ?? false;
 
@@ -132,6 +135,7 @@ function readProviderConfig(
         exclude: topicFilterExclude,
       },
       visibility: visibilityFilterInclude,
+      includeArchived,
     },
     schedule,
     validateLocationsExist,
