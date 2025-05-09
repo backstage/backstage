@@ -15,7 +15,7 @@
  */
 
 import * as runObj from '../run';
-import * as yarn from '../yarn';
+import * as yarn from './yarn';
 import { fetchPackageInfo, mapDependencies } from './packages';
 import { NotFoundError } from '../errors';
 import { createMockDirectory } from '@backstage/backend-test-utils';
@@ -27,7 +27,7 @@ jest.mock('../run', () => {
   };
 });
 
-jest.mock('../yarn', () => {
+jest.mock('./yarn', () => {
   return {
     detectYarnVersion: jest.fn(),
   };

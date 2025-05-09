@@ -20,7 +20,7 @@ import {
   GerritIntegrationConfig,
   readGerritIntegrationConfigs,
 } from './config';
-import { parseGitilesUrlRef } from './core';
+import { buildGerritEditUrl, parseGitilesUrlRef } from './core';
 
 /**
  * A Gerrit based integration.
@@ -75,7 +75,16 @@ export class GerritIntegration implements ScmIntegration {
   }
 
   resolveEditUrl(url: string): string {
-    // Not applicable for gerrit.
-    return url;
+    if (this.config.disableEditUrl) {
+      return url;
+    }
+
+    const parsed = parseGitilesUrlRef(this.config, url);
+    return buildGerritEditUrl(
+      this.config,
+      parsed.project,
+      parsed.ref,
+      parsed.path,
+    );
   }
 }

@@ -109,3 +109,35 @@ export const WithErrorAndDescription: Story = {
     description: 'Description',
   },
 };
+
+export const WithIcon: Story = {
+  args: {
+    ...WithLabel.args,
+    placeholder: 'Search...',
+    icon: 'search',
+  },
+};
+
+export const DisabledWithIcon: Story = {
+  args: {
+    ...WithIcon.args,
+    disabled: true,
+  },
+};
+
+export const WithOnClear: Story = {
+  args: {
+    ...WithLabel.args,
+    placeholder: 'Search...',
+    type: 'search',
+    onClear: () => console.log('Cleared!'),
+  },
+};
+
+export const DisabledWithOnClear: Story = {
+  args: {
+    ...WithOnClear.args,
+    defaultValue: 'Testing',
+    disabled: true,
+  },
+};

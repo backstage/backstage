@@ -62,6 +62,7 @@ export interface Config {
         clientSecret?: string;
         tenantId?: string;
         personalAccessToken?: string;
+        managedIdentityClientId?: string;
       }[];
       /**
        * PGP signing key for signing commits.
@@ -182,6 +183,11 @@ export interface Config {
        * @visibility frontend
        */
       cloneUrl?: string;
+      /**
+       * Disable the edit url feature.
+       * @visibility frontend
+       */
+      disableEditUrl?: boolean;
       /**
        * The username to use for authenticated requests.
        * @visibility secret

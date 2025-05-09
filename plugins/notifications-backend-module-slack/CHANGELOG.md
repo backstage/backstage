@@ -1,5 +1,20 @@
 # @backstage/plugin-notifications-backend-module-slack
 
+## 0.1.1-next.2
+
+### Patch Changes
+
+- 4f10768: Fix slack notification processor to handle a notification with an empty description
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/plugin-notifications-node@0.2.15-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+
 ## 0.1.1-next.1
 
 ### Patch Changes

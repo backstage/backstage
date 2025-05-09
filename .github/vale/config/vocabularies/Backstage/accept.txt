@@ -89,6 +89,7 @@ CVEs
 daemonsets
 Datadog
 dataflow
+dataloader
 dayjs
 debounce
 debounces
@@ -252,6 +253,7 @@ makefile
 Matomo
 md
 memcache
+memoization
 memoize
 memoized
 microservice

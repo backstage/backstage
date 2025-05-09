@@ -109,7 +109,6 @@ const DEFAULT_ENTITIES_RESPONSE = {
 describe('SlackNotificationProcessor', () => {
   const logger = mockServices.logger.mock();
   const auth = mockServices.auth();
-  const discovery = mockServices.discovery();
   const config = mockServices.rootConfig({
     data: {
       app: {
@@ -136,7 +135,6 @@ describe('SlackNotificationProcessor', () => {
 
     const processor = SlackNotificationProcessor.fromConfig(config, {
       auth,
-      discovery,
       logger,
       catalog: catalogServiceMock({
         entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -158,6 +156,10 @@ describe('SlackNotificationProcessor', () => {
           blocks: [
             {
               type: 'section',
+              text: {
+                text: 'No description provided',
+                type: 'mrkdwn',
+              },
               accessory: {
                 type: 'button',
                 text: {
@@ -195,7 +197,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -229,6 +230,10 @@ describe('SlackNotificationProcessor', () => {
             blocks: [
               {
                 type: 'section',
+                text: {
+                  text: 'No description provided',
+                  type: 'mrkdwn',
+                },
                 accessory: {
                   type: 'button',
                   text: {
@@ -267,7 +272,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -302,7 +306,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -358,7 +361,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(broadcastConfig, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -397,7 +399,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -421,7 +422,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: [DEFAULT_ENTITIES_RESPONSE.items[2]],
@@ -461,7 +461,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -507,7 +506,6 @@ describe('SlackNotificationProcessor', () => {
 
       const processor = SlackNotificationProcessor.fromConfig(config, {
         auth,
-        discovery,
         logger,
         catalog: catalogServiceMock({
           entities: DEFAULT_ENTITIES_RESPONSE.items,
@@ -541,6 +539,127 @@ describe('SlackNotificationProcessor', () => {
         ),
       );
       expect(slack.chat.postMessage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when replacing user entity refs with Slack IDs', () => {
+    const createBaseMessage = (text: string) => ({
+      channel: 'U12345678',
+      text: 'notification',
+      attachments: [
+        {
+          color: '#00A699',
+          blocks: [
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text,
+              },
+              accessory: {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'View More',
+                },
+                action_id: 'button-action',
+              },
+            },
+            {
+              type: 'context',
+              elements: [
+                {
+                  type: 'plain_text',
+                  text: 'Severity: normal',
+                  emoji: true,
+                },
+                {
+                  type: 'plain_text',
+                  text: 'Topic: N/A',
+                  emoji: true,
+                },
+              ],
+            },
+          ],
+          fallback: 'notification',
+        },
+      ],
+    });
+
+    it('should replace user entity refs with Slack compatible mentions', async () => {
+      const slack = new WebClient();
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        slack,
+      })[0];
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: '1234',
+          user: 'user:default/mock',
+          created: new Date(),
+          payload: {
+            title: 'notification',
+            description:
+              'Hello <@user:default/mock> and <@user:default/mock-without-slack-annotation>',
+          },
+        },
+        {
+          recipients: { type: 'entity', entityRef: 'user:default/mock' },
+          payload: {
+            title: 'notification',
+            description:
+              'Hello <@user:default/mock> and <@user:default/mock-without-slack-annotation>',
+          },
+        },
+      );
+
+      expect(slack.chat.postMessage).toHaveBeenCalledWith(
+        createBaseMessage(
+          'Hello <@U12345678> and <@user:default/mock-without-slack-annotation>',
+        ),
+      );
+    });
+
+    it('should handle text without user entity refs', async () => {
+      const slack = new WebClient();
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        slack,
+      })[0];
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: '1234',
+          user: 'user:default/mock',
+          created: new Date(),
+          payload: {
+            title: 'notification',
+            description: 'Hello world',
+          },
+        },
+        {
+          recipients: { type: 'entity', entityRef: 'user:default/mock' },
+          payload: {
+            title: 'notification',
+            description: 'Hello world',
+          },
+        },
+      );
+
+      expect(slack.chat.postMessage).toHaveBeenCalledWith(
+        createBaseMessage('Hello world'),
+      );
     });
   });
 });

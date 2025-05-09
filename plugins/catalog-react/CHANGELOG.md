@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-react
 
+## 1.18.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/core-compat-api@0.4.2-next.2
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/frontend-test-utils@0.3.2-next.2
+  - @backstage/integration-react@1.2.7-next.2
+  - @backstage/plugin-permission-react@0.4.34-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-permission-common@0.9.0-next.0
+
 ## 1.18.0-next.1
 
 ### Patch Changes

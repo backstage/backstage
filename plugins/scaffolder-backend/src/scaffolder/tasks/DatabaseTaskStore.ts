@@ -654,12 +654,18 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async retryTask?(options: { taskId: string }): Promise<void> {
+  async retryTask?(options: {
+    secrets?: TaskSecrets;
+    taskId: string;
+  }): Promise<void> {
+    const { secrets, taskId } = options;
+
     await this.db.transaction(async tx => {
       const result = await tx<RawDbTaskRow>('tasks')
-        .where('id', options.taskId)
+        .where('id', taskId)
         .update(
           {
+            ...(secrets && { secrets: JSON.stringify(secrets) }),
             status: 'open',
             last_heartbeat_at: this.db.fn.now(),
           },

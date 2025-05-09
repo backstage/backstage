@@ -1,5 +1,18 @@
 # @backstage/repo-tools
 
+## 0.13.3-next.2
+
+### Patch Changes
+
+- b229476: Support passing additional properties to OpenAPI server generator
+- Updated dependencies
+  - @backstage/cli-node@0.2.13
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/errors@1.2.7
+
 ## 0.13.3-next.1
 
 ### Patch Changes
