@@ -58,8 +58,6 @@ const HIGHLIGHT_LANGUAGES = [
   'json',
 ];
 
-const CACHE_DIR = '.cache/package-docs';
-
 function getExports(packageJson: any) {
   if (packageJson.exports) {
     return Object.values(packageJson.exports).filter(
@@ -120,9 +118,8 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
     exclude: opts.exclude,
   });
 
-  await mkdirp(CACHE_DIR);
   const cache = await PackageDocsCache.loadAsync(
-    CACHE_DIR,
+    cliPaths.resolveTargetRoot(),
     await Lockfile.load(cliPaths.resolveTargetRoot('yarn.lock')),
   );
 

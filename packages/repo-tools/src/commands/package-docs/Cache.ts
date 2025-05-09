@@ -18,12 +18,11 @@ import globby from 'globby';
 import { dirname, join as joinPath, relative } from 'path';
 import crypto from 'crypto';
 import { Lockfile } from '@backstage/cli-node';
-import { paths as cliPaths } from '../../lib/paths';
 import { mkdirp } from 'fs-extra';
 import { z } from 'zod';
+import { CACHE_DIR, CACHE_FILE } from './constants';
 
 const version = '1';
-const CACHE_FILE = 'cache.json';
 
 interface CacheEntry {
   hash: string;
@@ -46,11 +45,13 @@ export class PackageDocsCache {
     private readonly lockfile: Lockfile,
     // A map of package directory to cache entry.
     private readonly cache: Map<string, CacheEntry>,
-    private readonly cacheDir: string,
+    private readonly baseDirectory: string,
   ) {
     this.keyCache = new Map();
   }
-  static async loadAsync(cacheDir: string, lockfile: Lockfile) {
+  static async loadAsync(baseDirectory: string, lockfile: Lockfile) {
+    const cacheDir = joinPath(baseDirectory, CACHE_DIR);
+    await mkdirp(cacheDir);
     const cacheFiles = await globby(`**/${CACHE_FILE}`, {
       cwd: cacheDir,
     });
@@ -61,23 +62,29 @@ export class PackageDocsCache {
       try {
         const cacheJson = JSON.parse(cache);
         const parsed = cacheEntrySchema.parse(cacheJson);
+        if (parsed.version !== version) {
+          console.warn(
+            `Skipping cache file ${file} due to version mismatch: ${parsed.version} !== ${version}`,
+          );
+          continue;
+        }
         map.set(pkg, parsed);
       } catch (e) {
         console.error(`Skipping unparseable cache file ${file}: ${e}`);
       }
     }
-    return new PackageDocsCache(lockfile, map, cacheDir);
+    return new PackageDocsCache(lockfile, map, baseDirectory);
   }
 
   async directoryToName(directory: string) {
     const packageJson = await readFile(
-      joinPath(directory, 'package.json'),
+      joinPath(this.baseDirectory, directory, 'package.json'),
       'utf-8',
     );
     return JSON.parse(packageJson).name;
   }
 
-  async toKey(pkg: string) {
+  private async toKey(pkg: string) {
     if (this.keyCache.has(pkg)) {
       return this.keyCache.get(pkg)!;
     }
@@ -93,7 +100,7 @@ export class PackageDocsCache {
     hash.update('\0');
 
     for (const path of result.sort()) {
-      const absPath = cliPaths.resolveTargetRoot(pkg, path);
+      const absPath = joinPath(this.baseDirectory, pkg, path);
       const pathInPackage = joinPath(absPath, path);
       hash.update(pathInPackage);
       hash.update('\0');
@@ -122,16 +129,16 @@ export class PackageDocsCache {
     }
     const cacheEntry = this.cache.get(pkg);
     const restoreTo = cacheEntry!.restoreTo;
-    const cacheDir = joinPath(this.cacheDir, pkg);
+    const cacheDir = joinPath(this.baseDirectory, CACHE_DIR, pkg);
     const contentsDir = joinPath(cacheDir, 'contents');
 
-    const targetDir = cliPaths.resolveTargetRoot(restoreTo);
+    const targetDir = joinPath(this.baseDirectory, restoreTo);
     await mkdirp(targetDir);
     await cp(contentsDir, targetDir, { recursive: true });
   }
 
   async write(pkg: string, contentDirectory: string) {
-    const cacheDir = joinPath(this.cacheDir, pkg);
+    const cacheDir = joinPath(this.baseDirectory, CACHE_DIR, pkg);
     const contentsDir = joinPath(cacheDir, 'contents');
     await mkdirp(contentsDir);
     const hashString = await this.toKey(pkg);
@@ -139,7 +146,7 @@ export class PackageDocsCache {
     const cacheEntry: CacheEntry = {
       hash: hashString,
       packageName: await this.directoryToName(pkg),
-      restoreTo: relative(cliPaths.resolveTargetRoot(), contentDirectory),
+      restoreTo: relative(this.baseDirectory, contentDirectory),
       version,
     };
     await writeFile(joinPath(cacheDir, CACHE_FILE), JSON.stringify(cacheEntry));
