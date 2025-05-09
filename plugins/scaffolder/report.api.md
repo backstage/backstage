@@ -59,13 +59,9 @@ import { TemplateParameterSchema as TemplateParameterSchema_2 } from '@backstage
 import { TemplateWizardPageProps } from '@backstage/plugin-scaffolder/alpha';
 import { z } from 'zod';
 
-// Warning: (ae-missing-release-tag) "ActionsPage" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const ActionsPage: (props: ActionsPageProps) => React_2.JSX.Element;
 
-// Warning: (ae-missing-release-tag) "ActionsPageProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ActionsPageProps = {
   contextMenu?: {
@@ -205,9 +201,6 @@ export type LayoutTemplate = LayoutTemplate_2;
 // @public @deprecated (undocumented)
 export type ListActionsResponse = ListActionsResponse_2;
 
-// Warning: (ae-forgotten-export) The symbol "ListTasksTableProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "ListTasksTable" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function ListTasksTable({
   page,
@@ -217,6 +210,22 @@ export function ListTasksTable({
   tasks,
   totalTasks,
 }: Readonly<ListTasksTableProps>): React_2.JSX.Element;
+
+// @public (undocumented)
+export interface ListTasksTableProps {
+  // (undocumented)
+  limit: number;
+  // (undocumented)
+  page: number;
+  // (undocumented)
+  setLimit: Dispatch<SetStateAction<number>>;
+  // (undocumented)
+  setPage: Dispatch<SetStateAction<number>>;
+  // (undocumented)
+  tasks?: ScaffolderTask_2[];
+  // (undocumented)
+  totalTasks?: number;
+}
 
 // @public @deprecated (undocumented)
 export type LogEvent = LogEvent_2;

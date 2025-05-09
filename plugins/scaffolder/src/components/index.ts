@@ -20,6 +20,7 @@ export { TemplateTypePicker } from './TemplateTypePicker';
 
 export type { RouterProps } from './Router';
 export { OngoingTask as TaskPage } from './OngoingTask';
+export type { ListTasksTableProps } from './ListTasksPage';
 export { ListTasksTable } from './ListTasksPage';
 export type { ActionsPageProps } from './ActionsPage';
 export { ActionsPage } from './ActionsPage';

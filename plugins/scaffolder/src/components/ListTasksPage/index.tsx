@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { ListTasksTable, ListTasksPage } from './ListTasksPage';
+export type { ListTasksTableProps } from './ListTasksPage';

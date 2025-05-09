@@ -31,7 +31,12 @@ import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
 import { DefaultScaffolderFormDecoratorsApi } from './alpha/api/FormDecoratorsApi';
 import { formDecoratorsApiRef } from './alpha/api/ref';
 import { ScaffolderClient } from './api';
-import { ActionsPage, ListTasksTable, ActionsPageProps } from './components';
+import {
+  ActionsPage,
+  ListTasksTable,
+  ActionsPageProps,
+  ListTasksTableProps,
+} from './components';
 import { entityNamePickerValidation } from './components/fields/EntityNamePicker';
 import {
   EntityNamePicker,
@@ -87,7 +92,7 @@ import {
  *  Partials exports
  *  @public
  */
-export type { ActionsPageProps };
+export type { ActionsPageProps, ListTasksTableProps };
 export { ActionsPage, ListTasksTable };
 
 /**

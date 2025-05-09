@@ -44,7 +44,8 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 
-interface ListTasksTableProps {
+/** @public */
+export interface ListTasksTableProps {
   page: number;
   setPage: Dispatch<SetStateAction<number>>;
   limit: number;
@@ -53,6 +54,7 @@ interface ListTasksTableProps {
   totalTasks?: number;
 }
 
+/** @public */
 export function ListTasksTable({
   page,
   setPage,
