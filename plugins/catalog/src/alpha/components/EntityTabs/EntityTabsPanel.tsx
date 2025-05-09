@@ -15,7 +15,7 @@
  */
 
 import classNames from 'classnames';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 
 /** @public */

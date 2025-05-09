@@ -42,6 +42,7 @@ import { googleAuthApiRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { OAuthRequestApi } from '@backstage/core-plugin-api';
@@ -56,7 +57,6 @@ import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import PropTypes from 'prop-types';
-import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
@@ -115,7 +115,7 @@ export type ApiFactoryScope = 'default' | 'app' | 'static';
 
 // @public
 export const ApiProvider: {
-  (props: PropsWithChildren<ApiProviderProps>): React_2.JSX.Element;
+  (props: PropsWithChildren<ApiProviderProps>): JSX_2.Element;
   propTypes: {
     apis: PropTypes.Validator<
       NonNullable<
@@ -257,7 +257,7 @@ export type AppRouteBinder = <
 ) => void;
 
 // @public
-export function AppRouter(props: AppRouterProps): React_2.JSX.Element;
+export function AppRouter(props: AppRouterProps): JSX_2.Element;
 
 // @public
 export interface AppRouterProps {
@@ -292,6 +292,28 @@ export type AuthApiCreateOptions = {
   environment?: string;
   provider?: AuthProviderInfo;
   configApi?: ConfigApi;
+};
+
+// @public
+export type AuthConnector<AuthSession> = {
+  createSession(
+    options: AuthConnectorCreateSessionOptions,
+  ): Promise<AuthSession>;
+  refreshSession(
+    options?: AuthConnectorRefreshSessionOptions,
+  ): Promise<AuthSession>;
+  removeSession(): Promise<void>;
+};
+
+// @public (undocumented)
+export type AuthConnectorCreateSessionOptions = {
+  scopes: Set<string>;
+  instantPopup?: boolean;
+};
+
+// @public (undocumented)
+export type AuthConnectorRefreshSessionOptions = {
+  scopes: Set<string>;
 };
 
 // @public
@@ -365,7 +387,7 @@ export class ErrorAlerter implements ErrorApi {
   // (undocumented)
   error$(): Observable<{
     error: ErrorApiError;
-    context?: ErrorApiErrorContext | undefined;
+    context?: ErrorApiErrorContext;
   }>;
   // (undocumented)
   post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
@@ -390,9 +412,7 @@ export type ErrorBoundaryFallbackProps = PropsWithChildren<{
 }>;
 
 // @public
-export const FeatureFlagged: (
-  props: FeatureFlaggedProps,
-) => React_2.JSX.Element;
+export const FeatureFlagged: (props: FeatureFlaggedProps) => JSX_2.Element;
 
 // @public
 export type FeatureFlaggedProps = {
@@ -525,7 +545,9 @@ export class OAuth2
     SessionApi
 {
   // (undocumented)
-  static create(options: OAuth2CreateOptions): OAuth2;
+  static create(
+    options: OAuth2CreateOptions | OAuth2CreateOptionsWithAuthConnector,
+  ): OAuth2;
   // (undocumented)
   getAccessToken(
     scope?: string | string[],
@@ -540,6 +562,13 @@ export class OAuth2
   // (undocumented)
   getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
   // (undocumented)
+  static normalizeScopes(
+    scopes?: string | string[],
+    options?: {
+      scopeTransform: (scopes: string[]) => string[];
+    },
+  ): Set<string>;
+  // (undocumented)
   sessionState$(): Observable<SessionState>;
   // (undocumented)
   signIn(): Promise<void>;
@@ -551,6 +580,13 @@ export class OAuth2
 export type OAuth2CreateOptions = OAuthApiCreateOptions & {
   scopeTransform?: (scopes: string[]) => string[];
   popupOptions?: PopupOptions;
+};
+
+// @public
+export type OAuth2CreateOptionsWithAuthConnector = {
+  scopeTransform?: (scopes: string[]) => string[];
+  defaultScopes?: string[];
+  authConnector: AuthConnector<OAuth2Session>;
 };
 
 // @public
@@ -600,6 +636,19 @@ export type OneLoginAuthCreateOptions = {
   oauthRequestApi: OAuthRequestApi;
   environment?: string;
   provider?: AuthProviderInfo;
+};
+
+// @public
+export function openLoginPopup(
+  options: OpenLoginPopupOptions,
+): Promise<unknown>;
+
+// @public
+export type OpenLoginPopupOptions = {
+  url: string;
+  name: string;
+  width?: number;
+  height?: number;
 };
 
 // @public

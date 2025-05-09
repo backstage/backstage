@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Box } from '../Box/Box';
 import { Container } from './Container';
 
 const meta = {
-  title: 'Components/Container',
+  title: 'Layout/Container',
   component: Container,
   argTypes: {
     children: {

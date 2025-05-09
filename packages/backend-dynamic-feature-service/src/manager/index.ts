@@ -23,8 +23,6 @@ export type {
   BackendDynamicPlugin,
   BackendDynamicPluginInstaller,
   NewBackendPluginInstaller,
-  LegacyBackendPluginInstaller,
-  LegacyPluginEnvironment,
   DynamicPluginProvider,
   FrontendPluginProvider,
   BackendPluginProvider,

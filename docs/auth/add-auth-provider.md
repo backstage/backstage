@@ -66,10 +66,6 @@ function takes an `express.Response`, a `WebMessageResponse` and the URL of the
 frontend (`appOrigin`) as parameters and return an HTML page with the script and
 the message.
 
-There is a helper class for [OAuth2](https://oauth.net/2/) based authentication providers, [OAuthAdapter](../reference/plugin-auth-backend.oauthadapter.md). This class implements the `AuthProviderRouteHandlers` interface
-for you, and instead requires you to implement [OAuthHandlers](../reference/plugin-auth-backend.oauthhandlers.md), which
-is significantly easier.
-
 ### Auth Environment Separation
 
 The concept of an `env` is core to the way the auth backend works. It uses an

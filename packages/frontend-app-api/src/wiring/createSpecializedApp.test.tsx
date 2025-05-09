@@ -26,25 +26,26 @@ import {
   createExtensionInput,
   useRouteRef,
   analyticsApiRef,
+  createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 import { screen, render } from '@testing-library/react';
 import { createSpecializedApp } from './createSpecializedApp';
-import { mockApis } from '@backstage/test-utils';
-import React from 'react';
+import { mockApis, TestApiRegistry } from '@backstage/test-utils';
 import {
   configApiRef,
   createApiFactory,
   featureFlagsApiRef,
 } from '@backstage/core-plugin-api';
 import { MemoryRouter } from 'react-router-dom';
-import { ApiProvider } from '@backstage/core-app-api';
+import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
+import { Fragment } from 'react';
 
 describe('createSpecializedApp', () => {
   it('should render the root app', () => {
     const app = createSpecializedApp({
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             createExtension({
               attachTo: { id: 'root', input: 'app' },
@@ -56,7 +57,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('Test')).toBeInTheDocument();
   });
@@ -65,7 +66,7 @@ describe('createSpecializedApp', () => {
     const app = createSpecializedApp({
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             createExtension({
               attachTo: { id: 'root', input: 'app' },
@@ -77,7 +78,7 @@ describe('createSpecializedApp', () => {
           ],
         }),
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             createExtension({
               attachTo: { id: 'root', input: 'app' },
@@ -91,7 +92,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('Test 2')).toBeInTheDocument();
   });
@@ -101,7 +102,7 @@ describe('createSpecializedApp', () => {
       config: mockApis.config({ data: { test: 'foo' } }),
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             createExtension({
               attachTo: { id: 'root', input: 'app' },
@@ -117,7 +118,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('Test foo')).toBeInTheDocument();
   });
@@ -127,7 +128,7 @@ describe('createSpecializedApp', () => {
     const app = createSpecializedApp({
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           featureFlags: [{ name: 'a' }, { name: 'b' }],
           extensions: [
             createExtension({
@@ -163,18 +164,93 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('flags:test=a,test=b')).toBeInTheDocument();
+
+    expect(app.apis).toMatchInlineSnapshot(`
+      ApiResolver {
+        "apis": Map {
+          "core.featureflags" => {
+            "getRegisteredFlags": [Function],
+            "registerFlag": [Function],
+          },
+        },
+        "factories": ApiFactoryRegistry {
+          "factories": Map {
+            "core.featureflags" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.featureflags",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 10,
+            },
+            "core.app-tree" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.app-tree",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 100,
+            },
+            "core.config" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.config",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 100,
+            },
+            "core.route-resolution" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.route-resolution",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 100,
+            },
+            "core.identity" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.identity",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 100,
+            },
+          },
+        },
+      }
+    `);
   });
 
-  it('should intitialize the APIs in the correct order to allow for overrides', () => {
+  it('should initialize the APIs in the correct order to allow for overrides', () => {
     const mockAnalyticsApi = jest.fn(() => ({ captureEvent: jest.fn() }));
 
     const app = createSpecializedApp({
       features: [
         createFrontendPlugin({
-          id: 'first',
+          pluginId: 'first',
           extensions: [
             ApiBlueprint.make({
               params: {
@@ -190,7 +266,7 @@ describe('createSpecializedApp', () => {
           ],
         }),
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           featureFlags: [{ name: 'a' }, { name: 'b' }],
           extensions: [
             createExtension({
@@ -232,18 +308,67 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.createRoot());
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(mockAnalyticsApi).toHaveBeenCalled();
+  });
+
+  it('should use provided apis', async () => {
+    const app = createSpecializedApp({
+      apis: TestApiRegistry.from([
+        configApiRef,
+        new ConfigReader({ anything: 'config' }),
+      ]),
+      features: [
+        createFrontendPlugin({
+          pluginId: 'test',
+          extensions: [
+            createExtension({
+              attachTo: { id: 'root', input: 'app' },
+              output: [coreExtensionData.reactElement],
+              factory: ({ apis }) => [
+                coreExtensionData.reactElement(
+                  <div>
+                    providedApis:
+                    {apis.get(configApiRef)!.getString('anything')}
+                  </div>,
+                ),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
+
+    expect(screen.getByText('providedApis:config')).toBeInTheDocument();
+
+    expect(app.apis).toMatchInlineSnapshot(`
+      TestApiRegistry {
+        "apis": Map {
+          "core.config" => ConfigReader {
+            "context": "mock-config",
+            "data": {
+              "anything": "config",
+            },
+            "fallback": undefined,
+            "filteredKeys": undefined,
+            "notifiedFilteredKeys": Set {},
+            "prefix": "",
+          },
+        },
+      }
+    `);
   });
 
   it('should make the app structure available through the AppTreeApi', async () => {
     let appTreeApi: AppTreeApi | undefined = undefined;
 
-    createSpecializedApp({
+    const { tree } = createSpecializedApp({
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             createExtension({
               attachTo: { id: 'root', input: 'app' },
@@ -265,6 +390,55 @@ describe('createSpecializedApp', () => {
         ]
       </root>"
     `);
+
+    expect(tree).toMatchInlineSnapshot(`
+      {
+        "nodes": Map {
+          "test" => {
+            "attachments": undefined,
+            "id": "test",
+            "output": [
+              "core.reactElement",
+            ],
+          },
+          "root" => {
+            "attachments": {
+              "app": [
+                {
+                  "attachments": undefined,
+                  "id": "test",
+                  "output": [
+                    "core.reactElement",
+                  ],
+                },
+              ],
+            },
+            "id": "root",
+            "output": [
+              "core.reactElement",
+            ],
+          },
+        },
+        "orphans": [],
+        "root": {
+          "attachments": {
+            "app": [
+              {
+                "attachments": undefined,
+                "id": "test",
+                "output": [
+                  "core.reactElement",
+                ],
+              },
+            ],
+          },
+          "id": "root",
+          "output": [
+            "core.reactElement",
+          ],
+        },
+      }
+    `);
   });
 
   it('should support route bindings', async () => {
@@ -272,7 +446,7 @@ describe('createSpecializedApp', () => {
     const extRouteRef = createExternalRouteRef();
 
     const pluginA = createFrontendPlugin({
-      id: 'a',
+      pluginId: 'a',
       externalRoutes: {
         ext: extRouteRef,
       },
@@ -290,9 +464,9 @@ describe('createSpecializedApp', () => {
                 <ApiProvider apis={apis}>
                   <MemoryRouter>
                     {inputs.children.map(i => (
-                      <React.Fragment key={i.node.spec.id}>
+                      <Fragment key={i.node.spec.id}>
                         {i.get(coreExtensionData.reactElement)}
-                      </React.Fragment>
+                      </Fragment>
                     ))}
                   </MemoryRouter>
                 </ApiProvider>,
@@ -315,7 +489,7 @@ describe('createSpecializedApp', () => {
       ],
     });
     const pluginB = createFrontendPlugin({
-      id: 'b',
+      pluginId: 'b',
       routes: {
         root: routeRef,
       },
@@ -345,7 +519,7 @@ describe('createSpecializedApp', () => {
         bindRoutes({ bind }) {
           bind(pluginA.externalRoutes, { ext: pluginB.routes.root });
         },
-      }).createRoot(),
+      }).tree.root.instance!.getData(coreExtensionData.reactElement),
     );
 
     expect(screen.getByText('link: /test')).toBeInTheDocument();
@@ -357,7 +531,7 @@ describe('createSpecializedApp', () => {
     createSpecializedApp({
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             createExtension({
               name: 'root',
@@ -429,5 +603,72 @@ describe('createSpecializedApp', () => {
         ]
       </root>"
     `);
+  });
+
+  it('should apply multiple middlewares in order', () => {
+    const textDataRef = createExtensionDataRef<string>().with({ id: 'text' });
+
+    const app = createSpecializedApp({
+      features: [
+        createFrontendPlugin({
+          pluginId: 'test',
+          extensions: [
+            createExtension({
+              attachTo: { id: 'root', input: 'app' },
+              inputs: {
+                text: createExtensionInput([textDataRef], {
+                  singleton: true,
+                }),
+              },
+              output: [coreExtensionData.reactElement],
+              factory: ({ inputs }) => [
+                coreExtensionData.reactElement(
+                  <>{inputs.text.get(textDataRef)}</>,
+                ),
+              ],
+            }),
+            createExtension({
+              name: 'child',
+              attachTo: { id: 'test', input: 'text' },
+              config: {
+                schema: {
+                  text: z => z.string().default('test'),
+                },
+              },
+              output: [textDataRef],
+              factory: ({ config }) => [textDataRef(config.text)],
+            }),
+          ],
+        }),
+      ],
+      extensionFactoryMiddleware: [
+        function* middleware(originalFactory, { config }) {
+          const result = originalFactory({
+            config: config && { text: `1-${config.text}` },
+          });
+          yield* result;
+          const el = result.get(textDataRef);
+          if (el) {
+            yield textDataRef(`${el}-1`);
+          }
+        },
+        function* middleware(originalFactory, { config }) {
+          const result = originalFactory({
+            config: config && { text: `2-${config.text}` },
+          });
+          yield* result;
+          const el = result.get(textDataRef);
+          if (el) {
+            yield textDataRef(`${el}-2`);
+          }
+        },
+      ],
+    });
+
+    const root = app.tree.root.instance!.getData(
+      coreExtensionData.reactElement,
+    );
+
+    expect(render(root).container.textContent).toBe('1-2-test-1-2');
   });
 });

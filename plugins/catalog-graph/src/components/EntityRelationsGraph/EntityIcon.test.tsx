@@ -15,7 +15,6 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import React from 'react';
 import { EntityIcon } from './EntityIcon';
 import MuiMemoryIcon from '@material-ui/icons/Memory';
 import { IconComponent } from '@backstage/core-plugin-api';

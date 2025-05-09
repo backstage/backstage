@@ -97,26 +97,33 @@ export function createGithubAutolinksAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const client = new Octokit(
-        await getOctokitOptions({
-          integrations,
-          host,
-          owner,
-          repo,
-          credentialsProvider: githubCredentialsProvider,
-          token,
-        }),
-      );
-
-      await client.rest.repos.createAutolink({
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        host,
         owner,
         repo,
-        key_prefix: keyPrefix,
-        url_template: urlTemplate,
-        is_alphanumeric: isAlphanumeric,
+        credentialsProvider: githubCredentialsProvider,
+        token,
+      });
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
       });
 
-      ctx.logger.info(`Autolink reference created successfully`);
+      await ctx.checkpoint({
+        key: `create.auto.link.${owner}.${repo}`,
+        fn: async () => {
+          await client.rest.repos.createAutolink({
+            owner,
+            repo,
+            key_prefix: keyPrefix,
+            url_template: urlTemplate,
+            is_alphanumeric: isAlphanumeric,
+          });
+
+          ctx.logger.info(`Autolink reference created successfully`);
+        },
+      });
     },
   });
 }

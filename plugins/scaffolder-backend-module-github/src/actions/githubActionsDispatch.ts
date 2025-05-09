@@ -104,26 +104,33 @@ export function createGithubActionsDispatchAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const client = new Octokit(
-        await getOctokitOptions({
-          integrations,
-          host,
-          owner,
-          repo,
-          credentialsProvider: githubCredentialsProvider,
-          token: providedToken,
-        }),
-      );
-
-      await client.rest.actions.createWorkflowDispatch({
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        host,
         owner,
         repo,
-        workflow_id: workflowId,
-        ref: branchOrTagName,
-        inputs: workflowInputs,
+        credentialsProvider: githubCredentialsProvider,
+        token: providedToken,
+      });
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
       });
 
-      ctx.logger.info(`Workflow ${workflowId} dispatched successfully`);
+      await ctx.checkpoint({
+        key: `create.workflow.dispatch.${owner}.${repo}.${workflowId}`,
+        fn: async () => {
+          await client.rest.actions.createWorkflowDispatch({
+            owner,
+            repo,
+            workflow_id: workflowId,
+            ref: branchOrTagName,
+            inputs: workflowInputs,
+          });
+
+          ctx.logger.info(`Workflow ${workflowId} dispatched successfully`);
+        },
+      });
     },
   });
 }

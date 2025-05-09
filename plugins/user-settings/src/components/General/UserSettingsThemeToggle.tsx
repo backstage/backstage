@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { cloneElement } from 'react';
+import { MouseEvent, cloneElement } from 'react';
 import useObservable from 'react-use/esm/useObservable';
 import AutoIcon from '@material-ui/icons/BrightnessAuto';
 import ToggleButton from '@material-ui/lab/ToggleButton';
@@ -111,7 +111,7 @@ export const UserSettingsThemeToggle = () => {
   const { t } = useTranslationRef(userSettingsTranslationRef);
 
   const handleSetTheme = (
-    _event: React.MouseEvent<HTMLElement>,
+    _event: MouseEvent<HTMLElement>,
     newThemeId: string | undefined,
   ) => {
     if (themeIds.some(it => it.id === newThemeId)) {

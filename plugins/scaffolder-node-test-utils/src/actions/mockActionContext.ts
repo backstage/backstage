@@ -15,7 +15,6 @@
  */
 
 import { PassThrough } from 'stream';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   createMockDirectory,
   mockCredentials,
@@ -23,6 +22,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
+import { loggerToWinstonLogger } from './loggerToWinstonLogger';
 
 /**
  * A utility method to create a mock action context for scaffolder actions.
@@ -74,6 +74,7 @@ export const createMockActionContext = <
     templateInfo,
     workspacePath,
     task,
+    user,
   } = options;
 
   return {
@@ -87,6 +88,7 @@ export const createMockActionContext = <
     ...(input && { input }),
     ...(secrets && { secrets }),
     ...(task && { task }),
+    ...(user && { user }),
     templateInfo,
   };
 };

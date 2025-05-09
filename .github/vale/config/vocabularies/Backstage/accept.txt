@@ -14,6 +14,8 @@ allowlisted
 Anddddd
 Apdex
 api
+apis
+approvers
 asciidoc
 async
 Atlassian
@@ -72,6 +74,7 @@ config
 Config
 configmaps
 configs
+configurability
 conformant
 const
 cookiecutter
@@ -86,9 +89,10 @@ CVEs
 daemonsets
 Datadog
 dataflow
+dataloader
 dayjs
 debounce
-Debounce
+debounces
 debuggability
 declaratively
 deduplicate
@@ -103,11 +107,14 @@ destructured
 destructuring
 Deutsche
 dev
+devcontainer
+devcontainers
 devops
 devs
 dequeue
 dequeueing
 dialogs
+disambiguator
 discoverability
 Discoverability
 dls
@@ -136,6 +143,7 @@ Expedia
 facto
 failover
 Fargate
+featureful
 Figma
 firehydrant
 FireHydrant
@@ -166,6 +174,7 @@ graphviz
 Hackathons
 haproxy
 hardcoded
+hardcoding
 Harness
 harness
 Helidon
@@ -190,9 +199,11 @@ Indal
 indexable
 ingestors
 inlined
+inlining
 inlinehilite
 integrator's
 interop
+interoperate
 iterable
 JaCoCo
 JavaScript
@@ -222,12 +233,14 @@ learnings
 Leasot
 lerna
 Lerna
+Levenshtein
 lightbox
 Lightsail
 limitranges
 LocalStack
 lockdown
 lockfile
+lockfiles
 lookbehind
 lowercased
 lunr
@@ -240,6 +253,7 @@ makefile
 Matomo
 md
 memcache
+memoization
 memoize
 memoized
 microservice
@@ -275,6 +289,7 @@ neuro
 newrelic
 nginx
 nodegit
+nodejs
 nohoist
 nonces
 noop
@@ -327,6 +342,7 @@ PR
 pre
 prebaked
 preconfigured
+prefilled
 prepack
 Preprarer
 productional
@@ -342,7 +358,7 @@ pygments
 pymdownx
 rankdir
 readme
-Readme
+readmes
 readonly
 rebase
 rebasing
@@ -394,6 +410,7 @@ serializable
 Serverless
 shoutout
 SIG
+signoff
 SIGs
 siloed
 Sinon
@@ -481,6 +498,7 @@ unregister
 unregistering
 unregistration
 unstarred
+untemplated
 untracked
 upsert
 upstreams
@@ -492,6 +510,7 @@ utils
 Valentina
 validator
 validators
+Valkey
 varchar
 vite
 VMware
@@ -519,3 +538,4 @@ zsh
 scrollable
 severities
 intellij
+tsconfig

@@ -1,5 +1,203 @@
 # @backstage/plugin-catalog-import
 
+## 0.13.0-next.2
+
+### Minor Changes
+
+- e2fd549: **BREAKING**: `generateStepper` and `defaultGenerateStepper` now require a translation argument to be passed through for supporting translations.
+
+### Patch Changes
+
+- 66a1140: Add i18n support for `catalog-import` plugin.
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/core-compat-api@0.4.2-next.2
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/integration-react@1.2.7-next.2
+  - @backstage/plugin-catalog-react@1.18.0-next.2
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+
+## 0.12.14-next.1
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/core-compat-api@0.4.2-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/plugin-catalog-react@1.18.0-next.1
+  - @backstage/integration-react@1.2.7-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+
+## 0.12.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/integration-react@1.2.7-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.12.13
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 5b9514f: Expose the `UnpackNestedValue` type as it's been removed from `react-hook-form`
+- f1d9a64: adding translation for `Register an existing component` text
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.17.0
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/integration-react@1.2.6
+  - @backstage/core-compat-api@0.4.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/integration@1.16.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.12.13-next.2
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/integration-react@1.2.6-next.1
+  - @backstage/core-compat-api@0.4.1-next.2
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/plugin-catalog-react@1.17.0-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.12.12-next.1
+
+### Patch Changes
+
+- 5b9514f: Expose the `UnpackNestedValue` type as it's been removed from `react-hook-form`
+- f1d9a64: adding translation for `Register an existing component` text
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/integration-react@1.2.6-next.0
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/plugin-catalog-react@1.16.1-next.1
+  - @backstage/core-compat-api@0.4.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.12.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.16.1-next.0
+  - @backstage/core-compat-api@0.4.1-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/integration@1.16.2
+  - @backstage/integration-react@1.2.5
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.12.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/integration@1.16.2
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-catalog-react@1.16.0
+  - @backstage/core-compat-api@0.4.0
+  - @backstage/integration-react@1.2.5
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.12.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/plugin-catalog-react@1.16.0-next.2
+  - @backstage/core-compat-api@0.4.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.5-next.0
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.12.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/plugin-catalog-react@1.16.0-next.1
+  - @backstage/core-compat-api@0.3.7-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/integration@1.16.1
+  - @backstage/integration-react@1.2.4
+  - @backstage/plugin-catalog-common@1.1.3
+
 ## 0.12.11-next.0
 
 ### Patch Changes

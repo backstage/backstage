@@ -34,6 +34,7 @@ import { LdapVendor } from './vendors';
 import { GroupTransformer, UserTransformer } from './types';
 import { mapStringAttr } from './util';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { InputError } from '@backstage/errors';
 
 /**
  * The default implementation of the transformation from an LDAP entry to a
@@ -70,6 +71,13 @@ export async function defaultUserTransformer(
   mapStringAttr(entry, vendor, map.name, v => {
     entity.metadata.name = v;
   });
+
+  if (!entity.metadata.name) {
+    throw new InputError(
+      `User syncing failed: missing '${map.name}' attribute, consider applying a user filter to skip processing users with incomplete data.`,
+    );
+  }
+
   mapStringAttr(entry, vendor, map.description, v => {
     entity.metadata.description = v;
   });
@@ -180,6 +188,13 @@ export async function defaultGroupTransformer(
   mapStringAttr(entry, vendor, map.name, v => {
     entity.metadata.name = v;
   });
+
+  if (!entity.metadata.name) {
+    throw new InputError(
+      `Group syncing failed: missing '${map.name}' attribute, consider applying a group filter to skip processing groups with incomplete data.`,
+    );
+  }
+
   mapStringAttr(entry, vendor, map.description, v => {
     entity.metadata.description = v;
   });

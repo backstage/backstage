@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ContainerRunner } from '@backstage/backend-common';
 import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
@@ -29,6 +28,9 @@ import { RailsNewRunner } from './railsNewRunner';
 import { PassThrough } from 'stream';
 import { examples } from './index.examples';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { ContainerRunner } from './ContainerRunner';
+
+export { type ContainerRunner };
 
 /**
  * Creates the `fetch:rails` Scaffolder action.

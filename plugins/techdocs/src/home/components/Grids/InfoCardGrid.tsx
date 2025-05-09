@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi, useRouteRef, configApiRef } from '@backstage/core-plugin-api';

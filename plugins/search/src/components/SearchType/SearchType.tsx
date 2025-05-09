@@ -21,7 +21,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { ChangeEvent } from 'react';
+import { ChangeEvent } from 'react';
 import useEffectOnce from 'react-use/esm/useEffectOnce';
 import {
   SearchTypeAccordion,
@@ -29,6 +29,8 @@ import {
 } from './SearchType.Accordion';
 import { SearchTypeTabs, SearchTypeTabsProps } from './SearchType.Tabs';
 import { useSearch } from '@backstage/plugin-search-react';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -63,6 +65,7 @@ const SearchType = (props: SearchTypeProps) => {
   const { className, defaultValue, name, values = [] } = props;
   const classes = useStyles();
   const { types, setTypes } = useSearch();
+  const { t } = useTranslationRef(searchTranslationRef);
 
   useEffectOnce(() => {
     if (!types.length) {
@@ -94,7 +97,7 @@ const SearchType = (props: SearchTypeProps) => {
         variant="outlined"
         value={types}
         onChange={handleChange}
-        placeholder="All Results"
+        placeholder={t('searchType.allResults')}
         renderValue={selected => (
           <div className={classes.chips}>
             {(selected as string[]).map(value => (

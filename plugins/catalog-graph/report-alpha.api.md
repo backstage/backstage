@@ -9,11 +9,12 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Direction } from '@backstage/plugin-catalog-graph';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
+import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
@@ -43,15 +44,15 @@ const _default: FrontendPlugin<
         title: string | undefined;
         height: number | undefined;
       } & {
-        filter: string | undefined;
-        type: 'full' | 'info' | 'peek' | undefined;
+        filter: EntityPredicate | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         height?: number | undefined;
         curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         direction?: Direction | undefined;
-        title?: string | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
+        title?: string | undefined;
         relations?: string[] | undefined;
         maxDepth?: number | undefined;
         kinds?: string[] | undefined;
@@ -59,15 +60,11 @@ const _default: FrontendPlugin<
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
       } & {
-        filter?: string | undefined;
-        type?: 'full' | 'info' | 'peek' | undefined;
+        filter?: EntityPredicate | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
@@ -102,8 +99,8 @@ const _default: FrontendPlugin<
       name: 'relations';
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | ((entity: Entity) => boolean) | undefined;
-        type?: EntityCardType | undefined;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
       };
     }>;
     'page:catalog-graph': ExtensionDefinition<{
@@ -142,11 +139,7 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
         | ConfigurableExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
@@ -169,7 +162,7 @@ const _default: FrontendPlugin<
       params: {
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+        routeRef?: RouteRef;
       };
     }>;
   }

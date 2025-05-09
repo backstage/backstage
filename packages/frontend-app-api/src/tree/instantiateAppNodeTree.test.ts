@@ -925,6 +925,24 @@ describe('instantiateAppNodeTree', () => {
         });
       });
 
+      it('should create an extension passed through an extension factory middleware', () => {
+        const attachments = new Map();
+        const instance = createAppNodeInstance({
+          node: makeNode(simpleExtension),
+          attachments,
+          apis: testApis,
+          *extensionFactoryMiddleware(originalFactory) {
+            const output = originalFactory({
+              config: { output: 'modified' },
+            });
+            yield* output;
+          },
+        });
+
+        expect(Array.from(instance.getDataRefs())).toEqual([testDataRef]);
+        expect(instance.getData(testDataRef)).toEqual('modified');
+      });
+
       it('should refuse to create an extension with invalid config', () => {
         expect(() =>
           createAppNodeInstance({

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, ChangeEvent, useRef } from 'react';
+import { ReactElement, ChangeEvent, useRef } from 'react';
 import { capitalize } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import FormControl from '@material-ui/core/FormControl';
@@ -30,6 +30,9 @@ import {
   SearchAutocompleteFilterProps,
 } from './SearchFilter.Autocomplete';
 import { useAsyncFilterValues, useDefaultFilterValue } from './hooks';
+import { ensureFilterValueWithLabel, FilterValue } from './types';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchReactTranslationRef } from '../../translation';
 
 const useStyles = makeStyles({
   label: {
@@ -60,7 +63,7 @@ export type SearchFilterComponentProps = {
    * input value is provided as an input to allow values to be filtered. This
    * function is debounced and values cached.
    */
-  values?: string[] | ((partial: string) => Promise<string[]>);
+  values?: FilterValue[] | ((partial: string) => Promise<FilterValue[]>);
   defaultValue?: string[] | string | null;
   /**
    * Debounce time in milliseconds, used when values is an async callback.
@@ -84,7 +87,7 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
   const {
     className,
     defaultValue,
-    label,
+    label: formLabel,
     name,
     values: givenValues = [],
     valuesDebounceMs,
@@ -95,7 +98,9 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
   const asyncValues =
     typeof givenValues === 'function' ? givenValues : undefined;
   const defaultValues =
-    typeof givenValues === 'function' ? undefined : givenValues;
+    typeof givenValues === 'function'
+      ? undefined
+      : givenValues.map(v => ensureFilterValueWithLabel(v));
   const { value: values = [], loading } = useAsyncFilterValues(
     asyncValues,
     '',
@@ -123,21 +128,23 @@ export const CheckboxFilter = (props: SearchFilterComponentProps) => {
       fullWidth
       data-testid="search-checkboxfilter-next"
     >
-      {label ? <FormLabel className={classes.label}>{label}</FormLabel> : null}
-      {values.map((value: string) => (
+      {!!formLabel && (
+        <FormLabel className={classes.label}>{formLabel}</FormLabel>
+      )}
+      {values.map(({ value, label }) => (
         <FormControlLabel
           key={value}
           classes={{
             root: classes.checkboxWrapper,
             label: classes.textWrapper,
           }}
-          label={value}
+          label={label}
           control={
             <Checkbox
               color="primary"
-              inputProps={{ 'aria-labelledby': value }}
+              inputProps={{ 'aria-labelledby': label }}
               value={value}
-              name={value}
+              name={label}
               onChange={handleChange}
               checked={((filters[name] as string[]) ?? []).includes(value)}
             />
@@ -160,11 +167,14 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
     values: givenValues,
     valuesDebounceMs,
   } = props;
+  const { t } = useTranslationRef(searchReactTranslationRef);
   useDefaultFilterValue(name, defaultValue);
   const asyncValues =
     typeof givenValues === 'function' ? givenValues : undefined;
   const defaultValues =
-    typeof givenValues === 'function' ? undefined : givenValues;
+    typeof givenValues === 'function'
+      ? undefined
+      : givenValues?.map(v => ensureFilterValueWithLabel(v));
   const { value: values = [], loading } = useAsyncFilterValues(
     asyncValues,
     '',
@@ -172,7 +182,10 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
     valuesDebounceMs,
   );
   const allOptionValue = useRef(uuid());
-  const allOption = { value: allOptionValue.current, label: 'All' };
+  const allOption = {
+    value: allOptionValue.current,
+    label: t('searchFilter.allOptionTitle'),
+  };
   const { filters, setFilters } = useSearch();
 
   const handleChange = (value: SelectedItems) => {
@@ -184,7 +197,7 @@ export const SelectFilter = (props: SearchFilterComponentProps) => {
     });
   };
 
-  const items = [allOption, ...values.map(value => ({ value, label: value }))];
+  const items = [allOption, ...values];
 
   return (
     <FormControl

@@ -35,7 +35,7 @@ describe('collectRouteIds', () => {
 
     const collected = collectRouteIds([
       createFrontendPlugin({
-        id: 'test',
+        pluginId: 'test',
         routes: { ref },
         externalRoutes: { extRef },
       }),

@@ -1,5 +1,77 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.7.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-aws-node@0.1.16-next.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-backend-node@1.3.11-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/plugin-search-common@1.2.18-next.0
+
+## 1.7.2-next.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/plugin-search-backend-node@1.3.11-next.1
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/plugin-search-common@1.2.18-next.0
+
+## 1.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-search-backend-node@1.3.11-next.0
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.7.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/plugin-search-backend-node@1.3.10
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.7.0
+
+### Minor Changes
+
+- 5f66007: Add the option to configure the fuzziness of the elasticsearch results by defining the fuzziness and `prefix_length` property.
+
+### Patch Changes
+
+- 37e5386: Allow `indexPrefix` configuration through the `app-config.yaml`
+- Updated dependencies
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-backend-node@1.3.9
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.6.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/plugin-search-backend-node@1.3.9-next.1
+  - @backstage/plugin-search-common@1.2.17
+
 ## 1.6.6-next.0
 
 ### Patch Changes

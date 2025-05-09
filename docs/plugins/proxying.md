@@ -41,6 +41,7 @@ Example:
 ```yaml
 # in app-config.yaml
 proxy:
+  reviveConsumedRequestBodies: true
   endpoints:
     /simple-example: http://simple.example.com:8080
     '/larger-example/v1':
@@ -110,16 +111,22 @@ There are also additional settings:
   from the target.
 
 By default, the proxy will only forward safe HTTP request headers to the target.
-Those are based on the headers that are considered safe for CORS and includes
+These are based on the headers that are considered safe for CORS and include
 headers like `content-type` or `last-modified`, as well as all headers that are
-set by the proxy. If the proxy should forward other headers like
+set by the proxy. If the proxy should forward other headers, like
 `authorization`, this must be enabled by the `allowedHeaders` config, for
 example `allowedHeaders: ['Authorization']`. This should help to not
 accidentally forward confidential headers (`cookie`, `X-Auth-Request-User`) to
-third-parties.
+third parties.
 
 The same logic applies to headers that are sent from the target back to the
 frontend.
+
+### Passing POST-request body
+
+To fix the issue with missing request body passed by proxy to the target, set `proxy.reviveConsumedRequestBodies: true`, so the `fixRequestBody` handler of [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware?tab=readme-ov-file#intercept-and-manipulate-requests) will be used.
+
+In that case, mind setting the `Content-Type` header to either `application/json` or `application/x-www-form-urlencoded`.
 
 ### Proxy Extension Endpoint
 

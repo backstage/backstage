@@ -1,0 +1,62 @@
+policy:
+  - section:
+      - id: ['project-area']
+        block-list: []
+        label:
+          - name: 'area:auditor'
+            keys: ['Auditor']
+          - name: 'area:auth'
+            keys: ['Auth']
+          - name: 'area:catalog'
+            keys: ['Catalog']
+          - name: 'area:framework'
+            keys: ['Core Framework']
+          - name: 'area:design-system'
+            keys: ['Design System']
+          - name: 'area:documentation'
+            keys: ['Documentation', 'Microsite']
+          - name: 'area:events'
+            keys: ['Events System']
+          - name: 'area:home'
+            keys: ['Home']
+          - name: 'area:kubernetes'
+            keys: ['Kubernetes Plugin']
+          - name: 'area:notifications'
+            keys: ['Notifications']
+          - name: 'area:openapi-tooling'
+            keys: ['OpenAPI Tooling']
+          - name: 'area:operations'
+            keys: ['Management of this repository']
+          - name: 'area:permission'
+            keys: ['Permission Framework']
+          - name: 'area:search'
+            keys: ['Search']
+          - name: 'area:scaffolder'
+            keys: ['Software Templates']
+          - name: 'area:techdocs'
+            keys: ['TechDocs']
+          - name: 'area:tooling'
+            keys: ['CLI Tooling']
+      - id: ['integration']
+        block-list: []
+        label:
+          - name: 'integration:aws'
+            keys: ['AWS']
+          - name: 'integration:azure'
+            keys: ['Azure', 'Azure DevOps']
+          - name: 'integration:bitbucket-cloud'
+            keys: ['Bitbucket Cloud']
+          - name: 'integration:bitbucket-server'
+            keys: ['Bitbucket Server']
+          - name: 'integration:gcp'
+            keys: ['GCP']
+          - name: 'integration:gerrit'
+            keys: ['Gerrit']
+          - name: 'integration:gitea'
+            keys: ['Gitea']
+          - name: 'integration:github'
+            keys: ['GitHub']
+          - name: 'integration:gitlab'
+            keys: ['GitLab']
+          - name: 'integration:other'
+            keys: ['Other']

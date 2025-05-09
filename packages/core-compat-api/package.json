@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-compat-api",
-  "version": "0.3.7-next.0",
+  "version": "0.4.2-next.2",
   "backstage": {
     "role": "web-library"
   },
@@ -33,11 +33,12 @@
   "dependencies": {
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@backstage-community/plugin-puppetdb": "^0.1.18",
+    "@backstage-community/plugin-puppetdb": "^0.6.0",
     "@backstage-community/plugin-stackstorm": "^0.1.16",
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",

@@ -62,6 +62,10 @@ export interface CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
+  getLocations(
+    request?: {},
+    options?: CatalogRequestOptions,
+  ): Promise<GetLocationsResponse>;
   queryEntities(
     request?: QueryEntitiesRequest,
     options?: CatalogRequestOptions,
@@ -136,6 +140,10 @@ export class CatalogClient implements CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
+  getLocations(
+    request?: {},
+    options?: CatalogRequestOptions,
+  ): Promise<GetLocationsResponse>;
   queryEntities(
     request?: QueryEntitiesRequest,
     options?: CatalogRequestOptions,
@@ -248,6 +256,12 @@ export interface GetEntityFacetsResponse {
       count: number;
     }>
   >;
+}
+
+// @public
+export interface GetLocationsResponse {
+  // (undocumented)
+  items: Location_2[];
 }
 
 // @public

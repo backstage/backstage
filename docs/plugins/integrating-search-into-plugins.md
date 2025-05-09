@@ -5,7 +5,7 @@ description: How to integrate Search into a Backstage plugin
 ---
 
 :::info
-This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage [version 1.24](../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./integrating-search-into-plugins--old.md) instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
+This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage [version 1.24](../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/plugins/integrating-search-into-plugins--old.md) instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
 :::
 
 The Backstage Search Platform was designed to give plugin developers the APIs
@@ -46,7 +46,7 @@ We will use some libraries in the module, so let's add them to your plugin modul
 git checkout -b tutorials/new-faq-snippets-collator
 
 # Install the package containing the interface
-yarn workspace @internal/backstage-plugin-search-backend-module-faq-snippets-collator add node-fetch @backstage/plugin-search-common @backstage/plugin-search-backend-node
+yarn workspace @internal/backstage-plugin-search-backend-module-faq-snippets-collator add @backstage/plugin-search-common @backstage/plugin-search-backend-node
 ```
 
 #### 3. Use Backstage App configuration
@@ -245,7 +245,7 @@ You can also check out the documentation on [how to test Backstage plugin module
 
 #### 9. Running the collator locally
 
-Run `yarn dev` in the root folder of your Backstage project and look for logs like these:
+Run `yarn start` in the root folder of your Backstage project and look for logs like these:
 
 ```sh
 [backend]: YYYY-MM-DDTHH:MM:SS.000Z search info Task worker starting: search_index_faq_snippets, {"version":2,"cadence":"PT10M","initialDelayDuration":"PT3S","timeoutAfterDuration":"PT15M"} task=search_index_faq_snippets

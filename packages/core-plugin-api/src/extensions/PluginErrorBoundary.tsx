@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { PropsWithChildren, Component } from 'react';
 import { AppContext } from '../app/types';
 import { BackstagePlugin } from '../plugin';
 
-type Props = React.PropsWithChildren<{
+type Props = PropsWithChildren<{
   app: AppContext;
   plugin: BackstagePlugin;
 }>;
 
 type State = { error: Error | undefined };
 
-export class PluginErrorBoundary extends React.Component<Props, State> {
+export class PluginErrorBoundary extends Component<Props, State> {
   static getDerivedStateFromError(error: Error) {
     return { error };
   }

@@ -21,7 +21,6 @@ import {
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import VisualizerIcon from '@material-ui/icons/Visibility';
-import React from 'react';
 
 const rootRouteRef = createRouteRef();
 
@@ -46,6 +45,6 @@ export const appVisualizerNavItem = NavItemBlueprint.make({
 
 /** @public */
 export const visualizerPlugin = createFrontendPlugin({
-  id: 'app-visualizer',
+  pluginId: 'app-visualizer',
   extensions: [appVisualizerPage, appVisualizerNavItem],
 });

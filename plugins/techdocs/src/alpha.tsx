@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import {
   createFrontendPlugin,
@@ -236,7 +235,7 @@ const techDocsNavItem = NavItemBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'techdocs',
+  pluginId: 'techdocs',
   extensions: [
     techDocsClientApi,
     techDocsStorageApi,

@@ -23,7 +23,6 @@ import {
 } from '@graphiql/react';
 import 'graphiql/graphiql.css';
 import { buildSchema } from 'graphql';
-import React from 'react';
 
 const useStyles = makeStyles({
   root: {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { HeaderLabel } from '@backstage/core-components';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
@@ -22,7 +21,7 @@ import {
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { catalogTranslationRef } from '../../../alpha/translation';
+import { catalogTranslationRef } from '../../translation';
 
 type EntityLabelsProps = {
   entity: Entity;

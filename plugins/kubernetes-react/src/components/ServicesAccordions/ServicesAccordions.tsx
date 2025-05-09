@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { V1Service } from '@kubernetes/client-node';
+import type { V1Service } from '@kubernetes/client-node';
 import { ServiceDrawer } from './ServiceDrawer';
 import { GroupedResponsesContext } from '../../hooks';
 import { StructuredMetadataTable } from '@backstage/core-components';

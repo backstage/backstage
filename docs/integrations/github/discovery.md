@@ -7,7 +7,7 @@ description: Automatically discovering catalog entities from repositories in a G
 ---
 
 :::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./discovery--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/integrations/github/discovery--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
 :::
 
 ## GitHub Provider
@@ -152,7 +152,7 @@ If you do so, `default` will be used as provider ID.
   Wildcards cannot be used if the `validateLocationsExist` option is set to `true`.
 - **`filters`** _(optional)_:
   - **`branch`** _(optional)_:
-    String used to filter results based on the branch name.
+    String used to filter results based on the branch name. Branch name cannot have any slash (`/`) characters.
     Defaults to the default Branch of the repository.
   - **`repository`** _(optional)_:
     Regular expression used to filter results based on the repository name.

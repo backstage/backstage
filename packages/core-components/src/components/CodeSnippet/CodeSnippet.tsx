@@ -16,7 +16,6 @@
 
 import Box from '@material-ui/core/Box';
 import { useTheme } from '@material-ui/core/styles';
-import React from 'react';
 import type {} from 'react-syntax-highlighter';
 import LightAsync from 'react-syntax-highlighter/dist/esm/light-async';
 import dark from 'react-syntax-highlighter/dist/esm/styles/hljs/dark';

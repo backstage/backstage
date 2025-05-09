@@ -24,13 +24,17 @@ import {
   entityFilterFunctionDataRef,
   EntityCardType,
 } from './extensionData';
-import React from 'react';
+import { JSX } from 'react';
+import { EntityPredicate } from '../predicates';
+import { resolveEntityFilterData } from './resolveEntityFilterData';
+import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
+import { Entity } from '@backstage/catalog-model';
 
 /** @alpha */
 export interface EntityContentLayoutProps {
   cards: Array<{
     type?: EntityCardType;
-    element: React.JSX.Element;
+    element: JSX.Element;
   }>;
 }
 
@@ -57,7 +61,8 @@ export const EntityContentLayoutBlueprint = createExtensionBlueprint({
   config: {
     schema: {
       type: z => z.string().optional(),
-      filter: z => z.string().optional(),
+      filter: z =>
+        z.union([z.string(), createEntityPredicateSchema(z)]).optional(),
     },
   },
   *factory(
@@ -65,22 +70,12 @@ export const EntityContentLayoutBlueprint = createExtensionBlueprint({
       loader,
       filter,
     }: {
-      filter?:
-        | typeof entityFilterFunctionDataRef.T
-        | typeof entityFilterExpressionDataRef.T;
-      loader: () => Promise<
-        (props: EntityContentLayoutProps) => React.JSX.Element
-      >;
+      filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+      loader: () => Promise<(props: EntityContentLayoutProps) => JSX.Element>;
     },
     { node, config },
   ) {
-    if (config.filter) {
-      yield entityFilterExpressionDataRef(config.filter);
-    } else if (typeof filter === 'string') {
-      yield entityFilterExpressionDataRef(filter);
-    } else if (typeof filter === 'function') {
-      yield entityFilterFunctionDataRef(filter);
-    }
+    yield* resolveEntityFilterData(filter, config, node);
 
     yield entityCardLayoutComponentDataRef(
       ExtensionBoundary.lazyComponent(node, loader),

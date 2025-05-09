@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
+import {
   ReactNode,
   ChangeEvent,
   MouseEvent,
@@ -23,6 +23,8 @@ import React, {
 } from 'react';
 import TablePagination from '@material-ui/core/TablePagination';
 import { useSearch } from '../../context';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchReactTranslationRef } from '../../translation';
 
 const encodePageCursor = (pageCursor: number): string => {
   return Buffer.from(pageCursor.toString(), 'utf-8').toString('base64');
@@ -119,15 +121,18 @@ export type SearchPaginationBaseProps = {
  * @public
  */
 export const SearchPaginationBase = (props: SearchPaginationBaseProps) => {
+  const { t } = useTranslationRef(searchReactTranslationRef);
   const {
     total: count = -1,
     cursor: pageCursor,
     hasNextPage,
     onCursorChange: onPageCursorChange,
     limit: rowsPerPage = 25,
-    limitLabel: labelRowsPerPage = 'Results per page:',
+    limitLabel: labelRowsPerPage = t('searchPagination.limitLabel'),
     limitText: labelDisplayedRows = ({ from, to }) =>
-      count > 0 ? `of ${count}` : `${from}-${to}`,
+      count > 0
+        ? t('searchPagination.limitText', { num: `${count}` })
+        : `${from}-${to}`,
     limitOptions: rowsPerPageOptions,
     onLimitChange: onPageLimitChange,
     ...rest

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { icons } from './icons';
 import { IconContext } from './context';
 import type { IconProviderProps } from './types';

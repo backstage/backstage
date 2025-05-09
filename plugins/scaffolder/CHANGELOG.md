@@ -1,5 +1,298 @@
 # @backstage/plugin-scaffolder
 
+## 1.31.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/core-compat-api@0.4.2-next.2
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/integration-react@1.2.7-next.2
+  - @backstage/plugin-catalog-react@1.18.0-next.2
+  - @backstage/plugin-permission-react@0.4.34-next.1
+  - @backstage/plugin-scaffolder-react@1.16.0-next.2
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 1.31.0-next.1
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/core-compat-api@0.4.2-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/plugin-catalog-react@1.18.0-next.1
+  - @backstage/plugin-scaffolder-react@1.16.0-next.1
+  - @backstage/integration-react@1.2.7-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-permission-react@0.4.34-next.0
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 1.31.0-next.0
+
+### Minor Changes
+
+- 4235e87: add templating extensions page
+
+### Patch Changes
+
+- 92c3658: Full support in EntityPicker (and derivatives) for default EntityPresentationApi
+- d7da01d: Fix EntityPicker field to render description as markdown, matching other form components in the system.
+- 36ae651: Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+  - @backstage/plugin-scaffolder-react@1.16.0-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/integration-react@1.2.7-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.33
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.30.0
+
+### Minor Changes
+
+- 76681a5: **BREAKING ALPHA**: Extract out schema rendering components into their own Component. This means that the translation keys have changed for `actionsPage.content.tableCell.*`. They have moved to their own root key `renderSchema.*` instead.
+
+  ```diff
+  ...
+  -        tableCell: {
+  -          name: 'Name',
+  -          title: 'Title',
+  -          description: 'Description',
+  -          type: 'Type',
+  -        },
+  -        noRowsDescription: 'No schema defined',
+  ...
+  +    renderSchema: {
+  +      tableCell: {
+  +        name: 'Name',
+  +        title: 'Title',
+  +        description: 'Description',
+  +        type: 'Type',
+  +      },
+  +      undefined: 'No schema defined',
+  +    },
+  ```
+
+- 5890016: add api to retrieve template extensions info from scaffolder-backend
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 407eba1: Tweaked template editor tooltip to mention HTTPS requirement.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.17.0
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/integration-react@1.2.6
+  - @backstage/core-compat-api@0.4.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/plugin-permission-react@0.4.33
+  - @backstage/plugin-scaffolder-react@1.15.0
+  - @backstage/integration@1.16.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.30.0-next.2
+
+### Minor Changes
+
+- 76681a5: **BREAKING ALPHA**: Extract out schema rendering components into their own Component. This means that the translation keys have changed for `actionsPage.content.tableCell.*`. They have moved to their own root key `renderSchema.*` instead.
+
+  ```diff
+  ...
+  -        tableCell: {
+  -          name: 'Name',
+  -          title: 'Title',
+  -          description: 'Description',
+  -          type: 'Type',
+  -        },
+  -        noRowsDescription: 'No schema defined',
+  ...
+  +    renderSchema: {
+  +      tableCell: {
+  +        name: 'Name',
+  +        title: 'Title',
+  +        description: 'Description',
+  +        type: 'Type',
+  +      },
+  +      undefined: 'No schema defined',
+  +    },
+  ```
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 407eba1: Tweaked template editor tooltip to mention HTTPS requirement.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/integration-react@1.2.6-next.1
+  - @backstage/core-compat-api@0.4.1-next.2
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/plugin-permission-react@0.4.33-next.0
+  - @backstage/plugin-scaffolder-react@1.15.0-next.2
+  - @backstage/plugin-catalog-react@1.17.0-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.30.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/integration-react@1.2.6-next.0
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/plugin-catalog-react@1.16.1-next.1
+  - @backstage/plugin-scaffolder-react@1.15.0-next.1
+  - @backstage/core-compat-api@0.4.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.30.0-next.0
+
+### Minor Changes
+
+- 5890016: add api to retrieve template extensions info from scaffolder-backend
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.15.0-next.0
+  - @backstage/plugin-catalog-react@1.16.1-next.0
+  - @backstage/core-compat-api@0.4.1-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/integration@1.16.2
+  - @backstage/integration-react@1.2.5
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.29.0
+
+### Minor Changes
+
+- 9d864ff: Allowed passing `ui:disabled` for disabling the input field of all the pickers.
+
+### Patch Changes
+
+- 3db64ba: Disable the submit button on creating
+- 6a3fa48: Fixes DryRunContext not forwarding the correct Scaffolder Secrets to the DryRun API
+- b3b7c9c: Updated the alpha `page:scaffolder` extension to accept `formFields` input, matching the updated `FormFieldBlueprint`.
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/integration@1.16.2
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-catalog-react@1.16.0
+  - @backstage/plugin-scaffolder-react@1.14.6
+  - @backstage/core-compat-api@0.4.0
+  - @backstage/plugin-scaffolder-common@1.5.10
+  - @backstage/integration-react@1.2.5
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 1.29.0-next.2
+
+### Patch Changes
+
+- 3db64ba: Disable the submit button on creating
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/plugin-catalog-react@1.16.0-next.2
+  - @backstage/core-compat-api@0.4.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/plugin-scaffolder-react@1.14.6-next.2
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.5-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.31
+  - @backstage/plugin-scaffolder-common@1.5.10-next.0
+
+## 1.29.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/plugin-scaffolder-react@1.14.6-next.1
+  - @backstage/plugin-scaffolder-common@1.5.10-next.0
+  - @backstage/plugin-catalog-react@1.16.0-next.1
+  - @backstage/core-compat-api@0.3.7-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/integration@1.16.1
+  - @backstage/integration-react@1.2.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-react@0.4.31
+
 ## 1.29.0-next.0
 
 ### Minor Changes

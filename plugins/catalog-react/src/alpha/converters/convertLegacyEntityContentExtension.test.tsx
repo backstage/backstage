@@ -25,7 +25,6 @@ import {
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { convertLegacyEntityContentExtension } from './convertLegacyEntityContentExtension';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { EntityContentBlueprint } from '../blueprints';

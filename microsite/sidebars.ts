@@ -228,6 +228,7 @@ export default {
           'features/software-templates/migrating-from-v1beta2-to-v1beta3',
           'features/software-templates/dry-run-testing',
           'features/software-templates/experimental',
+          'features/software-templates/template-extensions',
         ],
       },
       {
@@ -450,6 +451,7 @@ export default {
               'backend-system/core-services/lifecycle',
               'backend-system/core-services/logger',
               'backend-system/core-services/permissions',
+              'backend-system/core-services/permissions-registry',
               'backend-system/core-services/plugin-metadata',
               'backend-system/core-services/root-config',
               'backend-system/core-services/root-health',
@@ -562,6 +564,7 @@ export default {
           'tutorials/yarn-migration',
           'tutorials/migrate-to-mui5',
           'tutorials/auth-service-migration',
+          'tutorials/jsx-transform-migration',
         ],
       },
     ],

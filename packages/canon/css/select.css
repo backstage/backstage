@@ -1,0 +1,188 @@
+.canon-Select {
+  font-family: var(--canon-font-regular);
+  flex-direction: column;
+  width: 100%;
+  display: flex;
+}
+
+.canon-SelectLabel {
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-primary);
+  margin-bottom: var(--canon-space-1_5);
+  cursor: pointer;
+}
+
+.canon-SelectLabel[data-disabled] {
+  cursor: default;
+}
+
+.canon-SelectDescription {
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-secondary);
+  padding-top: var(--canon-space-1_5);
+  margin: 0;
+}
+
+.canon-SelectError {
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-danger);
+  padding-top: var(--canon-space-1_5);
+  margin: 0;
+}
+
+.canon-SelectTrigger {
+  box-sizing: border-box;
+  border-radius: var(--canon-radius-3);
+  border: 1px solid var(--canon-border);
+  padding: 0 var(--canon-space-4);
+  background-color: var(--canon-bg-surface-1);
+  font-size: var(--canon-font-size-3);
+  font-family: var(--canon-font-regular);
+  font-weight: var(--canon-font-weight-regular);
+  color: var(--canon-fg-primary);
+  cursor: pointer;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--canon-space-2);
+  width: 100%;
+  transition: border-color .2s ease-in-out, outline-color .2s ease-in-out;
+  display: flex;
+}
+
+.canon-SelectTrigger::placeholder {
+  color: var(--canon-fg-secondary);
+}
+
+.canon-SelectTrigger:hover {
+  border-color: var(--canon-border-hover);
+}
+
+.canon-SelectTrigger:focus-visible {
+  border-color: var(--canon-border-pressed);
+  outline: 0;
+}
+
+.canon-SelectTrigger[data-invalid] {
+  border-color: var(--canon-fg-danger);
+}
+
+.canon-SelectTrigger[data-invalid]:hover, .canon-SelectTrigger[data-invalid]:focus-visible {
+  border-width: 2px;
+}
+
+.canon-SelectTrigger[data-disabled] {
+  cursor: not-allowed;
+  border-color: var(--canon-border-disabled);
+  color: var(--canon-fg-disabled);
+}
+
+.canon-SelectTrigger[data-size="small"] {
+  height: 2rem;
+}
+
+.canon-SelectTrigger[data-size="medium"] {
+  height: 3rem;
+}
+
+.canon-SelectIcon {
+  margin-left: var(--canon-space-5);
+  transition: transform .2s;
+}
+
+.canon-SelectTrigger[data-popup-open] .canon-SelectIcon {
+  transform: rotate(180deg);
+}
+
+.canon-SelectPopup {
+  box-sizing: border-box;
+  max-height: var(--available-height);
+  background-color: var(--canon-bg-surface-1);
+  border: 1px solid var(--canon-border);
+  border-radius: var(--canon-radius-3);
+  padding-block: var(--canon-space-1);
+  z-index: 1;
+  transform-origin: var(--transform-origin);
+  outline: 0;
+  transition: transform .15s, opacity .15s;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px #0003;
+}
+
+.canon-SelectPopup[data-starting-style], .canon-SelectPopup[data-ending-style] {
+  opacity: 0;
+  transform: scale(.9);
+}
+
+.canon-SelectItem {
+  width: var(--anchor-width);
+  padding-block: var(--canon-space-2);
+  padding-inline: var(--canon-space-4);
+  color: var(--canon-fg-primary);
+  border-radius: var(--canon-radius-3);
+  cursor: pointer;
+  user-select: none;
+  font-size: var(--canon-font-size-3);
+  align-items: center;
+  gap: var(--canon-space-2);
+  outline: none;
+  grid-template-columns: 1rem 1fr;
+  grid-template-areas: "icon text";
+  display: grid;
+  position: relative;
+}
+
+.canon-SelectItem[data-highlighted] {
+  z-index: 0;
+  color: var(--canon-fg-primary);
+  position: relative;
+}
+
+.canon-SelectItem[data-highlighted]:before {
+  content: "";
+  z-index: -1;
+  background-color: var(--canon-bg-tint-hover);
+  border-radius: .25rem;
+  position: absolute;
+  inset-block: 0;
+  inset-inline: .25rem;
+}
+
+.canon-SelectItem[data-disabled] {
+  cursor: not-allowed;
+  color: var(--canon-fg-disabled);
+}
+
+.canon-SelectItemIndicator {
+  grid-area: icon;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.canon-SelectItemText {
+  flex: 1;
+  grid-area: text;
+}
+
+.canon-SelectRequired {
+  color: var(--canon-fg-secondary);
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  margin-left: var(--canon-space-1);
+}
+
+.canon-SelectIcon {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.canon-SelectValue {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  overflow: hidden;
+}

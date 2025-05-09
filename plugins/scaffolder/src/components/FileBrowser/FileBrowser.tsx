@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -42,7 +42,7 @@ export type FileEntry =
       children: FileEntry[];
     };
 
-export function parseFileEntires(paths: string[]): FileEntry[] {
+export function parseFileEntries(paths: string[]): FileEntry[] {
   const root: FileEntry = {
     type: 'directory',
     name: '',
@@ -122,7 +122,7 @@ export function FileBrowser(props: FileBrowserProps) {
   const classes = useStyles();
 
   const fileTree = useMemo(
-    () => parseFileEntires(props.filePaths),
+    () => parseFileEntries(props.filePaths),
     [props.filePaths],
   );
 

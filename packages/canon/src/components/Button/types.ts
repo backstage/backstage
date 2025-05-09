@@ -13,21 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IconNames } from '../Icon';
+
 import type { ButtonOwnProps } from './Button.props';
+import { ReactElement } from 'react';
 
 /**
  * Properties for {@link Button}
  *
  * @public
  */
-export interface ButtonProps {
+export interface ButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
+  /**
+   * The size of the button
+   * @defaultValue 'medium'
+   */
   size?: ButtonOwnProps['size'];
+
+  /**
+   * The visual variant of the button
+   * @defaultValue 'primary'
+   */
   variant?: ButtonOwnProps['variant'];
+
+  /**
+   * The content of the button
+   */
   children: React.ReactNode;
-  className?: string;
-  disabled?: boolean;
-  iconStart?: IconNames;
-  iconEnd?: IconNames;
-  style?: React.CSSProperties;
+
+  /**
+   * Optional icon to display at the start of the button
+   */
+  iconStart?: ReactElement;
+
+  /**
+   * Optional icon to display at the end of the button
+   */
+  iconEnd?: ReactElement;
 }

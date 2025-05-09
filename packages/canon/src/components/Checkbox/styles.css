@@ -1,5 +1,5 @@
 .canon-CheckboxRoot {
-  all: unset;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -8,28 +8,37 @@
   box-shadow: inset 0 0 0 1px var(--canon-border);
   cursor: pointer;
   border-radius: 2px;
-  transition: all 0.2s ease-in-out;
+  transition: background-color 0.2s ease-in-out;
+  background-color: var(--canon-bg-surface-1);
+  padding: 0;
+  flex-shrink: 0;
+}
 
-  &[data-checked] {
-    background-color: var(--canon-bg-solid);
-    color: var(--canon-fg-solid);
-  }
+.canon-CheckboxRoot:focus-visible {
+  transition: none;
+  outline: 2px solid var(--canon-ring);
+  outline-offset: 2px;
+}
+
+.canon-CheckboxRoot[data-checked] {
+  background-color: var(--canon-bg-solid);
+  box-shadow: none;
+  color: var(--canon-fg-solid);
 }
 
 .canon-CheckboxLabel {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
   gap: var(--canon-space-2);
-  font-size: var(--canon-font-size-xs);
+  font-size: var(--canon-font-size-3);
   font-family: var(--canon-font-regular);
   font-weight: var(--canon-font-weight-regular);
   color: var(--canon-fg-primary);
   user-select: none;
 
   &:hover {
-    & .canon-CheckboxRoot {
+    & .canon-CheckboxRoot:not([data-checked]) {
       box-shadow: inset 0 0 0 1px var(--canon-border-hover);
     }
   }
@@ -39,5 +48,5 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--canon-fg-accent);
+  color: var(--canon-fg-solid);
 }

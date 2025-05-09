@@ -9,7 +9,7 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
@@ -19,6 +19,21 @@ const _default: FrontendPlugin<
   },
   {},
   {
+    'api:catalog-unprocessed-entities': ExtensionDefinition<{
+      kind: 'api';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
+      inputs: {};
+      params: {
+        factory: AnyApiFactory;
+      };
+    }>;
     'nav-item:catalog-unprocessed-entities': ExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
@@ -40,21 +55,6 @@ const _default: FrontendPlugin<
         routeRef: RouteRef<undefined>;
       };
     }>;
-    'api:catalog-unprocessed-entities': ExtensionDefinition<{
-      kind: 'api';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
-      inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
-    }>;
     'page:catalog-unprocessed-entities': ExtensionDefinition<{
       kind: 'page';
       name: undefined;
@@ -65,11 +65,7 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
         | ConfigurableExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
@@ -82,7 +78,7 @@ const _default: FrontendPlugin<
       params: {
         defaultPath: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+        routeRef?: RouteRef;
       };
     }>;
   }

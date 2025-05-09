@@ -149,16 +149,18 @@ export function createGithubWebhookAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const client = new Octokit(
-        await getOctokitOptions({
-          integrations,
-          credentialsProvider: githubCredentialsProvider,
-          host,
-          owner,
-          repo,
-          token: providedToken,
-        }),
-      );
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        host,
+        owner,
+        repo,
+        token: providedToken,
+      });
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       // If this is a dry run, log and return
       if (ctx.isDryRun) {
@@ -168,18 +170,25 @@ export function createGithubWebhookAction(options: {
 
       try {
         const insecure_ssl = insecureSsl ? '1' : '0';
-        await client.rest.repos.createWebhook({
-          owner,
-          repo,
-          config: {
-            url: webhookUrl,
-            content_type: contentType,
-            secret: webhookSecret,
-            insecure_ssl,
+
+        await ctx.checkpoint({
+          key: `create.webhhook.${owner}.${repo}.${webhookUrl}`,
+          fn: async () => {
+            await client.rest.repos.createWebhook({
+              owner,
+              repo,
+              config: {
+                url: webhookUrl,
+                content_type: contentType,
+                secret: webhookSecret,
+                insecure_ssl,
+              },
+              events,
+              active,
+            });
           },
-          events,
-          active,
         });
+
         ctx.logger.info(`Webhook '${webhookUrl}' created successfully`);
       } catch (e) {
         assertError(e);

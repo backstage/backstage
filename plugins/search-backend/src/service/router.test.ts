@@ -278,6 +278,8 @@ describe('createRouter', () => {
           permissions: mockPermissionEvaluator,
           discovery,
           logger,
+          auth: mockServices.auth(),
+          httpAuth: mockServices.httpAuth(),
         });
         app = express().use(router);
       });

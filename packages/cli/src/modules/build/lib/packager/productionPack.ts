@@ -143,7 +143,7 @@ async function rewriteEntryPoints(
 
   // Clear to ensure a clean slate before adding entries back in further down
   if (pkg.typesVersions) {
-    pkg.typesVersions = { '*': {} };
+    pkg.typesVersions = undefined;
   }
 
   for (const entryPoint of entryPoints) {
@@ -166,9 +166,11 @@ async function rewriteEntryPoints(
       if (!pkg.typesVersions) {
         pkg.typesVersions = { '*': {} };
       }
-      pkg.typesVersions['*'][entryPoint.name] = [
-        `dist/${entryPoint.name}.d.ts`,
-      ];
+      if (entryPoint.name !== 'index') {
+        pkg.typesVersions['*'][entryPoint.name] = [
+          `dist/${entryPoint.name}.d.ts`,
+        ];
+      }
     }
 
     exp.default = exp.require ?? exp.import;
@@ -216,6 +218,11 @@ async function rewriteEntryPoints(
     if (Object.keys(exp).length > 0) {
       outputExports[entryPoint.mount] = exp;
     }
+  }
+
+  // Make sure package.json is also available in typesVersions if present
+  if (pkg.typesVersions?.['*']) {
+    pkg.typesVersions['*']['package.json'] = ['package.json'];
   }
 
   if (pkg.exports) {

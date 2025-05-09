@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-github",
-  "version": "0.7.11-next.0",
+  "version": "0.9.0-next.2",
   "description": "A Backstage catalog backend module that helps integrate towards GitHub",
   "backstage": {
     "role": "backend-plugin-module",
@@ -51,7 +51,6 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",

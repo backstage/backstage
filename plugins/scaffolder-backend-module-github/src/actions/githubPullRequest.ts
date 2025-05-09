@@ -35,6 +35,7 @@ import {
   resolveSafeChildPath,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 
 export type Encoding = 'utf-8' | 'base64';
 
@@ -138,6 +139,7 @@ export const createPublishGithubPullRequestAction = (
     sourcePath?: string;
     token?: string;
     reviewers?: string[];
+    assignees?: string[];
     teamReviewers?: string[];
     commitMessage?: string;
     update?: boolean;
@@ -210,6 +212,15 @@ export const createPublishGithubPullRequestAction = (
             },
             description:
               'The users that will be added as reviewers to the pull request',
+          },
+          assignees: {
+            title: 'Pull Request Assignees',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description:
+              'The users that will be added as assignees to the pull request',
           },
           teamReviewers: {
             title: 'Pull Request Team Reviewers',
@@ -294,6 +305,7 @@ export const createPublishGithubPullRequestAction = (
         sourcePath,
         token: providedToken,
         reviewers,
+        assignees,
         teamReviewers,
         commitMessage,
         update,
@@ -425,32 +437,63 @@ export const createPublishGithubPullRequestAction = (
         if (targetBranchName) {
           createOptions.base = targetBranchName;
         }
-        const response = await client.createPullRequest(createOptions);
 
-        if (createWhenEmpty === false && !response) {
+        const pr = await ctx.checkpoint({
+          key: `create.pr.${owner}.${repo}.${branchName}`,
+          fn: async () => {
+            const response = await client.createPullRequest(createOptions);
+            if (!response) {
+              return null;
+            }
+
+            return {
+              base: response?.data.base,
+              html_url: response?.data.html_url,
+              number: response?.data.number,
+            };
+          },
+        });
+
+        if (createWhenEmpty === false && !pr) {
           ctx.logger.info('No changes to commit, pull request was not created');
           return;
         }
 
-        if (!response) {
+        if (!pr) {
           throw new GithubResponseError('null response from Github');
         }
 
-        const pullRequestNumber = response.data.number;
+        const pullRequestNumber = pr.number;
+        const pullRequest = { owner, repo, number: pullRequestNumber };
         if (reviewers || teamReviewers) {
-          const pullRequest = { owner, repo, number: pullRequestNumber };
           await requestReviewersOnPullRequest(
             pullRequest,
             reviewers,
             teamReviewers,
             client,
             ctx.logger,
+            ctx.checkpoint,
           );
         }
 
-        const targetBranch = response.data.base.ref;
+        if (assignees) {
+          if (assignees.length > 10) {
+            ctx.logger.warn(
+              'Assignees list is too long, only the first 10 will be used.',
+            );
+          }
+          await addAssigneesToPullRequest(
+            pullRequest,
+            assignees,
+            client,
+            ctx.logger,
+            ctx.checkpoint,
+          );
+        }
+
+        const targetBranch = pr.base.ref;
         ctx.output('targetBranchName', targetBranch);
-        ctx.output('remoteUrl', response.data.html_url);
+        ctx.output('remoteUrl', pr.html_url);
         ctx.output('pullRequestNumber', pullRequestNumber);
       } catch (e) {
         throw new GithubResponseError('Pull request creation failed', e);
@@ -458,26 +501,75 @@ export const createPublishGithubPullRequestAction = (
     },
   });
 
+  async function addAssigneesToPullRequest(
+    pr: GithubPullRequest,
+    assignees: string[],
+    client: Octokit,
+    logger: LoggerService,
+    checkpoint: <T extends JsonValue | void>(opts: {
+      key: string;
+      fn: () => Promise<T> | T;
+    }) => Promise<T>,
+  ) {
+    try {
+      await checkpoint({
+        key: `add.assignees.${pr.owner}.${pr.repo}.${pr.number}`,
+        fn: async () => {
+          const result = await client.rest.issues.addAssignees({
+            owner: pr.owner,
+            repo: pr.repo,
+            issue_number: pr.number,
+            assignees,
+          });
+
+          const addedAssignees = result.data.assignees?.join(', ') ?? '';
+
+          logger.info(
+            `Added assignees [${addedAssignees}] to Pull request ${pr.number}`,
+          );
+        },
+      });
+    } catch (e) {
+      logger.error(
+        `Failure when adding assignees to Pull request ${pr.number}`,
+        e,
+      );
+    }
+  }
+
   async function requestReviewersOnPullRequest(
     pr: GithubPullRequest,
     reviewers: string[] | undefined,
     teamReviewers: string[] | undefined,
     client: Octokit,
     logger: LoggerService,
+    checkpoint: <T extends JsonValue | void>(opts: {
+      key: string;
+      fn: () => Promise<T> | T;
+    }) => Promise<T>,
   ) {
     try {
-      const result = await client.rest.pulls.requestReviewers({
-        owner: pr.owner,
-        repo: pr.repo,
-        pull_number: pr.number,
-        reviewers,
-        team_reviewers: teamReviewers ? [...new Set(teamReviewers)] : undefined,
+      await checkpoint({
+        key: `request.reviewers.${pr.owner}.${pr.repo}.${pr.number}`,
+        fn: async () => {
+          const result = await client.rest.pulls.requestReviewers({
+            owner: pr.owner,
+            repo: pr.repo,
+            pull_number: pr.number,
+            reviewers,
+            team_reviewers: teamReviewers
+              ? [...new Set(teamReviewers)]
+              : undefined,
+          });
+
+          const addedUsers = result.data.requested_reviewers?.join(', ') ?? '';
+          const addedTeams = result.data.requested_teams?.join(', ') ?? '';
+
+          logger.info(
+            `Added users [${addedUsers}] and teams [${addedTeams}] as reviewers to Pull request ${pr.number}`,
+          );
+        },
       });
-      const addedUsers = result.data.requested_reviewers?.join(', ') ?? '';
-      const addedTeams = result.data.requested_teams?.join(', ') ?? '';
-      logger.info(
-        `Added users [${addedUsers}] and teams [${addedTeams}] as reviewers to Pull request ${pr.number}`,
-      );
     } catch (e) {
       logger.error(
         `Failure when adding reviewers to Pull request ${pr.number}`,

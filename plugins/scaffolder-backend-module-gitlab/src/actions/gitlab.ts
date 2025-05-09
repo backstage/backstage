@@ -16,13 +16,13 @@
 
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { Gitlab, VariableType } from '@gitbeaker/rest';
 import {
-  initRepoAndPush,
+  createTemplateAction,
   getRepoSourceDirectory,
+  initRepoAndPush,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
+import { Gitlab, VariableType } from '@gitbeaker/rest';
 import { Config } from '@backstage/config';
 import { examples } from './gitlab.examples';
 
@@ -49,6 +49,7 @@ export function createPublishGitlabAction(options: {
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    signCommit?: boolean;
     setUserAsOwner?: boolean;
     /** @deprecated in favour of settings.topics field */
     topics?: string[];
@@ -121,6 +122,11 @@ export function createPublishGitlabAction(options: {
             title: 'Default Author Email',
             type: 'string',
             description: `Sets the default author email for the commit.`,
+          },
+          signCommit: {
+            title: 'Sign commit',
+            type: 'boolean',
+            description: 'Sign commit with configured PGP private key',
           },
           sourcePath: {
             title: 'Source Path',
@@ -349,6 +355,7 @@ export function createPublishGitlabAction(options: {
         branches = [],
         projectVariables = [],
         skipExisting = false,
+        signCommit,
       } = ctx.input;
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
@@ -379,15 +386,17 @@ export function createPublishGitlabAction(options: {
       });
 
       let targetNamespaceId;
-
+      let targetNamespaceKind;
       try {
         const namespaceResponse = (await client.Namespaces.show(owner)) as {
           id: number;
+          kind: string;
         };
 
         targetNamespaceId = namespaceResponse.id;
+        targetNamespaceKind = namespaceResponse.kind;
       } catch (e) {
-        if (e.response && e.response.statusCode === 404) {
+        if (e.cause?.response?.status === 404) {
           throw new InputError(
             `The namespace ${owner} is not found or the user doesn't have permissions to access it`,
           );
@@ -401,13 +410,16 @@ export function createPublishGitlabAction(options: {
 
       if (!targetNamespaceId) {
         targetNamespaceId = userId;
+        targetNamespaceKind = 'user';
       }
 
-      const existingProjects = await client.Groups.allProjects(owner, {
-        search: repo,
-      });
+      const existingProjects =
+        targetNamespaceKind === 'user'
+          ? await client.Users.allProjects(owner, { search: repo })
+          : await client.Groups.allProjects(owner, { search: repo });
+
       const existingProject = existingProjects.find(
-        searchPathElem => searchPathElem.path === repo,
+        project => project.path === repo,
       );
 
       if (!skipExisting || (skipExisting && !existingProject)) {
@@ -447,6 +459,15 @@ export function createPublishGitlabAction(options: {
             ? gitAuthorEmail
             : config.getOptionalString('scaffolder.defaultAuthor.email'),
         };
+        const signingKey =
+          integrationConfig.config.commitSigningKey ??
+          config.getOptionalString('scaffolder.defaultCommitSigningKey');
+        if (signCommit && !signingKey) {
+          throw new Error(
+            'Signing commits is enabled but no signing key is provided in the configuration',
+          );
+        }
+
         const shouldSkipPublish =
           typeof ctx.input.sourcePath === 'boolean' && !ctx.input.sourcePath;
         if (!shouldSkipPublish) {
@@ -469,6 +490,7 @@ export function createPublishGitlabAction(options: {
               ? gitCommitMessage
               : config.getOptionalString('scaffolder.defaultCommitMessage'),
             gitAuthorInfo,
+            signingKey: signCommit ? signingKey : undefined,
           });
 
           if (branches) {

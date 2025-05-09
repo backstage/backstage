@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren, useEffect } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 import Helmet from 'react-helmet';
 
 import Grid from '@material-ui/core/Grid';

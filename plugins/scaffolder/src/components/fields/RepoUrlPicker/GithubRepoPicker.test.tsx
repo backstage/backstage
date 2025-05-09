@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { act } from 'react';
+import { act } from 'react';
 import { GithubRepoPicker } from './GithubRepoPicker';
 import { fireEvent, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -132,7 +132,7 @@ describe('GithubRepoPicker', () => {
         </TestApiProvider>,
       );
 
-      // Open the Autcomplete dropdown
+      // Open the Autocomplete dropdown
       const ownerInput = getAllByRole('textbox')[0];
       await userEvent.click(ownerInput);
 

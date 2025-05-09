@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import { GroupedResponsesContext } from './GroupedResponses';
 import { PodNamesWithErrorsContext } from './PodNamesWithErrors';
 import {
@@ -33,7 +33,7 @@ export const kubernetesProviders = (
   >(),
   cluster: ClusterAttributes = { name: 'some-cluster' },
 ) => {
-  return (node: React.ReactNode) => (
+  return (node: ReactNode) => (
     <ClusterContext.Provider value={cluster}>
       <GroupedResponsesContext.Provider value={groupedResponses}>
         <PodMetricsContext.Provider value={podNameToMetrics}>

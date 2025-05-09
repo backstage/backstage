@@ -123,6 +123,11 @@ const config: Config = {
         },
         blog: {
           path: 'blog',
+          // Gets rid of the following:
+          // Warning:  Some blog authors used in "2024-12-18-backstage-wrapped-2024.mdx" are not defined in "authors.yml":
+          // - {"name":"Patrik Oldsberg, Spotify & Ben Lambert, Spotify","key":null,"page":null}
+          // Note that we recommend to declare authors once in a "authors.yml" file and reference them by key in blog posts front matter to avoid author info duplication.
+          onInlineAuthors: 'ignore',
         },
         theme: {
           customCss: 'src/theme/customTheme.scss',
@@ -301,11 +306,6 @@ const config: Config = {
     languageTabs: [
       {
         highlight: 'javascript',
-        language: 'nodejs',
-        logoClass: 'nodejs',
-      },
-      {
-        highlight: 'javascript',
         language: 'javascript',
         logoClass: 'javascript',
       },
@@ -355,6 +355,11 @@ const config: Config = {
         {
           href: 'https://github.com/backstage/backstage',
           label: 'GitHub',
+          position: 'left',
+        },
+        {
+          href: 'https://discord.gg/backstage-687207715902193673',
+          label: 'Discord',
           position: 'left',
         },
         {
@@ -448,7 +453,7 @@ const config: Config = {
             },
             {
               label: 'Adopting',
-              to: 'https://backstage.spotify.com',
+              to: 'https://backstage.io/docs/getting-started/',
             },
             {
               label: 'Subscribe to our newsletter',
@@ -464,18 +469,6 @@ const config: Config = {
           title: 'More',
           items: [
             {
-              label: 'Open Source @ Spotify',
-              to: 'https://spotify.github.io/',
-            },
-            {
-              label: 'Spotify Engineering Blog',
-              to: 'https://engineering.atspotify.com/',
-            },
-            {
-              label: 'Spotify for Developers',
-              to: 'https://developer.spotify.com/',
-            },
-            {
               label: 'GitHub',
               to: 'https://github.com/backstage/',
             },
@@ -486,7 +479,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage</p>`,
+      copyright: `<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: <a href="https://www.linuxfoundation.org/trademark-usage" />https://www.linuxfoundation.org/trademark-usage</a></p>`,
     },
     algolia: {
       apiKey: '1f0ba86672ccfc3576faa94583e5b318',

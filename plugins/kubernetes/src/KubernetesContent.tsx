@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { Entity } from '@backstage/catalog-model';
@@ -40,7 +40,7 @@ import { RequireKubernetesPermissions } from './RequireKubernetesPermissions';
 type KubernetesContentProps = {
   entity: Entity;
   refreshIntervalMs?: number;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 export const KubernetesContent = ({

@@ -51,17 +51,23 @@ export interface Config {
 
       /**
        * The credentials to use for requests. If multiple credentials are specified the first one that matches the organization is used.
-       * If not organization matches the first credential without an organization is used.
+       * If no organization matches the first credential without an organization is used.
        *
        * If no credentials are specified at all, either a default credential (for Azure DevOps) or anonymous access (for Azure DevOps Server) is used.
        * @deepVisibility secret
        */
       credentials?: {
+        organizations?: string[];
         clientId?: string;
         clientSecret?: string;
         tenantId?: string;
         personalAccessToken?: string;
       }[];
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /**
@@ -94,6 +100,11 @@ export interface Config {
        * @visibility secret
        */
       appPassword?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for Bitbucket Cloud */
@@ -108,6 +119,11 @@ export interface Config {
        * @visibility secret
        */
       appPassword: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for Bitbucket Server */
@@ -137,6 +153,11 @@ export interface Config {
        * @visibility frontend
        */
       apiBaseUrl?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for Gerrit */
@@ -162,6 +183,11 @@ export interface Config {
        */
       cloneUrl?: string;
       /**
+       * Disable the edit url feature.
+       * @visibility frontend
+       */
+      disableEditUrl?: boolean;
+      /**
        * The username to use for authenticated requests.
        * @visibility secret
        */
@@ -172,6 +198,11 @@ export interface Config {
        * @visibility secret
        */
       password?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for GitHub */
@@ -214,7 +245,7 @@ export interface Config {
          * The secret used for webhooks
          * @visibility secret
          */
-        webhookSecret: string;
+        webhookSecret?: string;
         /**
          * The client ID to use
          */
@@ -269,6 +300,11 @@ export interface Config {
        * @visibility frontend
        */
       baseUrl?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
 
     /** Integration configuration for Google Cloud Storage */
@@ -349,6 +385,11 @@ export interface Config {
        * @visibility secret
        */
       password?: string;
+      /**
+       * PGP signing key for signing commits.
+       * @visibility secret
+       */
+      commitSigningKey?: string;
     }>;
     /** Integration configuration for Harness Code */
     harness?: Array<{

@@ -123,7 +123,7 @@ export function createGithubRepoPushAction(options: {
     async handler(ctx) {
       const {
         repoUrl,
-        defaultBranch = 'master',
+        defaultBranch = 'main',
         protectDefaultBranch = true,
         protectEnforceAdmins = true,
         gitCommitMessage = 'initial commit',
@@ -158,41 +158,50 @@ export function createGithubRepoPushAction(options: {
         repo,
       });
 
-      const client = new Octokit(octokitOptions);
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       const targetRepo = await client.rest.repos.get({ owner, repo });
 
       const remoteUrl = targetRepo.data.clone_url;
       const repoContentsUrl = `${targetRepo.data.html_url}/blob/${defaultBranch}`;
 
-      const { commitHash } = await initRepoPushAndProtect(
-        remoteUrl,
-        octokitOptions.auth,
-        ctx.workspacePath,
-        ctx.input.sourcePath,
-        defaultBranch,
-        protectDefaultBranch,
-        protectEnforceAdmins,
-        owner,
-        client,
-        repo,
-        requireCodeOwnerReviews,
-        bypassPullRequestAllowances,
-        requiredApprovingReviewCount,
-        restrictions,
-        requiredStatusCheckContexts,
-        requireBranchesToBeUpToDate,
-        requiredConversationResolution,
-        requireLastPushApproval,
-        config,
-        ctx.logger,
-        gitCommitMessage,
-        gitAuthorName,
-        gitAuthorEmail,
-        dismissStaleReviews,
-        requiredCommitSigning,
-        requiredLinearHistory,
-      );
+      const commitHash = await ctx.checkpoint({
+        key: `init.repo.publish.${owner}.${client}.${repo}`,
+        fn: async () => {
+          const { commitHash: hash } = await initRepoPushAndProtect(
+            remoteUrl,
+            octokitOptions.auth,
+            ctx.workspacePath,
+            ctx.input.sourcePath,
+            defaultBranch,
+            protectDefaultBranch,
+            protectEnforceAdmins,
+            owner,
+            client,
+            repo,
+            requireCodeOwnerReviews,
+            bypassPullRequestAllowances,
+            requiredApprovingReviewCount,
+            restrictions,
+            requiredStatusCheckContexts,
+            requireBranchesToBeUpToDate,
+            requiredConversationResolution,
+            requireLastPushApproval,
+            config,
+            ctx.logger,
+            gitCommitMessage,
+            gitAuthorName,
+            gitAuthorEmail,
+            dismissStaleReviews,
+            requiredCommitSigning,
+            requiredLinearHistory,
+          );
+          return hash;
+        },
+      });
 
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);

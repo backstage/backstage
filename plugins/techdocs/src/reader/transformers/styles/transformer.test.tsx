@@ -17,7 +17,7 @@
 import { renderHook } from '@testing-library/react';
 import { useStylesTransformer } from './transformer';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
-import React from 'react';
+import { ReactNode } from 'react';
 
 describe('Transformers > Styles', () => {
   it('should return a function that injects all styles into a given dom element', () => {
@@ -60,7 +60,7 @@ describe('Transformers > Styles', () => {
         },
       },
     });
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
+    const wrapper = ({ children }: { children: ReactNode }) => (
       <ThemeProvider theme={theme}>{children}</ThemeProvider>
     );
     const { result } = renderHook(() => useStylesTransformer(), { wrapper });
@@ -88,7 +88,7 @@ describe('Transformers > Styles', () => {
         },
       },
     });
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
+    const wrapper = ({ children }: { children: ReactNode }) => (
       <ThemeProvider theme={theme}>{children}</ThemeProvider>
     );
     const { result } = renderHook(() => useStylesTransformer(), { wrapper });
@@ -116,7 +116,7 @@ describe('Transformers > Styles', () => {
         },
       },
     });
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
+    const wrapper = ({ children }: { children: ReactNode }) => (
       <ThemeProvider theme={theme}>{children}</ThemeProvider>
     );
     const { result } = renderHook(() => useStylesTransformer(), { wrapper });

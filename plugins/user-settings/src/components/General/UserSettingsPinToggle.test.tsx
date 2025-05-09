@@ -16,7 +16,6 @@
 
 import { renderInTestApp } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
-import React from 'react';
 import { UserSettingsPinToggle } from './UserSettingsPinToggle';
 import { SidebarPinStateProvider } from '@backstage/core-components';
 

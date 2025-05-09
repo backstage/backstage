@@ -1,5 +1,55 @@
 # @backstage/plugin-auth-backend-module-okta-provider
 
+## 0.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.6.3-next.0
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/plugin-auth-node@0.6.2
+
+## 0.2.1
+
+### Patch Changes
+
+- ce15e30: Fixed repository url in `README.md`
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/backend-plugin-api@1.2.1
+
+## 0.2.1-next.2
+
+### Patch Changes
+
+- ce15e30: Fixed repository url in `README.md`
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/plugin-auth-node@0.6.1-next.1
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+
 ## 0.2.1-next.0
 
 ### Patch Changes
