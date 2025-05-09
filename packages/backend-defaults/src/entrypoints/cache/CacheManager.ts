@@ -27,9 +27,17 @@ import {
   ttlToMilliseconds,
   CacheStoreOptions,
   RedisCacheStoreOptions,
+  InfinispanCacheStoreOptions,
+  InfinispanClientBehaviorOptions,
+  InfinispanServerConfig,
+  InfinispanSslOptions,
+  InfinispanAuthOptions,
+  InfinispanDataFormatOptions,
 } from './types';
 import { durationToMilliseconds } from '@backstage/types';
 import { readDurationFromConfig } from '@backstage/config';
+
+import { createInfinispanStoreFactory_sync_facade } from './InfispanStoreFactory.ts';
 
 type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
 
@@ -41,36 +49,27 @@ type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
  * @public
  */
 export class CacheManager {
-  /**
-   * Keys represent supported `backend.cache.store` values, mapped to factories
-   * that return Keyv instances appropriate to the store.
-   */
-  private readonly storeFactories = {
-    redis: this.createRedisStoreFactory(),
-    valkey: this.createValkeyStoreFactory(),
-    memcache: this.createMemcacheStoreFactory(),
-    memory: this.createMemoryStoreFactory(),
+  private storeFactories: {
+    redis: StoreFactory;
+    valkey: StoreFactory;
+    memcache: StoreFactory;
+    memory: StoreFactory;
+    infinispan?: StoreFactory; // Infinispan factory is set conditionally
   };
 
   private readonly logger?: LoggerService;
-  private readonly store: keyof CacheManager['storeFactories'];
+  private readonly store: string; // Keep as string, validation done in constructor
   private readonly connection: string;
   private readonly errorHandler: CacheManagerOptions['onError'];
   private readonly defaultTtl?: number;
   private readonly storeOptions?: CacheStoreOptions;
 
-  /**
-   * Creates a new {@link CacheManager} instance by reading from the `backend`
-   * config section, specifically the `.cache` key.
-   *
-   * @param config - The loaded application configuration.
-   */
+  public infinispanClientShutdownMethod?: () => Promise<void>;
+
   static fromConfig(
     config: RootConfigService,
     options: CacheManagerOptions = {},
   ): CacheManager {
-    // If no `backend.cache` config is provided, instantiate the CacheManager
-    // with an in-memory cache client.
     const store = config.getOptionalString('backend.cache.store') || 'memory';
     const defaultTtlConfig = config.getOptional('backend.cache.defaultTtl');
     const connectionString =
@@ -96,10 +95,9 @@ export class CacheManager {
       }
     }
 
-    // Read store-specific options from config
     const storeOptions = CacheManager.parseStoreOptions(store, config, logger);
 
-    return new CacheManager(
+    const manager = new CacheManager(
       store,
       connectionString,
       options.onError,
@@ -107,36 +105,196 @@ export class CacheManager {
       defaultTtl,
       storeOptions,
     );
+    return manager;
   }
 
-  /**
-   * Parse store-specific options from configuration.
-   *
-   * @param store - The cache store type ('redis', 'valkey', 'memcache', or 'memory')
-   * @param config - The configuration service
-   * @param logger - Optional logger for warnings
-   * @returns The parsed store options
-   */
   private static parseStoreOptions(
     store: string,
     config: RootConfigService,
     logger?: LoggerService,
   ): CacheStoreOptions | undefined {
     const storeConfigPath = `backend.cache.${store}`;
-
-    if (
-      (store === 'redis' || store === 'valkey') &&
-      config.has(storeConfigPath)
-    ) {
-      return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
+    if (!config.has(storeConfigPath)) {
+      if (
+        store !== 'memory' &&
+        store !== 'memcache' &&
+        store !== 'redis' &&
+        store !== 'valkey' &&
+        store !== 'infinispan'
+      ) {
+        logger?.warn(
+          `No configuration found for cache store '${store}' at '${storeConfigPath}'.`,
+        );
+      }
+      return undefined;
     }
 
+    if (store === 'redis' || store === 'valkey') {
+      return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
+    }
+    if (store === 'infinispan') {
+      return CacheManager.parseInfinispanOptions(
+        storeConfigPath,
+        config,
+        logger,
+      );
+    }
     return undefined;
   }
 
-  /**
-   * Parse Redis-specific options from configuration.
-   */
+  private static parseInfinispanOptions(
+    storeConfigPath: string,
+    config: RootConfigService,
+    logger?: LoggerService,
+  ): InfinispanCacheStoreOptions | undefined {
+    const infinispanConfig = config.getConfig(storeConfigPath);
+    const parsedOptions: Partial<InfinispanCacheStoreOptions> = {};
+
+    if (infinispanConfig.has('servers')) {
+      const serversConfig = infinispanConfig.get('servers');
+      if (Array.isArray(serversConfig)) {
+        parsedOptions.servers = infinispanConfig.getConfigArray('servers').map(
+          serverConf =>
+            ({
+              host: serverConf.getString('host'),
+              port: serverConf.getNumber('port'),
+            } as InfinispanServerConfig),
+        );
+      } else if (typeof serversConfig === 'object' && serversConfig !== null) {
+        const serverConf = infinispanConfig.getConfig('servers');
+        parsedOptions.servers = {
+          host: serverConf.getString('host'),
+          port: serverConf.getNumber('port'),
+        } as InfinispanServerConfig;
+      } else {
+        logger?.error(
+          `Infinispan 'servers' configuration at ${storeConfigPath} must be an object or an array.`,
+        );
+        throw new Error(
+          `Infinispan 'servers' configuration at ${storeConfigPath} is invalid.`,
+        );
+      }
+    } else {
+      logger?.error(
+        `Infinispan configuration at ${storeConfigPath} is missing the 'servers' definition.`,
+      );
+      throw new Error(
+        `Infinispan configuration at ${storeConfigPath} must define 'servers'.`,
+      );
+    }
+
+    if (infinispanConfig.has('options')) {
+      const clientOptsConfig = infinispanConfig.getConfig('options');
+      const behaviorOptions: Partial<InfinispanClientBehaviorOptions> = {};
+
+      const versionStr = clientOptsConfig.getOptionalString('version');
+      if (
+        versionStr === '2.9' ||
+        versionStr === '2.5' ||
+        versionStr === '2.2'
+      ) {
+        behaviorOptions.version = versionStr; // Assign the string directly
+      } else if (versionStr === undefined || versionStr === null) {
+        behaviorOptions.version = versionStr; // Assign undefined or null
+      } else if (versionStr) {
+        // Log a warning if the version string is present but not one of the allowed values
+        logger?.warn(
+          `Invalid Infinispan client version "${versionStr}" in config at ${storeConfigPath}.options.version. Must be "2.9", "2.5", or "2.2". It will be ignored, and the client may use a default or fail.`,
+        );
+        // Do not assign behaviorOptions.version, let it be undefined if not valid
+      }
+
+      if (clientOptsConfig.has('cacheName'))
+        behaviorOptions.cacheName =
+          clientOptsConfig.getOptionalString('cacheName');
+      if (clientOptsConfig.has('maxRetries'))
+        behaviorOptions.maxRetries =
+          clientOptsConfig.getOptionalNumber('maxRetries');
+      if (clientOptsConfig.has('connectionTimeout'))
+        behaviorOptions.connectionTimeout =
+          clientOptsConfig.getOptionalNumber('connectionTimeout');
+      if (clientOptsConfig.has('socketTimeout'))
+        behaviorOptions.socketTimeout =
+          clientOptsConfig.getOptionalNumber('socketTimeout');
+      if (clientOptsConfig.has('topologyUpdates'))
+        behaviorOptions.topologyUpdates =
+          clientOptsConfig.getOptionalBoolean('topologyUpdates');
+
+      if (clientOptsConfig.has('authentication')) {
+        const authConfig = clientOptsConfig.getConfig('authentication');
+        const parsedAuthConfig: Partial<InfinispanAuthOptions> = {
+          enabled: authConfig.getBoolean('enabled'), // Assuming 'enabled' is mandatory for the block
+        };
+        if (authConfig.has('saslMechanism'))
+          parsedAuthConfig.saslMechanism =
+            authConfig.getOptionalString('saslMechanism');
+        if (authConfig.has('userName'))
+          parsedAuthConfig.userName = authConfig.getOptionalString('userName');
+        if (authConfig.has('password'))
+          parsedAuthConfig.password = authConfig.getOptionalString('password');
+        if (authConfig.has('token'))
+          parsedAuthConfig.token = authConfig.getOptionalString('token');
+        if (authConfig.has('realm'))
+          parsedAuthConfig.realm = authConfig.getOptionalString('realm');
+        behaviorOptions.authentication =
+          parsedAuthConfig as InfinispanAuthOptions;
+      }
+
+      if (clientOptsConfig.has('ssl')) {
+        const sslConfig = clientOptsConfig.getConfig('ssl');
+        const parsedSslOptions: Partial<InfinispanSslOptions> = {
+          enabled: sslConfig.getBoolean('enabled'), // Assuming 'enabled' is mandatory
+        };
+        if (sslConfig.has('secureProtocol'))
+          parsedSslOptions.secureProtocol =
+            sslConfig.getOptionalString('secureProtocol');
+        if (sslConfig.has('caFile'))
+          parsedSslOptions.caFile = sslConfig.getOptionalString('caFile');
+        if (sslConfig.has('clientCertificateFile'))
+          parsedSslOptions.clientCertificateFile = sslConfig.getOptionalString(
+            'clientCertificateFile',
+          );
+        if (sslConfig.has('clientKeyFile'))
+          parsedSslOptions.clientKeyFile =
+            sslConfig.getOptionalString('clientKeyFile');
+        if (sslConfig.has('clientKeyPassword'))
+          parsedSslOptions.clientKeyPassword =
+            sslConfig.getOptionalString('clientKeyPassword');
+        if (sslConfig.has('sniHostname'))
+          parsedSslOptions.sniHostname =
+            sslConfig.getOptionalString('sniHostname');
+        behaviorOptions.ssl = parsedSslOptions as InfinispanSslOptions;
+      }
+
+      if (clientOptsConfig.has('dataFormat')) {
+        const dfConfig = clientOptsConfig.getConfig('dataFormat');
+        const parsedDfOptions: Partial<InfinispanDataFormatOptions> = {};
+        if (dfConfig.has('keyType'))
+          parsedDfOptions.keyType = dfConfig.getOptionalString('keyType');
+        if (dfConfig.has('valueType'))
+          parsedDfOptions.valueType = dfConfig.getOptionalString('valueType');
+        const mediaTypeString = dfConfig.getOptionalString('mediaType');
+        if (
+          mediaTypeString === 'text/plain' ||
+          mediaTypeString === 'application/json'
+        ) {
+          parsedDfOptions.mediaType = mediaTypeString;
+        } else if (mediaTypeString === null) {
+          parsedDfOptions.mediaType = null;
+        } else if (mediaTypeString !== undefined) {
+          logger?.warn(
+            `Invalid mediaType "${mediaTypeString}" in Infinispan dataFormat config at ${storeConfigPath}.options.dataFormat. Allowed: "text/plain", "application/json", or null. Ignored.`,
+          );
+        }
+        behaviorOptions.dataFormat =
+          parsedDfOptions as InfinispanDataFormatOptions;
+      }
+      parsedOptions.options =
+        behaviorOptions as InfinispanClientBehaviorOptions;
+    }
+    return parsedOptions as InfinispanCacheStoreOptions;
+  }
+
   private static parseRedisOptions(
     storeConfigPath: string,
     config: RootConfigService,
@@ -144,7 +302,6 @@ export class CacheManager {
   ): RedisCacheStoreOptions {
     const redisOptions: RedisCacheStoreOptions = {};
     const redisConfig = config.getConfig(storeConfigPath);
-
     redisOptions.client = {
       namespace: redisConfig.getOptionalString('client.namespace'),
       keyPrefixSeparator:
@@ -155,20 +312,17 @@ export class CacheManager {
         'client.noNamespaceAffectsAll',
       ),
     };
-
     if (redisConfig.has('cluster')) {
       const clusterConfig = redisConfig.getConfig('cluster');
-
       if (!clusterConfig.has('rootNodes')) {
         logger?.warn(
-          `Redis cluster config has no 'rootNodes' key, defaulting to non-clustered mode`,
+          `Redis cluster config at ${storeConfigPath} has no 'rootNodes' key, defaulting to non-clustered mode`,
         );
         return redisOptions;
       }
-
       redisOptions.cluster = {
-        rootNodes: clusterConfig.get('rootNodes'),
-        defaults: clusterConfig.getOptional('defaults'),
+        rootNodes: clusterConfig.get('rootNodes') as any[], // Config type might be broader
+        defaults: clusterConfig.getOptional('defaults') as object | undefined,
         minimizeConnections: clusterConfig.getOptionalBoolean(
           'minimizeConnections',
         ),
@@ -178,7 +332,6 @@ export class CacheManager {
         ),
       };
     }
-
     return redisOptions;
   }
 
@@ -191,61 +344,104 @@ export class CacheManager {
     defaultTtl?: number,
     storeOptions?: CacheStoreOptions,
   ) {
-    if (!this.storeFactories.hasOwnProperty(store)) {
-      throw new Error(`Unknown cache store: ${store}`);
-    }
     this.logger = logger;
-    this.store = store as keyof CacheManager['storeFactories'];
+    this.store = store;
     this.connection = connectionString;
     this.errorHandler = errorHandler;
     this.defaultTtl = defaultTtl;
     this.storeOptions = storeOptions;
+
+    this.storeFactories = {
+      redis: this.createRedisStoreFactory(),
+      valkey: this.createValkeyStoreFactory(),
+      memcache: this.createMemcacheStoreFactory(),
+      memory: this.createMemoryStoreFactory(),
+    };
+
+    if (store === 'infinispan') {
+      if (!this.storeOptions || !('servers' in this.storeOptions)) {
+        const errorMsg =
+          'Infinispan store selected but required storeOptions (InfinispanCacheStoreOptions) are missing or invalid.';
+        this.logger?.error(errorMsg);
+        throw new Error(errorMsg);
+      }
+      if (!this.logger) {
+        throw new Error(
+          'Logger is required for Infinispan cache store factory but was not provided to CacheManager.',
+        );
+      }
+      const { factory, shutdown } = createInfinispanStoreFactory_sync_facade(
+        this.storeOptions as InfinispanCacheStoreOptions,
+        this.logger,
+      );
+      this.storeFactories.infinispan = factory;
+      this.infinispanClientShutdownMethod = shutdown;
+    }
+
+    // Validate that the selected store has a configured factory
+    if (!this.storeFactories[this.store as keyof typeof this.storeFactories]) {
+      throw new Error(`Unknown or uninitialized cache store: ${this.store}`);
+    }
   }
 
-  /**
-   * Generates a PluginCacheManager for consumption by plugins.
-   *
-   * @param pluginId - The plugin that the cache manager should be created for.
-   *        Plugin names should be unique.
-   */
   forPlugin(pluginId: string): CacheService {
     const clientFactory = (options: CacheServiceOptions) => {
       const ttl = options.defaultTtl ?? this.defaultTtl;
-      return this.getClientWithTtl(
+      const selectedStoreFactory =
+        this.storeFactories[this.store as keyof typeof this.storeFactories];
+      if (!selectedStoreFactory) {
+        // This should ideally be caught in constructor, but as a safeguard:
+        this.logger?.error(
+          `Cache store factory for '${this.store}' not found when creating client for plugin '${pluginId}'.`,
+        );
+        throw new Error(`Cache store factory for '${this.store}' not found.`);
+      }
+      return selectedStoreFactory(
         pluginId,
         ttl !== undefined ? ttlToMilliseconds(ttl) : undefined,
       );
     };
-
     return new DefaultCacheClient(clientFactory({}), clientFactory, {});
   }
 
-  private getClientWithTtl(pluginId: string, ttl: number | undefined): Keyv {
-    return this.storeFactories[this.store](pluginId, ttl);
+  // Method specific to shutting down the Infinispan client if it was initialized.
+  public async stopInfinispanClient(): Promise<void> {
+    if (this.infinispanClientShutdownMethod) {
+      this.logger?.info('CacheManager is stopping the Infinispan client...');
+      await this.infinispanClientShutdownMethod();
+      this.logger?.info(
+        'Infinispan client shutdown process completed via CacheManager.',
+      );
+    } else {
+      this.logger?.debug(
+        'No Infinispan client shutdown method registered with CacheManager.',
+      );
+    }
   }
 
   private createRedisStoreFactory(): StoreFactory {
     const KeyvRedis = require('@keyv/redis').default;
     const { createCluster } = require('@keyv/redis');
     const stores: Record<string, typeof KeyvRedis> = {};
-
     return (pluginId, defaultTtl) => {
       if (!stores[pluginId]) {
-        const redisOptions = this.storeOptions?.client || {
+        const redisStoreOptions = this.storeOptions as
+          | RedisCacheStoreOptions
+          | undefined;
+        const clientOpts = redisStoreOptions?.client || {
           keyPrefixSeparator: ':',
         };
-        if (this.storeOptions?.cluster) {
-          // Create a Redis cluster
-          const cluster = createCluster(this.storeOptions?.cluster);
-          stores[pluginId] = new KeyvRedis(cluster, redisOptions);
+        if (redisStoreOptions?.cluster) {
+          const cluster = createCluster(redisStoreOptions.cluster);
+          stores[pluginId] = new KeyvRedis(cluster, clientOpts);
         } else {
-          // Create a regular Redis connection
-          stores[pluginId] = new KeyvRedis(this.connection, redisOptions);
+          stores[pluginId] = new KeyvRedis(this.connection, clientOpts);
         }
-
-        // Always provide an error handler to avoid stopping the process
         stores[pluginId].on('error', (err: Error) => {
-          this.logger?.error('Failed to create redis cache client', err);
+          this.logger?.error('Redis cache client error', {
+            error: err.message,
+            pluginId,
+          });
           this.errorHandler?.(err);
         });
       }
@@ -261,26 +457,27 @@ export class CacheManager {
 
   private createValkeyStoreFactory(): StoreFactory {
     const KeyvValkey = require('@keyv/valkey').default;
-    const { createCluster } = require('@keyv/valkey');
+    const { createCluster } = require('@keyv/valkey'); // Assuming @keyv/valkey has similar cluster setup
     const stores: Record<string, typeof KeyvValkey> = {};
-
     return (pluginId, defaultTtl) => {
       if (!stores[pluginId]) {
-        const valkeyOptions = this.storeOptions?.client || {
+        const valkeyStoreOptions = this.storeOptions as
+          | RedisCacheStoreOptions
+          | undefined; // Valkey uses Redis options structure
+        const clientOpts = valkeyStoreOptions?.client || {
           keyPrefixSeparator: ':',
         };
-        if (this.storeOptions?.cluster) {
-          // Create a Valkey cluster (Redis cluster under the hood)
-          const cluster = createCluster(this.storeOptions?.cluster);
-          stores[pluginId] = new KeyvValkey(cluster, valkeyOptions);
+        if (valkeyStoreOptions?.cluster) {
+          const cluster = createCluster(valkeyStoreOptions.cluster);
+          stores[pluginId] = new KeyvValkey(cluster, clientOpts);
         } else {
-          // Create a regular Valkey connection
-          stores[pluginId] = new KeyvValkey(this.connection, valkeyOptions);
+          stores[pluginId] = new KeyvValkey(this.connection, clientOpts);
         }
-
-        // Always provide an error handler to avoid stopping the process
         stores[pluginId].on('error', (err: Error) => {
-          this.logger?.error('Failed to create valkey cache client', err);
+          this.logger?.error('Valkey cache client error', {
+            error: err.message,
+            pluginId,
+          });
           this.errorHandler?.(err);
         });
       }
@@ -297,13 +494,14 @@ export class CacheManager {
   private createMemcacheStoreFactory(): StoreFactory {
     const KeyvMemcache = require('@keyv/memcache').default;
     const stores: Record<string, typeof KeyvMemcache> = {};
-
     return (pluginId, defaultTtl) => {
       if (!stores[pluginId]) {
         stores[pluginId] = new KeyvMemcache(this.connection);
-        // Always provide an error handler to avoid stopping the process
         stores[pluginId].on('error', (err: Error) => {
-          this.logger?.error('Failed to create memcache cache client', err);
+          this.logger?.error('Memcache client error', {
+            error: err.message,
+            pluginId,
+          });
           this.errorHandler?.(err);
         });
       }

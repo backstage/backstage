@@ -20,6 +20,10 @@ import { connectToExternalMemcache, startMemcachedContainer } from './memcache';
 import { connectToExternalRedis, startRedisContainer } from './redis';
 import { Instance, TestCacheId, TestCacheProperties, allCaches } from './types';
 import { connectToExternalValkey, startValkeyContainer } from './valkey';
+import {
+  connectToExternalInfinispan,
+  startInfinispanContainer,
+} from './infinispan';
 
 /**
  * Encapsulates the creation of ephemeral test cache instances for use inside
@@ -159,6 +163,8 @@ export class TestCaches {
         return this.initRedis(properties);
       case 'valkey':
         return this.initValkey(properties);
+      case 'infinispan':
+        return this.initInfinispan(properties);
       case 'memory':
         return {
           store: 'memory',
@@ -210,6 +216,21 @@ export class TestCaches {
     }
 
     return await startValkeyContainer(properties.dockerImageName!);
+  }
+
+  private async initInfinispan(
+    properties: TestCacheProperties,
+  ): Promise<Instance> {
+    // Use the connection string if provided
+    const envVarName = properties.connectionStringEnvironmentVariableName;
+    if (envVarName) {
+      const connectionString = process.env[envVarName];
+      if (connectionString) {
+        return connectToExternalInfinispan(connectionString);
+      }
+    }
+
+    return await startInfinispanContainer(properties.dockerImageName!);
   }
 
   private async shutdown() {

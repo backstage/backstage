@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-export { cacheServiceFactory } from './cacheServiceFactory';
+export { cacheServiceFactory } from './CacheServiceFactory.ts';
 export { CacheManager } from './CacheManager';
 export type { CacheManagerOptions } from './types';
+export { InfinispanKeyvStore } from './InfinispanKeyvStore';

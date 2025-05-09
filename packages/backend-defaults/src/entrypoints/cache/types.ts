@@ -29,11 +29,79 @@ export type RedisCacheStoreOptions = {
 };
 
 /**
+ * Configuration for a single Infinispan server.
+ */
+export interface InfinispanServerConfig {
+  host: string;
+  port: number;
+}
+
+/**
+ * SSL/TLS options for the Infinispan client.
+ */
+export interface InfinispanSslOptions {
+  enabled: boolean;
+  secureProtocol?: string | null;
+  caFile?: string | null;
+  clientCertificateFile?: string | null;
+  clientKeyFile?: string | null;
+  clientKeyPassword?: string | null;
+  sniHostname?: string | null;
+}
+
+/**
+ * Authentication options for the Infinispan client.
+ */
+export interface InfinispanAuthOptions {
+  enabled: boolean;
+  saslMechanism?: string | null;
+  userName?: string | null;
+  password?: string | null;
+  token?: string | null;
+  realm?: string | null;
+}
+
+/**
+ * Data format options for the Infinispan client.
+ */
+export interface InfinispanDataFormatOptions {
+  keyType?: string | null;
+  valueType?: string | null;
+  mediaType?: 'text/plain' | 'application/json' | null;
+}
+
+/**
+ * Detailed client behavior options for the Infinispan client.
+ */
+export interface InfinispanClientBehaviorOptions {
+  version?: '2.9' | '2.5' | '2.2' | null; // Corrected to number literals
+  cacheName?: string | null;
+  maxRetries?: number | null;
+  connectionTimeout?: number | null;
+  socketTimeout?: number | null;
+  authentication?: InfinispanAuthOptions | null;
+  ssl?: InfinispanSslOptions | null;
+  dataFormat?: InfinispanDataFormatOptions | null;
+  topologyUpdates?: boolean | null;
+}
+
+/**
+ * Options for the Infinispan cache store, designed to be configured
+ * in app-config.yaml under `backend.cache.infinispan`.
+ */
+export type InfinispanCacheStoreOptions = {
+  servers: InfinispanServerConfig | InfinispanServerConfig[];
+  options?: InfinispanClientBehaviorOptions;
+};
+
+/**
  * Union type of all cache store options.
  *
  * @public
  */
-export type CacheStoreOptions = RedisCacheStoreOptions;
+export type CacheStoreOptions =
+  | RedisCacheStoreOptions
+  | InfinispanCacheStoreOptions;
 
 /**
  * Options given when constructing a {@link CacheManager}.
@@ -45,7 +113,6 @@ export type CacheManagerOptions = {
    * An optional logger for use by the PluginCacheManager.
    */
   logger?: LoggerService;
-
   /**
    * An optional handler for connection errors emitted from the underlying data
    * store.

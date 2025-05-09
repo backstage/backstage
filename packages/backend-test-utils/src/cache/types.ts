@@ -15,54 +15,56 @@
  */
 
 import Keyv from 'keyv';
-import { getDockerImageForName } from '../util/getDockerImageForName';
 
 /**
  * The possible caches to test against.
  *
  * @public
  */
-export type TestCacheId = 'MEMORY' | 'REDIS_7' | 'VALKEY_8' | 'MEMCACHED_1';
+export type TestCacheId =
+  | 'MEMCACHED_1'
+  | 'REDIS_7'
+  | 'REDIS_6'
+  | 'VALKEY_8'
+  | 'INFINISPAN_15';
 
-export type TestCacheProperties = {
-  name: string;
+export interface TestCacheProperties {
   store: string;
   dockerImageName?: string;
   connectionStringEnvironmentVariableName?: string;
-};
+}
 
-export type Instance = {
+export interface Instance {
   store: string;
   connection: string;
   keyv: Keyv;
   stop: () => Promise<void>;
-};
+}
 
-export const allCaches: Record<TestCacheId, TestCacheProperties> =
-  Object.freeze({
-    REDIS_7: {
-      name: 'Redis 7.x',
-      store: 'redis',
-      dockerImageName: getDockerImageForName('redis:7'),
-      connectionStringEnvironmentVariableName:
-        'BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING',
-    },
-    MEMCACHED_1: {
-      name: 'Memcached 1.x',
-      store: 'memcache',
-      dockerImageName: getDockerImageForName('memcached:1'),
-      connectionStringEnvironmentVariableName:
-        'BACKSTAGE_TEST_CACHE_MEMCACHED1_CONNECTION_STRING',
-    },
-    MEMORY: {
-      name: 'In-memory',
-      store: 'memory',
-    },
-    VALKEY_8: {
-      name: 'Valkey 8.x',
-      store: 'valkey',
-      dockerImageName: getDockerImageForName('valkey/valkey:8'),
-      connectionStringEnvironmentVariableName:
-        'BACKSTAGE_TEST_CACHE_VALKEY8_CONNECTION_STRING',
-    },
-  });
+export const allCaches: Record<TestCacheId, TestCacheProperties> = {
+  MEMCACHED_1: {
+    store: 'memcache',
+    dockerImageName: 'memcached:1.6-alpine',
+    connectionStringEnvironmentVariableName: 'TEST_MEMCACHED_CONNECTION',
+  },
+  REDIS_7: {
+    store: 'redis',
+    dockerImageName: 'redis:7-alpine',
+    connectionStringEnvironmentVariableName: 'TEST_REDIS_CONNECTION',
+  },
+  REDIS_6: {
+    store: 'redis',
+    dockerImageName: 'redis:6-alpine',
+    connectionStringEnvironmentVariableName: 'TEST_REDIS_CONNECTION',
+  },
+  VALKEY_8: {
+    store: 'valkey',
+    dockerImageName: 'valkey/valkey:8',
+    connectionStringEnvironmentVariableName: 'TEST_VALKEY_CONNECTION',
+  },
+  INFINISPAN_15: {
+    store: 'infinispan',
+    dockerImageName: 'infinispan/server:15.2.1.Final-1',
+    connectionStringEnvironmentVariableName: 'TEST_INFINISPAN_CONNECTION',
+  },
+};
