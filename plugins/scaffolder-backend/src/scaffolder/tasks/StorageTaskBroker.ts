@@ -503,8 +503,11 @@ export class StorageTaskBroker implements TaskBroker {
     });
   }
 
-  async retry?(taskId: string): Promise<void> {
-    await this.storage.retryTask?.({ taskId });
+  async retry?(options: {
+    secrets?: TaskSecrets;
+    taskId: string;
+  }): Promise<void> {
+    await this.storage.retryTask?.(options);
     this.signalDispatch();
   }
 }

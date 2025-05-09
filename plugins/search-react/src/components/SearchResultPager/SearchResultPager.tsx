@@ -20,6 +20,8 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 
 import { useSearch } from '../../context';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchReactTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,6 +38,7 @@ const useStyles = makeStyles(theme => ({
 export const SearchResultPager = () => {
   const { fetchNextPage, fetchPreviousPage } = useSearch();
   const classes = useStyles();
+  const { t } = useTranslationRef(searchReactTranslationRef);
 
   if (!fetchNextPage && !fetchPreviousPage) {
     return <></>;
@@ -49,7 +52,7 @@ export const SearchResultPager = () => {
         onClick={fetchPreviousPage}
         startIcon={<ArrowBackIosIcon />}
       >
-        Previous
+        {t('searchResultPager.previous')}
       </Button>
 
       <Button
@@ -58,7 +61,7 @@ export const SearchResultPager = () => {
         onClick={fetchNextPage}
         endIcon={<ArrowForwardIosIcon />}
       >
-        Next
+        {t('searchResultPager.next')}
       </Button>
     </nav>
   );

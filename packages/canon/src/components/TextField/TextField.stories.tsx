@@ -130,7 +130,7 @@ export const WithOnClear: Story = {
     ...WithLabel.args,
     placeholder: 'Search...',
     type: 'search',
-    onClear: () => null,
+    onClear: () => console.log('Cleared!'),
   },
 };
 

@@ -14,35 +14,32 @@
  * limitations under the License.
  */
 
-import {
-  DefaultAuthConnector,
-  PopupOptions,
-} from '../../../../lib/AuthConnector';
+import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
   AuthRequestOptions,
+  BackstageIdentityApi,
   BackstageIdentityResponse,
+  BackstageUserIdentity,
   OAuthApi,
   OpenIdConnectApi,
   ProfileInfo,
   ProfileInfoApi,
-  SessionState,
   SessionApi,
-  BackstageIdentityApi,
-  BackstageUserIdentity,
+  SessionState,
 } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
-import { OAuth2Session } from './types';
-import { OAuthApiCreateOptions } from '../types';
+import {
+  OAuth2CreateOptions,
+  OAuth2CreateOptionsWithAuthConnector,
+  OAuth2Session,
+} from './types';
 
-/**
- * OAuth2 create options.
- * @public
- */
-export type OAuth2CreateOptions = OAuthApiCreateOptions & {
-  scopeTransform?: (scopes: string[]) => string[];
-  popupOptions?: PopupOptions;
+const DEFAULT_PROVIDER = {
+  id: 'oauth2',
+  title: 'Your Identity Provider',
+  icon: () => null,
 };
 
 export type OAuth2Response = {
@@ -60,12 +57,6 @@ export type OAuth2Response = {
   };
 };
 
-const DEFAULT_PROVIDER = {
-  id: 'oauth2',
-  title: 'Your Identity Provider',
-  icon: () => null,
-};
-
 /**
  * Implements a generic OAuth2 flow for auth.
  *
@@ -79,19 +70,23 @@ export default class OAuth2
     BackstageIdentityApi,
     SessionApi
 {
-  static create(options: OAuth2CreateOptions) {
+  private static createAuthConnector(
+    options: OAuth2CreateOptions | OAuth2CreateOptionsWithAuthConnector,
+  ) {
+    if ('authConnector' in options) {
+      return options.authConnector;
+    }
     const {
+      scopeTransform = x => x,
       configApi,
       discoveryApi,
       environment = 'development',
       provider = DEFAULT_PROVIDER,
       oauthRequestApi,
-      defaultScopes = [],
-      scopeTransform = x => x,
       popupOptions,
     } = options;
 
-    const connector = new DefaultAuthConnector({
+    return new DefaultAuthConnector({
       configApi,
       discoveryApi,
       environment,
@@ -106,10 +101,9 @@ export default class OAuth2
           providerInfo: {
             idToken: res.providerInfo.idToken,
             accessToken: res.providerInfo.accessToken,
-            scopes: OAuth2.normalizeScopes(
+            scopes: OAuth2.normalizeScopes(res.providerInfo.scope, {
               scopeTransform,
-              res.providerInfo.scope,
-            ),
+            }),
             expiresAt: res.providerInfo.expiresInSeconds
               ? new Date(Date.now() + res.providerInfo.expiresInSeconds * 1000)
               : undefined,
@@ -128,6 +122,14 @@ export default class OAuth2
       },
       popupOptions,
     });
+  }
+
+  static create(
+    options: OAuth2CreateOptions | OAuth2CreateOptionsWithAuthConnector,
+  ) {
+    const { defaultScopes = [], scopeTransform = x => x } = options;
+
+    const connector = OAuth2.createAuthConnector(options);
 
     const sessionManager = new RefreshingAuthSessionManager({
       connector,
@@ -182,7 +184,9 @@ export default class OAuth2
     scope?: string | string[],
     options?: AuthRequestOptions,
   ) {
-    const normalizedScopes = OAuth2.normalizeScopes(this.scopeTransform, scope);
+    const normalizedScopes = OAuth2.normalizeScopes(scope, {
+      scopeTransform: this.scopeTransform,
+    });
     const session = await this.sessionManager.getSession({
       ...options,
       scopes: normalizedScopes,
@@ -210,9 +214,12 @@ export default class OAuth2
     return session?.profile;
   }
 
-  private static normalizeScopes(
-    scopeTransform: (scopes: string[]) => string[],
+  /**
+   * @public
+   */
+  public static normalizeScopes(
     scopes?: string | string[],
+    options?: { scopeTransform: (scopes: string[]) => string[] },
   ): Set<string> {
     if (!scopes) {
       return new Set();
@@ -222,6 +229,10 @@ export default class OAuth2
       ? scopes
       : scopes.split(/[\s|,]/).filter(Boolean);
 
-    return new Set(scopeTransform(scopeList));
+    const transformedScopes = options
+      ? options.scopeTransform(scopeList)
+      : scopeList;
+
+    return new Set(transformedScopes);
   }
 }

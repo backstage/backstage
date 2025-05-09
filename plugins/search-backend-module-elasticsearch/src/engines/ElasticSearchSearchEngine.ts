@@ -192,6 +192,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       config.getOptional<ElasticSearchHighlightOptions>(
         'search.elasticsearch.highlightOptions',
       ),
+      config.getOptional<ElasticSearchQueryConfig>(
+        'search.elasticsearch.queryOptions',
+      ),
     );
 
     for (const indexTemplate of this.readIndexTemplateConfig(
