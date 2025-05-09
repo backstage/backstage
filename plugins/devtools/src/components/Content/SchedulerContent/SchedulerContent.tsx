@@ -25,7 +25,6 @@ import {
   useTheme,
 } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
-import React from 'react';
 import ReactJson from 'react-json-view';
 import { useScheduler } from '../../../hooks';
 import { ConfigError } from '@backstage/plugin-devtools-common';
@@ -57,11 +56,41 @@ export const WarningContent = ({ error }: { error: ConfigError }) => {
   );
 };
 
+const SchedulerTasks = ({ pluginId }: { pluginId: string }) => {
+  const theme = useTheme();
+  const { schedules } = useScheduler(pluginId);
+
+  if (!schedules) {
+    return <Alert severity="error">Unable to load schedules</Alert>;
+  }
+
+  if (schedules.length === 0) {
+    return <Alert severity="info">No schedules found</Alert>;
+  }
+
+  return (
+    <>
+      {schedules.map(e => (
+        <>
+          <Typography variant="subtitle1">
+            {e.taskId} | {e.scope}
+          </Typography>
+          <ReactJson
+            src={e.settings as object}
+            name="schedule"
+            enableClipboard={false}
+            theme={theme.palette.type === 'dark' ? 'chalk' : 'rjv-default'}
+          />
+        </>
+      ))}
+    </>
+  );
+};
+
 /** @public */
 export const SchedulerContent = ({ pluginId }: { pluginId: string }) => {
   const classes = useStyles();
-  const theme = useTheme();
-  const { schedules, loading, error } = useScheduler(pluginId);
+  const { loading, error } = useScheduler(pluginId);
 
   if (loading) {
     return <Progress />;
@@ -70,28 +99,12 @@ export const SchedulerContent = ({ pluginId }: { pluginId: string }) => {
     return null;
   }
 
-  if (!schedules) {
-    return <Alert severity="error">Unable to load schedules</Alert>;
-  }
-
   return (
     <Box>
       <Paper className={classes.paperStyle}>
         <Typography variant="h6">{pluginId}</Typography>
         <Paper className={classes.paperStyle}>
-          {schedules.map(e => (
-            <>
-              <p>
-                {e.id} | {e.scope}
-              </p>
-              <ReactJson
-                src={e.settings as object}
-                name="schedule"
-                enableClipboard={false}
-                theme={theme.palette.type === 'dark' ? 'chalk' : 'rjv-default'}
-              />
-            </>
-          ))}
+          <SchedulerTasks pluginId={pluginId} />
         </Paper>
       </Paper>
     </Box>

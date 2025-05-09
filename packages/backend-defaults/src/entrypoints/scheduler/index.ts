@@ -16,3 +16,4 @@
 
 export { DefaultSchedulerService } from './lib/DefaultSchedulerService';
 export { schedulerServiceFactory } from './schedulerServiceFactory';
+export type { TaskApiTasksResponse } from './lib/types';

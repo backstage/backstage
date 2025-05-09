@@ -14,32 +14,33 @@
  * limitations under the License.
  */
 
-import { devToolsApiRef } from '../api';
-import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/esm/useAsync';
 import {
-  ConfigInfo,
-  SchedulerResponse,
-} from '@backstage/plugin-devtools-common';
+  discoveryApiRef,
+  fetchApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
+import useAsync from 'react-use/esm/useAsync';
+import { SchedulerResponse } from '@backstage/plugin-devtools-common';
 
 export function useScheduler(pluginId: string): {
-  schedules?: SchedulerResponse;
+  schedules?: SchedulerResponse['tasks'];
   loading: boolean;
   error?: Error;
 } {
   const discovery = useApi(discoveryApiRef);
+  const fetchApi = useApi(fetchApiRef);
   const { value, loading, error } = useAsync(async () => {
-    const response = await fetch(
+    const response = await fetchApi.fetch(
       `${await discovery.getBaseUrl(pluginId)}/.backstage/scheduler/v1/tasks`,
     );
     if (!response.ok) {
       throw new Error(`Failed to fetch schedules: ${response.statusText}`);
     }
-    return response.json();
+    return response.json() as Promise<SchedulerResponse>;
   }, [discovery, pluginId]);
 
   return {
-    schedules: value,
+    schedules: value?.tasks,
     loading,
     error,
   };

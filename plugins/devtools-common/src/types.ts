@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { JsonObject, JsonValue } from '@backstage/types';
+import { type TaskApiTasksResponse } from '@backstage/backend-defaults/scheduler';
+import { JsonValue } from '@backstage/types';
 
 /** @public */
 export type Endpoint = {
@@ -69,7 +70,5 @@ export type ConfigError = {
 
 /** @public */
 export type SchedulerResponse = {
-  id: string;
-  scope: string;
-  settings: JsonObject;
-}[];
+  tasks: TaskApiTasksResponse[];
+};
