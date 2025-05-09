@@ -19,18 +19,18 @@ import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { PluginHomeContentModalClassKey } from './';
 
 /** @public */
-export type CatalogReactComponentsNameToClassKey = {
+export type PluginHomeComponentsNameToClassKey = {
   PluginHomeContentModal: PluginHomeContentModalClassKey;
 };
 
 /** @public */
 export type BackstageOverrides = Overrides & {
-  [Name in keyof CatalogReactComponentsNameToClassKey]?: Partial<
-    StyleRules<CatalogReactComponentsNameToClassKey[Name]>
+  [Name in keyof PluginHomeComponentsNameToClassKey]?: Partial<
+    StyleRules<PluginHomeComponentsNameToClassKey[Name]>
   >;
 };
 
 declare module '@backstage/theme' {
   interface OverrideComponentNameToClassKeys
-    extends CatalogReactComponentsNameToClassKey {}
+    extends PluginHomeComponentsNameToClassKey {}
 }

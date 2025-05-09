@@ -13,8 +13,8 @@ import { UiSchema } from '@rjsf/utils';
 
 // @public (undocumented)
 export type BackstageOverrides = Overrides & {
-  [Name in keyof CatalogReactComponentsNameToClassKey]?: Partial<
-    StyleRules<CatalogReactComponentsNameToClassKey[Name]>
+  [Name in keyof PluginHomeComponentsNameToClassKey]?: Partial<
+    StyleRules<PluginHomeComponentsNameToClassKey[Name]>
   >;
 };
 
@@ -50,11 +50,6 @@ export type CardSettings = {
 };
 
 // @public (undocumented)
-export type CatalogReactComponentsNameToClassKey = {
-  PluginHomeContentModal: PluginHomeContentModalClassKey;
-};
-
-// @public (undocumented)
 export type ComponentParts = {
   Content: (props?: any) => JSX.Element;
   Actions?: () => JSX.Element;
@@ -85,6 +80,11 @@ export function createCardExtension<T>(options: {
   layout?: CardLayout;
   settings?: CardSettings;
 }): Extension<(props: CardExtensionProps<T>) => JSX_2.Element>;
+
+// @public (undocumented)
+export type PluginHomeComponentsNameToClassKey = {
+  PluginHomeContentModal: PluginHomeContentModalClassKey;
+};
 
 // @public (undocumented)
 export type PluginHomeContentModalClassKey = 'contentModal' | 'linkText';
