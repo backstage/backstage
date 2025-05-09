@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:infinispan:config:15.2" xmlns:server="urn:infinispan:server:15.2" xsi:schemaLocation="urn:infinispan:config:15.2 https://infinispan.org/schemas/infinispan-config-15.2.xsd urn:infinispan:server:15.2 https://infinispan.org/schemas/infinispan-server-15.2.xsd">
+
+    <cache-container name="default" statistics="true">
+        <security>
+            <authorization/>
+        </security>
+        <transport stack="tcp" node-name="infinispan-1"/>
+        <distributed-cache name="backstage" owners="2" mode="SYNC" statistics="true">
+            <encoding media-type="application/x-protostream"/>
+        </distributed-cache>
+    </cache-container>
+
+    <server xmlns="urn:infinispan:server:15.2">
+        <interfaces>
+            <interface name="public">
+                <inet-address value="${infinispan.bind.address:127.0.0.1}"/>
+            </interface>
+        </interfaces>
+        <socket-bindings default-interface="public" port-offset="${infinispan.socket.binding.port-offset:0}">
+            <socket-binding name="default" port="${infinispan.bind.port:11222}"/>
+        </socket-bindings>
+        <security>
+            <security-realms>
+                <security-realm name="default">
+                    <properties-realm/>
+                </security-realm>
+            </security-realms>
+        </security>
+        <endpoints socket-binding="default" security-realm="default"/>
+    </server>
+</infinispan> 
