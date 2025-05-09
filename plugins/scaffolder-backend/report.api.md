@@ -502,7 +502,10 @@ export class DatabaseTaskStore implements TaskStore {
     targetPath: string;
   }): Promise<void>;
   // (undocumented)
-  retryTask?(options: { taskId: string }): Promise<void>;
+  retryTask?(options: {
+    secrets?: TaskSecrets_2;
+    taskId: string;
+  }): Promise<void>;
   // (undocumented)
   saveTaskState(options: { taskId: string; state?: JsonObject }): Promise<void>;
   // (undocumented)
@@ -769,7 +772,10 @@ export interface TaskStore {
     targetPath: string;
   }): Promise<void>;
   // (undocumented)
-  retryTask?(options: { taskId: string }): Promise<void>;
+  retryTask?(options: {
+    secrets?: TaskSecrets_2;
+    taskId: string;
+  }): Promise<void>;
   // (undocumented)
   saveTaskState?(options: {
     taskId: string;
