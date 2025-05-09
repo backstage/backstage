@@ -58,6 +58,7 @@
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-devtools-common": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { type TaskApiTasksResponse } from '@backstage/backend-defaults/scheduler';
 import { JsonValue } from '@backstage/types';
 
 /** @public */
@@ -65,4 +66,9 @@ export type ConfigError = {
   message: string;
   messages?: string[];
   stack?: string;
+};
+
+/** @public */
+export type SchedulerResponse = {
+  tasks: TaskApiTasksResponse[];
 };
