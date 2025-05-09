@@ -18,7 +18,7 @@ import globby from 'globby';
 import { dirname, join as joinPath, relative } from 'path';
 import crypto from 'crypto';
 import { Lockfile } from '@backstage/cli-node';
-import { mkdirp } from 'fs-extra';
+import { exists, rm, mkdirp } from 'fs-extra';
 import { z } from 'zod';
 import { CACHE_DIR, CACHE_FILE } from './constants';
 
@@ -140,7 +140,11 @@ export class PackageDocsCache {
   async write(pkg: string, contentDirectory: string) {
     const cacheDir = joinPath(this.baseDirectory, CACHE_DIR, pkg);
     const contentsDir = joinPath(cacheDir, 'contents');
-    await mkdirp(contentsDir);
+    if (await exists(contentsDir)) {
+      await rm(contentsDir, { recursive: true });
+    } else {
+      await mkdirp(contentsDir);
+    }
     const hashString = await this.toKey(pkg);
     await cp(contentDirectory, contentsDir, { recursive: true });
     const cacheEntry: CacheEntry = {
