@@ -17,6 +17,10 @@
 import { EventEmitter } from 'events';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
+/**
+ * Options for putting values into Infinispan cache.
+ * @public
+ */
 export interface PutOptions {
   lifespan?: string;
   maxIdle?: string;
@@ -24,6 +28,10 @@ export interface PutOptions {
   flags?: string[];
 }
 
+/**
+ * Interface defining the required methods for an Infinispan client.
+ * @public
+ */
 export interface ClientInterface {
   get(key: string): Promise<string | null | undefined>;
   put(key: string, value: string, options?: PutOptions): Promise<any>;
@@ -36,12 +44,23 @@ export interface ClientInterface {
   containsKey?(key: string): Promise<boolean>;
 }
 
-interface InfinispanKeyvStoreOptions {
+/**
+ * Options for creating an InfinispanKeyvStore instance.
+ * @public
+ */
+export interface InfinispanKeyvStoreOptions {
   clientPromise: Promise<ClientInterface>;
   logger: LoggerService;
   defaultTtl?: number; // TTL in milliseconds
 }
 
+/**
+ * A Keyv store implementation that uses Infinispan as the backend.
+ * This store implements the Keyv store interface and provides caching functionality
+ * using Infinispan's distributed cache capabilities.
+ *
+ * @public
+ */
 export class InfinispanKeyvStore extends EventEmitter {
   private readonly clientPromise: Promise<ClientInterface>;
   private readonly logger: LoggerService;

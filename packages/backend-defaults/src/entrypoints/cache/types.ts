@@ -30,6 +30,7 @@ export type RedisCacheStoreOptions = {
 
 /**
  * Configuration for a single Infinispan server.
+ * @public
  */
 export interface InfinispanServerConfig {
   host: string;
@@ -38,6 +39,7 @@ export interface InfinispanServerConfig {
 
 /**
  * SSL/TLS options for the Infinispan client.
+ * @public
  */
 export interface InfinispanSslOptions {
   enabled: boolean;
@@ -51,6 +53,7 @@ export interface InfinispanSslOptions {
 
 /**
  * Authentication options for the Infinispan client.
+ * @public
  */
 export interface InfinispanAuthOptions {
   enabled: boolean;
@@ -63,6 +66,7 @@ export interface InfinispanAuthOptions {
 
 /**
  * Data format options for the Infinispan client.
+ * @public
  */
 export interface InfinispanDataFormatOptions {
   keyType?: string | null;
@@ -72,9 +76,10 @@ export interface InfinispanDataFormatOptions {
 
 /**
  * Detailed client behavior options for the Infinispan client.
+ * @public
  */
 export interface InfinispanClientBehaviorOptions {
-  version?: '2.9' | '2.5' | '2.2' | null; // Corrected to number literals
+  version?: '2.9' | '2.5' | '2.2' | null;
   cacheName?: string | null;
   maxRetries?: number | null;
   connectionTimeout?: number | null;
@@ -88,6 +93,7 @@ export interface InfinispanClientBehaviorOptions {
 /**
  * Options for the Infinispan cache store, designed to be configured
  * in app-config.yaml under `backend.cache.infinispan`.
+ * @public
  */
 export type InfinispanCacheStoreOptions = {
   servers: InfinispanServerConfig | InfinispanServerConfig[];
@@ -120,6 +126,14 @@ export type CacheManagerOptions = {
   onError?: (err: Error) => void;
 };
 
+/**
+ * Converts a TTL (Time To Live) value to milliseconds.
+ * Accepts either a number (milliseconds) or a HumanDuration object.
+ *
+ * @param ttl - The TTL value to convert, either as milliseconds or a HumanDuration object
+ * @returns The TTL value in milliseconds
+ * @public
+ */
 export function ttlToMilliseconds(ttl: number | HumanDuration): number {
   return typeof ttl === 'number' ? ttl : durationToMilliseconds(ttl);
 }

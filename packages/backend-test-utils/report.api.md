@@ -494,7 +494,12 @@ export interface TestBackendOptions<TExtensionPoints extends any[]> {
 }
 
 // @public
-export type TestCacheId = 'MEMORY' | 'REDIS_7' | 'VALKEY_8' | 'MEMCACHED_1';
+export type TestCacheId =
+  | 'MEMCACHED_1'
+  | 'REDIS_7'
+  | 'REDIS_6'
+  | 'VALKEY_8'
+  | 'INFINISPAN_15';
 
 // @public
 export class TestCaches {

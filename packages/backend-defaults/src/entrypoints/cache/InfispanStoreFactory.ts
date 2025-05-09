@@ -21,11 +21,26 @@ import { InfinispanCacheStoreOptions } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import infinispan from 'infinispan';
 
+/**
+ * Output interface for the Infinispan store factory.
+ * Contains the factory function to create Keyv instances and a shutdown method.
+ * @public
+ */
 export interface InfinispanStoreFactoryOutput {
   factory: (pluginId: string, defaultTtlMs: number | undefined) => Keyv;
   shutdown: () => Promise<void>;
 }
 
+/**
+ * Creates a factory for Infinispan-based Keyv stores.
+ * This factory manages a shared Infinispan client connection and creates
+ * Keyv instances that use this shared connection.
+ *
+ * @param options - Configuration options for the Infinispan connection
+ * @param logger - Logger service for logging operations
+ * @returns An object containing the factory function and a shutdown method
+ * @public
+ */
 export function createInfinispanStoreFactory_sync_facade(
   options: InfinispanCacheStoreOptions,
   logger: LoggerService,

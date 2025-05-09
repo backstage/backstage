@@ -4,17 +4,24 @@
 
 ```ts
 import { CacheService } from '@backstage/backend-plugin-api';
+import { EventEmitter } from 'events';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
 export class CacheManager {
+  // (undocumented)
   forPlugin(pluginId: string): CacheService;
+  // (undocumented)
   static fromConfig(
     config: RootConfigService,
     options?: CacheManagerOptions,
   ): CacheManager;
+  // (undocumented)
+  infinispanClientShutdownMethod?: () => Promise<void>;
+  // (undocumented)
+  stopInfinispanClient(): Promise<void>;
 }
 
 // @public
@@ -29,6 +36,24 @@ export const cacheServiceFactory: ServiceFactory<
   'plugin',
   'singleton'
 >;
+
+// @public
+export class InfinispanKeyvStore extends EventEmitter {
+  // Warning: (ae-forgotten-export) The symbol "InfinispanKeyvStoreOptions" needs to be exported by the entry point index.d.ts
+  constructor(options: InfinispanKeyvStoreOptions);
+  // (undocumented)
+  clear(): Promise<void>;
+  // (undocumented)
+  delete(key: string): Promise<boolean>;
+  // (undocumented)
+  disconnect(): Promise<void>;
+  // (undocumented)
+  get(key: string): Promise<string | undefined>;
+  // (undocumented)
+  readonly namespace?: string;
+  // (undocumented)
+  set(key: string, value: string, ttl?: number): Promise<void>;
+}
 
 // (No @packageDocumentation comment for this package)
 ```
