@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { default as React } from 'react';
 import { FC, PropsWithChildren } from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useTaskEventStream } from './useEventStream';
