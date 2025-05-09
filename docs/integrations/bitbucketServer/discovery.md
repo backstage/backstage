@@ -2,7 +2,6 @@
 id: discovery
 title: Bitbucket Server Discovery
 sidebar_label: Discovery
-# prettier-ignore
 description: Automatically discovering catalog entities from repositories in Bitbucket Server
 ---
 

@@ -1,7 +1,6 @@
 ---
 id: getting-involved
 title: Getting Involved
-# prettier-ignore
 description: How can you help us build Backstage? We welcome contributions of all kinds, from documentation to code to design.
 ---
 
