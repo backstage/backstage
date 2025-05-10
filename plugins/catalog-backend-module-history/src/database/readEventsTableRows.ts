@@ -15,8 +15,8 @@
  */
 
 import { Knex } from 'knex';
-import { SubscriptionEvent } from '../consumers';
 import { EventsTableRow } from './tables';
+import { CatalogEvent } from '../service/endpoints/types';
 
 export interface ReadEventsTableRowsOptions {
   afterEventId?: string;
@@ -29,7 +29,7 @@ export interface ReadEventsTableRowsOptions {
 export async function readEventsTableRows(
   knex: Knex,
   options: ReadEventsTableRowsOptions,
-): Promise<SubscriptionEvent[]> {
+): Promise<CatalogEvent[]> {
   let query = knex<EventsTableRow>('module_history__events');
 
   if (options.afterEventId) {

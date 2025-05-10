@@ -19,10 +19,7 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { connectConsumers } from './consumers/connectConsumers';
-import { HistoryConsumer } from './consumers/types';
 import { initializeDatabaseAfterCatalog } from './database/migrations';
-import { historyConsumersExtensionPoint } from './extensions';
 import { createRouter } from './service/createRouter';
 
 /**
@@ -34,23 +31,6 @@ export const catalogModuleHistory = createBackendModule({
   pluginId: 'catalog',
   moduleId: 'history',
   register(reg) {
-    const consumers: HistoryConsumer[] = [];
-
-    reg.registerExtensionPoint(historyConsumersExtensionPoint, {
-      addConsumer(consumer) {
-        if (
-          consumers.some(
-            prev => prev.getConsumerName() === consumer.getConsumerName(),
-          )
-        ) {
-          throw new Error(
-            `Consumer with name '${consumer.getConsumerName()}' already exists`,
-          );
-        }
-        consumers.push(consumer);
-      },
-    });
-
     reg.registerInit({
       deps: {
         database: coreServices.database,
@@ -71,14 +51,6 @@ export const catalogModuleHistory = createBackendModule({
         lifecycle.addShutdownHook(() => {
           controller.abort();
         });
-
-        dbPromise.then(knex =>
-          connectConsumers({
-            consumers,
-            knex,
-            signal: controller.signal,
-          }),
-        );
 
         httpRouter.use(
           await createRouter({

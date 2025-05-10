@@ -4,45 +4,8 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { ExtensionPoint } from '@backstage/backend-plugin-api';
 
 // @public
 const catalogModuleHistory: BackendFeature;
 export default catalogModuleHistory;
-
-// @public
-export interface HistoryConsumer {
-  connect(connection: HistoryConsumerConnection): void;
-  getConsumerName(): string;
-}
-
-// @public
-export interface HistoryConsumerConnection {
-  subscribe(options: SubscriptionOptions): AsyncGenerator<SubscriptionEvent[]>;
-}
-
-// @public
-export interface HistoryConsumersExtensionPoint {
-  // (undocumented)
-  addConsumer(consumer: HistoryConsumer): void;
-}
-
-// @public
-export const historyConsumersExtensionPoint: ExtensionPoint<HistoryConsumersExtensionPoint>;
-
-// @public
-export interface SubscriptionEvent {
-  entityJson?: string;
-  entityRef?: string;
-  eventAt: Date;
-  eventType: string;
-  id: string;
-}
-
-// @public
-export interface SubscriptionOptions {
-  maxPageSize?: number;
-  startAt: 'beginning' | 'now';
-  subscriptionId: string;
-}
 ```

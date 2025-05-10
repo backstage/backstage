@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { HistoryConsumer } from './consumers/types';
-
 /**
- * Allows for the management of consumers of catalog history events.
+ * A single history event, received through a consumer's subscription.
  *
  * @public
  */
-export interface HistoryConsumersExtensionPoint {
-  addConsumer(consumer: HistoryConsumer): void;
+export interface CatalogEvent {
+  /** A unique identifier for this particular event */
+  id: string;
+  /** An ISO timestamp string for when the event happened */
+  eventAt: Date;
+  /** The distinct type of event */
+  eventType: string;
+  /** The entity ref related to the event, where applicable */
+  entityRef?: string;
+  /** The entity uid related to the event, where applicable */
+  entityId?: string;
+  /** The JSON serialized body of the entity related to the event, where applicable */
+  entityJson?: string;
 }
-
-/**
- * Allows for the management of consumers of catalog history events.
- *
- * @public
- */
-export const historyConsumersExtensionPoint =
-  createExtensionPoint<HistoryConsumersExtensionPoint>({
-    id: 'catalog.history.consumers',
-  });

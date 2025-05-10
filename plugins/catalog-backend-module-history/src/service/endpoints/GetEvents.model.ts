@@ -16,7 +16,7 @@
 
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Knex } from 'knex';
-import { SubscriptionEvent } from '../../consumers';
+import { CatalogEvent } from './types';
 import { getMaxId } from '../../database/getMaxId';
 import {
   readEventsTableRows,
@@ -28,7 +28,7 @@ export interface GetEventsModel {
   readEventsNonblocking(options: {
     readOptions: ReadEventsTableRowsOptions;
     block: boolean;
-  }): Promise<{ events: SubscriptionEvent[]; cursor?: Cursor }>;
+  }): Promise<{ events: CatalogEvent[]; cursor?: Cursor }>;
   blockUntilDataIsReady(options: {
     readOptions: ReadEventsTableRowsOptions;
   }): Promise<'timeout' | 'aborted' | 'ready'>;
@@ -64,11 +64,11 @@ export class GetEventsModelImpl implements GetEventsModel {
   async readEventsNonblocking(options: {
     readOptions: ReadEventsTableRowsOptions;
     block: boolean;
-  }): Promise<{ events: SubscriptionEvent[]; cursor?: Cursor }> {
+  }): Promise<{ events: CatalogEvent[]; cursor?: Cursor }> {
     const knex = await this.#knexPromise;
 
     let readOptions = options.readOptions;
-    let events: SubscriptionEvent[] = [];
+    let events: CatalogEvent[] = [];
     if (readOptions.afterEventId === 'last') {
       readOptions = { ...readOptions, afterEventId: await getMaxId(knex) };
     } else {
