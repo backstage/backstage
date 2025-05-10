@@ -18,14 +18,14 @@ import { JsonValue } from '@backstage/types';
 /**
  * The status of a checkpoint, indicating whether it succeeded or failed.
  *
- * @public
+ * @alpha
  */
 export type CheckpointStatus = 'failed' | 'success';
 
 /**
  * Represents a successful checkpoint state with a value.
  *
- * @public
+ * @alpha
  */
 export type CheckpointSuccessState<T extends JsonValue = JsonValue> = {
   status: 'success';
@@ -35,7 +35,7 @@ export type CheckpointSuccessState<T extends JsonValue = JsonValue> = {
 /**
  * Represents a failed checkpoint state with a reason for failure.
  *
- * @public
+ * @alpha
  */
 export type CheckpointFailedState = {
   status: 'failed';
@@ -45,7 +45,7 @@ export type CheckpointFailedState = {
 /**
  * Represents the union of all possible checkpoint state values.
  *
- * @public
+ * @alpha
  */
 export type CheckpointStateValue =
   | CheckpointSuccessState
@@ -54,7 +54,7 @@ export type CheckpointStateValue =
 /**
  * A map of checkpoint keys to their states.
  *
- * @public
+ * @alpha
  */
 export type CheckpointState = {
   [key: string]: CheckpointStateValue;
@@ -63,7 +63,7 @@ export type CheckpointState = {
 /**
  * Context for checkpoint function invocation.
  *
- * @public
+ * @alpha
  */
 export type CheckpointContext<T extends JsonValue | void = JsonValue> = {
   /**

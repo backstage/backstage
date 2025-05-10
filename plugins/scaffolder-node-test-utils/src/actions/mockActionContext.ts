@@ -21,10 +21,8 @@ import {
   mockServices,
 } from '@backstage/backend-test-utils';
 import { JsonObject, JsonValue } from '@backstage/types';
-import {
-  ActionContext,
-  CheckpointContext,
-} from '@backstage/plugin-scaffolder-node';
+import { ActionContext } from '@backstage/plugin-scaffolder-node';
+import { CheckpointContext } from '@backstage/plugin-scaffolder-node/alpha';
 import { loggerToWinstonLogger } from './loggerToWinstonLogger';
 
 /**

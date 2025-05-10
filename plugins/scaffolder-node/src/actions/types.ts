@@ -23,7 +23,7 @@ import {
   BackstageCredentials,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { CheckpointContext } from '../checkpoints';
+import { CheckpointContext } from '../alpha';
 
 /**
  * ActionContext is passed into scaffolder actions.
