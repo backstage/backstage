@@ -40,10 +40,8 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
-    "@backstage/plugin-events-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "express": "^4.17.1",
-    "express-promise-router": "^4.1.0",
     "knex": "^3.0.0",
     "lodash": "^4.17.21",
     "zod": "^3.22.4"
