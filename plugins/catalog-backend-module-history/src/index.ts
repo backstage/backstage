@@ -20,9 +20,4 @@
  * @packageDocumentation
  */
 
-export * from './consumers';
-export {
-  historyConsumersExtensionPoint,
-  type HistoryConsumersExtensionPoint,
-} from './extensions';
 export { catalogModuleHistory as default } from './module';

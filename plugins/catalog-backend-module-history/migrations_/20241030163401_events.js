@@ -46,21 +46,6 @@ exports.up = async function up(knex) {
       .comment('The body of the affected entity, where applicable');
   });
 
-  await knex.schema.createTable('module_history__subscriptions', table => {
-    table.string('id').primary().comment('Unique ID of the event subscription');
-    table
-      .string('consumer_name')
-      .notNullable()
-      .comment('The name of the consumer that subscribed');
-    table
-      .dateTime('updated_at')
-      .notNullable()
-      .comment('When the subscription was last updated');
-    table
-      .bigInteger('last_event_id')
-      .comment('Last event ID successfully consumed');
-  });
-
   if (knex.client.config.client.includes('pg')) {
     await knex.schema.raw(
       `
@@ -267,6 +252,5 @@ exports.down = async function down(knex) {
       `DROP TRIGGER final_entities_change_history_deleted;`,
     );
   }
-  await knex.schema.dropTable('module_history__subscriptions');
   await knex.schema.dropTable('module_history__events');
 };
