@@ -96,37 +96,6 @@ export function addFiles(options: {
   logger?: Logger | undefined;
 }): Promise<void>;
 
-// @public
-export type CheckpointContext<T extends JsonValue | void = JsonValue> = {
-  key: string;
-  fn: () => Promise<T> | T;
-};
-
-// @public
-export type CheckpointFailedState = {
-  status: 'failed';
-  reason: string;
-};
-
-// @public
-export type CheckpointState = {
-  [key: string]: CheckpointStateValue;
-};
-
-// @public
-export type CheckpointStateValue =
-  | CheckpointSuccessState
-  | CheckpointFailedState;
-
-// @public
-export type CheckpointStatus = 'failed' | 'success';
-
-// @public
-export type CheckpointSuccessState<T extends JsonValue = JsonValue> = {
-  status: 'success';
-  value: T;
-};
-
 // @public (undocumented)
 export function cloneRepo(options: {
   url: string;
@@ -503,6 +472,8 @@ export interface TaskContext {
   spec: TaskSpec;
   // (undocumented)
   taskId?: string;
+  // Warning: (ae-forgotten-export) The symbol "UpdateTaskCheckpointOptions" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
   updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 }
@@ -593,8 +564,7 @@ export type TemplateGlobal =
   | ((...args: JsonValue[]) => JsonValue | undefined)
   | JsonValue;
 
-// @public
-export type UpdateTaskCheckpointOptions = {
-  key: string;
-} & CheckpointStateValue;
+// Warnings were encountered during analysis:
+//
+// src/actions/types.d.ts:19:5 - (ae-forgotten-export) The symbol "CheckpointContext" needs to be exported by the entry point index.d.ts
 ```

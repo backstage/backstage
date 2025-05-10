@@ -22,7 +22,6 @@ import {
 import { Config } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
-  CheckpointState,
   SerializedTask,
   SerializedTaskEvent,
   TaskBroker,
@@ -31,9 +30,12 @@ import {
   TaskContext,
   TaskSecrets,
   TaskStatus,
-  UpdateTaskCheckpointOptions,
 } from '@backstage/plugin-scaffolder-node';
-import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
+import {
+  CheckpointState,
+  WorkspaceProvider,
+  UpdateTaskCheckpointOptions,
+} from '@backstage/plugin-scaffolder-node/alpha';
 import { JsonObject, Observable, createDeferred } from '@backstage/types';
 import { Logger } from 'winston';
 import ObservableImpl from 'zen-observable';

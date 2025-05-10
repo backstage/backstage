@@ -50,7 +50,6 @@ import {
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import {
-  CheckpointContext,
   TaskContext,
   TemplateAction,
   TemplateFilter,
@@ -62,7 +61,10 @@ import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 import { convertFiltersToRecord } from '../../util/templating';
-import { CheckpointState } from '@backstage/plugin-scaffolder-node';
+import {
+  CheckpointState,
+  CheckpointContext,
+} from '@backstage/plugin-scaffolder-node/alpha';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;

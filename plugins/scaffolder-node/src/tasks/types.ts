@@ -17,7 +17,7 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, Observable } from '@backstage/types';
-import { CheckpointStateValue } from '../checkpoints';
+import { UpdateTaskCheckpointOptions } from '../alpha';
 
 /**
  * TaskSecrets
@@ -104,15 +104,6 @@ export type TaskBrokerDispatchOptions = {
   secrets?: TaskSecrets;
   createdBy?: string;
 };
-
-/**
- * Options for updating a checkpoint in a task.
- *
- * @public
- */
-export type UpdateTaskCheckpointOptions = {
-  key: string;
-} & CheckpointStateValue;
 
 /**
  * Task
