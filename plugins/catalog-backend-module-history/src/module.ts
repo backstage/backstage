@@ -19,6 +19,7 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { HistoryJanitor } from './database/HistoryJanitor';
 import { initializeDatabaseAfterCatalog } from './database/migrations';
 import { createRouter } from './service/createRouter';
 
@@ -33,15 +34,24 @@ export const catalogModuleHistory = createBackendModule({
   register(reg) {
     reg.registerInit({
       deps: {
+        config: coreServices.rootConfig,
         database: coreServices.database,
         httpRouter: coreServices.httpRouter,
         lifecycle: coreServices.lifecycle,
+        scheduler: coreServices.scheduler,
         catalogProcessing: catalogProcessingExtensionPoint,
       },
-      async init({ database, httpRouter, lifecycle, catalogProcessing }) {
+      async init({
+        config,
+        database,
+        httpRouter,
+        lifecycle,
+        scheduler,
+        catalogProcessing,
+      }) {
         // We can't await this call here, since we have to perform our own work
         // after the catalog has already spun up and is ready
-        const dbPromise = initializeDatabaseAfterCatalog({
+        const knexPromise = initializeDatabaseAfterCatalog({
           database,
           lifecycle,
           catalogProcessing,
@@ -52,9 +62,15 @@ export const catalogModuleHistory = createBackendModule({
           controller.abort();
         });
 
+        await HistoryJanitor.create({
+          knexPromise,
+          config,
+          scheduler,
+        });
+
         httpRouter.use(
           await createRouter({
-            knexPromise: dbPromise,
+            knexPromise,
             signal: controller.signal,
           }),
         );
