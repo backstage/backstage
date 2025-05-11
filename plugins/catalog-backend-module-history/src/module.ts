@@ -71,7 +71,7 @@ export const catalogModuleHistory = createBackendModule({
         httpRouter.use(
           await createRouter({
             knexPromise,
-            signal: controller.signal,
+            shutdownSignal: controller.signal,
           }),
         );
       },

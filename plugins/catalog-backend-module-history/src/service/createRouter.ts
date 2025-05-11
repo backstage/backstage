@@ -21,7 +21,7 @@ import { bindGetEventsEndpoint } from './endpoints/GetEvents.router';
 
 export async function createRouter(options: {
   knexPromise: Promise<Knex>;
-  signal: AbortSignal;
+  shutdownSignal: AbortSignal;
 }) {
   const router = await createOpenApiRouter();
 
@@ -29,7 +29,7 @@ export async function createRouter(options: {
     router,
     new GetEventsModelImpl({
       knexPromise: options.knexPromise,
-      signal: options.signal,
+      shutdownSignal: options.shutdownSignal,
     }),
   );
 

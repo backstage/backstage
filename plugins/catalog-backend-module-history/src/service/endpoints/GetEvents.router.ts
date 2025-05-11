@@ -71,25 +71,34 @@ export function bindGetEventsEndpoint(
     if (result.events.length === 0 && result.cursor) {
       res.status(202);
       res.flushHeaders();
+
+      const controller = new AbortController();
+      req.on('close', () => {
+        controller.abort();
+      });
+
       await model.blockUntilDataIsReady({
         readOptions,
+        signal: controller.signal,
       });
     }
 
-    res.end(
-      JSON.stringify({
-        items: result.events.map(row => ({
-          id: row.id,
-          eventAt: row.eventAt.toISOString(),
-          eventType: row.eventType,
-          entityRef: row.entityRef,
-          entityId: row.entityId,
-          entityJson: row.entityJson,
-        })),
-        pageInfo: {
-          cursor: result.cursor ? stringifyCursor(result.cursor) : undefined,
-        },
-      }),
-    );
+    if (!res.closed) {
+      res.end(
+        JSON.stringify({
+          items: result.events.map(row => ({
+            id: row.id,
+            eventAt: row.eventAt.toISOString(),
+            eventType: row.eventType,
+            entityRef: row.entityRef,
+            entityId: row.entityId,
+            entityJson: row.entityJson,
+          })),
+          pageInfo: {
+            cursor: result.cursor ? stringifyCursor(result.cursor) : undefined,
+          },
+        }),
+      );
+    }
   });
 }

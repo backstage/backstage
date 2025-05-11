@@ -56,7 +56,7 @@ describe('createRouter', () => {
           httpRouter.use(
             await createRouter({
               knexPromise: dbPromise,
-              signal: new AbortController().signal,
+              shutdownSignal: new AbortController().signal,
             }),
           );
         },

@@ -89,7 +89,7 @@ describe('GetEventsModelImpl', () => {
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          signal: new AbortController().signal,
+          shutdownSignal: new AbortController().signal,
         });
 
         await waitFor(async () => {
@@ -147,7 +147,7 @@ describe('GetEventsModelImpl', () => {
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          signal: new AbortController().signal,
+          shutdownSignal: new AbortController().signal,
         });
 
         await setEntity(knex, 'foo', 1);
@@ -234,7 +234,7 @@ describe('GetEventsModelImpl', () => {
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          signal: new AbortController().signal,
+          shutdownSignal: new AbortController().signal,
           blockDuration: { seconds: 1 },
           blockPollFrequency: { milliseconds: 100 },
         });
@@ -273,7 +273,7 @@ describe('GetEventsModelImpl', () => {
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          signal: new AbortController().signal,
+          shutdownSignal: new AbortController().signal,
           blockDuration: { seconds: 1 },
           blockPollFrequency: { milliseconds: 100 },
         });
@@ -315,14 +315,14 @@ describe('GetEventsModelImpl', () => {
     );
 
     it.each(databases.eachSupportedId())(
-      'aborts early on signal, %p',
+      'aborts early on shutdown signal, %p',
       async databaseId => {
         const { knex, backend } = await init(databaseId);
 
         const abortController = new AbortController();
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          signal: abortController.signal,
+          shutdownSignal: abortController.signal,
           blockDuration: { seconds: 1 },
           blockPollFrequency: { milliseconds: 100 },
         });
@@ -335,6 +335,42 @@ describe('GetEventsModelImpl', () => {
               order: 'asc',
               limit: 10,
             },
+          })
+          .then(r => {
+            resolution = r;
+          });
+
+        abortController.abort();
+        await waitFor(() => {
+          expect(resolution).toBe('aborted');
+        });
+
+        await backend.stop();
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'aborts early on request signal, %p',
+      async databaseId => {
+        const { knex, backend } = await init(databaseId);
+
+        const model = new GetEventsModelImpl({
+          knexPromise: Promise.resolve(knex),
+          shutdownSignal: new AbortController().signal, // not used here
+          blockDuration: { seconds: 1 },
+          blockPollFrequency: { milliseconds: 100 },
+        });
+
+        const abortController = new AbortController();
+        let resolution: string = '';
+        model
+          .blockUntilDataIsReady({
+            readOptions: {
+              entityRef: 'component:default/foo1',
+              order: 'asc',
+              limit: 10,
+            },
+            signal: abortController.signal,
           })
           .then(r => {
             resolution = r;
