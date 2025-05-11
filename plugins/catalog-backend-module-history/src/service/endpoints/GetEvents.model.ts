@@ -31,6 +31,7 @@ export interface GetEventsModel {
   }): Promise<{ events: CatalogEvent[]; cursor?: Cursor }>;
   blockUntilDataIsReady(options: {
     readOptions: ReadEventsTableRowsOptions;
+    signal?: AbortSignal;
   }): Promise<'timeout' | 'aborted' | 'ready'>;
 }
 
@@ -41,18 +42,18 @@ const DEFAULT_BLOCK_POLL_FREQUENCY =
 
 export class GetEventsModelImpl implements GetEventsModel {
   #knexPromise: Promise<Knex>;
-  #signal: AbortSignal;
+  #shutdownSignal: AbortSignal;
   #blockDurationMillis: number;
   #blockPollFrequencyMillis: number;
 
   constructor(options: {
     knexPromise: Promise<Knex>;
-    signal: AbortSignal;
+    shutdownSignal: AbortSignal;
     blockDuration?: HumanDuration;
     blockPollFrequency?: HumanDuration;
   }) {
     this.#knexPromise = options.knexPromise;
-    this.#signal = options.signal;
+    this.#shutdownSignal = options.shutdownSignal;
     this.#blockDurationMillis = durationToMilliseconds(
       options.blockDuration ?? DEFAULT_BLOCK_DURATION,
     );
@@ -105,14 +106,16 @@ export class GetEventsModelImpl implements GetEventsModel {
   // shutting down, or we start finding some rows.
   async blockUntilDataIsReady(options: {
     readOptions: ReadEventsTableRowsOptions;
+    signal?: AbortSignal;
   }): Promise<'timeout' | 'aborted' | 'ready'> {
     const knex = await this.#knexPromise;
     const deadline = Date.now() + this.#blockDurationMillis;
 
     while (Date.now() < deadline) {
       const inner = AbortSignal.any([
-        this.#signal,
         AbortSignal.timeout(this.#blockPollFrequencyMillis),
+        this.#shutdownSignal,
+        ...(options.signal ? [options.signal] : []),
       ]);
       // The event won't ever fire if the signal is already aborted, so we
       // need this check.
@@ -121,7 +124,7 @@ export class GetEventsModelImpl implements GetEventsModel {
           inner.addEventListener('abort', () => resolve());
         });
       }
-      if (this.#signal.aborted) {
+      if (this.#shutdownSignal.aborted || options.signal?.aborted) {
         return 'aborted';
       }
       const rows = await readEventsTableRows(knex, {
