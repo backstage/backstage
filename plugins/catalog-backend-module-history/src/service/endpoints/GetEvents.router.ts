@@ -15,11 +15,10 @@
  */
 
 import { TypedRouter } from '@backstage/backend-openapi-utils';
-import { InputError } from '@backstage/errors';
 import { ReadEventsTableRowsOptions } from '../../database/readEventsTableRows';
 import { EndpointMap } from '../../schema/openapi';
-import { parseCursor, stringifyCursor } from './GetEvents.utils';
 import { GetEventsModel } from './GetEvents.model';
+import { parseCursor, stringifyCursor } from './GetEvents.utils';
 
 export function bindGetEventsEndpoint(
   router: TypedRouter<EndpointMap>,
@@ -30,19 +29,15 @@ export function bindGetEventsEndpoint(
     let block: boolean = false;
 
     if (req.query.cursor) {
-      try {
-        const cursor = parseCursor(req.query.cursor);
-        readOptions = {
-          afterEventId: cursor.afterEventId,
-          entityRef: cursor.entityRef,
-          entityId: cursor.entityId,
-          order: cursor.order,
-          limit: cursor.limit,
-        };
-        block = cursor.block;
-      } catch {
-        throw new InputError('Invalid cursor');
-      }
+      const cursor = parseCursor(req.query.cursor);
+      readOptions = {
+        afterEventId: cursor.afterEventId,
+        entityRef: cursor.entityRef,
+        entityId: cursor.entityId,
+        order: cursor.order,
+        limit: cursor.limit,
+      };
+      block = cursor.block;
     } else {
       readOptions = {
         afterEventId: req.query.afterEventId,
@@ -52,12 +47,6 @@ export function bindGetEventsEndpoint(
         limit: req.query.limit ?? 100,
       };
       block = req.query.block ?? false;
-    }
-
-    if (!Number.isSafeInteger(readOptions.limit) || readOptions.limit < 1) {
-      throw new InputError('Invalid limit, expected a positive integer');
-    } else if (!['asc', 'desc'].includes(readOptions.order)) {
-      throw new InputError('Invalid order, expected "asc" or "desc"');
     }
 
     const result = await model.readEventsNonblocking({

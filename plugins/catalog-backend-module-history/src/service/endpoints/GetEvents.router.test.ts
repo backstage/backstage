@@ -236,6 +236,7 @@ describe('bindGetEventsEndpoint', () => {
         limit: 1,
         order: 'asc',
       },
+      signal: expect.any(AbortSignal),
     });
   });
 
