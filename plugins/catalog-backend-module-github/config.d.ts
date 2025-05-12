@@ -121,7 +121,7 @@ export interface Config {
                * (Optional) Whether to include archived repositories.
                * Default: `false`.
                */
-              includeArchived?: boolean;
+              allowArchived?: boolean;
             };
             /**
              * (Optional) TaskScheduleDefinition for the refresh.
@@ -195,7 +195,7 @@ export interface Config {
                  * (Optional) Whether to include archived repositories.
                  * Default: `false`.
                  */
-                includeArchived?: boolean;
+                allowArchived?: boolean;
               };
               /**
                * (Optional) TaskScheduleDefinition for the refresh.
