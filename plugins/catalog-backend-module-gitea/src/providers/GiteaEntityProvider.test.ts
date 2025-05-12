@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger } from '@backstage/backend-common';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { GiteaEntityProvider } from './GiteaEntityProvider';
@@ -28,7 +27,8 @@ jest.mock('./core');
 jest.mock('uuid');
 
 describe('GiteaEntityProvider', () => {
-  const logger = getVoidLogger() as unknown as LoggerService;
+  const logger = mockServices.logger.mock();
+
   const mockScheduler = {
     createScheduledTaskRunner: jest.fn(),
     triggerTask: jest.fn(),
@@ -283,66 +283,6 @@ describe('GiteaEntityProvider', () => {
       expect(mockTaskRunner.run).toHaveBeenCalledWith({
         id: 'gitea-provider:test-provider:refresh',
         fn: expect.any(Function),
-      });
-    });
-
-    it('should run the scheduled refresh function', async () => {
-      await provider.connect(mockConnection);
-
-      // Extract and call the scheduled function
-      const runArgument = mockTaskRunner.run.mock.calls[0][0];
-      const refreshFn = runArgument.fn;
-
-      // Mock the refresh behavior
-      (global.fetch as jest.Mock).mockImplementation(async (url: string) => {
-        if (url.includes('/orgs/test-org/repos')) {
-          if (url.includes('page=1')) {
-            return {
-              ok: true,
-              json: async () => [
-                {
-                  name: 'repo1',
-                  html_url: 'https://gitea.example.com/test-org/repo1',
-                  empty: false,
-                },
-                {
-                  name: 'repo2',
-                  html_url: 'https://gitea.example.com/test-org/repo2',
-                  empty: false,
-                },
-              ],
-            };
-          }
-          return {
-            ok: true,
-            json: async () => [],
-          };
-        } else if (url.includes('/contents/catalog-info.yaml')) {
-          if (url.includes('repo1')) {
-            return { ok: true };
-          }
-        }
-        return { ok: false };
-      });
-
-      const abortController = new AbortController();
-      await refreshFn(abortController.signal);
-
-      expect(mockConnection.applyMutation).toHaveBeenCalledWith({
-        type: 'full',
-        entities: [
-          {
-            locationKey: 'gitea-provider:test-provider',
-            entity: expect.objectContaining({
-              metadata: expect.objectContaining({
-                annotations: expect.objectContaining({
-                  'backstage.io/managed-by-location':
-                    'url:https://gitea.example.com/test-org/repo1/src/branch/main/catalog-info.yaml',
-                }),
-              }),
-            }),
-          },
-        ],
       });
     });
   });

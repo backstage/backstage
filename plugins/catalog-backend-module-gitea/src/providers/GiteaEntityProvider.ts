@@ -164,7 +164,7 @@ export class GiteaEntityProvider implements EntityProvider {
     let allRepos: any[] = [];
 
     try {
-      // Step 1: Fetch all repos for an organization
+      // Fetch all repos for an organization
       const OrgRepoApiUrl = `${getGiteaApiUrl(this.integration.config)}orgs/${
         this.config.organization
       }/repos`;
@@ -201,7 +201,7 @@ export class GiteaEntityProvider implements EntityProvider {
       );
     }
 
-    // Step 2: Filter for repos that have catalog-info.yaml at root
+    // Filter for repos that have catalog-info.yaml at root
     const { default: pLimit } = await import('p-limit');
     const limit = pLimit(5);
     const validRepos: string[] = [];
@@ -234,11 +234,11 @@ export class GiteaEntityProvider implements EntityProvider {
         }),
       ),
     );
-    // Step 3: create location specs for each valid repo
+    // Create location specs for each valid repo
     const locations = await Promise.all(
       validRepos.map(repo => limit(() => this.createLocationSpec(repo))),
     );
-    // Step 4: Apply the locations to the catalog
+    // Apply the locations to the catalog
     try {
       const providerName: string = this.getProviderName();
       const entities = locations.map(location => ({
