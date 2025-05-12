@@ -159,7 +159,7 @@ examples for one action that can demonstrate different combinations of inputs an
 
 Below is a sample TemplateExample that is used for `publish:github`. The source code is available
 on [github](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-github/src/actions/github.examples.ts)
-and preview on [demo.backstage.io/create/actions](https://demo.backstage.io/create/actions)
+and preview on [demo.backstage.io/create/actions](https://demo.backstage.io/create/actions#publish-github)
 
 ```ts title="With JSON Schema"
 import { TemplateExample } from '@backstage/plugin-scaffolder-node';
