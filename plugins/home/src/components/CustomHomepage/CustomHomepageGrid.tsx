@@ -321,7 +321,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
 
   return (
     <>
-      <ContentHeader title="">
+      <ContentHeader title={props.title}>
         <CustomHomepageButtons
           editMode={editMode}
           numWidgets={widgets.length}

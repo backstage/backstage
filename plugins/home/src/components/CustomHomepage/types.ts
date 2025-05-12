@@ -46,6 +46,10 @@ export type CustomHomepageGridProps = {
    */
   config?: LayoutConfiguration[];
   /**
+   * Title displayed in the header of the grid. If not provided, no title will be shown.
+   */
+  title?: string;
+  /**
    * Height of grid row in pixels.
    * @defaultValue 60
    */
