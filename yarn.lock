@@ -204,13 +204,13 @@ __metadata:
   linkType: hard
 
 "@apidevtools/json-schema-ref-parser@npm:^11.0.0, @apidevtools/json-schema-ref-parser@npm:^11.7.0":
-  version: 11.7.3
-  resolution: "@apidevtools/json-schema-ref-parser@npm:11.7.3"
+  version: 11.9.3
+  resolution: "@apidevtools/json-schema-ref-parser@npm:11.9.3"
   dependencies:
     "@jsdevtools/ono": "npm:^7.1.3"
     "@types/json-schema": "npm:^7.0.15"
     js-yaml: "npm:^4.1.0"
-  checksum: 10/ab496d84f8deca4e5e3ab4adb28825fb1e90655561cf7b70b6dc7b8cf95e49ea9fa3440c265d1d115a43e673b94a79005af05b5d76f77a8934ed1c2fae6762c9
+  checksum: 10/3d3618dbb611d1296b99bdee4ff0dde664dad47632d30e0310c6d10de8081f6378ccb58329ea4e03103eca9347d5143671d03f0527b1c3f0916d95f8c09215e2
   languageName: node
   linkType: hard
 
