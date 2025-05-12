@@ -182,6 +182,7 @@ jobs:
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=16384
+      DOCUSAURUS_PERF_LOGGER: true
 
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
