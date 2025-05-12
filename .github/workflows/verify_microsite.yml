@@ -23,6 +23,7 @@ jobs:
       CI: true
       NODE_OPTIONS: --max-old-space-size=8192
 
+
     outputs:
       release: ${{ steps.find-release.outputs.result }}
 
@@ -178,6 +179,8 @@ jobs:
 
     env:
       CI: true
+      DOCUSAURUS_PERF_LOGGER: true
+
 
     needs:
       - stable
