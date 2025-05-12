@@ -2,13 +2,8 @@
 id: discovery
 title: Gitea Discovery
 sidebar_label: Discovery
-# prettier-ignore
 description: Automatically discovering catalog entities from Gitea repositories
 ---
-
-:::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md).
-:::
 
 The Gitea integration has a special entity provider for discovering catalog entities
 from Gitea repositories. The provider uses the "List Projects" API in Gitea to get
