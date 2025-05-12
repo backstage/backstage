@@ -152,7 +152,7 @@ and writing of template entity definitions.
 ### Adding a TemplateExample
 
 A TemplateExample is a way to document different ways that your custom action can be used. Once added it will be visible
-in your backstage instance under [/create/actions](https://demo.backstage.io/create/actions) path. You can have multiple
+in your Backstage instance under the [/create/actions](https://demo.backstage.io/create/actions) path. You can have multiple
 examples for one action that can demonstrate different combinations of inputs and how to use them.
 
 #### Define TemplateExamples
