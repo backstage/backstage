@@ -24,9 +24,6 @@ jobs:
           fetch-tags: true
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
 
-      - name: Fetch tags # See https://github.com/actions/checkout/issues/2041
-        run: git fetch --tags
-
       - name: Install Dependencies
         run: yarn --immutable
       - name: Create Release Pull Request
