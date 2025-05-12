@@ -91,7 +91,7 @@ const config: Config = {
       lightningCssMinimizer: true,
       swcJsMinimizer: true,
       swcJsLoader: true,
-      rspackBundler: false,
+      rspackBundler: false, // test
       mdxCrossCompilerCache: true
     },
   },
