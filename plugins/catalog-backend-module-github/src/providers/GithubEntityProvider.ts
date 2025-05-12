@@ -260,12 +260,12 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     const topicFilters = this.config.filters.topic;
     const allowForks = this.config.filters.allowForks;
     const visibilities = this.config.filters.visibility ?? [];
-    const includeArchived = this.config.filters.includeArchived;
+    const allowArchived = this.config.filters.allowArchived;
 
     return repositories.filter(r => {
       const repoTopics: string[] = r.repositoryTopics;
       return (
-        (includeArchived || !r.isArchived) &&
+        (allowArchived || !r.isArchived) &&
         (!repositoryFilter || repositoryFilter.test(r.name)) &&
         satisfiesTopicFilter(repoTopics, topicFilters) &&
         satisfiesForkFilter(allowForks, r.isFork) &&
@@ -469,7 +469,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    * @param event - The repository archived event.
    */
   private async onRepoArchived(event: RepositoryArchivedEvent) {
-    if (this.config.filters.includeArchived) return;
+    if (this.config.filters.allowArchived) return;
 
     const repository = this.createRepoFromEvent(event);
     await this.removeEntitiesForRepo(repository);
