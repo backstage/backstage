@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.9.0-next.3
+
+### Patch Changes
+
+- ee9f59f: Added filter to include archived repositories
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@2.0.0-next.3
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.2
+  - @backstage/plugin-events-node@0.4.11-next.2
+
 ## 0.9.0-next.2
 
 ### Patch Changes

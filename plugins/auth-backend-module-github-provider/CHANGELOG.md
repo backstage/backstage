@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-github-provider
 
+## 0.3.3-next.2
+
+### Patch Changes
+
+- 5cc1f7f: Introduce `dangerouslyAllowSignInWithoutUserInCatalog` auth resolver config.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.3-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.2
+
 ## 0.3.3-next.1
 
 ### Patch Changes

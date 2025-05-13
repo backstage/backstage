@@ -1,5 +1,24 @@
 # @backstage/plugin-notifications-backend-module-slack
 
+## 0.1.1-next.3
+
+### Patch Changes
+
+- f6480c7: Fix dataloader caching, and use the proper catalog service ref
+- e099d0a: Notifications which mention user entity refs are now replaced with Slack compatible mentions.
+
+  Example: `Welcome <@user:default/billy>!` -> `Welcome <@U123456890>!`
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.17.0-next.2
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.15-next.2
+
 ## 0.1.1-next.2
 
 ### Patch Changes
