@@ -38,7 +38,7 @@ When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions 
 The summary of the BEP is a few paragraphs long and give a high-level overview of the features to be implemented. It should be possible to read *only* the summary and understand what the BEP is proposing to accomplish and what impact it has for users.
 -->
 
-The Backstage CLI is continuing to expand and evolve. Recently, there has been a new wave of CLI proposals, like catalog customization or API integrations that require more information about your Backstage instance. The CLI is also continuing to pick up more and more dependencies (80), which may sit in unused code paths causing CLI bloat. In order to best support a leaner, more extensible CLI, we propose a new modular CLI approach. The modular CLI will build on the new backend abstractions and let users install plugins/modules/services into their CLI, while still using the same `backstage-cli` command they're familiar with. To adapt to different workloads, we propose a new CLI profiles concept that lets you define separate CLI profiles to run, letting you create purpose-built CLIs for CI validation or local development.
+The Backstage CLI is continuing to expand and evolve. Recently, there has been a new wave of CLI proposals, like catalog customization or API integrations that require more information about your Backstage instance. The CLI is also continuing to pick up more and more dependencies (80), which may sit in unused code paths causing CLI bloat. In order to best support a leaner, more extensible CLI, we propose a new modular CLI approach. The modular CLI will build on the new backend abstractions and eventually the goal is to let users install plugins/modules/services into their CLI, while still using the same `backstage-cli` command they're familiar with.
 
 ## Motivation
 
@@ -63,7 +63,6 @@ know that this has succeeded?
 1. Users can write commands locally and install them into the CLI.
 1. Users will still be able to use the existing `backstage-cli` command.
 1. Shared dependency management, like peer dependencies, should work as expected.
-1. CLI packaging, users should be able to use your CLI outside of your Backstage repository.
 
 ### Non-Goals
 
@@ -74,6 +73,7 @@ and make progress.
 
 1. Distribution of your CLI, including compiling your CLI for different architectures.
 1. Module system for adding functionality across different plugins.
+1. CLI packaging, users should be able to use your CLI outside of your Backstage repository.
 
 ## Proposal
 
@@ -144,79 +144,6 @@ As part of this effort, we propose breaking up the existing CLI into a set of pl
 1. Migration plugin - Automatic migration scripts.
 1. "New plugin" plugin - Creating a new plugin flow.
 1. Version plugin - Handle versioning for your Backstage instance.
-
-### CLI Installation
-
-There are 2 goals with this design,
-
-1. Not require a new `backstage-cli` executable to be created and distributed.
-1. Leverage existing tools where possible, for example module resolution.
-
-#### Declaring your CLI
-
-We propose a new file, `cli-config.yaml` that will serve as both your declarative installation format and your config store (mentioned above in [`rootConfigService`](#rootconfigservice)). That file will have the following "schema":
-
-```ts
-interface CliConfigYaml {
-  app?: {
-    baseUrl?: string;
-  };
-
-  backend?: {
-    baseUrl?: string;
-  };
-
-  cli?: {
-    profiles?: {
-      [key: string]: {
-        // The package name of the package that contains your dependency information.
-        // Separate profiles can have separate packages to reduce dependency bloat.
-        name: string;
-
-        version: string;
-      };
-    };
-  };
-}
-```
-
-The CLI will start with the `default` profile, unless a `--profile` parameter is passed during execution, in which case we will instead load from that profile instead.
-
-We propose the creation of a new package, `@backstage/cli-profile-default` that contains the previous plugins that were bundled with the pre-modular CLI. Users that want to customize their CLI, we recommend using `@backstage/cli-profile-default` as a starting place, but being judicious about what functionality they actually need and installing that directly into a new profile.
-
-Each `cli.profiles.[key].name` above refers to a package name,
-
-```yaml
-packages/
-  cli/
-    my-custom-profile:
-      name: '@internal/cli-custom-profile'
-      version: '0.1.3'
-```
-
-Upon initialization, the existing installation of `backstage-cli` will detect that `cli-config.yaml` is set and needs to load the profile and plugins.
-
-Users can declare both direct plugin dependencies and peer dependency resolutions in this profile to minimize the size of this new package and allow plugins to not have to bundle their own large dependencies (`eslint`, `esbuild`, etc).
-
-### Maintaining state
-
-We'll be using a separate lockfile to maintain dependency state across installs over time. Each profile will ship with this as part of its publish package, updates will then run an install using the lockfile.
-
-TODO: Figure out how this mechanism would work.
-
-#### Keeping your CLI up to date
-
-We'll also need to make sure that users can be notified that a newer version is available and recommended to be upgraded to. Upgrades should also be a relatively painless process, developers shouldn't have yet another dependency to manually manage.
-
-To address this, we propose:
-
-1. Automatic version checks most CLIs/tools do this. When starting, check what the latest version is and if it's different than the current version print a message that tells the user to update their version.
-
-- For the main CLI, print a message telling users how to update it themselves, for example `npm i -g @backstage/cli@2.1.3`
-- For plugins, print a message telling users how to update it themselves, for example `npm i -g @backstage/cli-profile-default@0.1.2`
-- (stretch) Allow users to update the CLI from the CLI.
-
-1. (stretch) Easy/easier profile installs, similar to version checks for the main CLI, users will likely need to update their profiles at a regular cadence. Where possible, we should make this as easy as pressing 'y' on their keyboard.
 
 ### Services
 
@@ -317,7 +244,9 @@ This section should describe the rollout process for any new features. It must t
 If there is any particular feedback to be gathered during the rollout, this should be described here as well.
 -->
 
-TODO: While backwards compatibility/migration path is important, figuring out a good way to do that while rolling an interesting new paradigm will take work.
+1. Iterate in `packages/cli` using a new `alpha` entrypoint - this will mainly be focused on the overall types and not services.
+2. Promote that alpha entrypoint to main when things seem figured out.
+3. Add support for a few services as mentioned above - config, auth, fetch and logging.
 
 ## Dependencies
 
@@ -325,7 +254,7 @@ TODO: While backwards compatibility/migration path is important, figuring out a 
 List any dependencies that this work has on other BEPs or features.
 -->
 
-1. External authentication is a dependency for more complex personalized plugins. It is not a blocker for an initial modularization effort.
+1. Device auth will be required for unlocking CLI authentication.
 
 ## Alternatives
 
