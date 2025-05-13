@@ -116,14 +116,6 @@ export type BackendFeatureMeta =
     };
 
 // @alpha (undocumented)
-export interface BackstageInstance {
-  // (undocumented)
-  externalUrl: string;
-  // (undocumented)
-  internalUrl: string;
-}
-
-// @alpha (undocumented)
 export interface InstanceMetadataService {
   // (undocumented)
   getInstalledFeatures: () => BackendFeatureMeta[];
@@ -132,19 +124,6 @@ export interface InstanceMetadataService {
 // @alpha (undocumented)
 export const instanceMetadataServiceRef: ServiceRef<
   InstanceMetadataService,
-  'root',
-  'singleton'
->;
-
-// @alpha (undocumented)
-export interface SystemMetadataService {
-  // (undocumented)
-  listInstances(): Promise<BackstageInstance[]>;
-}
-
-// @alpha
-export const systemMetadataServiceRef: ServiceRef<
-  SystemMetadataService,
   'root',
   'singleton'
 >;

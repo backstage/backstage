@@ -21,7 +21,6 @@
   "exports": {
     ".": "./src/index.ts",
     "./auditor": "./src/entrypoints/auditor/index.ts",
-    "./alpha": "./src/entrypoints/alpha.ts",
     "./auth": "./src/entrypoints/auth/index.ts",
     "./cache": "./src/entrypoints/cache/index.ts",
     "./database": "./src/entrypoints/database/index.ts",
@@ -38,6 +37,7 @@
     "./rootLifecycle": "./src/entrypoints/rootLifecycle/index.ts",
     "./rootLogger": "./src/entrypoints/rootLogger/index.ts",
     "./scheduler": "./src/entrypoints/scheduler/index.ts",
+    "./systemMetadata": "./src/entrypoints/systemMetadata/index.ts",
     "./urlReader": "./src/entrypoints/urlReader/index.ts",
     "./userInfo": "./src/entrypoints/userInfo/index.ts",
     "./alpha": "./src/alpha/index.ts",
@@ -49,9 +49,6 @@
     "*": {
       "auditor": [
         "src/entrypoints/auditor/index.ts"
-      ],
-      "alpha": [
-        "src/entrypoints/alpha.ts"
       ],
       "auth": [
         "src/entrypoints/auth/index.ts"
@@ -100,6 +97,9 @@
       ],
       "scheduler": [
         "src/entrypoints/scheduler/index.ts"
+      ],
+      "systemMetadata": [
+        "src/entrypoints/systemMetadata/index.ts"
       ],
       "urlReader": [
         "src/entrypoints/urlReader/index.ts"

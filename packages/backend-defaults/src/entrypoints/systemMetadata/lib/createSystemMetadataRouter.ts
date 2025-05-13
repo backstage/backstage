@@ -15,10 +15,8 @@
  */
 
 import { LoggerService } from '@backstage/backend-plugin-api';
-import {
-  BackendFeatureMeta,
-  SystemMetadataService,
-} from '@backstage/backend-plugin-api/alpha';
+import { BackendFeatureMeta } from '@backstage/backend-plugin-api/alpha';
+import type { SystemMetadataService } from '@backstage/backend-plugin-api';
 import Router from 'express-promise-router';
 
 export async function createSystemMetadataRouter(options: {

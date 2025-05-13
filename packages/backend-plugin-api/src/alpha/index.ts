@@ -32,10 +32,3 @@ export {
   actionsServiceRef,
   instanceMetadataServiceRef,
 } from './refs';
-
-import { createServiceRef } from '@backstage/backend-plugin-api';
-
-export type {
-  BackstageInstance,
-  SystemMetadataService,
-} from './services/definitions/SystemMetadataService';
