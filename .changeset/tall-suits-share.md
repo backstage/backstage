@@ -16,8 +16,6 @@
 '@backstage/plugin-auth-backend-module-oauth2-provider': patch
 '@backstage/plugin-auth-backend-module-oidc-provider': patch
 '@backstage/plugin-auth-backend-module-okta-provider': patch
-'@backstage/plugin-auth-backend': patch
-'@backstage/plugin-auth-node': patch
 ---
 
-introduce dangerouslyAllowSignInWithoutUserInCatalog auth resolver config
+Introduce `dangerouslyAllowSignInWithoutUserInCatalog` auth resolver config.
