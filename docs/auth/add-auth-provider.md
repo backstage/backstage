@@ -117,11 +117,9 @@ due to its comprehensive set of supported authentication
 
 ### Quick guide
 
-[1.](#create-new-auth-provider-module) Create a new auth provider module
+[1.](#create-new-auth-provider-module) Create a new auth provider module or [add a proxy auth based provider](#creating-proxy-auth-based-provider) depending on your needs.
 
-[3.](#adding-an-oauth-based-provider) or [adding a proxy auth based provider](#creating-proxy-auth-based-provider) depending on your needs.
-
-[4.](#add-the-provider-to-the-backend) Add the provider to the backend.
+[2.](#add-the-provider-to-the-backend) Add the provider to the backend.
 
 ### Create new auth provider module
 
