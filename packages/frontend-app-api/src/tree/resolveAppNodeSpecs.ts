@@ -33,12 +33,14 @@ export function resolveAppNodeSpecs(options: {
   builtinExtensions?: Extension<any, any>[];
   parameters?: Array<ExtensionParameters>;
   forbidden?: Set<string>;
+  allowUnknownExtensionConfig?: boolean;
 }): AppNodeSpec[] {
   const {
     builtinExtensions = [],
     parameters = [],
     forbidden = new Set(),
     features = [],
+    allowUnknownExtensionConfig = false,
   } = options;
 
   const plugins = features.filter(OpaqueFrontendPlugin.isType);
@@ -202,7 +204,7 @@ export function resolveAppNodeSpecs(options: {
         existing.params.disabled = Boolean(overrideParam.disabled);
       }
       order.set(extensionId, existing);
-    } else {
+    } else if (!allowUnknownExtensionConfig) {
       throw new Error(`Extension ${extensionId} does not exist`);
     }
   }
