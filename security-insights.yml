@@ -22,7 +22,7 @@ project:
   documentation:
     quickstart-guide: https://backstage.io/docs/getting-started
     detailed-guide: https://backstage.io/docs/overview/what-is-backstage
-    code-of-conduct: https://github.com/backstage/backstage/tree/master?tab=coc-ov-file#readme
+    code-of-conduct: https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md
     release-process: https://backstage.io/docs/overview/versioning-policy
     support-policy: https://backstage.io/docs/overview/versioning-policy
   repositories:
