@@ -26,5 +26,5 @@ export interface BackstageInstance {
  * @alpha
  */
 export interface SystemMetadataService {
-  listInstances(): Promise<BackstageInstance[]>;
+  introspect(): Promise<{ instances: BackstageInstance[] }>;
 }

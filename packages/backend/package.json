@@ -27,7 +27,6 @@
     "lint": "backstage-cli package lint",
     "start": "backstage-cli package start --require ./src/instrumentation.js",
     "start:prometheus": "docker run --mount type=bind,source=./prometheus.yml,destination=/etc/prometheus/prometheus.yml --publish published=9090,target=9090,protocol=tcp prom/prometheus",
-    "start:split": "backstage-cli package start --require ./src/instrumentation.js --config ../../app-config.yaml --config app-config.split.yaml",
     "test": "backstage-cli package test"
   },
   "dependencies": {

@@ -26,20 +26,24 @@ export async function createSystemMetadataRouter(options: {
   systemMetadata: SystemMetadataService;
 }) {
   const { logger, systemMetadata } = options;
+
+  async function getInstances() {
+    const instances = await systemMetadata.introspect();
+    return instances.instances;
+  }
+
   logger.info(
-    `Instances in this system: ${JSON.stringify(
-      await systemMetadata.listInstances(),
-    )}`,
+    `Instances in this system: ${JSON.stringify(await getInstances())}`,
   );
 
   const router = Router();
 
   router.get('/instances', async (_, res) => {
-    res.json(await systemMetadata.listInstances());
+    res.json(await getInstances());
   });
 
   router.get('/features/installed', async (_, res) => {
-    const instances = await systemMetadata.listInstances();
+    const instances = await getInstances();
     const featurePromises = await Promise.allSettled(
       instances.map(async instance => {
         const response = await fetch(

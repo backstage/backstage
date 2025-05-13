@@ -28,17 +28,6 @@ export const instanceMetadataServiceRef = createServiceRef<
   scope: 'root',
 });
 
-/**
- * EXPERIMENTAL: System metadata service.
- * @alpha
- */
-export const systemMetadataServiceRef = createServiceRef<
-  import('./services/definitions/SystemMetadataService').SystemMetadataService
->({
-  id: 'core.systemMetadata',
-  scope: 'root',
-});
-
 export type {
   BackendFeatureMeta,
   InstanceMetadataService,
