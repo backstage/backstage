@@ -18,7 +18,9 @@ export class DefaultSystemMetadataService implements SystemMetadataService {
     config: RootConfigService;
   }): DefaultSystemMetadataService;
   // (undocumented)
-  listInstances(): Promise<BackstageInstance[]>;
+  introspect(): Promise<{
+    instances: BackstageInstance[];
+  }>;
 }
 
 // @alpha
