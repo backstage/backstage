@@ -77,6 +77,7 @@ export const ExpandableNavigationAddon = () => {
     (item: HTMLInputElement) => {
       const isExpanded = item.checked;
       const shouldExpand = expanded?.expandAllNestedNavs;
+      // console.log('Item:', item, 'isExpanded:', isExpanded, 'shouldExpand:', shouldExpand);
 
       // Is collapsed but should expand
       if (shouldExpand && !isExpanded) {
@@ -102,6 +103,7 @@ export const ExpandableNavigationAddon = () => {
     }
   };
   useEffect(() => {
+    // console.log('Checkbox Toggles:', checkboxToggles);
     // There is no nested navs
     if (!checkboxToggles?.length) return;
 
@@ -109,7 +111,10 @@ export const ExpandableNavigationAddon = () => {
     checkboxToggles.forEach(item => {
       item.tabIndex = 0;
       const toggleAction = () => {
-        if (shouldToggle(item)) item.click();
+        if (shouldToggle(item)) {
+          // console.log('Toggling item:', item);
+          item.click();
+        }
       };
       // Add keyboard event listener
       const keydownHandler = (event: KeyboardEvent) => {
@@ -118,14 +123,25 @@ export const ExpandableNavigationAddon = () => {
           toggleAction,
         );
       };
+      // console.log('Attaching keydown listener to:', item)
       item.addEventListener('keydown', keydownHandler);
+      item.addEventListener('click', toggleAction);
 
       // Clean up event listener or unmount
       return () => {
         item.removeEventListener('keydown', keydownHandler);
+        item.removeEventListener('click', toggleAction);
       };
     });
   }, [checkboxToggles, shouldToggle]);
+  useEffect(() => {
+    if (!checkboxToggles?.length) return;
+    checkboxToggles.forEach(item => {
+      if (shouldToggle(item)) {
+        item.click();
+      }
+    });
+  }, [expanded, checkboxToggles, shouldToggle]);
 
   const handleState = () => {
     setExpanded(prevState => ({
