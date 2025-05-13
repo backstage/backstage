@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-backend
 
+## 2.0.0-next.3
+
+### Patch Changes
+
+- 8e0f15f: "Added a note clarifying that `entity-fetch` audit events are not visible by default in the logs and are only displayed when the log severity level is adjusted."
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/backend-openapi-utils@0.5.3-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.2
+  - @backstage/plugin-events-node@0.4.11-next.2
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.2
+
 ## 2.0.0-next.2
 
 ### Patch Changes
