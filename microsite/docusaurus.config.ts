@@ -101,23 +101,23 @@ const config: Config = {
           sidebarPath: 'sidebars.ts',
           ...(useVersionedDocs
             ? {
-              includeCurrentVersion: true,
-              lastVersion: 'stable',
-              versions: {
-                stable: {
-                  label: 'Stable',
-                  path: '/',
-                  banner: 'none',
-                  badge: false,
+                includeCurrentVersion: true,
+                lastVersion: 'stable',
+                versions: {
+                  stable: {
+                    label: 'Stable',
+                    path: '/',
+                    banner: 'none',
+                    badge: false,
+                  },
+                  current: {
+                    label: 'Next',
+                    path: '/next',
+                    banner: 'unreleased',
+                    badge: true,
+                  },
                 },
-                current: {
-                  label: 'Next',
-                  path: '/next',
-                  banner: 'unreleased',
-                  badge: true,
-                },
-              },
-            }
+              }
             : undefined),
           docItemComponent: '@theme/ApiItem',
         },
@@ -344,13 +344,13 @@ const config: Config = {
 
     colorMode: {
       disableSwitch: false,
-      respectPrefersColorScheme: true
+      respectPrefersColorScheme: true,
     },
     navbar: {
       logo: {
         alt: 'Backstage Software Catalog and Developer Platform',
         src: 'img/logo-black.svg',
-        srcDark: 'img/logo.svg'
+        srcDark: 'img/logo.svg',
       },
       items: [
         {
@@ -395,11 +395,11 @@ const config: Config = {
         },
         ...(useVersionedDocs
           ? [
-            {
-              type: 'docsVersionDropdown',
-              position: 'right' as const,
-            },
-          ]
+              {
+                type: 'docsVersionDropdown',
+                position: 'right' as const,
+              },
+            ]
           : []),
       ],
     },

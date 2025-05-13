@@ -1,20 +1,20 @@
 $xlUpBreakpoint: 1441px;
 $desktopUpBreakpoint: 997px;
 
-html[data-theme='dark']{
-    --ifm-grey-background: var(--ifm-grey-background-dark);
-    --ifm-green-gradient-background: var(--ifm-green-gradient-background-dark);
-    --backstage-logo: url(/img/logo.svg);
-    --bullet-line-color: var(--ifm-bullet-line-dark);
-    --ifm-button-border-color: var(--ifm-color-primary-darker);
+html[data-theme='dark'] {
+  --ifm-grey-background: var(--ifm-grey-background-dark);
+  --ifm-green-gradient-background: var(--ifm-green-gradient-background-dark);
+  --backstage-logo: url(/img/logo.svg);
+  --bullet-line-color: var(--ifm-bullet-line-dark);
+  --ifm-button-border-color: var(--ifm-color-primary-darker);
 }
 
-html[data-theme='light']{
-    --ifm-grey-background: var(--ifm-grey-background-light);
-    --ifm-green-gradient-background: var(--ifm-green-gradient-background-light);
-    --ifm-breadcrumb-color-active: var(--ifm-color-primary-darker);
-    --ifm-menu-color-active: var(--ifm-color-primary-darker);
-    --ifm-link-color: var(--ifm-color-primary-darker);
-    --backstage-logo: url(/img/logo-black.svg);
-    --bullet-line-color: var(--ifm-bullet-line-light);
+html[data-theme='light'] {
+  --ifm-grey-background: var(--ifm-grey-background-light);
+  --ifm-green-gradient-background: var(--ifm-green-gradient-background-light);
+  --ifm-breadcrumb-color-active: var(--ifm-color-primary-darker);
+  --ifm-menu-color-active: var(--ifm-color-primary-darker);
+  --ifm-link-color: var(--ifm-color-primary-darker);
+  --backstage-logo: url(/img/logo-black.svg);
+  --bullet-line-color: var(--ifm-bullet-line-light);
 }
