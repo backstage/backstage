@@ -21,7 +21,7 @@ import { BackstageInstance } from '@backstage/backend-plugin-api/alpha';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
-import { SystemMetadataService } from '@backstage/backend-plugin-api/alpha';
+import { SystemMetadataService } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
 export class DefaultSystemMetadataService implements SystemMetadataService {
