@@ -289,6 +289,8 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'fields.entityPicker.description': 'An entity from the catalog';
     readonly 'fields.entityTagsPicker.title': 'Tags';
     readonly 'fields.entityTagsPicker.description': "Add any relevant tags, hit 'Enter' to add new tags. Valid format: [a-z0-9+#] separated by [-], at most 63 characters";
+    readonly 'fields.multiEntityPicker.title': 'Entity';
+    readonly 'fields.multiEntityPicker.description': 'An entity from the catalog';
     readonly 'fields.myGroupsPicker.title': 'Entity';
     readonly 'fields.myGroupsPicker.description': 'An entity from the catalog';
     readonly 'fields.ownedEntityPicker.title': 'Entity';

@@ -11,6 +11,14 @@ export function getManifestByReleaseLine(
 // @public
 export type GetManifestByReleaseLineOptions = {
   releaseLine: string;
+  fetch?: (
+    url: string,
+    options?: {
+      signal?: AbortSignal;
+    },
+  ) => Promise<Pick<Response, 'ok' | 'status' | 'text' | 'json' | 'url'>>;
+  gitHubRawBaseUrl?: string;
+  versionsBaseUrl?: string;
 };
 
 // @public
@@ -27,6 +35,8 @@ export type GetManifestByVersionOptions = {
       signal?: AbortSignal;
     },
   ) => Promise<Pick<Response, 'status' | 'json' | 'url'>>;
+  gitHubRawBaseUrl?: string;
+  versionsBaseUrl?: string;
 };
 
 // @public
