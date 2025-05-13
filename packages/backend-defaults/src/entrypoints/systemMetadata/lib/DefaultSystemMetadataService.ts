@@ -73,7 +73,9 @@ export class DefaultSystemMetadataService implements SystemMetadataService {
     return new DefaultSystemMetadataService(pluginEnv);
   }
 
-  async listInstances() {
-    return this.instances;
+  async introspect() {
+    return {
+      instances: this.instances,
+    };
   }
 }

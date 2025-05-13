@@ -289,4 +289,15 @@ export namespace coreServices {
     id: 'core.rootInstanceMetadata',
     scope: 'root',
   });
+  
+  /**
+   * Read information about your current Backstage deployment.
+   * @alpha
+   */
+  export const systemMetadataServiceRef = createServiceRef<
+    import('./SystemMetadataService').SystemMetadataService
+  >({
+    id: 'core.systemMetadata',
+    scope: 'root',
+  });
 }

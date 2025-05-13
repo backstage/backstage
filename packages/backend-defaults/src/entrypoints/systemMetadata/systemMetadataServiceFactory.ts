@@ -19,7 +19,6 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { DefaultSystemMetadataService } from './lib/DefaultSystemMetadataService';
-import { systemMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { createSystemMetadataRouter } from './lib/createSystemMetadataRouter';
 
 /**
@@ -28,7 +27,7 @@ import { createSystemMetadataRouter } from './lib/createSystemMetadataRouter';
  * @alpha
  */
 export const systemMetadataServiceFactory = createServiceFactory({
-  service: systemMetadataServiceRef,
+  service: coreServices.systemMetadataServiceRef,
   deps: {
     logger: coreServices.rootLogger,
     config: coreServices.rootConfig,
