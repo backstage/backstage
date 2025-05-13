@@ -20,7 +20,7 @@ project:
       affiliation: Spotify
       email: ben@blam.sh
   documentation:
-    quickstart-guide: https://backstage.io/docs/getting-started/quickstart
+    quickstart-guide: https://backstage.io/docs/getting-started
     detailed-guide: https://backstage.io/docs/overview/what-is-backstage
     code-of-conduct: https://github.com/backstage/backstage/tree/master?tab=coc-ov-file#readme
     release-process: https://backstage.io/docs/overview/versioning-policy
