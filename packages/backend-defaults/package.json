@@ -37,6 +37,7 @@
     "./rootLifecycle": "./src/entrypoints/rootLifecycle/index.ts",
     "./rootLogger": "./src/entrypoints/rootLogger/index.ts",
     "./scheduler": "./src/entrypoints/scheduler/index.ts",
+    "./systemMetadata": "./src/entrypoints/systemMetadata/index.ts",
     "./urlReader": "./src/entrypoints/urlReader/index.ts",
     "./userInfo": "./src/entrypoints/userInfo/index.ts",
     "./alpha": "./src/alpha/index.ts",
@@ -96,6 +97,9 @@
       ],
       "scheduler": [
         "src/entrypoints/scheduler/index.ts"
+      ],
+      "systemMetadata": [
+        "src/entrypoints/systemMetadata/index.ts"
       ],
       "urlReader": [
         "src/entrypoints/urlReader/index.ts"

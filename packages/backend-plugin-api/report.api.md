@@ -137,6 +137,14 @@ export type BackstageCredentials<TPrincipal = unknown> = {
   principal: TPrincipal;
 };
 
+// @public (undocumented)
+export interface BackstageInstance {
+  // (undocumented)
+  externalUrl: string;
+  // (undocumented)
+  internalUrl: string;
+}
+
 // @public
 export type BackstageNonePrincipal = {
   type: 'none';
@@ -237,6 +245,12 @@ export namespace coreServices {
     'root',
     'singleton'
   >;
+  const // @alpha
+    systemMetadataServiceRef: ServiceRef<
+      SystemMetadataService,
+      'root',
+      'singleton'
+    >;
 }
 
 // @public
@@ -742,6 +756,14 @@ export interface ServiceRefOptions<
   multiton?: TInstances extends 'multiton' ? true : false;
   // (undocumented)
   scope?: TScope;
+}
+
+// @public (undocumented)
+export interface SystemMetadataService {
+  // (undocumented)
+  introspect(): Promise<{
+    instances: BackstageInstance[];
+  }>;
 }
 
 // @public
