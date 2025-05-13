@@ -97,7 +97,7 @@ function FrobsAggregator() {
 
   const { value, loading, error } = useAsync(async () => {
     const baseUrl = await discoveryApi.getBaseUrl('proxy');
-    const response = await fetch(`${baseUrl}/frobs`);
+    const response = await fetchApi.fetch(`${baseUrl}/frobs`);
     return response.json();
   }, [fetchApi, discoveryApi]);
 
