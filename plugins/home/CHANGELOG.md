@@ -1,5 +1,32 @@
 # @backstage/plugin-home
 
+## 0.8.8-next.3
+
+### Patch Changes
+
+- f7ca0fe: Added the Catalog presentation API to the HomePageRecentlyVisited and HomePageTopVisited components
+- eddd96c: Added optional title prop to `customHomePageGrid`
+- 16eb4bf: Export ContentModal from `@backstage/plugin-home-react` so people can use this in other scenarios.
+  Renamed `CatalogReactComponentsNameToClassKey` to `PluginHomeComponentsNameToClassKey` in `overridableComponents.ts`
+
+  Made QuickStartCard `docsLinkTitle` prop more flexible to allow for any React.JSX.Element instead of just a string.
+  Added QuickStartCard prop `additionalContent` which can eventually replace the prop `video`.
+
+- 195323f: Export root page route from the home plugin to enable adding links/nav to it from outside the plugin
+- d710d74: docs: Update default for `preventCollision` prop
+- Updated dependencies
+  - @backstage/core-app-api@1.17.0-next.1
+  - @backstage/plugin-home-react@0.1.26-next.2
+  - @backstage/core-compat-api@0.4.2-next.3
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.3
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/theme@0.6.6-next.0
+
 ## 0.8.8-next.2
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-auth-backend
 
+## 0.25.0-next.2
+
+### Patch Changes
+
+- ab53e6f: Added support for the new `dangerousEntityRefFallback` option for `signInWithCatalogUser` in `AuthResolverContext`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.3-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.17.0-next.2
+
 ## 0.25.0-next.1
 
 ### Patch Changes

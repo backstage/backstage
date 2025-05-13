@@ -1,5 +1,29 @@
 # @backstage/backend-defaults
 
+## 0.10.0-next.3
+
+### Patch Changes
+
+- 1e06afd: `GithubUrlReader`'s search detects glob-patterns supported by `minimatch`, instead of just detecting
+  `*` and `?` characters.
+
+  For example, this allows to search for patterns like `{C,c}atalog-info.yaml`.
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/plugin-auth-node@0.6.3-next.2
+  - @backstage/backend-app-api@1.2.3-next.2
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.16-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.11-next.2
+  - @backstage/plugin-permission-node@0.10.0-next.2
+
 ## 0.10.0-next.2
 
 ### Patch Changes
