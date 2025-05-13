@@ -59,6 +59,7 @@ const useStyles = makeStyles(
       position: 'relative',
       background: 'none',
       border: 'none',
+      overflow: 'hidden',
     },
     itemContainer: {
       width: '100%',
@@ -148,6 +149,7 @@ export type SidebarSubmenuItemProps = {
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
   exact?: boolean;
   initialShowDropdown?: boolean;
+  adornment?: React.ReactNode;
 };
 
 /**
@@ -156,7 +158,15 @@ export type SidebarSubmenuItemProps = {
  * @public
  */
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
-  const { title, subtitle, to, icon: Icon, dropdownItems, exact } = props;
+  const {
+    title,
+    subtitle,
+    to,
+    icon: Icon,
+    dropdownItems,
+    exact,
+    adornment,
+  } = props;
   const classes = useStyles();
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
@@ -209,6 +219,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
                 </Typography>
               )}
             </Typography>
+            {adornment}
             {showDropDown ? (
               <ArrowDropUpIcon className={classes.dropdownArrow} />
             ) : (
@@ -275,6 +286,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
               </Typography>
             )}
           </Typography>
+          {adornment}
         </Link>
       </Tooltip>
     </Box>
