@@ -15,7 +15,7 @@
  */
 
 /**
- * @alpha
+ * @public
  */
 export interface BackstageInstance {
   internalUrl: string;
@@ -23,7 +23,7 @@ export interface BackstageInstance {
 }
 
 /**
- * @alpha
+ * @public
  */
 export interface SystemMetadataService {
   introspect(): Promise<{ instances: BackstageInstance[] }>;

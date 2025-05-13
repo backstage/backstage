@@ -21,7 +21,7 @@ import {
 import {
   BackstageInstance,
   SystemMetadataService,
-} from '@backstage/backend-plugin-api/alpha';
+} from '@backstage/backend-plugin-api';
 import z from 'zod';
 
 const targetObjectSchema = z.object({

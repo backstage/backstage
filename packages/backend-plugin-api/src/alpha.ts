@@ -32,8 +32,3 @@ export type {
   BackendFeatureMeta,
   InstanceMetadataService,
 } from './services/definitions/InstanceMetadataService';
-
-export type {
-  BackstageInstance,
-  SystemMetadataService,
-} from './services/definitions/SystemMetadataService';
