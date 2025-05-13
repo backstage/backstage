@@ -151,11 +151,15 @@ and writing of template entity definitions.
 
 ### Adding a TemplateExample
 
-A TemplateExample is a predefined structure that can be used to create custom actions in your software templates. It
-serves as a blueprint for users to understand how to use a specific action and its fields as well as to ensure
-consistency and standardization across different custom actions.
+A TemplateExample is a way to document different ways that your custom action can be used. Once added it will be visible
+in your Backstage instance under the [/create/actions](https://demo.backstage.io/create/actions) path. You can have multiple
+examples for one action that can demonstrate different combinations of inputs and how to use them.
 
-#### Define a TemplateExample and add to your Custom Action
+#### Define TemplateExamples
+
+Below is a sample TemplateExample that is used for `publish:github`. The source code is available
+on [github](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-github/src/actions/github.examples.ts)
+and preview on [demo.backstage.io/create/actions](https://demo.backstage.io/create/actions#publish-github)
 
 ```ts title="With JSON Schema"
 import { TemplateExample } from '@backstage/plugin-scaffolder-node';
@@ -163,15 +167,33 @@ import yaml from 'yaml';
 
 export const examples: TemplateExample[] = [
   {
-    description: 'Template Example for Creating an Acme file',
+    description: 'Initializes a GitHub repository with a description.',
     example: yaml.stringify({
       steps: [
         {
-          action: 'acme:file:create',
-          name: 'Create an Acme file.',
+          id: 'publish',
+          action: 'publish:github',
+          name: 'Publish to GitHub',
           input: {
-            contents: 'file contents...',
-            filename: 'ACME.properties',
+            repoUrl: 'github.com?repo=repo&owner=owner',
+            description: 'Initialize a git repository',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description:
+      'Initializes a GitHub repository with public repo visibility, if not set defaults to private',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:github',
+          name: 'Publish to GitHub',
+          input: {
+            repoUrl: 'github.com?repo=repo&owner=owner',
+            repoVisibility: 'public',
           },
         },
       ],
@@ -180,23 +202,27 @@ export const examples: TemplateExample[] = [
 ];
 ```
 
-Add the example to `createTemplateAction` by including the `examples` property:
+#### Register TemplateExample with your custom action
+
+It is also crucial
+to [register](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-github/src/actions/github.ts#L126)
+the `TemplateExample` when calling `createTemplateAction` by including the `examples`
+property.
 
 ```ts
 return createTemplateAction({
-  id: 'acme:file:create',
-  description: 'Create an Acme file',
-  schema: {
-    input: {
-      contents: d => d.string().describe('The contents of the file'),
-      filename: d =>
-        d.string().describe('The filename of the file that will be created'),
-    },
-  },
+  id: 'publish:github',
+  description:
+    'Initializes a git repository of contents in workspace and publishes it to GitHub.',
   examples,
   // ...rest of the action configuration
 });
 ```
+
+#### Test TemplateAction examples
+
+It is also possible to test your example TemplateActions. You can see a sample test
+on [github](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-github/src/actions/github.examples.test.ts)
 
 ### The context object
 
