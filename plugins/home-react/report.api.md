@@ -5,8 +5,18 @@
 ```ts
 import { Extension } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { JSX as JSX_3 } from 'react';
+import { Overrides } from '@material-ui/core/styles/overrides';
 import { RJSFSchema } from '@rjsf/utils';
+import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { UiSchema } from '@rjsf/utils';
+
+// @public (undocumented)
+export type BackstageOverrides = Overrides & {
+  [Name in keyof PluginHomeComponentsNameToClassKey]?: Partial<
+    StyleRules<PluginHomeComponentsNameToClassKey[Name]>
+  >;
+};
 
 // @public (undocumented)
 export type CardConfig = {
@@ -53,6 +63,15 @@ export type ComponentRenderer = {
 };
 
 // @public
+export const ContentModal: (props: ContentModalProps) => JSX_2.Element;
+
+// @public
+export type ContentModalProps = {
+  modalContent: JSX_3.Element;
+  linkContent: string | JSX_3.Element;
+};
+
+// @public
 export function createCardExtension<T>(options: {
   title?: string;
   components: () => Promise<ComponentParts>;
@@ -61,6 +80,14 @@ export function createCardExtension<T>(options: {
   layout?: CardLayout;
   settings?: CardSettings;
 }): Extension<(props: CardExtensionProps<T>) => JSX_2.Element>;
+
+// @public (undocumented)
+export type PluginHomeComponentsNameToClassKey = {
+  PluginHomeContentModal: PluginHomeContentModalClassKey;
+};
+
+// @public (undocumented)
+export type PluginHomeContentModalClassKey = 'contentModal' | 'linkText';
 
 // @public (undocumented)
 export type RendererProps = {
