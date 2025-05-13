@@ -22,6 +22,7 @@ import {
 } from '../../../../build/lib/bundler';
 import { paths } from '../../../../../lib/paths';
 import { BackstagePackageJson } from '@backstage/cli-node';
+import { hasReactDomClient } from '../../../../build/lib/bundler/hasReactDomClient';
 
 interface StartAppOptions {
   verifyVersions?: boolean;
@@ -39,6 +40,12 @@ export async function startFrontend(options: StartAppOptions) {
   const packageJson = (await readJson(
     resolvePath(options.targetDir ?? paths.targetDir, 'package.json'),
   )) as BackstagePackageJson;
+
+  if (!hasReactDomClient()) {
+    console.warn(
+      'React 17 is now deprecated! Please follow the Backstage migration guide to update to React 18: https://backstage.io/docs/tutorials/react18-migration/',
+    );
+  }
 
   const waitForExit = await serveBundle({
     entry: options.entry,
