@@ -176,7 +176,7 @@ function FrobsAggregator() {
     // highlight-next-line
     const baseUrl = await discoveryApi.getBaseUrl('frobs-aggregator');
     // highlight-next-line
-    const response = await fetch(`${baseUrl}/summary`);
+    const response = await fetchApi.fetch(`${baseUrl}/summary`);
     return response.json();
   }, [fetchApi, discoveryApi]);
 
