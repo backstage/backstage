@@ -142,19 +142,19 @@ export async function createConfig(
       options.moduleFederation,
     );
 
+    const refreshOptions = {
+      overlay: {
+        sockProtocol: 'ws',
+        sockHost: host,
+        sockPort: port,
+      },
+    } as const;
+
     if (rspack) {
       const RspackReactRefreshPlugin = require('@rspack/plugin-react-refresh');
-      plugins.push(new RspackReactRefreshPlugin());
+      plugins.push(new RspackReactRefreshPlugin(refreshOptions));
     } else {
-      plugins.push(
-        new ReactRefreshPlugin({
-          overlay: {
-            sockProtocol: 'ws',
-            sockHost: host,
-            sockPort: port,
-          },
-        }),
-      );
+      plugins.push(new ReactRefreshPlugin(refreshOptions));
     }
   }
 
@@ -466,7 +466,7 @@ export async function createConfig(
         : {}),
     },
     experiments: {
-      lazyCompilation: !rspack && yn(process.env.EXPERIMENTAL_LAZY_COMPILATION),
+      lazyCompilation: yn(process.env.EXPERIMENTAL_LAZY_COMPILATION),
       ...(rspack && {
         // We're still using `style-loader` for custom `insert` option
         css: false,
