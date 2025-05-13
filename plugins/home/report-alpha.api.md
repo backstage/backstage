@@ -13,7 +13,9 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 const _default: FrontendPlugin<
-  {},
+  {
+    root: RouteRef<undefined>;
+  },
   {},
   {
     'page:home': ExtensionDefinition<{
