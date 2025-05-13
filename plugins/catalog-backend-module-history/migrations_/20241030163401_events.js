@@ -21,6 +21,10 @@
  * @returns { Promise<void> }
  */
 exports.up = async function up(knex) {
+  /*
+   * Events table
+   */
+
   await knex.schema.createTable('module_history__events', table => {
     table
       .bigIncrements('id')
@@ -46,6 +50,10 @@ exports.up = async function up(knex) {
       .comment('The body of the affected entity, where applicable');
   });
 
+  /*
+   * Postgres triggers
+   */
+
   if (knex.client.config.client.includes('pg')) {
     await knex.schema.raw(
       `
@@ -57,34 +65,41 @@ exports.up = async function up(knex) {
         entity_id TEXT;
         entity_json TEXT;
       BEGIN
+
         IF (TG_OP = 'INSERT') THEN
-          -- Before first stitch completes, an entry is made with a null final_entity.
-          -- We still capture INSERT triggers desipte that, just to cover for the case
-          -- if this behavior changes some time down the line.
-          IF (NEW.final_entity IS NULL) THEN
-            RETURN null;
-          END IF;
-          event_type = 'entity_created';
-          entity_ref = NEW.entity_ref;
-          entity_id = NEW.entity_id;
-          entity_json = NEW.final_entity;
-        ELSIF (TG_OP = 'UPDATE') THEN
-          IF (OLD.final_entity IS NULL) THEN
-            -- Before first stitch completes, an entry is made with a null final_entity.
+          IF (NEW.final_entity IS NOT NULL) THEN
             event_type = 'entity_created';
-          ELSIF (OLD.final_entity IS DISTINCT FROM NEW.final_entity) THEN
-            event_type = 'entity_updated';
           ELSE
             RETURN null;
           END IF;
           entity_ref = NEW.entity_ref;
           entity_id = NEW.entity_id;
           entity_json = NEW.final_entity;
+
+        ELSIF (TG_OP = 'UPDATE') THEN
+          IF (OLD.final_entity IS NULL AND NEW.final_entity IS NOT NULL) THEN
+            event_type = 'entity_created';
+          ELSIF (OLD.final_entity IS NOT NULL AND NEW.final_entity IS NOT NULL AND OLD.final_entity <> NEW.final_entity) THEN
+            event_type = 'entity_updated';
+          ELSIF (OLD.final_entity IS NOT NULL AND NEW.final_entity IS NULL) THEN
+            event_type = 'entity_deleted';
+          ELSE
+            RETURN null;
+          END IF;
+          entity_ref = NEW.entity_ref;
+          entity_id = NEW.entity_id;
+          entity_json = NEW.final_entity;
+
         ELSIF (TG_OP = 'DELETE') THEN
-          event_type = 'entity_deleted';
+          IF (OLD.final_entity IS NOT NULL) THEN
+            event_type = 'entity_deleted';
+          ELSE
+            RETURN null;
+          END IF;
           entity_ref = OLD.entity_ref;
           entity_id = OLD.entity_id;
           entity_json = OLD.final_entity;
+
         ELSE
           RETURN null;
         END IF;
@@ -109,7 +124,13 @@ exports.up = async function up(knex) {
       FOR EACH ROW EXECUTE PROCEDURE final_entities_change_history();
       `,
     );
-  } else if (knex.client.config.client.includes('sqlite')) {
+  }
+
+  /*
+   * SQLite triggers
+   */
+
+  if (knex.client.config.client.includes('sqlite')) {
     await knex.schema.raw(
       `
       CREATE TRIGGER final_entities_change_history_inserted
@@ -159,7 +180,13 @@ exports.up = async function up(knex) {
       END;
       `,
     );
-  } else if (knex.client.config.client.includes('mysql')) {
+  }
+
+  /*
+   * MySQL triggers
+   */
+
+  if (knex.client.config.client.includes('mysql')) {
     await knex.schema.raw(
       `
       CREATE TRIGGER final_entities_change_history_inserted

@@ -61,7 +61,7 @@ describe('migrations', () => {
   const databases = TestDatabases.create();
 
   it.each(databases.eachSupportedId())(
-    '20241030163401_init.js, %p',
+    '20241030163401_events.js, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
       const mockProvider = createMockEntityProvider();
@@ -102,7 +102,7 @@ describe('migrations', () => {
 
       // Upgrading works
       await mockProvider.ready;
-      await migrateUntilBefore(knex, '20241030163401_init.js');
+      await migrateUntilBefore(knex, '20241030163401_events.js');
       await migrateUpOnce(knex);
 
       // Expect that an insertion leads to an event
