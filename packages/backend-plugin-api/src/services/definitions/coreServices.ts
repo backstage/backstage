@@ -277,4 +277,15 @@ export namespace coreServices {
   export const urlReader = createServiceRef<
     import('./UrlReaderService').UrlReaderService
   >({ id: 'core.urlReader' });
+
+  /**
+   * Read information about your current Backstage deployment.
+   * @alpha
+   */
+  export const systemMetadataServiceRef = createServiceRef<
+    import('./SystemMetadataService').SystemMetadataService
+  >({
+    id: 'core.systemMetadata',
+    scope: 'root',
+  });
 }

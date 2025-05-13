@@ -35,17 +35,6 @@ export {
 
 import { createServiceRef } from '@backstage/backend-plugin-api';
 
-/**
- * EXPERIMENTAL: System metadata service.
- * @alpha
- */
-export const systemMetadataServiceRef = createServiceRef<
-  import('./services/definitions/SystemMetadataService').SystemMetadataService
->({
-  id: 'core.systemMetadata',
-  scope: 'root',
-});
-
 export type {
   BackstageInstance,
   SystemMetadataService,
