@@ -31,11 +31,11 @@ import {
   EntityHeaderBlueprint,
   EntityContentBlueprint,
   defaultEntityContentGroups,
-  buildFilterFn,
   EntityContextMenuItemBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
+import { buildFilterFn } from './filter/FilterWrapper';
 
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {

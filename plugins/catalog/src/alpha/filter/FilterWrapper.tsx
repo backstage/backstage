@@ -24,13 +24,9 @@ import { parseFilterExpression } from './parseFilterExpression';
 const seenParseErrorExpressionStrings = new Set<string>();
 const seenDuplicateExpressionStrings = new Set<string>();
 
-/**
- * Given an optional filter function and an optional filter expression, make
- * sure that at most one of them was given, and return a filter function that
- * does the right thing.
- *
- * @alpha
- */
+// Given an optional filter function and an optional filter expression, make
+// sure that at most one of them was given, and return a filter function that
+// does the right thing.
 export function buildFilterFn(
   filterFunction?: (entity: Entity) => boolean,
   filterExpression?: string,
