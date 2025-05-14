@@ -222,6 +222,12 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
             .describe(
               'Automatically assign reviewers from the approval rules of the MR. Includes `CODEOWNERS`',
             ),
+        labels: z =>
+          z
+            .string()
+            .or(z.string().array())
+            .optional()
+            .describe('Labels with which to tag the created merge request'),
       },
       output: {
         targetBranchName: z =>
@@ -245,6 +251,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
         sourcePath,
         title,
         token,
+        labels,
       } = ctx.input;
 
       const { owner, repo, project } = parseRepoUrl(repoUrl, integrations);
@@ -453,6 +460,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
                   : false,
                 assigneeId,
                 reviewerIds,
+                labels,
               },
             );
             return {

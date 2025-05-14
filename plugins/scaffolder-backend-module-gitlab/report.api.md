@@ -206,6 +206,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     assignee?: string | undefined;
     reviewers?: string[] | undefined;
     assignReviewersFromApprovalRules?: boolean | undefined;
+    labels?: string | string[] | undefined;
   },
   {
     targetBranchName: string;
