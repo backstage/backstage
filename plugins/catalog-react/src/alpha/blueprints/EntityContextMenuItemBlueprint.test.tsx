@@ -20,6 +20,7 @@ import {
 import { EntityContextMenuItemBlueprint } from './EntityContextMenuItemBlueprint';
 import { screen, waitFor } from '@testing-library/react';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { Entity } from '@backstage/catalog-model';
 
 jest.mock('../../hooks/useEntityContextMenu', () => ({
   useEntityContextMenu: () => ({
@@ -237,5 +238,29 @@ describe('EntityContextMenuItemBlueprint', () => {
     await waitFor(() => {
       expect(screen.getByText('Test')).toBeInTheDocument();
     });
+  });
+
+  it.each([
+    { filter: { kind: 'Api' } },
+    { filter: (e: Entity) => e.kind.toLowerCase() === 'api' },
+  ])('should return a filter function', async ({ filter }) => {
+    const extension = EntityContextMenuItemBlueprint.make({
+      name: 'test',
+      params: {
+        icon: <span>Icon</span>,
+        useProps: () => ({ title: 'Test', onClick: () => {} }),
+        filter,
+      },
+    });
+
+    const tester = createExtensionTester(extension);
+
+    const filterFn = tester.get(
+      EntityContextMenuItemBlueprint.dataRefs.filterFunction,
+    );
+
+    expect(filterFn).toBeDefined();
+    expect(filterFn?.({ kind: 'Api' } as Entity)).toBe(true);
+    expect(filterFn?.({ kind: 'Component' } as Entity)).toBe(false);
   });
 });
