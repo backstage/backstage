@@ -24,14 +24,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { useEntityContextMenu } from '../../hooks/useEntityContextMenu';
-import { EntityPredicate } from '../predicates';
-import type { Entity } from '@backstage/catalog-model';
 import {
-  entityFilterExpressionDataRef,
-  entityFilterFunctionDataRef,
-} from './extensionData';
+  EntityPredicate,
+  entityPredicateToFilterFunction,
+} from '../predicates';
+import type { Entity } from '@backstage/catalog-model';
+import { entityFilterFunctionDataRef } from './extensionData';
 import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
-import { resolveEntityFilterData } from './resolveEntityFilterData';
 /** @alpha */
 export type UseProps = () =>
   | {
@@ -49,7 +48,7 @@ export type UseProps = () =>
 export type EntityContextMenuItemParams = {
   useProps: UseProps;
   icon: JSX.Element;
-  filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+  filter?: EntityPredicate | ((entity: Entity) => boolean);
 };
 
 /** @alpha */
@@ -59,16 +58,13 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
   output: [
     coreExtensionData.reactElement,
     entityFilterFunctionDataRef.optional(),
-    entityFilterExpressionDataRef.optional(),
   ],
   dataRefs: {
     filterFunction: entityFilterFunctionDataRef,
-    filterExpression: entityFilterExpressionDataRef,
   },
   config: {
     schema: {
-      filter: z =>
-        z.union([z.string(), createEntityPredicateSchema(z)]).optional(),
+      filter: z => createEntityPredicateSchema(z).optional(),
     },
   },
   *factory(params: EntityContextMenuItemParams, { node, config }) {
@@ -102,6 +98,16 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
 
     yield coreExtensionData.reactElement(ExtensionBoundary.lazy(node, loader));
 
-    yield* resolveEntityFilterData(params.filter, config, node);
+    if (config.filter) {
+      yield entityFilterFunctionDataRef(
+        entityPredicateToFilterFunction(config.filter),
+      );
+    } else if (typeof params.filter === 'function') {
+      yield entityFilterFunctionDataRef(params.filter);
+    } else if (params.filter) {
+      yield entityFilterFunctionDataRef(
+        entityPredicateToFilterFunction(params.filter),
+      );
+    }
   },
 });

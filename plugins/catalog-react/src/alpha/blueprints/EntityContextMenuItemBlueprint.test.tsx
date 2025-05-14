@@ -90,122 +90,115 @@ describe('EntityContextMenuItemBlueprint', () => {
               "filter": {
                 "anyOf": [
                   {
-                    "type": "string",
-                  },
-                  {
                     "anyOf": [
                       {
-                        "anyOf": [
-                          {
-                            "type": [
-                              "string",
-                              "number",
-                              "boolean",
-                            ],
-                          },
-                          {
-                            "items": {
-                              "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0",
-                            },
-                            "type": "array",
-                          },
+                        "type": [
+                          "string",
+                          "number",
+                          "boolean",
                         ],
                       },
                       {
-                        "additionalProperties": false,
-                        "properties": {
-                          "$all": {
-                            "items": {
-                              "$ref": "#/properties/filter/anyOf/1",
-                            },
-                            "type": "array",
-                          },
+                        "items": {
+                          "$ref": "#/properties/filter/anyOf/0/anyOf/0",
                         },
-                        "required": [
-                          "$all",
-                        ],
-                        "type": "object",
-                      },
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "$any": {
-                            "items": {
-                              "$ref": "#/properties/filter/anyOf/1",
-                            },
-                            "type": "array",
-                          },
-                        },
-                        "required": [
-                          "$any",
-                        ],
-                        "type": "object",
-                      },
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "$not": {
-                            "$ref": "#/properties/filter/anyOf/1",
-                          },
-                        },
-                        "required": [
-                          "$not",
-                        ],
-                        "type": "object",
-                      },
-                      {
-                        "additionalProperties": {
-                          "anyOf": [
-                            {
-                              "$ref": "#/properties/filter/anyOf/1/anyOf/0",
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$exists": {
-                                  "type": "boolean",
-                                },
-                              },
-                              "required": [
-                                "$exists",
-                              ],
-                              "type": "object",
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$in": {
-                                  "items": {
-                                    "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0",
-                                  },
-                                  "type": "array",
-                                },
-                              },
-                              "required": [
-                                "$in",
-                              ],
-                              "type": "object",
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$contains": {
-                                  "$ref": "#/properties/filter/anyOf/1",
-                                },
-                              },
-                              "required": [
-                                "$contains",
-                              ],
-                              "type": "object",
-                            },
-                          ],
-                        },
-                        "propertyNames": {
-                          "pattern": "^(?!\\$).*$",
-                        },
-                        "type": "object",
+                        "type": "array",
                       },
                     ],
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "$all": {
+                        "items": {
+                          "$ref": "#/properties/filter",
+                        },
+                        "type": "array",
+                      },
+                    },
+                    "required": [
+                      "$all",
+                    ],
+                    "type": "object",
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "$any": {
+                        "items": {
+                          "$ref": "#/properties/filter",
+                        },
+                        "type": "array",
+                      },
+                    },
+                    "required": [
+                      "$any",
+                    ],
+                    "type": "object",
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "$not": {
+                        "$ref": "#/properties/filter",
+                      },
+                    },
+                    "required": [
+                      "$not",
+                    ],
+                    "type": "object",
+                  },
+                  {
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/properties/filter/anyOf/0",
+                        },
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "$exists": {
+                              "type": "boolean",
+                            },
+                          },
+                          "required": [
+                            "$exists",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "$in": {
+                              "items": {
+                                "$ref": "#/properties/filter/anyOf/0/anyOf/0",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "required": [
+                            "$in",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "$contains": {
+                              "$ref": "#/properties/filter",
+                            },
+                          },
+                          "required": [
+                            "$contains",
+                          ],
+                          "type": "object",
+                        },
+                      ],
+                    },
+                    "propertyNames": {
+                      "pattern": "^(?!\\$).*$",
+                    },
+                    "type": "object",
                   },
                 ],
               },
@@ -226,15 +219,6 @@ describe('EntityContextMenuItemBlueprint', () => {
               "optional": true,
             },
             "id": "catalog.entity-filter-function",
-            "optional": [Function],
-            "toString": [Function],
-          },
-          {
-            "$$type": "@backstage/ExtensionDataRef",
-            "config": {
-              "optional": true,
-            },
-            "id": "catalog.entity-filter-expression",
             "optional": [Function],
             "toString": [Function],
           },

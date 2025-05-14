@@ -75,7 +75,6 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
     contextMenuItems: createExtensionInput([
       coreExtensionData.reactElement,
       EntityContextMenuItemBlueprint.dataRefs.filterFunction.optional(),
-      EntityContextMenuItemBlueprint.dataRefs.filterExpression.optional(),
     ]),
   },
   config: {
@@ -95,10 +94,9 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
 
         const menuItems = inputs.contextMenuItems.map(item => ({
           element: item.get(coreExtensionData.reactElement),
-          filter: buildFilterFn(
-            item.get(EntityContextMenuItemBlueprint.dataRefs.filterFunction),
-            item.get(EntityContextMenuItemBlueprint.dataRefs.filterExpression),
-          ),
+          filter:
+            item.get(EntityContextMenuItemBlueprint.dataRefs.filterFunction) ??
+            (() => true),
         }));
 
         type Groups = Record<

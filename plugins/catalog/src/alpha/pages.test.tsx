@@ -738,11 +738,11 @@ describe('Entity page', () => {
     it.each([
       {
         positive: { params: {} },
-        negative: { params: { filter: 'kind:api' } },
+        negative: { params: { filter: { kind: 'api' } } },
       },
       {
-        positive: { params: { filter: 'kind:component' } },
-        negative: { params: { filter: 'kind:api' } },
+        positive: { params: { filter: { kind: 'component' } } },
+        negative: { params: { filter: { kind: 'api' } } },
       },
       {
         positive: {
