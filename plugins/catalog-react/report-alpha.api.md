@@ -17,12 +17,6 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha
-export function buildFilterFn(
-  filterFunction?: (entity: Entity) => boolean,
-  filterExpression?: string,
-): (entity: Entity) => boolean;
-
-// @alpha
 export const CatalogFilterBlueprint: ExtensionBlueprint<{
   kind: 'catalog-filter';
   name: undefined;
@@ -346,13 +340,6 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
         {
           optional: true;
         }
-      >
-    | ConfigurableExtensionDataRef<
-        string,
-        'catalog.entity-filter-expression',
-        {
-          optional: true;
-        }
       >;
   inputs: {};
   config: {
@@ -367,11 +354,6 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
       'catalog.entity-filter-function',
       {}
     >;
-    filterExpression: ConfigurableExtensionDataRef<
-      string,
-      'catalog.entity-filter-expression',
-      {}
-    >;
   };
 }>;
 
@@ -379,7 +361,7 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
 export type EntityContextMenuItemParams = {
   useProps: UseProps;
   icon: JSX_2.Element;
-  filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+  filter?: EntityPredicate | ((entity: Entity) => boolean);
 };
 
 // @alpha (undocumented)

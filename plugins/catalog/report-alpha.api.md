@@ -877,13 +877,6 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
-          >
-        | ConfigurableExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
           >;
       inputs: {};
       params: EntityContextMenuItemParams;
@@ -905,13 +898,6 @@ const _default: FrontendPlugin<
             {
               optional: true;
             }
-          >
-        | ConfigurableExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
           >;
       inputs: {};
       params: EntityContextMenuItemParams;
@@ -930,13 +916,6 @@ const _default: FrontendPlugin<
         | ConfigurableExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ConfigurableExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
             {
               optional: true;
             }
@@ -1094,13 +1073,6 @@ const _default: FrontendPlugin<
           | ConfigurableExtensionDataRef<
               (entity: Entity) => boolean,
               'catalog.entity-filter-function',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              string,
-              'catalog.entity-filter-expression',
               {
                 optional: true;
               }
