@@ -10,7 +10,7 @@ There are two available loaders. The first one is `info.packageJson`, which can 
 export default createFrontendPlugin({
   pluginId: '...',
   info: {
-    packageJson: () => import('../package.json'),
+    info: { packageJson: () => import('../package.json') },
   },
 });
 ```
