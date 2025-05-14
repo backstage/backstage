@@ -81,7 +81,7 @@ backend:
   rateLimit: true
 ```
 
-You can additionally configure the rate limiting parameters also by plugin:
+You can additionally configure the rate limiting parameters, also by plugin:
 
 ```yaml
 backend:
@@ -112,6 +112,17 @@ backend:
       connection: redis://127.0.0.1:16379
 ```
 
+If your instance is working behind a proxy, you have to configure the backend to trust the proxy
+for the rate limiting being able to distinguish clients.
+
+```yaml
+backend:
+  trustProxy: true
+```
+
+For more information about the trust proxy configuration and available options,
+please refer to [express documentation](https://expressjs.com/en/guide/behind-proxies.html).
+
 ## Configuring the service
 
 For more advanced customization, there are several APIs from the `@backstage/backend-defaults/httpRouter` package that allow you to customize the implementation of the config service. The default implementation uses all of the middleware exported from `@backstage/backend-defaults/httpRouter`, including `createLifecycleMiddleware`, `createAuthIntegrationRouter`, `createCredentialsBarrier` and `createCookieAuthRefreshMiddleware`. You can use these to create your own `httpRouter` service implementation, for example - here's how you would add a custom health check route to all plugins:
@@ -122,6 +133,7 @@ import {
   createCookieAuthRefreshMiddleware,
   createCredentialsBarrier,
   createAuthIntegrationRouter,
+  createRateLimitMiddleware,
 } from '@backstage/backend-defaults/httpRouter';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
 
@@ -148,6 +160,11 @@ backend.add(
       lifecycle,
     }) {
       const router = PromiseRouter();
+
+      // Optional rate limiting middleware
+      router.use(
+        createRateLimitMiddleware({ pluginId: plugin.getId(), config }),
+      );
 
       rootHttpRouter.use(`/api/${plugin.getId()}`, router);
 

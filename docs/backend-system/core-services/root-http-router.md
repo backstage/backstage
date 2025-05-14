@@ -40,6 +40,10 @@ createBackendPlugin({
 });
 ```
 
+## Rate limiting
+
+Please refer to the [HTTP Router documentation](./http-router.md#rate-limiting).
+
 ## Configuring the service
 
 ### Via `app-config.yaml`
