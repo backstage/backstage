@@ -244,4 +244,26 @@ describe('scaffolder action utils', () => {
       });
     });
   });
+
+  describe('filterGitFiles', () => {
+    it('should filter .git directory and its contents but keep other files', () => {
+      // Import the function to test
+      const { filterGitFiles } = require('./util');
+
+      // Should filter out .git directory
+      expect(filterGitFiles('.git')).toBe(false);
+
+      // Should filter out .git directory in subdirectories
+      expect(filterGitFiles('subdir/.git')).toBe(false);
+
+      // Should filter out files inside .git directory
+      expect(filterGitFiles('.git/config')).toBe(false);
+      expect(filterGitFiles('subdir/.git/config')).toBe(false);
+
+      // Should keep .gitignore and other non-.git-directory files
+      expect(filterGitFiles('.gitignore')).toBe(true);
+      expect(filterGitFiles('src/components/GitHubIcon.js')).toBe(true);
+      expect(filterGitFiles('.github/workflows/ci.yml')).toBe(true);
+    });
+  });
 });

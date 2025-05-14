@@ -33,4 +33,4 @@ export {
   createBranch,
   cloneRepo,
 } from './gitHelpers';
-export { parseRepoUrl, getRepoSourceDirectory } from './util';
+export { parseRepoUrl, getRepoSourceDirectory, filterGitFiles } from './util';
