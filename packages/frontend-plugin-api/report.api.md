@@ -1322,13 +1322,37 @@ export interface FrontendPlugin<
   getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
   // (undocumented)
   readonly id: string;
+  info(): Promise<FrontendPluginInfo>;
   // (undocumented)
   readonly routes: TRoutes;
   // (undocumented)
   withOverrides(options: {
     extensions: Array<ExtensionDefinition>;
+    info?: FrontendPluginInfoOptions;
   }): FrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
 }
+
+// @public
+export interface FrontendPluginInfo {
+  description?: string;
+  links?: Array<{
+    title: string;
+    url: string;
+  }>;
+  ownerEntityRefs?: string[];
+  packageName?: string;
+  version?: string;
+}
+
+// @public
+export type FrontendPluginInfoOptions = {
+  packageJson?: () => Promise<
+    {
+      name: string;
+    } & JsonObject
+  >;
+  manifest?: () => Promise<JsonObject>;
+};
 
 export { githubAuthApiRef };
 
@@ -1513,6 +1537,8 @@ export interface PluginOptions<
   externalRoutes?: TExternalRoutes;
   // (undocumented)
   featureFlags?: FeatureFlagConfig[];
+  // (undocumented)
+  info?: FrontendPluginInfoOptions;
   // (undocumented)
   pluginId: TId;
   // (undocumented)
