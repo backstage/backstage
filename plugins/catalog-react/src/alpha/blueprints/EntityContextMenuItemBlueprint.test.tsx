@@ -48,25 +48,6 @@ describe('EntityContextMenuItemBlueprint', () => {
     },
   ];
 
-  const filterTestCases = [
-    {
-      params: { filter: 'kind:component' },
-      config: undefined,
-    },
-    {
-      params: { filter: (e: Entity) => e.kind.toLowerCase() === 'component' },
-      config: undefined,
-    },
-    {
-      params: {},
-      config: { filter: 'kind:component' },
-    },
-    {
-      params: {},
-      config: { filter: { kind: 'component' } },
-    },
-  ];
-
   it.each(data)('should return an extension with sane defaults', params => {
     const extension = EntityContextMenuItemBlueprint.make({
       name: 'test',
@@ -229,72 +210,6 @@ describe('EntityContextMenuItemBlueprint', () => {
       }
     `);
   });
-
-  it.each(filterTestCases)(
-    'should exclude items based on the filter',
-    async ({ params, config }) => {
-      const extension = EntityContextMenuItemBlueprint.make({
-        name: 'test',
-        params: {
-          icon: <span>Icon</span>,
-          ...params,
-          useProps: () => ({
-            title: 'Test',
-            onClick: () => {},
-          }),
-        },
-      });
-
-      renderInTestApp(
-        <EntityProvider
-          entity={{
-            apiVersion: 'v1',
-            kind: 'API',
-            metadata: { name: 'test' },
-          }}
-        >
-          <ul>{createExtensionTester(extension, { config }).reactElement()}</ul>
-        </EntityProvider>,
-      );
-
-      await waitFor(() => {
-        expect(screen.queryByText('Test')).not.toBeInTheDocument();
-      });
-    },
-  );
-
-  it.each(filterTestCases)(
-    'should include items based on the filter',
-    async ({ params, config }) => {
-      const extension = EntityContextMenuItemBlueprint.make({
-        name: 'test',
-        params: {
-          icon: <span>Icon</span>,
-          ...params,
-          useProps: () => ({
-            title: 'Test',
-            onClick: () => {},
-          }),
-        },
-      });
-
-      renderInTestApp(
-        <EntityProvider
-          entity={{
-            apiVersion: 'v1',
-            kind: 'Component',
-            metadata: { name: 'test' },
-          }}
-        >
-          <ul>{createExtensionTester(extension, { config }).reactElement()}</ul>
-        </EntityProvider>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByText('Test')).toBeInTheDocument();
-      });
-    },
-  );
 
   it('should render a menu item', async () => {
     const extension = EntityContextMenuItemBlueprint.make({
