@@ -238,7 +238,7 @@ jest.mock('@gitbeaker/rest', () => ({
 }));
 
 describe('createGitLabMergeRequest', () => {
-  let instance: TemplateAction<any>;
+  let instance: TemplateAction<any, any, 'v2'>;
 
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
