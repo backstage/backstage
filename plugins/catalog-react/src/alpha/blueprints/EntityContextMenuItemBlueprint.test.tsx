@@ -20,7 +20,6 @@ import {
 import { EntityContextMenuItemBlueprint } from './EntityContextMenuItemBlueprint';
 import { screen, waitFor } from '@testing-library/react';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { Entity } from '@backstage/catalog-model';
 
 jest.mock('../../hooks/useEntityContextMenu', () => ({
   useEntityContextMenu: () => ({
