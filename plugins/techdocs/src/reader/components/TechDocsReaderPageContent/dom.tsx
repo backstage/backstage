@@ -45,7 +45,7 @@ import {
   useSanitizerTransformer,
   useStylesTransformer,
   handleMetaRedirects,
-  addNavLinkKeyboardToggle;
+  addNavLinkKeyboardToggle,
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
 import { useParams } from 'react-router-dom';
