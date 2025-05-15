@@ -15,31 +15,31 @@
  */
 
 /**
-* Adds Keyboard accesibility to sub-navigation links by allowing
-* users to toggle the associated (hidden) checkboxes with the keyboard
-*/
+ * Adds Keyboard accesibility to sub-navigation links by allowing
+ * users to toggle the associated (hidden) checkboxes with the keyboard
+ */
 export function addNavLinkKeyboardToggle() {
-	return (element: Element) => {
-		const navLabels = element.querySelectorAll('label.md-nav__link[for]');
-		navLabels.forEach(label => {
-			label.setAttribute('tabIndex', '0'); //Ensure focusable
-			label.addEventListener('keydown', event => {
-				const keyboardEvent = event as KeyboardEvent;
-				if (keyboardEvent.key === 'Enter' || keyboardEvent.key === ' ') {
-					const forId = label.getAttribute('for');
-					if (!forId) return;
-					const checkbox = element.querySelector(
-						`#${forId}`,
-					) as HTMLInputElement | null;
-					if (checkbox && checkbox.type === 'checkbox') {
-						checkbox.checked = !checkbox.checked;
-						checkbox.dispatchEvent(new Event('change', { bubbles: true }));
-						event.preventDefault();
-						event.stopPropagation();
-					}
-				}	
-			});
-		});
-		return element;
-	};
+  return (element: Element) => {
+    const navLabels = element.querySelectorAll('label.md-nav__link[for]');
+    navLabels.forEach(label => {
+      label.setAttribute('tabIndex', '0');
+      label.addEventListener('keydown', event => {
+        const keyboardEvent = event as KeyboardEvent;
+        if (keyboardEvent.key === 'Enter' || keyboardEvent.key === ' ') {
+          const forId = label.getAttribute('for');
+          if (!forId) return;
+          const checkbox = element.querySelector(
+            `#${forId}`,
+          ) as HTMLInputElement | null;
+          if (checkbox && checkbox.type === 'checkbox') {
+            checkbox.checked = !checkbox.checked;
+            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }
+      });
+    });
+    return element;
+  };
 }
