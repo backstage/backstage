@@ -45,6 +45,7 @@ import {
   useSanitizerTransformer,
   useStylesTransformer,
   handleMetaRedirects,
+  addNavLinkKeyboardToggle;
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
 import { useParams } from 'react-router-dom';
@@ -267,6 +268,7 @@ export const useTechDocsReaderDom = (
           },
           onLoaded: () => {},
         }),
+        addNavLinkKeyboardToggle(),
       ]),
     [theme, navigate, analytics, entityRef.name, configApi],
   );
