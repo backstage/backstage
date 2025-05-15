@@ -90,7 +90,7 @@ function normalizePluginInfo(info: FrontendPluginInfo) {
     ownerEntityRefs: info.ownerEntityRefs?.map(ref =>
       stringifyEntityRef(
         parseEntityRef(ref, {
-          defaultKind: 'group',
+          defaultKind: 'Group',
         }),
       ),
     ),
@@ -161,7 +161,7 @@ function resolveManifestInfo(manifest?: JsonValue) {
     info.ownerEntityRefs = [
       stringifyEntityRef(
         parseEntityRef(manifest.spec.owner, {
-          defaultKind: 'group',
+          defaultKind: 'Group',
           defaultNamespace: manifest.metadata.namespace?.toString(),
         }),
       ),
