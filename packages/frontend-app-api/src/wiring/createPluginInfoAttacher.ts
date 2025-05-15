@@ -210,7 +210,7 @@ function resolvePackageInfo(packageJson?: JsonObject) {
           url.hostname === 'github.com' &&
           typeof packageJson.repository.directory === 'string'
         ) {
-          const path = `${url.pathname}/tree/master/${packageJson.repository.directory}`;
+          const path = `${url.pathname}/tree/-/${packageJson.repository.directory}`;
           url.pathname = path.replaceAll('//', '/');
         }
 

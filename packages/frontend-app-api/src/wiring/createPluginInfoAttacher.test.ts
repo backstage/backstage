@@ -121,7 +121,7 @@ describe('createPluginInfoAttacher', () => {
           },
           {
             title: 'Repository',
-            url: 'https://github.com/test/project/tree/master/packages/test',
+            url: 'https://github.com/test/project/tree/-/packages/test',
           },
         ],
       });

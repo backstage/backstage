@@ -109,9 +109,7 @@ export interface FrontendPlugin<
     extensions: Array<ExtensionDefinition>;
 
     /**
-     * Overrides to merge with the original plugin info. The merging is done for
-     * each top-level field. Setting a field explicitly to `undefined` will
-     * remove it.
+     * Overrides the original info loaders of the plugin one by one.
      */
     info?: FrontendPluginInfoOptions;
   }): FrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
