@@ -21,7 +21,7 @@ export {
 
 export { externalTokenTypeHandlersRef } from './external/ExternalTokenHandler';
 
-export type { TokenHandler } from './external/types';
+export type { TokenHandler, TokenTypeHandler } from './external/types';
 export type { AccessRestrictionsMap } from './external/types';
 
 export type { PluginTokenHandler } from './plugin/PluginTokenHandler';

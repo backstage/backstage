@@ -38,3 +38,18 @@ export interface TokenHandler {
     | undefined
   >;
 }
+
+/**
+ * @public
+ * This interface is used to handle external tokens.
+ */
+export interface TokenTypeHandler {
+  type: string;
+  /**
+   * A factory function that takes all token configuration for a given type
+   * and returns a TokenHandler or an array of TokenHandlers.
+   */
+  factory: (
+    configs: import('@backstage/config').Config[],
+  ) => TokenHandler | TokenHandler[];
+}
