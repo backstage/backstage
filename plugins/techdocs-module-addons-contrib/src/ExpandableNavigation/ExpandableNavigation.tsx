@@ -77,6 +77,7 @@ export const ExpandableNavigationAddon = () => {
     (item: HTMLInputElement) => {
       const isExpanded = item.checked;
       const shouldExpand = expanded?.expandAllNestedNavs;
+      // console.log('Item:', item, 'isExpanded:', isExpanded, 'shouldExpand:', shouldExpand);
 
       // Is collapsed but should expand
       if (shouldExpand && !isExpanded) {
@@ -92,16 +93,55 @@ export const ExpandableNavigationAddon = () => {
     },
     [expanded],
   );
-
+  const handleKeyPass = (
+    event: React.KeyboardEvent<HTMLElement>,
+    toggleAction: () => void,
+  ) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      toggleAction();
+    }
+  };
   useEffect(() => {
+    // console.log('Checkbox Toggles:', checkboxToggles);
     // There is no nested navs
     if (!checkboxToggles?.length) return;
 
     setHasNavSubLevels(true);
     checkboxToggles.forEach(item => {
-      if (shouldToggle(item)) item.click();
+      item.tabIndex = 0;
+      const toggleAction = () => {
+        if (shouldToggle(item)) {
+          // console.log('Toggling item:', item);
+          item.click();
+        }
+      };
+      // Add keyboard event listener
+      const keydownHandler = (event: KeyboardEvent) => {
+        handleKeyPass(
+          event as unknown as React.KeyboardEvent<HTMLDivElement>,
+          toggleAction,
+        );
+      };
+      // console.log('Attaching keydown listener to:', item)
+      item.addEventListener('keydown', keydownHandler);
+      item.addEventListener('click', toggleAction);
+
+      // Clean up event listener or unmount
+      return () => {
+        item.removeEventListener('keydown', keydownHandler);
+        item.removeEventListener('click', toggleAction);
+      };
     });
-  }, [expanded, shouldToggle, checkboxToggles]);
+  }, [checkboxToggles, shouldToggle]);
+  useEffect(() => {
+    if (!checkboxToggles?.length) return;
+    checkboxToggles.forEach(item => {
+      if (shouldToggle(item)) {
+        item.click();
+      }
+    });
+  }, [expanded, checkboxToggles, shouldToggle]);
 
   const handleState = () => {
     setExpanded(prevState => ({
@@ -115,6 +155,9 @@ export const ExpandableNavigationAddon = () => {
         <StyledButton
           size="small"
           onClick={handleState}
+          onKeyDown={event => handleKeyPass(event, handleState)}
+          tabIndex={0} // Ensuring keyboard focus
+          aria-expanded={expanded?.expandAllNestedNavs} // Accessibility
           aria-label={
             expanded?.expandAllNestedNavs ? 'collapse-nav' : 'expand-nav'
           }

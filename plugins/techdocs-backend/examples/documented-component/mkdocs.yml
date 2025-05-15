@@ -5,8 +5,14 @@ edit_uri: edit/master/plugins/techdocs-backend/examples/documented-component/doc
 nav:
   - Home: index.md
   - Subpage: sub-page.md
-  - 'Code Sample': code/code-sample.md
-  - Extensions: extensions.md
+  - Code Sample:
+      - Overview: code/code-sample.md
+      - Example 1: code/example1.md
+      - Example 2: code/example2.md
+  - Extensions:
+      - Overview: extensions.md
+      - Advanced: extensions/advanced.md
+      - API Reference: extensions/api-reference.md
 
 plugins:
   - techdocs-core
