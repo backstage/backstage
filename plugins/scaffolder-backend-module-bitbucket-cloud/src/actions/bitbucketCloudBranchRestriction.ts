@@ -30,7 +30,7 @@ const createBitbucketCloudBranchRestriction = async (opts: {
   branchMatchKind?: string;
   branchType?: string;
   pattern?: string;
-  value?: number;
+  value?: number | null;
   users?: { uuid: string; type: string }[];
   groups?: { slug: string; type: string }[];
   authorization: {
@@ -84,7 +84,7 @@ export function createBitbucketCloudBranchRestrictionAction(options: {
     branchMatchKind?: string;
     branchType?: string;
     pattern?: string;
-    value?: number;
+    value?: number | null;
     users?: { uuid: string }[];
     groups?: { slug: string }[];
     token?: string;
