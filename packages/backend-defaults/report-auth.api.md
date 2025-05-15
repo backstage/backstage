@@ -24,10 +24,7 @@ export const authServiceFactory: ServiceFactory<
 
 // @public
 export const externalTokenTypeHandlersRef: ServiceRef<
-  {
-    type: string;
-    factory: (config: Config[]) => TokenHandler;
-  },
+  TokenTypeHandler,
   'plugin',
   'multiton'
 >;
@@ -72,6 +69,13 @@ export interface TokenHandler {
       }
     | undefined
   >;
+}
+
+// @public
+export interface TokenTypeHandler {
+  factory: (configs: Config[]) => TokenHandler | TokenHandler[];
+  // (undocumented)
+  type: string;
 }
 
 // (No @packageDocumentation comment for this package)
