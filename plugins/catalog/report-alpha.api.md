@@ -863,39 +863,63 @@ const _default: FrontendPlugin<
     'entity-context-menu-item:catalog/copy-entity-url': ExtensionDefinition<{
       kind: 'entity-context-menu-item';
       name: 'copy-entity-url';
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      config: {
+        filter: EntityPredicate | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >;
       inputs: {};
       params: EntityContextMenuItemParams;
     }>;
     'entity-context-menu-item:catalog/inspect-entity': ExtensionDefinition<{
       kind: 'entity-context-menu-item';
       name: 'inspect-entity';
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      config: {
+        filter: EntityPredicate | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >;
       inputs: {};
       params: EntityContextMenuItemParams;
     }>;
     'entity-context-menu-item:catalog/unregister-entity': ExtensionDefinition<{
       kind: 'entity-context-menu-item';
       name: 'unregister-entity';
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        JSX_2.Element,
-        'core.reactElement',
-        {}
-      >;
+      config: {
+        filter: EntityPredicate | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >;
       inputs: {};
       params: EntityContextMenuItemParams;
     }>;
@@ -1045,7 +1069,14 @@ const _default: FrontendPlugin<
           }
         >;
         contextMenuItems: ExtensionInput<
-          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
+              {
+                optional: true;
+              }
+            >,
           {
             singleton: false;
             optional: false;
