@@ -174,8 +174,8 @@ export const buttonPropDefs: {
 export interface ButtonProps
   extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   children: React.ReactNode;
-  iconEnd?: ReactElement;
-  iconStart?: ReactElement;
+  iconEnd?: React.ReactNode;
+  iconStart?: React.ReactNode;
   size?: ButtonOwnProps['size'];
   variant?: ButtonOwnProps['variant'];
 }
@@ -1220,7 +1220,7 @@ export interface TextFieldProps
   className?: string;
   description?: string;
   error?: string | null;
-  icon?: IconNames;
+  icon?: React.ReactNode;
   label?: string;
   name: string;
   onClear?: React.MouseEventHandler<HTMLButtonElement>;
