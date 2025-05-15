@@ -324,25 +324,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asyncapi/protobuf-schema-parser@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "@asyncapi/protobuf-schema-parser@npm:3.4.0"
+"@asyncapi/protobuf-schema-parser@npm:^3.5.1":
+  version: 3.5.1
+  resolution: "@asyncapi/protobuf-schema-parser@npm:3.5.1"
   dependencies:
     "@asyncapi/parser": "npm:^3.4.0"
     "@types/protocol-buffers-schema": "npm:^3.4.3"
     protobufjs: "npm:^7.4.0"
-  checksum: 10/e04ab346e0145d735a4d4238d7adc74ea469b588be10507363e6e216822b3501b786f2c33d0451ace20ac9e6dace411458b6b8045388bed0300278e7fa2e3822
+  checksum: 10/dbef0c14080f0894e2d2ca1f5f233485e3cce3f37bf82e3412be50322bd16366812ab933f35e38c35ee453a29ae20e2d8a811a6921fc5631cb5caf0b59fd839a
   languageName: node
   linkType: hard
 
 "@asyncapi/react-component@npm:^2.3.3":
-  version: 2.5.1
-  resolution: "@asyncapi/react-component@npm:2.5.1"
+  version: 2.6.3
+  resolution: "@asyncapi/react-component@npm:2.6.3"
   dependencies:
     "@asyncapi/avro-schema-parser": "npm:^3.0.24"
     "@asyncapi/openapi-schema-parser": "npm:^3.0.24"
     "@asyncapi/parser": "npm:^3.3.0"
-    "@asyncapi/protobuf-schema-parser": "npm:^3.4.0"
+    "@asyncapi/protobuf-schema-parser": "npm:^3.5.1"
     highlight.js: "npm:^10.7.2"
     isomorphic-dompurify: "npm:^2.14.0"
     marked: "npm:^4.0.14"
@@ -352,7 +352,7 @@ __metadata:
   peerDependencies:
     react: ">=18.0.0"
     react-dom: ">=18.0.0"
-  checksum: 10/590b9e8e4326a803149bd5c99662cd75acf4e469cb3c829588f2b8a2b2b85bf3d342a81daccf3f974d9fbdb89e30a6bfed2d870826abaf7366b1017389dbd5c5
+  checksum: 10/7105385f8f806200638f10b799ff1a5d1838041d20d14c6e64b1e1a411933727b91cd3957c2057bc7946524be01c8ab7bb03946886534b15f4767c277da38445
   languageName: node
   linkType: hard
 
