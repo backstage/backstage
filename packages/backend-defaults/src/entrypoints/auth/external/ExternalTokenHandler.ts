@@ -27,32 +27,12 @@ import { JWKSHandler } from './jwks';
 import { TokenHandler } from './types';
 import { Config } from '@backstage/config';
 import { groupBy } from 'lodash';
+import { TokenTypeHandler } from './types';
 
 const NEW_CONFIG_KEY = 'backend.auth.externalAccess';
 const OLD_CONFIG_KEY = 'backend.auth.keys';
 let loggedDeprecationWarning = false;
 
-/**
- * @public
- * This service is used to decorate the default plugin token handler with custom logic.
- */
-export const externalTokenTypeHandlersRef = createServiceRef<{
-  type: string;
-  factory: (config: Config[]) => TokenHandler;
-}>({
-  id: 'core.auth.externalTokenHandlers',
-  multiton: true,
-  // defaultFactory // :pepe-think: seems like is not possible to use defaultFactory with multiton
-});
-
-type TokenTypeHandler = {
-  type: string;
-  /**
-   * A factory function that takes all token configuration for a given type
-   * and returns a TokenHandler or an array of TokenHandlers.
-   */
-  factory: (config: Config[]) => TokenHandler | TokenHandler[];
-};
 type LegacyTokenTypeHandler = {
   type: 'legacy';
   /**
@@ -60,9 +40,22 @@ type LegacyTokenTypeHandler = {
    * and returns a TokenHandler or an array of TokenHandlers.
    */
   factory: (
-    config: (Config | LegacyConfigWrapper)[],
+    configs: (
+      | import('@backstage/config').Config
+      | { legacy: true; config: import('@backstage/config').Config }
+    )[],
   ) => TokenHandler | TokenHandler[];
 };
+
+/**
+ * @public
+ * This service is used to decorate the default plugin token handler with custom logic.
+ */
+export const externalTokenTypeHandlersRef = createServiceRef<TokenTypeHandler>({
+  id: 'core.auth.externalTokenHandlers',
+  multiton: true,
+  // defaultFactory // :pepe-think: seems like is not possible to use defaultFactory with multiton
+});
 
 const defaultHandlers: (TokenTypeHandler | LegacyTokenTypeHandler)[] = [
   {
