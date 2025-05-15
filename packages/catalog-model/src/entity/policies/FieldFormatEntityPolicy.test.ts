@@ -189,13 +189,15 @@ describe('FieldFormatEntityPolicy', () => {
     await expect(policy.enforce(data)).rejects.toThrow(/links.0.icon.*""/i);
   });
 
-  it.each([['dashboard'], ['admin-dashboard'], ['foo_dashboard']])(
-    'accepts valid link icon',
-    async icon => {
-      data.metadata.links = [{ url: 'http://foo', icon }];
-      await expect(policy.enforce(data)).resolves.toBe(data);
-    },
-  );
+  it.each([
+    ['dashboard'],
+    ['admin-dashboard'],
+    ['foo_dashboard'],
+    ['kind:api'],
+  ])('accepts valid link icon', async icon => {
+    data.metadata.links = [{ url: 'http://foo', icon }];
+    await expect(policy.enforce(data)).resolves.toBe(data);
+  });
 
   it.each([[123], [{}], [[]], ['abc xyz']])(
     'rejects bad link icon value %s',

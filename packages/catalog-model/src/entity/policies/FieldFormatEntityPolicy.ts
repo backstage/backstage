@@ -97,6 +97,10 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
           case 'isNonEmptyString':
             expectation = 'a non empty string';
             break;
+          case 'isValidIcon':
+            expectation =
+              'a string that is sequences of [a-zA-Z0-9] separated by any of [-_.:], at most 63 characters in total';
+            break;
           default:
             expectation = undefined;
             break;
@@ -161,7 +165,7 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
       optional(
         `links.${i}.icon`,
         links[i]?.icon,
-        KubernetesValidatorFunctions.isValidObjectName,
+        CommonValidatorFunctions.isValidIcon,
       );
     }
 

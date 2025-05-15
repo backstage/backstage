@@ -147,4 +147,18 @@ export class CommonValidatorFunctions {
   static isNonEmptyString(value: unknown): value is string {
     return typeof value === 'string' && value?.trim()?.length >= 1;
   }
+
+  /**
+   * Checks that the value is a valid icon.
+   *
+   * @param value - The value to check
+   */
+  static isValidIcon(value: unknown): boolean {
+    return (
+      typeof value === 'string' &&
+      value.length >= 1 &&
+      value.length <= 63 &&
+      /^([A-Za-z0-9][-A-Za-z0-9_.:]*)?[A-Za-z0-9]$/.test(value)
+    );
+  }
 }
