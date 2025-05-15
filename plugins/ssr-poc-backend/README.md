@@ -1,9 +1,12 @@
-# ssr
+# SSR Proof of Concept
 
-Example simple Server Side rendering backend plugin
+Example simple Server Side proof of concept for backend plugins.
 
 Used as POC for enabling support for loading .tsx files within a backend environment, which can be useful for rendering
 emails or content on the backend
+
+Note: This plugin is not intended to be ship-able with the current implementation, but used as a POC that it could work,
+and to act as a test case for checking SSR in a runtime environment
 
 ## Installation
 
