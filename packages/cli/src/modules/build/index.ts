@@ -43,24 +43,6 @@ export function registerPackageCommands(command: Command) {
       Array<string>(),
     )
     .action(lazy(() => import('./commands/package/build'), 'command'));
-
-  command
-    .command('start')
-    .description('Start a package for local development')
-    .option(...configOption)
-    .option('--role <name>', 'Run the command with an explicit package role')
-    .option('--check', 'Enable type checking and linting if available')
-    .option('--inspect [host]', 'Enable debugger in Node.js environments')
-    .option(
-      '--inspect-brk [host]',
-      'Enable debugger in Node.js environments, breaking before code starts',
-    )
-    .option(
-      '--require <path...>',
-      'Add a --require argument to the node process',
-    )
-    .option('--link <path>', 'Link an external workspace for module resolution')
-    .action(lazy(() => import('./commands/package/start'), 'command'));
 }
 
 export const buildPlugin = createCliPlugin({
