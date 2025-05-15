@@ -59,6 +59,7 @@ export class CommonValidatorFunctions {
   static isNonEmptyString(value: unknown): value is string;
   static isValidDnsLabel(value: unknown): boolean;
   static isValidDnsSubdomain(value: unknown): boolean;
+  static isValidIcon(value: unknown): boolean;
   static isValidPrefixAndOrSuffix(
     value: unknown,
     separator: string,
