@@ -365,19 +365,25 @@ export const createPublishGitlabMergeRequestAction: (options: {
     title: string;
     description: string;
     branchName: string;
-    targetBranchName?: string;
-    sourcePath?: string;
-    targetPath?: string;
-    token?: string;
-    commitAction?: 'create' | 'delete' | 'update' | 'skip' | 'auto';
-    projectid?: string;
-    removeSourceBranch?: boolean;
-    assignee?: string;
-    reviewers?: string[];
-    assignReviewersFromApprovalRules?: boolean;
+    targetBranchName?: string | undefined;
+    sourcePath?: string | undefined;
+    targetPath?: string | undefined;
+    token?: string | undefined;
+    commitAction?: 'auto' | 'update' | 'delete' | 'create' | 'skip' | undefined;
+    projectid?: string | undefined;
+    removeSourceBranch?: boolean | undefined;
+    assignee?: string | undefined;
+    reviewers?: string[] | undefined;
+    assignReviewersFromApprovalRules?: boolean | undefined;
+    labels?: string | string[] | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    targetBranchName: string;
+    projectid: string;
+    projectPath: string;
+    mergeRequestUrl: string;
+  },
+  'v2'
 >;
 
 // @public @deprecated
