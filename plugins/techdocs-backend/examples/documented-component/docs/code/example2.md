@@ -1,9 +1,31 @@
-Aliqua adipisicing incididunt ea exercitation nulla qui irure. Ad reprehenderit eu incididunt officia ea magna voluptate proident in pariatur laborum. Voluptate consectetur aliqua aute fugiat dolor duis eiusmod exercitation aliquip consectetur. Dolor exercitation voluptate minim veniam laborum eiusmod in velit et.
+# Sample Code
 
-Amet et adipisicing qui ipsum. Incididunt enim sint reprehenderit ullamco ipsum dolor culpa Lorem cillum. Aliqua qui adipisicing amet magna deserunt fugiat ipsum nisi ex sint Lorem laboris. Nulla anim tempor anim nulla sit non non incididunt. Irure ad aliqua velit minim elit excepteur ad voluptate in pariatur officia nulla sunt fugiat. Est aliquip est sit nostrud occaecat. Elit ipsum veniam qui adipisicing sint duis officia ad reprehenderit quis.
+This page provides some sample code which may be used in your example component.
 
-Labore cillum dolor ea laborum. Exercitation non nostrud excepteur anim quis sint dolore. Esse aute dolor velit consequat labore amet et reprehenderit reprehenderit. Enim aute et minim nostrud sint aute Lorem. Fugiat aliqua mollit ullamco sunt.
+This code uses TypeScript, and the Markdown code fence to wrap the code.
 
-Fugiat fugiat eiusmod culpa adipisicing proident non nostrud velit dolor laboris. Labore laborum ut eu labore do amet tempor labore. Eu laborum nostrud occaecat tempor amet elit elit ad anim Lorem exercitation aliquip est enim. Sit et laborum nostrud magna incididunt.
+```typescript
+const serviceEntityPage = (
+  <EntityLayout>
+    <EntityLayout.Route path="/" title="Overview">
+      <Grid container spacing={3} alignItems="stretch">
+        <Grid item md={6}>
+          <EntityAboutCard variant="gridItem" />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/docs" title="Docs">
+      <EntityTechdocsContent />
+    </EntityLayout.Route>
+  </EntityLayout>
+);
+```
 
-Duis culpa ea Lorem laborum in commodo ea officia irure labore duis consectetur anim consectetur. Exercitation minim velit minim reprehenderit ad laboris id anim. Adipisicing ad esse dolor ut sint mollit pariatur minim cupidatat.
+Here is an example of Python code:
+
+```python
+def getUsersInGroup(targetGroup, secure=False):
+
+    if __debug__:
+        print('targetGroup=[' + targetGroup + ']')
+```
