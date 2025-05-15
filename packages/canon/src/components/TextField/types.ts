@@ -15,7 +15,6 @@
  */
 
 import type { Breakpoint } from '../../types';
-import type { IconNames } from '../Icon';
 
 /** @public */
 export interface TextFieldProps
@@ -54,7 +53,7 @@ export interface TextFieldProps
   /**
    * An icon to render before the input
    */
-  icon?: IconNames;
+  icon?: React.ReactNode;
 
   /**
    * Handler to call when the clear button is pressed

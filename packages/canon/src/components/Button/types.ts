@@ -15,7 +15,6 @@
  */
 
 import type { ButtonOwnProps } from './Button.props';
-import { ReactElement } from 'react';
 
 /**
  * Properties for {@link Button}
@@ -44,10 +43,10 @@ export interface ButtonProps
   /**
    * Optional icon to display at the start of the button
    */
-  iconStart?: ReactElement;
+  iconStart?: React.ReactNode;
 
   /**
    * Optional icon to display at the end of the button
    */
-  iconEnd?: ReactElement;
+  iconEnd?: React.ReactNode;
 }
