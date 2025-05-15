@@ -88,7 +88,7 @@ By default the app will pick a few common fields from `package.json` files, and 
 
 The default plugin info is intended as a base to build upon. As part of setting up an app you can both customize the way that the plugin info is resolved, as well as extend the `FrontendPluginInfo` type to include more information.
 
-In order to extend the `FrontendPluginInfo` type you use [TypeScript module augmentation](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation). This makes it possible to extend the `FrontendPluginInfo` inferface with additional fields, which you can then add custom resolution logic for as well as access within the app. For example, you might add a `slackChannel` field as follows:
+In order to extend the `FrontendPluginInfo` type you use [TypeScript module augmentation](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation). This makes it possible to extend the `FrontendPluginInfo` interface with additional fields, which you can then add custom resolution logic for as well as access within the app. For example, you might add a `slackChannel` field as follows:
 
 ```ts
 declare module '@backstage/frontend-plugin-api' {
