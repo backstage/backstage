@@ -95,6 +95,9 @@ describe('migrations', () => {
       await startTestBackend({
         features: [
           mockServices.database.factory({ knex }),
+          mockServices.rootConfig.factory({
+            data: { catalog: { processingInterval: '100ms' } },
+          }),
           catalogBackend,
           mockProvider,
         ],
@@ -119,7 +122,7 @@ describe('migrations', () => {
             entity_json: expect.stringContaining('"owner":"me"'),
           },
         ]);
-      }, 20_000);
+      });
 
       // Expect that an update of the entity leads to an event
       entity.spec!.owner = 'you';
@@ -144,7 +147,7 @@ describe('migrations', () => {
             entity_json: expect.stringContaining('"owner":"you"'),
           },
         ]);
-      }, 20_000);
+      });
 
       // Expect that changes of unrelated columns do NOT lead to events
       await knex('final_entities')
