@@ -172,7 +172,7 @@ export type PermissionBase<TType extends string, TFields extends object> = {
 
 // @public
 export class PermissionClient implements PermissionEvaluator {
-  constructor(options: { discovery: DiscoveryApi; config: Config });
+  constructor(options: PermissionClientOptions);
   authorize(
     requests: AuthorizePermissionRequest[],
     options?: PermissionClientRequestOptions,
@@ -184,8 +184,18 @@ export class PermissionClient implements PermissionEvaluator {
 }
 
 // @public
+export type PermissionClientOptions = {
+  discovery: DiscoveryApi;
+  config: Config;
+  loaderCacheTtl?: number;
+  cacheTtl?: number;
+  batchDelay?: number;
+};
+
+// @public
 export type PermissionClientRequestOptions = {
   token?: string;
+  identifier?: string;
 };
 
 // @public

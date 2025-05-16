@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RestContext, rest } from 'msw';
+import { rest, RestContext } from 'msw';
 import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -22,10 +22,10 @@ import {
   PermissionClient,
 } from './PermissionClient';
 import {
-  EvaluatePermissionRequest,
   AuthorizeResult,
-  IdentifiedPermissionMessage,
   ConditionalPolicyDecision,
+  EvaluatePermissionRequest,
+  IdentifiedPermissionMessage,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { createPermission } from './permissions';
@@ -57,6 +57,8 @@ describe('PermissionClient', () => {
       client = new PermissionClient({
         discovery,
         config: new ConfigReader({ permission: { enabled: true } }),
+        batchDelay: 0,
+        cacheTtl: 0,
       });
     });
 
@@ -113,14 +115,12 @@ describe('PermissionClient', () => {
 
     it('should not include authorization headers if no token is supplied', async () => {
       await client.authorize([mockAuthorizeConditional]);
-
       const request = mockAuthorizeHandler.mock.calls[0][0];
       expect(request.headers.has('authorization')).toEqual(false);
     });
 
     it('should include correctly-constructed authorization header if token is supplied', async () => {
       await client.authorize([mockAuthorizeConditional], { token });
-
       const request = mockAuthorizeHandler.mock.calls[0][0];
       expect(request.headers.get('authorization')).toEqual('Bearer fake-token');
     });
@@ -218,6 +218,70 @@ describe('PermissionClient', () => {
     });
   });
 
+  describe('authorize with dataloader', () => {
+    beforeAll(() => {
+      client = new PermissionClient({
+        discovery,
+        config: new ConfigReader({
+          permission: {
+            enabled: true,
+            EXPERIMENTAL_enableDataloaderRequests: true,
+          },
+        }),
+      });
+    });
+
+    const mockAuthorizeConditional = {
+      permission: mockPermission,
+      resourceRef: 'foo:bar',
+    };
+
+    const mockAuthorizeConditional2 = {
+      permission: mockPermission,
+      resourceRef: 'bar:foo',
+    };
+
+    const mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
+      const responses = req.body.items.map(
+        (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
+          id: a.id,
+          result: AuthorizeResult.ALLOW,
+        }),
+      );
+
+      return res(json({ items: responses }));
+    });
+
+    beforeEach(() => {
+      server.use(rest.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should include multiple authorize requests in a request body', async () => {
+      client.authorize([mockAuthorizeConditional]);
+      client.authorize([mockAuthorizeConditional2]);
+
+      await new Promise(resolve => setTimeout(resolve, 150));
+      const request = mockAuthorizeHandler.mock.calls[0][0];
+
+      expect(request.body).toEqual({
+        items: [
+          expect.objectContaining({
+            permission: mockPermission,
+            resourceRef: 'foo:bar',
+          }),
+          expect.objectContaining({
+            permission: mockPermission,
+            resourceRef: 'bar:foo',
+          }),
+        ],
+      });
+    });
+  });
+
   describe('authorize (batched)', () => {
     beforeAll(() => {
       client = new PermissionClient({
@@ -228,6 +292,8 @@ describe('PermissionClient', () => {
             EXPERIMENTAL_enableBatchedRequests: true,
           },
         }),
+        batchDelay: 0,
+        cacheTtl: 0,
       });
     });
 
@@ -493,6 +559,8 @@ describe('PermissionClient', () => {
       client = new PermissionClient({
         discovery,
         config: new ConfigReader({ permission: { enabled: true } }),
+        batchDelay: 0,
+        cacheTtl: 0,
       });
     });
 

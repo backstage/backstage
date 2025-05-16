@@ -45,6 +45,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
+    "react-use": "^17.2.4",
     "swr": "^2.0.0"
   },
   "devDependencies": {

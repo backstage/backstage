@@ -24,4 +24,5 @@ export * from './permissions';
 export {
   PermissionClient,
   type PermissionClientRequestOptions,
+  type PermissionClientOptions,
 } from './PermissionClient';
