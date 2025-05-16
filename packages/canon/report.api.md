@@ -175,8 +175,8 @@ export const buttonPropDefs: {
 export interface ButtonProps
   extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   children: React.ReactNode;
-  iconEnd?: React.ReactNode;
-  iconStart?: React.ReactNode;
+  iconEnd?: ReactElement;
+  iconStart?: ReactElement;
   size?: ButtonOwnProps['size'];
   variant?: ButtonOwnProps['variant'];
 }
