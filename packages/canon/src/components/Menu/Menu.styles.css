@@ -16,6 +16,7 @@
   max-height: min(var(--available-height), 500px);
   transition: transform 150ms, opacity 150ms;
   position: relative;
+  padding-bottom: var(--canon-space-1);
 
   &[data-starting-style],
   &[data-ending-style] {
@@ -44,10 +45,6 @@
     margin-top: var(--canon-space-1);
   }
 
-  &:last-child {
-    margin-bottom: var(--canon-space-1);
-  }
-
   &[data-highlighted] {
     background-color: var(--canon-gray-3);
   }
@@ -72,6 +69,10 @@
 
   & .canon-Icon {
     color: var(--canon-fg-secondary);
+  }
+
+  &:first-child {
+    margin-top: var(--canon-space-1);
   }
 
   &[data-popup-open],
