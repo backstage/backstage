@@ -21,7 +21,7 @@ Backstage unifies all your infrastructure tooling, services, and documentation t
 
 ![software-catalog](docs/assets/header.png)
 
-Out of the box, Backstage includes:
+Out of the box, Backstage includesxx:
 
 - [Backstage Software Catalog](https://backstage.io/docs/features/software-catalog/) for managing all your software such as microservices, libraries, data pipelines, websites, and ML models
 - [Backstage Software Templates](https://backstage.io/docs/features/software-templates/) for quickly spinning up new projects and standardizing your tooling with your organization’s best practices
