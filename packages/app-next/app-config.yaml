@@ -56,7 +56,10 @@ app:
     - entity-card:org/group-profile
     - entity-card:org/members-list
     - entity-card:org/ownership
-    - entity-card:org/user-profile
+    - entity-card:org/user-profile:
+        config:
+          maxRelations: 5
+          hideIcons: true
     # - entity-card:azure-devops/readme
 
     # Entity page contents
