@@ -613,17 +613,27 @@ export interface GridProps extends SpaceProps {
 
 // @public (undocumented)
 export const Heading: ForwardRefExoticComponent<
-  HeadingProps & RefAttributes<HTMLHeadingElement>
+  Omit<HeadingProps, 'ref'> & RefAttributes<HTMLHeadingElement>
 >;
 
 // @public (undocumented)
-export interface HeadingProps {
-  // (undocumented)
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-  // (undocumented)
-  children: React.ReactNode;
+export interface HeadingProps
+  extends Omit<useRender.ComponentProps<'h1'>, 'color'> {
   // (undocumented)
   className?: string;
+  // (undocumented)
+  color?:
+    | 'primary'
+    | 'secondary'
+    | 'danger'
+    | 'warning'
+    | 'success'
+    | Partial<
+        Record<
+          Breakpoint,
+          'primary' | 'secondary' | 'danger' | 'warning' | 'success'
+        >
+      >;
   // (undocumented)
   style?: React.CSSProperties;
   // (undocumented)
@@ -1208,7 +1218,7 @@ export interface TableCellTextProps
 
 // @public (undocumented)
 const Text_2: ForwardRefExoticComponent<
-  TextProps & RefAttributes<HTMLParagraphElement>
+  Omit<TextProps, 'ref'> & RefAttributes<HTMLParagraphElement>
 >;
 export { Text_2 as Text };
 
@@ -1231,9 +1241,8 @@ export interface TextFieldProps
 }
 
 // @public (undocumented)
-export interface TextProps {
-  // (undocumented)
-  children: ReactNode;
+export interface TextProps
+  extends Omit<useRender.ComponentProps<'p'>, 'color'> {
   // (undocumented)
   className?: string;
   // (undocumented)

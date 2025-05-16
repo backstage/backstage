@@ -108,6 +108,13 @@ export const WrappedInLink: Story = {
   ],
 };
 
+export const CustomRender: Story = {
+  args: {
+    ...Default.args,
+    render: <span />,
+  },
+};
+
 export const Playground: Story = {
   render: () => (
     <Flex gap="4" direction="column">
