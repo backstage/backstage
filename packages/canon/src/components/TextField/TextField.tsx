@@ -27,7 +27,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
   (props: TextFieldProps, ref) => {
     const {
       className,
-      size = 'medium',
+      size = 'small',
       label,
       description,
       error,
@@ -61,7 +61,15 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           </Field.Label>
         )}
         <div className="canon-TextFieldInputWrapper" data-size={responsiveSize}>
-          {icon && <Icon className="canon-TextFieldInputIcon" name={icon} />}
+          {icon && (
+            <div
+              className="canon-TextFieldIcon"
+              aria-hidden="true"
+              data-size={responsiveSize}
+            >
+              {icon}
+            </div>
+          )}
           <Field.Control
             className="canon-TextFieldInput"
             required={required}

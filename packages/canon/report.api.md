@@ -15,6 +15,7 @@ import { ForwardRefExoticComponent } from 'react';
 import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
+import type { MouseEventHandler } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
@@ -1220,10 +1221,10 @@ export interface TextFieldProps
   className?: string;
   description?: string;
   error?: string | null;
-  icon?: IconNames;
+  icon?: ReactNode;
   label?: string;
   name: string;
-  onClear?: React.MouseEventHandler<HTMLButtonElement>;
+  onClear?: MouseEventHandler<HTMLButtonElement>;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 

@@ -5,11 +5,15 @@ export const inputPropDefs: Record<string, PropDef> = {
   size: {
     type: 'enum',
     values: ['small', 'medium'],
-    default: 'medium',
-    responsive: false,
+    default: 'small',
+    responsive: true,
   },
   label: {
     type: 'string',
+  },
+  icon: {
+    type: 'enum',
+    values: ['ReactNode'],
   },
   description: {
     type: 'string',
