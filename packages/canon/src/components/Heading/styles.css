@@ -51,3 +51,9 @@
   font-size: var(--canon-font-size-5);
   font-weight: var(--canon-font-weight-bold);
 }
+
+.canon-Heading[data-truncate] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

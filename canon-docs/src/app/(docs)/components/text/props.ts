@@ -16,6 +16,10 @@ export const textPropDefs: Record<string, PropDef> = {
     values: ['regular', 'bold'],
     responsive: true,
   },
+  truncate: {
+    type: 'boolean',
+    default: 'false',
+  },
   ...childrenPropDefs,
   ...classNamePropDefs,
   ...stylePropDefs,

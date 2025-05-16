@@ -628,6 +628,8 @@ export interface HeadingProps {
   // (undocumented)
   style?: React.CSSProperties;
   // (undocumented)
+  truncate?: boolean;
+  // (undocumented)
   variant?:
     | 'display'
     | 'title1'
@@ -1274,6 +1276,8 @@ export interface TextProps {
       >;
   // (undocumented)
   style?: CSSProperties;
+  // (undocumented)
+  truncate?: boolean;
   // (undocumented)
   variant?:
     | 'subtitle'

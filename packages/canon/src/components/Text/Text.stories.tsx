@@ -78,6 +78,13 @@ export const AllColors: Story = {
   ),
 };
 
+export const Truncate: Story = {
+  args: {
+    ...Default.args,
+    truncate: true,
+  },
+};
+
 export const Responsive: Story = {
   args: {
     ...Default.args,

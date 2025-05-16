@@ -50,6 +50,14 @@ export const AllVariants: Story = {
   ),
 };
 
+export const Truncate: Story = {
+  args: {
+    ...Title1.args,
+    truncate: true,
+    style: { maxWidth: '400px' },
+  },
+};
+
 export const Responsive: Story = {
   args: {
     variant: {
