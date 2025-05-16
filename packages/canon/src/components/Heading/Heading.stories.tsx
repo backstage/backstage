@@ -58,9 +58,6 @@ export const AllColors: Story = {
     <Flex gap="4" direction="column">
       <Heading color="primary" {...args} />
       <Heading color="secondary" {...args} />
-      <Heading color="danger" {...args} />
-      <Heading color="warning" {...args} />
-      <Heading color="success" {...args} />
     </Flex>
   ),
 };

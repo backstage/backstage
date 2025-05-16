@@ -60,18 +60,6 @@
   color: var(--canon-fg-secondary);
 }
 
-.canon-Heading[data-color='danger'] {
-  color: var(--canon-fg-danger);
-}
-
-.canon-Heading[data-color='warning'] {
-  color: var(--canon-fg-warning);
-}
-
-.canon-Heading[data-color='success'] {
-  color: var(--canon-fg-success);
-}
-
 .canon-Heading[data-truncate] {
   overflow: hidden;
   text-overflow: ellipsis;

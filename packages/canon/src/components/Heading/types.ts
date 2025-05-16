@@ -36,15 +36,7 @@ export interface HeadingProps
   color?:
     | 'primary'
     | 'secondary'
-    | 'danger'
-    | 'warning'
-    | 'success'
-    | Partial<
-        Record<
-          Breakpoint,
-          'primary' | 'secondary' | 'danger' | 'warning' | 'success'
-        >
-      >;
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
   truncate?: boolean;
   className?: string;
   style?: React.CSSProperties;
