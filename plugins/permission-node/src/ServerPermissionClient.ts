@@ -110,16 +110,28 @@ export class ServerPermissionClient implements PermissionsService {
 
   async #getRequestOptions(
     options?: PermissionsServiceRequestOptions,
-  ): Promise<{ token?: string } | undefined> {
+  ): Promise<{ token?: string; identifier?: string } | undefined> {
     if (options && 'credentials' in options) {
       if (this.#auth.isPrincipal(options.credentials, 'none')) {
-        return {};
+        return { identifier: 'none' };
       }
 
-      return this.#auth.getPluginRequestToken({
+      const { token } = await this.#auth.getPluginRequestToken({
         onBehalfOf: options.credentials,
         targetPluginId: 'permission',
       });
+
+      let identifier: string | undefined = undefined;
+      if (this.#auth.isPrincipal(options.credentials, 'user')) {
+        identifier = `user.${options.credentials.principal.userEntityRef}`;
+      } else if (this.#auth.isPrincipal(options.credentials, 'service')) {
+        identifier = `service.${options.credentials.principal.subject}`;
+      }
+
+      return {
+        token,
+        identifier,
+      };
     }
 
     return options;

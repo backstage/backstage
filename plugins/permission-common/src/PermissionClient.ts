@@ -20,16 +20,17 @@ import fetch from 'cross-fetch';
 import * as uuid from 'uuid';
 import { z } from 'zod';
 import {
-  AuthorizeResult,
-  PermissionMessageBatch,
-  PermissionCriteria,
-  PermissionCondition,
-  PermissionEvaluator,
-  QueryPermissionRequest,
   AuthorizePermissionRequest,
   AuthorizePermissionResponse,
-  QueryPermissionResponse,
+  AuthorizeResult,
   IdentifiedPermissionMessage,
+  PermissionCondition,
+  PermissionCriteria,
+  PermissionEvaluator,
+  PermissionMessageBatch,
+  PolicyDecision,
+  QueryPermissionRequest,
+  QueryPermissionResponse,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import {
@@ -38,6 +39,9 @@ import {
   ResourcePermission,
 } from './types/permission';
 import { isResourcePermission } from './permissions';
+import DataLoader from 'dataloader';
+import { durationToMilliseconds } from '@backstage/types';
+import { ExpiryMap } from './utils.ts';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -116,7 +120,26 @@ const responseSchema = <T>(
  */
 export type PermissionClientRequestOptions = {
   token?: string;
+  identifier?: string;
 };
+
+/**
+ * Options for Permission client
+ *
+ * @public
+ */
+export type PermissionClientOptions = {
+  discovery: DiscoveryApi;
+  config: Config;
+  loaderCacheTtl?: number;
+  cacheTtl?: number;
+  batchDelay?: number;
+};
+
+const MAX_BATCH_SIZE = 200;
+const DEFAULT_LOADER_CACHE_TTL = durationToMilliseconds({ minutes: 10 });
+const DEFAULT_CACHE_TTL = durationToMilliseconds({ seconds: 10 });
+const DEFAULT_BATCH_DELAY = durationToMilliseconds({ milliseconds: 20 });
 
 /**
  * An isomorphic client for requesting authorization for Backstage permissions.
@@ -126,8 +149,19 @@ export class PermissionClient implements PermissionEvaluator {
   private readonly enabled: boolean;
   private readonly discovery: DiscoveryApi;
   private readonly enableBatchedRequests: boolean;
+  private readonly enableDataloaderRequests: boolean;
+  private readonly cacheTtl: number;
+  private readonly batchDelay: number;
+  private readonly authorizeLoaderMap: ExpiryMap<
+    string,
+    DataLoader<AuthorizePermissionRequest, AuthorizePermissionResponse>
+  >;
+  private readonly authorizeConditionalLoaderMap: ExpiryMap<
+    string,
+    DataLoader<QueryPermissionRequest, QueryPermissionResponse>
+  >;
 
-  constructor(options: { discovery: DiscoveryApi; config: Config }) {
+  constructor(options: PermissionClientOptions) {
     this.discovery = options.discovery;
     this.enabled =
       options.config.getOptionalBoolean('permission.enabled') ?? false;
@@ -136,6 +170,18 @@ export class PermissionClient implements PermissionEvaluator {
       options.config.getOptionalBoolean(
         'permission.EXPERIMENTAL_enableBatchedRequests',
       ) ?? false;
+
+    this.enableDataloaderRequests =
+      options.config.getOptionalBoolean(
+        'permission.EXPERIMENTAL_enableDataloaderRequests',
+      ) ?? false;
+
+    this.cacheTtl = options?.cacheTtl ?? DEFAULT_CACHE_TTL;
+    this.batchDelay = options?.batchDelay ?? DEFAULT_BATCH_DELAY;
+
+    const loaderCacheTtl = options?.loaderCacheTtl ?? DEFAULT_LOADER_CACHE_TTL;
+    this.authorizeLoaderMap = new ExpiryMap(loaderCacheTtl);
+    this.authorizeConditionalLoaderMap = new ExpiryMap(loaderCacheTtl);
   }
 
   /**
@@ -149,10 +195,14 @@ export class PermissionClient implements PermissionEvaluator {
       return requests.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
     }
 
+    if (this.enableDataloaderRequests) {
+      const loader = this.getAuthorizeLoader(options);
+      return Promise.all(requests.map(r => loader.load(r)));
+    }
+
     if (this.enableBatchedRequests) {
       return this.makeBatchedRequest(requests, options);
     }
-
     return this.makeRequest(
       requests,
       authorizePermissionResponseSchema,
@@ -171,11 +221,16 @@ export class PermissionClient implements PermissionEvaluator {
       return queries.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
     }
 
+    if (this.enableDataloaderRequests) {
+      const loader = this.getAuthorizeConditionalLoader(options);
+      return Promise.all(queries.map(q => loader.load(q)));
+    }
+
     return this.makeRequest(queries, queryPermissionResponseSchema, options);
   }
 
   private async makeRequest<TQuery, TResult>(
-    queries: TQuery[],
+    queries: readonly TQuery[],
     itemSchema: z.ZodSchema<TResult>,
     options?: AuthorizeRequestOptions,
   ) {
@@ -201,9 +256,9 @@ export class PermissionClient implements PermissionEvaluator {
   }
 
   private async makeBatchedRequest(
-    queries: AuthorizePermissionRequest[],
+    queries: readonly AuthorizePermissionRequest[],
     options?: AuthorizeRequestOptions,
-  ) {
+  ): Promise<AuthorizePermissionResponse[]> {
     const request: Record<string, BatchedAuthorizePermissionRequest> = {};
 
     for (const query of queries) {
@@ -280,6 +335,66 @@ export class PermissionClient implements PermissionEvaluator {
 
   private getAuthorizationHeader(token?: string): Record<string, string> {
     return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+
+  private getAuthorizeLoader(options?: PermissionClientRequestOptions) {
+    const key = options?.identifier ?? btoa(JSON.stringify(options));
+    const loader = this.authorizeLoaderMap.get(key);
+    if (loader) {
+      return loader;
+    }
+
+    const newLoader = new DataLoader<
+      AuthorizePermissionRequest,
+      AuthorizePermissionResponse
+    >(
+      async requests => {
+        if (this.enableBatchedRequests) {
+          return this.makeBatchedRequest(requests, options);
+        }
+        return this.makeRequest(
+          requests,
+          authorizePermissionResponseSchema,
+          options,
+        );
+      },
+      {
+        name: 'PermissionClient.authorizeLoader',
+        cacheMap: new ExpiryMap(this.cacheTtl),
+        maxBatchSize: MAX_BATCH_SIZE,
+        batchScheduleFn: cb => setTimeout(cb, this.batchDelay),
+      },
+    );
+    this.authorizeLoaderMap.set(key, newLoader);
+    return newLoader;
+  }
+
+  private getAuthorizeConditionalLoader(
+    options?: PermissionClientRequestOptions,
+  ) {
+    const key = options?.identifier ?? btoa(JSON.stringify(options));
+    const loader = this.authorizeConditionalLoaderMap.get(key);
+    if (loader) {
+      return loader;
+    }
+
+    const newLoader = new DataLoader<QueryPermissionRequest, PolicyDecision>(
+      async queries => {
+        return this.makeRequest(
+          queries,
+          queryPermissionResponseSchema,
+          options,
+        );
+      },
+      {
+        name: 'PermissionClient.authorizeConditionalLoader',
+        cacheMap: new ExpiryMap(this.cacheTtl),
+        maxBatchSize: MAX_BATCH_SIZE,
+        batchScheduleFn: cb => setTimeout(cb, this.batchDelay),
+      },
+    );
+    this.authorizeConditionalLoaderMap.set(key, newLoader);
+    return newLoader;
   }
 }
 
