@@ -15,6 +15,7 @@
  */
 
 import {
+  LoggerService,
   UrlReaderService,
   UrlReaderServiceReadTreeOptions,
   UrlReaderServiceReadTreeResponse,
@@ -63,15 +64,19 @@ export type GhBlobResponse =
  * @public
  */
 export class GithubUrlReader implements UrlReaderService {
-  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
+  static factory: ReaderFactory = ({ config, logger, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
     const credentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     return integrations.github.list().map(integration => {
-      const reader = new GithubUrlReader(integration, {
-        treeResponseFactory,
-        credentialsProvider,
-      });
+      const reader = new GithubUrlReader(
+        integration,
+        {
+          treeResponseFactory,
+          credentialsProvider,
+        },
+        logger,
+      );
       const predicate = (url: URL) => url.host === integration.config.host;
       return { reader, predicate };
     });
@@ -83,6 +88,7 @@ export class GithubUrlReader implements UrlReaderService {
       treeResponseFactory: ReadTreeResponseFactory;
       credentialsProvider: GithubCredentialsProvider;
     },
+    private readonly logger?: LoggerService,
   ) {
     if (!integration.config.apiBaseUrl && !integration.config.rawBaseUrl) {
       throw new Error(
@@ -386,6 +392,7 @@ export class GithubUrlReader implements UrlReaderService {
       if (this.integration.parseRateLimitInfo(response).isRateLimited) {
         message += ' (rate limit exceeded)';
       }
+      this.logger?.warn(message);
 
       throw new Error(message);
     }

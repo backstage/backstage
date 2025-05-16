@@ -25,7 +25,6 @@ import {
   DefaultEventsService,
   EventParams,
 } from '@backstage/plugin-events-node';
-import { graphql } from '@octokit/graphql';
 import { createGraphqlClient } from '../lib/github';
 import { withLocations } from '../lib/withLocations';
 import { GithubOrgEntityProvider } from './GithubOrgEntityProvider';
@@ -820,7 +819,7 @@ describe('GithubOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
       await entityProvider.connect(entityProviderConnection);
 
@@ -1071,7 +1070,7 @@ describe('GithubOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
       await entityProvider.connect(entityProviderConnection);
 
       const event: EventParams = {
@@ -1295,7 +1294,7 @@ describe('GithubOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
       await entityProvider.connect(entityProviderConnection);
 
       const event: EventParams = {

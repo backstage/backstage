@@ -27,8 +27,8 @@ import {
   LocationSpec,
   processingResult,
 } from '@backstage/plugin-catalog-node';
-import { graphql } from '@octokit/graphql';
 import { getOrganizationRepositories } from '../lib';
+import { createGraphqlClient } from '../lib/github';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
@@ -91,6 +91,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
       return false;
     }
 
+    const logger = this.logger;
     const gitHubConfig = this.integrations.github.byUrl(
       location.target,
     )?.config;
@@ -112,26 +113,28 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
       url: orgUrl,
     });
 
-    const client = graphql.defaults({
+    const client = createGraphqlClient({
       baseUrl: gitHubConfig.apiBaseUrl,
       headers,
+      logger,
     });
 
     // Read out all of the raw data
     const startTimestamp = Date.now();
-    this.logger.info(`Reading GitHub repositories from ${location.target}`);
+    logger.info(`Reading GitHub repositories from ${location.target}`);
 
     const { repositories } = await getOrganizationRepositories(
       client,
       org,
       catalogPath,
+      logger,
     );
     const matching = repositories.filter(
       r => !r.isArchived && repoSearchPath.test(r.name),
     );
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
-    this.logger.debug(
+    logger.debug(
       `Read ${repositories.length} GitHub repositories (${matching.length} matching the pattern) in ${duration} seconds`,
     );
 

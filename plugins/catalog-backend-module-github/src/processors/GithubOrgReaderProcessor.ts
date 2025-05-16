@@ -36,6 +36,7 @@ import {
   getOrganizationUsers,
   parseGithubOrgUrl,
 } from '../lib';
+import { createGraphqlClient } from '../lib/github';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
@@ -143,9 +144,10 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
         url: orgUrl,
       });
 
-    const client = graphql.defaults({
+    const client = createGraphqlClient({
       baseUrl: gitHubConfig.apiBaseUrl,
       headers,
+      logger: this.logger,
     });
 
     return { client, tokenType };

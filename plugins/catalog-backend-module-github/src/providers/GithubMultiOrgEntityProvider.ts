@@ -38,7 +38,6 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 import { EventParams, EventsService } from '@backstage/plugin-events-node';
-import { graphql } from '@octokit/graphql';
 import {
   InstallationCreatedEvent,
   InstallationEvent,
@@ -71,6 +70,7 @@ import {
   ANNOTATION_GITHUB_USER_LOGIN,
 } from '../lib/annotation';
 import {
+  createGraphqlClient,
   getOrganizationsFromUser,
   getOrganizationTeam,
   getOrganizationTeamsFromUsers,
@@ -272,24 +272,29 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         await this.options.githubCredentialsProvider.getCredentials({
           url: `${this.options.githubUrl}/${org}`,
         });
-      const client = graphql.defaults({
+      const client = createGraphqlClient({
         baseUrl: this.options.gitHubConfig.apiBaseUrl,
         headers,
+        logger,
       });
 
-      logger.info(`Reading GitHub users and teams for org: ${org}`);
+      logger.info(`Reading GitHub users for org: ${org}`);
 
       const { users } = await getOrganizationUsers(
         client,
         org,
         tokenType,
         this.options.userTransformer,
+        logger,
       );
+
+      logger.info(`Reading GitHub teams for org: ${org}`);
 
       const { teams } = await getOrganizationTeams(
         client,
         org,
         this.defaultMultiOrgTeamTransformer.bind(this),
+        logger,
       );
 
       // Grab current users from `allUsersMap` if they already exist in our
@@ -418,13 +423,15 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     }
 
     const org = event.installation.account.login;
+    const logger = this.options.logger;
     const { headers, type: tokenType } =
       await this.options.githubCredentialsProvider.getCredentials({
         url: `${this.options.githubUrl}/${org}`,
       });
-    const client = graphql.defaults({
+    const client = createGraphqlClient({
       baseUrl: this.options.gitHubConfig.apiBaseUrl,
       headers,
+      logger,
     });
 
     const { users } = await getOrganizationUsers(
@@ -448,9 +455,10 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           await this.options.githubCredentialsProvider.getCredentials({
             url: `${this.options.githubUrl}/${userOrg}`,
           });
-        const orgClient = graphql.defaults({
+        const orgClient = createGraphqlClient({
           baseUrl: this.options.gitHubConfig.apiBaseUrl,
           headers: orgHeaders,
+          logger,
         });
 
         const { teams: userTeams } = await getOrganizationTeamsFromUsers(
@@ -489,6 +497,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       throw new Error('Not initialized');
     }
 
+    const logger = this.options.logger;
     const userTransformer =
       this.options.userTransformer || defaultUserTransformer;
     const { name, avatar_url: avatarUrl, email, login } = event.membership.user;
@@ -497,9 +506,10 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       await this.options.githubCredentialsProvider.getCredentials({
         url: `${this.options.githubUrl}/${org}`,
       });
-    const client = graphql.defaults({
+    const client = createGraphqlClient({
       baseUrl: this.options.gitHubConfig.apiBaseUrl,
       headers,
+      logger,
     });
 
     const { orgs } = await getOrganizationsFromUser(client, login);
@@ -551,9 +561,10 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           await this.options.githubCredentialsProvider.getCredentials({
             url: `${this.options.githubUrl}/${userOrg}`,
           });
-        const orgClient = graphql.defaults({
+        const orgClient = createGraphqlClient({
           baseUrl: this.options.gitHubConfig.apiBaseUrl,
           headers: orgHeaders,
+          logger,
         });
 
         const { teams } = await getOrganizationTeamsFromUsers(
@@ -584,14 +595,16 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       throw new Error('Not initialized');
     }
 
+    const logger = this.options.logger;
     const org = event.organization.login;
     const { headers } =
       await this.options.githubCredentialsProvider.getCredentials({
         url: `${this.options.githubUrl}/${org}`,
       });
-    const client = graphql.defaults({
+    const client = createGraphqlClient({
       baseUrl: this.options.gitHubConfig.apiBaseUrl,
       headers,
+      logger,
     });
 
     const { name, html_url: url, description, slug } = event.team;
@@ -636,14 +649,16 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       throw new Error('Not initialized');
     }
 
+    const logger = this.options.logger;
     const org = event.organization.login;
     const { headers, type: tokenType } =
       await this.options.githubCredentialsProvider.getCredentials({
         url: `${this.options.githubUrl}/${org}`,
       });
-    const client = graphql.defaults({
+    const client = createGraphqlClient({
       baseUrl: this.options.gitHubConfig.apiBaseUrl,
       headers,
+      logger,
     });
 
     const teamSlug = event.team.slug;
@@ -677,9 +692,10 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           await this.options.githubCredentialsProvider.getCredentials({
             url: `${this.options.githubUrl}/${userOrg}`,
           });
-        const orgClient = graphql.defaults({
+        const orgClient = createGraphqlClient({
           baseUrl: this.options.gitHubConfig.apiBaseUrl,
           headers: orgHeaders,
+          logger,
         });
 
         const { teams } = await getOrganizationTeamsFromUsers(
@@ -749,14 +765,16 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       return;
     }
 
+    const logger = this.options.logger;
     const org = event.organization.login;
     const { headers } =
       await this.options.githubCredentialsProvider.getCredentials({
         url: `${this.options.githubUrl}/${org}`,
       });
-    const client = graphql.defaults({
+    const client = createGraphqlClient({
       baseUrl: this.options.gitHubConfig.apiBaseUrl,
       headers,
+      logger,
     });
 
     const teamSlug = event.team.slug;
@@ -794,9 +812,10 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           await this.options.githubCredentialsProvider.getCredentials({
             url: `${this.options.githubUrl}/${userOrg}`,
           });
-        const orgClient = graphql.defaults({
+        const orgClient = createGraphqlClient({
           baseUrl: this.options.gitHubConfig.apiBaseUrl,
           headers: orgHeaders,
+          logger,
         });
 
         const { teams } = await getOrganizationTeamsFromUsers(

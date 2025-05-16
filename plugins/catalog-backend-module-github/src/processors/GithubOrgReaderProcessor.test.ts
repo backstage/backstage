@@ -20,11 +20,15 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
-import { graphql } from '@octokit/graphql';
+import { createGraphqlClient } from '../lib/github';
 import { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('@octokit/graphql');
+jest.mock('../lib/github', () => ({
+  ...jest.requireActual('../lib/github'),
+  createGraphqlClient: jest.fn(),
+}));
 
 describe('GithubOrgReaderProcessor', () => {
   describe('implementation', () => {
@@ -107,7 +111,7 @@ describe('GithubOrgReaderProcessor', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
       const processor = new GithubOrgReaderProcessor({
         integrations,
@@ -164,7 +168,7 @@ describe('GithubOrgReaderProcessor', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
       const processor = new GithubOrgReaderProcessor({
         integrations,
