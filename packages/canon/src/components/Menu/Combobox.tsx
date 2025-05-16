@@ -201,7 +201,7 @@ export const Combobox = forwardRef<HTMLDivElement, MenuComboboxProps>(
           className="canon-SubmenuComboboxSearch"
           type="text"
           role="combobox"
-          placeholder="Filter"
+          placeholder="Filter..."
           aria-labelledby={triggerId}
           aria-controls={listboxId}
           aria-autocomplete="list"
@@ -212,7 +212,6 @@ export const Combobox = forwardRef<HTMLDivElement, MenuComboboxProps>(
           onKeyDown={handleKeyDown}
           onChange={handleSearchChange}
         />
-
         <div
           role="listbox"
           id={listboxId}
