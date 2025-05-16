@@ -16,7 +16,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { Menu } from './Menu';
-import { Text, Icon, Button } from '../../index';
+import { Text, Icon, Button, Flex } from '../../index';
 import { useState } from 'react';
 
 const meta = {
@@ -131,7 +131,7 @@ export const SubmenuCombobox = () => {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
 
   return (
-    <>
+    <Flex direction="column" gap="1" align="start">
       <Text style={{ marginBottom: 16 }}>
         {selectedValues.length === 0
           ? 'Which is your favorite fruit?'
@@ -173,7 +173,7 @@ export const SubmenuCombobox = () => {
           </Menu.Positioner>
         </Menu.Portal>
       </Menu.Root>
-    </>
+    </Flex>
   );
 };
 
@@ -181,7 +181,7 @@ export const SubmenuComboboxMultiselect = () => {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
 
   return (
-    <>
+    <Flex direction="column" gap="1" align="start">
       <Text style={{ marginBottom: 16 }}>
         {selectedValues.length === 0
           ? 'Tell us what fruits you like.'
@@ -226,6 +226,6 @@ export const SubmenuComboboxMultiselect = () => {
           </Menu.Positioner>
         </Menu.Portal>
       </Menu.Root>
-    </>
+    </Flex>
   );
 };

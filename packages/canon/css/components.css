@@ -701,6 +701,7 @@
   transform-origin: var(--transform-origin);
   max-width: min(var(--available-width), 340px);
   max-height: min(var(--available-height), 500px);
+  padding-bottom: var(--canon-space-1);
   border-radius: .375rem;
   outline: none;
   flex-direction: column;
@@ -735,10 +736,6 @@
     margin-top: var(--canon-space-1);
   }
 
-  &:last-child {
-    margin-bottom: var(--canon-space-1);
-  }
-
   &[data-highlighted] {
     background-color: var(--canon-gray-3);
   }
@@ -763,6 +760,10 @@
 
   & .canon-Icon {
     color: var(--canon-fg-secondary);
+  }
+
+  &:first-child {
+    margin-top: var(--canon-space-1);
   }
 
   &[data-popup-open], &[data-highlighted] {
