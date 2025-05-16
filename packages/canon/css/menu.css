@@ -3,7 +3,6 @@
 }
 
 .canon-MenuPopup {
-  padding: var(--canon-space-1) 0;
   background-color: var(--canon-bg-surface-1);
   border: 1px solid var(--canon-border);
   color: var(--canon-fg-primary);
@@ -15,6 +14,7 @@
   flex-direction: column;
   transition: transform .15s, opacity .15s;
   display: flex;
+  position: relative;
   overflow: auto;
 
   &[data-starting-style], &[data-ending-style] {
@@ -35,8 +35,17 @@
   font-size: var(--canon-font-size-3);
   cursor: pointer;
   outline: 0;
+  flex-shrink: 0;
   text-decoration: none;
   display: flex;
+
+  &:first-child {
+    margin-top: var(--canon-space-1);
+  }
+
+  &:last-child {
+    margin-bottom: var(--canon-space-1);
+  }
 
   &[data-highlighted] {
     background-color: var(--canon-gray-3);
@@ -56,6 +65,7 @@
   font-size: var(--canon-font-size-3);
   cursor: pointer;
   outline: 0;
+  flex-shrink: 0;
   text-decoration: none;
   display: flex;
 
@@ -79,20 +89,21 @@
 }
 
 .canon-SubmenuComboboxSearch {
-  padding: var(--canon-space-2) var(--canon-space-5);
+  padding-inline: var(--canon-space-3);
   border: none;
   border-bottom: 1px solid var(--canon-border);
   background-color: var(--canon-bg-surface-1);
+  height: 32px;
   color: var(--canon-fg-primary);
-  outline: none;
   line-height: 140%;
+  font-size: var(--canon-font-size-3);
+  z-index: 1;
+  outline: none;
+  position: sticky;
+  top: 0;
 
   &::placeholder {
     color: var(--canon-fg-secondary);
-  }
-
-  &:focus {
-    border-color: var(--canon-border-hover);
   }
 
   &:disabled {
@@ -110,8 +121,9 @@
 }
 
 .canon-SubmenuComboboxNoResults {
-  padding: var(--canon-space-3);
-  padding-left: var(--canon-space-5);
+  padding-inline: var(--canon-space-3);
+  padding-top: var(--canon-space-2);
+  padding-bottom: var(--canon-space-4);
   color: var(--canon-fg-secondary);
   font-size: var(--canon-font-size-3);
 }
@@ -129,6 +141,7 @@
   font-size: var(--canon-font-size-3);
   cursor: pointer;
   outline: 0;
+  flex-shrink: 0;
   text-decoration: none;
   display: flex;
 
