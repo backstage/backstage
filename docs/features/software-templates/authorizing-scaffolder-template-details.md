@@ -220,7 +220,7 @@ class ExamplePermissionPolicy implements PermissionPolicy {
       // Allow users to read tasks they created
       return createScaffolderTaskConditionalDecision(
         request.permission,
-        scaffolderTaskConditions.hasCreatedBy({
+        scaffolderTaskConditions.isTaskOwner({
           createdBy: user?.info.userEntityRef ? [user?.info.userEntityRef] : [],
         }),
       );
@@ -245,7 +245,7 @@ class ExamplePermissionPolicy implements PermissionPolicy {
       if (user?.info.userEntityRef === 'user:default/bob') {
         return createScaffolderTaskConditionalDecision(
           request.permission,
-          scaffolderTaskConditions.hasCreatedBy({
+          scaffolderTaskConditions.isTaskOwner({
             createdBy: user?.info.userEntityRef
               ? [user?.info.userEntityRef]
               : [],
