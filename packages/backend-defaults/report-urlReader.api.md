@@ -316,6 +316,7 @@ export class GithubUrlReader implements UrlReaderService {
       treeResponseFactory: ReadTreeResponseFactory;
       credentialsProvider: GithubCredentialsProvider;
     },
+    logger?: LoggerService | undefined,
   );
   // (undocumented)
   static factory: ReaderFactory;
