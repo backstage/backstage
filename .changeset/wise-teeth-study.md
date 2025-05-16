@@ -1,17 +1,16 @@
 ---
-'@backstage/plugin-catalog-backend-module-azure': minor
+'@backstage/plugin-catalog-backend-module-azure': patch
 ---
 
-The `isCloud` function now also checks if hostname is visualstudio.com or ends with .visualstudio.com along with dev.azure.com
+visualstudio.com domains are now supported along with dev.azure.com
 
 ```diff
-- const isCloud = (host: string) => host === 'dev.azure.com';
 + const isCloud = (host: string) => {
 +   if (host === 'dev.azure.com') {
 +     return true;
 +   }
 +
-+   if (host === 'visualstudio.com' || host.endsWith('.visualstudio.com')) {
++   if (host.endsWith('.visualstudio.com')) {
 +     return true;
 +   }
 +

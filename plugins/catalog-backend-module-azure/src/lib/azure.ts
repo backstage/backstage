@@ -51,7 +51,7 @@ const isCloud = (host: string) => {
     return true;
   }
 
-  if (host === 'visualstudio.com' || host.endsWith('.visualstudio.com')) {
+  if (host.endsWith('.visualstudio.com')) {
     return true;
   }
 
