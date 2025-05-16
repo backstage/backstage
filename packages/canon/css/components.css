@@ -683,16 +683,19 @@
 }
 
 .canon-MenuPopup {
-  padding: var(--canon-space-2);
+  padding: var(--canon-space-1) 0;
   background-color: var(--canon-bg-surface-1);
   border: 1px solid var(--canon-border);
   color: var(--canon-fg-primary);
   transform-origin: var(--transform-origin);
+  max-width: min(var(--available-width), 340px);
+  max-height: min(var(--available-height), 500px);
   border-radius: .375rem;
   outline: none;
-  max-width: 340px;
+  flex-direction: column;
   transition: transform .15s, opacity .15s;
-  overflow: hidden;
+  display: flex;
+  overflow: auto;
 
   &[data-starting-style], &[data-ending-style] {
     opacity: 0;
@@ -701,26 +704,51 @@
 }
 
 .canon-MenuItem {
-  cursor: default;
   user-select: none;
+  align-items: center;
   gap: var(--canon-space-2);
+  height: 32px;
   color: var(--canon-fg-primary);
   border-radius: var(--canon-radius-2);
-  padding: var(--canon-space-2) var(--canon-space-2);
-  padding-right: var(--canon-space-4);
+  margin-inline: var(--canon-space-1);
+  padding-inline: var(--canon-space-2);
+  font-size: var(--canon-font-size-3);
   cursor: pointer;
   outline: 0;
   text-decoration: none;
   display: flex;
 
-  &:last-child {
-    border-bottom: none;
+  &[data-highlighted] {
+    background-color: var(--canon-gray-3);
+  }
+}
+
+.canon-MenuSubmenuTrigger {
+  user-select: none;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--canon-space-2);
+  height: 32px;
+  color: var(--canon-fg-primary);
+  border-radius: var(--canon-radius-2);
+  margin-inline: var(--canon-space-1);
+  padding-inline: var(--canon-space-2);
+  font-size: var(--canon-font-size-3);
+  cursor: pointer;
+  outline: 0;
+  text-decoration: none;
+  display: flex;
+
+  & .canon-Icon {
+    color: var(--canon-fg-secondary);
   }
 
-  &[data-highlighted] {
-    z-index: 0;
-    background-color: var(--canon-bg-tint-hover);
-    position: relative;
+  &[data-popup-open], &[data-highlighted] {
+    background-color: var(--canon-gray-3);
+
+    & .canon-Icon {
+      color: var(--canon-fg-primary);
+    }
   }
 }
 
@@ -728,6 +756,90 @@
   background-color: var(--color-gray-200);
   height: 1px;
   margin: .375rem 1rem;
+}
+
+.canon-SubmenuComboboxSearch {
+  padding: var(--canon-space-2) var(--canon-space-5);
+  border: none;
+  border-bottom: 1px solid var(--canon-border);
+  background-color: var(--canon-bg-surface-1);
+  color: var(--canon-fg-primary);
+  outline: none;
+  line-height: 140%;
+
+  &::placeholder {
+    color: var(--canon-fg-secondary);
+  }
+
+  &:focus {
+    border-color: var(--canon-border-hover);
+  }
+
+  &:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+}
+
+.canon-SubmenuComboboxItems {
+  padding-top: var(--canon-space-2);
+  outline: none;
+  flex-direction: column;
+  display: flex;
+  overflow-y: auto;
+}
+
+.canon-SubmenuComboboxNoResults {
+  padding: var(--canon-space-3);
+  padding-left: var(--canon-space-5);
+  color: var(--canon-fg-secondary);
+  font-size: var(--canon-font-size-3);
+}
+
+.canon-SubmenuComboboxItem {
+  user-select: none;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--canon-space-2);
+  height: 32px;
+  color: var(--canon-fg-primary);
+  border-radius: var(--canon-radius-2);
+  margin-inline: var(--canon-space-1);
+  padding-inline: var(--canon-space-2);
+  font-size: var(--canon-font-size-3);
+  cursor: pointer;
+  outline: 0;
+  text-decoration: none;
+  display: flex;
+
+  &[data-highlighted] {
+    background-color: var(--canon-gray-3);
+  }
+
+  &[data-disabled] {
+    opacity: .5;
+    cursor: not-allowed;
+  }
+}
+
+.canon-SubmenuComboboxItemCheckbox {
+  width: 16px;
+  height: 16px;
+  color: var(--canon-fg-primary);
+  border-radius: var(--canon-radius-2);
+  border: 1px solid var(--canon-border);
+  background: var(--canon-bg-surface-1);
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.canon-SubmenuComboboxItemLabel {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  overflow: hidden;
 }
 
 .canon-Link {
