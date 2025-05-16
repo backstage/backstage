@@ -142,8 +142,8 @@ export const createTaskPermissionRule = makeCreatePermissionRule<
   typeof RESOURCE_TYPE_SCAFFOLDER_TASK
 >();
 
-export const hasCreatedBy = createTaskPermissionRule({
-  name: 'HAS_CREATED_BY',
+export const isTaskOwner = createTaskPermissionRule({
+  name: 'IS_TASK_OWNER',
   description: 'Allows tasks created by certain users to be accessible',
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
   paramsSchema: z.object({
@@ -174,4 +174,4 @@ export const scaffolderActionRules = {
   hasNumberProperty,
   hasStringProperty,
 };
-export const scaffolderTaskRules = { hasCreatedBy };
+export const scaffolderTaskRules = { isTaskOwner };

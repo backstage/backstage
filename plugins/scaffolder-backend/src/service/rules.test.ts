@@ -22,7 +22,7 @@ import {
   hasProperty,
   hasStringProperty,
   hasTag,
-  hasCreatedBy,
+  isTaskOwner,
 } from './rules';
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
@@ -527,7 +527,7 @@ describe('hasStringProperty', () => {
   });
 });
 
-describe('hasCreatedBy', () => {
+describe('isTaskOwner', () => {
   describe('apply', () => {
     const task: SerializedTask = {
       id: 'a-random-id',
@@ -538,28 +538,28 @@ describe('hasCreatedBy', () => {
     };
     it('returns false when createdBy is an empty array', () => {
       expect(
-        hasCreatedBy.apply(task, {
+        isTaskOwner.apply(task, {
           createdBy: [],
         }),
       ).toEqual(false);
     });
     it('returns false when createdBy is not matched (single user in createdBy)', () => {
       expect(
-        hasCreatedBy.apply(task, {
+        isTaskOwner.apply(task, {
           createdBy: ['not-matched'],
         }),
       ).toEqual(false);
     });
     it('returns true when createdBy matches (single user in createdBy)', () => {
       expect(
-        hasCreatedBy.apply(task, {
+        isTaskOwner.apply(task, {
           createdBy: ['user:default/user-1'],
         }),
       ).toEqual(true);
     });
     it('returns false when createdBy is not matched (multiple users in createdBy)', () => {
       expect(
-        hasCreatedBy.apply(task, {
+        isTaskOwner.apply(task, {
           createdBy: [
             'user:default/user-2',
             'user:default/user-3',
@@ -570,7 +570,7 @@ describe('hasCreatedBy', () => {
     });
     it('returns true when createdBy matches (multiple users in createdBy)', () => {
       expect(
-        hasCreatedBy.apply(task, {
+        isTaskOwner.apply(task, {
           createdBy: [
             'user:default/user-1',
             'user:default/user-2',
@@ -583,7 +583,7 @@ describe('hasCreatedBy', () => {
   describe('toQuery', () => {
     it('returns the correct query filter with values (single user in createdBy)', () => {
       expect(
-        hasCreatedBy.toQuery({
+        isTaskOwner.toQuery({
           createdBy: ['user:default/user-1'],
         }),
       ).toEqual({ key: 'created_by', values: ['user:default/user-1'] });
@@ -591,7 +591,7 @@ describe('hasCreatedBy', () => {
   });
   it('returns the correct query filter with values (multiple users in createdBy)', () => {
     expect(
-      hasCreatedBy.toQuery({
+      isTaskOwner.toQuery({
         createdBy: ['user:default/user-1', 'user:default/user-2'],
       }),
     ).toEqual({

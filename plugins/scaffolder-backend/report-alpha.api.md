@@ -85,7 +85,7 @@ export const scaffolderActionConditions: Conditions<{
 
 // @alpha
 export const scaffolderTaskConditions: Conditions<{
-  hasCreatedBy: PermissionRule<
+  isTaskOwner: PermissionRule<
     SerializedTask,
     {
       key: string;

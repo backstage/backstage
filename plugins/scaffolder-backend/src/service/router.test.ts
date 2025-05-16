@@ -602,7 +602,7 @@ describe.each([
               {
                 conditions: {
                   resourceType: 'scaffolder-task',
-                  rule: 'HAS_CREATED_BY',
+                  rule: 'IS_TASK_OWNER',
                   params: { createdBy: ['user'] },
                 },
                 pluginId: 'scaffolder',
@@ -650,7 +650,7 @@ describe.each([
               {
                 conditions: {
                   resourceType: 'scaffolder-task',
-                  rule: 'HAS_CREATED_BY',
+                  rule: 'IS_TASK_OWNER',
                   params: { createdBy: ['user'] },
                 },
                 pluginId: 'scaffolder',
@@ -942,7 +942,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               {
                 conditions: {
                   resourceType: 'scaffolder-task',
-                  rule: 'HAS_CREATED_BY',
+                  rule: 'IS_TASK_OWNER',
                   params: { createdBy: ['user'] },
                 },
                 pluginId: 'scaffolder',
@@ -1543,7 +1543,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               {
                 conditions: {
                   resourceType: 'scaffolder-task',
-                  rule: 'HAS_CREATED_BY',
+                  rule: 'IS_TASK_OWNER',
                   params: { createdBy: ['user'] },
                 },
                 pluginId: 'scaffolder',
@@ -1591,7 +1591,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               {
                 conditions: {
                   resourceType: 'scaffolder-task',
-                  rule: 'HAS_CREATED_BY',
+                  rule: 'IS_TASK_OWNER',
                   params: { createdBy: ['user'] },
                 },
                 pluginId: 'scaffolder',
@@ -1778,7 +1778,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               {
                 conditions: {
                   resourceType: 'scaffolder-task',
-                  rule: 'HAS_CREATED_BY',
+                  rule: 'IS_TASK_OWNER',
                   params: { createdBy: ['user'] },
                 },
                 pluginId: 'scaffolder',
@@ -1915,7 +1915,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               {
                 conditions: {
                   resourceType: 'scaffolder-task',
-                  rule: 'HAS_CREATED_BY',
+                  rule: 'IS_TASK_OWNER',
                   params: { createdBy: ['user'] },
                 },
                 pluginId: 'scaffolder',
