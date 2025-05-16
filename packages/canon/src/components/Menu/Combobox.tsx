@@ -26,7 +26,7 @@ import {
   useEffect,
 } from 'react';
 import clsx from 'clsx';
-import { ComboboxOption, ComboboxProps } from './types';
+import { MenuComboboxOption, MenuComboboxProps } from './types';
 import { Icon } from '@backstage/canon';
 
 const getListboxItemId = (listboxId: string, optionValue: string): string =>
@@ -42,7 +42,7 @@ function ComboboxItem({
   onItemSelect,
   listboxId,
 }: {
-  option: ComboboxOption;
+  option: MenuComboboxOption;
   optionIndex: number;
   value?: string[];
   activeOptionIndex: number;
@@ -85,7 +85,7 @@ function ComboboxItem({
 }
 
 /** @public */
-export const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
+export const Combobox = forwardRef<HTMLDivElement, MenuComboboxProps>(
   (props, ref) => {
     const {
       options,

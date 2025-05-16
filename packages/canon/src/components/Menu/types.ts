@@ -22,6 +22,22 @@ import {
 } from 'react';
 
 /** @public */
+export type MenuComboboxOption = {
+  label: string;
+  value: string;
+  disabled?: boolean;
+};
+
+/** @public */
+export interface MenuComboboxProps extends ComponentProps<'div'> {
+  options: MenuComboboxOption[];
+  value?: string[];
+  onValueChange?: (value: string[]) => void;
+  multiselect?: boolean;
+  closeParentOnEsc?: boolean;
+}
+
+/** @public */
 export type MenuComponent = {
   Root: typeof MenuPrimitive.Root;
   Trigger: typeof MenuPrimitive.Trigger;
@@ -41,22 +57,6 @@ export type MenuComponent = {
   SubmenuTrigger: typeof MenuPrimitive.SubmenuTrigger;
   Separator: typeof MenuPrimitive.Separator;
   Combobox: ForwardRefExoticComponent<
-    ComboboxProps & RefAttributes<HTMLDivElement>
+    MenuComboboxProps & RefAttributes<HTMLDivElement>
   >;
 };
-
-/** @public */
-export type ComboboxOption = {
-  label: string;
-  value: string;
-  disabled?: boolean;
-};
-
-/** @public */
-export interface ComboboxProps extends ComponentProps<'div'> {
-  options: ComboboxOption[];
-  value?: string[];
-  onValueChange?: (value: string[]) => void;
-  multiselect?: boolean;
-  closeParentOnEsc?: boolean;
-}
