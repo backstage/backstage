@@ -33,9 +33,16 @@ A text field component for your forms.
   <Tabs.Panel>
     We recommend starting with our [global tokens](/theme/theming) to customize the library and align it with
     your brand. For additional flexibility, you can use the provided class names for each element listed below.
-    <CodeBlock
-      code={`<TextField className="canon-TextField" />`}
-    />
+    - `canon-TextField`
+    - `canon-TextFieldLabel`
+    - `canon-TextFieldRequired`
+    - `canon-TextFieldInputWrapper`
+    - `canon-TextFieldIcon`
+    - `canon-TextFieldInput`
+    - `canon-TextFieldClearButton`
+    - `canon-TextFieldClearButtonIcon`
+    - `canon-TextFieldDescription`
+    - `canon-TextFieldError`
   </Tabs.Panel>
 </Tabs.Root>
 
@@ -55,8 +62,8 @@ We support two different sizes: `small`, `medium`.
   open
   preview={<TextFieldSnippet story="Sizes" />}
   code={`<Flex direction="row" gap="4">
-    <TextField size="small" placeholder="Small" />
-    <TextField size="medium" placeholder="Medium" />
+    <TextField size="small" placeholder="Small" icon={<Icon name="sparkling" />} />
+    <TextField size="medium" placeholder="Medium" icon={<Icon name="sparkling" />} />
   </Flex>`}
 />
 
