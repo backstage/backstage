@@ -27,6 +27,7 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
       children,
       variant = 'title1',
       as = 'h1',
+      truncate,
       className,
       ...restProps
     } = props;
@@ -47,6 +48,7 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
         ref={ref}
         className={clsx('canon-Heading', className)}
         data-variant={responsiveVariant}
+        data-truncate={truncate}
         {...restProps}
       >
         {children}
