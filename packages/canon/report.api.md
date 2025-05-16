@@ -7,6 +7,7 @@ import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
 import { Breakpoint as Breakpoint_2 } from '@backstage/canon';
 import { ChangeEvent } from 'react';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
+import { ComponentProps } from 'react';
 import { Context } from 'react';
 import type { CSSProperties } from 'react';
 import { FC } from 'react';
@@ -892,6 +893,27 @@ export type MarginProps = GetPropDefTypes<typeof marginPropDefs>;
 export const Menu: MenuComponent;
 
 // @public (undocumented)
+export type MenuComboboxOption = {
+  label: string;
+  value: string;
+  disabled?: boolean;
+};
+
+// @public (undocumented)
+export interface MenuComboboxProps extends ComponentProps<'div'> {
+  // (undocumented)
+  closeParentOnEsc?: boolean;
+  // (undocumented)
+  multiselect?: boolean;
+  // (undocumented)
+  onValueChange?: (value: string[]) => void;
+  // (undocumented)
+  options: MenuComboboxOption[];
+  // (undocumented)
+  value?: string[];
+}
+
+// @public (undocumented)
 export type MenuComponent = {
   Root: typeof Menu_2.Root;
   Trigger: typeof Menu_2.Trigger;
@@ -910,6 +932,9 @@ export type MenuComponent = {
   CheckboxItemIndicator: typeof Menu_2.CheckboxItemIndicator;
   SubmenuTrigger: typeof Menu_2.SubmenuTrigger;
   Separator: typeof Menu_2.Separator;
+  Combobox: ForwardRefExoticComponent<
+    MenuComboboxProps & RefAttributes<HTMLDivElement>
+  >;
 };
 
 // @public (undocumented)
