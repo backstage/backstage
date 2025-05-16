@@ -136,7 +136,7 @@ export type PermissionClientOptions = {
   batchDelay?: number;
 };
 
-const MAX_BATCH_SIZE = 200;
+const MAX_BATCH_SIZE = 50;
 const DEFAULT_LOADER_CACHE_TTL = durationToMilliseconds({ minutes: 10 });
 const DEFAULT_CACHE_TTL = durationToMilliseconds({ seconds: 10 });
 const DEFAULT_BATCH_DELAY = durationToMilliseconds({ milliseconds: 20 });
@@ -346,7 +346,8 @@ export class PermissionClient implements PermissionEvaluator {
 
     const newLoader = new DataLoader<
       AuthorizePermissionRequest,
-      AuthorizePermissionResponse
+      AuthorizePermissionResponse,
+      string
     >(
       async requests => {
         if (this.enableBatchedRequests) {
@@ -363,6 +364,9 @@ export class PermissionClient implements PermissionEvaluator {
         cacheMap: new ExpiryMap(this.cacheTtl),
         maxBatchSize: MAX_BATCH_SIZE,
         batchScheduleFn: cb => setTimeout(cb, this.batchDelay),
+        cacheKeyFn: req => {
+          return btoa(JSON.stringify(req));
+        },
       },
     );
     this.authorizeLoaderMap.set(key, newLoader);
@@ -378,7 +382,11 @@ export class PermissionClient implements PermissionEvaluator {
       return loader;
     }
 
-    const newLoader = new DataLoader<QueryPermissionRequest, PolicyDecision>(
+    const newLoader = new DataLoader<
+      QueryPermissionRequest,
+      PolicyDecision,
+      string
+    >(
       async queries => {
         return this.makeRequest(
           queries,
@@ -391,6 +399,9 @@ export class PermissionClient implements PermissionEvaluator {
         cacheMap: new ExpiryMap(this.cacheTtl),
         maxBatchSize: MAX_BATCH_SIZE,
         batchScheduleFn: cb => setTimeout(cb, this.batchDelay),
+        cacheKeyFn: req => {
+          return btoa(JSON.stringify(req));
+        },
       },
     );
     this.authorizeConditionalLoaderMap.set(key, newLoader);
