@@ -235,6 +235,8 @@ export interface AppNodeSpec {
   // (undocumented)
   readonly id: string;
   // (undocumented)
+  readonly plugin?: FrontendPlugin;
+  // @deprecated (undocumented)
   readonly source?: FrontendPlugin;
 }
 
