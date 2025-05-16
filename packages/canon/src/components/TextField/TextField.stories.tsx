@@ -80,8 +80,8 @@ export const Sizes: Story = {
   },
   render: args => (
     <Flex direction="row" gap="4" style={{ width: '100%', maxWidth: '600px' }}>
-      <TextField {...args} size="small" icon={<Icon name="bug" />} />
-      <TextField {...args} size="medium" icon={<Icon name="bug" />} />
+      <TextField {...args} size="small" icon={<Icon name="sparkling" />} />
+      <TextField {...args} size="medium" icon={<Icon name="sparkling" />} />
     </Flex>
   ),
 };
