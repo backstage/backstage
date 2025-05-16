@@ -39,6 +39,7 @@ export interface TextProps {
           'primary' | 'secondary' | 'danger' | 'warning' | 'success'
         >
       >;
+  truncate?: boolean;
   className?: string;
   style?: CSSProperties;
 }

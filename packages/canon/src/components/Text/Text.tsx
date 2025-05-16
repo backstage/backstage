@@ -30,6 +30,7 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
       color = 'primary',
       style,
       className,
+      truncate,
       ...restProps
     } = props;
 
@@ -45,6 +46,7 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
         data-variant={responsiveVariant}
         data-weight={responsiveWeight}
         data-color={responsiveColor}
+        data-truncate={truncate}
         style={style}
         {...restProps}
       >
