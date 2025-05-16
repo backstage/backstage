@@ -18,27 +18,20 @@ import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { CatalogClient } from '@backstage/catalog-client';
 import {
   mockCredentials,
   mockServices,
   startTestBackend,
 } from '@backstage/backend-test-utils';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { scaffolderAutocompleteExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 
 import { scaffolderPlugin } from './ScaffolderPlugin';
 
-jest.mock('@backstage/catalog-client');
-
 describe('scaffolderPlugin', () => {
-  const getEntityByRefSpy = jest.spyOn(
-    CatalogClient.prototype,
-    'getEntityByRef',
-  );
-
-  const getMockTemplate = (): TemplateEntityV1beta3 => ({
+  const mockTemplateEntity = {
     apiVersion: 'scaffolder.backstage.io/v1beta3',
     kind: 'Template',
     metadata: {
@@ -100,19 +93,16 @@ describe('scaffolderPlugin', () => {
         },
       ],
     },
-  });
-
-  beforeEach(() => {
-    getEntityByRefSpy.mockImplementation(async () => getMockTemplate());
-  });
-
-  afterEach(() => {
-    getEntityByRefSpy.mockReset();
-  });
+  } satisfies TemplateEntityV1beta3;
 
   it('supports fetching template parameters schema', async () => {
     const { server } = await startTestBackend({
-      features: [scaffolderPlugin],
+      features: [
+        scaffolderPlugin,
+        catalogServiceMock.factory({
+          entities: [mockTemplateEntity],
+        }),
+      ],
     });
 
     const { body, status } = await request(server).get(
@@ -198,27 +188,26 @@ describe('scaffolderPlugin', () => {
       schema: {
         input: {
           type: 'object',
-          required: ['url'],
           properties: {
             url: {
-              title: 'Fetch URL',
+              type: 'string',
               description:
                 'Relative path or absolute URL pointing to the directory tree to fetch',
-              type: 'string',
             },
             targetPath: {
-              title: 'Target Path',
+              type: 'string',
               description:
                 'Target path within the working directory to download the contents to.',
-              type: 'string',
             },
             token: {
-              title: 'Token',
+              type: 'string',
               description:
                 'An optional token to use for authentication when reading the resources.',
-              type: 'string',
             },
           },
+          required: ['url'],
+          additionalProperties: false,
+          $schema: 'http://json-schema.org/draft-07/schema#',
         },
       },
     });
@@ -239,7 +228,12 @@ describe('scaffolderPlugin', () => {
 
   it('rejects creating tasks if template schema definition mismatches', async () => {
     const { server } = await startTestBackend({
-      features: [scaffolderPlugin],
+      features: [
+        scaffolderPlugin,
+        catalogServiceMock.factory({
+          entities: [mockTemplateEntity],
+        }),
+      ],
     });
 
     // Confirm no tasks are present
@@ -266,7 +260,12 @@ describe('scaffolderPlugin', () => {
 
   it('supports creating tasks', async () => {
     const { server } = await startTestBackend({
-      features: [scaffolderPlugin],
+      features: [
+        scaffolderPlugin,
+        catalogServiceMock.factory({
+          entities: [mockTemplateEntity],
+        }),
+      ],
     });
 
     // Confirm no tasks are present
@@ -357,76 +356,25 @@ describe('scaffolderPlugin', () => {
           },
           entityRef: 'template:default/create-react-app-template',
         },
-        user: {
-          entity: {
-            apiVersion: 'scaffolder.backstage.io/v1beta3',
-            kind: 'Template',
-            metadata: {
-              annotations: {
-                'backstage.io/managed-by-location': 'url:https://dev.azure.com',
-              },
-              description: 'Create a new CRA website project',
-              name: 'create-react-app-template',
-              tags: ['experimental', 'react', 'cra'],
-              title: 'Create React App Template',
-            },
-            spec: {
-              owner: 'web@example.com',
-              parameters: [
-                {
-                  properties: {
-                    requiredParameter1: {
-                      description: 'Required parameter 1',
-                      type: 'string',
-                    },
-                  },
-                  required: ['requiredParameter1'],
-                  type: 'object',
-                },
-                {
-                  'backstage:permissions': { tags: ['parameters-tag'] },
-                  properties: {
-                    requiredParameter2: {
-                      description: 'Required parameter 2',
-                      type: 'string',
-                    },
-                  },
-                  required: ['requiredParameter2'],
-                  type: 'object',
-                },
-              ],
-              steps: [
-                {
-                  action: 'debug:log',
-                  id: 'step-one',
-                  input: { message: 'hello' },
-                  name: 'First log',
-                },
-                {
-                  action: 'debug:log',
-                  'backstage:permissions': { tags: ['steps-tag'] },
-                  id: 'step-two',
-                  input: { message: 'world' },
-                  name: 'Second log',
-                },
-              ],
-              type: 'website',
-            },
-          },
-          ref: 'user:default/mock',
-        },
+        user: { ref: 'user:default/mock' },
       },
       status: 'completed',
     });
   });
 
   it('emits auditlog containing user identifier when backstage auth is passed', async () => {
-    const mockToken = mockCredentials.user.token();
     const mockLogger = mockServices.logger.mock();
+    mockLogger.child.mockReturnValue(mockLogger);
     const loggerSpy = jest.spyOn(mockLogger, 'info');
 
     const { server } = await startTestBackend({
-      features: [scaffolderPlugin, mockLogger.factory],
+      features: [
+        scaffolderPlugin,
+        catalogServiceMock.factory({
+          entities: [mockTemplateEntity],
+        }),
+        mockLogger.factory,
+      ],
     });
 
     // Confirm no tasks are present
@@ -438,7 +386,6 @@ describe('scaffolderPlugin', () => {
     // Create a task
     response = await request(server)
       .post('/api/scaffolder/v2/tasks')
-      .set('Authorization', `Bearer ${mockToken}`)
       .send({
         templateRef: stringifyEntityRef({
           kind: 'template',
@@ -466,17 +413,21 @@ describe('scaffolderPlugin', () => {
       });
     });
 
-    expect(loggerSpy).toHaveBeenCalledTimes(6);
+    expect(loggerSpy).toHaveBeenCalledTimes(10);
     expect(loggerSpy).toHaveBeenNthCalledWith(
-      2,
+      3,
       'Scaffolding task for template:default/create-react-app-template created by user:default/mock',
-      expect.any(Object),
     );
   });
 
   it('supports fetching a task by ID', async () => {
     const { server } = await startTestBackend({
-      features: [scaffolderPlugin],
+      features: [
+        scaffolderPlugin,
+        catalogServiceMock.factory({
+          entities: [mockTemplateEntity],
+        }),
+      ],
     });
 
     // Confirm no tasks are present
@@ -561,61 +512,6 @@ describe('scaffolderPlugin', () => {
           entityRef: 'template:default/create-react-app-template',
         },
         user: {
-          entity: {
-            apiVersion: 'scaffolder.backstage.io/v1beta3',
-            kind: 'Template',
-            metadata: {
-              annotations: {
-                'backstage.io/managed-by-location': 'url:https://dev.azure.com',
-              },
-              description: 'Create a new CRA website project',
-              name: 'create-react-app-template',
-              tags: ['experimental', 'react', 'cra'],
-              title: 'Create React App Template',
-            },
-            spec: {
-              owner: 'web@example.com',
-              parameters: [
-                {
-                  properties: {
-                    requiredParameter1: {
-                      description: 'Required parameter 1',
-                      type: 'string',
-                    },
-                  },
-                  required: ['requiredParameter1'],
-                  type: 'object',
-                },
-                {
-                  'backstage:permissions': { tags: ['parameters-tag'] },
-                  properties: {
-                    requiredParameter2: {
-                      description: 'Required parameter 2',
-                      type: 'string',
-                    },
-                  },
-                  required: ['requiredParameter2'],
-                  type: 'object',
-                },
-              ],
-              steps: [
-                {
-                  action: 'debug:log',
-                  id: 'step-one',
-                  input: { message: 'hello' },
-                  name: 'First log',
-                },
-                {
-                  action: 'debug:log',
-                  'backstage:permissions': { tags: ['steps-tag'] },
-                  id: 'step-two',
-                  input: { message: 'world' },
-                  name: 'Second log',
-                },
-              ],
-              type: 'website',
-            },
-          },
           ref: 'user:default/mock',
         },
       },
@@ -626,7 +522,12 @@ describe('scaffolderPlugin', () => {
 
   it('supports listing tasks using a filter', async () => {
     const { server } = await startTestBackend({
-      features: [scaffolderPlugin],
+      features: [
+        scaffolderPlugin,
+        catalogServiceMock.factory({
+          entities: [mockTemplateEntity],
+        }),
+      ],
     });
 
     // Confirm no tasks are present
@@ -735,7 +636,12 @@ describe('scaffolderPlugin', () => {
 
   it('supports canceling a task by ID', async () => {
     const { server } = await startTestBackend({
-      features: [scaffolderPlugin],
+      features: [
+        scaffolderPlugin,
+        catalogServiceMock.factory({
+          entities: [mockTemplateEntity],
+        }),
+      ],
     });
 
     // Confirm no tasks are present
@@ -786,7 +692,12 @@ describe('scaffolderPlugin', () => {
 
   it('supports retrying a task by ID', async () => {
     const { server } = await startTestBackend({
-      features: [scaffolderPlugin],
+      features: [
+        scaffolderPlugin,
+        catalogServiceMock.factory({
+          entities: [mockTemplateEntity],
+        }),
+      ],
     });
 
     // Confirm no tasks are present
@@ -846,7 +757,12 @@ describe('scaffolderPlugin', () => {
 
   it('supports fetching event stream for a task', async () => {
     const { server } = await startTestBackend({
-      features: [scaffolderPlugin],
+      features: [
+        scaffolderPlugin,
+        catalogServiceMock.factory({
+          entities: [mockTemplateEntity],
+        }),
+      ],
     });
 
     // Confirm no tasks are present
@@ -913,7 +829,12 @@ describe('scaffolderPlugin', () => {
 
   it('supports fetching event stream for a task with after query', async () => {
     const { server } = await startTestBackend({
-      features: [scaffolderPlugin],
+      features: [
+        scaffolderPlugin,
+        catalogServiceMock.factory({
+          entities: [mockTemplateEntity],
+        }),
+      ],
     });
 
     // Confirm no tasks are present
@@ -989,7 +910,12 @@ describe('scaffolderPlugin', () => {
 
   it('supports fetching events for a task', async () => {
     const { server } = await startTestBackend({
-      features: [scaffolderPlugin],
+      features: [
+        scaffolderPlugin,
+        catalogServiceMock.factory({
+          entities: [mockTemplateEntity],
+        }),
+      ],
     });
 
     // Confirm no tasks are present
@@ -1055,7 +981,12 @@ describe('scaffolderPlugin', () => {
 
   it('supports fetching events for a task with after query', async () => {
     const { server } = await startTestBackend({
-      features: [scaffolderPlugin],
+      features: [
+        scaffolderPlugin,
+        catalogServiceMock.factory({
+          entities: [mockTemplateEntity],
+        }),
+      ],
     });
 
     // Confirm no tasks are present
@@ -1124,16 +1055,20 @@ describe('scaffolderPlugin', () => {
   });
 
   it('supports performing a dry-run of a template', async () => {
-    const mockTemplate = getMockTemplate();
-
     const { server } = await startTestBackend({
-      features: [scaffolderPlugin],
+      features: [
+        scaffolderPlugin,
+        catalogServiceMock.factory({
+          entities: [mockTemplateEntity],
+        }),
+      ],
     });
 
     const { body, status } = await request(server)
       .post('/api/scaffolder/v2/dry-run')
+      .auth(mockCredentials.user.token(), { type: 'bearer' })
       .send({
-        template: mockTemplate,
+        template: mockTemplateEntity,
         values: {
           requiredParameter1: 'required-value-1',
           requiredParameter2: 'required-value-2',
@@ -1230,7 +1165,6 @@ describe('scaffolderPlugin', () => {
         },
       ],
     });
-    expect(getEntityByRefSpy).toHaveBeenCalledTimes(1);
   });
 
   it('supports performing an autocomplete for a given provider and resource', async () => {
