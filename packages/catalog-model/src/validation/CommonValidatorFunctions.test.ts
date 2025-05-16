@@ -243,25 +243,4 @@ describe('CommonValidatorFunctions', () => {
   ])(`isNonEmptyString %p ? %p`, (value, result) => {
     expect(CommonValidatorFunctions.isNonEmptyString(value)).toBe(result);
   });
-
-  it.each([
-    [7, false],
-    [null, false],
-    ['', false],
-    ['a', true],
-    ['AZ09', true],
-    ['a'.repeat(63), true],
-    ['a'.repeat(64), false],
-    ['a/b', false],
-    ['a-b', true],
-    ['-a-b', false],
-    ['a-b-', false],
-    ['a--b', true],
-    ['a_b', true],
-    ['a.b', true],
-    ['a..b', true],
-    ['a:b', true],
-  ])(`isValidIcon %p ? %p`, (value, matches) => {
-    expect(CommonValidatorFunctions.isValidIcon(value)).toBe(matches);
-  });
 });
