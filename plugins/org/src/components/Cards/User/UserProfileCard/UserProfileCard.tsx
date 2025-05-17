@@ -55,7 +55,6 @@ import { LinksGroup } from '../../Meta';
 import PersonIcon from '@material-ui/icons/Person';
 
 import { useCallback, useState } from 'react';
-import _ from 'lodash';
 
 const useStyles = makeStyles((theme: any) => ({
   closeButton: {
@@ -72,6 +71,7 @@ const useStyles = makeStyles((theme: any) => ({
     minHeight: 400,
   },
 }));
+
 const CardTitle = (props: { title?: string }) =>
   props.title ? (
     <Box display="flex" alignItems="center">
@@ -91,16 +91,13 @@ export const UserProfileCard = (props: {
 
   const classes = useStyles();
   const { entity: user } = useEntity<UserEntity>();
-  const [isViewAllGroupsDialogOpen, setIsViewAllGroupsDialogOpen] =
-    useState(false);
+  const [isAllGroupsDialogOpen, setIsAllGroupsDialogOpen] = useState(false);
 
-  const openViewAllGroupsDialog = useCallback(
-    () => setIsViewAllGroupsDialogOpen(true),
-    [],
-  );
-
-  const closeViewAllGroupsDialog = useCallback(
-    () => setIsViewAllGroupsDialogOpen(false),
+  const toggleAllGroupsDialog = useCallback(
+    () =>
+      setIsAllGroupsDialogOpen(
+        prevIsViewAllGroupsDialogOpen => !prevIsViewAllGroupsDialogOpen,
+      ),
     [],
   );
 
@@ -179,7 +176,7 @@ export const UserProfileCard = (props: {
                       ,
                       <BaseButton
                         className={classes.moreButton}
-                        onClick={openViewAllGroupsDialog}
+                        onClick={toggleAllGroupsDialog}
                         disableRipple
                       >
                         {` ...More (${
@@ -198,8 +195,8 @@ export const UserProfileCard = (props: {
 
       <Dialog
         classes={{ paper: classes.dialogPaper }}
-        open={isViewAllGroupsDialogOpen}
-        onClose={closeViewAllGroupsDialog}
+        open={isAllGroupsDialogOpen}
+        onClose={toggleAllGroupsDialog}
         scroll="paper"
         aria-labelledby="view-all-groups-dialog-title"
         maxWidth="md"
@@ -210,7 +207,7 @@ export const UserProfileCard = (props: {
           <IconButton
             className={classes.closeButton}
             aria-label="close"
-            onClick={closeViewAllGroupsDialog}
+            onClick={toggleAllGroupsDialog}
           >
             <CloseIcon />
           </IconButton>
@@ -219,7 +216,7 @@ export const UserProfileCard = (props: {
           <EntityRefLinks entityRefs={memberOfRelations} defaultKind="Group" />
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeViewAllGroupsDialog}>Close</Button>
+          <Button onClick={toggleAllGroupsDialog}>Close</Button>
         </DialogActions>
       </Dialog>
     </InfoCard>
