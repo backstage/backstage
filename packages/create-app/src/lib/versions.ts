@@ -42,6 +42,7 @@ import { version as coreComponents } from '../../../core-components/package.json
 import { version as corePluginApi } from '../../../core-plugin-api/package.json';
 import { version as e2eTestUtils } from '../../../e2e-test-utils/package.json';
 import { version as frontendDefaults } from '../../../frontend-defaults/package.json';
+import { version as frontendPluginApi } from '../../../frontend-plugin-api/package.json';
 import { version as integrationReact } from '../../../integration-react/package.json';
 import { version as testUtils } from '../../../test-utils/package.json';
 import { version as theme } from '../../../theme/package.json';
@@ -100,6 +101,7 @@ export const packageVersions = {
   '@backstage/core-plugin-api': corePluginApi,
   '@backstage/e2e-test-utils': e2eTestUtils,
   '@backstage/frontend-defaults': frontendDefaults,
+  '@backstage/frontend-plugin-api': frontendPluginApi,
   '@backstage/integration-react': integrationReact,
   '@backstage/plugin-api-docs': pluginApiDocs,
   '@backstage/plugin-app-backend': pluginAppBackend,

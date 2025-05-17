@@ -19,6 +19,20 @@ yarn install
 yarn backstage-create-app
 ```
 
+## Testing Changes Locally
+
+If you want to be able to test changes to `create-app` locally you can run the following command:
+
+```sh
+./path/to/your/backstage/fork/backstage/packages/create-app/bin/backstage-create-app
+```
+
+If your fork lives in `~/repos/forks` then it would be:
+
+```sh
+~/repos/forks/backstage/packages/create-app/bin/backstage-create-app
+```
+
 ## Documentation
 
 - [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)

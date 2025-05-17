@@ -15,23 +15,52 @@
  */
 
 import { createApp } from '@backstage/frontend-defaults';
+import apiDocsPlugin from '@backstage/plugin-api-docs/alpha';
 import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
+import catalogGraphPlugin from '@backstage/plugin-catalog-graph/alpha';
+import catalogImportPlugin from '@backstage/plugin-catalog-import/alpha';
 import homePlugin from '@backstage/plugin-home/alpha';
 import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
+import orgPlugin from '@backstage/plugin-org/alpha';
 import scaffolderPlugin from '@backstage/plugin-scaffolder/alpha';
 import searchPlugin from '@backstage/plugin-search/alpha';
+import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
+
+import { createFrontendModule, PageBlueprint } from '@backstage/frontend-plugin-api';
+import { Navigate } from 'react-router';
+
+
+// This just defaults to `/catalog` instead of a blank page
+const defaultPageExtension = PageBlueprint.make({
+  name: 'default',
+  params: {
+    defaultPath: '/',
+    loader: () => Promise.resolve(<Navigate to="catalog" />),
+  },
+});
 
 const app = createApp({
   features: [
-    appVisualizerPlugin,
+    searchPlugin,
+    orgPlugin,
     catalogPlugin,
+    apiDocsPlugin,
+    techdocsPlugin,
+    scaffolderPlugin,
     homePlugin,
     kubernetesPlugin,
-    scaffolderPlugin,
-    searchPlugin,
+    catalogGraphPlugin,
+    catalogImportPlugin,
+    appVisualizerPlugin,
     userSettingsPlugin,
+    createFrontendModule({
+      pluginId: 'app',
+      extensions: [
+        defaultPageExtension
+      ],
+    }),
   ],
 });
 
