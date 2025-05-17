@@ -90,7 +90,7 @@ export default createCliPlugin({
             lax: { type: 'boolean' },
             frontend: { type: 'boolean' },
             deprecated: { type: 'boolean' },
-            strict: { type: 'boolean', required: true },
+            strict: { type: 'boolean' },
             config: {
               type: 'string',
               array: true,
