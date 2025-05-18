@@ -16,11 +16,12 @@
 
 import { forwardRef } from 'react';
 import { Tabs as TabsPrimitive } from '@base-ui-components/react/tabs';
+import type { TabsRootWithoutOrientation } from './types';
 import clsx from 'clsx';
 
 const TabsRoot = forwardRef<
   React.ElementRef<typeof TabsPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>
+  TabsRootWithoutOrientation
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Root
     ref={ref}

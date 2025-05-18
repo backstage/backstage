@@ -16,7 +16,6 @@
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { Tabs } from './Tabs';
-import { Text } from '../../index';
 
 const meta = {
   title: 'Components/Tabs',
@@ -25,6 +24,11 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+const panelStyles = {
+  padding: 'var(--canon-space-3)',
+  fontSize: 'var(--canon-font-size-2)',
+};
 
 export const Default: Story = {
   args: {
@@ -35,15 +39,9 @@ export const Default: Story = {
           <Tabs.Tab>Tab 2</Tabs.Tab>
           <Tabs.Tab>Tab 3 With long title</Tabs.Tab>
         </Tabs.List>
-        <Tabs.Panel style={{ padding: 'var(--canon-space-3' }}>
-          <Text>Content for Tab 1</Text>
-        </Tabs.Panel>
-        <Tabs.Panel style={{ padding: 'var(--canon-space-3' }}>
-          <Text>Content for Tab 2</Text>
-        </Tabs.Panel>
-        <Tabs.Panel style={{ padding: 'var(--canon-space-3' }}>
-          <Text>Content for Tab 3</Text>
-        </Tabs.Panel>
+        <Tabs.Panel style={panelStyles}>Content for Tab 1</Tabs.Panel>
+        <Tabs.Panel style={panelStyles}>Content for Tab 2</Tabs.Panel>
+        <Tabs.Panel style={panelStyles}>Content for Tab 3</Tabs.Panel>
       </Tabs.Root>
     ),
   },

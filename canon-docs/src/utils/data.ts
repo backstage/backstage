@@ -122,6 +122,11 @@ export const components: Page[] = [
     status: 'inProgress',
   },
   {
+    title: 'Tabs',
+    slug: 'tabs',
+    status: 'alpha',
+  },
+  {
     title: 'Text',
     slug: 'text',
     status: 'alpha',

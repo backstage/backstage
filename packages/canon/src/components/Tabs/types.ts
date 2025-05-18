@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Tabs } from '@base-ui-components/react/tabs';
 
-export { Tabs } from './Tabs';
-export type { TabsRootWithoutOrientation } from './types';
+// We are not supporting the orientation prop, so we need to omit it
+
+/** @public */
+export interface TabsRootWithoutOrientation
+  extends Omit<
+    React.ComponentPropsWithoutRef<typeof Tabs.Root>,
+    'orientation'
+  > {}

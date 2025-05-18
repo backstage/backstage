@@ -1235,8 +1235,7 @@ export interface TableCellTextProps
 // @public (undocumented)
 export const Tabs: {
   Root: ForwardRefExoticComponent<
-    Omit<Tabs_2.Root.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
+    TabsRootWithoutOrientation & RefAttributes<HTMLDivElement>
   >;
   List: ForwardRefExoticComponent<
     Omit<Tabs_2.List.Props & RefAttributes<HTMLDivElement>, 'ref'> &
@@ -1251,6 +1250,13 @@ export const Tabs: {
       RefAttributes<HTMLDivElement>
   >;
 };
+
+// @public (undocumented)
+export interface TabsRootWithoutOrientation
+  extends Omit<
+    React.ComponentPropsWithoutRef<typeof Tabs_2.Root>,
+    'orientation'
+  > {}
 
 // @public (undocumented)
 const Text_2: ForwardRefExoticComponent<
