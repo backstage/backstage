@@ -24,7 +24,12 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
-import express from 'express';
+import express, {
+  NextFunction,
+  Request,
+  RequestHandler,
+  Response,
+} from 'express';
 import Router from 'express-promise-router';
 import { Duration } from 'luxon';
 
@@ -76,6 +81,7 @@ import {
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesProxy } from './KubernetesProxy';
 import { requirePermission } from '../auth/requirePermission';
+import { URL } from 'node:url';
 
 /**
  * @deprecated Please migrate to the new backend system as this will be removed in the future.
@@ -387,7 +393,11 @@ export class KubernetesBuilder {
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
-    router.use('/proxy', proxy.createRequestHandler({ permissionApi }));
+    router.use(
+      '/proxy',
+      webSocketHandler(authService),
+      proxy.createRequestHandler({ permissionApi }),
+    );
     router.use(express.json());
     router.use(
       createPermissionIntegrationRouter({
@@ -571,4 +581,49 @@ export class KubernetesBuilder {
   protected getAuthStrategyMap() {
     return this.authStrategyMap ?? this.buildAuthStrategyMap();
   }
+}
+
+function webSocketHandler(auth: AuthService): RequestHandler {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    if (req.headers['sec-websocket-protocol']) {
+      // Sending just the token in the protocol from browser isn't enough as it
+      // has to be removed from sec-websocket-protocol header while connecting to
+      // k8s api server which doesn't accept token as a protocol, and if deleted,
+      // the browser drops the connection since a protocol isn't negotiated
+      // (check https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket#protocols).
+      // This way, both the ends are happy when proxying
+
+      const [token, protocol, k8sToken] =
+        req.headers['sec-websocket-protocol'].split(', ');
+
+      try {
+        // Authenticate the request
+        await auth.authenticate(token);
+      } catch (err) {
+        res.status(401).json({ error: new Error('Unauthorized') });
+        return;
+      }
+
+      const url = new URL(`${req.protocol}://${req.hostname}${req.url}`);
+
+      if (
+        k8sToken !== String(undefined) &&
+        !!url.searchParams.get('authHeader')
+      ) {
+        req.headers[url.searchParams.get('authHeader')!] = k8sToken;
+      }
+
+      if (!!url.searchParams.get('cluster')) {
+        req.headers['Backstage-Kubernetes-Cluster'] =
+          url.searchParams.get('cluster')!;
+      }
+
+      req.headers.authorization = `Bearer ${token}`;
+      req.headers['sec-websocket-protocol'] = protocol;
+
+      next();
+    } else {
+      next();
+    }
+  };
 }

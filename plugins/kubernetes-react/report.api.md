@@ -16,12 +16,15 @@ import { DetectedError } from '@backstage/plugin-kubernetes-common';
 import { DetectedErrorsByCluster } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { Event as Event_2 } from 'kubernetes-models/v1';
+import { Event as Event_2 } from 'event-target-shim';
+import { Event as Event_3 } from 'kubernetes-models/v1';
+import { EventTarget as EventTarget_2 } from 'event-target-shim';
 import { FC } from 'react';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { GroupedResponses } from '@backstage/plugin-kubernetes-common';
 import { IContainer } from 'kubernetes-models/v1';
 import { IContainerStatus } from 'kubernetes-models/v1';
+import { IdentityApi } from '@backstage/core-plugin-api';
 import type { IIoK8sApimachineryPkgApisMetaV1ObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import type { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import { JsonObject } from '@backstage/types';
@@ -202,7 +205,7 @@ export const EventsContent: ({
 // @public
 export interface EventsContentProps {
   // (undocumented)
-  events: Event_2[];
+  events: Event_3[];
   // (undocumented)
   warningEventsOnly?: boolean;
 }
@@ -349,6 +352,8 @@ export interface KubernetesApi {
     path: string;
     init?: RequestInit;
   }): Promise<Response>;
+  // (undocumented)
+  proxyWs(options: { clusterName: string; path: string }): Promise<Socket>;
 }
 
 // @public (undocumented)
@@ -405,6 +410,7 @@ export const kubernetesAuthProvidersApiRef: ApiRef<KubernetesAuthProvidersApi>;
 // @public (undocumented)
 export class KubernetesBackendClient implements KubernetesApi {
   constructor(options: {
+    identityApi: IdentityApi;
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
     kubernetesAuthProvidersApi: KubernetesAuthProvidersApi;
@@ -440,6 +446,8 @@ export class KubernetesBackendClient implements KubernetesApi {
     path: string;
     init?: RequestInit;
   }): Promise<Response>;
+  // (undocumented)
+  proxyWs(options: { clusterName: string; path: string }): Promise<Socket>;
 }
 
 // @public (undocumented)
@@ -529,7 +537,7 @@ export interface KubernetesProxyApi {
     clusterName: string;
     involvedObjectName: string;
     namespace: string;
-  }): Promise<Event_2[]>;
+  }): Promise<Event_3[]>;
   // (undocumented)
   getPodLogs(request: {
     podName: string;
@@ -540,6 +548,14 @@ export interface KubernetesProxyApi {
   }): Promise<{
     text: string;
   }>;
+  // (undocumented)
+  streamPodLogs(request: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+    containerName: string;
+    previous?: boolean;
+  }): Promise<Socket>;
 }
 
 // @public (undocumented)
@@ -569,7 +585,7 @@ export class KubernetesProxyClient {
     clusterName: string;
     involvedObjectName: string;
     namespace: string;
-  }): Promise<Event_2[]>;
+  }): Promise<Event_3[]>;
   // (undocumented)
   getPodLogs({
     podName,
@@ -586,6 +602,20 @@ export class KubernetesProxyClient {
   }): Promise<{
     text: string;
   }>;
+  // (undocumented)
+  streamPodLogs({
+    podName,
+    namespace,
+    clusterName,
+    containerName,
+    previous,
+  }: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+    containerName: string;
+    previous?: boolean;
+  }): Promise<Socket>;
 }
 
 // @public (undocumented)
@@ -842,6 +872,72 @@ export const ServicesAccordions: ({}: ServicesAccordionsProps) => JSX_2.Element;
 export type ServicesAccordionsProps = {};
 
 // @public (undocumented)
+export const SOCK_EVENT_MAP: {
+  readonly CONNECT_ERROR: 'connect_error';
+  readonly CONNECTED: 'connected';
+  readonly CONNECTING: 'connecting';
+  readonly DISCONNECT_ERROR: 'disconnect_error';
+  readonly DISCONNECTED: 'disconnected';
+  readonly MESSAGE: 'message';
+};
+
+// @public (undocumented)
+export class Socket extends EventTarget_2<SocketEventMap> {
+  constructor(
+    url: string,
+    protocol: string | string[] | undefined,
+    autoReconnect?: boolean,
+    maxTries?: number,
+  );
+  // (undocumented)
+  autoReconnect: boolean;
+  // (undocumented)
+  static CLOSED: 3;
+  // (undocumented)
+  static CLOSING: 2;
+  // (undocumented)
+  connect(): void;
+  // (undocumented)
+  static CONNECTING: 0;
+  // (undocumented)
+  disconnect(callBack?: CallableFunction): Promise<void>;
+  // (undocumented)
+  hasBeenOpen: boolean;
+  // (undocumented)
+  hasReconnected: boolean;
+  // (undocumented)
+  isConnected(): boolean;
+  // (undocumented)
+  maxTries: number;
+  // (undocumented)
+  static OPEN: 1;
+  // (undocumented)
+  protocol: string | string[] | null | undefined;
+  // (undocumented)
+  reconnect(): void;
+  // (undocumented)
+  static RECONNECTING: 4;
+  // (undocumented)
+  send(data: string | ArrayBufferLike | Blob | ArrayBufferView): boolean;
+  // (undocumented)
+  get sockId(): number;
+  // (undocumented)
+  state: number;
+  // (undocumented)
+  url: URL;
+}
+
+// @public (undocumented)
+export type SocketEventMap = {
+  connecting: Event_2<'connecting'>;
+  connected: Event_2<'connected'>;
+  disconnected: Event_2<'disconnected'> & CloseEvent;
+  message: Event_2<'message'> & MessageEvent;
+  connect_error: Event_2<'connect_error'>;
+  disconnect_error: Event_2<'disconnect_error'>;
+};
+
+// @public (undocumented)
 export class StandardClusterLinksFormatter implements ClusterLinksFormatter {
   // (undocumented)
   formatClusterLink(options: ClusterLinksFormatterOptions): Promise<URL>;
@@ -859,7 +955,7 @@ export const useEvents: ({
   involvedObjectName,
   namespace,
   clusterName,
-}: EventsOptions) => AsyncState<Event_2[]>;
+}: EventsOptions) => AsyncState<Event_3[]>;
 
 // @public (undocumented)
 export const useKubernetesObjects: (
@@ -871,12 +967,11 @@ export const useKubernetesObjects: (
 export const useMatchingErrors: (matcher: ErrorMatcher) => DetectedError[];
 
 // @public
-export const usePodLogs: ({
-  containerScope,
-  previous,
-}: PodLogsOptions) => AsyncState<{
-  text: string;
-}>;
+export const usePodLogs: ({ containerScope, previous }: PodLogsOptions) => {
+  logs: string;
+  loading: boolean;
+  error: Error | null;
+};
 
 // @public
 export const usePodMetrics: (

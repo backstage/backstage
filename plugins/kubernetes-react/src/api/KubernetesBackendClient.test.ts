@@ -49,6 +49,7 @@ describe('KubernetesBackendClient', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     backendClient = new KubernetesBackendClient({
+      identityApi,
       discoveryApi: UrlPatternDiscovery.compile(
         'http://localhost:1234/api/{{ pluginId }}',
       ),

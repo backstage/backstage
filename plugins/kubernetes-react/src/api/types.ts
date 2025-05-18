@@ -23,6 +23,7 @@ import {
 import { createApiRef } from '@backstage/core-plugin-api';
 import { Event } from 'kubernetes-models/v1';
 import { JsonObject } from '@backstage/types';
+import { Socket } from '../utils/socket';
 
 /** @public */
 export const kubernetesApiRef = createApiRef<KubernetesApi>({
@@ -72,6 +73,7 @@ export interface KubernetesApi {
     path: string;
     init?: RequestInit;
   }): Promise<Response>;
+  proxyWs(options: { clusterName: string; path: string }): Promise<Socket>;
 }
 
 /** @public */
@@ -83,6 +85,13 @@ export interface KubernetesProxyApi {
     containerName: string;
     previous?: boolean;
   }): Promise<{ text: string }>;
+  streamPodLogs(request: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+    containerName: string;
+    previous?: boolean;
+  }): Promise<Socket>;
   deletePod(request: {
     podName: string;
     namespace: string;

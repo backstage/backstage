@@ -45,7 +45,7 @@ export const PodLogs: FC<PodLogsProps> = ({
   containerScope,
   previous,
 }: PodLogsProps) => {
-  const { value, error, loading } = usePodLogs({
+  const { logs, error, loading } = usePodLogs({
     containerScope,
     previous,
   });
@@ -68,15 +68,15 @@ export const PodLogs: FC<PodLogsProps> = ({
       >
         {loading && <Skeleton variant="rect" width="100%" height="100%" />}
         {!loading &&
-          value !== undefined &&
-          (value.text === '' ? (
+          logs !== undefined &&
+          (logs === '' ? (
             <EmptyState
               missing="data"
               title="No logs emitted"
               description="No logs were emitted by the container"
             />
           ) : (
-            <LogViewer text={value.text} />
+            <LogViewer text={logs} />
           ))}
       </Paper>
     </>

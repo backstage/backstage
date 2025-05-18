@@ -15,6 +15,7 @@
  */
 
 import type { JsonObject } from '@backstage/types';
+import { Event } from 'event-target-shim';
 
 /**
  * @public
@@ -32,3 +33,15 @@ export interface ClusterLinksFormatterOptions {
 export interface ClusterLinksFormatter {
   formatClusterLink(options: ClusterLinksFormatterOptions): Promise<URL>;
 }
+
+/**
+ * @public
+ */
+export type SocketEventMap = {
+  connecting: Event<'connecting'>;
+  connected: Event<'connected'>;
+  disconnected: Event<'disconnected'> & CloseEvent;
+  message: Event<'message'> & MessageEvent;
+  connect_error: Event<'connect_error'>;
+  disconnect_error: Event<'disconnect_error'>;
+};

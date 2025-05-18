@@ -541,3 +541,5 @@ scrollable
 severities
 intellij
 tsconfig
+websocket
+service

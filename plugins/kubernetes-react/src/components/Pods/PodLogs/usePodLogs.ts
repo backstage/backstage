@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import useAsync from 'react-use/esm/useAsync';
+import { useEffect, useState, useRef } from 'react';
 
 import { ContainerScope } from './types';
 import { useApi } from '@backstage/core-plugin-api';
 import { kubernetesProxyApiRef } from '../../../api/types';
+import { Socket } from '../../../utils/socket';
 
 /**
  * Arguments for usePodLogs
@@ -36,13 +37,66 @@ export interface PodLogsOptions {
  */
 export const usePodLogs = ({ containerScope, previous }: PodLogsOptions) => {
   const kubernetesProxyApi = useApi(kubernetesProxyApiRef);
-  return useAsync(async () => {
-    return await kubernetesProxyApi.getPodLogs({
-      podName: containerScope.podName,
-      namespace: containerScope.podNamespace,
-      containerName: containerScope.containerName,
-      clusterName: containerScope.cluster.name,
-      previous,
-    });
+
+  const isMountedRef = useRef(true);
+
+  const [stream, setStream] = useState<{
+    logs: string;
+    loading: boolean;
+    error: Error | null;
+  }>({ logs: '', loading: true, error: null });
+
+  useEffect(() => {
+    (async () => {
+      const sock = await kubernetesProxyApi.streamPodLogs({
+        podName: containerScope.podName,
+        namespace: containerScope.podNamespace,
+        containerName: containerScope.containerName,
+        clusterName: containerScope.cluster.name,
+        previous,
+      });
+
+      sock.addEventListener('message', (e: MessageEvent) => {
+        const { data } = e;
+        data.text().then((txt: string) => {
+          setStream(prev => ({ ...prev, logs: `${prev.logs}\n${txt}` }));
+        });
+      });
+
+      sock.addEventListener('connecting', () =>
+        setStream(prev => ({ ...prev, loading: true })),
+      );
+
+      sock.addEventListener('connected', () =>
+        setStream(prev => ({ ...prev, loading: false })),
+      );
+
+      sock.addEventListener('connect_error', () => {
+        setStream(prev => ({
+          ...prev,
+          error: new Error('Error while connecting'),
+        }));
+      });
+
+      sock.addEventListener('disconnect_error', () => {
+        setStream(prev => ({
+          ...prev,
+          error: new Error('Error while disconnecting'),
+        }));
+      });
+
+      if (isMountedRef.current) {
+        sock.connect();
+      } else if (sock.state === Socket.OPEN) {
+        await sock.disconnect();
+      }
+    })();
+
+    return () => {
+      isMountedRef.current = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(containerScope)]);
+
+  return stream;
 };
