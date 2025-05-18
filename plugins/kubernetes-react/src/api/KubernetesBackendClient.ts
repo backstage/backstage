@@ -21,22 +21,30 @@ import {
   WorkloadsByEntityRequest,
   CustomObjectsByEntityRequest,
 } from '@backstage/plugin-kubernetes-common';
-import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
+import {
+  DiscoveryApi,
+  FetchApi,
+  IdentityApi,
+} from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { KubernetesAuthProvidersApi } from '../kubernetes-auth-provider';
 import { NotFoundError } from '@backstage/errors';
+import { Socket } from '../utils/socket';
 
 /** @public */
 export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
+  private readonly identityApi: IdentityApi;
   private readonly kubernetesAuthProvidersApi: KubernetesAuthProvidersApi;
 
   constructor(options: {
+    identityApi: IdentityApi;
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
     kubernetesAuthProvidersApi: KubernetesAuthProvidersApi;
   }) {
+    this.identityApi = options.identityApi;
     this.discoveryApi = options.discoveryApi;
     this.fetchApi = options.fetchApi;
     this.kubernetesAuthProvidersApi = options.kubernetesAuthProvidersApi;
@@ -156,6 +164,48 @@ export class KubernetesBackendClient implements KubernetesApi {
       oidcTokenProvider,
     );
     return await this.fetchApi.fetch(url, { ...options.init, headers });
+  }
+
+  async proxyWs(options: {
+    clusterName: string;
+    path: string;
+  }): Promise<Socket> {
+    const { authProvider, oidcTokenProvider } = await this.getCluster(
+      options.clusterName,
+    );
+    const { token } = await this.identityApi.getCredentials();
+
+    const kubernetesCredentials = await this.getCredentials(
+      authProvider,
+      oidcTokenProvider,
+    );
+
+    const kubernetesAuthHeader =
+      KubernetesBackendClient.getKubernetesAuthHeaderByAuthProvider(
+        authProvider,
+        oidcTokenProvider,
+      );
+
+    const url = new URL(
+      `${await this.discoveryApi.getBaseUrl('kubernetes')}/proxy${
+        options.path
+      }`,
+    );
+
+    // To keep the connection alive and follow logs live
+    url.searchParams.append('follow', String(true));
+
+    // To instrument proper request headers on the backend
+    url.searchParams.append(`cluster`, options.clusterName);
+    url.searchParams.append('authHeader', kubernetesAuthHeader);
+
+    // Add the token to `Sec-Websocket-Protocol` header for auth as suggested
+    // https://github.com/backstage/backstage/issues/19581#issuecomment-1988167856
+    return new Socket(
+      url.href,
+      [String(token), 'binary.k8s.io', String(kubernetesCredentials.token)],
+      false,
+    );
   }
 
   private static getKubernetesHeaders(

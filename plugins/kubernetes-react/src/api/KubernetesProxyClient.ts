@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Socket } from '../utils/socket';
 import { KubernetesApi } from './types';
 import { Event } from 'kubernetes-models/v1';
 
@@ -109,6 +110,31 @@ export class KubernetesProxyClient {
       })
       .then(response => this.handleText(response))
       .then(text => ({ text }));
+  }
+
+  async streamPodLogs({
+    podName,
+    namespace,
+    clusterName,
+    containerName,
+    previous,
+  }: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+    containerName: string;
+    previous?: boolean;
+  }): Promise<Socket> {
+    const params = new URLSearchParams({
+      container: containerName,
+    });
+    if (previous) {
+      params.append('previous', '');
+    }
+    return await this.kubernetesApi.proxyWs({
+      clusterName: clusterName,
+      path: `/api/v1/namespaces/${namespace}/pods/${podName}/log?${params.toString()}`,
+    });
   }
 
   async deletePod({
