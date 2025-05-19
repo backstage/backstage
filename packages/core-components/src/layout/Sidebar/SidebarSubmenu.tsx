@@ -150,9 +150,11 @@ export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
         }}
       >
         <Paper>
-          <Typography variant="h5" component="div" className={classes.title}>
-            {props.title}
-          </Typography>
+          {props.title && (
+            <Typography variant="h5" component="div" className={classes.title}>
+              {props.title}
+            </Typography>
+          )}
           {props.children}
         </Paper>
       </Popper>
