@@ -30,6 +30,7 @@ export type SidebarOptions = {
 export type SubmenuOptions = {
   drawerWidthClosed?: number;
   drawerWidthOpen?: number;
+  subMenuType: 'default' | 'popper';
 };
 
 /** @internal */
@@ -83,12 +84,14 @@ export type SubmenuConfig = {
   drawerWidthClosed: number;
   drawerWidthOpen: number;
   defaultOpenDelayMs: number;
+  subMenuType: 'default' | 'popper';
 };
 
-export const submenuConfig = {
+export const submenuConfig: SubmenuConfig = {
   drawerWidthClosed: 0,
   drawerWidthOpen: 202,
   defaultOpenDelayMs: sidebarConfig.defaultOpenDelayMs + 200,
+  subMenuType: 'default',
 };
 
 export const makeSidebarSubmenuConfig = (
@@ -114,10 +117,17 @@ export const SidebarConfigContext = createContext<SidebarConfigContextType>({
 export type SidebarItemWithSubmenuContextType = {
   isHoveredOn: boolean;
   setIsHoveredOn: Dispatch<SetStateAction<boolean>>;
+  anchorEl: HTMLElement | null;
+  popperKey: number;
+  setPopperKey: Dispatch<SetStateAction<number>>;
 };
 
 export const SidebarItemWithSubmenuContext =
   createContext<SidebarItemWithSubmenuContextType>({
     isHoveredOn: false,
     setIsHoveredOn: () => {},
+    anchorEl: null,
+    // State to force re-render of popper to recalculate position for dropdown items
+    popperKey: 0,
+    setPopperKey: () => {},
   });

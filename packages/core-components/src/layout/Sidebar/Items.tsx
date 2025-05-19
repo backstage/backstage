@@ -47,11 +47,12 @@ import {
   useContext,
   useMemo,
   useState,
-  MouseEvent,
   ChangeEvent,
   ReactElement,
   createElement,
+  TouchEvent,
 } from 'react';
+import type { MouseEvent } from 'react';
 
 import {
   Link,
@@ -510,9 +511,18 @@ const SidebarItemWithSubmenu = ({
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [popperKey, setPopperKey] = useState(0);
 
-  const handleMouseEnter = () => {
+  const handleMouseEnter = (
+    e:
+      | MouseEvent<HTMLDivElement, globalThis.MouseEvent>
+      | TouchEvent<HTMLDivElement>,
+  ) => {
     setIsHoveredOn(true);
+    if (e.currentTarget instanceof HTMLElement) {
+      setAnchorEl(e.currentTarget);
+    }
   };
   const handleMouseLeave = () => {
     setIsHoveredOn(false);
@@ -538,6 +548,9 @@ const SidebarItemWithSubmenu = ({
       value={{
         isHoveredOn,
         setIsHoveredOn,
+        anchorEl,
+        popperKey,
+        setPopperKey,
       }}
     >
       <div

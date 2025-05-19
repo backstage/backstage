@@ -158,7 +158,10 @@ export type SidebarSubmenuItemProps = {
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   const { title, subtitle, to, icon: Icon, dropdownItems, exact } = props;
   const classes = useStyles();
-  const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
+  const { setIsHoveredOn, setPopperKey } = useContext(
+    SidebarItemWithSubmenuContext,
+  );
+
   const closeSubmenu = () => {
     setIsHoveredOn(false);
   };
@@ -170,8 +173,16 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
     props.initialShowDropdown ?? false,
   );
   const handleClickDropdown = () => {
+    // Force rerender of popper to recalculate position with dropdown items
+    /* Note: The setPopperKey state update should be run before setShowDropDown to 
+       ensure the popper is rerendered before the dropdown items are shown.
+       This avoids a flicker effect when the dropdown items are displayed,
+       and the popper disappearing when navigating back previous submenu items.
+    */
+    setPopperKey(prevKey => prevKey + 1);
     setShowDropDown(!showDropDown);
   };
+
   if (dropdownItems !== undefined) {
     dropdownItems.some(item => {
       const resolvedPath = resolvePath(item.to);

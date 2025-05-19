@@ -26,6 +26,8 @@ import {
   SubmenuConfig,
 } from './config';
 import { useSidebarOpenState } from './SidebarOpenStateContext';
+import Paper from '@material-ui/core/Paper';
+import Popper from '@material-ui/core/Popper';
 
 /** @public */
 export type SidebarSubmenuClassKey = 'root' | 'drawer' | 'drawerOpen' | 'title';
@@ -120,12 +122,42 @@ export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
     : sidebarConfig.drawerWidthClosed;
   const classes = useStyles({ left, submenuConfig });
 
-  const { isHoveredOn } = useContext(SidebarItemWithSubmenuContext);
-  const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
+  const { isHoveredOn, anchorEl } = useContext(SidebarItemWithSubmenuContext);
+  const [isSubmenuOpen, setIsSubmenuOpen] = useState(true);
 
   useEffect(() => {
     setIsSubmenuOpen(isHoveredOn);
   }, [isHoveredOn]);
+
+  if (submenuConfig.subMenuType === 'popper') {
+    return (
+      <Popper
+        open={isHoveredOn}
+        anchorEl={anchorEl}
+        placement="right-start"
+        transition
+        style={{
+          width: submenuConfig.drawerWidthOpen,
+        }}
+        modifiers={{
+          flip: {
+            enabled: true,
+          },
+          preventOverflow: {
+            enabled: true,
+            boundariesElement: 'viewport',
+          },
+        }}
+      >
+        <Paper>
+          <Typography variant="h5" component="div" className={classes.title}>
+            {props.title}
+          </Typography>
+          {props.children}
+        </Paper>
+      </Popper>
+    );
+  }
 
   return (
     <Box
