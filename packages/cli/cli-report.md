@@ -488,7 +488,7 @@ Options:
 ### `backstage-cli repo lint`
 
 ```
-Usage: program [options]
+Usage: program [options] [command]
 
 Options:
   --fix
