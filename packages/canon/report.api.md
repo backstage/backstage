@@ -23,6 +23,7 @@ import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
 import { Table as Table_2 } from '@tanstack/react-table';
+import { Tabs as Tabs_2 } from '@base-ui-components/react/tabs';
 import { TdHTMLAttributes } from 'react';
 import { ThHTMLAttributes } from 'react';
 import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
@@ -1230,6 +1231,32 @@ export interface TableCellTextProps
   // (undocumented)
   title: string;
 }
+
+// @public (undocumented)
+export const Tabs: {
+  Root: ForwardRefExoticComponent<
+    TabsRootWithoutOrientation & RefAttributes<HTMLDivElement>
+  >;
+  List: ForwardRefExoticComponent<
+    Omit<Tabs_2.List.Props & RefAttributes<HTMLDivElement>, 'ref'> &
+      RefAttributes<HTMLDivElement>
+  >;
+  Tab: ForwardRefExoticComponent<
+    Omit<Tabs_2.Tab.Props & RefAttributes<Element>, 'ref'> &
+      RefAttributes<Element>
+  >;
+  Panel: ForwardRefExoticComponent<
+    Omit<Tabs_2.Panel.Props & RefAttributes<HTMLDivElement>, 'ref'> &
+      RefAttributes<HTMLDivElement>
+  >;
+};
+
+// @public (undocumented)
+export interface TabsRootWithoutOrientation
+  extends Omit<
+    React.ComponentPropsWithoutRef<typeof Tabs_2.Root>,
+    'orientation'
+  > {}
 
 // @public (undocumented)
 const Text_2: ForwardRefExoticComponent<
