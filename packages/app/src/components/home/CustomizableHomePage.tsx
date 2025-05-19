@@ -28,6 +28,7 @@ import { HomePageSearchBar } from '@backstage/plugin-search';
 import Grid from '@material-ui/core/Grid';
 
 import { tools, useLogoStyles } from './shared';
+import { WelcomeTitle } from '@backstage/plugin-home';
 
 const defaultConfig = [
   {
@@ -81,6 +82,7 @@ export const CustomizableHomePage = () => {
         </Grid>
 
         <CustomHomepageGrid config={defaultConfig}>
+          <WelcomeTitle variant="h1" />
           <HomePageSearchBar />
           <HomePageRecentlyVisited />
           <HomePageTopVisited />
