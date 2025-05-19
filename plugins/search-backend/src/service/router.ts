@@ -201,6 +201,17 @@ export async function createRouter(
         // re-throw and let the default error handler middleware captures it and serializes it with the right response code on the standard form
         throw error;
       }
+      if (query.term.indexOf('<') !== -1) {
+        // Search queries that contain '<' are likely to be a SQL injection attack, log the error and return an empty response
+        const message = (error as any)?.message || '';
+        if (
+          typeof message === 'string' &&
+          message.indexOf('syntax error in tsquery') !== -1
+        ) {
+          logger.info('Search query skipped due to tsquery syntax error.');
+          return; // Do not throw an error and just skip the search
+        }
+      }
 
       throw new Error(
         `There was a problem performing the search query: ${error.message}`,
