@@ -524,6 +524,14 @@
   font-weight: var(--canon-font-weight-bold);
 }
 
+.canon-Heading[data-color="primary"] {
+  color: var(--canon-fg-primary);
+}
+
+.canon-Heading[data-color="secondary"] {
+  color: var(--canon-fg-secondary);
+}
+
 .canon-Heading[data-truncate] {
   text-overflow: ellipsis;
   white-space: nowrap;

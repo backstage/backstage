@@ -14,46 +14,41 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
+import { forwardRef, useRef } from 'react';
 import clsx from 'clsx';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
-
+import { useRender } from '@base-ui-components/react/use-render';
 import type { HeadingProps } from './types';
 
 /** @public */
 export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
   (props, ref) => {
     const {
-      children,
       variant = 'title1',
-      as = 'h1',
+      color = 'primary',
       truncate,
       className,
+      render = <h1 />,
       ...restProps
     } = props;
 
-    // Get the responsive value for the variant
     const responsiveVariant = useResponsiveValue(variant);
+    const responsiveColor = useResponsiveValue(color);
+    const internalRef = useRef<HTMLElement | null>(null);
 
-    // Determine the component to render based on the variant
-    let Component = as;
-    if (variant === 'title2') Component = 'h2';
-    if (variant === 'title3') Component = 'h3';
-    if (variant === 'title4') Component = 'h4';
-    if (variant === 'title5') Component = 'h5';
-    if (as) Component = as;
+    const { renderElement } = useRender({
+      render,
+      props: {
+        className: clsx('canon-Heading', className),
+        ['data-variant']: responsiveVariant,
+        ['data-color']: responsiveColor,
+        ['data-truncate']: truncate,
+        ...restProps,
+      },
+      refs: [ref, internalRef],
+    });
 
-    return (
-      <Component
-        ref={ref}
-        className={clsx('canon-Heading', className)}
-        data-variant={responsiveVariant}
-        data-truncate={truncate}
-        {...restProps}
-      >
-        {children}
-      </Component>
-    );
+    return renderElement();
   },
 );
 
