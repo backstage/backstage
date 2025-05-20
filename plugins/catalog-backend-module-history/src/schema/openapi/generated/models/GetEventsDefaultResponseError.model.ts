@@ -19,12 +19,9 @@
 // ******************************************************************
 
 /**
- * Pagination information. If the \"cursor\" property is set, it can be used for requesting subsequent pages of data.
  * @public
  */
-export interface EventsPageInfo {
-  /**
-   * The cursor for the next set of results.
-   */
-  cursor?: string;
+export interface GetEventsDefaultResponseError {
+  name: string;
+  message: string;
 }

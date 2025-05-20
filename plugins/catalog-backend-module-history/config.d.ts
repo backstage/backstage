@@ -32,7 +32,7 @@ export interface Config {
        * this applies to all event types, meaning that the creation events will
        * be removed first.
        */
-      maxRetentionTime?: HumanDuration | string;
+      eventMaxRetentionTime?: HumanDuration | string;
 
       /**
        * The amount of time that catalog history events are retained, after the
@@ -50,7 +50,19 @@ export interface Config {
        * ref. This way you can keep track of entities being re-appropriated in
        * a new place after deletion etc.
        */
-      retentionTimeAfterDeletion?: HumanDuration | string;
+      eventRetentionTimeAfterDeletion?: HumanDuration | string;
+
+      /**
+       * The amount of time that a subscription will wait for an acknowledgement
+       * before a delivery is considered failed and gets marked for re-delivery.
+       */
+      subscriptionAckTimeout?: HumanDuration | string;
+
+      /**
+       * The amount of time that catalog history subscriptions are kept around
+       * after no activity is detected on them.
+       */
+      subscriptionRetentionTimeAfterInactive?: HumanDuration | string;
     };
   };
 }

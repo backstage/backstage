@@ -30,6 +30,7 @@ import { createMockEntityProvider } from '../__fixtures__/createMockEntityProvid
 import { initializeDatabaseAfterCatalog } from '../database/migrations';
 import { createRouter } from './createRouter';
 import { parseCursor } from './endpoints/GetEvents.utils';
+import { getHistoryConfig } from '../config';
 
 jest.setTimeout(60_000);
 
@@ -56,6 +57,7 @@ describe('createRouter', () => {
           httpRouter.use(
             await createRouter({
               knexPromise: dbPromise,
+              historyConfig: getHistoryConfig(),
               shutdownSignal: new AbortController().signal,
             }),
           );
@@ -319,15 +321,35 @@ describe('createRouter', () => {
         body: { items: [], pageInfo: {} },
       });
 
-      // Read filtering entity ref, blocking, from last. Since there by
-      // definition are no new entities after "last" yet, it should return a 202
-      blocked = request(backend.server)
+      // Read filtering by entity ref, blocking, from last. Since there by
+      // definition are no new entities after "last" yet, it immediately returns
+      // an empty response and a cursor that is used to make a blocking request
+      // for the next data.
+      response = await request(backend.server)
         .get('/api/catalog/history/v1/events')
         .query({
           block: true,
           afterEventId: 'last',
           entityRef: 'component:default/foo',
-        })
+        });
+      expect(response).toMatchObject({
+        status: 202,
+        body: { items: [], pageInfo: { cursor: expect.any(String) } },
+      });
+      expect(parseCursor(response.body.pageInfo.cursor)).toEqual({
+        version: 1,
+        afterEventId: '2',
+        entityRef: 'component:default/foo',
+        entityId: undefined,
+        order: 'asc',
+        limit: 100,
+        block: true,
+      });
+
+      // The immediately following request using that cursor should block
+      blocked = request(backend.server)
+        .get('/api/catalog/history/v1/events')
+        .query({ cursor: response.body.pageInfo.cursor })
         .then(r => r);
 
       // Soon after, remove the entity

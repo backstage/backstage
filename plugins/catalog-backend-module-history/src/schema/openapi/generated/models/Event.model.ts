@@ -19,6 +19,7 @@
 // ******************************************************************
 
 /**
+ * A single catalog event.
  * @public
  */
 export interface Event {

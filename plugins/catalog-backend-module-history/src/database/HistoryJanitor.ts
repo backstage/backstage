@@ -14,48 +14,28 @@
  * limitations under the License.
  */
 
-import {
-  RootConfigService,
-  SchedulerService,
-} from '@backstage/backend-plugin-api';
-import { readDurationFromConfig } from '@backstage/config';
-import { HumanDuration, durationToMilliseconds } from '@backstage/types';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
+import { HistoryConfig } from '../config';
+import { knexRawNowMinus } from './util';
 
 export class HistoryJanitor {
   #knexPromise: Promise<Knex>;
-  #maxRetentionTime?: HumanDuration;
-  #retentionTimeAfterDeletion?: HumanDuration;
+  #historyConfig: HistoryConfig;
 
   static async create(options: {
     knexPromise: Promise<Knex>;
-    config: RootConfigService;
+    historyConfig: HistoryConfig;
     scheduler: SchedulerService;
   }): Promise<HistoryJanitor> {
-    const maxRetentionTimeKey = 'catalog.history.maxRetentionTime';
-    const maxRetentionTime = options.config.has(maxRetentionTimeKey)
-      ? readDurationFromConfig(options.config, { key: maxRetentionTimeKey })
-      : undefined;
-
-    const retentionTimeAfterDeletionKey =
-      'catalog.history.retentionTimeAfterDeletion';
-    const retentionTimeAfterDeletion = options.config.has(
-      retentionTimeAfterDeletionKey,
-    )
-      ? readDurationFromConfig(options.config, {
-          key: retentionTimeAfterDeletionKey,
-        })
-      : undefined;
-
     const janitor = new HistoryJanitor({
       knexPromise: options.knexPromise,
-      maxRetentionTime,
-      retentionTimeAfterDeletion,
+      historyConfig: options.historyConfig,
     });
 
     await options.scheduler.scheduleTask({
       id: 'catalog-history-janitor',
-      frequency: { minutes: 10 },
+      frequency: { seconds: 30 },
       timeout: { minutes: 10 },
       fn: janitor.runOnce.bind(janitor),
     });
@@ -65,12 +45,10 @@ export class HistoryJanitor {
 
   constructor(options: {
     knexPromise: Promise<Knex>;
-    maxRetentionTime?: HumanDuration;
-    retentionTimeAfterDeletion?: HumanDuration;
+    historyConfig: HistoryConfig;
   }) {
     this.#knexPromise = options.knexPromise;
-    this.#maxRetentionTime = options.maxRetentionTime;
-    this.#retentionTimeAfterDeletion = options.retentionTimeAfterDeletion;
+    this.#historyConfig = options.historyConfig;
   }
 
   async runOnce(signal?: AbortSignal): Promise<void> {
@@ -80,18 +58,20 @@ export class HistoryJanitor {
 
     const knex = await this.#knexPromise;
 
-    if (this.#maxRetentionTime) {
-      const deadline = new Date(
-        Date.now() - durationToMilliseconds(this.#maxRetentionTime),
+    if (this.#historyConfig.eventMaxRetentionTime) {
+      const deadline = knexRawNowMinus(
+        knex,
+        this.#historyConfig.eventMaxRetentionTime,
       );
       await knex('module_history__events')
         .where('event_at', '<', deadline)
         .delete();
     }
 
-    if (this.#retentionTimeAfterDeletion) {
-      const deadline = new Date(
-        Date.now() - durationToMilliseconds(this.#retentionTimeAfterDeletion),
+    if (this.#historyConfig.eventRetentionTimeAfterDeletion) {
+      const deadline = knexRawNowMinus(
+        knex,
+        this.#historyConfig.eventRetentionTimeAfterDeletion,
       );
       await knex
         .with(
@@ -122,6 +102,30 @@ export class HistoryJanitor {
             .from('deleted')
             .where('deleted.newest_event_at', '<', deadline),
         )
+        .delete();
+    }
+
+    // If a receiver did not acknowledge completion of a set of events, we
+    // consider it a failed delivery and consider re-sending them to a different
+    // receiver.
+    await knex('module_history__subscriptions')
+      .update({
+        state: 'idle',
+        ack_id: null,
+        ack_timeout_at: null,
+      })
+      .where('state', '=', 'waiting')
+      .andWhere('ack_timeout_at', '<', knex.fn.now());
+
+    // Delete subscriptions that have been inactive for a while
+    if (this.#historyConfig.subscriptionRetentionTimeAfterInactive) {
+      const deadline = knexRawNowMinus(
+        knex,
+        this.#historyConfig.subscriptionRetentionTimeAfterInactive,
+      );
+      await knex('module_history__subscriptions')
+        .where('state', '=', 'idle')
+        .andWhere('active_at', '<', deadline)
         .delete();
     }
   }
