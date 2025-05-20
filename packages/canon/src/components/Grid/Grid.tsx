@@ -20,11 +20,13 @@ import { extractProps } from '../../utils/extractProps';
 import { gridItemPropDefs, gridPropDefs } from './Grid.props';
 import clsx from 'clsx';
 import type { GridItemProps, GridProps } from './types';
+import { spacingPropDefs } from '../../props/spacing.props';
 
-const GridBase = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
+const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
   const propDefs = {
     ...gapPropDefs,
     ...gridPropDefs,
+    ...spacingPropDefs,
   };
 
   const { className, style } = extractProps(props, propDefs);
@@ -53,4 +55,7 @@ const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
 });
 
 /** @public */
-export const Grid = Object.assign(GridBase, { Item: GridItem });
+export const Grid = {
+  Root: GridRoot,
+  Item: GridItem,
+};

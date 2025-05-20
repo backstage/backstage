@@ -62,7 +62,9 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <DecorativeBox />, <DecorativeBox />, <DecorativeBox />
+        <DecorativeBox />
+        <DecorativeBox />
+        <DecorativeBox />
       </>
     ),
   },
@@ -70,23 +72,15 @@ export const Default: Story = {
 
 export const ColumnDirection: Story = {
   args: {
+    ...Default.args,
     direction: 'column',
-    children: (
-      <>
-        <DecorativeBox />, <DecorativeBox />, <DecorativeBox />
-      </>
-    ),
   },
 };
 
 export const RowDirection: Story = {
   args: {
+    ...Default.args,
     direction: 'row',
-    children: (
-      <>
-        <DecorativeBox />, <DecorativeBox />, <DecorativeBox />
-      </>
-    ),
   },
 };
 
