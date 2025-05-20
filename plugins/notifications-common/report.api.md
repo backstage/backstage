@@ -12,14 +12,6 @@ export type ChannelSetting = {
 };
 
 // @public (undocumented)
-export const generateSettingsHash: (
-  user: string,
-  channel: string,
-  origin: string,
-  topic: string | null,
-) => string;
-
-// @public (undocumented)
 export const getProcessorFiltersFromConfig: (
   config: Config,
 ) => NotificationProcessorFilters;
