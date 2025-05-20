@@ -41,6 +41,7 @@ export interface KubernetesObjects {
 export const useKubernetesObjects = (
   entity: Entity,
   intervalMs: number = 10000,
+  customLabelSelectorAnnotation?: string,
 ): KubernetesObjects => {
   const kubernetesApi = useApi(kubernetesApiRef);
   const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
@@ -53,8 +54,14 @@ export const useKubernetesObjects = (
     return await kubernetesApi.getObjectsByEntity({
       auth,
       entity,
+      customLabelSelectorAnnotation,
     });
-  }, [kubernetesApi, entity, kubernetesAuthProvidersApi]);
+  }, [
+    kubernetesApi,
+    entity,
+    kubernetesAuthProvidersApi,
+    customLabelSelectorAnnotation,
+  ]);
 
   const { value, loading, error, retry } = useAsyncRetry(
     () => getObjects(),

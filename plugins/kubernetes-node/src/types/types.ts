@@ -52,6 +52,7 @@ export interface KubernetesObjectsProvider {
 export interface KubernetesObjectsByEntity {
   entity: Entity;
   auth: KubernetesRequestAuth;
+  customLabelSelectorAnnotation?: string;
 }
 /**
  *

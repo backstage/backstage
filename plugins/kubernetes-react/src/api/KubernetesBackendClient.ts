@@ -114,6 +114,7 @@ export class KubernetesBackendClient implements KubernetesApi {
     return await this.postRequired('/resources/workloads/query', {
       auth: request.auth,
       entityRef: stringifyEntityRef(request.entity),
+      customLabelSelectorAnnotation: request.customLabelSelectorAnnotation,
     });
   }
 
@@ -124,6 +125,7 @@ export class KubernetesBackendClient implements KubernetesApi {
       entityRef: stringifyEntityRef(request.entity),
       auth: request.auth,
       customResources: request.customResources,
+      customLabelSelectorAnnotation: request.customLabelSelectorAnnotation,
     });
   }
 

@@ -235,7 +235,12 @@ export class KubernetesFanOutHandler implements KubernetesObjectsProvider {
   }
 
   async getCustomResourcesByEntity(
-    { entity, auth, customResources }: CustomResourcesByEntity,
+    {
+      entity,
+      auth,
+      customResources,
+      customLabelSelectorAnnotation,
+    }: CustomResourcesByEntity,
     options: { credentials: BackstageCredentials },
   ): Promise<ObjectsByEntityResponse> {
     // Don't fetch the default object types only the provided custom resources
@@ -245,11 +250,12 @@ export class KubernetesFanOutHandler implements KubernetesObjectsProvider {
       { credentials: options.credentials },
       new Set<ObjectToFetch>(),
       customResources,
+      customLabelSelectorAnnotation,
     );
   }
 
   async getKubernetesObjectsByEntity(
-    { entity, auth }: KubernetesObjectsByEntity,
+    { entity, auth, customLabelSelectorAnnotation }: KubernetesObjectsByEntity,
     options: { credentials: BackstageCredentials },
   ): Promise<ObjectsByEntityResponse> {
     return this.fanOutRequests(
@@ -259,6 +265,8 @@ export class KubernetesFanOutHandler implements KubernetesObjectsProvider {
         credentials: options.credentials,
       },
       this.objectTypesToFetch,
+      undefined,
+      customLabelSelectorAnnotation,
     );
   }
 
@@ -268,6 +276,7 @@ export class KubernetesFanOutHandler implements KubernetesObjectsProvider {
     options: { credentials: BackstageCredentials },
     objectTypesToFetch: Set<ObjectToFetch>,
     customResources?: CustomResourceMatcher[],
+    customLabelSelectorAnnotation?: string,
   ) {
     const entityName =
       entity.metadata?.annotations?.['backstage.io/kubernetes-id'] ||
@@ -287,7 +296,8 @@ export class KubernetesFanOutHandler implements KubernetesObjectsProvider {
 
     const labelSelector: string =
       entity.metadata?.annotations?.[
-        KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION
+        customLabelSelectorAnnotation ||
+          KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION
       ] || `${KUBERNETES_ANNOTATION}=${entityName}`;
 
     const namespace =

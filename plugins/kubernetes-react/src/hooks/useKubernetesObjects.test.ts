@@ -135,6 +135,30 @@ describe('useKubernetesObjects', () => {
     });
   });
 
+  it('should call with customLabelSelectorAnnotation', async () => {
+    mockGenerateAuth.mockResolvedValue(entityWithAuthToken.auth);
+    (useApi as any).mockReturnValue({
+      getObjectsByEntity:
+        mockGetObjectsByEntity.mockResolvedValue(mockResponse),
+    });
+    const { result } = renderHook(() =>
+      useKubernetesObjects(entity, 1000, 'tekton.dev/selector-label'),
+    );
+
+    expect(result.current.loading).toEqual(true);
+
+    await waitFor(() => {
+      expect(result.current.error).toBeUndefined();
+      expect(result.current.loading).toEqual(false);
+      expect(result.current.kubernetesObjects).toStrictEqual(mockResponse);
+
+      expect(mockGetObjectsByEntity).toHaveBeenLastCalledWith({
+        ...entityWithAuthToken,
+        customLabelSelectorAnnotation: 'tekton.dev/selector-label',
+      });
+    });
+  });
+
   describe('when retrying', () => {
     it('should reset error after generateAuth has failed and then succeeded', async () => {
       (useApi as any).mockReturnValue({

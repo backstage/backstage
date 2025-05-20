@@ -149,6 +149,8 @@ export interface CustomObjectsByEntityRequest {
   // (undocumented)
   auth: KubernetesRequestAuth;
   // (undocumented)
+  customLabelSelectorAnnotation?: string;
+  // (undocumented)
   customResources: CustomResourceMatcher[];
   // (undocumented)
   entity: Entity;
@@ -354,6 +356,8 @@ export interface KubernetesRequestBody {
   // (undocumented)
   auth?: KubernetesRequestAuth;
   // (undocumented)
+  customLabelSelectorAnnotation?: string;
+  // (undocumented)
   entity: Entity;
 }
 
@@ -485,6 +489,8 @@ export interface StatusError {
 export interface WorkloadsByEntityRequest {
   // (undocumented)
   auth: KubernetesRequestAuth;
+  // (undocumented)
+  customLabelSelectorAnnotation?: string;
   // (undocumented)
   entity: Entity;
 }

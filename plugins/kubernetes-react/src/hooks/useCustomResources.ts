@@ -37,6 +37,7 @@ export const useCustomResources = (
   entity: Entity,
   customResourceMatchers: CustomResourceMatcher[],
   intervalMs: number = 10000,
+  customLabelSelectorAnnotation?: string,
 ): KubernetesObjects => {
   const kubernetesApi = useApi(kubernetesApiRef);
   const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
@@ -52,10 +53,17 @@ export const useCustomResources = (
         auth,
         customResources: customResourceMatchers,
         entity,
+        customLabelSelectorAnnotation,
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [kubernetesApi, entity, kubernetesAuthProvidersApi, matchersString],
+    [
+      kubernetesApi,
+      entity,
+      kubernetesAuthProvidersApi,
+      matchersString,
+      customLabelSelectorAnnotation,
+    ],
   );
 
   const { value, loading, error, retry } = useAsyncRetry(

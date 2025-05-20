@@ -146,6 +146,8 @@ export interface KubernetesObjectsByEntity {
   // (undocumented)
   auth: KubernetesRequestAuth;
   // (undocumented)
+  customLabelSelectorAnnotation?: string;
+  // (undocumented)
   entity: Entity;
 }
 
