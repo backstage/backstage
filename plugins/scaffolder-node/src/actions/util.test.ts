@@ -245,25 +245,29 @@ describe('scaffolder action utils', () => {
     });
   });
 
-  describe('filterGitFiles', () => {
+  describe('isNotGitDirectoryOrContents', () => {
     it('should filter .git directory and its contents but keep other files', () => {
       // Import the function to test
-      const { filterGitFiles } = require('./util');
+      const { isNotGitDirectoryOrContents } = require('./util');
 
       // Should filter out .git directory
-      expect(filterGitFiles('.git')).toBe(false);
+      expect(isNotGitDirectoryOrContents('.git')).toBe(false);
 
       // Should filter out .git directory in subdirectories
-      expect(filterGitFiles('subdir/.git')).toBe(false);
+      expect(isNotGitDirectoryOrContents('subdir/.git')).toBe(false);
 
       // Should filter out files inside .git directory
-      expect(filterGitFiles('.git/config')).toBe(false);
-      expect(filterGitFiles('subdir/.git/config')).toBe(false);
+      expect(isNotGitDirectoryOrContents('.git/config')).toBe(false);
+      expect(isNotGitDirectoryOrContents('subdir/.git/config')).toBe(false);
 
       // Should keep .gitignore and other non-.git-directory files
-      expect(filterGitFiles('.gitignore')).toBe(true);
-      expect(filterGitFiles('src/components/GitHubIcon.js')).toBe(true);
-      expect(filterGitFiles('.github/workflows/ci.yml')).toBe(true);
+      expect(isNotGitDirectoryOrContents('.gitignore')).toBe(true);
+      expect(isNotGitDirectoryOrContents('src/components/GitHubIcon.js')).toBe(
+        true,
+      );
+      expect(isNotGitDirectoryOrContents('.github/workflows/ci.yml')).toBe(
+        true,
+      );
     });
   });
 });

@@ -192,6 +192,6 @@ export const parseSchemas = (
  * while keeping other files like .gitignore
  * @public
  */
-export function filterGitFiles(path: string): boolean {
+export function isNotGitDirectoryOrContents(path: string): boolean {
   return !(path.endsWith('.git') || path.includes('.git/'));
 }

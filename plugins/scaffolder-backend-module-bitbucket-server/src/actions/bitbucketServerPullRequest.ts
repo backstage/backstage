@@ -26,7 +26,7 @@ import {
   addFiles,
   cloneRepo,
   parseRepoUrl,
-  filterGitFiles,
+  isNotGitDirectoryOrContents,
 } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
 import fs from 'fs-extra';
@@ -454,7 +454,7 @@ export function createPublishBitbucketServerPullRequestAction(options: {
         // copy files
         fs.cpSync(sourceDir, tempDir, {
           recursive: true,
-          filter: filterGitFiles,
+          filter: isNotGitDirectoryOrContents,
         });
 
         await addFiles({

@@ -286,9 +286,6 @@ export function fetchFile(options: {
   token?: string;
 }): Promise<void>;
 
-// @public
-export function filterGitFiles(path: string): boolean;
-
 // @public (undocumented)
 export const getRepoSourceDirectory: (
   workspacePath: string,
@@ -318,6 +315,9 @@ export function initRepoAndPush(input: {
 }): Promise<{
   commitHash: string;
 }>;
+
+// @public
+export function isNotGitDirectoryOrContents(path: string): boolean;
 
 // @public (undocumented)
 export const parseRepoUrl: (
