@@ -197,8 +197,8 @@ catalog:
 scaffolder:
   # Use to customize default commit author info used when new components are created
   defaultAuthor:
-     name: Scaffolder
-     email: scaffolder@backstage.io
+    name: Scaffolder
+    email: scaffolder@backstage.io
   # Use to customize the default commit message when new components are created
   defaultCommitMessage: 'Initial commit'
 
