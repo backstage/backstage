@@ -1,5 +1,23 @@
 # @backstage/plugin-kubernetes
 
+## 0.12.7
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 216c6b2: Updated dependency `@kubernetes/client-node` to `1.1.2`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/plugin-kubernetes-react@0.5.7
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/plugin-kubernetes-common@0.9.5
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/plugin-permission-react@0.4.34
+
 ## 0.12.7-next.3
 
 ### Patch Changes

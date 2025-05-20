@@ -42,6 +42,8 @@ export type EntityRelationAggregation = 'direct' | 'aggregated';
 export const EntityUserProfileCard: (props: {
   variant?: InfoCardVariants;
   showLinks?: boolean;
+  maxRelations?: number;
+  hideIcons?: boolean;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -98,5 +100,7 @@ export const OwnershipCard: (props: {
 export const UserProfileCard: (props: {
   variant?: InfoCardVariants;
   showLinks?: boolean;
+  maxRelations?: number;
+  hideIcons?: boolean;
 }) => JSX_2.Element;
 ```

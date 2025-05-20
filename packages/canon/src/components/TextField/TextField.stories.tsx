@@ -17,6 +17,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { TextField } from './TextField';
 import { Flex } from '../Flex';
+import { Icon } from '../Icon';
 
 const meta = {
   title: 'Components/TextField',
@@ -79,8 +80,8 @@ export const Sizes: Story = {
   },
   render: args => (
     <Flex direction="row" gap="4" style={{ width: '100%', maxWidth: '600px' }}>
-      <TextField {...args} size="small" />
-      <TextField {...args} size="medium" />
+      <TextField {...args} size="small" icon={<Icon name="sparkling" />} />
+      <TextField {...args} size="medium" icon={<Icon name="sparkling" />} />
     </Flex>
   ),
 };
@@ -114,7 +115,7 @@ export const WithIcon: Story = {
   args: {
     ...WithLabel.args,
     placeholder: 'Search...',
-    icon: 'search',
+    icon: <Icon name="search" />,
   },
 };
 

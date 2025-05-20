@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.7.0
+
+### Minor Changes
+
+- 20c1ea7: Add new `userGroupMember.path`, `user.path` and, `group.path` option to each query type to allow more complex msgraph queries
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.4
+
 ## 0.7.0-next.2
 
 ### Patch Changes

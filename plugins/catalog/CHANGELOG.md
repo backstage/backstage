@@ -1,5 +1,34 @@
 # @backstage/plugin-catalog
 
+## 1.30.0
+
+### Minor Changes
+
+- 970cb48: Show the pagination text for the offset-paginated catalog table, and remove the pagination bar from the top of the `CatalogTable` when pagination is enabled.
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 2ddbc50: A new `filter` parameter has been added to `EntityContextMenuItemBlueprint` to make it easier to configure which entities a menu item should appear for. The `filter` parameter is a function which accepts an entity and returns a boolean.
+- bf85d37: Fix for missing `routeRef` when using `core-plugin-api` in a dialog context
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/plugin-search-react@1.9.0
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/catalog-client@1.10.0
+  - @backstage/integration-react@1.2.7
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-scaffolder-common@1.5.11
+  - @backstage/plugin-search-common@1.2.18
+
 ## 1.30.0-next.3
 
 ### Minor Changes

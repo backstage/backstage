@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.8.2
+
+### Patch Changes
+
+- 16e2e9c: trim leading and trailing slashes from parseRepoUrl query parameters
+- 72d019d: Removed various typos
+- ec42f8e: Generating new tokens on each Scaffolder Task Retry
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
 ## 0.8.2-next.3
 
 ### Patch Changes

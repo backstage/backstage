@@ -12,6 +12,10 @@ export const headingPropDefs: Record<string, PropDef> = {
     values: ['ReactNode'],
     responsive: false,
   },
+  truncate: {
+    type: 'boolean',
+    default: 'false',
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };

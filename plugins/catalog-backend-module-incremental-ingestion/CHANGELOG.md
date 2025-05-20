@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.7.0
+
+### Minor Changes
+
+- 10f693c: **BREAKING** Removed support for the legacy backend, please [migrate to the new backend system](https://github.com/backstage/backstage/tree/v1.38.0/plugins/catalog-backend-module-incremental-ingestion#installation). Also, if you were importing from the `/alpha` export of this package, you should remove the `/alpha` part.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@2.0.0
+  - @backstage/backend-defaults@0.10.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.11
+
 ## 0.7.0-next.3
 
 ### Patch Changes

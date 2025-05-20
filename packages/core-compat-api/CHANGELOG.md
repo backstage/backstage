@@ -1,5 +1,19 @@
 # @backstage/core-compat-api
 
+## 0.4.2
+
+### Patch Changes
+
+- 173db8f: Updates to use the new `plugin` property of `AppNodeSpec`.
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 6eedf46: Updated dependency `@backstage-community/plugin-puppetdb` to `^0.6.0`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/version-bridge@1.0.11
+
 ## 0.4.2-next.3
 
 ### Patch Changes
