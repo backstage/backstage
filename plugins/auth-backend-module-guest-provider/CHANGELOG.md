@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-guest-provider
 
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-auth-node@0.6.3
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/errors@1.2.7
+
 ## 0.2.8-next.2
 
 ### Patch Changes

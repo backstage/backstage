@@ -1,5 +1,24 @@
 # @backstage/plugin-search-react
 
+## 1.9.0
+
+### Minor Changes
+
+- 611c941: Allow search filters to provide labels and values separately, and not only values
+
+### Patch Changes
+
+- 2c76614: Fix memoization of `filterValue` in `SearchFilter.Autocomplete` to prevent unintended resets
+- fa48594: search plugin support i18n
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/theme@0.6.6
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.18
+
 ## 1.9.0-next.2
 
 ### Patch Changes

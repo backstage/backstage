@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.9.0
+
+### Minor Changes
+
+- ff335e5: **BREAKING** The `GithubLocationAnalyzer` now requires the `AuthService` and the `CatalogService` when being constructed and the `TokenManger` has been removed.
+
+### Patch Changes
+
+- ee9f59f: Added filter to include archived repositories
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-catalog-backend@2.0.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-events-node@0.4.11
+
 ## 0.9.0-next.3
 
 ### Patch Changes

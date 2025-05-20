@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.6.0
+
+### Minor Changes
+
+- f453d5c: **BREAKING** Removed support for the legacy backend and removed references to `@backstage/backend-common`, please [migrate to the new backend system](https://backstage.io/docs/backend-system/building-plugins-and-modules/migrating)
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/plugin-auth-node@0.6.3
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.8
+
 ## 0.6.0-next.2
 
 ### Patch Changes

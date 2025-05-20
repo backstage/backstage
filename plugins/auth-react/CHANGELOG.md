@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-react
 
+## 0.1.15
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+
 ## 0.1.15-next.1
 
 ### Patch Changes

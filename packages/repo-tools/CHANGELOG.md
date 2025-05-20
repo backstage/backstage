@@ -1,5 +1,20 @@
 # @backstage/repo-tools
 
+## 0.13.3
+
+### Patch Changes
+
+- b229476: Support passing additional properties to OpenAPI server generator
+- 659f2ce: Updated dependency `typedoc` to `^0.28.0`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/config-loader@1.10.1
+  - @backstage/cli-node@0.2.13
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
 ## 0.13.3-next.3
 
 ### Patch Changes

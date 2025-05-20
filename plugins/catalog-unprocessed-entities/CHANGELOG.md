@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.2.17
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+
 ## 0.2.17-next.3
 
 ### Patch Changes

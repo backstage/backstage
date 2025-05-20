@@ -1,5 +1,56 @@
 # @backstage/plugin-auth-node
 
+## 0.6.3
+
+### Patch Changes
+
+- 332e934: Added the `identity` property to `BackstageSignInResult`.
+
+  The `prepareBackstageIdentityResponse` function will now also forward the `identity` to the response if present in the provided sign-in result.
+
+- ab53e6f: Added a new `dangerousEntityRefFallback` option to the `signInWithCatalogUser` method in `AuthResolverContext`. The option will cause the provided entity reference to be used as a fallback in case the user is not found in the catalog. It is up to the caller to provide the fallback entity reference.
+
+  Auth providers that include pre-defined sign-in resolvers are encouraged to define a flag named `dangerouslyAllowSignInWithoutUserInCatalog` in their config, which in turn enables use of the `dangerousEntityRefFallback` option. For example:
+
+  ```ts
+  export const usernameMatchingUserEntityName = createSignInResolverFactory({
+    optionsSchema: z
+      .object({
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+      })
+      .optional(),
+    create(options = {}) {
+      return async (
+        info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
+        ctx,
+      ) => {
+        const { username } = info.result.fullProfile;
+        if (!username) {
+          throw new Error('User profile does not contain a username');
+        }
+
+        return ctx.signInWithCatalogUser(
+          { entityRef: { name: username } },
+          {
+            dangerousEntityRefFallback:
+              options?.dangerouslyAllowSignInWithoutUserInCatalog
+                ? { entityRef: { name: username } }
+                : undefined,
+          },
+        );
+      };
+    },
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.6.3-next.2
 
 ### Patch Changes

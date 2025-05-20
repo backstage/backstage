@@ -1,5 +1,40 @@
 # @backstage/backend-defaults
 
+## 0.10.0
+
+### Minor Changes
+
+- d385854: **BREAKING**: The `DefaultSchedulerService` constructor options now requires `RootLifecycleService`, `HttpRouterService`, and `PluginMetadataService` fields.
+
+  The scheduler will register a REST API for listing and triggering tasks. Please see [the scheduler documentation](https://backstage.io/docs/backend-system/core-services/scheduler) for more details about this API.
+
+### Patch Changes
+
+- 1e06afd: `GithubUrlReader`'s search detects glob-patterns supported by `minimatch`, instead of just detecting
+  `*` and `?` characters.
+
+  For example, this allows to search for patterns like `{C,c}atalog-info.yaml`.
+
+- acea1d4: update documentation
+- 72d019d: Removed various typos
+- c6bc67d: Added Valkey support alongside Redis in backend-defaults cache clients, using the new Keyv Valkey package. Also extended backend-test-utils to support Valkey in tests.
+- 36f77e9: Bug fix: Pass user provided token through to gitlab url resolvers
+- 0e7a640: The `GithubUrlReader` will now use the token from `options` when fetching repo details
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/backend-app-api@1.2.3
+  - @backstage/plugin-auth-node@0.6.3
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-permission-node@0.10.0
+  - @backstage/config-loader@1.10.1
+  - @backstage/integration-aws-node@0.1.16
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.11
+
 ## 0.10.0-next.3
 
 ### Patch Changes
