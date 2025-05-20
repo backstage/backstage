@@ -51,6 +51,10 @@ export const scaffolderTranslationRef = createTranslationRef({
         description:
           "Add any relevant tags, hit 'Enter' to add new tags. Valid format: [a-z0-9+#] separated by [-], at most 63 characters",
       },
+      multiEntityPicker: {
+        title: 'Entity',
+        description: 'An entity from the catalog',
+      },
       myGroupsPicker: {
         title: 'Entity',
         description: 'An entity from the catalog',

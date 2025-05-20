@@ -414,7 +414,7 @@ export interface TaskBroker {
   // (undocumented)
   recoverTasks?(): Promise<void>;
   // (undocumented)
-  retry?(taskId: string): Promise<void>;
+  retry?(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
   // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }

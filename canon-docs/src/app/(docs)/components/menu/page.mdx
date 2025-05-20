@@ -155,3 +155,48 @@ You can additionally configure how quickly the menu opens on hover using the `de
     </Menu.Portal>
   </Menu.Root>`}
 />
+
+### Nested navigation
+
+You can nest menus to create a more complex navigation structure.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<MenuSnippet story="Submenu" />}
+  code={`<Menu.Trigger
+    render={props => (
+      <Button
+        {...props}
+        size="small"
+        variant="secondary"
+        iconEnd={<Icon name="chevron-down" />}
+      >
+        Menu
+      </Button>
+    )}
+  />
+  <Menu.Portal>
+    <Menu.Positioner sideOffset={8} align="start">
+      <Menu.Popup>
+        <Menu.Item>Settings</Menu.Item>
+        <Menu.Item>Invite new members</Menu.Item>
+        <Menu.Item>Download app</Menu.Item>
+        <Menu.Item>Log out</Menu.Item>
+        <Menu.Root>
+          <Menu.SubmenuTrigger>Submenu</Menu.SubmenuTrigger>
+          <Menu.Portal>
+            <Menu.Positioner>
+              <Menu.Popup>
+                <Menu.Item>Submenu Item 1</Menu.Item>
+                <Menu.Item>Submenu Item 2</Menu.Item>
+                <Menu.Item>Submenu Item 3</Menu.Item>
+              </Menu.Popup>
+            </Menu.Positioner>
+          </Menu.Portal>
+        </Menu.Root>
+      </Menu.Popup>
+    </Menu.Positioner>
+  </Menu.Portal>`}
+/>

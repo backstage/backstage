@@ -26,12 +26,13 @@ export const SecretInput = (props: ScaffolderRJSFFieldProps) => {
     disabled,
     errors,
     required,
+    uiSchema,
   } = props;
 
   return (
     <ScaffolderField
       rawErrors={rawErrors}
-      rawDescription={description}
+      rawDescription={uiSchema['ui:description'] ?? description}
       disabled={disabled}
       errors={errors}
       required={required}

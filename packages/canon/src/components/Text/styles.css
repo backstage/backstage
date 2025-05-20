@@ -67,3 +67,9 @@
 .canon-Text[data-color='success'] {
   color: var(--canon-fg-success);
 }
+
+.canon-Text[data-truncate] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

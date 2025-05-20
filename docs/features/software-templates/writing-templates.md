@@ -711,9 +711,9 @@ powerful [Nunjucks templating engine](https://mozilla.github.io/nunjucks/).
 To learn more about basic Nunjucks templating please see
 [templating documentation](https://mozilla.github.io/nunjucks/templating.html).
 
-Information about Backstage's built-in Nunjucks extensions, as well as how to
+Information about Backstage's built-in templating extensions, as well as how to
 create your own customizations, may be found at
-[Template Extensions](./template-extensions.md).
+[Templating Extensions](./templating-extensions.md).
 
 ## Template Editor
 

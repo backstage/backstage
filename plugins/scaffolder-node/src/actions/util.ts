@@ -22,6 +22,7 @@ import { TemplateActionOptions } from './createTemplateAction';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { z } from 'zod';
 import { Schema } from 'jsonschema';
+import { trim } from 'lodash';
 
 /**
  * @public
@@ -67,11 +68,6 @@ export const parseRepoUrl = (
     );
   }
   const host = parsed.host;
-  const owner = parsed.searchParams.get('owner') ?? undefined;
-  const organization = parsed.searchParams.get('organization') ?? undefined;
-  const workspace = parsed.searchParams.get('workspace') ?? undefined;
-  const project = parsed.searchParams.get('project') ?? undefined;
-
   const type = integrations.byHost(host)?.type;
 
   if (!type) {
@@ -79,8 +75,14 @@ export const parseRepoUrl = (
       `No matching integration configuration for host ${host}, please check your integrations config`,
     );
   }
-
-  const repo: string = parsed.searchParams.get('repo')!;
+  const { owner, organization, workspace, project, repo } = Object.fromEntries(
+    ['owner', 'organization', 'workspace', 'project', 'repo'].map(param => [
+      param,
+      parsed.searchParams.has(param)
+        ? trim(parsed.searchParams.get(param)!, '/')
+        : undefined,
+    ]),
+  );
   switch (type) {
     case 'bitbucket': {
       if (host === 'www.bitbucket.org') {
@@ -113,8 +115,7 @@ export const parseRepoUrl = (
       break;
     }
   }
-
-  return { host, owner, repo, organization, workspace, project };
+  return { host, owner, repo: repo!, organization, workspace, project };
 };
 
 function checkRequiredParams(repoUrl: URL, ...params: string[]) {

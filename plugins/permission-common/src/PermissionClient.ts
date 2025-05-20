@@ -60,14 +60,16 @@ const authorizePermissionResponseSchema: z.ZodSchema<AuthorizePermissionResponse
       .or(z.literal(AuthorizeResult.DENY)),
   });
 
-const authorizePermissionResponseBatchSchema = z.object({
-  result: z.array(
-    z.union([
-      z.literal(AuthorizeResult.ALLOW),
-      z.literal(AuthorizeResult.DENY),
-    ]),
-  ),
-});
+const authorizePermissionResponseBatchSchema = z
+  .object({
+    result: z.array(
+      z.union([
+        z.literal(AuthorizeResult.ALLOW),
+        z.literal(AuthorizeResult.DENY),
+      ]),
+    ),
+  })
+  .or(authorizePermissionResponseSchema);
 
 const queryPermissionResponseSchema: z.ZodSchema<QueryPermissionResponse> =
   z.union([
@@ -240,9 +242,13 @@ export class PermissionClient implements PermissionEvaluator {
       const { id } = request[query.permission.name];
 
       const item = responsesById[id];
-      return {
-        result: query.resourceRef ? item.result.shift()! : item.result[0],
-      };
+
+      if (Array.isArray(item.result)) {
+        return {
+          result: query.resourceRef ? item.result.shift()! : item.result[0],
+        };
+      }
+      return { result: item.result };
     });
   }
 

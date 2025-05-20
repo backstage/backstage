@@ -171,7 +171,7 @@ export interface TaskStore {
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
 
-  retryTask?(options: { taskId: string }): Promise<void>;
+  retryTask?(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
 
   recoverTasks?(
     options: TaskStoreRecoverTaskOptions,

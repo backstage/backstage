@@ -1,5 +1,11 @@
 # @backstage/canon
 
+## 0.4.0-next.3
+
+### Patch Changes
+
+- c8f32db: Use correct colour token for TextField clear button icon, prevent layout shift whenever it is hidden or shown and properly size focus area around it. Also stop leading icon shrinking when used together with clear button.
+
 ## 0.4.0-next.2
 
 ### Patch Changes

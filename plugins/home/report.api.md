@@ -89,6 +89,7 @@ export const CustomHomepageGrid: (
 export type CustomHomepageGridProps = {
   children?: ReactNode;
   config?: LayoutConfiguration[];
+  title?: string;
   rowHeight?: number;
   breakpoints?: Record<Breakpoint, number>;
   cols?: Record<Breakpoint, number>;
@@ -194,9 +195,10 @@ export const QuickStartCard: (
 // @public
 export type QuickStartCardProps = {
   modalTitle?: string | JSX_3.Element;
-  docsLinkTitle?: string;
+  docsLinkTitle?: string | JSX_3.Element;
   docsLink?: string;
   video?: JSX_3.Element;
+  additionalContent?: JSX_3.Element;
   image: JSX_3.Element;
   cardDescription?: string;
   downloadImage?: JSX_3.Element;

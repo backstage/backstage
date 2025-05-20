@@ -168,14 +168,15 @@ Team: @backstage/tooling-maintainers
 
 Scope: All published Backstage CLI tools in the main `backstage` repository that do not belong to other areas, including `@backstage/cli` and `@backstage/repo-tools`.
 
-| Name                 | Organization | Team          | GitHub                                          | Discord         |
-| -------------------- | ------------ | ------------- | ----------------------------------------------- | --------------- |
-| Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
-| Ben Lambert          | Spotify      | Cubic Belugas | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`     |
-| Camila Loiola        | Spotify      | Cubic Belugas | [camilaibs](http://github.com/camilaibs)        | `camilal#0226`  |
-| Fredrik Adelöw       | Spotify      | Cubic Belugas | [freben](https://github.com/freben)             | `freben#3926`   |
-| Mihai Tabara         | Spotify      | Cubic Belugas | [MihaiTabara](http://github.com/MihaiTabara)    | `mihait#3107`   |
-| Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
+| Name                 | Organization | Team          | GitHub                                                | Discord         |
+| -------------------- | ------------ | ------------- | ----------------------------------------------------- | --------------- |
+| Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)                   | `Rugvip#0019`   |
+| Ben Lambert          | Spotify      | Cubic Belugas | [benjdlambert](https://github.com/benjdlambert)       | `blam#2159`     |
+| Camila Loiola        | Spotify      | Cubic Belugas | [camilaibs](http://github.com/camilaibs)              | `camilal#0226`  |
+| Fredrik Adelöw       | Spotify      | Cubic Belugas | [freben](https://github.com/freben)                   | `freben#3926`   |
+| Mihai Tabara         | Spotify      | Cubic Belugas | [MihaiTabara](http://github.com/MihaiTabara)          | `mihait#3107`   |
+| Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)                | `vinzscam#6944` |
+| Aramis Sennyey       | DoorDash     |               | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984`   |
 
 ## Incubating Project Areas
 

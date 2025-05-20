@@ -34,6 +34,9 @@ export function createSpecializedApp(options?: {
   extensionFactoryMiddleware?:
     | ExtensionFactoryMiddleware
     | ExtensionFactoryMiddleware[];
+  flags?: {
+    allowUnknownExtensionConfig?: boolean;
+  };
 }): {
   apis: ApiHolder;
   tree: AppTree;

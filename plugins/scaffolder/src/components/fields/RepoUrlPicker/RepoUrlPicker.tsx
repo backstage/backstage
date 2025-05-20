@@ -35,6 +35,7 @@ import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
 import { RepoUrlPickerFieldSchema } from './schema';
 import { RepoUrlPickerState } from './types';
 import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
+import { MarkdownContent } from '@backstage/core-components';
 
 export { RepoUrlPickerSchema } from './schema';
 
@@ -166,6 +167,9 @@ export const RepoUrlPicker = (
 
   const hostType =
     (state.host && integrationApi.byHost(state.host)?.type) ?? null;
+
+  const description = uiSchema['ui:description'] ?? schema.description;
+
   return (
     <>
       {schema.title && (
@@ -174,8 +178,10 @@ export const RepoUrlPicker = (
           <Divider />
         </Box>
       )}
-      {schema.description && (
-        <Typography variant="body1">{schema.description}</Typography>
+      {description && (
+        <Typography variant="body1">
+          <MarkdownContent content={description} />
+        </Typography>
       )}
       <RepoUrlPickerHost
         host={state.host}
