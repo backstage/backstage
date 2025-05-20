@@ -24,13 +24,13 @@ import {
   TopicGetOptions,
 } from './NotificationsStore';
 import {
-  generateSettingsHash,
   Notification,
   NotificationSettings,
   notificationSeverities,
   NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
 import { Knex } from 'knex';
+import crypto from 'crypto';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-notifications-backend',
@@ -104,6 +104,16 @@ export const normalizeSeverity = (input?: string): NotificationSeverity => {
     lower = 'normal';
   }
   return lower;
+};
+
+export const generateSettingsHash = (
+  user: string,
+  channel: string,
+  origin: string,
+  topic: string | null,
+): string => {
+  const rawKey = `${user}|${channel}|${origin}|${topic ?? ''}`;
+  return crypto.createHash('sha256').update(rawKey).digest('hex');
 };
 
 /** @internal */
