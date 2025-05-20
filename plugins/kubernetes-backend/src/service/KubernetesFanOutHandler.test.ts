@@ -101,8 +101,6 @@ describe('KubernetesFanOutHandler', () => {
     metadata: {
       name: 'test-component',
       annotations: {
-        'backstage.io/kubernetes-label-selector-custom-key':
-          'backstage.io/custom-kubernetes-labels-selector',
         'backstage.io/custom-kubernetes-labels-selector':
           'backstage.io/custom-test-label=test-component',
       },
@@ -1651,6 +1649,8 @@ describe('KubernetesFanOutHandler', () => {
               plural: 'pods',
             },
           ],
+          customLabelSelectorAnnotation:
+            'backstage.io/custom-kubernetes-labels-selector',
         },
         { credentials: mockCredentials },
       );
