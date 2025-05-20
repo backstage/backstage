@@ -21,6 +21,9 @@
 /**
  * @public
  */
-export interface ErrorPayloadResponse {
-  statusCode: number;
+export interface UpsertSubscription200Response {
+  /**
+   * Unique ID for the subscription
+   */
+  id: string;
 }

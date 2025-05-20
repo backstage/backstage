@@ -18,9 +18,15 @@ import { Knex } from 'knex';
 import { createOpenApiRouter } from '../schema/openapi';
 import { GetEventsModelImpl } from './endpoints/GetEvents.model';
 import { bindGetEventsEndpoint } from './endpoints/GetEvents.router';
+import { bindReadSubscriptionEndpoint } from './endpoints/ReadSubscription.router';
+import { ReadSubscriptionModelImpl } from './endpoints/ReadSubscription.model';
+import { AckSubscriptionModelImpl } from './endpoints/AckSubscription.model';
+import { bindAckSubscriptionEndpoint } from './endpoints/AckSubscription.router';
+import { HistoryConfig } from '../config';
 
 export async function createRouter(options: {
   knexPromise: Promise<Knex>;
+  historyConfig: HistoryConfig;
   shutdownSignal: AbortSignal;
 }) {
   const router = await createOpenApiRouter();
@@ -29,7 +35,24 @@ export async function createRouter(options: {
     router,
     new GetEventsModelImpl({
       knexPromise: options.knexPromise,
+      historyConfig: options.historyConfig,
       shutdownSignal: options.shutdownSignal,
+    }),
+  );
+
+  bindReadSubscriptionEndpoint(
+    router,
+    new ReadSubscriptionModelImpl({
+      knexPromise: options.knexPromise,
+      historyConfig: options.historyConfig,
+      shutdownSignal: options.shutdownSignal,
+    }),
+  );
+
+  bindAckSubscriptionEndpoint(
+    router,
+    new AckSubscriptionModelImpl({
+      knexPromise: options.knexPromise,
     }),
   );
 

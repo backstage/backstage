@@ -21,7 +21,6 @@
 /**
  * @public
  */
-export interface ErrorPayloadRequest {
-  method: string;
-  url: string;
+export interface GetEventsDefaultResponseResponse {
+  statusCode: number;
 }

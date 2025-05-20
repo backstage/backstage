@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Knex } from 'knex';
-import { CatalogEvent } from './types';
+import { once } from 'events';
+import { HistoryConfig } from '../../config';
 import { getMaxId } from '../../database/getMaxId';
 import {
   readEventsTableRows,
   ReadEventsTableRowsOptions,
 } from '../../database/readEventsTableRows';
 import { Cursor } from './GetEvents.utils';
+import { CatalogEvent } from './types';
+import { durationToMilliseconds } from '@backstage/types';
 
 export interface GetEventsModel {
   readEventsNonblocking(options: {
@@ -35,31 +37,19 @@ export interface GetEventsModel {
   }): Promise<'timeout' | 'aborted' | 'ready'>;
 }
 
-const DEFAULT_BLOCK_DURATION =
-  process.env.NODE_ENV === 'test' ? { seconds: 3 } : { seconds: 10 };
-const DEFAULT_BLOCK_POLL_FREQUENCY =
-  process.env.NODE_ENV === 'test' ? { milliseconds: 100 } : { seconds: 1 };
-
 export class GetEventsModelImpl implements GetEventsModel {
   #knexPromise: Promise<Knex>;
   #shutdownSignal: AbortSignal;
-  #blockDurationMillis: number;
-  #blockPollFrequencyMillis: number;
+  #historyConfig: HistoryConfig;
 
   constructor(options: {
     knexPromise: Promise<Knex>;
     shutdownSignal: AbortSignal;
-    blockDuration?: HumanDuration;
-    blockPollFrequency?: HumanDuration;
+    historyConfig: HistoryConfig;
   }) {
     this.#knexPromise = options.knexPromise;
     this.#shutdownSignal = options.shutdownSignal;
-    this.#blockDurationMillis = durationToMilliseconds(
-      options.blockDuration ?? DEFAULT_BLOCK_DURATION,
-    );
-    this.#blockPollFrequencyMillis = durationToMilliseconds(
-      options.blockPollFrequency ?? DEFAULT_BLOCK_POLL_FREQUENCY,
-    );
+    this.#historyConfig = options.historyConfig;
   }
 
   async readEventsNonblocking(options: {
@@ -109,30 +99,41 @@ export class GetEventsModelImpl implements GetEventsModel {
     signal?: AbortSignal;
   }): Promise<'timeout' | 'aborted' | 'ready'> {
     const knex = await this.#knexPromise;
-    const deadline = Date.now() + this.#blockDurationMillis;
+    const deadline =
+      Date.now() + durationToMilliseconds(this.#historyConfig.blockDuration);
 
     while (Date.now() < deadline) {
-      const inner = AbortSignal.any([
-        AbortSignal.timeout(this.#blockPollFrequencyMillis),
-        this.#shutdownSignal,
-        ...(options.signal ? [options.signal] : []),
-      ]);
-      // The event won't ever fire if the signal is already aborted, so we
-      // need this check.
-      if (!inner.aborted) {
-        await new Promise<void>(resolve => {
-          inner.addEventListener('abort', () => resolve());
+      // Not using AbortSignal.timeout() because https://github.com/nodejs/node/pull/57867
+      const timeoutController = new AbortController();
+      const timeoutHandle = setTimeout(
+        () => timeoutController.abort(),
+        durationToMilliseconds(this.#historyConfig.blockPollFrequency),
+      );
+      try {
+        const inner = AbortSignal.any([
+          timeoutController.signal,
+          this.#shutdownSignal,
+          ...(options.signal ? [options.signal] : []),
+        ]);
+        // The event won't ever fire if the signal is already aborted, so we
+        // need this check.
+        if (!inner.aborted) {
+          await once(inner, 'abort');
+        }
+        if (this.#shutdownSignal.aborted || options.signal?.aborted) {
+          return 'aborted';
+        }
+        const rows = await readEventsTableRows(knex, {
+          ...options.readOptions,
+          limit: 1,
         });
-      }
-      if (this.#shutdownSignal.aborted || options.signal?.aborted) {
-        return 'aborted';
-      }
-      const rows = await readEventsTableRows(knex, {
-        ...options.readOptions,
-        limit: 1,
-      });
-      if (rows.length) {
-        return 'ready';
+        if (rows.length) {
+          return 'ready';
+        }
+      } finally {
+        // Clean up
+        timeoutController.abort();
+        clearTimeout(timeoutHandle);
       }
     }
 

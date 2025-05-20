@@ -67,7 +67,12 @@ export function bindGetEventsEndpoint(
       });
 
       await model.blockUntilDataIsReady({
-        readOptions,
+        readOptions: {
+          ...readOptions,
+          // If it was specified as "last" in the request, the cursor contains
+          // the real last ID
+          afterEventId: result.cursor.afterEventId,
+        },
         signal: controller.signal,
       });
     }

@@ -25,6 +25,7 @@ import catalogBackend from '@backstage/plugin-catalog-backend';
 import { Knex } from 'knex';
 import waitFor from 'wait-for-expect';
 import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
+import { getHistoryConfig } from '../../config';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import { GetEventsModelImpl } from './GetEvents.model';
 
@@ -90,6 +91,7 @@ describe('GetEventsModelImpl', () => {
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
           shutdownSignal: new AbortController().signal,
+          historyConfig: getHistoryConfig(),
         });
 
         await waitFor(async () => {
@@ -148,6 +150,7 @@ describe('GetEventsModelImpl', () => {
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
           shutdownSignal: new AbortController().signal,
+          historyConfig: getHistoryConfig(),
         });
 
         await setEntity(knex, 'foo', 1);
@@ -224,6 +227,40 @@ describe('GetEventsModelImpl', () => {
         await backend.stop();
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'handles the "last" limit properly, %p',
+      async databaseId => {
+        const { knex, backend } = await init(databaseId);
+
+        const model = new GetEventsModelImpl({
+          knexPromise: Promise.resolve(knex),
+          shutdownSignal: new AbortController().signal,
+          historyConfig: getHistoryConfig(),
+        });
+
+        await setEntity(knex, 'foo', 1);
+        await setEntity(knex, 'foo', 2);
+
+        await expect(
+          model.readEventsNonblocking({
+            readOptions: { afterEventId: 'last', order: 'asc', limit: 1 },
+            block: true,
+          }),
+        ).resolves.toEqual({
+          events: [],
+          cursor: {
+            version: 1,
+            afterEventId: '2',
+            order: 'asc',
+            limit: 1,
+            block: true,
+          },
+        });
+
+        await backend.stop();
+      },
+    );
   });
 
   describe('blockUntilDataIsReady', () => {
@@ -235,8 +272,12 @@ describe('GetEventsModelImpl', () => {
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
           shutdownSignal: new AbortController().signal,
-          blockDuration: { seconds: 1 },
-          blockPollFrequency: { milliseconds: 100 },
+          historyConfig: getHistoryConfig({
+            overrides: {
+              blockDuration: { seconds: 1 },
+              blockPollFrequency: { milliseconds: 100 },
+            },
+          }),
         });
 
         let resolution: string = '';
@@ -274,8 +315,12 @@ describe('GetEventsModelImpl', () => {
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
           shutdownSignal: new AbortController().signal,
-          blockDuration: { seconds: 1 },
-          blockPollFrequency: { milliseconds: 100 },
+          historyConfig: getHistoryConfig({
+            overrides: {
+              blockDuration: { seconds: 1 },
+              blockPollFrequency: { milliseconds: 100 },
+            },
+          }),
         });
 
         let resolution1: string = '';
@@ -323,8 +368,12 @@ describe('GetEventsModelImpl', () => {
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
           shutdownSignal: abortController.signal,
-          blockDuration: { seconds: 1 },
-          blockPollFrequency: { milliseconds: 100 },
+          historyConfig: getHistoryConfig({
+            overrides: {
+              blockDuration: { seconds: 1 },
+              blockPollFrequency: { milliseconds: 100 },
+            },
+          }),
         });
 
         let resolution: string = '';
@@ -357,8 +406,12 @@ describe('GetEventsModelImpl', () => {
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
           shutdownSignal: new AbortController().signal, // not used here
-          blockDuration: { seconds: 1 },
-          blockPollFrequency: { milliseconds: 100 },
+          historyConfig: getHistoryConfig({
+            overrides: {
+              blockDuration: { seconds: 1 },
+              blockPollFrequency: { milliseconds: 100 },
+            },
+          }),
         });
 
         const abortController = new AbortController();

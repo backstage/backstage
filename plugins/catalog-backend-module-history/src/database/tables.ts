@@ -25,7 +25,10 @@ export interface EventsTableRow {
 
 export interface SubscriptionsTableRow {
   id: string;
-  consumer_name: string;
-  updated_at: Date | string;
-  last_event_id: string;
+  active_at: Date | string;
+  state: 'idle' | 'waiting';
+  ack_id: string | null;
+  ack_timeout_at: Date | string | null;
+  last_acknowledged_event_id: number | string;
+  last_sent_event_id: number | string;
 }

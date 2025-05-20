@@ -22,6 +22,7 @@ import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/
 import { HistoryJanitor } from './database/HistoryJanitor';
 import { initializeDatabaseAfterCatalog } from './database/migrations';
 import { createRouter } from './service/createRouter';
+import { getHistoryConfig } from './config';
 
 /**
  * The history module for the catalog backend.
@@ -57,6 +58,8 @@ export const catalogModuleHistory = createBackendModule({
           catalogProcessing,
         });
 
+        const historyConfig = getHistoryConfig({ config });
+
         const controller = new AbortController();
         lifecycle.addShutdownHook(() => {
           controller.abort();
@@ -64,13 +67,14 @@ export const catalogModuleHistory = createBackendModule({
 
         await HistoryJanitor.create({
           knexPromise,
-          config,
+          historyConfig,
           scheduler,
         });
 
         httpRouter.use(
           await createRouter({
             knexPromise,
+            historyConfig,
             shutdownSignal: controller.signal,
           }),
         );
