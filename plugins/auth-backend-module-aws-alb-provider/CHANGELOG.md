@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend-module-aws-alb-provider
 
+## 0.4.3
+
+### Patch Changes
+
+- 5cc1f7f: Introduce `dangerouslyAllowSignInWithoutUserInCatalog` auth resolver config.
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.25.0
+  - @backstage/plugin-auth-node@0.6.3
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/errors@1.2.7
+
 ## 0.4.3-next.2
 
 ### Patch Changes

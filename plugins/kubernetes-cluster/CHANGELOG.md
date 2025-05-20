@@ -1,5 +1,19 @@
 # @backstage/plugin-kubernetes-cluster
 
+## 0.0.25
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/plugin-kubernetes-react@0.5.7
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/plugin-kubernetes-common@0.9.5
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/plugin-permission-react@0.4.34
+
 ## 0.0.25-next.3
 
 ### Patch Changes

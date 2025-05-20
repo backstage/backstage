@@ -1,5 +1,22 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.7.1
+
+### Patch Changes
+
+- 6579c2c: Use action context logger in Octokit client
+- 72d019d: Removed various typos
+- b2b654c: Added optional assignees parameter to `publish:github:pull-request` action
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-scaffolder-node@0.8.2
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.7.1-next.3
 
 ### Patch Changes
