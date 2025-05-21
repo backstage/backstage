@@ -6,6 +6,7 @@
 
 | Column        | Type                       | Nullable | Max Length | Default             |
 | ------------- | -------------------------- | -------- | ---------- | ------------------- |
+| `attributes`  | `text`                     | true     | -          | -                   |
 | `created`     | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
 | `description` | `text`                     | true     | -          | -                   |
 | `icon`        | `character varying`        | true     | 255        | -                   |
@@ -40,6 +41,7 @@
 
 | Column        | Type                       | Nullable | Max Length | Default             |
 | ------------- | -------------------------- | -------- | ---------- | ------------------- |
+| `attributes`  | `text`                     | true     | -          | -                   |
 | `created`     | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
 | `description` | `text`                     | true     | -          | -                   |
 | `icon`        | `character varying`        | true     | 255        | -                   |
