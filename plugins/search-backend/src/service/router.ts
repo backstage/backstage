@@ -197,25 +197,17 @@ export async function createRouter(
 
       res.json(filterResultSet(toSearchResults(resultSet)));
     } catch (error) {
+      // Log the error message here, but don't expose it to the user in the response
+      logger.error(
+        `There was a problem performing the search query: ${error.message}`,
+      );
       if (error.name === 'MissingIndexError') {
         // re-throw and let the default error handler middleware captures it and serializes it with the right response code on the standard form
         throw error;
       }
-      if (query.term.indexOf('<') !== -1) {
-        // Search queries that contain '<' are likely to be a SQL injection attack, log the error and return an empty response
-        const message = (error as any)?.message || '';
-        if (
-          typeof message === 'string' &&
-          message.indexOf('syntax error in tsquery') !== -1
-        ) {
-          logger.info('Search query skipped due to tsquery syntax error.');
-          return; // Do not throw an error and just skip the search
-        }
-      }
 
-      throw new Error(
-        `There was a problem performing the search query: ${error.message}`,
-      );
+      // If the error is not a MissingIndexError, we want to throw a generic error without the error message as it may leak internal information
+      throw new Error(`There was a problem performing the search query`);
     }
   });
 
