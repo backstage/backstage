@@ -18,7 +18,9 @@
 export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
 
 /** @public */
-export type NotificationPayload = {
+export type NotificationPayload<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> = {
   /**
    * Notification title
    */
@@ -50,10 +52,16 @@ export type NotificationPayload = {
    * Optional notification icon
    */
   icon?: string;
+  /**
+   * Optional additional customizable attributes.
+   */
+  attributes?: T;
 };
 
 /** @public */
-export type Notification = {
+export type Notification<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> = {
   /**
    * Unique identifier for the notification
    */
@@ -87,7 +95,7 @@ export type Notification = {
   /**
    * Actual notification payload
    */
-  payload: NotificationPayload;
+  payload: NotificationPayload<T>;
 };
 
 /** @public */
