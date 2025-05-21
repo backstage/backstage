@@ -21,8 +21,8 @@
  */
 export interface CatalogEvent {
   /** A unique identifier for this particular event */
-  id: string;
-  /** An ISO timestamp string for when the event happened */
+  eventId: string;
+  /** When the event happened */
   eventAt: Date;
   /** The distinct type of event */
   eventType: string;
@@ -32,4 +32,22 @@ export interface CatalogEvent {
   entityId?: string;
   /** The JSON serialized body of the entity related to the event, where applicable */
   entityJson?: string;
+}
+
+/**
+ * A subscription to catalog events.
+ *
+ * @public
+ */
+export interface CatalogEventSubscription {
+  /** The ID of the subscription */
+  subscriptionId: string;
+  /** An ISO timestamp string for when the subscription was created */
+  createdAt: Date;
+  /** An ISO timestamp string for when the subscription was last active */
+  activeAt: Date;
+  /** The entity ref filter for the subscription */
+  filterEntityRef?: string;
+  /** The entity uid filter for the subscription */
+  filterEntityId?: string;
 }

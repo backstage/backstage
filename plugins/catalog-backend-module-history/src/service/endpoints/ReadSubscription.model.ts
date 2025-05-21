@@ -79,9 +79,9 @@ export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
         state: 'waiting',
         ack_id: ackId,
         ack_timeout_at: ackDeadline,
-        last_sent_event_id: result.events[result.events.length - 1].id,
+        last_sent_event_id: result.events[result.events.length - 1].eventId,
       })
-      .where('id', '=', options.readOptions.subscriptionId)
+      .where('subscription_id', '=', options.readOptions.subscriptionId)
       .andWhere('state', '=', 'idle')
       .andWhere(
         'last_acknowledged_event_id',
@@ -119,16 +119,16 @@ export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
         'module_history__subscriptions',
       )
         .update({ active_at: knex.fn.now() })
-        .where('id', '=', subscriptionId)
+        .where('subscription_id', '=', subscriptionId)
         .returning(['state', 'last_acknowledged_event_id']);
     } else {
       await knex<SubscriptionsTableRow>('module_history__subscriptions')
         .update({ active_at: knex.fn.now() })
-        .where('id', '=', subscriptionId);
+        .where('subscription_id', '=', subscriptionId);
       subscriptions = await knex
         .select('state', 'last_acknowledged_event_id')
         .from<SubscriptionsTableRow>('module_history__subscriptions')
-        .where('id', '=', subscriptionId);
+        .where('subscription_id', '=', subscriptionId);
     }
 
     if (subscriptions.length !== 1) {

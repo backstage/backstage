@@ -27,7 +27,7 @@ exports.up = async function up(knex) {
 
   await knex.schema.createTable('module_history__events', table => {
     table
-      .bigIncrements('id')
+      .bigIncrements('event_id')
       .primary()
       .comment('Unique sequential ID of the event');
     table

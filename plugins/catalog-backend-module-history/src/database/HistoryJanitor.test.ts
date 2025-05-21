@@ -27,7 +27,7 @@ import { createMockEntityProvider } from '../__fixtures__/createMockEntityProvid
 import { getHistoryConfig } from '../config';
 import { HistoryJanitor } from './HistoryJanitor';
 import { applyDatabaseMigrations } from './migrations';
-import { EventsTableRow } from './tables';
+import { EventsTableRow, SubscriptionsTableRow } from './tables';
 import { knexRawNowMinus, knexRawNowPlus } from './util';
 
 jest.setTimeout(60_000);
@@ -124,7 +124,9 @@ describe('HistoryJanitor', () => {
         ]);
 
         await expect(
-          knex('module_history__events').select('event_type').orderBy('id'),
+          knex('module_history__events')
+            .select('event_type')
+            .orderBy('event_id'),
         ).resolves.toEqual([
           { event_type: 'a' },
           { event_type: 'b' },
@@ -135,7 +137,9 @@ describe('HistoryJanitor', () => {
         await janitor.runOnce();
 
         await expect(
-          knex('module_history__events').select('event_type').orderBy('id'),
+          knex('module_history__events')
+            .select('event_type')
+            .orderBy('event_id'),
         ).resolves.toEqual([{ event_type: 'b' }, { event_type: 'd' }]);
 
         await backend.stop();
@@ -241,7 +245,9 @@ describe('HistoryJanitor', () => {
         ]);
 
         await expect(
-          knex('module_history__events').select('entity_ref').orderBy('id'),
+          knex('module_history__events')
+            .select('entity_ref')
+            .orderBy('event_id'),
         ).resolves.toEqual([
           { entity_ref: 'k:ns/only-older-than-deadline-but-is-not-deleted' },
           { entity_ref: 'k:ns/only-older-than-deadline-but-is-not-deleted' },
@@ -256,7 +262,9 @@ describe('HistoryJanitor', () => {
         await janitor.runOnce();
 
         await expect(
-          knex('module_history__events').select('entity_ref').orderBy('id'),
+          knex('module_history__events')
+            .select('entity_ref')
+            .orderBy('event_id'),
         ).resolves.toEqual([
           { entity_ref: 'k:ns/only-older-than-deadline-but-is-not-deleted' },
           { entity_ref: 'k:ns/only-older-than-deadline-but-is-not-deleted' },
@@ -286,7 +294,7 @@ describe('HistoryJanitor', () => {
         const inTheFuture = knexRawNowPlus(knex, { seconds: 30 });
 
         await knex('module_history__subscriptions').insert({
-          active_at: knex.fn.now(),
+          subscription_id: 's1',
           state: 'waiting',
           ack_timeout_at: inThePast,
           ack_id: 'i',
@@ -294,7 +302,7 @@ describe('HistoryJanitor', () => {
           last_sent_event_id: '2',
         });
         await knex('module_history__subscriptions').insert({
-          active_at: knex.fn.now(),
+          subscription_id: 's2',
           state: 'waiting',
           ack_timeout_at: inTheFuture,
           ack_id: 'i',
@@ -302,7 +310,7 @@ describe('HistoryJanitor', () => {
           last_sent_event_id: '2',
         });
         await knex('module_history__subscriptions').insert({
-          active_at: knex.fn.now(),
+          subscription_id: 's3',
           state: 'not-waiting',
           ack_timeout_at: inThePast,
           ack_id: 'i',
@@ -313,7 +321,7 @@ describe('HistoryJanitor', () => {
         await janitor.runOnce();
 
         await expect(
-          knex('module_history__subscriptions').orderBy('id'),
+          knex('module_history__subscriptions').orderBy('subscription_id'),
         ).resolves.toEqual([
           expect.objectContaining({
             state: 'idle',

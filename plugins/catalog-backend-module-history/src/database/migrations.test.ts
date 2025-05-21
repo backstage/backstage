@@ -68,11 +68,11 @@ describe('migrations', () => {
 
       function rows(): Promise<EventsTableRow[]> {
         return knex('module_history__events')
-          .orderBy('id')
+          .orderBy('event_id')
           .then(r =>
             r.map(row => ({
               ...row,
-              id: String(row.id),
+              event_id: String(row.event_id),
             })),
           );
       }
@@ -114,7 +114,7 @@ describe('migrations', () => {
       await waitFor(async () => {
         await expect(rows()).resolves.toEqual([
           {
-            id: '1',
+            event_id: '1',
             event_at: expect.anything(),
             event_type: 'entity_created',
             entity_ref: entityRef,
@@ -131,7 +131,7 @@ describe('migrations', () => {
       await waitFor(async () => {
         await expect(rows()).resolves.toEqual([
           {
-            id: '1',
+            event_id: '1',
             event_at: expect.anything(),
             event_type: 'entity_created',
             entity_ref: entityRef,
@@ -139,7 +139,7 @@ describe('migrations', () => {
             entity_json: expect.stringContaining('"owner":"me"'),
           },
           {
-            id: '2',
+            event_id: '2',
             event_at: expect.anything(),
             event_type: 'entity_updated',
             entity_ref: entityRef,
@@ -156,7 +156,7 @@ describe('migrations', () => {
 
       await expect(rows()).resolves.toEqual([
         {
-          id: '1',
+          event_id: '1',
           event_at: expect.anything(),
           event_type: 'entity_created',
           entity_ref: entityRef,
@@ -164,7 +164,7 @@ describe('migrations', () => {
           entity_json: expect.stringContaining('"owner":"me"'),
         },
         {
-          id: '2',
+          event_id: '2',
           event_at: expect.anything(),
           event_type: 'entity_updated',
           entity_ref: entityRef,
@@ -179,7 +179,7 @@ describe('migrations', () => {
       await waitFor(async () => {
         await expect(rows()).resolves.toEqual([
           {
-            id: '1',
+            event_id: '1',
             event_at: expect.anything(),
             event_type: 'entity_created',
             entity_ref: entityRef,
@@ -187,7 +187,7 @@ describe('migrations', () => {
             entity_json: expect.stringContaining('"owner":"me"'),
           },
           {
-            id: '2',
+            event_id: '2',
             event_at: expect.anything(),
             event_type: 'entity_updated',
             entity_ref: entityRef,
@@ -195,7 +195,7 @@ describe('migrations', () => {
             entity_json: expect.stringContaining('"owner":"you"'),
           },
           {
-            id: '3',
+            event_id: '3',
             event_at: expect.anything(),
             event_type: 'entity_deleted',
             entity_ref: entityRef,

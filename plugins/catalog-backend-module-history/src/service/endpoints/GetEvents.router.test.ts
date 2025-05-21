@@ -253,7 +253,7 @@ describe('bindGetEventsEndpoint', () => {
     model.readEventsNonblocking.mockResolvedValue({
       events: [
         {
-          id: 'a',
+          eventId: 'a',
           eventAt: new Date('2023-01-01T00:00:00Z'),
           eventType: 'b',
           entityRef: 'c',
@@ -269,7 +269,7 @@ describe('bindGetEventsEndpoint', () => {
     expect(response.body).toEqual({
       items: [
         {
-          id: 'a',
+          eventId: 'a',
           eventAt: new Date('2023-01-01T00:00:00Z').toISOString(),
           eventType: 'b',
           entityRef: 'c',

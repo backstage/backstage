@@ -118,28 +118,6 @@ export const spec = {
         },
       },
     },
-    requestBodies: {
-      UpsertSubscriptionRequest: {
-        description: 'A request to create or update a subscription',
-        required: true,
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              properties: {
-                target: {
-                  type: 'string',
-                },
-                type: {
-                  type: 'string',
-                },
-              },
-              required: ['target', 'type'],
-            },
-          },
-        },
-      },
-    },
     responses: {
       ErrorResponse: {
         description: 'An error response from the backend.',
@@ -147,9 +125,12 @@ export const spec = {
           'application/json': {
             schema: {
               type: 'object',
+              required: ['error', 'request', 'response'],
+              additionalProperties: false,
               properties: {
                 error: {
                   type: 'object',
+                  required: ['name', 'message'],
                   properties: {
                     name: {
                       type: 'string',
@@ -158,10 +139,10 @@ export const spec = {
                       type: 'string',
                     },
                   },
-                  required: ['name', 'message'],
                 },
                 request: {
                   type: 'object',
+                  required: ['method', 'url'],
                   properties: {
                     method: {
                       type: 'string',
@@ -170,97 +151,17 @@ export const spec = {
                       type: 'string',
                     },
                   },
-                  required: ['method', 'url'],
                 },
                 response: {
                   type: 'object',
+                  required: ['statusCode'],
                   properties: {
                     statusCode: {
                       type: 'number',
                     },
                   },
-                  required: ['statusCode'],
                 },
               },
-              required: ['error', 'request', 'response'],
-              additionalProperties: false,
-            },
-          },
-        },
-      },
-      GetEventsResponse: {
-        description: 'Some events returned from the GetEnvents call.',
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              properties: {
-                items: {
-                  type: 'array',
-                  description:
-                    'The list of events. The number of returned items may be fewer than requested.',
-                  items: {
-                    $ref: '#/components/schemas/Event',
-                  },
-                },
-                pageInfo: {
-                  type: 'object',
-                  description:
-                    'Pagination information. If the "cursor" property is set, it can be used for requesting subsequent pages of data.',
-                  properties: {
-                    cursor: {
-                      type: 'string',
-                      description: 'The cursor for the next set of results.',
-                    },
-                  },
-                },
-              },
-              required: ['items', 'pageInfo'],
-              additionalProperties: false,
-            },
-          },
-        },
-      },
-      SubscriptionResponse: {
-        description: 'Describes a single subscription.',
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              properties: {
-                id: {
-                  type: 'string',
-                  description: 'Unique ID for the subscription',
-                },
-              },
-              required: ['id'],
-              additionalProperties: false,
-            },
-          },
-        },
-      },
-      ReadSubscriptionResponse: {
-        description: 'Some events returned from the ReadSubscription call.',
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              properties: {
-                items: {
-                  type: 'array',
-                  description: 'The list of events.',
-                  items: {
-                    $ref: '#/components/schemas/Event',
-                  },
-                },
-                ackId: {
-                  type: 'string',
-                  description:
-                    'The ID used to acknowledge this batch of events. Is only set if there were any events to send.',
-                },
-              },
-              required: ['items'],
-              additionalProperties: false,
             },
           },
         },
@@ -270,9 +171,9 @@ export const spec = {
       Event: {
         description: 'A single catalog event.',
         type: 'object',
-        required: ['id', 'eventAt', 'eventType'],
+        required: ['eventId', 'eventAt', 'eventType'],
         properties: {
-          id: {
+          eventId: {
             type: 'string',
             description:
               'A unique sequential big-integer ID for the event, as a string.',
@@ -297,12 +198,57 @@ export const spec = {
           },
         },
       },
+      SubscriptionSpec: {
+        description:
+          'The specification for a single subscription, used in an upsert',
+        type: 'object',
+        properties: {
+          subscriptionId: {
+            type: 'string',
+            description:
+              'A unique identifier of this subscription.\nIt is recommended that this ID only consist of URL safe characters, and it must be no more than 250 characters long.\nIf not specified, a new subscription with a random ID will be created.\n',
+          },
+          from: {
+            type: 'string',
+            description:
+              'Where the subscription should start from. Reading always happen in ascending order (from older to newer events).\nEither an event ID to start from (not including itself), or the special strings "beginning" or "now" for those respective ends of the event stream.\nIf not specified, "now" is assumed.\nThis parameter only has an effect on the actual current stream position upon initial creation; after that, only reads can move it.\n',
+          },
+          entityRef: {
+            type: 'string',
+            description: 'Filter to only events pertaining to this entity ref',
+          },
+          entityId: {
+            type: 'string',
+            description: 'Filter to only events pertaining to this entity uid',
+          },
+        },
+      },
+      Subscription: {
+        description: 'A single subscription',
+        type: 'object',
+        required: ['subscriptionId'],
+        properties: {
+          subscriptionId: {
+            type: 'string',
+            description: 'The unique identifier of this subscription.',
+          },
+          entityRef: {
+            type: 'string',
+            description:
+              'Filtered to only events pertaining to this entity ref',
+          },
+          entityId: {
+            type: 'string',
+            description:
+              'Filtered to only events pertaining to this entity uid',
+          },
+        },
+      },
     },
     securitySchemes: {
-      JWT: {
+      BackstageAuth: {
         type: 'http',
         scheme: 'bearer',
-        bearerFormat: 'JWT',
       },
     },
   },
@@ -310,23 +256,11 @@ export const spec = {
     '/history/v1/events': {
       get: {
         operationId: 'GetEvents',
-        description: 'Gets history events',
-        responses: {
-          '200': {
-            $ref: '#/components/responses/GetEventsResponse',
-          },
-          '202': {
-            description:
-              'No new events are available. Response will block until the client should try again.',
-          },
-          default: {
-            $ref: '#/components/responses/ErrorResponse',
-          },
-        },
+        description: 'Stateless, cursor based reading of history events',
         security: [
           {},
           {
-            JWT: [],
+            BackstageAuth: [],
           },
         ],
         parameters: [
@@ -352,34 +286,189 @@ export const spec = {
             $ref: '#/components/parameters/block',
           },
         ],
+        responses: {
+          '200': {
+            description: 'Returned a set of events',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['items', 'pageInfo'],
+                  additionalProperties: false,
+                  properties: {
+                    items: {
+                      type: 'array',
+                      description:
+                        'The list of events. The number of returned items may be fewer than requested.',
+                      items: {
+                        $ref: '#/components/schemas/Event',
+                      },
+                    },
+                    pageInfo: {
+                      type: 'object',
+                      description:
+                        'Pagination information. If the "cursor" property is set, it can be used for requesting subsequent pages of data.',
+                      properties: {
+                        cursor: {
+                          type: 'string',
+                          description:
+                            'The cursor for the next set of results.',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          '202': {
+            description:
+              'No new events are available. Response will block until the client should try again.',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['items', 'pageInfo'],
+                  additionalProperties: false,
+                  properties: {
+                    items: {
+                      type: 'array',
+                      description:
+                        'The list of events. The number of returned items may be fewer than requested.',
+                      items: {
+                        $ref: '#/components/schemas/Event',
+                      },
+                    },
+                    pageInfo: {
+                      type: 'object',
+                      description:
+                        'Pagination information. If the "cursor" property is set, it can be used for requesting subsequent pages of data.',
+                      properties: {
+                        cursor: {
+                          type: 'string',
+                          description:
+                            'The cursor for the next set of results.',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
       },
     },
     '/history/v1/subscriptions': {
       post: {
         operationId: 'UpsertSubscription',
         description: 'Creates or updates a subscription',
-        responses: {
-          '200': {
-            $ref: '#/components/responses/SubscriptionResponse',
+        security: [
+          {},
+          {
+            BackstageAuth: [],
           },
-        },
+        ],
         requestBody: {
-          required: true,
+          required: false,
           content: {
             'application/json': {
               schema: {
-                type: 'object',
-                properties: {
-                  target: {
-                    type: 'string',
-                  },
-                  type: {
-                    type: 'string',
-                  },
-                },
-                required: ['target', 'type'],
+                $ref: '#/components/schemas/SubscriptionSpec',
               },
             },
+          },
+        },
+        responses: {
+          '200': {
+            description: 'Created or updated the subscription',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['subscription'],
+                  additionalProperties: false,
+                  properties: {
+                    subscription: {
+                      $ref: '#/components/schemas/Subscription',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
+      },
+    },
+    '/history/v1/subscriptions/{subscriptionId}/read': {
+      get: {
+        operationId: 'ReadSubscription',
+        description: 'Reads events from a subscription',
+        security: [
+          {},
+          {
+            BackstageAuth: [],
+          },
+        ],
+        parameters: [
+          {
+            in: 'path',
+            name: 'subscriptionId',
+            required: true,
+            allowReserved: true,
+            schema: {
+              type: 'string',
+            },
+          },
+          {
+            $ref: '#/components/parameters/limit',
+          },
+          {
+            $ref: '#/components/parameters/block',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Read events from the subscription',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['items'],
+                  additionalProperties: false,
+                  properties: {
+                    items: {
+                      type: 'array',
+                      description: 'The list of events.',
+                      items: {
+                        $ref: '#/components/schemas/Event',
+                      },
+                    },
+                    ackId: {
+                      type: 'string',
+                      description:
+                        'The ID used to acknowledge this batch of events. Is only set if there were any events to send.',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          '202': {
+            description:
+              'No new events are available. Response will block until the client should try again.',
+          },
+          '404': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
       },
@@ -389,21 +478,10 @@ export const spec = {
         operationId: 'AckSubscription',
         description:
           'Acknowledges a received batch of events from a subscription',
-        responses: {
-          '200': {
-            description: 'The ack was received',
-          },
-          '404': {
-            $ref: '#/components/responses/ErrorResponse',
-          },
-          default: {
-            $ref: '#/components/responses/ErrorResponse',
-          },
-        },
         security: [
           {},
           {
-            JWT: [],
+            BackstageAuth: [],
           },
         ],
         parameters: [
@@ -426,19 +504,9 @@ export const spec = {
             },
           },
         ],
-      },
-    },
-    '/history/v1/subscriptions/{subscriptionId}/read': {
-      get: {
-        operationId: 'ReadSubscription',
-        description: 'Reads events from a subscription',
         responses: {
           '200': {
-            $ref: '#/components/responses/ReadSubscriptionResponse',
-          },
-          '202': {
-            description:
-              'No new events are available. Response will block until the client should try again.',
+            description: 'The ack was received',
           },
           '404': {
             $ref: '#/components/responses/ErrorResponse',
@@ -447,29 +515,6 @@ export const spec = {
             $ref: '#/components/responses/ErrorResponse',
           },
         },
-        security: [
-          {},
-          {
-            JWT: [],
-          },
-        ],
-        parameters: [
-          {
-            in: 'path',
-            name: 'subscriptionId',
-            required: true,
-            allowReserved: true,
-            schema: {
-              type: 'string',
-            },
-          },
-          {
-            $ref: '#/components/parameters/limit',
-          },
-          {
-            $ref: '#/components/parameters/block',
-          },
-        ],
       },
     },
   },

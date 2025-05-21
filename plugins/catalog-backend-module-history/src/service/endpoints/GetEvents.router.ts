@@ -81,7 +81,7 @@ export function bindGetEventsEndpoint(
       res.end(
         JSON.stringify({
           items: result.events.map(row => ({
-            id: row.id,
+            eventId: row.eventId,
             eventAt: row.eventAt.toISOString(),
             eventType: row.eventType,
             entityRef: row.entityRef,

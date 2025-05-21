@@ -27,9 +27,14 @@ exports.up = async function up(knex) {
 
   await knex.schema.createTable('module_history__subscriptions', table => {
     table
-      .bigIncrements('id')
+      .string('subscription_id')
       .primary()
       .comment('Unique ID of the subscription');
+    table
+      .dateTime('created_at')
+      .notNullable()
+      .defaultTo(knex.fn.now())
+      .comment('When the subscription was created');
     table
       .dateTime('active_at')
       .notNullable()
@@ -55,6 +60,14 @@ exports.up = async function up(knex) {
       .bigInteger('last_acknowledged_event_id')
       .notNullable()
       .comment('The most recent acknowledged event ID');
+    table
+      .string('filter_entity_ref')
+      .nullable()
+      .comment('Filter to only events pertaining to this entity ref');
+    table
+      .string('filter_entity_id')
+      .nullable()
+      .comment('Filter to only events pertaining to this entity uid');
   });
 };
 

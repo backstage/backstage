@@ -77,7 +77,7 @@ export class GetEventsModelImpl implements GetEventsModel {
         version: 1,
         afterEventId:
           events.length > 0
-            ? events[events.length - 1].id
+            ? events[events.length - 1].eventId
             : readOptions.afterEventId,
         entityRef: readOptions.entityRef,
         entityId: readOptions.entityId,

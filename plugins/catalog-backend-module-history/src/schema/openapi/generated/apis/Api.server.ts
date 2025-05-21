@@ -22,8 +22,8 @@
 import { GetEvents200Response } from '../models/GetEvents200Response.model';
 import { GetEventsDefaultResponse } from '../models/GetEventsDefaultResponse.model';
 import { ReadSubscription200Response } from '../models/ReadSubscription200Response.model';
+import { SubscriptionSpec } from '../models/SubscriptionSpec.model';
 import { UpsertSubscription200Response } from '../models/UpsertSubscription200Response.model';
-import { UpsertSubscriptionRequest } from '../models/UpsertSubscriptionRequest.model';
 
 /**
  * @public
@@ -48,7 +48,10 @@ export type GetEvents = {
     limit?: number;
     block?: boolean;
   };
-  response: GetEvents200Response | void | GetEventsDefaultResponse;
+  response:
+    | GetEvents200Response
+    | GetEvents200Response
+    | GetEventsDefaultResponse;
 };
 /**
  * @public
@@ -71,8 +74,8 @@ export type ReadSubscription = {
  * @public
  */
 export type UpsertSubscription = {
-  body: UpsertSubscriptionRequest;
-  response: UpsertSubscription200Response;
+  body: SubscriptionSpec;
+  response: UpsertSubscription200Response | GetEventsDefaultResponse;
 };
 
 export type EndpointMap = {
