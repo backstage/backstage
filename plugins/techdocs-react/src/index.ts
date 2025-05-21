@@ -57,4 +57,3 @@ export {
   getEntityRootTechDocsPath,
   buildTechDocsURL,
 } from './helpers';
-export type { TechDocsRouteFunc } from './helpers';

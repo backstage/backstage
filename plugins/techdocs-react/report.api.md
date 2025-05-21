@@ -21,7 +21,11 @@ import { SetStateAction } from 'react';
 // @public
 export const buildTechDocsURL: (
   entity: Entity,
-  routeFunc: TechDocsRouteFunc | undefined,
+  routeFunc: RouteFunc<{
+    namespace: string;
+    kind: string;
+    name: string;
+  }> | undefined,
 ) => string | undefined;
 
 // @public
@@ -131,13 +135,6 @@ export type TechDocsReaderPageValue = {
   setSubtitle: Dispatch<SetStateAction<string>>;
   onReady?: () => void;
 };
-
-// @public
-export type TechDocsRouteFunc = RouteFunc<{
-  namespace: string;
-  kind: string;
-  name: string;
-}>;
 
 // @public
 export const TechDocsShadowDom: (

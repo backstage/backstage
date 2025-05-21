@@ -28,18 +28,6 @@ import {
 import { RouteFunc } from '@backstage/core-plugin-api';
 
 /**
- * The RouteFunc used by buildTechDocsURL() to build the TechDocs link for
- * an entity.
- *
- * @public
- */
-export type TechDocsRouteFunc = RouteFunc<{
-  namespace: string;
-  kind: string;
-  name: string;
-}>;
-
-/**
  * Lower-case entity triplets by default, but allow override.
  *
  * @public
@@ -82,7 +70,13 @@ export function getEntityRootTechDocsPath(entity: Entity): string {
  */
 export const buildTechDocsURL = (
   entity: Entity,
-  routeFunc: TechDocsRouteFunc | undefined,
+  routeFunc:
+    | RouteFunc<{
+        namespace: string;
+        kind: string;
+        name: string;
+      }>
+    | undefined,
 ) => {
   if (!routeFunc) {
     return undefined;
