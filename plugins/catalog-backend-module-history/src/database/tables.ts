@@ -15,7 +15,7 @@
  */
 
 export interface EventsTableRow {
-  id: string;
+  event_id: string;
   event_at: Date | string;
   event_type: string;
   entity_ref: string | null;
@@ -24,11 +24,14 @@ export interface EventsTableRow {
 }
 
 export interface SubscriptionsTableRow {
-  id: string;
+  subscription_id: string;
+  created_at: Date | string;
   active_at: Date | string;
   state: 'idle' | 'waiting';
   ack_id: string | null;
   ack_timeout_at: Date | string | null;
   last_acknowledged_event_id: number | string;
   last_sent_event_id: number | string;
+  filter_entity_ref: string | null;
+  filter_entity_id: string | null;
 }

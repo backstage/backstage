@@ -48,7 +48,7 @@ export class AckSubscriptionModelImpl implements AckSubscriptionModel {
         ack_timeout_at: null,
         last_acknowledged_event_id: knex.ref('last_sent_event_id'),
       })
-      .where('id', '=', options.ackOptions.subscriptionId)
+      .where('subscription_id', '=', options.ackOptions.subscriptionId)
       .andWhere('state', '=', 'waiting')
       .andWhere('ack_id', '=', options.ackOptions.ackId);
 

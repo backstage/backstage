@@ -161,7 +161,7 @@ describe('createRouter', () => {
         body: {
           items: [
             {
-              id: '1',
+              eventId: '1',
               eventType: 'entity_created',
               entityId: expect.any(String),
               entityJson: expect.any(String),
@@ -231,7 +231,7 @@ describe('createRouter', () => {
         body: {
           items: [
             {
-              id: '2',
+              eventId: '2',
               eventType: 'entity_updated',
               entityId: expect.any(String),
               entityJson: expect.any(String),
@@ -261,7 +261,7 @@ describe('createRouter', () => {
         body: {
           items: [
             {
-              id: '2',
+              eventId: '2',
               eventType: 'entity_updated',
               entityId: expect.any(String),
               entityJson: expect.any(String),
@@ -291,7 +291,7 @@ describe('createRouter', () => {
         body: {
           items: [
             {
-              id: '1',
+              eventId: '1',
               eventType: 'entity_created',
               entityId: expect.any(String),
               entityJson: expect.any(String),
@@ -381,7 +381,7 @@ describe('createRouter', () => {
         body: {
           items: [
             {
-              id: '3',
+              eventId: '3',
               eventType: 'entity_deleted',
               entityId: expect.any(String),
               entityJson: expect.any(String),

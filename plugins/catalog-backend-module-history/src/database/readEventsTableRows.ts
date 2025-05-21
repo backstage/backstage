@@ -34,7 +34,7 @@ export async function readEventsTableRows(
 
   if (options.afterEventId) {
     query = query.where(
-      'id',
+      'event_id',
       options.order === 'asc' ? '>' : '<',
       options.afterEventId,
     );
@@ -46,11 +46,11 @@ export async function readEventsTableRows(
     query = query.where('entity_id', '=', options.entityId);
   }
 
-  query = query.orderBy('id', options.order).limit(options.limit);
+  query = query.orderBy('event_id', options.order).limit(options.limit);
 
   return await query.then(rows =>
     rows.map(row => ({
-      id: String(row.id),
+      eventId: String(row.event_id),
       eventAt:
         typeof row.event_at === 'string'
           ? new Date(row.event_at)

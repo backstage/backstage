@@ -22,5 +22,6 @@ export * from '../models/GetEventsDefaultResponseError.model';
 export * from '../models/GetEventsDefaultResponseRequest.model';
 export * from '../models/GetEventsDefaultResponseResponse.model';
 export * from '../models/ReadSubscription200Response.model';
+export * from '../models/Subscription.model';
+export * from '../models/SubscriptionSpec.model';
 export * from '../models/UpsertSubscription200Response.model';
-export * from '../models/UpsertSubscriptionRequest.model';

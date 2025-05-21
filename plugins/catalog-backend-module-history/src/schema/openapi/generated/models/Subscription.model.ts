@@ -19,9 +19,20 @@
 // ******************************************************************
 
 /**
+ * A single subscription
  * @public
  */
-export interface UpsertSubscriptionRequest {
-  target: string;
-  type: string;
+export interface Subscription {
+  /**
+   * The unique identifier of this subscription.
+   */
+  subscriptionId: string;
+  /**
+   * Filtered to only events pertaining to this entity ref
+   */
+  entityRef?: string;
+  /**
+   * Filtered to only events pertaining to this entity uid
+   */
+  entityId?: string;
 }

@@ -121,7 +121,7 @@ describe('GetEventsModelImpl', () => {
         ).resolves.toEqual({
           events: [
             {
-              id: '1',
+              eventId: '1',
               eventType: 'entity_created',
               eventAt: expect.any(Date),
               entityRef: 'k:ns/foo',
@@ -165,7 +165,7 @@ describe('GetEventsModelImpl', () => {
         ).resolves.toEqual({
           events: [
             {
-              id: '3',
+              eventId: '3',
               eventType: 'entity_updated',
               eventAt: expect.any(Date),
               entityRef: 'k:ns/foo',
@@ -173,7 +173,7 @@ describe('GetEventsModelImpl', () => {
               entityJson: '{"data":3}',
             },
             {
-              id: '2',
+              eventId: '2',
               eventType: 'entity_updated',
               eventAt: expect.any(Date),
               entityRef: 'k:ns/foo',
@@ -198,7 +198,7 @@ describe('GetEventsModelImpl', () => {
         ).resolves.toEqual({
           events: [
             {
-              id: '1',
+              eventId: '1',
               eventType: 'entity_created',
               eventAt: expect.any(Date),
               entityRef: 'k:ns/foo',
