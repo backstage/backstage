@@ -15,10 +15,10 @@
  */
 
 import { Knex } from 'knex';
-import { EventsTableRow } from './tables';
-import { CatalogEvent } from '../service/endpoints/types';
+import { EventsTableRow } from '../tables';
+import { CatalogEvent } from '../../service/endpoints/types';
 
-export interface ReadEventsTableRowsOptions {
+export interface ReadHistoryEventsOptions {
   afterEventId?: string;
   entityRef?: string;
   entityId?: string;
@@ -26,9 +26,12 @@ export interface ReadEventsTableRowsOptions {
   limit: number;
 }
 
-export async function readEventsTableRows(
+/**
+ * Reads history events directly from the events table.
+ */
+export async function readHistoryEvents(
   knex: Knex,
-  options: ReadEventsTableRowsOptions,
+  options: ReadHistoryEventsOptions,
 ): Promise<CatalogEvent[]> {
   let query = knex<EventsTableRow>('module_history__events');
 

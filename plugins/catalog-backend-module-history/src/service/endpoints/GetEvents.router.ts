@@ -15,7 +15,7 @@
  */
 
 import { TypedRouter } from '@backstage/backend-openapi-utils';
-import { ReadEventsTableRowsOptions } from '../../database/readEventsTableRows';
+import { ReadEventsTableRowsOptions } from '../../database/operations/readHistoryEvents';
 import { EndpointMap } from '../../schema/openapi';
 import { GetEventsModel } from './GetEvents.model';
 import { parseCursor, stringifyCursor } from './GetEvents.utils';

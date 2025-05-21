@@ -19,20 +19,20 @@ import {
   startTestBackend,
   TestDatabases,
 } from '@backstage/backend-test-utils';
-import { getMaxId } from './getMaxId';
-import { EventsTableRow } from './tables';
+import { getMaxEventId } from './getMaxEventId';
+import { EventsTableRow } from '../tables';
 import catalog from '@backstage/plugin-catalog-backend';
 import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { initializeDatabaseAfterCatalog } from './migrations';
+import { initializeDatabaseAfterCatalog } from '../migrations';
 import { createDeferred } from '@backstage/types';
 
 jest.setTimeout(60_000);
 
-describe('getMaxId', () => {
+describe('getMaxEventId', () => {
   const databases = TestDatabases.create();
 
   it.each(databases.eachSupportedId())('works, %p', async databaseId => {
@@ -66,13 +66,13 @@ describe('getMaxId', () => {
     });
     await ready;
 
-    await expect(getMaxId(knex)).resolves.toBe('0');
+    await expect(getMaxEventId(knex)).resolves.toBe('0');
 
     await knex<EventsTableRow>('module_history__events').insert({
       event_type: 't',
     });
 
-    await expect(getMaxId(knex)).resolves.toBe('1');
+    await expect(getMaxEventId(knex)).resolves.toBe('1');
 
     await backend.stop();
   });
