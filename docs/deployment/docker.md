@@ -16,8 +16,14 @@ This guide assumes your have a basic understanding of Docker and how it works. I
 You'all also want to complete the following prerequisites:
 
 1. Created an app following the [Getting Started guide](../getting-started/index.md)
-2. Setup an auth provider, the [Authentication guide](../getting-started/config/authentication.md) is a good starting point for this, the default [Guest auth provider](../auth/guest/provider.md) is not intended for use in deployed environments
+2. Setup an auth provider, the [Authentication guide](../getting-started/config/authentication.md) is a good starting point for this, the default [Guest auth provider](../auth/guest/provider.md) is not intended for use in containerized environments
 3. A Postgres database setup that you are able to connect to, the [Database guide](../getting-started/config/database.md) can help you with this
+
+:::warning
+
+Moving forward without addressing these prerequisites is very likely to cause undesirable results, the most common being not having a proper auth provider setup as the default [Guest auth provider](../auth/guest/provider.md) is not intended for use in containerized environments.
+
+:::
 
 ## Host Build
 
