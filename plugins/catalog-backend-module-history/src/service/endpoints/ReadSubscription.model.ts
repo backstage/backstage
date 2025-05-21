@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-import { NotFoundError } from '@backstage/errors';
 import { durationToMilliseconds } from '@backstage/types';
-import { randomUUID } from 'crypto';
 import { once } from 'events';
 import { Knex } from 'knex';
 import { HistoryConfig } from '../../config';
-import { readEventsTableRows } from '../../database/readEventsTableRows';
-import { SubscriptionsTableRow } from '../../database/tables';
-import { knexRawNowPlus } from '../../database/util';
+import { readHistorySubscription } from '../../database/operations/readHistorySubscription';
 import { CatalogEvent } from './types';
 
 export interface ReadSubscriptionOptions {
@@ -59,104 +55,12 @@ export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
   async readSubscriptionNonblocking(options: {
     readOptions: ReadSubscriptionOptions;
   }): Promise<{ events: CatalogEvent[]; ackId: string } | undefined> {
-    const result = await this.#tryReadSubscriptionNonblocking(options);
-    if (!result) {
-      return undefined;
-    }
-
-    // Move the subscription forward and mark it as waiting for acknowledgement,
-    // but only if it's still untouched since the operation started
-    const knex = await this.#knexPromise;
-    const ackId = randomUUID();
-    const ackDeadline = knexRawNowPlus(
-      knex,
-      this.#historyConfig.subscriptionAckTimeout,
-    );
-    const count = await knex<SubscriptionsTableRow>(
-      'module_history__subscriptions',
-    )
-      .update({
-        state: 'waiting',
-        ack_id: ackId,
-        ack_timeout_at: ackDeadline,
-        last_sent_event_id: result.events[result.events.length - 1].eventId,
-      })
-      .where('subscription_id', '=', options.readOptions.subscriptionId)
-      .andWhere('state', '=', 'idle')
-      .andWhere(
-        'last_acknowledged_event_id',
-        '=',
-        result.previousLasAcknowledgedEventId,
-      );
-
-    // If we could not move the subscription forward, just bail out because
-    // either the subscription was deleted, or someone else made an
-    // overlapping read and "won". In that case we do not want to also send
-    // the same events.
-    if (count !== 1) {
-      return undefined;
-    }
-
-    return {
-      events: result.events,
-      ackId,
-    };
-  }
-
-  async #tryReadSubscriptionNonblocking(options: {
-    readOptions: ReadSubscriptionOptions;
-  }): Promise<
-    | { events: CatalogEvent[]; previousLasAcknowledgedEventId: string }
-    | undefined
-  > {
-    const { subscriptionId, limit } = options.readOptions;
-    const knex = await this.#knexPromise;
-
-    // "Touch" the subscription and get its metadata
-    let subscriptions: SubscriptionsTableRow[];
-    if (knex.client.config.client.includes('pg')) {
-      subscriptions = await knex<SubscriptionsTableRow>(
-        'module_history__subscriptions',
-      )
-        .update({ active_at: knex.fn.now() })
-        .where('subscription_id', '=', subscriptionId)
-        .returning(['state', 'last_acknowledged_event_id']);
-    } else {
-      await knex<SubscriptionsTableRow>('module_history__subscriptions')
-        .update({ active_at: knex.fn.now() })
-        .where('subscription_id', '=', subscriptionId);
-      subscriptions = await knex
-        .select('state', 'last_acknowledged_event_id')
-        .from<SubscriptionsTableRow>('module_history__subscriptions')
-        .where('subscription_id', '=', subscriptionId);
-    }
-
-    if (subscriptions.length !== 1) {
-      throw new NotFoundError(`Subscription ${subscriptionId} not found`);
-    }
-
-    // We can only read idle subscriptions. If it is not idle, another operation
-    // is pending for it, most likely waiting for another reader to acknowledge
-    // reception of events.
-    const { state, last_acknowledged_event_id } = subscriptions[0];
-    if (state !== 'idle') {
-      return undefined;
-    }
-
-    const events = await readEventsTableRows(knex, {
-      afterEventId: String(last_acknowledged_event_id),
-      order: 'asc',
-      limit,
+    return await readHistorySubscription(await this.#knexPromise, {
+      subscriptionId: options.readOptions.subscriptionId,
+      operation: 'read',
+      limit: options.readOptions.limit,
+      historyConfig: this.#historyConfig,
     });
-
-    if (events.length === 0) {
-      return undefined;
-    }
-
-    return {
-      events,
-      previousLasAcknowledgedEventId: String(last_acknowledged_event_id),
-    };
   }
 
   // TODO(freben): Implement a more efficient way to wait for new events. See
@@ -191,8 +95,11 @@ export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
         if (this.#shutdownSignal.aborted || options.signal?.aborted) {
           return 'aborted';
         }
-        const result = await this.#tryReadSubscriptionNonblocking({
-          readOptions: { ...options.readOptions, limit: 1 },
+        const result = await readHistorySubscription(await this.#knexPromise, {
+          subscriptionId: options.readOptions.subscriptionId,
+          operation: 'peek',
+          limit: 1,
+          historyConfig: this.#historyConfig,
         });
         if (result) {
           return 'ready';

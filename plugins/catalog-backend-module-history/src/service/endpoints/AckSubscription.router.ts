@@ -16,10 +16,7 @@
 
 import { TypedRouter } from '@backstage/backend-openapi-utils';
 import { EndpointMap } from '../../schema/openapi';
-import {
-  AckSubscriptionModel,
-  AckSubscriptionOptions,
-} from './AckSubscription.model';
+import { AckSubscriptionModel } from './AckSubscription.model';
 
 export function bindAckSubscriptionEndpoint(
   router: TypedRouter<EndpointMap>,
@@ -30,14 +27,17 @@ export function bindAckSubscriptionEndpoint(
     async (req, res) => {
       const { subscriptionId, ackId } = req.params;
 
-      const ackOptions: AckSubscriptionOptions = {
-        subscriptionId,
-        ackId,
-      };
+      const result = await model.ackSubscription({
+        ackOptions: {
+          subscriptionId,
+          ackId,
+        },
+      });
+      if (!result) {
+        throw new Error('Subscription or ACK id not found');
+      }
 
-      const result = await model.ackSubscription({ ackOptions });
-
-      res.sendStatus(result ? 200 : 404);
+      res.sendStatus(200);
     },
   );
 }

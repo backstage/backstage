@@ -27,7 +27,7 @@ import { createMockEntityProvider } from '../__fixtures__/createMockEntityProvid
 import { getHistoryConfig } from '../config';
 import { HistoryJanitor } from './HistoryJanitor';
 import { applyDatabaseMigrations } from './migrations';
-import { EventsTableRow, SubscriptionsTableRow } from './tables';
+import { EventsTableRow } from './tables';
 import { knexRawNowMinus, knexRawNowPlus } from './util';
 
 jest.setTimeout(60_000);

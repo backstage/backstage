@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import { Knex } from 'knex';
+import { durationToMilliseconds } from '@backstage/types';
 import { once } from 'events';
+import { Knex } from 'knex';
 import { HistoryConfig } from '../../config';
-import { getMaxId } from '../../database/getMaxId';
+import { getMaxEventId } from '../../database/operations/getMaxEventId';
 import {
-  readEventsTableRows,
-  ReadEventsTableRowsOptions,
-} from '../../database/readEventsTableRows';
+  readHistoryEvents,
+  ReadHistoryEventsOptions,
+} from '../../database/operations/readHistoryEvents';
 import { Cursor } from './GetEvents.utils';
 import { CatalogEvent } from './types';
-import { durationToMilliseconds } from '@backstage/types';
 
 export interface GetEventsModel {
   readEventsNonblocking(options: {
-    readOptions: ReadEventsTableRowsOptions;
+    readOptions: ReadHistoryEventsOptions;
     block: boolean;
   }): Promise<{ events: CatalogEvent[]; cursor?: Cursor }>;
   blockUntilDataIsReady(options: {
-    readOptions: ReadEventsTableRowsOptions;
+    readOptions: ReadHistoryEventsOptions;
     signal?: AbortSignal;
   }): Promise<'timeout' | 'aborted' | 'ready'>;
 }
@@ -53,7 +53,7 @@ export class GetEventsModelImpl implements GetEventsModel {
   }
 
   async readEventsNonblocking(options: {
-    readOptions: ReadEventsTableRowsOptions;
+    readOptions: ReadHistoryEventsOptions;
     block: boolean;
   }): Promise<{ events: CatalogEvent[]; cursor?: Cursor }> {
     const knex = await this.#knexPromise;
@@ -61,9 +61,9 @@ export class GetEventsModelImpl implements GetEventsModel {
     let readOptions = options.readOptions;
     let events: CatalogEvent[] = [];
     if (readOptions.afterEventId === 'last') {
-      readOptions = { ...readOptions, afterEventId: await getMaxId(knex) };
+      readOptions = { ...readOptions, afterEventId: await getMaxEventId(knex) };
     } else {
-      events = await readEventsTableRows(knex, readOptions);
+      events = await readHistoryEvents(knex, readOptions);
     }
 
     // Let's generate a cursor for continuing to read, if we got some rows OR if
@@ -95,7 +95,7 @@ export class GetEventsModelImpl implements GetEventsModel {
   // up until the deadline and stop early if the request closes, or if we are
   // shutting down, or we start finding some rows.
   async blockUntilDataIsReady(options: {
-    readOptions: ReadEventsTableRowsOptions;
+    readOptions: ReadHistoryEventsOptions;
     signal?: AbortSignal;
   }): Promise<'timeout' | 'aborted' | 'ready'> {
     const knex = await this.#knexPromise;
@@ -123,7 +123,7 @@ export class GetEventsModelImpl implements GetEventsModel {
         if (this.#shutdownSignal.aborted || options.signal?.aborted) {
           return 'aborted';
         }
-        const rows = await readEventsTableRows(knex, {
+        const rows = await readHistoryEvents(knex, {
           ...options.readOptions,
           limit: 1,
         });
