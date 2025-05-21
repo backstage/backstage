@@ -13,7 +13,7 @@ This section describes how to build a Backstage App into a deployable Docker ima
 
 This guide assumes your have a basic understanding of Docker and how it works. If you are new to Docker, you can start with the [Docker overview](https://docs.docker.com/get-started/overview/) guide.
 
-You'all also want to complete the following prerequisites:
+You'll also want to complete the following prerequisites:
 
 1. Created an app following the [Getting Started guide](../getting-started/index.md)
 2. Setup an auth provider, the [Authentication guide](../getting-started/config/authentication.md) is a good starting point for this, the default [Guest auth provider](../auth/guest/provider.md) is not intended for use in containerized environments
