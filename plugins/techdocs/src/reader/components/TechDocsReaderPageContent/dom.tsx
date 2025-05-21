@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  // useRef,
+  useState,
+} from 'react';
 
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
@@ -55,23 +61,17 @@ const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 // current location in the history. This should only happen on the initial load so
 // navigating to the root of the docs doesn't also redirect.
 const useInitialRedirect = (defaultPath?: string) => {
-  const [hasRun, setHasRun] = useState(false);
+  // const hasRun = useRef(false);
 
   const location = useLocation();
   const navigate = useNavigate();
   const { '*': currPath = '' } = useParams();
 
-  useEffect(() => {
-    // Only run once
-    if (hasRun) {
-      return;
-    }
-    setHasRun(true);
-
+  useLayoutEffect(() => {
     if (currPath === '' && defaultPath !== '') {
       navigate(`${location.pathname}${defaultPath}`, { replace: true });
     }
-  }, [hasRun, currPath, defaultPath, location, navigate]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 };
 
 /**
