@@ -21,11 +21,13 @@ import { SetStateAction } from 'react';
 // @public
 export const buildTechDocsURL: (
   entity: Entity,
-  routeFunc: RouteFunc<{
-    namespace: string;
-    kind: string;
-    name: string;
-  }> | undefined,
+  routeFunc:
+    | RouteFunc<{
+        namespace: string;
+        kind: string;
+        name: string;
+      }>
+    | undefined,
 ) => string | undefined;
 
 // @public
