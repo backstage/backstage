@@ -92,7 +92,7 @@ search:
 ```
 
 :::note Note 
-The highlight search term feature uses `ts_headline` which has been known to potentially impact performance. You only need this minimal config to disable it should you have issues:
+The highlight search term feature uses `ts_headline` which has been known to potentially impact performance. You only need this minimal config to disable it should you have issues.
 
 :::
 
