@@ -22,11 +22,11 @@ An installed instance of Backstage. An app can be local, intended for a single d
 
 ## Authentication
 
-The process of verifying the identity of a user, system, or entity attempting to access a resource, system, or network. It answers the question: "Are you who you claim to be?" See [the Wikipedia article](https://en.wikipedia.org/wiki/Authentication) for more details.
+The process of verifying the identity of a user, system, or entity attempting to access a resource, system, or network. It answers the question: "Are you who you claim to be?" See [this Wikipedia article](https://en.wikipedia.org/wiki/Authentication) for more details.
 
 ## Authorization
 
-The process of determining what an authenticated user or system is allowed to do within a system, application, or resource. Coming after authentication (which verifies who you are), it answers the question: "What are you allowed to access or do?" This involves assigning specific privileges or access rights to users or roles. See [the Wikipedia article](https://en.wikipedia.org/wiki/Authorization) for more details.
+The process of determining what an authenticated user or system is allowed to do within a system, application, or resource. It comes after authentication, and answers the question: "What are you allowed to access or do?" It involves assigning specific privileges or access rights or roles to the user. See [this Wikipedia article](https://en.wikipedia.org/wiki/Authorization) for more details.
 
 ## Authorization Code
 
@@ -58,15 +58,11 @@ The actual framework that Backstage [plugins](#plugin) sit on. This spans both t
 
 A set of technologies that "empower organizations to build and run scalable applications in modern, dynamic environments such as public, private, and hybrid clouds. Containers, service meshes, microservices, immutable infrastructure, and declarative APIs exemplify this approach." ([CNCF Cloud Native Definition v1.0](https://github.com/cncf/toc/blob/main/DEFINITION.md)).
 
-## Cloud Native Computing Foundation
+## Cloud Native Computing Foundation (AKA CNCF)
 
 A foundation dedicated to the promotion and advancement of [Cloud Native Computing](#Cloud-Native-Computing). The mission of the Cloud Native Computing Foundation (CNCF) is "to make cloud native computing ubiquitous" ([CNCF Charter](https://github.com/cncf/foundation/blob/main/charter.md)).
 
 CNCF is part of the [Linux Foundation](https://www.linuxfoundation.org/).
-
-## CNCF
-
-[Cloud Native Computing Foundation](#cloud-native-computing-foundation).
 
 ## Code Grant
 
@@ -128,7 +124,7 @@ A centralized system comprising a user interface and database used to facilitate
 
 ## Entity
 
-1. Something that exists as a distinct, separate unit. This existence can be real or abstract, physical or conceptual, persistent or ephemeral.
+1. Something that exists as a separate and distinct unit. Its existence can be real or abstract, physical or conceptual, persistent or ephemeral.
 
 2. What is cataloged in the Backstage Software Catalog. An entity is identified by a unique combination of [kind](#Kind), [namespace](#Namespace), and name. See [the catalog docs](https://backstage.io/docs/features/software-catalog/system-model) for more information.
 
@@ -154,13 +150,9 @@ A write stream of [documents](#documents).
 
 Someone who develops one or more plugins that enable Backstage to interoperate with another software system. A [user role](#user-role).
 
-## JSON Web Token
+## JSON Web Token (AKA JWT)
 
-A popular, compact, and self-contained open standard for securely transmitting information between parties as a JSON object. A JSON Web Token (JWT) is commonly used to verify a user's identity [authentication](#authentication) and permissions [authorization](#authorization). Each JWT consists of three parts separated by dots: a header, a payload, and a digital signature. While often encrypted, JWTs are always signed for integrity. This standard is a key component of [OpenID Connect](#openid-connect). For more details, see [the Wikipedia article](https://en.wikipedia.org/wiki/JSON_Web_Token).
-
-## JWT
-
-[JSON Web Token](#json-web-token).
+A popular, compact, and self-contained open standard for securely transmitting information between parties as a JSON object. It is commonly used to verify a user's identity [authentication](#authentication) and permissions [authorization](#authorization). Each JWT consists of a header, payload, and digital signature separated by dots. While often encrypted, JWTs are always signed for integrity. This standard is a key component of [OpenID Connect](#openid-connect). For more details, see [the Wikipedia article](https://en.wikipedia.org/wiki/JSON_Web_Token).
 
 ## Kind
 
@@ -222,7 +214,7 @@ The declared role of a package, see [package roles](../tooling/cli/02-build-syst
 
 ## Permission
 
-Specific rules or settings that define the level of access and types of actions that a user, group, or system process is allowed to perform on a particular resource. They are a core component of authorization that determine "what you can do" after you've been authenticated ("who you are"). Permissions are properties of objects or resources. Closely related to [Privilege](#privilege) (the terms are often used interchangeably).
+Specific rules or settings that define the level of access and types of actions that a user, group, or system process is allowed to perform on a particular resource. They are a core component of authorization that determine "what you can do" after you've been authenticated. Permissions are properties of objects or resources. Closely related to [Privilege](#privilege) (the terms are often used interchangeably).
 
 ## Permission (core Backstage plugin)
 
@@ -338,4 +330,4 @@ Any consumer of Backstage or Backstage products/applications. Includes individua
 
 ## User Role
 
-A class of Backstage user for purposes of analyzing [use cases](#use-case). One of: evaluator; administrator; developer; integrator; and contributor.
+A class of Backstage user for purposes of analyzing [use cases](#use-case). One of: [evaluator](#evaluator); [administrator](#administrator); [developer](#developer); [integrator](#integrator); and [contributor](#contributor).
