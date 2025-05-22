@@ -329,6 +329,10 @@ A purpose for which a [user role](#User-Role) interacts with Backstage. Related 
 
 Any consumer of Backstage or Backstage products/applications. Includes individuals like employees and contractors, as well as software that interacts with the backend through an API or acts as a proxy for a person by operating the user interface.
 
+## User
+
+Any consumer of Backstage or Backstage products/applications. Includes individuals like employees and contractors, as well as software that interacts with the backend through an API or acts as a proxy for a person by operating the user interface.
+
 ## User Role
 
 A class of Backstage user for purposes of analyzing [use cases](#use-case). One of: [evaluator](#evaluator); [administrator](#administrator); [developer](#developer); [integrator](#integrator); and [contributor](#contributor).
