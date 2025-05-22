@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * The history backend module for the catalog plugin.
- *
- * @packageDocumentation
- */
-
-export {
-  CATALOG_HISTORY_EVENT_TOPIC,
-  type CatalogHistoryEvent,
-} from './emitter';
-export { catalogModuleHistory as default } from './module';
+export { type CatalogHistoryEvent, CATALOG_HISTORY_EVENT_TOPIC } from './types';

@@ -15,7 +15,7 @@
  */
 
 import { Knex } from 'knex';
-import { SubscriptionsTableRow } from '../../database/tables';
+import { ackHistorySubscription } from '../../database/operations/ackHistorySubscription';
 
 export interface AckSubscriptionOptions {
   subscriptionId: string;
@@ -39,19 +39,9 @@ export class AckSubscriptionModelImpl implements AckSubscriptionModel {
     ackOptions: AckSubscriptionOptions;
   }): Promise<boolean> {
     const knex = await this.#knexPromise;
-    const count = await knex<SubscriptionsTableRow>(
-      'module_history__subscriptions',
-    )
-      .update({
-        state: 'idle',
-        ack_id: null,
-        ack_timeout_at: null,
-        last_acknowledged_event_id: knex.ref('last_sent_event_id'),
-      })
-      .where('subscription_id', '=', options.ackOptions.subscriptionId)
-      .andWhere('state', '=', 'waiting')
-      .andWhere('ack_id', '=', options.ackOptions.ackId);
-
-    return count === 1;
+    return await ackHistorySubscription(knex, {
+      subscriptionId: options.ackOptions.subscriptionId,
+      ackId: options.ackOptions.ackId,
+    });
   }
 }

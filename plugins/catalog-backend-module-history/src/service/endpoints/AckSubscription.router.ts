@@ -15,6 +15,7 @@
  */
 
 import { TypedRouter } from '@backstage/backend-openapi-utils';
+import { InputError } from '@backstage/errors';
 import { EndpointMap } from '../../schema/openapi';
 import { AckSubscriptionModel } from './AckSubscription.model';
 
@@ -33,8 +34,9 @@ export function bindAckSubscriptionEndpoint(
           ackId,
         },
       });
+
       if (!result) {
-        throw new Error('Subscription or ACK id not found');
+        throw new InputError('Subscription or ACK id not found');
       }
 
       res.sendStatus(200);

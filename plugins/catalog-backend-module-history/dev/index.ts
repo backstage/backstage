@@ -15,8 +15,43 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { CATALOG_HISTORY_EVENT_TOPIC, CatalogHistoryEvent } from '../src';
+
+const eventLogger = createBackendPlugin({
+  pluginId: 'catalog-history-event-logger',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        logger: coreServices.logger,
+        events: eventsServiceRef,
+      },
+      async init({ logger, events }) {
+        await events.subscribe({
+          id: 'catalog-history-event-logger',
+          topics: [CATALOG_HISTORY_EVENT_TOPIC],
+          onEvent: async event => {
+            logger.info(
+              JSON.stringify(
+                event.eventPayload as unknown as CatalogHistoryEvent,
+                null,
+                2,
+              ),
+            );
+          },
+        });
+      },
+    });
+  },
+});
 
 const backend = createBackend();
 backend.add(import('@backstage/plugin-catalog-backend'));
+backend.add(import('@backstage/plugin-events-backend'));
 backend.add(import('../src'));
+backend.add(eventLogger);
 backend.start();

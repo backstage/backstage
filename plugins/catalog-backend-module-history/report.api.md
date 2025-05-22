@@ -6,6 +6,23 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @public
+export const CATALOG_HISTORY_EVENT_TOPIC = 'backstage.catalog.history.event';
+
+// @public
+export interface CatalogHistoryEvent {
+  // (undocumented)
+  entityId: string;
+  // (undocumented)
+  entityRef: string;
+  // (undocumented)
+  eventAt: string;
+  // (undocumented)
+  eventId: string;
+  // (undocumented)
+  eventType: string;
+}
+
+// @public
 const catalogModuleHistory: BackendFeature;
 export default catalogModuleHistory;
 ```
