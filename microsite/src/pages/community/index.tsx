@@ -70,6 +70,13 @@ const Community = () => {
       link: 'https://www.cncf.io/training/certification/cba/',
       label: 'Learn more',
     },
+    {
+      title: 'KodeKloud Certified Backstage Associate Course',
+      content:
+        'KodeKloud offers an interactive course with hands-on labs to prepare you for the Certified Backstage Associate exam. Perfect for practical learners who want to gain real-world Backstage skills.',
+      link: 'https://learn.kodekloud.com/user/courses?search=backstage',
+      label: 'Learn more',
+    },
   ];
 
   const partners: { name: string; url: string; logo: string }[] = [
@@ -165,7 +172,9 @@ const Community = () => {
           <BannerSectionGrid
             header={
               <>
-                <h2 className="text--primary">Offical Backstage Initiatives</h2>
+                <h2 className="text--primary">
+                  Official Backstage Initiatives
+                </h2>
 
                 <h1>Stay tuned to the latest developments</h1>
               </>

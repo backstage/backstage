@@ -89,16 +89,18 @@ export function createGithubIssuesLabelAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const client = new Octokit(
-        await getOctokitOptions({
-          integrations,
-          credentialsProvider: githubCredentialsProvider,
-          host,
-          owner,
-          repo,
-          token: providedToken,
-        }),
-      );
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        host,
+        owner,
+        repo,
+        token: providedToken,
+      });
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       try {
         await ctx.checkpoint({

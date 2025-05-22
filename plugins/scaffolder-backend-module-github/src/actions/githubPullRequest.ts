@@ -139,6 +139,7 @@ export const createPublishGithubPullRequestAction = (
     sourcePath?: string;
     token?: string;
     reviewers?: string[];
+    assignees?: string[];
     teamReviewers?: string[];
     commitMessage?: string;
     update?: boolean;
@@ -211,6 +212,15 @@ export const createPublishGithubPullRequestAction = (
             },
             description:
               'The users that will be added as reviewers to the pull request',
+          },
+          assignees: {
+            title: 'Pull Request Assignees',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description:
+              'The users that will be added as assignees to the pull request',
           },
           teamReviewers: {
             title: 'Pull Request Team Reviewers',
@@ -295,6 +305,7 @@ export const createPublishGithubPullRequestAction = (
         sourcePath,
         token: providedToken,
         reviewers,
+        assignees,
         teamReviewers,
         commitMessage,
         update,
@@ -453,12 +464,27 @@ export const createPublishGithubPullRequestAction = (
         }
 
         const pullRequestNumber = pr.number;
+        const pullRequest = { owner, repo, number: pullRequestNumber };
         if (reviewers || teamReviewers) {
-          const pullRequest = { owner, repo, number: pullRequestNumber };
           await requestReviewersOnPullRequest(
             pullRequest,
             reviewers,
             teamReviewers,
+            client,
+            ctx.logger,
+            ctx.checkpoint,
+          );
+        }
+
+        if (assignees) {
+          if (assignees.length > 10) {
+            ctx.logger.warn(
+              'Assignees list is too long, only the first 10 will be used.',
+            );
+          }
+          await addAssigneesToPullRequest(
+            pullRequest,
+            assignees,
             client,
             ctx.logger,
             ctx.checkpoint,
@@ -474,6 +500,42 @@ export const createPublishGithubPullRequestAction = (
       }
     },
   });
+
+  async function addAssigneesToPullRequest(
+    pr: GithubPullRequest,
+    assignees: string[],
+    client: Octokit,
+    logger: LoggerService,
+    checkpoint: <T extends JsonValue | void>(opts: {
+      key: string;
+      fn: () => Promise<T> | T;
+    }) => Promise<T>,
+  ) {
+    try {
+      await checkpoint({
+        key: `add.assignees.${pr.owner}.${pr.repo}.${pr.number}`,
+        fn: async () => {
+          const result = await client.rest.issues.addAssignees({
+            owner: pr.owner,
+            repo: pr.repo,
+            issue_number: pr.number,
+            assignees,
+          });
+
+          const addedAssignees = result.data.assignees?.join(', ') ?? '';
+
+          logger.info(
+            `Added assignees [${addedAssignees}] to Pull request ${pr.number}`,
+          );
+        },
+      });
+    } catch (e) {
+      logger.error(
+        `Failure when adding assignees to Pull request ${pr.number}`,
+        e,
+      );
+    }
+  }
 
   async function requestReviewersOnPullRequest(
     pr: GithubPullRequest,

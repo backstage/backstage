@@ -1,5 +1,34 @@
 # @backstage/plugin-app-visualizer
 
+## 0.1.19
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+
+## 0.1.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+
+## 0.1.19-next.0
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/core-plugin-api@1.10.6
+
 ## 0.1.18
 
 ### Patch Changes

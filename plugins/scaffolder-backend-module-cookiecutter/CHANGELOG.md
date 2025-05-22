@@ -1,5 +1,70 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.3.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/backend-defaults@0.10.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-scaffolder-node@0.8.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.3.10-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0-next.3
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/plugin-scaffolder-node@0.8.2-next.3
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.3.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/backend-defaults@0.10.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/plugin-scaffolder-node@0.8.2-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.3.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/plugin-scaffolder-node@0.8.2-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.3.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/backend-defaults@0.9.1-next.0
+  - @backstage/plugin-scaffolder-node@0.8.2-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.3.9
 
 ### Patch Changes

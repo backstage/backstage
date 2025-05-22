@@ -1,5 +1,59 @@
 # @backstage/canon
 
+## 0.4.0
+
+### Minor Changes
+
+- ea36f74: **Breaking Change** Icons on Button and IconButton now need to be imported and placed like this: <Button iconStart={<ChevronDownIcon />} />
+- ccb1fc6: We are modifying the way we treat custom render using 'useRender()' under the hood from BaseUI.
+- 04a65c6: The icon prop in TextField now accept a ReactNode instead of an icon name. We also updated the icon sizes for each input sizes.
+
+### Patch Changes
+
+- c8f32db: Use correct colour token for TextField clear button icon, prevent layout shift whenever it is hidden or shown and properly size focus area around it. Also stop leading icon shrinking when used together with clear button.
+- e996368: Fix Canon missing dependencies
+- 720033c: For improved a11y, clicking a Select component label now focuses the Select trigger element, and the TextField component's label is now styled to indicate it's interactive.
+- 6189bfd: Added new icon and onClear props to the TextField to make it easier to accessorize inputs.
+- 9510105: Add new Tabs component to Canon
+- 97b25a1: Pin version of @base-ui-components/react.
+- 206ffbe: Fixed an issue with Canon's DataTable.Pagination component showing the wrong number for the "to" count.
+- 72d019d: Removed various typos
+- 4551fb7: Update Menu component in Canon to make the UI more condensed. We are also adding a new Combobox option for nested navigation.
+- 185d3a8: Use the Field component from Base UI within the TextField.
+- 1ea1db0: Add new truncate prop to Text and Heading components in Canon.
+
+## 0.4.0-next.3
+
+### Patch Changes
+
+- c8f32db: Use correct colour token for TextField clear button icon, prevent layout shift whenever it is hidden or shown and properly size focus area around it. Also stop leading icon shrinking when used together with clear button.
+
+## 0.4.0-next.2
+
+### Patch Changes
+
+- 6189bfd: Added new icon and onClear props to the TextField to make it easier to accessorize inputs.
+- 97b25a1: Pin version of @base-ui-components/react.
+- 185d3a8: Use the Field component from Base UI within the TextField.
+
+## 0.4.0-next.1
+
+### Minor Changes
+
+- ea36f74: **Breaking Change** Icons on Button and IconButton now need to be imported and placed like this: <Button iconStart={<ChevronDownIcon />} />
+
+### Patch Changes
+
+- 720033c: For improved a11y, clicking a Select component label now focuses the Select trigger element, and the TextField component's label is now styled to indicate it's interactive.
+- 206ffbe: Fixed an issue with Canon's DataTable.Pagination component showing the wrong number for the "to" count.
+- 72d019d: Removed various typos
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- e996368: Fix Canon missing dependencies
+
 ## 0.3.0
 
 ### Minor Changes

@@ -5,31 +5,15 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstagePackageJson } from '@backstage/cli-node';
-import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
 import { ConfigSchema } from '@backstage/config-loader';
-import { DatabaseService } from '@backstage/backend-plugin-api';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
-import { EventBroker } from '@backstage/plugin-events-node';
-import { EventsService } from '@backstage/plugin-events-node';
-import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
-import { IdentityApi } from '@backstage/plugin-auth-node';
-import { IndexBuilder } from '@backstage/plugin-search-backend-node';
 import { JsonObject } from '@backstage/types';
-import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PackagePlatform } from '@backstage/cli-node';
 import { PackageRole } from '@backstage/cli-node';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
-import { Router } from 'express';
-import { SchedulerService } from '@backstage/backend-plugin-api';
-import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { WinstonLoggerOptions } from '@backstage/backend-defaults/rootLogger';
 
 // @public (undocumented)
@@ -44,9 +28,7 @@ export interface BackendDynamicPlugin extends BaseDynamicPlugin {
 }
 
 // @public (undocumented)
-export type BackendDynamicPluginInstaller =
-  | LegacyBackendPluginInstaller
-  | NewBackendPluginInstaller;
+export type BackendDynamicPluginInstaller = NewBackendPluginInstaller;
 
 // @public (undocumented)
 export interface BackendPluginProvider {
@@ -248,6 +230,9 @@ export type FrontendRemoteResolver = {
   getRemoteEntryType?: (
     manifestContent: JsonObject,
   ) => 'manifest' | 'javascript';
+  getAdditionalRemoteInfo?: (
+    manifestContent: JsonObject,
+  ) => AdditionalRemoteInfo;
   getAdditionaRemoteInfo?: (
     manifestContent: JsonObject,
   ) => AdditionalRemoteInfo;
@@ -270,48 +255,6 @@ export type FrontendRemoteResolverProvider = {
 export function isBackendDynamicPluginInstaller(
   obj: any,
 ): obj is BackendDynamicPluginInstaller;
-
-// @public @deprecated (undocumented)
-export interface LegacyBackendPluginInstaller {
-  // (undocumented)
-  catalog?(builder: CatalogBuilder, env: LegacyPluginEnvironment): void;
-  // (undocumented)
-  events?(env: LegacyPluginEnvironment): HttpPostIngressOptions[];
-  // (undocumented)
-  kind: 'legacy';
-  // (undocumented)
-  permissions?: {
-    policy?: PermissionPolicy;
-  };
-  // (undocumented)
-  router?: {
-    pluginID: string;
-    createPlugin(env: LegacyPluginEnvironment): Promise<Router>;
-  };
-  // (undocumented)
-  scaffolder?(env: LegacyPluginEnvironment): TemplateAction<any>[];
-  // (undocumented)
-  search?(
-    indexBuilder: IndexBuilder,
-    schedule: SchedulerServiceTaskRunner,
-    env: LegacyPluginEnvironment,
-  ): void;
-}
-
-// @public @deprecated (undocumented)
-export type LegacyPluginEnvironment = {
-  logger: Logger;
-  database: DatabaseService;
-  config: Config;
-  reader: UrlReaderService;
-  discovery: DiscoveryService;
-  permissions: PermissionEvaluator;
-  scheduler: SchedulerService;
-  identity: IdentityApi;
-  eventBroker: EventBroker;
-  events: EventsService;
-  pluginProvider: BackendPluginProvider;
-};
 
 // @public (undocumented)
 export interface ModuleLoader {

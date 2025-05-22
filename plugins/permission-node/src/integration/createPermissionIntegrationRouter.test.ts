@@ -567,6 +567,101 @@ describe('createPermissionIntegrationRouter', () => {
       });
     });
 
+    describe('batched requests with resourceRef as an array', () => {
+      let response: Response;
+
+      beforeEach(async () => {
+        const app = express().use(
+          createPermissionIntegrationRouter(mockedOptionResources).use(
+            middleware.error(),
+          ),
+        );
+
+        mockTestRule1Apply.mockReturnValueOnce(true);
+        mockTestRule1Apply.mockReturnValueOnce(false);
+        mockTestRule1Apply.mockReturnValueOnce(false);
+
+        response = await request(app)
+          .post('/.well-known/backstage/permissions/apply-conditions')
+          .send({
+            items: [
+              {
+                id: '123',
+                resourceRef: [
+                  'default:test/resource-1',
+                  'default:test/resource-2',
+                ],
+                resourceType: 'test-resource',
+                conditions: {
+                  rule: 'test-rule-1',
+                  resourceType: 'test-resource',
+                  params: {
+                    foo: 'a',
+                    bar: 1,
+                  },
+                },
+              },
+              {
+                id: '234',
+                resourceRef: 'default:test/resource-3',
+                resourceType: 'test-resource',
+                conditions: {
+                  rule: 'test-rule-1',
+                  resourceType: 'test-resource',
+                  params: {
+                    foo: 'a',
+                    bar: 1,
+                  },
+                },
+              },
+              {
+                id: '345',
+                resourceRef: 'default:test/resource-2',
+                resourceType: 'test-resource-2',
+                conditions: {
+                  not: {
+                    rule: 'test-rule-1',
+                    resourceType: 'test-resource-2',
+                    params: {
+                      foo: 'a',
+                      bar: 1,
+                    },
+                  },
+                },
+              },
+            ],
+          });
+      });
+
+      it('processes batched requests', () => {
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({
+          items: [
+            {
+              id: '123',
+              result: [AuthorizeResult.ALLOW, AuthorizeResult.DENY],
+            },
+            {
+              id: '234',
+              result: AuthorizeResult.DENY,
+            },
+            { id: '345', result: AuthorizeResult.ALLOW },
+          ],
+        });
+      });
+
+      it('calls getResources for all required resources at once', () => {
+        expect(defaultMockedGetResources1).toHaveBeenCalledWith([
+          'default:test/resource-1',
+          'default:test/resource-2',
+          'default:test/resource-3',
+        ]);
+        expect(defaultMockedGetResources2).toHaveBeenCalledWith([
+          'default:test/resource-2',
+        ]);
+      });
+    });
+
     it('returns 400 when called with incorrect resource type', async () => {
       const response = await request(createApp())
         .post('/.well-known/backstage/permissions/apply-conditions')

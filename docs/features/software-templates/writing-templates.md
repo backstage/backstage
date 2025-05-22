@@ -4,8 +4,7 @@ title: Writing Templates
 description: Details around creating your own custom Software Templates
 ---
 
-Templates are stored in the **Software Catalog** under a kind `Template`. You
-can create your own templates with a small `yaml` definition which describes the
+You can create your own templates with a small `yaml` definition which describes the
 template and its metadata, along with some input variables that your template
 will need, and then a list of actions which are then executed by the scaffolding
 service.
@@ -252,7 +251,7 @@ spec:
   type: service
 
   parameters:
-    - title: Authenticaion
+    - title: Authentication
       description: Provide authentication for the resource
       required:
         - username
@@ -712,9 +711,9 @@ powerful [Nunjucks templating engine](https://mozilla.github.io/nunjucks/).
 To learn more about basic Nunjucks templating please see
 [templating documentation](https://mozilla.github.io/nunjucks/templating.html).
 
-Information about Backstage's built-in Nunjucks extensions, as well as how to
+Information about Backstage's built-in templating extensions, as well as how to
 create your own customizations, may be found at
-[Template Extensions](./template-extensions.md).
+[Templating Extensions](./templating-extensions.md).
 
 ## Template Editor
 

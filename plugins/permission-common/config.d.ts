@@ -23,5 +23,10 @@ export interface Config {
      * @visibility frontend
      */
     enabled?: boolean;
+
+    /**
+     * @visibility frontend
+     */
+    EXPERIMENTAL_enableBatchedRequests?: boolean;
   };
 }

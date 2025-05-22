@@ -56,7 +56,15 @@ Open `packages/app/src/App.tsx` and below the last `import` line, add:
 import { githubAuthApiRef } from '@backstage/core-plugin-api';
 ```
 
-Search for `const app = createApp({` in this file, and below `apis,` add:
+Search for `const app = createApp({` in this file, and replace:
+
+```tsx title="packages/app/src/App.tsx"
+components: {
+  SignInPage: props => <SignInPage {...props} auto providers={['guest']} />,
+},
+```
+
+with
 
 ```tsx title="packages/app/src/App.tsx"
 components: {

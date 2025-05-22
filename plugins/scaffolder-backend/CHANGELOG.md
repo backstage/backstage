@@ -1,5 +1,176 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.33.0
+
+### Minor Changes
+
+- 587cb05: Added `workspace:template` and `workspace:template:file` actions to complement respective `fetch:*` actions
+
+### Patch Changes
+
+- eb39388: Fixed bug in fs:delete that prevented wildcard patterns from matching paths starting with "."
+- 36ae651: Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
+- 72d019d: Removed various typos
+- ec42f8e: Generating new tokens on each Scaffolder Task Retry
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.1
+  - @backstage/backend-defaults@0.10.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/plugin-auth-node@0.6.3
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.0
+  - @backstage/plugin-scaffolder-node@0.8.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.9
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.9
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.10
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.9
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.9
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.9
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.8
+  - @backstage/plugin-events-node@0.4.11
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 1.33.0-next.3
+
+### Patch Changes
+
+- ec42f8e: Generating new tokens on each Scaffolder Task Retry
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0-next.3
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/plugin-scaffolder-node@0.8.2-next.3
+  - @backstage/plugin-auth-node@0.6.3-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.1-next.3
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0-next.3
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.8-next.2
+  - @backstage/plugin-catalog-node@1.17.0-next.2
+  - @backstage/plugin-events-node@0.4.11-next.2
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.9-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.10-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.9-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.9-next.3
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.9-next.3
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.9-next.3
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.1-next.3
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 1.33.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/backend-defaults@0.10.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.1-next.2
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.10-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.1-next.2
+  - @backstage/plugin-scaffolder-node@0.8.2-next.2
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.8-next.1
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 1.33.0-next.1
+
+### Minor Changes
+
+- 587cb05: Added `workspace:template` and `workspace:template:file` actions to complement respective `fetch:*` actions
+
+### Patch Changes
+
+- eb39388: Fixed bug in fs:delete that prevented wildcard patterns from matching paths starting with "."
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0-next.1
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.1-next.1
+  - @backstage/plugin-scaffolder-node@0.8.2-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.8-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0-next.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.9-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.9-next.1
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 1.32.2-next.0
+
+### Patch Changes
+
+- 36ae651: Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.1-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.1-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.0
+  - @backstage/backend-defaults@0.9.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.9-next.0
+  - @backstage/plugin-scaffolder-node@0.8.2-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.6.3-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.8-next.0
+  - @backstage/plugin-events-node@0.4.11-next.0
+  - @backstage/plugin-permission-node@0.9.2-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-scaffolder-common@1.5.10
+
 ## 1.32.0
 
 ### Minor Changes

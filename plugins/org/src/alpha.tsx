@@ -59,20 +59,34 @@ const EntityOwnershipCard = EntityCardBlueprint.make({
 });
 
 /** @alpha */
-const EntityUserProfileCard = EntityCardBlueprint.make({
+const EntityUserProfileCard = EntityCardBlueprint.makeWithOverrides({
   name: 'user-profile',
-  params: {
-    filter: 'kind:user',
-    loader: async () =>
-      import('./components/Cards/User/UserProfileCard/UserProfileCard').then(
-        m => compatWrapper(<m.UserProfileCard />),
-      ),
+  config: {
+    schema: {
+      maxRelations: z => z.number().optional(),
+      hideIcons: z => z.boolean().default(false),
+    },
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      filter: 'kind:user',
+      loader: async () =>
+        import('./components/Cards/User/UserProfileCard/UserProfileCard').then(
+          m =>
+            compatWrapper(
+              <m.UserProfileCard
+                maxRelations={config.maxRelations}
+                hideIcons={config.hideIcons}
+              />,
+            ),
+        ),
+    });
   },
 });
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'org',
+  pluginId: 'org',
   extensions: [
     EntityGroupProfileCard,
     EntityMembersListCard,

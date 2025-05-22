@@ -1,5 +1,59 @@
 # @backstage/test-utils
 
+## 1.7.8
+
+### Patch Changes
+
+- b573341: Added support for interpolating JSX elements with the `MockTranslationApi`.
+- Updated dependencies
+  - @backstage/theme@0.6.6
+  - @backstage/core-app-api@1.17.0
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/types@1.2.1
+
+## 1.7.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.17.0-next.1
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-react@0.4.34-next.1
+
+## 1.7.8-next.1
+
+### Patch Changes
+
+- b573341: Added support for interpolating JSX elements with the `MockTranslationApi`.
+- Updated dependencies
+  - @backstage/core-app-api@1.16.2-next.0
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-react@0.4.34-next.1
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+
+## 1.7.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.16.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-react@0.4.34-next.0
+
 ## 1.7.7
 
 ### Patch Changes

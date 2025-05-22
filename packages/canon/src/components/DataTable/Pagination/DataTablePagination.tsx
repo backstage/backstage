@@ -21,6 +21,7 @@ import { IconButton } from '../../IconButton';
 import clsx from 'clsx';
 import { Select } from '../../Select';
 import { useDataTable } from '../Root/DataTableRoot';
+import { Icon } from '../../Icon';
 
 /** @public */
 const DataTablePagination = forwardRef(
@@ -32,6 +33,12 @@ const DataTablePagination = forwardRef(
     const { table } = useDataTable();
     const pageIndex = table?.getState().pagination.pageIndex;
     const pageSize = table?.getState().pagination.pageSize;
+    const rowCount = table?.getRowCount();
+    const fromCount = (pageIndex ?? 0) * (pageSize ?? 10) + 1;
+    const toCount = Math.min(
+      ((pageIndex ?? 0) + 1) * (pageSize ?? 10),
+      rowCount,
+    );
 
     return (
       <div
@@ -63,22 +70,20 @@ const DataTablePagination = forwardRef(
           )}
         </div>
         <div className="canon-DataTablePagination--right">
-          <Text variant="body">{`${(pageIndex ?? 0) * (pageSize ?? 10) + 1} - ${
-            ((pageIndex ?? 0) + 1) * (pageSize ?? 10)
-          } of ${table?.getRowCount()}`}</Text>
+          <Text variant="body">{`${fromCount} - ${toCount} of ${rowCount}`}</Text>
           <IconButton
             variant="secondary"
             size="small"
             onClick={() => table?.previousPage()}
             disabled={!table?.getCanPreviousPage()}
-            icon="chevron-left"
+            icon={<Icon name="chevron-left" />}
           />
           <IconButton
             variant="secondary"
             size="small"
             onClick={() => table?.nextPage()}
             disabled={!table?.getCanNextPage()}
-            icon="chevron-right"
+            icon={<Icon name="chevron-right" />}
           />
         </div>
       </div>

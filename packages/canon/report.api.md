@@ -7,6 +7,7 @@ import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
 import { Breakpoint as Breakpoint_2 } from '@backstage/canon';
 import { ChangeEvent } from 'react';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
+import { ComponentProps } from 'react';
 import { Context } from 'react';
 import type { CSSProperties } from 'react';
 import { FC } from 'react';
@@ -15,11 +16,14 @@ import { ForwardRefExoticComponent } from 'react';
 import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
+import type { MouseEventHandler } from 'react';
+import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
 import { Table as Table_2 } from '@tanstack/react-table';
+import { Tabs as Tabs_2 } from '@base-ui-components/react/tabs';
 import { TdHTMLAttributes } from 'react';
 import { ThHTMLAttributes } from 'react';
 import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
@@ -173,8 +177,8 @@ export const buttonPropDefs: {
 export interface ButtonProps
   extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   children: React.ReactNode;
-  iconEnd?: IconNames;
-  iconStart?: IconNames;
+  iconEnd?: ReactElement;
+  iconStart?: ReactElement;
   size?: ButtonOwnProps['size'];
   variant?: ButtonOwnProps['variant'];
 }
@@ -449,9 +453,8 @@ export type GetPropDefTypes<P> = {
 };
 
 // @public (undocumented)
-export const Grid: ForwardRefExoticComponent<
-  GridProps & RefAttributes<HTMLDivElement>
-> & {
+export const Grid: {
+  Root: ForwardRefExoticComponent<GridProps & RefAttributes<HTMLDivElement>>;
   Item: ForwardRefExoticComponent<
     GridItemProps & RefAttributes<HTMLDivElement>
   >;
@@ -611,19 +614,23 @@ export interface GridProps extends SpaceProps {
 
 // @public (undocumented)
 export const Heading: ForwardRefExoticComponent<
-  HeadingProps & RefAttributes<HTMLHeadingElement>
+  Omit<HeadingProps, 'ref'> & RefAttributes<HTMLHeadingElement>
 >;
 
 // @public (undocumented)
-export interface HeadingProps {
-  // (undocumented)
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-  // (undocumented)
-  children: React.ReactNode;
+export interface HeadingProps
+  extends Omit<useRender.ComponentProps<'h1'>, 'color'> {
   // (undocumented)
   className?: string;
   // (undocumented)
+  color?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+  // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  truncate?: boolean;
   // (undocumented)
   variant?:
     | 'display'
@@ -697,7 +704,7 @@ export const iconButtonPropDefs: {
 // @public
 export interface IconButtonProps
   extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  icon: IconNames;
+  icon: ReactElement;
   size?: IconButtonOwnProps['size'];
   variant?: IconButtonOwnProps['variant'];
 }
@@ -743,6 +750,7 @@ export type IconNames =
   | 'chevron-left'
   | 'chevron-right'
   | 'chevron-up'
+  | 'close'
   | 'cloud'
   | 'code'
   | 'discord'
@@ -758,6 +766,7 @@ export type IconNames =
   | 'heart'
   | 'moon'
   | 'plus'
+  | 'search'
   | 'sidebar-fold'
   | 'sidebar-unfold'
   | 'sparkling'
@@ -888,6 +897,27 @@ export type MarginProps = GetPropDefTypes<typeof marginPropDefs>;
 export const Menu: MenuComponent;
 
 // @public (undocumented)
+export type MenuComboboxOption = {
+  label: string;
+  value: string;
+  disabled?: boolean;
+};
+
+// @public (undocumented)
+export interface MenuComboboxProps extends ComponentProps<'div'> {
+  // (undocumented)
+  closeParentOnEsc?: boolean;
+  // (undocumented)
+  multiselect?: boolean;
+  // (undocumented)
+  onValueChange?: (value: string[]) => void;
+  // (undocumented)
+  options: MenuComboboxOption[];
+  // (undocumented)
+  value?: string[];
+}
+
+// @public (undocumented)
 export type MenuComponent = {
   Root: typeof Menu_2.Root;
   Trigger: typeof Menu_2.Trigger;
@@ -906,6 +936,9 @@ export type MenuComponent = {
   CheckboxItemIndicator: typeof Menu_2.CheckboxItemIndicator;
   SubmenuTrigger: typeof Menu_2.SubmenuTrigger;
   Separator: typeof Menu_2.Separator;
+  Combobox: ForwardRefExoticComponent<
+    MenuComboboxProps & RefAttributes<HTMLDivElement>
+  >;
 };
 
 // @public (undocumented)
@@ -1201,8 +1234,34 @@ export interface TableCellTextProps
 }
 
 // @public (undocumented)
+export const Tabs: {
+  Root: ForwardRefExoticComponent<
+    TabsRootWithoutOrientation & RefAttributes<HTMLDivElement>
+  >;
+  List: ForwardRefExoticComponent<
+    Omit<Tabs_2.List.Props & RefAttributes<HTMLDivElement>, 'ref'> &
+      RefAttributes<HTMLDivElement>
+  >;
+  Tab: ForwardRefExoticComponent<
+    Omit<Tabs_2.Tab.Props & RefAttributes<Element>, 'ref'> &
+      RefAttributes<Element>
+  >;
+  Panel: ForwardRefExoticComponent<
+    Omit<Tabs_2.Panel.Props & RefAttributes<HTMLDivElement>, 'ref'> &
+      RefAttributes<HTMLDivElement>
+  >;
+};
+
+// @public (undocumented)
+export interface TabsRootWithoutOrientation
+  extends Omit<
+    React.ComponentPropsWithoutRef<typeof Tabs_2.Root>,
+    'orientation'
+  > {}
+
+// @public (undocumented)
 const Text_2: ForwardRefExoticComponent<
-  TextProps & RefAttributes<HTMLParagraphElement>
+  Omit<TextProps, 'ref'> & RefAttributes<HTMLParagraphElement>
 >;
 export { Text_2 as Text };
 
@@ -1217,15 +1276,16 @@ export interface TextFieldProps
   className?: string;
   description?: string;
   error?: string | null;
+  icon?: ReactNode;
   label?: string;
   name: string;
+  onClear?: MouseEventHandler<HTMLButtonElement>;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 
 // @public (undocumented)
-export interface TextProps {
-  // (undocumented)
-  children: ReactNode;
+export interface TextProps
+  extends Omit<useRender.ComponentProps<'p'>, 'color'> {
   // (undocumented)
   className?: string;
   // (undocumented)
@@ -1243,6 +1303,8 @@ export interface TextProps {
       >;
   // (undocumented)
   style?: CSSProperties;
+  // (undocumented)
+  truncate?: boolean;
   // (undocumented)
   variant?:
     | 'subtitle'

@@ -85,7 +85,7 @@ export function toLegacyPlugin(
 // TODO: Currently a very naive implementation, may need some more work
 function toNewPlugin(plugin: LegacyBackstagePlugin): NewFrontendPlugin {
   return createNewPlugin({
-    id: plugin.getId(),
+    pluginId: plugin.getId(),
   });
 }
 
@@ -119,7 +119,7 @@ function LegacyAppContextProvider(props: { children: ReactNode }) {
 
         const pluginSet = new Set<LegacyBackstagePlugin>();
         for (const node of tree.nodes.values()) {
-          const plugin = node.spec.source;
+          const plugin = node.spec.plugin;
           if (plugin) {
             pluginSet.add(toLegacyPlugin(plugin));
           }

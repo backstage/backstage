@@ -28,6 +28,6 @@ export const ExamplePage = PageBlueprint.make({
 
 /** @public */
 export const examplePlugin = createFrontendPlugin({
-  id: 'example',
+  pluginId: 'example',
   extensions: [ExamplePage],
 });

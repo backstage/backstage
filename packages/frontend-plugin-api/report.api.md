@@ -235,6 +235,8 @@ export interface AppNodeSpec {
   // (undocumented)
   readonly id: string;
   // (undocumented)
+  readonly plugin?: FrontendPlugin;
+  // @deprecated (undocumented)
   readonly source?: FrontendPlugin;
 }
 
@@ -768,6 +770,25 @@ export function createFrontendPlugin<
   TExtensions extends readonly ExtensionDefinition[] = [],
 >(
   options: PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
+): FrontendPlugin<
+  TRoutes,
+  TExternalRoutes,
+  MakeSortedExtensionsMap<TExtensions[number], TId>
+>;
+
+// @public @deprecated (undocumented)
+export function createFrontendPlugin<
+  TId extends string,
+  TRoutes extends AnyRoutes = {},
+  TExternalRoutes extends AnyExternalRoutes = {},
+  TExtensions extends readonly ExtensionDefinition[] = [],
+>(
+  options: Omit<
+    PluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>,
+    'pluginId'
+  > & {
+    id: string;
+  },
 ): FrontendPlugin<
   TRoutes,
   TExternalRoutes,
@@ -1495,7 +1516,7 @@ export interface PluginOptions<
   // (undocumented)
   featureFlags?: FeatureFlagConfig[];
   // (undocumented)
-  id: TId;
+  pluginId: TId;
   // (undocumented)
   routes?: TRoutes;
 }

@@ -750,6 +750,7 @@ export interface LogViewerProps {
     root?: string;
   };
   text: string;
+  textWrap?: boolean;
 }
 
 // Warning: (ae-forgotten-export) The symbol "Props_8" needs to be exported by the entry point index.d.ts

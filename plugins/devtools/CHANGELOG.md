@@ -1,5 +1,72 @@
 # @backstage/plugin-devtools
 
+## 0.1.27
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/core-components@0.17.2
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-devtools-common@0.1.16
+
+## 0.1.27-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.3
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/plugin-devtools-common@0.1.16-next.0
+  - @backstage/plugin-permission-react@0.4.34-next.1
+
+## 0.1.27-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/core-compat-api@0.4.2-next.2
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/plugin-permission-react@0.4.34-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-devtools-common@0.1.16-next.0
+
+## 0.1.27-next.1
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/core-compat-api@0.4.2-next.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-devtools-common@0.1.16-next.0
+  - @backstage/plugin-permission-react@0.4.34-next.0
+
+## 0.1.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/plugin-devtools-common@0.1.15
+  - @backstage/plugin-permission-react@0.4.33
+
 ## 0.1.26
 
 ### Patch Changes

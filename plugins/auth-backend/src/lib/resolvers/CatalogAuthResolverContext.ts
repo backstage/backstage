@@ -77,8 +77,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
   ) {}
 
   async issueToken(params: TokenParams) {
-    const token = await this.tokenIssuer.issueToken(params);
-    return { token };
+    return await this.tokenIssuer.issueToken(params);
   }
 
   async findCatalogUser(query: AuthResolverCatalogUserQuery) {
@@ -140,20 +139,54 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     return { entity: result };
   }
 
-  async signInWithCatalogUser(query: AuthResolverCatalogUserQuery) {
-    const { entity } = await this.findCatalogUser(query);
+  async signInWithCatalogUser(
+    query: AuthResolverCatalogUserQuery,
+    options?: {
+      dangerousEntityRefFallback?: {
+        entityRef:
+          | string
+          | {
+              kind?: string;
+              namespace?: string;
+              name: string;
+            };
+      };
+    },
+  ) {
+    try {
+      const { entity } = await this.findCatalogUser(query);
 
-    const { ownershipEntityRefs } = await this.resolveOwnershipEntityRefs(
-      entity,
-    );
+      const { ownershipEntityRefs } = await this.resolveOwnershipEntityRefs(
+        entity,
+      );
 
-    const token = await this.tokenIssuer.issueToken({
-      claims: {
-        sub: stringifyEntityRef(entity),
-        ent: ownershipEntityRefs,
-      },
-    });
-    return { token };
+      return await this.tokenIssuer.issueToken({
+        claims: {
+          sub: stringifyEntityRef(entity),
+          ent: ownershipEntityRefs,
+        },
+      });
+    } catch (error) {
+      if (
+        error?.name !== 'NotFoundError' ||
+        !options?.dangerousEntityRefFallback
+      ) {
+        throw error;
+      }
+      const userEntityRef = stringifyEntityRef(
+        parseEntityRef(options.dangerousEntityRefFallback.entityRef, {
+          defaultKind: 'User',
+          defaultNamespace: DEFAULT_NAMESPACE,
+        }),
+      );
+
+      return await this.tokenIssuer.issueToken({
+        claims: {
+          sub: userEntityRef,
+          ent: [userEntityRef],
+        },
+      });
+    }
   }
 
   async resolveOwnershipEntityRefs(

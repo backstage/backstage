@@ -1,5 +1,80 @@
 # @backstage/frontend-app-api
 
+## 0.11.2
+
+### Patch Changes
+
+- 173db8f: Updates to use the new `plugin` property of `AppNodeSpec`.
+- 1f04491: Added the ability to ignore unknown extension config by passing `{ flags: { allowUnknownExtensionConfig: true } }` to `createSpecializedApp`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/frontend-defaults@0.2.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.11.2-next.3
+
+### Patch Changes
+
+- 1f04491: Added the ability to ignore unknown extension config by passing `{ flags: { allowUnknownExtensionConfig: true } }` to `createSpecializedApp`.
+- Updated dependencies
+  - @backstage/core-app-api@1.17.0-next.1
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-defaults@0.2.2-next.3
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.11.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.16.2-next.0
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/frontend-defaults@0.2.2-next.2
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.11.2-next.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/frontend-defaults@0.2.2-next.1
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.16.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.11.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.16.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-defaults@0.2.2-next.0
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.11.1
 
 ### Patch Changes

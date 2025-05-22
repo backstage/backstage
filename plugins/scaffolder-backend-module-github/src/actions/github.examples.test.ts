@@ -121,7 +121,7 @@ describe('publish:github', () => {
       githubCredentialsProvider,
     });
 
-    // restore real implmentation
+    // restore real implementation
     (entityRefToName as jest.Mock).mockImplementation(
       realFamiliarizeEntityName,
     );

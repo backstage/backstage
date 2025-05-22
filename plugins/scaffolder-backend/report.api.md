@@ -339,6 +339,7 @@ export const createPublishGithubPullRequestAction: (
     sourcePath?: string;
     token?: string;
     reviewers?: string[];
+    assignees?: string[];
     teamReviewers?: string[];
     commitMessage?: string;
     update?: boolean;
@@ -501,7 +502,10 @@ export class DatabaseTaskStore implements TaskStore {
     targetPath: string;
   }): Promise<void>;
   // (undocumented)
-  retryTask?(options: { taskId: string }): Promise<void>;
+  retryTask?(options: {
+    secrets?: TaskSecrets_2;
+    taskId: string;
+  }): Promise<void>;
   // (undocumented)
   saveTaskState(options: { taskId: string; state?: JsonObject }): Promise<void>;
   // (undocumented)
@@ -768,7 +772,10 @@ export interface TaskStore {
     targetPath: string;
   }): Promise<void>;
   // (undocumented)
-  retryTask?(options: { taskId: string }): Promise<void>;
+  retryTask?(options: {
+    secrets?: TaskSecrets_2;
+    taskId: string;
+  }): Promise<void>;
   // (undocumented)
   saveTaskState?(options: {
     taskId: string;

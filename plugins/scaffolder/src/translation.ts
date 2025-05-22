@@ -51,6 +51,10 @@ export const scaffolderTranslationRef = createTranslationRef({
         description:
           "Add any relevant tags, hit 'Enter' to add new tags. Valid format: [a-z0-9+#] separated by [-], at most 63 characters",
       },
+      multiEntityPicker: {
+        title: 'Entity',
+        description: 'An entity from the catalog',
+      },
       myGroupsPicker: {
         title: 'Entity',
         description: 'An entity from the catalog',
@@ -194,6 +198,43 @@ export const scaffolderTranslationRef = createTranslationRef({
       },
       undefined: 'No schema defined',
     },
+    templatingExtensions: {
+      title: 'Templating Extensions',
+      pageTitle: 'Templating Extensions',
+      subtitle: 'This is the collection of available templating extensions',
+      content: {
+        emptyState: {
+          title: 'No information to display',
+          description:
+            'There are no templating extensions available or there was an issue communicating with the backend.',
+        },
+        searchFieldPlaceholder: 'Search for an extension',
+        filters: {
+          title: 'Filters',
+          notAvailable: 'There are no template filters defined.',
+          metadataAbsent: 'Filter metadata unavailable',
+          schema: {
+            input: 'Input',
+            arguments: 'Arguments',
+            output: 'Output',
+          },
+          examples: 'Examples',
+        },
+        functions: {
+          title: 'Functions',
+          notAvailable: 'There are no global template functions defined.',
+          schema: {
+            arguments: 'Arguments',
+            output: 'Output',
+          },
+          examples: 'Examples',
+        },
+        values: {
+          title: 'Values',
+          notAvailable: 'There are no global template values defined.',
+        },
+      },
+    },
     templateTypePicker: {
       title: 'Categories',
     },
@@ -316,6 +357,8 @@ export const scaffolderTranslationRef = createTranslationRef({
     templateEditorToolbar: {
       customFieldExplorerTooltip: 'Custom Fields Explorer',
       installedActionsDocumentationTooltip: 'Installed Actions Documentation',
+      templatingExtensionsDocumentationTooltip:
+        'Templating Extensions Documentation',
       addToCatalogButton: 'Publish',
       addToCatalogDialogTitle: 'Publish changes',
       addToCatalogDialogContent: {

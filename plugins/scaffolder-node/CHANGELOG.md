@@ -1,5 +1,71 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.8.2
+
+### Patch Changes
+
+- 16e2e9c: trim leading and trailing slashes from parseRepoUrl query parameters
+- 72d019d: Removed various typos
+- ec42f8e: Generating new tokens on each Scaffolder Task Retry
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 0.8.2-next.3
+
+### Patch Changes
+
+- 16e2e9c: trim leading and trailing slashes from parseRepoUrl query parameters
+- ec42f8e: Generating new tokens on each Scaffolder Task Retry
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 0.8.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 0.8.2-next.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 0.8.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.10
+
 ## 0.8.1
 
 ### Patch Changes

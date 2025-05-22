@@ -195,7 +195,7 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
 
 /**
  * Creates an empty app without any default features. This is a low-level API is
- * intended for use in tests or specialized setups. Typically wou want to use
+ * intended for use in tests or specialized setups. Typically you want to use
  * `createApp` from `@backstage/frontend-defaults` instead.
  *
  * @public
@@ -208,6 +208,7 @@ export function createSpecializedApp(options?: {
   extensionFactoryMiddleware?:
     | ExtensionFactoryMiddleware
     | ExtensionFactoryMiddleware[];
+  flags?: { allowUnknownExtensionConfig?: boolean };
 }): { apis: ApiHolder; tree: AppTree } {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []);
@@ -221,6 +222,7 @@ export function createSpecializedApp(options?: {
       ],
       parameters: readAppExtensionsConfig(config),
       forbidden: new Set(['root']),
+      allowUnknownExtensionConfig: options?.flags?.allowUnknownExtensionConfig,
     }),
   );
 

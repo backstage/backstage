@@ -27,7 +27,7 @@ import {
 import { runParallelWorkers } from '../../../../lib/parallel';
 import { buildFrontend } from '../../lib/buildFrontend';
 import { buildBackend } from '../../lib/buildBackend';
-import { createScriptOptionsParser } from '../../../../commands/repo/optionsParser';
+import { createScriptOptionsParser } from '../../../../lib/optionsParser';
 
 export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();

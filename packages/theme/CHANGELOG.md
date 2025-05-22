@@ -1,5 +1,17 @@
 # @backstage/theme
 
+## 0.6.6
+
+### Patch Changes
+
+- 1b14572: Show arrow when MuiTableSortLabel receives focus
+
+## 0.6.6-next.0
+
+### Patch Changes
+
+- 1b14572: Show arrow when MuiTableSortLabel receives focus
+
 ## 0.6.5
 
 ### Patch Changes

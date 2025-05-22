@@ -828,7 +828,22 @@ export async function createRouter(
 
         await auditorEvent?.success();
 
-        await taskBroker.retry?.(taskId);
+        const { token } = await auth.getPluginRequestToken({
+          onBehalfOf: credentials,
+          targetPluginId: 'catalog',
+        });
+
+        const secrets: InternalTaskSecrets = {
+          ...req.body.secrets,
+          backstageToken: token,
+          __initiatorCredentials: JSON.stringify({
+            ...credentials,
+            // credentials.token is nonenumerable and will not be serialized, so we need to add it explicitly
+            token: (credentials as any).token,
+          }),
+        };
+
+        await taskBroker.retry?.({ secrets, taskId });
         res.status(201).json({ id: taskId });
       } catch (err) {
         await auditorEvent?.fail({ error: err });
@@ -1115,7 +1130,7 @@ export async function createRouter(
 
       res.status(200).json({ results });
     })
-    .get('/v2/template-extensions', async (_req, res) => {
+    .get('/v2/templating-extensions', async (_req, res) => {
       res.status(200).json({
         filters: {
           ...extractFilterMetadata(createDefaultFilters({ integrations })),

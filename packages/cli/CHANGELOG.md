@@ -1,5 +1,103 @@
 # @backstage/cli
 
+## 0.32.1
+
+### Patch Changes
+
+- 674def9: fix: enable `lazyCompilation` and `refreshOptions` for rspack
+- d649df0: Internal code cleanup
+- c2cae47: Add missing modules to the Backstage CLI alpha entrypoint.
+- 3f45861: Add a warning for React 17 deprecation that triggers when frontend packages and plugins start.
+- 9aaec54: Internal refactor of opaque type handling.
+- 9285385: Added `info` object to the context of the alpha CLI.
+- 6cc9507: Updated dependency `@octokit/request` to `^8.0.0`.
+- 5cd3c54: Updated dependency `react-refresh` to `^0.17.0`.
+- 72d019d: Removed various typos
+- 19a4e7c: Internal refactor to move things closer to home
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/release-manifests@0.0.13
+  - @backstage/config-loader@1.10.1
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/types@1.2.1
+
+## 0.32.1-next.3
+
+### Patch Changes
+
+- 674def9: fix: enable `lazyCompilation` and `refreshOptions` for rspack
+- 19a4e7c: Internal refactor to move things closer to home
+- Updated dependencies
+  - @backstage/release-manifests@0.0.13-next.0
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/types@1.2.1
+
+## 0.32.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/release-manifests@0.0.12
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/types@1.2.1
+
+## 0.32.1-next.1
+
+### Patch Changes
+
+- d649df0: Internal code cleanup
+- 9aaec54: Internal refactor of opaque type handling.
+- 9285385: Added `info` object to the context of the alpha CLI.
+- 6cc9507: Updated dependency `@octokit/request` to `^8.0.0`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
+## 0.32.1-next.0
+
+### Patch Changes
+
+- 5cd3c54: Updated dependency `react-refresh` to `^0.17.0`.
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/release-manifests@0.0.12
+  - @backstage/types@1.2.1
+
 ## 0.32.0
 
 ### Minor Changes

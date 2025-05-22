@@ -64,7 +64,7 @@ jobs:
           ref: refs/tags/${{ steps.find-release.outputs.result }}
 
       - name: Use Node.js 20.x
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -119,7 +119,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Use Node.js 20.x
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -195,10 +195,10 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Use Node.js 20.x
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20.x
-      - uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.9'
 
@@ -222,13 +222,13 @@ jobs:
         run: node scripts/verify-lockfile-duplicates.js
 
       - name: download stable reference
-        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: stable-reference
           path: docs/reference
 
       - name: download stable OpenAPI API docs
-        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: stable-openapi-docs
           path: docs
@@ -242,11 +242,8 @@ jobs:
         run: yarn docusaurus docs:version stable
         working-directory: microsite
 
-      - name: clear API reference
-        run: rm -r docs/reference
-
-      - name: clear OpenAPI reference
-        run: find ./docs -name '*.api.mdx' -type f -delete
+      - name: clear generated docs
+        run: git clean -fdx docs/
 
       - name: build API reference
         run: yarn build:api-docs
@@ -260,13 +257,13 @@ jobs:
         run: mkdocs build --strict
 
       - name: download next reference
-        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: next-reference
           path: docs/reference
 
       - name: download next OpenAPI API docs
-        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: next-openapi-docs
           path: docs

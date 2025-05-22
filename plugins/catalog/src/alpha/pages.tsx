@@ -31,11 +31,11 @@ import {
   EntityHeaderBlueprint,
   EntityContentBlueprint,
   defaultEntityContentGroups,
+  EntityContextMenuItemBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
-import { EntityHeader } from './components/EntityHeader';
 
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
@@ -72,7 +72,10 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       EntityContentBlueprint.dataRefs.filterExpression.optional(),
       EntityContentBlueprint.dataRefs.group.optional(),
     ]),
-    contextMenuItems: createExtensionInput([coreExtensionData.reactElement]),
+    contextMenuItems: createExtensionInput([
+      coreExtensionData.reactElement,
+      EntityContextMenuItemBlueprint.dataRefs.filterFunction.optional(),
+    ]),
   },
   config: {
     schema: {
@@ -89,9 +92,12 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       loader: async () => {
         const { EntityLayout } = await import('./components/EntityLayout');
 
-        const menuItems = inputs.contextMenuItems.map(item =>
-          item.get(coreExtensionData.reactElement),
-        );
+        const menuItems = inputs.contextMenuItems.map(item => ({
+          element: item.get(coreExtensionData.reactElement),
+          filter:
+            item.get(EntityContextMenuItemBlueprint.dataRefs.filterFunction) ??
+            (() => true),
+        }));
 
         type Groups = Record<
           string,
@@ -100,7 +106,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
 
         const header = inputs.header?.get(
           EntityHeaderBlueprint.dataRefs.element,
-        ) ?? <EntityHeader contextMenuItems={menuItems} />;
+        );
 
         let groups = Object.entries(defaultEntityContentGroups).reduce<Groups>(
           (rest, group) => {
@@ -137,9 +143,18 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
         }
 
         const Component = () => {
+          const entityFromUrl = useEntityFromUrl();
+          const { entity } = entityFromUrl;
+          const filteredMenuItems = entity
+            ? menuItems.filter(i => i.filter(entity)).map(i => i.element)
+            : [];
+
           return (
-            <AsyncEntityProvider {...useEntityFromUrl()}>
-              <EntityLayout header={header} contextMenuItems={menuItems}>
+            <AsyncEntityProvider {...entityFromUrl}>
+              <EntityLayout
+                header={header}
+                contextMenuItems={filteredMenuItems}
+              >
                 {Object.values(groups).flatMap(({ title, items }) =>
                   items.map(output => (
                     <EntityLayout.Route

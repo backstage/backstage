@@ -237,7 +237,7 @@ The development server created above will be automatically configured with the d
 
 ```ts title="in dev/index.js"
 //...
-// This package should be installed as `devDependecies`
+// This package should be installed as `devDependencies`
 import { mockServices } from '@backstage/backend-test-utils';
 
 const backend = createBackend();

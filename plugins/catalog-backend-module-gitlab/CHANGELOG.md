@@ -1,5 +1,77 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.6.6
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/backend-defaults@0.10.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-events-node@0.4.11
+
+## 0.6.6-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0-next.3
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.2
+  - @backstage/plugin-events-node@0.4.11-next.2
+
+## 0.6.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/backend-defaults@0.10.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+
+## 0.6.6-next.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0-next.1
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-events-node@0.4.11-next.1
+
+## 0.6.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.0
+  - @backstage/backend-defaults@0.9.1-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-events-node@0.4.11-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.3
+
 ## 0.6.5
 
 ### Patch Changes

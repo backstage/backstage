@@ -45,6 +45,6 @@ export const appVisualizerNavItem = NavItemBlueprint.make({
 
 /** @public */
 export const visualizerPlugin = createFrontendPlugin({
-  id: 'app-visualizer',
+  pluginId: 'app-visualizer',
   extensions: [appVisualizerPage, appVisualizerNavItem],
 });

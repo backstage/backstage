@@ -241,7 +241,13 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   // based on the requested filters changing.
   const [{ loading, error }, refresh] = useAsyncFn(
     async () => {
-      const compacted = compact(Object.values(requestedFilters));
+      const kindValue =
+        requestedFilters.kind?.value?.toLocaleLowerCase('en-US');
+      const adjustedFilters =
+        kindValue === 'user' || kindValue === 'group'
+          ? { ...requestedFilters, owners: undefined }
+          : requestedFilters;
+      const compacted = compact(Object.values(adjustedFilters));
 
       const queryParams = Object.keys(requestedFilters).reduce(
         (params, key) => {

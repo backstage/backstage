@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
+import { forwardRef, useRef } from 'react';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
+import { useRender } from '@base-ui-components/react/use-render';
 import clsx from 'clsx';
 
 import type { TextProps } from './types';
@@ -24,12 +25,12 @@ import type { TextProps } from './types';
 export const Text = forwardRef<HTMLParagraphElement, TextProps>(
   (props, ref) => {
     const {
-      children,
       variant = 'body',
       weight = 'regular',
       color = 'primary',
-      style,
       className,
+      truncate,
+      render = <p />,
       ...restProps
     } = props;
 
@@ -37,20 +38,22 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(
     const responsiveVariant = useResponsiveValue(variant);
     const responsiveWeight = useResponsiveValue(weight);
     const responsiveColor = useResponsiveValue(color);
+    const internalRef = useRef<HTMLElement | null>(null);
 
-    return (
-      <p
-        ref={ref}
-        className={clsx('canon-Text', className)}
-        data-variant={responsiveVariant}
-        data-weight={responsiveWeight}
-        data-color={responsiveColor}
-        style={style}
-        {...restProps}
-      >
-        {children}
-      </p>
-    );
+    const { renderElement } = useRender({
+      render,
+      props: {
+        className: clsx('canon-Text', className),
+        ['data-variant']: responsiveVariant,
+        ['data-weight']: responsiveWeight,
+        ['data-color']: responsiveColor,
+        ['data-truncate']: truncate,
+        ...restProps,
+      },
+      refs: [ref, internalRef],
+    });
+
+    return renderElement();
   },
 );
 

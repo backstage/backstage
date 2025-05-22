@@ -1,5 +1,46 @@
 # @backstage/frontend-plugin-api
 
+## 0.10.2
+
+### Patch Changes
+
+- 173db8f: The `source` property of `AppNodeSpec` has been renamed to `plugin`. The old property has been deprecated and will be removed in a future release.
+- fb58f20: The `id` option of `createFrontendPlugin` has been renamed to `pluginId` in order to better align with similar APIs in the frontend and backend systems.
+
+  The old `id` option is deprecated and will be removed in a future release.
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.2-next.0
+
+### Patch Changes
+
+- fb58f20: The `id` option of `createFrontendPlugin` has been renamed to `pluginId` in order to better align with similar APIs in the frontend and backend systems.
+
+  The old `id` option is deprecated and will be removed in a future release.
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.10.1
 
 ### Patch Changes

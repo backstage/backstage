@@ -35,7 +35,13 @@ export namespace commonSignInResolvers {
    */
   export const emailMatchingUserEntityProfileEmail =
     createSignInResolverFactory({
-      create() {
+      optionsSchema: z
+        .object({
+          allowedDomains: z.array(z.string()).optional(),
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        })
+        .optional(),
+      create(options = {}) {
         return async (info, ctx) => {
           const { profile } = info;
 
@@ -59,11 +65,19 @@ export namespace commonSignInResolvers {
                 const [_, name, _plus, domain] = m;
                 const noPlusEmail = `${name}${domain}`;
 
-                return ctx.signInWithCatalogUser({
-                  filter: {
-                    'spec.profile.email': noPlusEmail,
+                return ctx.signInWithCatalogUser(
+                  {
+                    filter: {
+                      'spec.profile.email': noPlusEmail,
+                    },
                   },
-                });
+                  {
+                    dangerousEntityRefFallback:
+                      options?.dangerouslyAllowSignInWithoutUserInCatalog
+                        ? { entityRef: { name: noPlusEmail } }
+                        : undefined,
+                  },
+                );
               }
             }
             // Email had no plus addressing or is missing in the catalog, forward failure
@@ -82,6 +96,7 @@ export namespace commonSignInResolvers {
       optionsSchema: z
         .object({
           allowedDomains: z.array(z.string()).optional(),
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
         })
         .optional(),
       create(options = {}) {
@@ -102,10 +117,15 @@ export namespace commonSignInResolvers {
               'Sign-in user email is not from an allowed domain',
             );
           }
-
-          return ctx.signInWithCatalogUser({
-            entityRef: { name: localPart },
-          });
+          return ctx.signInWithCatalogUser(
+            { entityRef: { name: localPart } },
+            {
+              dangerousEntityRefFallback:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                  ? { entityRef: { name: localPart } }
+                  : undefined,
+            },
+          );
         };
       },
     });

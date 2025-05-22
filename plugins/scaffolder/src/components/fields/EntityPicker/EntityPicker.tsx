@@ -81,10 +81,13 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   const { value: entities, loading } = useAsync(async () => {
     const fields = [
+      'kind',
       'metadata.name',
       'metadata.namespace',
       'metadata.title',
-      'kind',
+      'metadata.description',
+      'spec.profile.displayName',
+      'spec.type',
     ];
     const { items } = await catalogApi.getEntities(
       catalogFilter
@@ -182,7 +185,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
   return (
     <ScaffolderField
       rawErrors={rawErrors}
-      rawDescription={description}
+      rawDescription={uiSchema['ui:description'] ?? description}
       required={required}
       disabled={isDisabled}
       errors={errors}
@@ -204,7 +207,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
           typeof option === 'string'
             ? option
             : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
-                ?.primaryTitle || stringifyEntityRef(option)
+                ?.entityRef!
         }
         autoSelect
         freeSolo={allowArbitraryValues}

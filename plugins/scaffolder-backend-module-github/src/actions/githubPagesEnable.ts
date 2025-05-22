@@ -112,7 +112,10 @@ export function createGithubPagesEnableAction(options: {
         owner,
         repo,
       });
-      const client = new Octokit(octokitOptions);
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       ctx.logger.info(
         `Attempting to enable GitHub Pages for ${owner}/${repo} with "${buildType}" build type, on source branch "${sourceBranch}" and source path "${sourcePath}"`,

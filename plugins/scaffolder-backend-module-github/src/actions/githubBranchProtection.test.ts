@@ -20,6 +20,9 @@ import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
   rest: {
     repos: {
@@ -29,13 +32,8 @@ const mockOctokit = {
     },
   },
 };
-
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 describe('github:branch-protection:create', () => {
@@ -59,6 +57,8 @@ describe('github:branch-protection:create', () => {
   });
 
   beforeEach(() => {
+    octokitMock.mockImplementation(() => mockOctokit);
+
     mockOctokit.rest.repos.get.mockResolvedValue({
       data: {
         default_branch: 'master',
@@ -71,6 +71,14 @@ describe('github:branch-protection:create', () => {
   });
 
   afterEach(jest.resetAllMocks);
+
+  it('should pass context logger to Octokit client', async () => {
+    await action.handler(mockContext);
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
+  });
 
   it('should work with default params', async () => {
     await action.handler(mockContext);

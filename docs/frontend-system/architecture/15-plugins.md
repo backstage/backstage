@@ -28,7 +28,7 @@ const myPage = PageBlueprint.make({
 });
 
 export default createFrontendPlugin({
-  id: 'my-plugin',
+  pluginId: 'my-plugin',
   extensions: [myPage],
 });
 ```

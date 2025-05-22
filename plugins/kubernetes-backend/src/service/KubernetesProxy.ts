@@ -27,11 +27,7 @@ import {
   KubernetesRequestAuth,
 } from '@backstage/plugin-kubernetes-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import {
-  bufferFromFileOrString,
-  Cluster,
-  KubeConfig,
-} from '@kubernetes/client-node';
+import type { Cluster } from '@kubernetes/client-node';
 import { createProxyMiddleware, RequestHandler } from 'http-proxy-middleware';
 import fs from 'fs-extra';
 
@@ -176,6 +172,10 @@ export class KubernetesProxy {
           const cluster = await this.getClusterForRequest(req);
           const url = new URL(cluster.url);
 
+          const { bufferFromFileOrString } = await import(
+            '@kubernetes/client-node'
+          );
+
           const target: any = {
             protocol: url.protocol,
             host: url.hostname,
@@ -234,6 +234,8 @@ export class KubernetesProxy {
   }
 
   private async getClusterForRequest(req: Request): Promise<ClusterDetails> {
+    const { KubeConfig } = await import('@kubernetes/client-node');
+
     const clusterName = req.headers[HEADER_KUBERNETES_CLUSTER.toLowerCase()];
     const clusters = await this.clusterSupplier.getClusters({
       credentials: await this.httpAuth.credentials(req),

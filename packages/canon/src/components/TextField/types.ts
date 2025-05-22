@@ -15,7 +15,7 @@
  */
 
 import type { Breakpoint } from '../../types';
-
+import type { ReactNode, MouseEventHandler } from 'react';
 /** @public */
 export interface TextFieldProps
   extends Omit<React.ComponentPropsWithoutRef<'input'>, 'size'> {
@@ -49,4 +49,14 @@ export interface TextFieldProps
    * The error message of the text field
    */
   error?: string | null;
+
+  /**
+   * An icon to render before the input
+   */
+  icon?: ReactNode;
+
+  /**
+   * Handler to call when the clear button is pressed
+   */
+  onClear?: MouseEventHandler<HTMLButtonElement>;
 }

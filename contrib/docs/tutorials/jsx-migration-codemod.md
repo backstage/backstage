@@ -307,7 +307,7 @@ While a codemod for the New JSX Transform was originally introduced in the [Intr
            j(path).replaceWith(j.jsxIdentifier(property));
          });
 
-       // Add exisiting React imports to map
+       // Add existing React imports to map
        reactImportPaths.forEach(path => {
          const specifiers = path.value.specifiers;
          for (let i = 0; i < specifiers.length; i++) {

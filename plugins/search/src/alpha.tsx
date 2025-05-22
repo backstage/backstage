@@ -278,9 +278,12 @@ export const searchNavItem = NavItemBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'search',
+  pluginId: 'search',
   extensions: [searchApi, searchPage, searchNavItem],
   routes: convertLegacyRouteRefs({
     root: rootRouteRef,
   }),
 });
+
+/** @alpha */
+export { searchTranslationRef } from './translation';

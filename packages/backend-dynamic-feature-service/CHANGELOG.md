@@ -1,5 +1,142 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.7.0
+
+### Minor Changes
+
+- 10f693c: **BREAKING** Removed support for the legacy backend, please migrate to the new backend system
+
+### Patch Changes
+
+- 72d019d: Fixed various typos.
+  `FrontendRemoteResolver`'s misspelled `getAdditionaRemoteInfo` has been deprecated. Use the correct spelling `getAdditionalRemoteInfo` instead.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@2.0.0
+  - @backstage/backend-defaults@0.10.0
+  - @backstage/plugin-auth-node@0.6.3
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.0
+  - @backstage/plugin-scaffolder-node@0.8.2
+  - @backstage/config-loader@1.10.1
+  - @backstage/backend-openapi-utils@0.5.3
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-app-node@0.1.33
+  - @backstage/plugin-events-backend@0.5.2
+  - @backstage/plugin-events-node@0.4.11
+  - @backstage/plugin-search-backend-node@1.3.11
+  - @backstage/plugin-search-common@1.2.18
+
+## 0.7.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0-next.3
+  - @backstage/plugin-catalog-backend@2.0.0-next.3
+  - @backstage/plugin-scaffolder-node@0.8.2-next.3
+  - @backstage/plugin-auth-node@0.6.3-next.2
+  - @backstage/backend-openapi-utils@0.5.3-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-app-node@0.1.33-next.2
+  - @backstage/plugin-events-backend@0.5.2-next.2
+  - @backstage/plugin-events-node@0.4.11-next.2
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.2
+  - @backstage/plugin-search-backend-node@1.3.11-next.2
+  - @backstage/plugin-search-common@1.2.18-next.0
+
+## 0.7.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0-next.2
+  - @backstage/backend-openapi-utils@0.5.3-next.1
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-backend@2.0.0-next.2
+  - @backstage/plugin-events-backend@0.5.2-next.1
+  - @backstage/plugin-scaffolder-node@0.8.2-next.2
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/plugin-search-backend-node@1.3.11-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-app-node@0.1.33-next.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-search-common@1.2.18-next.0
+
+## 0.7.0-next.1
+
+### Patch Changes
+
+- 72d019d: Fixed various typos.
+  `FrontendRemoteResolver`'s misspelled `getAdditionaRemoteInfo` has been deprecated. Use the correct spelling `getAdditionalRemoteInfo` instead.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@2.0.0-next.1
+  - @backstage/backend-defaults@0.10.0-next.1
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/plugin-scaffolder-node@0.8.2-next.1
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/plugin-events-backend@0.5.2-next.1
+  - @backstage/plugin-search-backend-node@1.3.11-next.1
+  - @backstage/backend-openapi-utils@0.5.3-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-app-node@0.1.33-next.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+  - @backstage/plugin-search-common@1.2.18-next.0
+
+## 0.7.0-next.0
+
+### Minor Changes
+
+- 10f693c: **BREAKING** Removed support for the legacy backend, please migrate to the new backend system
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.1-next.0
+  - @backstage/plugin-catalog-backend@1.32.2-next.0
+  - @backstage/plugin-scaffolder-node@0.8.2-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.0
+  - @backstage/plugin-auth-node@0.6.3-next.0
+  - @backstage/plugin-events-backend@0.5.2-next.0
+  - @backstage/plugin-events-node@0.4.11-next.0
+  - @backstage/plugin-permission-node@0.9.2-next.0
+  - @backstage/plugin-search-backend-node@1.3.11-next.0
+  - @backstage/backend-openapi-utils@0.5.3-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-app-node@0.1.33-next.0
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
 ## 0.6.2
 
 ### Patch Changes

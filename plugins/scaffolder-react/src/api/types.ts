@@ -86,7 +86,7 @@ export type Action = {
 export type ListActionsResponse = Array<Action>;
 
 /**
- * The response shape for a single filter in the `listTemplateExtensions` call to the `scaffolder-backend`
+ * The response shape for a single filter in the `listTemplatingExtensions` call to the `scaffolder-backend`
  *
  * @public
  */
@@ -101,7 +101,7 @@ export type TemplateFilter = {
 };
 
 /**
- * The response shape for a single global function in the `listTemplateExtensions` call to the `scaffolder-backend`
+ * The response shape for a single global function in the `listTemplatingExtensions` call to the `scaffolder-backend`
  *
  * @public
  */
@@ -115,7 +115,7 @@ export type TemplateGlobalFunction = {
 };
 
 /**
- * The response shape for a single global value in the `listTemplateExtensions` call to the `scaffolder-backend`
+ * The response shape for a single global value in the `listTemplatingExtensions` call to the `scaffolder-backend`
  *
  * @public
  */
@@ -125,11 +125,11 @@ export type TemplateGlobalValue = {
 };
 
 /**
- * The response shape for the `listTemplateExtensions` call to the `scaffolder-backend`
+ * The response shape for the `listTemplatingExtensions` call to the `scaffolder-backend`
  *
  * @public
  */
-export type ListTemplateExtensionsResponse = {
+export type ListTemplatingExtensionsResponse = {
   filters: Record<string, TemplateFilter>;
   globals: {
     functions: Record<string, TemplateGlobalFunction>;
@@ -300,7 +300,7 @@ export interface ScaffolderApi {
   /**
    * Returns a structure describing the available templating extensions.
    */
-  listTemplateExtensions?(): Promise<ListTemplateExtensionsResponse>;
+  listTemplatingExtensions?(): Promise<ListTemplatingExtensionsResponse>;
 
   streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent>;
 

@@ -17,6 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { assertError } from '@backstage/errors';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import {
   catalogApiRef,
   humanizeEntityRef,
@@ -30,8 +31,10 @@ import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { NestedValue, UseFormReturn } from 'react-hook-form';
 import useAsync from 'react-use/esm/useAsync';
 import YAML from 'yaml';
+
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
 import { useCatalogFilename } from '../../hooks';
+import { catalogImportTranslationRef } from '../../translation';
 import { PartialEntity } from '../../types';
 import { BackButton, NextButton } from '../Buttons';
 import { PrepareResult } from '../useImportState';
@@ -127,6 +130,7 @@ export const StepPrepareCreatePullRequest = (
 ) => {
   const { analyzeResult, onPrepare, onGoBack, renderFormFields } = props;
 
+  const { t } = useTranslationRef(catalogImportTranslationRef);
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const catalogImportApi = useApi(catalogImportApiRef);
@@ -252,7 +256,9 @@ export const StepPrepareCreatePullRequest = (
               })}
 
               <Box marginTop={2}>
-                <Typography variant="h6">Preview Pull Request</Typography>
+                <Typography variant="h6">
+                  {t('stepPrepareCreatePullRequest.previewPr.title')}
+                </Typography>
               </Box>
 
               <PreviewPullRequestComponent
@@ -265,7 +271,9 @@ export const StepPrepareCreatePullRequest = (
               />
 
               <Box marginTop={2} marginBottom={1}>
-                <Typography variant="h6">Preview Entities</Typography>
+                <Typography variant="h6">
+                  {t('stepPrepareCreatePullRequest.previewCatalogInfo.title')}
+                </Typography>
               </Box>
 
               <PreviewCatalogInfoComponent
@@ -296,7 +304,7 @@ export const StepPrepareCreatePullRequest = (
                   )}
                   loading={submitted}
                 >
-                  Create PR
+                  {t('stepPrepareCreatePullRequest.nextButtonText')}
                 </NextButton>
               </Grid>
             </>

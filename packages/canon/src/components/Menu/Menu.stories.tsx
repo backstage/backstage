@@ -16,7 +16,8 @@
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { Menu } from './Menu';
-import { Button } from '../Button';
+import { Text, Icon, Button, Flex } from '../../index';
+import { useState } from 'react';
 
 const meta = {
   title: 'Components/Menu',
@@ -26,6 +27,18 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const options = [
+  { label: 'Apple', value: 'apple' },
+  { label: 'Banana', value: 'banana' },
+  { label: 'Blueberry', value: 'blueberry' },
+  { label: 'Cherry', value: 'cherry' },
+  { label: 'Durian', value: 'durian' },
+  { label: 'Elderberry', value: 'elderberry' },
+  { label: 'Fig', value: 'fig' },
+  { label: 'Grape', value: 'grape' },
+  { label: 'Honeydew', value: 'honeydew' },
+];
+
 export const Default: Story = {
   args: {
     children: (
@@ -34,9 +47,9 @@ export const Default: Story = {
           render={props => (
             <Button
               {...props}
-              size="medium"
+              size="small"
               variant="secondary"
-              iconEnd="chevron-down"
+              iconEnd={<Icon name="chevron-down" />}
             >
               Menu
             </Button>
@@ -69,4 +82,150 @@ export const OpenOnHover: Story = {
     ...Default.args,
     openOnHover: true,
   },
+};
+
+export const Submenu: Story = {
+  args: {
+    children: (
+      <>
+        <Menu.Trigger
+          render={props => (
+            <Button
+              {...props}
+              size="small"
+              variant="secondary"
+              iconEnd={<Icon name="chevron-down" />}
+            >
+              Menu
+            </Button>
+          )}
+        />
+        <Menu.Portal>
+          <Menu.Positioner sideOffset={8} align="start">
+            <Menu.Popup>
+              <Menu.Item>Settings</Menu.Item>
+              <Menu.Item>Invite new members</Menu.Item>
+              <Menu.Item>Download app</Menu.Item>
+              <Menu.Item>Log out</Menu.Item>
+              <Menu.Root>
+                <Menu.SubmenuTrigger>Submenu</Menu.SubmenuTrigger>
+                <Menu.Portal>
+                  <Menu.Positioner>
+                    <Menu.Popup>
+                      <Menu.Item>Submenu Item 1</Menu.Item>
+                      <Menu.Item>Submenu Item 2</Menu.Item>
+                      <Menu.Item>Submenu Item 3</Menu.Item>
+                    </Menu.Popup>
+                  </Menu.Positioner>
+                </Menu.Portal>
+              </Menu.Root>
+            </Menu.Popup>
+          </Menu.Positioner>
+        </Menu.Portal>
+      </>
+    ),
+  },
+};
+
+export const SubmenuCombobox = () => {
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
+
+  return (
+    <Flex direction="column" gap="1" align="start">
+      <Text style={{ marginBottom: 16 }}>
+        {selectedValues.length === 0
+          ? 'Which is your favorite fruit?'
+          : `Yum, ${selectedValues[0]} is delicious!`}
+      </Text>
+      <Menu.Root>
+        <Menu.Trigger
+          render={props => (
+            <Button
+              {...props}
+              size="small"
+              variant="secondary"
+              iconEnd={<Icon name="chevron-down" />}
+            >
+              Select Fruits
+            </Button>
+          )}
+        />
+        <Menu.Portal>
+          <Menu.Positioner sideOffset={4} align="start">
+            <Menu.Popup>
+              <Menu.Item>Regular Item</Menu.Item>
+              <Menu.Root>
+                <Menu.SubmenuTrigger>Fruits</Menu.SubmenuTrigger>
+                <Menu.Portal>
+                  <Menu.Positioner sideOffset={8} align="start">
+                    <Menu.Popup>
+                      <Menu.Combobox
+                        options={options}
+                        value={selectedValues}
+                        onValueChange={setSelectedValues}
+                      />
+                    </Menu.Popup>
+                  </Menu.Positioner>
+                </Menu.Portal>
+              </Menu.Root>
+              <Menu.Item>Another Item</Menu.Item>
+            </Menu.Popup>
+          </Menu.Positioner>
+        </Menu.Portal>
+      </Menu.Root>
+    </Flex>
+  );
+};
+
+export const SubmenuComboboxMultiselect = () => {
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
+
+  return (
+    <Flex direction="column" gap="1" align="start">
+      <Text style={{ marginBottom: 16 }}>
+        {selectedValues.length === 0
+          ? 'Tell us what fruits you like.'
+          : `${selectedValues.join(
+              ', ',
+            )} would make for a great, healthy smoothy!`}
+      </Text>
+      <Menu.Root>
+        <Menu.Trigger
+          render={props => (
+            <Button
+              {...props}
+              size="small"
+              variant="secondary"
+              iconEnd={<Icon name="chevron-down" />}
+            >
+              Select Fruits
+            </Button>
+          )}
+        />
+        <Menu.Portal>
+          <Menu.Positioner>
+            <Menu.Popup>
+              <Menu.Item>Regular Item</Menu.Item>
+              <Menu.Root>
+                <Menu.SubmenuTrigger>Fruits</Menu.SubmenuTrigger>
+                <Menu.Portal>
+                  <Menu.Positioner>
+                    <Menu.Popup>
+                      <Menu.Combobox
+                        multiselect
+                        options={options}
+                        value={selectedValues}
+                        onValueChange={setSelectedValues}
+                      />
+                    </Menu.Popup>
+                  </Menu.Positioner>
+                </Menu.Portal>
+              </Menu.Root>
+              <Menu.Item>Another Item</Menu.Item>
+            </Menu.Popup>
+          </Menu.Positioner>
+        </Menu.Portal>
+      </Menu.Root>
+    </Flex>
+  );
 };

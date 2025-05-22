@@ -1,5 +1,64 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.9.1
+
+### Patch Changes
+
+- d15355c: If the commit action is not `create` log a more appropriate error message to the end user advising that the files they're trying to modify might not exist
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-scaffolder-node@0.8.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.9.1-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/plugin-scaffolder-node@0.8.2-next.3
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.9.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/plugin-scaffolder-node@0.8.2-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/errors@1.2.7
+
+## 0.9.1-next.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/plugin-scaffolder-node@0.8.2-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- d15355c: If the commit action is not `create` log a more appropriate error message to the end user advising that the files they're trying to modify might not exist
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/plugin-scaffolder-node@0.8.2-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.9.0
 
 ### Minor Changes

@@ -72,6 +72,8 @@ import {
   RiGithubLine,
   RiDiscordLine,
   RiYoutubeLine,
+  RiCloseLine,
+  RiSearchLine,
 } from '@remixicon/react';
 
 /** @public */
@@ -103,6 +105,7 @@ export const icons: IconMap = {
   'chevron-left': RiArrowLeftSLine,
   'chevron-right': RiArrowRightSLine,
   'chevron-up': RiArrowUpSLine,
+  close: RiCloseLine,
   cloud: RiCloudLine,
   code: RiCodeLine,
   discord: RiDiscordLine,
@@ -118,6 +121,7 @@ export const icons: IconMap = {
   heart: RiHeartLine,
   moon: RiMoonLine,
   plus: RiAddLine,
+  search: RiSearchLine,
   'sidebar-fold': RiSidebarFoldLine,
   'sidebar-unfold': RiSidebarUnfoldLine,
   sparkling: RiSparklingLine,

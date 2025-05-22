@@ -56,12 +56,11 @@ Commands:
 ### `backstage-cli-alpha config docs`
 
 ```
-Usage: <none>
+Usage: backstage-cli config docs [options]
 
 Options:
-  --help
-  --package
-  --version
+  --package <name>
+  -h, --help
 ```
 
 ### `backstage-cli-alpha config schema`
@@ -242,8 +241,12 @@ Options:
 
 Commands:
   build
+  clean
   help [command]
   lint
+  postpack
+  prepack
+  start
   test
 ```
 
@@ -261,6 +264,15 @@ Options:
   -h, --help
 ```
 
+### `backstage-cli-alpha package clean`
+
+```
+Usage: program [options]
+
+Options:
+  -h, --help
+```
+
 ### `backstage-cli-alpha package lint`
 
 ```
@@ -271,6 +283,40 @@ Options:
   --format <format>
   --max-warnings <number>
   --output-file <path>
+  -h, --help
+```
+
+### `backstage-cli-alpha package postpack`
+
+```
+Usage: program [options]
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli-alpha package prepack`
+
+```
+Usage: program [options]
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli-alpha package start`
+
+```
+Usage: program [options]
+
+Options:
+  --check
+  --config <path>
+  --inspect [host]
+  --inspect-brk [host]
+  --link <path>
+  --require <path...>
+  --role <name>
   -h, --help
 ```
 
@@ -398,8 +444,12 @@ Options:
 
 Commands:
   build
+  clean
+  fix
   help [command]
   lint
+  list-deprecations
+  start
   test
 ```
 
@@ -412,6 +462,26 @@ Options:
   --all
   --minify
   --since <ref>
+  -h, --help
+```
+
+### `backstage-cli-alpha repo clean`
+
+```
+Usage: program [options]
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli-alpha repo fix`
+
+```
+Usage: program [options]
+
+Options:
+  --check
+  --publish
   -h, --help
 ```
 
@@ -428,6 +498,31 @@ Options:
   --since <ref>
   --successCache
   --successCacheDir <path>
+  -h, --help
+```
+
+### `backstage-cli-alpha repo list-deprecations`
+
+```
+Usage: program [options]
+
+Options:
+  --json
+  -h, --help
+```
+
+### `backstage-cli-alpha repo start`
+
+```
+Usage: program [options] [...packageNameOrPath]
+
+Options:
+  --config <path>
+  --inspect [host]
+  --inspect-brk [host]
+  --link <path>
+  --plugin <pluginId>
+  --require <path...>
   -h, --help
 ```
 

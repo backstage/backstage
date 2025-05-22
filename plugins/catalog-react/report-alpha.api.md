@@ -332,17 +332,36 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
   kind: 'entity-context-menu-item';
   name: undefined;
   params: EntityContextMenuItemParams;
-  output: ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+  output:
+    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ConfigurableExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >;
   inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: never;
+  config: {
+    filter: EntityPredicate | undefined;
+  };
+  configInput: {
+    filter?: EntityPredicate | undefined;
+  };
+  dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+  };
 }>;
 
 // @alpha (undocumented)
 export type EntityContextMenuItemParams = {
   useProps: UseProps;
   icon: JSX_2.Element;
+  filter?: EntityPredicate | ((entity: Entity) => boolean);
 };
 
 // @alpha (undocumented)

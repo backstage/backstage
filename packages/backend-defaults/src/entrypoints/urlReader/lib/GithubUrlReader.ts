@@ -45,6 +45,7 @@ import {
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { parseLastModified } from './util';
+import isGlob from 'is-glob';
 
 export type GhRepoResponse =
   RestEndpointMethodTypes['repos']['get']['response']['data'];
@@ -154,7 +155,7 @@ export class GithubUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceReadTreeOptions,
   ): Promise<UrlReaderServiceReadTreeResponse> {
-    const repoDetails = await this.getRepoDetails(url);
+    const repoDetails = await this.getRepoDetails(url, options);
     const commitSha = repoDetails.commitSha;
 
     if (options?.etag && options.etag === commitSha) {
@@ -186,7 +187,7 @@ export class GithubUrlReader implements UrlReaderService {
     const { filepath } = parseGitUrl(url);
 
     // If it's a direct URL we use readUrl instead
-    if (!filepath?.match(/[*?]/)) {
+    if (!isGlob(filepath)) {
       try {
         const data = await this.readUrl(url, options);
 
@@ -212,7 +213,7 @@ export class GithubUrlReader implements UrlReaderService {
       }
     }
 
-    const repoDetails = await this.getRepoDetails(url);
+    const repoDetails = await this.getRepoDetails(url, options);
     const commitSha = repoDetails.commitSha;
 
     if (options?.etag && options.etag === commitSha) {
@@ -320,7 +321,10 @@ export class GithubUrlReader implements UrlReaderService {
     }));
   }
 
-  private async getRepoDetails(url: string): Promise<{
+  private async getRepoDetails(
+    url: string,
+    options?: { token?: string },
+  ): Promise<{
     commitSha: string;
     repo: {
       archive_url: string;
@@ -330,9 +334,7 @@ export class GithubUrlReader implements UrlReaderService {
     const parsed = parseGitUrl(url);
     const { ref, full_name } = parsed;
 
-    const credentials = await this.deps.credentialsProvider.getCredentials({
-      url,
-    });
+    const credentials = await this.getCredentials(url, options);
     const { headers } = credentials;
 
     const commitStatus: GhCombinedCommitStatusResponse = await this.fetchJson(

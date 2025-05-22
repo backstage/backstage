@@ -94,12 +94,14 @@
   width: 32px;
 }
 
-.canon-IconButton[data-size='small'] .canon-IconButtonIcon {
+.canon-IconButtonIcon[data-size='small'],
+.canon-IconButtonIcon[data-size='small'] svg {
   width: 1rem;
   height: 1rem;
 }
 
-.canon-IconButton[data-size='medium'] .canon-IconButtonIcon {
-  width: 1.5rem;
-  height: 1.5rem;
+.canon-IconButtonIcon[data-size='medium'],
+.canon-IconButtonIcon[data-size='medium'] svg {
+  width: 1.25rem;
+  height: 1.25rem;
 }
