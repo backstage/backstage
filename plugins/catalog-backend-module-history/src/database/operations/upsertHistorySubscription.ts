@@ -1,0 +1,103 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { randomUUID } from 'crypto';
+import { Knex } from 'knex';
+import {
+  Subscription,
+  SubscriptionSpec,
+} from '../../schema/openapi/generated/models';
+import { getMaxEventId } from './getMaxEventId';
+
+export async function upsertHistorySubscription(
+  knex: Knex,
+  subscription: SubscriptionSpec,
+): Promise<Subscription> {
+  if (!subscription.subscriptionId) {
+    return await createSubscription(knex, subscription);
+  }
+
+  // We go through the trouble of checking if the subscription exists, because
+  // computing the max event id is much more expensive than the indexed
+  // subscription lookup, so we try to avoid doing that unless necessary
+  const exists = await knex('module_history__subscriptions')
+    .where('subscription_id', '=', subscription.subscriptionId)
+    .first()
+    .then(Boolean);
+
+  if (exists) {
+    await knex('module_history__subscriptions')
+      .where('subscription_id', '=', subscription.subscriptionId)
+      .update({
+        active_at: knex.fn.now(),
+        filter_entity_ref: subscription.entityRef,
+        filter_entity_id: subscription.entityId,
+      });
+    return {
+      subscriptionId: subscription.subscriptionId,
+      entityRef: subscription.entityRef,
+      entityId: subscription.entityId,
+    };
+  }
+
+  return await createSubscription(knex, subscription);
+}
+
+async function createSubscription(
+  knex: Knex,
+  subscription: SubscriptionSpec,
+): Promise<Subscription> {
+  const subscriptionId = subscription.subscriptionId ?? randomUUID();
+  const eventId = await getStartingEventId(knex, subscription);
+
+  await knex('module_history__subscriptions').insert({
+    subscription_id: subscriptionId,
+    state: 'idle',
+    last_sent_event_id: eventId,
+    last_acknowledged_event_id: eventId,
+    filter_entity_ref: subscription.entityRef,
+    filter_entity_id: subscription.entityId,
+  });
+
+  return {
+    subscriptionId,
+    entityRef: subscription.entityRef,
+    entityId: subscription.entityId,
+  };
+}
+
+async function getStartingEventId(
+  knex: Knex,
+  subscription: SubscriptionSpec,
+): Promise<string> {
+  const from = subscription._from ?? 'now';
+
+  if (from === 'beginning') {
+    return '0';
+  }
+
+  if (from === 'now') {
+    return await getMaxEventId(knex);
+  }
+
+  if (!from.match(/^\d+$/)) {
+    throw new Error(
+      `Invalid from value, expected a string of digits or "beginning" or "now", got "${from}"`,
+    );
+  }
+
+  return from;
+}

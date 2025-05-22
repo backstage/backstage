@@ -17,7 +17,7 @@
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 import { HistoryConfig } from '../config';
-import { knexRawNowMinus } from './util';
+import { runJanitorCleanup } from './operations/runJanitorCleanup';
 
 export class HistoryJanitor {
   #knexPromise: Promise<Knex>;
@@ -52,81 +52,10 @@ export class HistoryJanitor {
   }
 
   async runOnce(signal?: AbortSignal): Promise<void> {
+    const knex = await this.#knexPromise;
     if (signal?.aborted) {
       return;
     }
-
-    const knex = await this.#knexPromise;
-
-    if (this.#historyConfig.eventMaxRetentionTime) {
-      const deadline = knexRawNowMinus(
-        knex,
-        this.#historyConfig.eventMaxRetentionTime,
-      );
-      await knex('module_history__events')
-        .where('event_at', '<', deadline)
-        .delete();
-    }
-
-    if (this.#historyConfig.eventRetentionTimeAfterDeletion) {
-      const deadline = knexRawNowMinus(
-        knex,
-        this.#historyConfig.eventRetentionTimeAfterDeletion,
-      );
-      await knex
-        .with(
-          'deleted',
-          ['entity_ref', 'newest_event_at'],
-          deleted =>
-            deleted
-              .select(
-                'module_history__events.entity_ref',
-                knex.raw(
-                  'max(module_history__events.event_at) as newest_event_at',
-                ),
-              )
-              .from('module_history__events')
-              .groupBy('module_history__events.entity_ref')
-              .leftOuterJoin(
-                'final_entities',
-                'final_entities.entity_ref',
-                'module_history__events.entity_ref',
-              )
-              .whereNotNull('module_history__events.entity_ref')
-              .whereNull('final_entities.final_entity'), // either missing row, or actual NULL column
-        )
-        .from('module_history__events')
-        .whereIn('entity_ref', inner =>
-          inner
-            .select('deleted.entity_ref')
-            .from('deleted')
-            .where('deleted.newest_event_at', '<', deadline),
-        )
-        .delete();
-    }
-
-    // If a receiver did not acknowledge completion of a set of events, we
-    // consider it a failed delivery and consider re-sending them to a different
-    // receiver.
-    await knex('module_history__subscriptions')
-      .update({
-        state: 'idle',
-        ack_id: null,
-        ack_timeout_at: null,
-      })
-      .where('state', '=', 'waiting')
-      .andWhere('ack_timeout_at', '<', knex.fn.now());
-
-    // Delete subscriptions that have been inactive for a while
-    if (this.#historyConfig.subscriptionRetentionTimeAfterInactive) {
-      const deadline = knexRawNowMinus(
-        knex,
-        this.#historyConfig.subscriptionRetentionTimeAfterInactive,
-      );
-      await knex('module_history__subscriptions')
-        .where('state', '=', 'idle')
-        .andWhere('active_at', '<', deadline)
-        .delete();
-    }
+    await runJanitorCleanup(knex, this.#historyConfig);
   }
 }

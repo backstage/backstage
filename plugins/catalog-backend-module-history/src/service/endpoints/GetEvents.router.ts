@@ -15,7 +15,7 @@
  */
 
 import { TypedRouter } from '@backstage/backend-openapi-utils';
-import { ReadEventsTableRowsOptions } from '../../database/operations/readHistoryEvents';
+import { ReadHistoryEventsOptions } from '../../database/operations/readHistoryEvents';
 import { EndpointMap } from '../../schema/openapi';
 import { GetEventsModel } from './GetEvents.model';
 import { parseCursor, stringifyCursor } from './GetEvents.utils';
@@ -25,7 +25,7 @@ export function bindGetEventsEndpoint(
   model: GetEventsModel,
 ): void {
   router.get('/history/v1/events', async (req, res) => {
-    let readOptions: ReadEventsTableRowsOptions;
+    let readOptions: ReadHistoryEventsOptions;
     let block: boolean = false;
 
     if (req.query.cursor) {

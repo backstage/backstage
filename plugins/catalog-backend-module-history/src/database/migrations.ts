@@ -17,20 +17,18 @@
 import {
   DatabaseService,
   LifecycleService,
+  resolvePackagePath,
 } from '@backstage/backend-plugin-api';
 import { CatalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { Knex } from 'knex';
-import { resolve as resolvePath } from 'path';
 
 export const DB_MIGRATIONS_TABLE = 'module_history__knex_migrations';
 
 export async function applyDatabaseMigrations(knex: Knex): Promise<void> {
-  // const migrationsDir = resolvePackagePath(
-  //   '@backstage/plugin-catalog-backend-module-history',
-  //   'migrations',
-  // );
-  // eslint-disable-next-line no-restricted-syntax
-  const migrationsDir = resolvePath(__dirname, '../../migrations_');
+  const migrationsDir = resolvePackagePath(
+    '@backstage/plugin-catalog-backend-module-history',
+    'migrations_',
+  );
 
   await knex.migrate.latest({
     directory: migrationsDir,
@@ -59,11 +57,6 @@ export async function initializeDatabaseAfterCatalog(options: {
   });
 
   const knex = await options.database.getClient();
-
-  // const client = knex.client.config.client;
-  // if (!client.includes('pg') && !client.includes('sqlite')) {
-  //   throw new Error(`Feature not supported for database ${client}`);
-  // }
 
   if (options.database.migrations?.skip !== true) {
     await applyDatabaseMigrations(knex);

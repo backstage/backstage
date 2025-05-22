@@ -19,10 +19,12 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { getHistoryConfig } from './config';
+import { HistoryEventEmitter } from './emitter/HistoryEventEmitter';
 import { HistoryJanitor } from './database/HistoryJanitor';
 import { initializeDatabaseAfterCatalog } from './database/migrations';
 import { createRouter } from './service/createRouter';
-import { getHistoryConfig } from './config';
 
 /**
  * The history module for the catalog backend.
@@ -41,6 +43,7 @@ export const catalogModuleHistory = createBackendModule({
         lifecycle: coreServices.lifecycle,
         scheduler: coreServices.scheduler,
         catalogProcessing: catalogProcessingExtensionPoint,
+        events: eventsServiceRef,
       },
       async init({
         config,
@@ -49,6 +52,7 @@ export const catalogModuleHistory = createBackendModule({
         lifecycle,
         scheduler,
         catalogProcessing,
+        events,
       }) {
         // We can't await this call here, since we have to perform our own work
         // after the catalog has already spun up and is ready
@@ -69,6 +73,13 @@ export const catalogModuleHistory = createBackendModule({
           knexPromise,
           historyConfig,
           scheduler,
+        });
+
+        await HistoryEventEmitter.create({
+          knexPromise,
+          events,
+          historyConfig,
+          shutdownSignal: controller.signal,
         });
 
         httpRouter.use(

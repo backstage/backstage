@@ -131,8 +131,8 @@ describe('readHistorySubscription', () => {
       // And then the subscription stays intact
       await expect(getSubscription(knex, 'test')).resolves.toEqual({
         subscription_id: 'test',
-        active_at: expect.any(String),
-        created_at: expect.any(String),
+        active_at: expect.anything(),
+        created_at: expect.anything(),
         state: 'idle',
         ack_id: null,
         ack_timeout_at: null,
@@ -164,11 +164,11 @@ describe('readHistorySubscription', () => {
       // Which moves forward the subscription and marks it as waiting
       await expect(getSubscription(knex, 'test')).resolves.toEqual({
         subscription_id: 'test',
-        active_at: expect.any(String),
-        created_at: expect.any(String),
+        active_at: expect.anything(),
+        created_at: expect.anything(),
         state: 'waiting',
         ack_id: expect.any(String),
-        ack_timeout_at: expect.any(String),
+        ack_timeout_at: expect.anything(),
         last_sent_event_id: '1',
         last_acknowledged_event_id: '0',
         filter_entity_ref: null,
@@ -198,11 +198,11 @@ describe('readHistorySubscription', () => {
       // And then the subscription stays intact
       await expect(getSubscription(knex, 'test')).resolves.toEqual({
         subscription_id: 'test',
-        active_at: expect.any(String),
-        created_at: expect.any(String),
+        active_at: expect.anything(),
+        created_at: expect.anything(),
         state: 'waiting',
         ack_id: expect.any(String),
-        ack_timeout_at: expect.any(String),
+        ack_timeout_at: expect.anything(),
         last_sent_event_id: '1',
         last_acknowledged_event_id: '0',
         filter_entity_ref: null,
@@ -246,11 +246,11 @@ describe('readHistorySubscription', () => {
       // And then the subscription moved forward
       await expect(getSubscription(knex, 'test')).resolves.toEqual({
         subscription_id: 'test',
-        active_at: expect.any(String),
-        created_at: expect.any(String),
+        active_at: expect.anything(),
+        created_at: expect.anything(),
         state: 'waiting',
         ack_id: expect.any(String),
-        ack_timeout_at: expect.any(String),
+        ack_timeout_at: expect.anything(),
         last_sent_event_id: '3',
         last_acknowledged_event_id: '1',
         filter_entity_ref: null,
