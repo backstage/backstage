@@ -21,6 +21,8 @@ export interface EventsTableRow {
   entity_ref: string | null;
   entity_id: string | null;
   entity_json: string | null;
+  location_id: string | null;
+  location_ref: string | null;
 }
 
 export interface SubscriptionsTableRow {

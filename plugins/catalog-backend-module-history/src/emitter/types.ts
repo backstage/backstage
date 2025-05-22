@@ -32,4 +32,6 @@ export interface CatalogHistoryEvent {
   eventType: string;
   entityRef?: string;
   entityId?: string;
+  locationId?: string;
+  locationRef?: string;
 }

@@ -32,6 +32,10 @@ export interface CatalogEvent {
   entityId?: string;
   /** The JSON serialized body of the entity related to the event, where applicable */
   entityJson?: string;
+  /** The location id related to the event, where applicable */
+  locationId?: string;
+  /** The location ref related to the event, where applicable */
+  locationRef?: string;
 }
 
 /**

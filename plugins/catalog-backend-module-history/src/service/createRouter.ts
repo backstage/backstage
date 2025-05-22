@@ -40,6 +40,16 @@ export async function createRouter(options: {
     }),
   );
 
+  /*
+  bindUpsertSubscriptionEndpoint(
+    router,
+    new UpsertSubscriptionModelImpl({
+      knexPromise: options.knexPromise,
+      historyConfig: options.historyConfig,
+    }),
+  );
+  */
+
   bindReadSubscriptionEndpoint(
     router,
     new ReadSubscriptionModelImpl({
