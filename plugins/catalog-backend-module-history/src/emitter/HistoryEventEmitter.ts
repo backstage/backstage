@@ -83,6 +83,8 @@ export class HistoryEventEmitter {
             eventType: event.eventType,
             entityRef: event.entityRef,
             entityId: event.entityId,
+            locationId: event.locationId,
+            locationRef: event.locationRef,
           };
           await this.#events.publish({
             topic: CATALOG_HISTORY_EVENT_TOPIC,

@@ -83,6 +83,9 @@ describe('migrations', () => {
         metadata: {
           namespace: 'default',
           name: 'foo',
+          annotations: {
+            'backstage.io/managed-by-location': 'url:https://backstage.io',
+          },
         },
         spec: {
           type: 'service',
@@ -120,6 +123,8 @@ describe('migrations', () => {
             entity_ref: entityRef,
             entity_id: expect.any(String),
             entity_json: expect.stringContaining('"owner":"me"'),
+            location_id: null,
+            location_ref: 'url:https://backstage.io',
           },
         ]);
       });
@@ -137,6 +142,8 @@ describe('migrations', () => {
             entity_ref: entityRef,
             entity_id: expect.any(String),
             entity_json: expect.stringContaining('"owner":"me"'),
+            location_id: null,
+            location_ref: 'url:https://backstage.io',
           },
           {
             event_id: '2',
@@ -145,6 +152,8 @@ describe('migrations', () => {
             entity_ref: entityRef,
             entity_id: expect.any(String),
             entity_json: expect.stringContaining('"owner":"you"'),
+            location_id: null,
+            location_ref: 'url:https://backstage.io',
           },
         ]);
       });
@@ -162,6 +171,8 @@ describe('migrations', () => {
           entity_ref: entityRef,
           entity_id: expect.any(String),
           entity_json: expect.stringContaining('"owner":"me"'),
+          location_id: null,
+          location_ref: 'url:https://backstage.io',
         },
         {
           event_id: '2',
@@ -170,6 +181,8 @@ describe('migrations', () => {
           entity_ref: entityRef,
           entity_id: expect.any(String),
           entity_json: expect.stringContaining('"owner":"you"'),
+          location_id: null,
+          location_ref: 'url:https://backstage.io',
         },
       ]);
 
@@ -185,6 +198,8 @@ describe('migrations', () => {
             entity_ref: entityRef,
             entity_id: expect.any(String),
             entity_json: expect.stringContaining('"owner":"me"'),
+            location_id: null,
+            location_ref: 'url:https://backstage.io',
           },
           {
             event_id: '2',
@@ -193,6 +208,8 @@ describe('migrations', () => {
             entity_ref: entityRef,
             entity_id: expect.any(String),
             entity_json: expect.stringContaining('"owner":"you"'),
+            location_id: null,
+            location_ref: 'url:https://backstage.io',
           },
           {
             event_id: '3',
@@ -201,6 +218,76 @@ describe('migrations', () => {
             entity_ref: entityRef,
             entity_id: expect.any(String),
             entity_json: expect.stringContaining('"owner":"you"'),
+            location_id: null,
+            location_ref: 'url:https://backstage.io',
+          },
+        ]);
+      });
+
+      // Make a clean slate for location testing
+      await knex('module_history__events').delete();
+
+      await knex('locations').insert({
+        id: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
+        type: 'url',
+        target: 'https://backstage.io',
+      });
+
+      await waitFor(async () => {
+        await expect(rows()).resolves.toEqual([
+          {
+            event_id: '4',
+            event_at: expect.anything(),
+            event_type: 'location_created',
+            entity_ref: null,
+            entity_id: null,
+            entity_json: null,
+            location_id: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
+            location_ref: 'url:https://backstage.io',
+          },
+        ]);
+      });
+
+      await knex('locations')
+        .update({
+          type: 'url',
+          target: 'https://backstage.io(elsewhere',
+        })
+        .where('id', '=', 'b07a8526-0025-47e9-bf3b-f47ac94692c2');
+
+      await waitFor(async () => {
+        await expect(rows()).resolves.toEqual([
+          expect.objectContaining({ event_id: '4' }),
+          {
+            event_id: '5',
+            event_at: expect.anything(),
+            event_type: 'location_updated',
+            entity_ref: null,
+            entity_id: null,
+            entity_json: null,
+            location_id: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
+            location_ref: 'url:https://backstage.io(elsewhere',
+          },
+        ]);
+      });
+
+      await knex('locations')
+        .delete()
+        .where('id', '=', 'b07a8526-0025-47e9-bf3b-f47ac94692c2');
+
+      await waitFor(async () => {
+        await expect(rows()).resolves.toEqual([
+          expect.objectContaining({ event_id: '4' }),
+          expect.objectContaining({ event_id: '5' }),
+          {
+            event_id: '6',
+            event_at: expect.anything(),
+            event_type: 'location_deleted',
+            entity_ref: null,
+            entity_id: null,
+            entity_json: null,
+            location_id: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',
+            location_ref: 'url:https://backstage.io(elsewhere',
           },
         ]);
       });

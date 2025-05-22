@@ -21,9 +21,9 @@ import {
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { getHistoryConfig } from './config';
-import { HistoryEventEmitter } from './emitter/HistoryEventEmitter';
-import { HistoryJanitor } from './database/HistoryJanitor';
 import { initializeDatabaseAfterCatalog } from './database/migrations';
+import { runJanitorCleanup } from './database/operations/runJanitorCleanup';
+import { HistoryEventEmitter } from './emitter/HistoryEventEmitter';
 import { createRouter } from './service/createRouter';
 
 /**
@@ -69,10 +69,16 @@ export const catalogModuleHistory = createBackendModule({
           controller.abort();
         });
 
-        await HistoryJanitor.create({
-          knexPromise,
-          historyConfig,
-          scheduler,
+        await scheduler.scheduleTask({
+          id: 'catalog-history-janitor',
+          frequency: { seconds: 30 },
+          timeout: { minutes: 10 },
+          async fn() {
+            const knex = await knexPromise;
+            if (!controller.signal.aborted) {
+              await runJanitorCleanup(knex, historyConfig);
+            }
+          },
         });
 
         await HistoryEventEmitter.create({

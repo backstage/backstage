@@ -62,6 +62,8 @@ export async function readHistoryEvents(
       entityRef: row.entity_ref ?? undefined,
       entityId: row.entity_id ?? undefined,
       entityJson: row.entity_json ?? undefined,
+      locationId: row.location_id ?? undefined,
+      locationRef: row.location_ref ?? undefined,
     })),
   );
 }
