@@ -21,6 +21,9 @@ import { Container } from './Container';
 const meta = {
   title: 'Layout/Container',
   component: Container,
+  parameters: {
+    layout: 'fullscreen',
+  },
   argTypes: {
     children: {
       control: false,
@@ -48,14 +51,9 @@ const DecorativeBox = () => (
 );
 
 export const Default: Story = {
-  parameters: {
-    layout: 'fullscreen',
+  args: {
+    children: <DecorativeBox />,
   },
-  render: args => (
-    <Container {...args}>
-      <DecorativeBox />
-    </Container>
-  ),
 };
 
 export const Preview: Story = {
@@ -64,4 +62,46 @@ export const Preview: Story = {
       <DecorativeBox />
     </div>
   ),
+};
+
+export const WithPaddingY: Story = {
+  args: {
+    ...Default.args,
+    py: '4',
+  },
+};
+
+export const WithPaddingTop: Story = {
+  args: {
+    ...Default.args,
+    pt: '4',
+  },
+};
+
+export const WithPaddingBottom: Story = {
+  args: {
+    ...Default.args,
+    pb: '4',
+  },
+};
+
+export const WithMarginY: Story = {
+  args: {
+    ...Default.args,
+    my: '4',
+  },
+};
+
+export const WithMarginTop: Story = {
+  args: {
+    ...Default.args,
+    mt: '4',
+  },
+};
+
+export const WithMarginBottom: Story = {
+  args: {
+    ...Default.args,
+    mb: '4',
+  },
 };
