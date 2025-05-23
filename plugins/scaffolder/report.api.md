@@ -58,7 +58,7 @@ import { TemplateWizardPageProps } from '@backstage/plugin-scaffolder/alpha';
 import { z } from 'zod';
 
 // @public (undocumented)
-export const ActionsPage: (props: ActionsPageProps) => React_2.JSX.Element;
+export const ActionsPage: (props: ActionsPageProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type ActionsPageProps = {
@@ -209,7 +209,7 @@ export function ListTasksTable({
   setLimit,
   tasks,
   totalTasks,
-}: Readonly<ListTasksTableProps>): React_2.JSX.Element;
+}: Readonly<ListTasksTableProps>): JSX_2.Element;
 
 // @public (undocumented)
 export interface ListTasksTableProps {
