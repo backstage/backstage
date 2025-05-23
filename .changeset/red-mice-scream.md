@@ -1,5 +1,5 @@
 ---
-'@internal/scaffolder': minor
+'@backstage/plugin-scaffolder': minor
 ---
 
 export ListTasksPage and ActionsPage
