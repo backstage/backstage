@@ -86,7 +86,9 @@ export function bindGetEventsEndpoint(
             eventType: row.eventType,
             entityRef: row.entityRef,
             entityId: row.entityId,
-            entityJson: row.entityJson,
+            entityJson: row.entityJson ? JSON.parse(row.entityJson) : undefined,
+            locationId: row.locationId,
+            locationRef: row.locationRef,
           })),
           pageInfo: {
             cursor: result.cursor ? stringifyCursor(result.cursor) : undefined,

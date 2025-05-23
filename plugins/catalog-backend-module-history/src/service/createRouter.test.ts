@@ -89,9 +89,10 @@ describe('createRouter', () => {
       let response = await request(backend.server).get(
         '/api/catalog/history/v1/events',
       );
-      expect(response).toMatchObject({
-        status: 202,
-        body: { items: [], pageInfo: { cursor: expect.any(String) } },
+      expect(response.status).toBe(202);
+      expect(response.body).toEqual({
+        items: [],
+        pageInfo: { cursor: expect.any(String) },
       });
       expect(parseCursor(response.body.pageInfo.cursor)).toEqual({
         version: 1,
@@ -107,10 +108,8 @@ describe('createRouter', () => {
       response = await request(backend.server)
         .get('/api/catalog/history/v1/events')
         .query({ order: 'desc' });
-      expect(response).toMatchObject({
-        status: 200,
-        body: { items: [], pageInfo: {} },
-      });
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ items: [], pageInfo: {} });
 
       // Blocking request on empty data blocks
       let blocked = request(backend.server)
@@ -137,9 +136,10 @@ describe('createRouter', () => {
       // Shortly after adding the entity, the blocking request should resolve
       // with a 202 and a cursor that can be used to follow up
       response = await blocked;
-      expect(response).toMatchObject({
-        status: 202,
-        body: { items: [], pageInfo: { cursor: expect.any(String) } },
+      expect(response.status).toBe(202);
+      expect(response.body).toEqual({
+        items: [],
+        pageInfo: { cursor: expect.any(String) },
       });
       expect(parseCursor(response.body.pageInfo.cursor)).toEqual({
         version: 1,
@@ -156,21 +156,22 @@ describe('createRouter', () => {
       response = await request(backend.server)
         .get('/api/catalog/history/v1/events')
         .query({ cursor: response.body.pageInfo.cursor });
-      expect(response).toMatchObject({
-        status: 200,
-        body: {
-          items: [
-            {
-              eventId: '1',
-              eventType: 'entity_created',
-              entityId: expect.any(String),
-              entityJson: expect.any(String),
-              entityRef: 'component:default/foo',
-              eventAt: expect.any(String),
-            },
-          ],
-          pageInfo: { cursor: expect.any(String) },
-        },
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        items: [
+          {
+            eventId: '1',
+            eventAt: expect.any(String),
+            eventType: 'entity_created',
+            entityId: expect.any(String),
+            entityRef: 'component:default/foo',
+            entityJson: expect.objectContaining({
+              kind: 'Component',
+            }),
+            locationRef: 'url:http://mockEntityProvider.com',
+          },
+        ],
+        pageInfo: { cursor: expect.any(String) },
       });
       expect(parseCursor(response.body.pageInfo.cursor)).toEqual({
         version: 1,
@@ -207,9 +208,10 @@ describe('createRouter', () => {
       // Shortly after modifying the entity, the blocking request should resolve
       // with a 200 and a cursor that can be used to follow up
       response = await blocked;
-      expect(response).toMatchObject({
-        status: 202,
-        body: { items: [], pageInfo: { cursor: expect.any(String) } },
+      expect(response.status).toBe(202);
+      expect(response.body).toEqual({
+        items: [],
+        pageInfo: { cursor: expect.any(String) },
       });
       expect(parseCursor(response.body.pageInfo.cursor)).toEqual({
         version: 1,
@@ -226,21 +228,22 @@ describe('createRouter', () => {
       response = await request(backend.server)
         .get('/api/catalog/history/v1/events')
         .query({ cursor: response.body.pageInfo.cursor });
-      expect(response).toMatchObject({
-        status: 200,
-        body: {
-          items: [
-            {
-              eventId: '2',
-              eventType: 'entity_updated',
-              entityId: expect.any(String),
-              entityJson: expect.any(String),
-              entityRef: 'component:default/foo',
-              eventAt: expect.any(String),
-            },
-          ],
-          pageInfo: { cursor: expect.any(String) },
-        },
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        items: [
+          {
+            eventId: '2',
+            eventAt: expect.any(String),
+            eventType: 'entity_updated',
+            entityRef: 'component:default/foo',
+            entityId: expect.any(String),
+            entityJson: expect.objectContaining({
+              kind: 'Component',
+            }),
+            locationRef: 'url:http://mockEntityProvider.com',
+          },
+        ],
+        pageInfo: { cursor: expect.any(String) },
       });
       expect(parseCursor(response.body.pageInfo.cursor)).toEqual({
         version: 1,
@@ -256,21 +259,22 @@ describe('createRouter', () => {
       response = await request(backend.server)
         .get('/api/catalog/history/v1/events')
         .query({ order: 'desc', limit: 1 });
-      expect(response).toMatchObject({
-        status: 200,
-        body: {
-          items: [
-            {
-              eventId: '2',
-              eventType: 'entity_updated',
-              entityId: expect.any(String),
-              entityJson: expect.any(String),
-              entityRef: 'component:default/foo',
-              eventAt: expect.any(String),
-            },
-          ],
-          pageInfo: { cursor: expect.any(String) },
-        },
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        items: [
+          {
+            eventId: '2',
+            eventAt: expect.any(String),
+            eventType: 'entity_updated',
+            entityRef: 'component:default/foo',
+            entityId: expect.any(String),
+            entityJson: expect.objectContaining({
+              kind: 'Component',
+            }),
+            locationRef: 'url:http://mockEntityProvider.com',
+          },
+        ],
+        pageInfo: { cursor: expect.any(String) },
       });
       expect(parseCursor(response.body.pageInfo.cursor)).toEqual({
         version: 1,
@@ -286,21 +290,22 @@ describe('createRouter', () => {
       response = await request(backend.server)
         .get('/api/catalog/history/v1/events')
         .query({ cursor: response.body.pageInfo.cursor });
-      expect(response).toMatchObject({
-        status: 200,
-        body: {
-          items: [
-            {
-              eventId: '1',
-              eventType: 'entity_created',
-              entityId: expect.any(String),
-              entityJson: expect.any(String),
-              entityRef: 'component:default/foo',
-              eventAt: expect.any(String),
-            },
-          ],
-          pageInfo: { cursor: expect.any(String) },
-        },
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        items: [
+          {
+            eventId: '1',
+            eventAt: expect.any(String),
+            eventType: 'entity_created',
+            entityRef: 'component:default/foo',
+            entityId: expect.any(String),
+            entityJson: expect.objectContaining({
+              kind: 'Component',
+            }),
+            locationRef: 'url:http://mockEntityProvider.com',
+          },
+        ],
+        pageInfo: { cursor: expect.any(String) },
       });
       expect(parseCursor(response.body.pageInfo.cursor)).toEqual({
         version: 1,
@@ -316,10 +321,8 @@ describe('createRouter', () => {
       response = await request(backend.server)
         .get('/api/catalog/history/v1/events')
         .query({ cursor: response.body.pageInfo.cursor });
-      expect(response).toMatchObject({
-        status: 200,
-        body: { items: [], pageInfo: {} },
-      });
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ items: [], pageInfo: {} });
 
       // Read filtering by entity ref, blocking, from last. Since there by
       // definition are no new entities after "last" yet, it immediately returns
@@ -332,9 +335,10 @@ describe('createRouter', () => {
           afterEventId: 'last',
           entityRef: 'component:default/foo',
         });
-      expect(response).toMatchObject({
-        status: 202,
-        body: { items: [], pageInfo: { cursor: expect.any(String) } },
+      expect(response.status).toBe(202);
+      expect(response.body).toEqual({
+        items: [],
+        pageInfo: { cursor: expect.any(String) },
       });
       expect(parseCursor(response.body.pageInfo.cursor)).toEqual({
         version: 1,
@@ -358,9 +362,10 @@ describe('createRouter', () => {
 
       // Shortly after removing the entity, the blocking request should resolve
       response = await blocked;
-      expect(response).toMatchObject({
-        status: 202,
-        body: { items: [], pageInfo: { cursor: expect.any(String) } },
+      expect(response.status).toBe(202);
+      expect(response.body).toEqual({
+        items: [],
+        pageInfo: { cursor: expect.any(String) },
       });
       expect(parseCursor(response.body.pageInfo.cursor)).toEqual({
         version: 1,
@@ -376,21 +381,22 @@ describe('createRouter', () => {
       response = await request(backend.server)
         .get('/api/catalog/history/v1/events')
         .query({ cursor: response.body.pageInfo.cursor });
-      expect(response).toMatchObject({
-        status: 200,
-        body: {
-          items: [
-            {
-              eventId: '3',
-              eventType: 'entity_deleted',
-              entityId: expect.any(String),
-              entityJson: expect.any(String),
-              entityRef: 'component:default/foo',
-              eventAt: expect.any(String),
-            },
-          ],
-          pageInfo: { cursor: expect.any(String) },
-        },
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        items: [
+          {
+            eventId: '3',
+            eventAt: expect.any(String),
+            eventType: 'entity_deleted',
+            entityRef: 'component:default/foo',
+            entityId: expect.any(String),
+            entityJson: expect.objectContaining({
+              kind: 'Component',
+            }),
+            locationRef: 'url:http://mockEntityProvider.com',
+          },
+        ],
+        pageInfo: { cursor: expect.any(String) },
       });
       expect(parseCursor(response.body.pageInfo.cursor)).toEqual({
         version: 1,

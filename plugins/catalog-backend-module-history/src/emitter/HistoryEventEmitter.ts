@@ -82,14 +82,20 @@ export class HistoryEventEmitter {
             eventId: event.eventId,
             eventAt: event.eventAt.toISOString(),
             eventType: event.eventType,
-            entityRef: event.entityRef,
             entityId: event.entityId,
+            entityRef: event.entityRef,
+            entityJson: event.entityJson
+              ? JSON.parse(event.entityJson)
+              : undefined,
             locationId: event.locationId,
             locationRef: event.locationRef,
           };
           await this.#events.publish({
             topic: CATALOG_HISTORY_EVENT_TOPIC,
             eventPayload,
+            metadata: {
+              eventType: event.eventType,
+            },
           });
         }
         await ackHistorySubscription(knex, {
