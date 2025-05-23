@@ -258,7 +258,7 @@ describe('bindGetEventsEndpoint', () => {
           eventType: 'b',
           entityRef: 'c',
           entityId: 'd',
-          entityJson: { e: 'f' },
+          entityJson: JSON.stringify({ e: 'f' }),
         },
       ],
       cursor,

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { JsonObject } from '@backstage/types';
+
 /**
  * The events backend topic that the catalog history events are emitted on.
  *
@@ -30,8 +32,9 @@ export interface CatalogHistoryEvent {
   eventId: string;
   eventAt: string;
   eventType: string;
-  entityRef?: string;
   entityId?: string;
+  entityRef?: string;
+  entityJson?: JsonObject;
   locationId?: string;
   locationRef?: string;
 }

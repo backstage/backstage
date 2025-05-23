@@ -40,7 +40,19 @@ export interface Event {
    */
   entityRef?: string;
   /**
-   * The JSON serialized body of the entity related to the event, where applicable
+   * The entity uid related to the event, where applicable
    */
-  entityJson?: string;
+  entityId?: string;
+  /**
+   * The body of the entity related to the event, where applicable
+   */
+  entityJson?: any;
+  /**
+   * The location id related to the event, where applicable
+   */
+  locationId?: string;
+  /**
+   * The location ref related to the event, where applicable
+   */
+  locationRef?: string;
 }
