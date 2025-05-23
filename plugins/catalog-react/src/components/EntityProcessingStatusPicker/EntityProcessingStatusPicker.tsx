@@ -21,11 +21,12 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { makeStyles } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useEntityList } from '../../hooks';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogAutocomplete } from '../CatalogAutocomplete';
+import { EntityFilter } from '../../types';
 
 /** @public */
 export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
@@ -42,29 +43,50 @@ const useStyles = makeStyles(
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
+const advanceFilterOptions: {
+  [key: string]: {
+    label: string;
+    createFilterFn: () => EntityFilter;
+  };
+} = {
+  orphan: {
+    label: 'Is Orphan',
+    createFilterFn: () => new EntityOrphanFilter(true),
+  },
+  error: {
+    label: 'Has Error',
+    createFilterFn: () => new EntityErrorFilter(true),
+  },
+};
+
 /** @public */
 export const EntityProcessingStatusPicker = () => {
   const classes = useStyles();
-  const { updateFilters } = useEntityList();
+  const { updateFilters, queryParameters } = useEntityList();
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const [selectedAdvancedItems, setSelectedAdvancedItems] = useState<string[]>(
-    [],
+    Object.keys(queryParameters)
+      .filter(key => key in advanceFilterOptions)
+      .map(key => advanceFilterOptions[key].label),
   );
 
-  function orphanChange(value: boolean) {
-    updateFilters({
-      orphan: value ? new EntityOrphanFilter(value) : undefined,
-    });
-  }
+  useEffect(() => {
+    updateFilters(
+      Object.fromEntries(
+        Object.keys(advanceFilterOptions).map(key => [
+          key,
+          selectedAdvancedItems.includes(advanceFilterOptions[key].label)
+            ? advanceFilterOptions[key].createFilterFn()
+            : undefined,
+        ]),
+      ),
+    );
+  }, [selectedAdvancedItems, updateFilters]);
 
-  function errorChange(value: boolean) {
-    updateFilters({
-      error: value ? new EntityErrorFilter(value) : undefined,
-    });
-  }
-
-  const availableAdvancedItems = ['Is Orphan', 'Has Error'];
+  const availableAdvancedItems = Object.values(advanceFilterOptions).map(
+    v => v.label,
+  );
 
   return (
     <Box className={classes.root} pb={1} pt={1}>
@@ -76,8 +98,6 @@ export const EntityProcessingStatusPicker = () => {
         value={selectedAdvancedItems}
         onChange={(_: object, value: string[]) => {
           setSelectedAdvancedItems(value);
-          orphanChange(value.includes('Is Orphan'));
-          errorChange(value.includes('Has Error'));
         }}
         renderOption={(option, { selected }) => (
           <FormControlLabel
