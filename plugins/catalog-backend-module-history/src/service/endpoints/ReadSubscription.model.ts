@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { durationToMilliseconds } from '@backstage/types';
-import { once } from 'events';
 import { Knex } from 'knex';
 import { HistoryConfig } from '../../config';
 import { readHistorySubscription } from '../../database/operations/readHistorySubscription';
+import { waitForEvents } from '../../database/operations/waitForEvents';
 import { CatalogEvent } from './types';
 
 export interface ReadSubscriptionOptions {
@@ -55,10 +54,13 @@ export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
   async readSubscriptionNonblocking(options: {
     readOptions: ReadSubscriptionOptions;
   }): Promise<{ events: CatalogEvent[]; ackId: string } | undefined> {
-    return await readHistorySubscription(await this.#knexPromise, {
-      subscriptionId: options.readOptions.subscriptionId,
+    const { subscriptionId, limit } = options.readOptions;
+    const knex = await this.#knexPromise;
+
+    return await readHistorySubscription(knex, {
+      subscriptionId,
       operation: 'read',
-      limit: options.readOptions.limit,
+      limit,
       historyConfig: this.#historyConfig,
     });
   }
@@ -71,46 +73,22 @@ export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
     readOptions: ReadSubscriptionOptions;
     signal?: AbortSignal;
   }): Promise<'timeout' | 'aborted' | 'ready'> {
-    const deadline =
-      Date.now() + durationToMilliseconds(this.#historyConfig.blockDuration);
+    const { subscriptionId } = options.readOptions;
+    const knex = await this.#knexPromise;
 
-    while (Date.now() < deadline) {
-      // Not using AbortSignal.timeout() because https://github.com/nodejs/node/pull/57867
-      const timeoutController = new AbortController();
-      const timeoutHandle = setTimeout(
-        () => timeoutController.abort(),
-        durationToMilliseconds(this.#historyConfig.blockPollFrequency),
-      );
-      try {
-        const inner = AbortSignal.any([
-          timeoutController.signal,
-          this.#shutdownSignal,
-          ...(options.signal ? [options.signal] : []),
-        ]);
-        // The event won't ever fire if the signal is already aborted, so we
-        // need this check.
-        if (!inner.aborted) {
-          await once(inner, 'abort');
-        }
-        if (this.#shutdownSignal.aborted || options.signal?.aborted) {
-          return 'aborted';
-        }
-        const result = await readHistorySubscription(await this.#knexPromise, {
-          subscriptionId: options.readOptions.subscriptionId,
+    return await waitForEvents({
+      historyConfig: this.#historyConfig,
+      signal: AbortSignal.any([
+        this.#shutdownSignal,
+        ...(options.signal ? [options.signal] : []),
+      ]),
+      checker: () =>
+        readHistorySubscription(knex, {
+          subscriptionId,
           operation: 'peek',
           limit: 1,
           historyConfig: this.#historyConfig,
-        });
-        if (result) {
-          return 'ready';
-        }
-      } finally {
-        // Clean up
-        clearTimeout(timeoutHandle);
-        timeoutController.abort();
-      }
-    }
-
-    return 'timeout';
+        }).then(r => r !== undefined),
+    });
   }
 }

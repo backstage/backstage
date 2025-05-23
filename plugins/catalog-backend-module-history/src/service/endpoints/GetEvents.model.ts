@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { durationToMilliseconds } from '@backstage/types';
-import { once } from 'events';
 import { Knex } from 'knex';
 import { HistoryConfig } from '../../config';
 import { getMaxEventId } from '../../database/operations/getMaxEventId';
@@ -23,6 +21,7 @@ import {
   readHistoryEvents,
   ReadHistoryEventsOptions,
 } from '../../database/operations/readHistoryEvents';
+import { waitForEvents } from '../../database/operations/waitForEvents';
 import { Cursor } from './GetEvents.utils';
 import { CatalogEvent } from './types';
 
@@ -90,53 +89,21 @@ export class GetEventsModelImpl implements GetEventsModel {
     return { events, cursor };
   }
 
-  // TODO(freben): Implement a more efficient way to wait for new events. See
-  // the events backend using LISTEN/NOTIFY for inspiration. For now, wait for
-  // up until the deadline and stop early if the request closes, or if we are
-  // shutting down, or we start finding some rows.
   async blockUntilDataIsReady(options: {
     readOptions: ReadHistoryEventsOptions;
     signal?: AbortSignal;
   }): Promise<'timeout' | 'aborted' | 'ready'> {
     const knex = await this.#knexPromise;
-    const deadline =
-      Date.now() + durationToMilliseconds(this.#historyConfig.blockDuration);
-
-    while (Date.now() < deadline) {
-      // Not using AbortSignal.timeout() because https://github.com/nodejs/node/pull/57867
-      const timeoutController = new AbortController();
-      const timeoutHandle = setTimeout(
-        () => timeoutController.abort(),
-        durationToMilliseconds(this.#historyConfig.blockPollFrequency),
-      );
-      try {
-        const inner = AbortSignal.any([
-          timeoutController.signal,
-          this.#shutdownSignal,
-          ...(options.signal ? [options.signal] : []),
-        ]);
-        // The event won't ever fire if the signal is already aborted, so we
-        // need this check.
-        if (!inner.aborted) {
-          await once(inner, 'abort');
-        }
-        if (this.#shutdownSignal.aborted || options.signal?.aborted) {
-          return 'aborted';
-        }
-        const rows = await readHistoryEvents(knex, {
-          ...options.readOptions,
-          limit: 1,
-        });
-        if (rows.length) {
-          return 'ready';
-        }
-      } finally {
-        // Clean up
-        timeoutController.abort();
-        clearTimeout(timeoutHandle);
-      }
-    }
-
-    return 'timeout';
+    return await waitForEvents({
+      historyConfig: this.#historyConfig,
+      signal: AbortSignal.any([
+        this.#shutdownSignal,
+        ...(options.signal ? [options.signal] : []),
+      ]),
+      checker: () =>
+        readHistoryEvents(knex, { ...options.readOptions, limit: 1 }).then(
+          rows => rows.length > 0,
+        ),
+    });
   }
 }

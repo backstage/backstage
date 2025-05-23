@@ -28,6 +28,14 @@ export interface Subscription {
    */
   subscriptionId: string;
   /**
+   * An ISO timestamp sting for when the subscription was created
+   */
+  createdAt: string;
+  /**
+   * An ISO timestamp sting for when the subscription last saw client (not event source) activity
+   */
+  lastActiveAt: string;
+  /**
    * Filtered to only events pertaining to this entity ref
    */
   entityRef?: string;

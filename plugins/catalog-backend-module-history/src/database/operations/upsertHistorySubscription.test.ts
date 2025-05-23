@@ -73,13 +73,15 @@ describe('upsertHistorySubscription', () => {
   }
 
   it.each(databases.eachSupportedId())(
-    'can create a new subscription bith with a given and a generated id, %p',
+    'can create a new subscription both with a given and a generated id, %p',
     async databaseId => {
       const { knex, backend } = await init(databaseId);
 
       let subscription = await upsertHistorySubscription(knex, {});
       expect(subscription).toEqual({
         subscriptionId: expect.any(String),
+        createdAt: expect.any(String),
+        lastActiveAt: expect.any(String),
       });
 
       await expect(
@@ -106,6 +108,8 @@ describe('upsertHistorySubscription', () => {
       });
       expect(subscription).toEqual({
         subscriptionId: 'test',
+        createdAt: expect.any(String),
+        lastActiveAt: expect.any(String),
         entityRef: 'r',
         entityId: 'i',
       });
@@ -139,6 +143,8 @@ describe('upsertHistorySubscription', () => {
       });
       expect(subscription).toEqual({
         subscriptionId: 'test',
+        createdAt: expect.any(String),
+        lastActiveAt: expect.any(String),
       });
 
       await expect(
@@ -163,6 +169,8 @@ describe('upsertHistorySubscription', () => {
       });
       expect(subscription).toEqual({
         subscriptionId: 'test',
+        createdAt: expect.any(String),
+        lastActiveAt: expect.any(String),
         entityRef: 'r',
         entityId: 'i',
       });
@@ -203,6 +211,8 @@ describe('upsertHistorySubscription', () => {
       });
       expect(subscription).toEqual({
         subscriptionId: 'beginning',
+        createdAt: expect.any(String),
+        lastActiveAt: expect.any(String),
       });
 
       await expect(
@@ -226,6 +236,8 @@ describe('upsertHistorySubscription', () => {
       });
       expect(subscription).toEqual({
         subscriptionId: 'now',
+        createdAt: expect.any(String),
+        lastActiveAt: expect.any(String),
       });
 
       await expect(
@@ -249,6 +261,8 @@ describe('upsertHistorySubscription', () => {
       });
       expect(subscription).toEqual({
         subscriptionId: 'number',
+        createdAt: expect.any(String),
+        lastActiveAt: expect.any(String),
       });
 
       await expect(

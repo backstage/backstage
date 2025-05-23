@@ -226,11 +226,21 @@ export const spec = {
       Subscription: {
         description: 'A single subscription',
         type: 'object',
-        required: ['subscriptionId'],
+        required: ['subscriptionId', 'createdAt', 'lastActiveAt'],
         properties: {
           subscriptionId: {
             type: 'string',
             description: 'The unique identifier of this subscription.',
+          },
+          createdAt: {
+            type: 'string',
+            description:
+              'An ISO timestamp sting for when the subscription was created',
+          },
+          lastActiveAt: {
+            type: 'string',
+            description:
+              'An ISO timestamp sting for when the subscription last saw client (not event source) activity',
           },
           entityRef: {
             type: 'string',
