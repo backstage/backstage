@@ -4,6 +4,10 @@ title: TechDocs Addons
 description: How to find, use, or create TechDocs Addons.
 ---
 
+:::info
+This documentation is written for [the old frontend system](./getting-started.md#adding-techdocs-frontend-plugin). If you are on the [new frontend system](../../frontend-system/index.md) you may want to read [its own article](./addons--new.md) instead.
+:::
+
 ## Concepts
 
 TechDocs is a centralized platform for publishing, viewing, and discovering
@@ -177,8 +181,7 @@ provided by the Addon framework.
 
 ```tsx
 // plugins/your-plugin/src/addons/MakeAllImagesCatGifs.tsx
-
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
 
 // This is a normal react component; in order to make it an Addon, you would

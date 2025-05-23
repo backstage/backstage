@@ -9,7 +9,7 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
@@ -19,34 +19,19 @@ const _default: FrontendPlugin<
   },
   {},
   {
-    'page:devtools': ExtensionDefinition<{
-      kind: 'page';
+    'api:devtools': ExtensionDefinition<{
+      kind: 'api';
       name: undefined;
-      config: {
-        path: string | undefined;
-      };
-      configInput: {
-        path?: string | undefined;
-      };
-      output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
-            'core.routing.ref',
-            {
-              optional: true;
-            }
-          >;
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        AnyApiFactory,
+        'core.api.factory',
+        {}
+      >;
       inputs: {};
       params: {
-        defaultPath: string;
-        loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef<AnyRouteRefParams> | undefined;
+        factory: AnyApiFactory;
       };
     }>;
     'nav-item:devtools': ExtensionDefinition<{
@@ -70,19 +55,30 @@ const _default: FrontendPlugin<
         routeRef: RouteRef<undefined>;
       };
     }>;
-    'api:devtools': ExtensionDefinition<{
-      kind: 'api';
+    'page:devtools': ExtensionDefinition<{
+      kind: 'page';
       name: undefined;
-      config: {};
-      configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      config: {
+        path: string | undefined;
+      };
+      configInput: {
+        path?: string | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+        | ConfigurableExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >;
       inputs: {};
       params: {
-        factory: AnyApiFactory;
+        defaultPath: string;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef;
       };
     }>;
   }

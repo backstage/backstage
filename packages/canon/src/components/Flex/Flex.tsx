@@ -20,12 +20,14 @@ import clsx from 'clsx';
 import { flexPropDefs } from './Flex.props';
 import { extractProps } from '../../utils/extractProps';
 import { gapPropDefs } from '../../props/gap-props';
+import { spacingPropDefs } from '../../props/spacing.props';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
   const propDefs = {
     ...gapPropDefs,
     ...flexPropDefs,
+    ...spacingPropDefs,
   };
 
   const { className, style } = extractProps(props, propDefs);

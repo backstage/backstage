@@ -25,8 +25,8 @@ The behavior of the `backstage-cli new` command is configurable through your roo
 ```
 
 - `globals` - Configures input for all generated packages and plugins.
-  - `version` - Sets the value of the `version` field in `package.json` of all generated packages. Defaults to `Apache-2.0`.
-  - `license` - Sets the value of the `license` field in `package.json` of all generated packages. Defaults to `0.1.0`.
+  - `version` - Sets the value of the `version` field in `package.json` of all generated packages. Defaults to `0.1.0`.
+  - `license` - Sets the value of the `license` field in `package.json` of all generated packages. Defaults to `Apache-2.0`.
   - `private` - Sets the value of the `private` field in `package.json` of all generated packages. Defaults to `true`.
   - `publishRegistry` - Sets the value of the `publishConfig.registry` field in `package.json` of all generated packages.
   - `namePrefix` - The prefix used to generate the full package name. Defaults to `@internal/`.

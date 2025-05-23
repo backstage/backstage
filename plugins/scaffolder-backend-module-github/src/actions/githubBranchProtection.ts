@@ -128,31 +128,45 @@ export function createGithubBranchProtectionAction(options: {
         owner,
         repo,
       });
-      const client = new Octokit(octokitOptions);
-
-      const repository = await client.rest.repos.get({
-        owner: owner,
-        repo: repo,
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
       });
 
-      await enableBranchProtectionOnDefaultRepoBranch({
-        repoName: repo,
-        client,
-        owner,
-        logger: ctx.logger,
-        requireCodeOwnerReviews,
-        bypassPullRequestAllowances,
-        requiredApprovingReviewCount,
-        restrictions,
-        requiredStatusCheckContexts,
-        requireBranchesToBeUpToDate,
-        requiredConversationResolution,
-        requireLastPushApproval,
-        defaultBranch: branch ?? repository.data.default_branch,
-        enforceAdmins,
-        dismissStaleReviews,
-        requiredCommitSigning,
-        requiredLinearHistory,
+      const defaultBranch = await ctx.checkpoint({
+        key: `read.default.branch.${owner}.${repo}`,
+        fn: async () => {
+          const repository = await client.rest.repos.get({
+            owner: owner,
+            repo: repo,
+          });
+          return repository.data.default_branch;
+        },
+      });
+
+      await ctx.checkpoint({
+        key: `enable.branch.protection.${owner}.${repo}`,
+        fn: async () => {
+          await enableBranchProtectionOnDefaultRepoBranch({
+            repoName: repo,
+            client,
+            owner,
+            logger: ctx.logger,
+            requireCodeOwnerReviews,
+            bypassPullRequestAllowances,
+            requiredApprovingReviewCount,
+            restrictions,
+            requiredStatusCheckContexts,
+            requireBranchesToBeUpToDate,
+            requiredConversationResolution,
+            requireLastPushApproval,
+            defaultBranch: branch ?? defaultBranch,
+            enforceAdmins,
+            dismissStaleReviews,
+            requiredCommitSigning,
+            requiredLinearHistory,
+          });
+        },
       });
     },
   });

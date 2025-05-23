@@ -57,7 +57,7 @@ export function prepareBackstageIdentityResponse(
   return {
     ...result,
     expiresInSeconds: exp,
-    identity: {
+    identity: result.identity ?? {
       type: 'user',
       userEntityRef: sub,
       ownershipEntityRefs: ent,

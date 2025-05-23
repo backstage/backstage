@@ -85,6 +85,7 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
   templateFormRouteRef,
+  templatingExtensionsRouteRef,
   viewTechDocRouteRef,
 } from './routes';
 
@@ -139,6 +140,7 @@ export const scaffolderPlugin = createPlugin({
     editor: editorRouteRef,
     customFields: customFieldsRouteRef,
     templateForm: templateFormRouteRef,
+    templatingExtensions: templatingExtensionsRouteRef,
   },
   externalRoutes: {
     registerComponent: registerComponentRouteRef,

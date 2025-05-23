@@ -541,7 +541,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should forward errors when plugins fail to start', async () => {
-    const init = new BackendInitializer([]);
+    const init = new BackendInitializer(baseFactories);
     init.add(
       createBackendPlugin({
         pluginId: 'test',
@@ -557,6 +557,216 @@ describe('BackendInitializer', () => {
     );
     await expect(init.start()).rejects.toThrow(
       "Plugin 'test' startup failed; caused by Error: NOPE",
+    );
+  });
+
+  it('should permit startup errors for plugins with onPluginBootFailure: continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: { plugins: { test: { onPluginBootFailure: 'continue' } } },
+          },
+        },
+      }),
+    ]);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).resolves.not.toThrow();
+  });
+
+  it('should permit startup errors if the default onPluginBootFailure is continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: { default: { onPluginBootFailure: 'continue' } },
+          },
+        },
+      }),
+    ]);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).resolves.not.toThrow();
+  });
+
+  it('should forward errors for plugins explicitly marked to abort when the default is continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: {
+              default: { onPluginBootFailure: 'continue' },
+              plugins: { test: { onPluginBootFailure: 'abort' } },
+            },
+          },
+        },
+      }),
+    ]);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Plugin 'test' startup failed; caused by Error: NOPE",
+    );
+  });
+
+  it('should forward errors when plugin modules fail to start', async () => {
+    const init = new BackendInitializer(baseFactories);
+    init.add(testPlugin);
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Module 'mod' for plugin 'test' startup failed; caused by Error: NOPE",
+    );
+  });
+
+  it('should permit startup errors for plugin modules with onPluginModuleBootFailure: continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: {
+              plugins: {
+                test: {
+                  modules: { mod: { onPluginModuleBootFailure: 'continue' } },
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+    init.add(testPlugin);
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).resolves.not.toThrow();
+  });
+
+  it('should permit startup errors if the default onPluginModuleBootFailure is continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: { default: { onPluginModuleBootFailure: 'continue' } },
+          },
+        },
+      }),
+    ]);
+    init.add(testPlugin);
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).resolves.not.toThrow();
+  });
+
+  it('should forward errors for plugin modules explicitly marked to abort when the default is continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: {
+              default: { onPluginModuleBootFailure: 'continue' },
+              plugins: {
+                test: {
+                  modules: { mod: { onPluginModuleBootFailure: 'abort' } },
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+    init.add(testPlugin);
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Module 'mod' for plugin 'test' startup failed; caused by Error: NOPE",
     );
   });
 

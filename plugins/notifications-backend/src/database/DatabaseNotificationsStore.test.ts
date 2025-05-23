@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import {
+  mockServices,
   TestDatabaseId,
   TestDatabases,
-  mockServices,
 } from '@backstage/backend-test-utils';
 import { DatabaseNotificationsStore } from './DatabaseNotificationsStore';
 import { Knex } from 'knex';
@@ -748,6 +748,7 @@ describe.each(databases.eachSupportedId())(
         await storage.saveNotification(testNotification1);
         await storage.saveNotification(testNotification2);
         await storage.saveBroadcast(testNotification3);
+        await storage.saveNotification(testNotification4); // One without topic
         await storage.saveNotification(otherUserNotification);
 
         const topics = await storage.getTopics({ user });

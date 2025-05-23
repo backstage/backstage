@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import { Table, TableProps } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
 import { CatalogTableToolbar } from './CatalogTableToolbar';
@@ -37,7 +35,6 @@ export function CursorPaginatedCatalogTable(props: PaginatedCatalogTableProps) {
       columns={columns}
       data={data}
       options={{
-        paginationPosition: 'both',
         ...options,
         // These settings are configured to force server side pagination
         pageSizeOptions: [],

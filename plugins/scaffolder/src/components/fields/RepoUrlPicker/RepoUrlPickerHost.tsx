@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Progress, Select, SelectItem } from '@backstage/core-components';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -28,8 +28,9 @@ export const RepoUrlPickerHost = (props: {
   hosts?: string[];
   onChange: (host: string) => void;
   rawErrors: string[];
+  isDisabled?: boolean;
 }) => {
-  const { host, hosts, onChange, rawErrors } = props;
+  const { host, hosts, onChange, rawErrors, isDisabled } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const scaffolderApi = useApi(scaffolderApiRef);
 
@@ -75,7 +76,7 @@ export const RepoUrlPickerHost = (props: {
       >
         <Select
           native
-          disabled={hosts?.length === 1}
+          disabled={isDisabled || hosts?.length === 1}
           label={t('fields.repoUrlPicker.host.title')}
           onChange={s => onChange(String(Array.isArray(s) ? s[0] : s))}
           selected={host}

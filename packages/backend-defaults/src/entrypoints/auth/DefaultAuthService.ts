@@ -68,6 +68,7 @@ export class DefaultAuthService implements AuthService {
           userResult.userEntityRef,
           pluginResult.limitedUserToken,
           this.#getJwtExpiration(pluginResult.limitedUserToken),
+          pluginResult.subject,
         );
       }
       return createCredentialsWithServicePrincipal(pluginResult.subject);
@@ -150,7 +151,7 @@ export class DefaultAuthService implements AuthService {
     }
 
     // check whether a plugin support the new auth system
-    // by checking the public keys endpoint existance.
+    // by checking the public keys endpoint existence.
     switch (type) {
       // TODO: Check whether the principal is ourselves
       case 'service':

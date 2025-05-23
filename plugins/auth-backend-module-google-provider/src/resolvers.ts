@@ -20,6 +20,7 @@ import {
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
+import { z } from 'zod';
 
 /**
  * Available sign-in resolvers for the Google auth provider.
@@ -31,7 +32,12 @@ export namespace googleSignInResolvers {
    * Looks up the user by matching their email to the `google.com/email` annotation.
    */
   export const emailMatchingUserEntityAnnotation = createSignInResolverFactory({
-    create() {
+    optionsSchema: z
+      .object({
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+      })
+      .optional(),
+    create(options = {}) {
       return async (
         info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
         ctx,
@@ -42,11 +48,19 @@ export namespace googleSignInResolvers {
           throw new Error('Google profile contained no email');
         }
 
-        return ctx.signInWithCatalogUser({
-          annotations: {
-            'google.com/email': profile.email,
+        return ctx.signInWithCatalogUser(
+          {
+            annotations: {
+              'google.com/email': profile.email,
+            },
           },
-        });
+          {
+            dangerousEntityRefFallback:
+              options?.dangerouslyAllowSignInWithoutUserInCatalog
+                ? { entityRef: { name: profile.email } }
+                : undefined,
+          },
+        );
       };
     },
   });

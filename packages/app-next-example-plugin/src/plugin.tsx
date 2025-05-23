@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   PageBlueprint,
   createFrontendPlugin,
@@ -29,6 +28,6 @@ export const ExamplePage = PageBlueprint.make({
 
 /** @public */
 export const examplePlugin = createFrontendPlugin({
-  id: 'example',
+  pluginId: 'example',
   extensions: [ExamplePage],
 });

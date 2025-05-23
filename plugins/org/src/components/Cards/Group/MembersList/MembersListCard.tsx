@@ -20,14 +20,18 @@ import {
   UserEntity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  useEntity,
+  EntityRefLink,
+} from '@backstage/plugin-catalog-react';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Pagination from '@material-ui/lab/Pagination';
-import React, { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 
 import {
@@ -43,7 +47,6 @@ import {
   getAllDesendantMembersForGroupEntity,
   removeDuplicateEntitiesFrom,
 } from '../../../../helpers/helpers';
-import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { EntityRelationAggregation } from '../../types';
 
 /** @public */
@@ -175,8 +178,8 @@ export const MembersListCard = (props: {
 
   const groupNamespace = grpNamespace || DEFAULT_NAMESPACE;
 
-  const [page, setPage] = React.useState(1);
-  const pageChange = (_: React.ChangeEvent<unknown>, pageIndex: number) => {
+  const [page, setPage] = useState(1);
+  const pageChange = (_: ChangeEvent<unknown>, pageIndex: number) => {
     setPage(pageIndex);
   };
 
@@ -245,7 +248,7 @@ export const MembersListCard = (props: {
     />
   );
 
-  let memberList: React.JSX.Element;
+  let memberList: JSX.Element;
   if (members && members.length > 0) {
     memberList = (
       <Box className={classes.memberList}>

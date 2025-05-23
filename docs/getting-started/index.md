@@ -116,11 +116,11 @@ If this fails on the `yarn install` step, it's likely that you will need to inst
 
 ## 2. Run the Backstage app
 
-Your Backstage app is fully installed and ready to be run! Now that the installation is complete, you can go to the application directory and start the app using the `yarn dev` command. The `yarn dev` command will run both the frontend and backend as separate processes (named `[0]` and `[1]`) in the same window.
+Your Backstage app is fully installed and ready to be run! Now that the installation is complete, you can go to the application directory and start the app using the `yarn start` command. The `yarn start` command will run both the frontend and backend as separate processes (named `[0]` and `[1]`) in the same window.
 
 ```bash
 cd my-backstage-app # your app name
-yarn dev
+yarn start
 ```
 
 ![Screenshot of the command output, with the message web pack compiled successfully](../assets/getting-started/startup.png)

@@ -4,11 +4,37 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { ContainerRunner } from '@backstage/backend-common';
 import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { Writable } from 'stream';
+
+// @public
+export interface ContainerRunner {
+  runContainer(opts: {
+    imageName: string;
+    command?: string | string[];
+    args: string[];
+    logStream?: Writable;
+    mountDirs?: Record<string, string>;
+    workingDir?: string;
+    envVars?: Record<string, string>;
+    pullImage?: boolean;
+    defaultUser?: boolean;
+    pullOptions?: {
+      authconfig?: {
+        username?: string;
+        password?: string;
+        auth?: string;
+        email?: string;
+        serveraddress?: string;
+        [key: string]: unknown;
+      };
+      [key: string]: unknown;
+    };
+  }): Promise<void>;
+}
 
 // @public
 export function createFetchRailsAction(options: {
@@ -19,11 +45,12 @@ export function createFetchRailsAction(options: {
 }): TemplateAction<
   {
     url: string;
-    targetPath?: string | undefined;
+    targetPath?: string;
     values: JsonObject;
-    imageName?: string | undefined;
+    imageName?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public

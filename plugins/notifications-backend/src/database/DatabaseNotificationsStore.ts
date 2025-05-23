@@ -570,7 +570,9 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       ...options,
       orderField: [{ field: 'topic', order: 'asc' }],
     });
-    const topics = await notificationQuery.distinct(['topic']);
+    const topics = await notificationQuery
+      .whereNotNull('topic')
+      .distinct(['topic']);
     return { topics: topics.map(row => row.topic) };
   }
 }

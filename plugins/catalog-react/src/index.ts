@@ -27,6 +27,7 @@ export * from './apis';
 export * from './components';
 export * from './hooks';
 export * from './filters';
+export type { EntityRouteParamsOptions } from './routes';
 export { entityRouteParams, entityRouteRef } from './routes';
 export * from './types';
 export * from './overridableComponents';

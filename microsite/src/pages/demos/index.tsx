@@ -31,7 +31,7 @@ const Demos = () => {
           <p>
             Watch the videos below to get an introduction to Backstage and to
             see how we use different plugins to customize{' '}
-            <Link to="https://engineering.atspotify.com/2020/04/21/how-we-use-backstage-at-spotify/">
+            <Link to="https://engineering.atspotify.com/2020/04/how-we-use-backstage-at-spotify/">
               our internal version of Backstage at Spotify
             </Link>
           </p>

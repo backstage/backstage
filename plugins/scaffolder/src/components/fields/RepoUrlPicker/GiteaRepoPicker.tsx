@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import TextField from '@material-ui/core/TextField';
@@ -28,7 +27,7 @@ export const GiteaRepoPicker = (
     allowedRepos?: string[];
   }>,
 ) => {
-  const { allowedOwners = [], state, onChange, rawErrors } = props;
+  const { allowedOwners = [], state, onChange, rawErrors, isDisabled } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const ownerItems: SelectItem[] = allowedOwners
     ? allowedOwners.map(i => ({ label: i, value: i }))
@@ -55,7 +54,7 @@ export const GiteaRepoPicker = (
                   ),
                 })
               }
-              disabled={allowedOwners.length === 1}
+              disabled={isDisabled || allowedOwners.length === 1}
               selected={owner}
               items={ownerItems}
             />
@@ -70,6 +69,7 @@ export const GiteaRepoPicker = (
               label={t('fields.giteaRepoPicker.owner.inputTitle')}
               onChange={e => onChange({ owner: e.target.value })}
               helperText={t('fields.giteaRepoPicker.owner.description')}
+              disabled={isDisabled}
               value={owner}
             />
           </>

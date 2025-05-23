@@ -21,4 +21,3 @@
  */
 
 export { catalogModuleUnprocessedEntities as default } from './module';
-export * from './UnprocessedEntitiesModule';

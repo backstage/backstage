@@ -33,7 +33,10 @@ const isSvgNeedingInlining = (
   attrVal: string,
   apiOrigin: string,
 ) => {
-  const isSrcToSvg = attrName === 'src' && attrVal.endsWith('.svg');
+  // Let's let the URL object do automatic parsing of the pathname for us
+  const pathname = new URL(attrVal, 'https://ignored.com').pathname;
+  const isSrcToSvg = attrName === 'src' && pathname.endsWith('.svg');
+
   const isRelativeUrl = !attrVal.match(/^([a-z]*:)?\/\//i);
   const pointsToOurBackend = attrVal.startsWith(apiOrigin);
   return isSrcToSvg && (isRelativeUrl || pointsToOurBackend);

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { createApiRef, useApiHolder } from '@backstage/core-plugin-api';
 import { TestApiProvider, TestApiRegistry } from './TestApiProvider';
 import { render, screen } from '@testing-library/react';

@@ -19,7 +19,7 @@ import {
   scmIntegrationsApiRef,
   scmAuthApiRef,
 } from '@backstage/integration-react';
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
 import Box from '@material-ui/core/Box';
@@ -31,6 +31,7 @@ import { RepoBranchPickerState } from './types';
 import { BitbucketRepoBranchPicker } from './BitbucketRepoBranchPicker';
 import { DefaultRepoBranchPicker } from './DefaultRepoBranchPicker';
 import { GitHubRepoBranchPicker } from './GitHubRepoBranchPicker';
+import { MarkdownContent } from '@backstage/core-components';
 
 /**
  * The underlying component that is rendered in the form for the `RepoBranchPicker`
@@ -133,6 +134,7 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
               uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
               secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
             }
+            isDisabled={uiSchema?.['ui:disabled'] ?? false}
             required={required}
           />
         );
@@ -146,6 +148,7 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
               uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
               secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
             }
+            isDisabled={uiSchema?.['ui:disabled'] ?? false}
             required={required}
           />
         );
@@ -155,11 +158,14 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
             onChange={updateLocalState}
             state={state}
             rawErrors={rawErrors}
+            isDisabled={uiSchema?.['ui:disabled'] ?? false}
             required={required}
           />
         );
     }
   };
+
+  const description = uiSchema['ui:description'] ?? schema.description;
 
   return (
     <>
@@ -169,8 +175,10 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
           <Divider />
         </Box>
       )}
-      {schema.description && (
-        <Typography variant="body1">{schema.description}</Typography>
+      {description && (
+        <Typography variant="body1">
+          <MarkdownContent content={description} />
+        </Typography>
       )}
       {renderRepoBranchPicker()}
     </>

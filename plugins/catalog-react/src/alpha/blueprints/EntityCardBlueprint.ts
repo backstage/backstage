@@ -22,7 +22,14 @@ import {
 import {
   entityFilterFunctionDataRef,
   entityFilterExpressionDataRef,
+  entityCardTypeDataRef,
+  entityCardTypes,
+  EntityCardType,
 } from './extensionData';
+import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
+import { EntityPredicate } from '../predicates';
+import { resolveEntityFilterData } from './resolveEntityFilterData';
+import { Entity } from '@backstage/catalog-model';
 
 /**
  * @alpha
@@ -35,36 +42,44 @@ export const EntityCardBlueprint = createExtensionBlueprint({
     coreExtensionData.reactElement,
     entityFilterFunctionDataRef.optional(),
     entityFilterExpressionDataRef.optional(),
+    entityCardTypeDataRef.optional(),
   ],
   dataRefs: {
     filterFunction: entityFilterFunctionDataRef,
     filterExpression: entityFilterExpressionDataRef,
+    type: entityCardTypeDataRef,
   },
   config: {
     schema: {
-      filter: z => z.string().optional(),
+      filter: z =>
+        z.union([z.string(), createEntityPredicateSchema(z)]).optional(),
+      type: z => z.enum(entityCardTypes).optional(),
     },
   },
   *factory(
     {
       loader,
       filter,
+      type,
     }: {
       loader: () => Promise<JSX.Element>;
-      filter?:
-        | typeof entityFilterFunctionDataRef.T
-        | typeof entityFilterExpressionDataRef.T;
+      filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+      type?: EntityCardType;
     },
     { node, config },
   ) {
     yield coreExtensionData.reactElement(ExtensionBoundary.lazy(node, loader));
 
-    if (config.filter) {
-      yield entityFilterExpressionDataRef(config.filter);
-    } else if (typeof filter === 'string') {
-      yield entityFilterExpressionDataRef(filter);
-    } else if (typeof filter === 'function') {
-      yield entityFilterFunctionDataRef(filter);
+    yield* resolveEntityFilterData(filter, config, node);
+
+    const finalType = config.type ?? type;
+    if (finalType) {
+      yield entityCardTypeDataRef(finalType);
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `DEPRECATION WARNING: Not providing type for entity cards is deprecated. Missing from '${node.spec.id}'`,
+      );
     }
   },
 });

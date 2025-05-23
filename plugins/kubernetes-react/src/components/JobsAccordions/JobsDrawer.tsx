@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { V1Job } from '@kubernetes/client-node';
+import type { V1Job } from '@kubernetes/client-node';
 import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';

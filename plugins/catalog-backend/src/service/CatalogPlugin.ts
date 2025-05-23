@@ -35,13 +35,14 @@ import {
   catalogModelExtensionPoint,
   CatalogPermissionExtensionPoint,
   catalogPermissionExtensionPoint,
+  CatalogPermissionRuleInput,
   CatalogProcessingExtensionPoint,
   catalogProcessingExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Permission } from '@backstage/plugin-permission-common';
 import { merge } from 'lodash';
-import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
+import { CatalogBuilder } from './CatalogBuilder';
 
 class CatalogLocationsExtensionPointImpl
   implements CatalogLocationsExtensionPoint
@@ -232,7 +233,6 @@ export const catalogPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         lifecycle: coreServices.rootLifecycle,
         scheduler: coreServices.scheduler,
-        discovery: coreServices.discovery,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
         auditor: coreServices.auditor,
@@ -248,7 +248,6 @@ export const catalogPlugin = createBackendPlugin({
         httpRouter,
         lifecycle,
         scheduler,
-        discovery,
         auth,
         httpAuth,
         auditor,
@@ -262,7 +261,6 @@ export const catalogPlugin = createBackendPlugin({
           database,
           scheduler,
           logger,
-          discovery,
           auth,
           httpAuth,
           auditor,

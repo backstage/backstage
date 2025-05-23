@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  createLegacyAuthAdapters,
-  HostDiscovery,
-} from '@backstage/backend-common';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import {
   AuditorService,
   AuthService,
@@ -112,6 +109,15 @@ import {
   parseStringsParam,
 } from './helpers';
 import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
+import {
+  convertFiltersToRecord,
+  convertGlobalsToRecord,
+  extractFilterMetadata,
+  extractGlobalFunctionMetadata,
+  extractGlobalValueMetadata,
+} from '../util/templating';
+import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
 
 /**
  *
@@ -163,7 +169,7 @@ export interface RouterOptions {
   database: DatabaseService;
   catalogClient: CatalogApi;
   scheduler?: SchedulerService;
-  actions?: TemplateAction<any, any>[];
+  actions?: TemplateAction<any, any, any>[];
   /**
    * @deprecated taskWorkers is deprecated in favor of concurrentTasksLimit option with a single TaskWorker
    * @defaultValue 1
@@ -177,7 +183,7 @@ export interface RouterOptions {
   taskBroker?: TaskBroker;
   additionalTemplateFilters?:
     | Record<string, TemplateFilter>
-    | CreatedTemplateFilter[];
+    | CreatedTemplateFilter<any, any>[];
   additionalTemplateGlobals?:
     | Record<string, TemplateGlobal>
     | CreatedTemplateGlobal[];
@@ -369,23 +375,14 @@ export async function createRouter(
   }
 
   const actionRegistry = new TemplateActionRegistry();
+
   const templateExtensions = {
-    additionalTemplateFilters: Array.isArray(additionalTemplateFilters)
-      ? Object.fromEntries(
-          additionalTemplateFilters.map(f => [
-            f.id,
-            f.filter as TemplateFilter,
-          ]),
-        )
-      : additionalTemplateFilters,
-    additionalTemplateGlobals: Array.isArray(additionalTemplateGlobals)
-      ? Object.fromEntries(
-          additionalTemplateGlobals.map(g => [
-            g.id,
-            ('value' in g ? g.value : g.fn) as TemplateGlobal,
-          ]),
-        )
-      : additionalTemplateGlobals,
+    additionalTemplateFilters: convertFiltersToRecord(
+      additionalTemplateFilters,
+    ),
+    additionalTemplateGlobals: convertGlobalsToRecord(
+      additionalTemplateGlobals,
+    ),
   };
 
   const workers: TaskWorker[] = [];
@@ -831,7 +828,22 @@ export async function createRouter(
 
         await auditorEvent?.success();
 
-        await taskBroker.retry?.(taskId);
+        const { token } = await auth.getPluginRequestToken({
+          onBehalfOf: credentials,
+          targetPluginId: 'catalog',
+        });
+
+        const secrets: InternalTaskSecrets = {
+          ...req.body.secrets,
+          backstageToken: token,
+          __initiatorCredentials: JSON.stringify({
+            ...credentials,
+            // credentials.token is nonenumerable and will not be serialized, so we need to add it explicitly
+            token: (credentials as any).token,
+          }),
+        };
+
+        await taskBroker.retry?.({ secrets, taskId });
         res.status(201).json({ id: taskId });
       } catch (err) {
         await auditorEvent?.fail({ error: err });
@@ -1117,6 +1129,18 @@ export async function createRouter(
       });
 
       res.status(200).json({ results });
+    })
+    .get('/v2/templating-extensions', async (_req, res) => {
+      res.status(200).json({
+        filters: {
+          ...extractFilterMetadata(createDefaultFilters({ integrations })),
+          ...extractFilterMetadata(additionalTemplateFilters),
+        },
+        globals: {
+          functions: extractGlobalFunctionMetadata(additionalTemplateGlobals),
+          values: extractGlobalValueMetadata(additionalTemplateGlobals),
+        },
+      });
     });
 
   const app = express();

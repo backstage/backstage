@@ -84,7 +84,6 @@ function addProcessorAttributes(
   );
 }
 
-/** @public */
 export class DefaultCatalogProcessingOrchestrator
   implements CatalogProcessingOrchestrator
 {

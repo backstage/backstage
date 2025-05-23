@@ -254,12 +254,7 @@ async function generatePatch(
   await fs.writeFile(joinPath(patchDir, name), patch, 'utf8');
 
   const locator = `${ctx.sourcePkg.packageJson.name}@npm:${version}`;
-  return `patch:${encodeURIComponent(locator)}#${posix.join(
-    '.',
-    '.yarn',
-    'patches',
-    name,
-  )}`;
+  return `patch:${locator}#${posix.join('.', '.yarn', 'patches', name)}`;
 }
 
 // Check if an existing resolution entry is a patch, and in that case return the

@@ -17,18 +17,18 @@
 import { compatWrapper } from '@backstage/core-compat-api';
 import { BackstagePlugin, getComponentData } from '@backstage/core-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import React, { ComponentType } from 'react';
+import { ComponentType } from 'react';
 import { EntityCardBlueprint } from '../blueprints';
 import kebabCase from 'lodash/kebabCase';
+import { EntityPredicate } from '../predicates';
+import { Entity } from '@backstage/catalog-model';
 
 /** @alpha */
 export function convertLegacyEntityCardExtension(
   LegacyExtension: ComponentType<{}>,
   overrides?: {
     name?: string;
-    filter?:
-      | typeof EntityCardBlueprint.dataRefs.filterFunction.T
-      | typeof EntityCardBlueprint.dataRefs.filterExpression.T;
+    filter?: string | EntityPredicate | ((entity: Entity) => boolean);
   },
 ): ExtensionDefinition {
   const element = <LegacyExtension />;

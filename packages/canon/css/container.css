@@ -1,0 +1,18 @@
+.canon-Container {
+  max-width: 120rem;
+  padding-inline: var(--canon-space-4);
+  margin-inline: auto;
+  transition: padding .2s ease-in-out;
+}
+
+@media (width >= 640px) {
+  .canon-Container {
+    padding-inline: var(--canon-space-8);
+  }
+}
+
+@media (width >= 1024px) {
+  .canon-Container {
+    padding-inline: var(--canon-space-12);
+  }
+}

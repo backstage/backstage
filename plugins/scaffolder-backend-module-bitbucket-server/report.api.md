@@ -20,17 +20,19 @@ export function createPublishBitbucketServerAction(options: {
 }): TemplateAction<
   {
     repoUrl: string;
-    description?: string | undefined;
-    defaultBranch?: string | undefined;
-    repoVisibility?: 'private' | 'public' | undefined;
-    sourcePath?: string | undefined;
-    enableLFS?: boolean | undefined;
-    token?: string | undefined;
-    gitCommitMessage?: string | undefined;
-    gitAuthorName?: string | undefined;
-    gitAuthorEmail?: string | undefined;
+    description?: string;
+    defaultBranch?: string;
+    repoVisibility?: 'private' | 'public';
+    sourcePath?: string;
+    enableLFS?: boolean;
+    token?: string;
+    gitCommitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
+    signCommit?: boolean;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 
 // @public
@@ -41,14 +43,15 @@ export function createPublishBitbucketServerPullRequestAction(options: {
   {
     repoUrl: string;
     title: string;
-    description?: string | undefined;
-    targetBranch?: string | undefined;
+    description?: string;
+    targetBranch?: string;
     sourceBranch: string;
-    reviewers?: string[] | undefined;
-    token?: string | undefined;
-    gitAuthorName?: string | undefined;
-    gitAuthorEmail?: string | undefined;
+    reviewers?: string[];
+    token?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 ```

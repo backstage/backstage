@@ -1,0 +1,59 @@
+.canon-Text {
+  font-family: var(--canon-font-regular);
+  margin: 0;
+  padding: 0;
+}
+
+.canon-Text[data-variant="body"] {
+  font-size: var(--canon-font-size-3);
+  line-height: 140%;
+}
+
+.canon-Text[data-variant="subtitle"] {
+  font-size: var(--canon-font-size-4);
+  line-height: 140%;
+}
+
+.canon-Text[data-variant="caption"] {
+  font-size: var(--canon-font-size-2);
+  line-height: 140%;
+}
+
+.canon-Text[data-variant="label"] {
+  font-size: var(--canon-font-size-1);
+  line-height: 140%;
+}
+
+.canon-Text[data-weight="regular"] {
+  font-weight: var(--canon-font-weight-regular);
+}
+
+.canon-Text[data-weight="bold"] {
+  font-weight: var(--canon-font-weight-bold);
+}
+
+.canon-Text[data-color="primary"] {
+  color: var(--canon-fg-primary);
+}
+
+.canon-Text[data-color="secondary"] {
+  color: var(--canon-fg-secondary);
+}
+
+.canon-Text[data-color="danger"] {
+  color: var(--canon-fg-danger);
+}
+
+.canon-Text[data-color="warning"] {
+  color: var(--canon-fg-warning);
+}
+
+.canon-Text[data-color="success"] {
+  color: var(--canon-fg-success);
+}
+
+.canon-Text[data-truncate] {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}

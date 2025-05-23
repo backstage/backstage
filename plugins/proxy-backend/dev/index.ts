@@ -19,7 +19,7 @@ import { createBackendModule } from '@backstage/backend-plugin-api';
 import { proxyEndpointsExtensionPoint } from '@backstage/plugin-proxy-node/alpha';
 
 const backend = createBackend();
-backend.add(import('../src/alpha'));
+backend.add(import('../src'));
 
 backend.add(
   createBackendModule({

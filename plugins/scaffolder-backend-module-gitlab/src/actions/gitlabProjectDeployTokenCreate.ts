@@ -70,21 +70,31 @@ export const createGitlabProjectDeployTokenAction = (options: {
         token: token,
       });
 
-      const deployToken = await api.DeployTokens.create(
-        name,
-        scopes as DeployTokenScope[],
-        {
-          projectId,
-          username,
+      const { deployToken, deployUsername } = await ctx.checkpoint({
+        key: `create.deploy.token.${projectId}.${name}`,
+        fn: async () => {
+          const res = await api.DeployTokens.create(
+            name,
+            scopes as DeployTokenScope[],
+            {
+              projectId,
+              username,
+            },
+          );
+
+          if (!res.hasOwnProperty('token')) {
+            throw new InputError(`No deploy_token given from gitlab instance`);
+          }
+
+          return {
+            deployToken: res.token as string,
+            deployUsername: res.username,
+          };
         },
-      );
+      });
 
-      if (!deployToken.hasOwnProperty('token')) {
-        throw new InputError(`No deploy_token given from gitlab instance`);
-      }
-
-      ctx.output('deploy_token', deployToken.token as string);
-      ctx.output('user', deployToken.username);
+      ctx.output('deploy_token', deployToken);
+      ctx.output('user', deployUsername);
     },
   });
 };

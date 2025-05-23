@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 
 import { Page, Header, Content } from '@backstage/core-components';
 import Tab from '@material-ui/core/Tab';
@@ -36,7 +36,7 @@ const useStyles = makeStyles(() => ({
 export const UnprocessedEntitiesContent = () => {
   const classes = useStyles();
   const [tab, setTab] = useState('failed');
-  const handleChange = (_event: React.ChangeEvent<{}>, tabValue: string) => {
+  const handleChange = (_event: ChangeEvent<{}>, tabValue: string) => {
     setTab(tabValue);
   };
 

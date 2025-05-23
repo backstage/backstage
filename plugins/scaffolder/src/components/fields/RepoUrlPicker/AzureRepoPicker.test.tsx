@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { AzureRepoPicker } from './AzureRepoPicker';
 import { fireEvent } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
@@ -28,6 +27,23 @@ describe('AzureRepoPicker', () => {
     const allInputs = getAllByRole('textbox');
 
     expect(allInputs).toHaveLength(2);
+  });
+
+  it('disables input fields when isDisabled is true', async () => {
+    const { getAllByRole } = await renderInTestApp(
+      <AzureRepoPicker
+        onChange={jest.fn()}
+        rawErrors={[]}
+        state={{}}
+        isDisabled
+      />,
+    );
+
+    const allInputs = getAllByRole('textbox');
+
+    allInputs.forEach(input => {
+      expect(input).toBeDisabled();
+    });
   });
 
   describe('org field', () => {

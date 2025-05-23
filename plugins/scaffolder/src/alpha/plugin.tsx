@@ -24,6 +24,7 @@ import {
   scaffolderListTaskRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
+  templatingExtensionsRouteRef,
   viewTechDocRouteRef,
 } from '../routes';
 import {
@@ -37,7 +38,7 @@ import { formDecoratorsApi } from './api';
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'scaffolder',
+  pluginId: 'scaffolder',
   routes: convertLegacyRouteRefs({
     root: rootRouteRef,
     selectedTemplate: selectedTemplateRouteRef,
@@ -45,6 +46,7 @@ export default createFrontendPlugin({
     actions: actionsRouteRef,
     listTasks: scaffolderListTaskRouteRef,
     edit: editRouteRef,
+    templatingExtensions: templatingExtensionsRouteRef,
   }),
   externalRoutes: convertLegacyRouteRefs({
     registerComponent: registerComponentRouteRef,

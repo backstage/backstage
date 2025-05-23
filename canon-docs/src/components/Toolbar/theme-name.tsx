@@ -24,7 +24,7 @@ export const ThemeNameSelector = () => {
           placeholder="Select a theme"
         />
         <Select.Icon className={styles.SelectIcon}>
-          <Icon name="chevronDown" />
+          <Icon name="chevron-down" />
         </Select.Icon>
       </Select.Trigger>
       <Select.Portal>

@@ -27,7 +27,7 @@ import {
 } from './apis';
 
 export default createFrontendPlugin({
-  id: 'kubernetes',
+  pluginId: 'kubernetes',
   extensions: [
     kubernetesPage,
     entityKubernetesContent,

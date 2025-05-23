@@ -22,7 +22,7 @@ import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { AzureRepoPicker } from './AzureRepoPicker';
 import { BitbucketRepoPicker } from './BitbucketRepoPicker';
@@ -35,6 +35,7 @@ import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
 import { RepoUrlPickerFieldSchema } from './schema';
 import { RepoUrlPickerState } from './types';
 import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
+import { MarkdownContent } from '@backstage/core-components';
 
 export { RepoUrlPickerSchema } from './schema';
 
@@ -77,7 +78,10 @@ export const RepoUrlPicker = (
     () => uiSchema?.['ui:options']?.allowedRepos ?? [],
     [uiSchema],
   );
-
+  const isDisabled = useMemo(
+    () => uiSchema?.['ui:disabled'] ?? false,
+    [uiSchema],
+  );
   const { owner, organization, project, repoName } = state;
 
   useEffect(() => {
@@ -163,6 +167,9 @@ export const RepoUrlPicker = (
 
   const hostType =
     (state.host && integrationApi.byHost(state.host)?.type) ?? null;
+
+  const description = uiSchema['ui:description'] ?? schema.description;
+
   return (
     <>
       {schema.title && (
@@ -171,14 +178,17 @@ export const RepoUrlPicker = (
           <Divider />
         </Box>
       )}
-      {schema.description && (
-        <Typography variant="body1">{schema.description}</Typography>
+      {description && (
+        <Typography variant="body1">
+          <MarkdownContent content={description} />
+        </Typography>
       )}
       <RepoUrlPickerHost
         host={state.host}
         hosts={allowedHosts}
         onChange={host => setState(prevState => ({ ...prevState, host }))}
         rawErrors={rawErrors}
+        isDisabled={isDisabled}
       />
       {hostType === 'github' && (
         <GithubRepoPicker
@@ -186,6 +196,7 @@ export const RepoUrlPicker = (
           onChange={updateLocalState}
           rawErrors={rawErrors}
           state={state}
+          isDisabled={isDisabled}
           accessToken={
             uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
             secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
@@ -198,6 +209,7 @@ export const RepoUrlPicker = (
           allowedRepos={allowedRepos}
           rawErrors={rawErrors}
           state={state}
+          isDisabled={isDisabled}
           onChange={updateLocalState}
         />
       )}
@@ -207,6 +219,7 @@ export const RepoUrlPicker = (
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
+          isDisabled={isDisabled}
           accessToken={
             uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
             secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
@@ -220,6 +233,7 @@ export const RepoUrlPicker = (
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
+          isDisabled={isDisabled}
           accessToken={
             uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
             secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
@@ -232,6 +246,7 @@ export const RepoUrlPicker = (
           allowedProject={allowedProjects}
           rawErrors={rawErrors}
           state={state}
+          isDisabled={isDisabled}
           onChange={updateLocalState}
         />
       )}
@@ -240,6 +255,7 @@ export const RepoUrlPicker = (
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
+          isDisabled={isDisabled}
         />
       )}
       <RepoUrlPickerRepoName
@@ -251,6 +267,7 @@ export const RepoUrlPicker = (
             repoName: repo.id || repo.name,
           }))
         }
+        isDisabled={isDisabled}
         rawErrors={rawErrors}
         availableRepos={state.availableRepos}
       />

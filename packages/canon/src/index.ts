@@ -21,7 +21,7 @@
  */
 
 // Providers
-export * from './contexts/canon';
+export * from './components/Icon/context';
 
 // Layout components
 export * from './components/Box';
@@ -32,13 +32,25 @@ export * from './components/Text';
 export * from './components/Heading';
 
 // UI components
+export * from './components/Avatar';
 export * from './components/Button';
+export * from './components/Collapsible';
+export * from './components/DataTable';
 export * from './components/Icon';
+export * from './components/IconButton';
 export * from './components/Checkbox';
 export * from './components/Table';
-export * from './components/Input';
-export * from './components/Field';
+export * from './components/Tabs';
+export * from './components/TextField';
+export * from './components/Tooltip';
+export * from './components/Menu';
+export * from './components/ScrollArea';
+export * from './components/Link';
+export * from './components/Select';
 
 // Types
 export * from './types';
 export * from './props';
+
+// Hooks
+export { useBreakpoint } from './hooks/useBreakpoint';

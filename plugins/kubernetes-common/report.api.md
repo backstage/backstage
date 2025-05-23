@@ -9,21 +9,21 @@ import { FetchResponse as FetchResponse_2 } from '@backstage/plugin-kubernetes-c
 import type { JsonObject } from '@backstage/types';
 import type { JsonValue } from '@backstage/types';
 import { ObjectsByEntityResponse as ObjectsByEntityResponse_2 } from '@backstage/plugin-kubernetes-common';
-import { PodStatus } from '@kubernetes/client-node';
-import { V1ConfigMap } from '@kubernetes/client-node';
-import { V1CronJob } from '@kubernetes/client-node';
-import { V1DaemonSet } from '@kubernetes/client-node';
-import { V1Deployment } from '@kubernetes/client-node';
-import { V1Ingress } from '@kubernetes/client-node';
-import { V1Job } from '@kubernetes/client-node';
-import { V1LimitRange } from '@kubernetes/client-node';
-import { V1Pod } from '@kubernetes/client-node';
-import { V1ReplicaSet } from '@kubernetes/client-node';
-import { V1ResourceQuota } from '@kubernetes/client-node';
-import { V1Secret } from '@kubernetes/client-node';
-import { V1Service } from '@kubernetes/client-node';
-import { V1StatefulSet } from '@kubernetes/client-node';
-import { V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
+import type { PodStatus } from '@kubernetes/client-node';
+import type { V1ConfigMap } from '@kubernetes/client-node';
+import type { V1CronJob } from '@kubernetes/client-node';
+import type { V1DaemonSet } from '@kubernetes/client-node';
+import type { V1Deployment } from '@kubernetes/client-node';
+import type { V1Ingress } from '@kubernetes/client-node';
+import type { V1Job } from '@kubernetes/client-node';
+import type { V1LimitRange } from '@kubernetes/client-node';
+import type { V1Pod } from '@kubernetes/client-node';
+import type { V1ReplicaSet } from '@kubernetes/client-node';
+import type { V1ResourceQuota } from '@kubernetes/client-node';
+import type { V1Secret } from '@kubernetes/client-node';
+import type { V1Service } from '@kubernetes/client-node';
+import type { V1StatefulSet } from '@kubernetes/client-node';
+import type { V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
 
 // @public
 export const ANNOTATION_KUBERNETES_API_SERVER = 'kubernetes.io/api-server';
@@ -316,6 +316,13 @@ export interface JobsFetchResponse {
   // (undocumented)
   type: 'jobs';
 }
+
+// @public
+export const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
+
+// @public
+export const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
+  'backstage.io/kubernetes-label-selector';
 
 // @public
 export const kubernetesClustersReadPermission: BasicPermission;

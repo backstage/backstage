@@ -20,7 +20,6 @@ import {
   TableColumn,
   TableOptions,
 } from '@backstage/core-components';
-import React from 'react';
 import {
   asComponentEntities,
   componentEntityColumns,
@@ -35,6 +34,7 @@ export interface HasSubcomponentsCardProps {
   title?: string;
   columns?: TableColumn<ComponentEntity>[];
   tableOptions?: TableOptions;
+  kind?: string;
 }
 
 export function HasSubcomponentsCard(props: HasSubcomponentsCardProps) {
@@ -44,12 +44,13 @@ export function HasSubcomponentsCard(props: HasSubcomponentsCardProps) {
     title = t('hasSubcomponentsCard.title'),
     columns = componentEntityColumns,
     tableOptions = {},
+    kind = 'Component',
   } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
       title={title}
-      entityKind="Component"
+      entityKind={kind}
       relationType={RELATION_HAS_PART}
       columns={columns}
       asRenderableEntities={asComponentEntities}

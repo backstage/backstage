@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import {
   coreExtensionData,
   createExtensionDataRef,
@@ -69,6 +67,9 @@ const homePage = PageBlueprint.makeWithOverrides({
  * @alpha
  */
 export default createFrontendPlugin({
-  id: 'home',
+  pluginId: 'home',
   extensions: [homePage],
+  routes: {
+    root: rootRouteRef,
+  },
 });

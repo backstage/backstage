@@ -78,7 +78,7 @@ export interface ConfigSource {
 }
 
 /**
- * A custom function to be used for substitution withing configuration files.
+ * A custom function to be used for substitution within configuration files.
  *
  * @remarks
  *

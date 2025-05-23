@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import {
+  entityPresentationApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 import {
   mockApis,
   renderInTestApp,
@@ -81,6 +84,16 @@ const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
   syncEntityDocs: jest.fn(),
 };
 
+const entityPresentationApiMock: jest.Mocked<
+  typeof entityPresentationApiRef.T
+> = {
+  forEntity: jest.fn().mockReturnValue({
+    snapshot: {
+      primaryTitle: 'Test Entity',
+    },
+  }),
+};
+
 const fetchApiMock = {
   fetch: jest.fn().mockResolvedValue({
     ok: true,
@@ -105,7 +118,7 @@ const configApi = mockApis.config({
   data: { app: { baseUrl: 'http://localhost:3000' } },
 });
 
-const Wrapper = ({ children }: { children: React.ReactNode }) => {
+const Wrapper = ({ children }: { children: ReactNode }) => {
   return (
     <TestApiProvider
       apis={[
@@ -115,6 +128,7 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
         [configApiRef, configApi],
         [techdocsApiRef, techdocsApiMock],
         [techdocsStorageApiRef, techdocsStorageApiMock],
+        [entityPresentationApiRef, entityPresentationApiMock],
       ]}
     >
       {children}

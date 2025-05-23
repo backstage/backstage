@@ -24,6 +24,7 @@ export const createConfluenceToMarkdownAction: (options: {
     confluenceUrls: string[];
     repoUrl: string;
   },
-  JsonObject
+  JsonObject,
+  'v1'
 >;
 ```

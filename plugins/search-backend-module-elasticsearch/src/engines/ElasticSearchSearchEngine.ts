@@ -60,6 +60,7 @@ export type ElasticSearchConcreteQuery = {
  */
 export type ElasticSearchQueryTranslatorOptions = {
   highlightOptions?: ElasticSearchHighlightConfig;
+  queryOptions?: ElasticSearchQueryConfig;
 };
 
 /**
@@ -95,6 +96,14 @@ export type ElasticSearchHighlightOptions = {
 /**
  * @public
  */
+export type ElasticSearchQueryConfig = {
+  fuzziness?: string | number;
+  prefixLength?: number;
+};
+
+/**
+ * @public
+ */
 export type ElasticSearchHighlightConfig = {
   fragmentDelimiter: string;
   fragmentSize: number;
@@ -125,6 +134,7 @@ const DEFAULT_INDEXER_BATCH_SIZE = 1000;
 export class ElasticSearchSearchEngine implements SearchEngine {
   private readonly elasticSearchClientWrapper: ElasticSearchClientWrapper;
   private readonly highlightOptions: ElasticSearchHighlightConfig;
+  private readonly queryOptions?: ElasticSearchQueryConfig;
 
   constructor(
     private readonly elasticSearchClientOptions: ElasticSearchClientOptions,
@@ -133,6 +143,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     private readonly logger: LoggerService,
     private readonly batchSize: number,
     highlightOptions?: ElasticSearchHighlightOptions,
+    queryOptions?: ElasticSearchQueryConfig,
   ) {
     this.elasticSearchClientWrapper =
       ElasticSearchClientWrapper.fromClientOptions(elasticSearchClientOptions);
@@ -145,6 +156,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       fragmentDelimiter: ' ... ',
       ...highlightOptions,
     };
+    this.queryOptions = queryOptions;
   }
 
   static async fromConfig(options: ElasticSearchOptions) {
@@ -179,6 +191,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         DEFAULT_INDEXER_BATCH_SIZE,
       config.getOptional<ElasticSearchHighlightOptions>(
         'search.elasticsearch.highlightOptions',
+      ),
+      config.getOptional<ElasticSearchQueryConfig>(
+        'search.elasticsearch.queryOptions',
       ),
     );
 
@@ -266,11 +281,15 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       if (restTerm?.length > 0) {
         const esbRestQuery = esb
           .multiMatchQuery(['*'], restTerm.trim())
-          .fuzziness('auto');
+          .fuzziness(options?.queryOptions?.fuzziness ?? 'auto')
+          .prefixLength(options?.queryOptions?.prefixLength ?? 0);
         esbQueries.push(esbRestQuery);
       }
     } else {
-      const esbQuery = esb.multiMatchQuery(['*'], term).fuzziness('auto');
+      const esbQuery = esb
+        .multiMatchQuery(['*'], term)
+        .fuzziness(options?.queryOptions?.fuzziness ?? 'auto')
+        .prefixLength(options?.queryOptions?.prefixLength ?? 0);
       esbQueries.push(esbQuery);
     }
 
@@ -386,7 +405,10 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   async query(query: SearchQuery): Promise<IndexableResultSet> {
     const { elasticSearchQuery, documentTypes, pageSize } = this.translator(
       query,
-      { highlightOptions: this.highlightOptions },
+      {
+        highlightOptions: this.highlightOptions,
+        queryOptions: this.queryOptions,
+      },
     );
     const queryIndices = documentTypes
       ? documentTypes.map(it => this.constructSearchAlias(it))
@@ -499,7 +521,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       const service =
         config.getOptionalString('service') ?? requestSigner.service;
       if (service !== 'es' && service !== 'aoss')
-        throw new Error(`Unrecognized serivce type: ${service}`);
+        throw new Error(`Unrecognized service type: ${service}`);
       return {
         provider: 'aws',
         node: config.getString('node'),

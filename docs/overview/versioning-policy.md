@@ -106,7 +106,7 @@ be part of the `1.12` Backstage release.
 The following versioning policy applies to all packages:
 
 - Breaking changes are noted in the changelog, and documentation is updated.
-- Breaking changes are prefixed with `**BREAKING**: ` in the changelog.
+- Breaking changes are prefixed with `**BREAKING**:` in the changelog.
 - All public exports are considered stable and will have an entry in the
   changelog.
 - Breaking changes are recommended to document a clear upgrade path in the
@@ -195,4 +195,4 @@ The Backstage project recommends and supports using PostgreSQL for persistent st
 
 The PostgreSQL [versioning policy](https://www.postgresql.org/support/versioning/) is to release a new major version every year with new features which is then supported for 5 years after its initial release.
 
-Our policy mirrors the PostgreSQL versioning policy - we will support the last 5 major versions. We will also test the newest and oldest versions in that range. For example, if the range we support is currently 12 to 16, then we would only test 12 and 16 explicitly.
+Our policy mirrors the PostgreSQL versioning policy - we will support the last 5 major versions. We will also test the newest and oldest versions in that range. For example, if the range we support is currently 13 to 17, then we would only test 13 and 17 explicitly.

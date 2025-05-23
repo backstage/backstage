@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import { EntityNotFound } from './EntityNotFound';

@@ -4,16 +4,9 @@ title: Getting Started
 description: Getting Started Documentation
 ---
 
-TechDocs functions as a plugin to Backstage, so you will need to use Backstage
-to use TechDocs.
+TechDocs functions as a plugin in Backstage and ships with it installed out of the box, so you will need to use Backstage to use TechDocs.
 
-If you haven't setup Backstage already, start
-[here](../../getting-started/index.md).
-
-> If you used `npx @backstage/create-app`, TechDocs may already be present.
->
-> You should skip to [`Setting the Configuration`](#setting-the-configuration)
-> below.
+If you haven't setup Backstage already, start [here](../../getting-started/index.md).
 
 ## Adding TechDocs frontend plugin
 
@@ -102,100 +95,10 @@ That's it! Now, we need the TechDocs Backend plugin for the frontend to work.
 
 ## Adding TechDocs Backend plugin
 
-Navigate to `packages/backend` of your Backstage app, and install the
-`@backstage/plugin-techdocs-backend` package.
-
-```bash title="From your Backstage root directory"
-yarn --cwd packages/backend add @backstage/plugin-techdocs-backend
-```
-
-Create a file called `techdocs.ts` inside `packages/backend/src/plugins/` and
-add the following
-
-```typescript
-import { DockerContainerRunner } from '@backstage/backend-common';
-import {
-  createRouter,
-  Generators,
-  Preparers,
-  Publisher,
-} from '@backstage/plugin-techdocs-backend';
-import Docker from 'dockerode';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  // Preparers are responsible for fetching source files for documentation.
-  const preparers = await Preparers.fromConfig(env.config, {
-    logger: env.logger,
-    reader: env.reader,
-  });
-
-  // Docker client (conditionally) used by the generators, based on techdocs.generators config.
-  const dockerClient = new Docker();
-  const containerRunner = new DockerContainerRunner({ dockerClient });
-
-  // Generators are used for generating documentation sites.
-  const generators = await Generators.fromConfig(env.config, {
-    logger: env.logger,
-  });
-
-  // Publisher is used for
-  // 1. Publishing generated files to storage
-  // 2. Fetching files from storage and passing them to TechDocs frontend.
-  const publisher = await Publisher.fromConfig(env.config, {
-    logger: env.logger,
-    discovery: env.discovery,
-  });
-
-  // checks if the publisher is working and logs the result
-  await publisher.getReadiness();
-
-  return await createRouter({
-    preparers,
-    generators,
-    publisher,
-    logger: env.logger,
-    config: env.config,
-    discovery: env.discovery,
-    cache: env.cache,
-  });
-}
-```
-
-You may need to install the `dockerode` package. But you may already have it in
-your backend since [Scaffolder plugin](../software-templates/index.md) also uses
-it.
-
-See [Concepts](concepts.md) and [TechDocs Architecture](architecture.md) to
-learn more about how preparers, generators and publishers work.
-
-The final step is to import the techdocs backend plugin in Backstage app
-backend. Add the following to your `packages/backend/src/index.ts`:
-
-```typescript
-import techdocs from './plugins/techdocs';
-
-// .... main should already be present.
-async function main() {
-  // ... other backend plugin envs
-  const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
-
-  // ... other backend plugin routes
-  apiRouter.use('/techdocs', await techdocs(techdocsEnv));
-}
-```
-
-That's it! TechDocs frontend and backend have now been added to your Backstage
-app. Now let us tweak some configurations to suit your needs.
-
-### New Backend System
-
-To install TechDocs when using the New Backend system you will need to do the following.
-
-Navigate to `packages/backend` of your Backstage app, and install the `@backstage/plugin-techdocs-backend` package.
+:::note
+These instructions are for the new backend system. For setting this up in the old backend system, see [here](https://github.com/backstage/backstage/blob/v1.36.1/docs/features/techdocs/getting-started.md)
+:::
+First we need to install the `@backstage/plugin-techdocs-backend` package.
 
 ```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-techdocs-backend
@@ -215,11 +118,8 @@ backend.add(import('@backstage/plugin-techdocs-backend'));
 backend.start();
 ```
 
-:::note Note
-
-The above is a very simplified example, you may have more content then this in your version.
-
-:::
+That's it! TechDocs frontend and backend have now been added to your Backstage
+app. Now let us tweak some configurations to suit your needs.
 
 ## Setting the configuration
 

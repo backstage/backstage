@@ -1,9 +1,9 @@
 ---
 id: migrations
-title: Frontend System Migrations
-sidebar_label: Migrations
+title: Frontend System Changelog
+sidebar_label: Changelog
 # prettier-ignore
-description: Migration documentation for different versions of the frontend system core APIs.
+description: Changelog documentation for different versions of the frontend system core APIs.
 ---
 
 > **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**

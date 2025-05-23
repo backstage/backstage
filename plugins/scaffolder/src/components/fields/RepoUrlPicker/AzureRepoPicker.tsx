@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import TextField from '@material-ui/core/TextField';
@@ -35,6 +34,7 @@ export const AzureRepoPicker = (
     rawErrors,
     state,
     onChange,
+    isDisabled,
   } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -63,7 +63,7 @@ export const AzureRepoPicker = (
               onChange={s =>
                 onChange({ organization: String(Array.isArray(s) ? s[0] : s) })
               }
-              disabled={allowedOrganizations.length === 1}
+              disabled={isDisabled || allowedOrganizations.length === 1}
               selected={organization}
               items={organizationItems}
             />
@@ -77,6 +77,7 @@ export const AzureRepoPicker = (
             label={t('fields.azureRepoPicker.organization.title')}
             onChange={e => onChange({ organization: e.target.value })}
             helperText={t('fields.azureRepoPicker.organization.description')}
+            disabled={isDisabled}
             value={organization}
           />
         )}
@@ -94,7 +95,7 @@ export const AzureRepoPicker = (
               onChange={s =>
                 onChange({ project: String(Array.isArray(s) ? s[0] : s) })
               }
-              disabled={allowedProject.length === 1}
+              disabled={isDisabled || allowedProject.length === 1}
               selected={project}
               items={projectItems}
             />
@@ -108,6 +109,7 @@ export const AzureRepoPicker = (
             label={t('fields.azureRepoPicker.project.title')}
             onChange={e => onChange({ project: e.target.value })}
             value={project}
+            disabled={isDisabled}
             helperText={t('fields.azureRepoPicker.project.description')}
           />
         )}

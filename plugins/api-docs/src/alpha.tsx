@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import Grid from '@material-ui/core/Grid';
 
 import {
@@ -75,7 +74,7 @@ const apiDocsConfigApi = ApiBlueprint.make({
 const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
   config: {
     schema: {
-      // Ommiting columns and actions for now as their types are too complex to map to zod
+      // Omitting columns and actions for now as their types are too complex to map to zod
       initiallySelectedFilter: z =>
         z.enum(['owned', 'starred', 'all']).optional(),
     },
@@ -99,7 +98,7 @@ const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
 const apiDocsHasApisEntityCard = EntityCardBlueprint.make({
   name: 'has-apis',
   params: {
-    // Ommiting configSchema for now
+    // Omitting configSchema for now
     // We are skipping variants and columns are too complex to map to zod
     // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
     filter: entity => {
@@ -133,7 +132,7 @@ const apiDocsDefinitionEntityCard = EntityCardBlueprint.make({
 const apiDocsConsumedApisEntityCard = EntityCardBlueprint.make({
   name: 'consumed-apis',
   params: {
-    // Ommiting configSchema for now
+    // Omitting configSchema for now
     // We are skipping variants and columns are too complex to map to zod
     // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
     filter: 'kind:component',
@@ -147,7 +146,7 @@ const apiDocsConsumedApisEntityCard = EntityCardBlueprint.make({
 const apiDocsProvidedApisEntityCard = EntityCardBlueprint.make({
   name: 'provided-apis',
   params: {
-    // Ommiting configSchema for now
+    // Omitting configSchema for now
     // We are skipping variants and columns are too complex to map to zod
     // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
     filter: 'kind:component',
@@ -161,7 +160,7 @@ const apiDocsProvidedApisEntityCard = EntityCardBlueprint.make({
 const apiDocsConsumingComponentsEntityCard = EntityCardBlueprint.make({
   name: 'consuming-components',
   params: {
-    // Ommiting configSchema for now
+    // Omitting configSchema for now
     // We are skipping variants
     // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
     filter: 'kind:api',
@@ -175,7 +174,7 @@ const apiDocsConsumingComponentsEntityCard = EntityCardBlueprint.make({
 const apiDocsProvidingComponentsEntityCard = EntityCardBlueprint.make({
   name: 'providing-components',
   params: {
-    // Ommiting configSchema for now
+    // Omitting configSchema for now
     // We are skipping variants
     // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
     filter: 'kind:api',
@@ -228,7 +227,7 @@ const apiDocsApisEntityContent = EntityContentBlueprint.make({
 });
 
 export default createFrontendPlugin({
-  id: 'api-docs',
+  pluginId: 'api-docs',
   routes: {
     root: convertLegacyRouteRef(rootRoute),
   },
@@ -249,3 +248,5 @@ export default createFrontendPlugin({
     apiDocsApisEntityContent,
   ],
 });
+
+export { apiDocsTranslationRef } from './translation';

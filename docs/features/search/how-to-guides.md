@@ -111,40 +111,6 @@ indexBuilder.addCollator({
 });
 ```
 
-## How to limit what can be searched in the Software Catalog
-
-The Software Catalog includes a wealth of information about the components,
-systems, groups, users, and other aspects of your software ecosystem. However,
-you may not always want _every_ aspect to appear when a user searches the
-catalog. Examples include:
-
-- Entities of kind `Location`, which are often not useful to Backstage users.
-- Entities of kind `User` or `Group`, if you'd prefer that users and groups be
-  exposed to search in a different way (or not at all).
-
-It's possible to write your own [Collator](./concepts.md#collators) to control
-exactly what's available to search, (or a [Decorator](./concepts.md#decorators)
-to filter things out here and there), but the `DefaultCatalogCollator` that's
-provided by `@backstage/plugin-catalog-backend` offers some configuration too!
-
-```ts title="packages/backend/src/plugins/search.ts"
-indexBuilder.addCollator({
-  defaultRefreshIntervalSeconds: 600,
-  collator: DefaultCatalogCollator.fromConfig(env.config, {
-    discovery: env.discovery,
-    tokenManager: env.tokenManager,
-    /* highlight-add-start */
-    filter: {
-      kind: ['API', 'Component', 'Domain', 'Group', 'System', 'User'],
-    },
-    /* highlight-add-end */
-  }),
-});
-```
-
-As shown above, you can add a catalog entity filter to narrow down what catalog
-entities are indexed by the search engine.
-
 ## How to customize search results highlighting styling
 
 The default highlighting styling for matched terms in search results is your
@@ -276,8 +242,6 @@ which renderers to use. Note that the order of the renderers matters! The first 
 Here is an example of customizing your `SearchPage`:
 
 ```tsx title="packages/app/src/components/searchPage.tsx"
-import React from 'react';
-
 import { Grid, Paper } from '@material-ui/core';
 import BuildIcon from '@material-ui/icons/Build';
 
@@ -359,8 +323,6 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
 Assuming you have completely customized your SearchModal, here's an example that renders results with extensions:
 
 ```tsx title="packages/app/src/components/searchModal.tsx"
-import React from 'react';
-
 import { DialogContent, DialogTitle, Paper } from '@material-ui/core';
 import BuildIcon from '@material-ui/icons/Build';
 

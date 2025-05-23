@@ -139,6 +139,7 @@ describe('read microsoft graph', () => {
           top: 999,
         },
         undefined,
+        undefined,
       );
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
@@ -186,6 +187,7 @@ describe('read microsoft graph', () => {
           top: 999,
         },
         'advanced',
+        undefined,
       );
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
@@ -229,6 +231,55 @@ describe('read microsoft graph', () => {
           top: 999,
         },
         undefined,
+        undefined,
+      );
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
+        'userid',
+        120,
+      );
+    });
+
+    it('should read users from different endpoints', async () => {
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      const { users } = await readMicrosoftGraphUsers(client, {
+        userFilter: 'accountEnabled eq true',
+        userPath: '/users/x/y',
+        logger: mockServices.logger.mock(),
+      });
+
+      expect(users).toEqual([
+        user({
+          metadata: {
+            annotations: {
+              'graph.microsoft.com/user-id': 'userid',
+              'microsoft.com/email': 'user.name@example.com',
+            },
+            name: 'user.name_example.com',
+          },
+          spec: {
+            profile: {
+              displayName: 'User Name',
+              email: 'user.name@example.com',
+              picture: 'data:image/jpeg;base64,...',
+            },
+            memberOf: [],
+          },
+        }),
+      ]);
+
+      expect(client.getUsers).toHaveBeenCalledTimes(1);
+      expect(client.getUsers).toHaveBeenCalledWith(
+        {
+          filter: 'accountEnabled eq true',
+          top: 999,
+        },
+        undefined,
+        '/users/x/y',
       );
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
@@ -279,6 +330,7 @@ describe('read microsoft graph', () => {
           select: ['id', 'displayName'],
           top: 999,
         },
+        undefined,
         undefined,
       );
 
@@ -338,6 +390,7 @@ describe('read microsoft graph', () => {
           top: 999,
         },
         'advanced',
+        undefined,
       );
 
       expect(client.getGroupUserMembers).toHaveBeenCalledTimes(1);
@@ -393,6 +446,7 @@ describe('read microsoft graph', () => {
           top: 999,
         },
         undefined,
+        undefined,
       );
 
       expect(client.getGroupUserMembers).toHaveBeenCalledTimes(1);
@@ -409,6 +463,52 @@ describe('read microsoft graph', () => {
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledWith(
         'userid',
         120,
+      );
+    });
+
+    it('should read users from different group endpoints', async () => {
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupUserMembers.mockImplementation(getExampleUsers);
+
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      const { users } = await readMicrosoftGraphUsersInGroups(client, {
+        userGroupMemberFilter: 'securityEnabled eq true',
+        userGroupMemberPath: '/groups/x/y',
+        logger: mockServices.logger.mock(),
+      });
+
+      expect(users).toEqual([
+        user({
+          metadata: {
+            annotations: {
+              'graph.microsoft.com/user-id': 'userid',
+              'microsoft.com/email': 'user.name@example.com',
+            },
+            name: 'user.name_example.com',
+          },
+          spec: {
+            profile: {
+              displayName: 'User Name',
+              email: 'user.name@example.com',
+              picture: 'data:image/jpeg;base64,...',
+            },
+            memberOf: [],
+          },
+        }),
+      ]);
+
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
+        {
+          filter: 'securityEnabled eq true',
+          select: ['id', 'displayName'],
+          top: 999,
+        },
+        undefined,
+        '/groups/x/y',
       );
     });
   });
@@ -535,6 +635,7 @@ describe('read microsoft graph', () => {
           top: 999,
         },
         undefined,
+        undefined,
       );
       expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
       expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
@@ -614,6 +715,7 @@ describe('read microsoft graph', () => {
           top: 999,
         },
         'advanced',
+        undefined,
       );
       expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
       expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
@@ -694,6 +796,7 @@ describe('read microsoft graph', () => {
           top: 999,
         },
         undefined,
+        undefined,
       );
       expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
       expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
@@ -766,6 +869,7 @@ describe('read microsoft graph', () => {
           filter: 'securityEnabled eq true',
           top: 999,
         },
+        undefined,
         undefined,
       );
       expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
@@ -871,6 +975,7 @@ describe('read microsoft graph', () => {
           top: 999,
         },
         undefined,
+        undefined,
       );
       expect(client.getGroupMembers).toHaveBeenCalledTimes(2);
       expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
@@ -883,6 +988,79 @@ describe('read microsoft graph', () => {
       // doesn't allows this yet
       // expect(client.getGroupPhotoWithSizeLimit).toBeCalledTimes(1);
       // expect(client.getGroupPhotoWithSizeLimit).toBeCalledWith('groupid', 120);
+    });
+
+    it('should read groups from different endpoints paths', async () => {
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getOrganization.mockResolvedValue({
+        id: 'tenantid',
+        displayName: 'Organization Name',
+      });
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      const { groups, groupMember, groupMemberOf, rootGroup } =
+        await readMicrosoftGraphGroups(client, 'tenantid', {
+          groupFilter: 'securityEnabled eq false',
+          groupPath: '/groups/x/y',
+        });
+
+      const expectedRootGroup = group({
+        metadata: {
+          annotations: {
+            'graph.microsoft.com/tenant-id': 'tenantid',
+          },
+          name: 'organization_name',
+          description: 'Organization Name',
+        },
+        spec: {
+          type: 'root',
+          profile: {
+            displayName: 'Organization Name',
+          },
+          children: [],
+        },
+      });
+      expect(groups).toEqual([
+        expectedRootGroup,
+        group({
+          metadata: {
+            annotations: {
+              'graph.microsoft.com/group-id': 'groupid',
+            },
+            name: 'group_name',
+            description: 'Group Description',
+          },
+          spec: {
+            type: 'team',
+            profile: {
+              displayName: 'Group Name',
+              email: 'group@example.com',
+            },
+            children: [],
+          },
+        }),
+      ]);
+      expect(rootGroup).toEqual(expectedRootGroup);
+      expect(groupMember.get('groupid')).toEqual(new Set(['childgroupid']));
+      expect(groupMemberOf.get('userid')).toEqual(new Set(['groupid']));
+      expect(groupMember.get('organization_name')).toEqual(new Set());
+
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
+        {
+          filter: 'securityEnabled eq false',
+          top: 999,
+        },
+        undefined,
+        '/groups/x/y',
+      );
+      expect(client.getGroupMembers).toHaveBeenCalledTimes(1);
+      expect(client.getGroupMembers).toHaveBeenCalledWith('groupid', {
+        top: 999,
+      });
     });
   });
 
@@ -1018,6 +1196,7 @@ describe('read microsoft graph', () => {
           top: 999,
         },
         undefined,
+        undefined,
       );
       expect(client.getGroups).toHaveBeenCalledTimes(1);
       expect(client.getGroups).toHaveBeenCalledWith(
@@ -1025,6 +1204,7 @@ describe('read microsoft graph', () => {
           filter: 'securityEnabled eq false',
           top: 999,
         },
+        undefined,
         undefined,
       );
     });
@@ -1058,6 +1238,7 @@ describe('read microsoft graph', () => {
           top: 999,
         },
         undefined,
+        undefined,
       );
       expect(client.getGroups).toHaveBeenCalledTimes(1);
       expect(client.getGroups).toHaveBeenCalledWith(
@@ -1065,6 +1246,7 @@ describe('read microsoft graph', () => {
           filter: 'securityEnabled eq false',
           top: 999,
         },
+        undefined,
         undefined,
       );
     });
@@ -1096,12 +1278,14 @@ describe('read microsoft graph', () => {
           top: 999,
         },
         undefined,
+        undefined,
       );
       expect(client.getGroups).toHaveBeenCalledTimes(1);
       expect(client.getGroups).toHaveBeenCalledWith(
         {
           top: 999,
         },
+        undefined,
         undefined,
       );
     });
@@ -1132,6 +1316,7 @@ describe('read microsoft graph', () => {
           top: 999,
         },
         undefined,
+        undefined,
       );
     });
 
@@ -1161,19 +1346,23 @@ describe('read microsoft graph', () => {
 
       expect(client.getUsers).toHaveBeenCalledTimes(0);
       expect(client.getGroups).toHaveBeenCalledTimes(2);
-      expect(client.getGroups).toHaveBeenCalledWith(
+      expect(client.getGroups).toHaveBeenNthCalledWith(
+        1,
         {
           filter: 'name eq backstage-group',
           select: ['id', 'displayName'],
           top: 999,
         },
         undefined,
+        undefined,
       );
-      expect(client.getGroups).toHaveBeenCalledWith(
+      expect(client.getGroups).toHaveBeenNthCalledWith(
+        2,
         {
           filter: 'securityEnabled eq false',
           top: 999,
         },
+        undefined,
         undefined,
       );
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
@@ -1215,12 +1404,14 @@ describe('read microsoft graph', () => {
           top: 999,
         },
         undefined,
+        undefined,
       );
       expect(client.getGroups).toHaveBeenCalledTimes(1);
       expect(client.getGroups).toHaveBeenCalledWith(
         {
           top: 999,
         },
+        undefined,
         undefined,
       );
     });

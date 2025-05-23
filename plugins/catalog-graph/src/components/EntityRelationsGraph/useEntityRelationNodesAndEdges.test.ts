@@ -34,6 +34,17 @@ const useEntityRelationGraph = useEntityRelationGraphMocked as jest.Mock<
   ReturnType<typeof useEntityRelationGraphMocked>
 >;
 
+/*
+  This is the full test graph:
+  - b:d/c -> k:d/a1 (ownerOf)
+  - b:d/c -> b:d/c1 (hasPart)
+  - k:d/a1 -> b:d/c (ownedBy)
+  - k:d/a1 -> b:d/c1 (ownedBy)
+  - b:d/c1 -> b:d/c (partOf)
+  - b:d/c1 -> k:d/a1 (ownerOf)
+  - b:d/c1 -> b:d/c2 (hasPart)
+  - b:d/c2 -> b:d/c1 (partOf)
+*/
 const entities: { [ref: string]: Entity } = {
   'b:d/c': {
     apiVersion: 'a',
@@ -236,6 +247,12 @@ describe('useEntityRelationNodesAndEdges', () => {
       {
         from: 'b:d/c1',
         label: 'visible',
+        relations: [RELATION_OWNER_OF, RELATION_OWNED_BY],
+        to: 'k:d/a1',
+      },
+      {
+        from: 'b:d/c1',
+        label: 'visible',
         relations: [RELATION_HAS_PART, RELATION_PART_OF],
         to: 'b:d/c2',
       },
@@ -305,8 +322,38 @@ describe('useEntityRelationNodesAndEdges', () => {
       {
         from: 'b:d/c1',
         label: 'visible',
+        relations: [RELATION_PART_OF],
+        to: 'b:d/c',
+      },
+      {
+        from: 'b:d/c1',
+        label: 'visible',
+        relations: [RELATION_OWNER_OF],
+        to: 'k:d/a1',
+      },
+      {
+        from: 'b:d/c1',
+        label: 'visible',
         relations: [RELATION_HAS_PART],
         to: 'b:d/c2',
+      },
+      {
+        from: 'b:d/c2',
+        label: 'visible',
+        relations: [RELATION_PART_OF],
+        to: 'b:d/c1',
+      },
+      {
+        from: 'k:d/a1',
+        label: 'visible',
+        relations: [RELATION_OWNED_BY],
+        to: 'b:d/c',
+      },
+      {
+        from: 'k:d/a1',
+        label: 'visible',
+        relations: [RELATION_OWNED_BY],
+        to: 'b:d/c1',
       },
     ]);
   });
@@ -545,6 +592,12 @@ describe('useEntityRelationNodesAndEdges', () => {
       },
       {
         from: 'b:d/c1',
+        label: 'visible',
+        relations: ['ownerOf', 'ownedBy'],
+        to: 'k:d/a1',
+      },
+      {
+        from: 'b:d/c',
         label: 'visible',
         relations: ['ownerOf', 'ownedBy'],
         to: 'k:d/a1',

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { createElement } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createApp } from '../../../frontend-defaults/src/createApp';
 import { screen } from '@testing-library/react';
@@ -109,7 +109,7 @@ const outputExtension = createExtension({
   factory({ inputs }) {
     return [
       coreExtensionData.reactElement(
-        React.createElement('span', {}, [
+        createElement('span', {}, [
           `Names: ${inputs.names
             .map(n => n.get(nameExtensionDataRef))
             .join(', ')}`,
@@ -134,6 +134,13 @@ function createTestAppRoot({
 
 describe('createFrontendPlugin', () => {
   it('should create an empty plugin', () => {
+    const plugin = createFrontendPlugin({ pluginId: 'test' });
+
+    expect(plugin).toBeDefined();
+    expect(String(plugin)).toBe('Plugin{id=test}');
+  });
+
+  it('should create an empty plugin with deprecated id option', () => {
     const plugin = createFrontendPlugin({ id: 'test' });
 
     expect(plugin).toBeDefined();
@@ -142,7 +149,7 @@ describe('createFrontendPlugin', () => {
 
   it('should create a plugin with extension instances', async () => {
     const plugin = createFrontendPlugin({
-      id: 'test',
+      pluginId: 'test',
       extensions: [Extension1, Extension2, outputExtension],
     });
     expect(plugin).toBeDefined();
@@ -189,7 +196,7 @@ describe('createFrontendPlugin', () => {
 
   it('should create a plugin with nested extension instances', async () => {
     const plugin = createFrontendPlugin({
-      id: 'test',
+      pluginId: 'test',
       extensions: [Extension1, Extension2, Extension3, Child, outputExtension],
     });
     expect(plugin).toBeDefined();
@@ -221,7 +228,7 @@ describe('createFrontendPlugin', () => {
 
   it('should create a plugin with nested extension instances and multiple children', async () => {
     const plugin = createFrontendPlugin({
-      id: 'test',
+      pluginId: 'test',
       extensions: [
         Extension1,
         Extension2,
@@ -254,14 +261,14 @@ describe('createFrontendPlugin', () => {
   it('should throw on duplicate extensions', async () => {
     expect(() =>
       createFrontendPlugin({
-        id: 'test',
+        pluginId: 'test',
         extensions: [Extension1, Extension1],
       }),
     ).toThrow("Plugin 'test' provided duplicate extensions: test/1");
 
     expect(() =>
       createFrontendPlugin({
-        id: 'test',
+        pluginId: 'test',
         extensions: [
           Extension1,
           Extension2,
@@ -277,7 +284,7 @@ describe('createFrontendPlugin', () => {
   describe('overrides', () => {
     it('should return a plugin instance with the correct namespace', () => {
       const plugin = createFrontendPlugin({
-        id: 'test',
+        pluginId: 'test',
         extensions: [Extension1, Extension2],
       });
 
@@ -308,7 +315,7 @@ describe('createFrontendPlugin', () => {
 
     it('should allow overriding extensions that have a matching ID, while keeping old extensions that do not have overlapping IDs', async () => {
       const plugin = createFrontendPlugin({
-        id: 'test',
+        pluginId: 'test',
         extensions: [Extension1, Extension2, outputExtension],
       });
 

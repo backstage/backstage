@@ -51,6 +51,9 @@ export type BitbucketCloudIntegrationConfig = {
    * The access token to use for requests to Bitbucket Cloud (bitbucket.org).
    */
   token?: string;
+
+  /** PGP private key for signing commits. */
+  commitSigningKey?: string;
 };
 
 /**
@@ -74,6 +77,7 @@ export function readBitbucketCloudIntegrationConfig(
     apiBaseUrl,
     username,
     appPassword,
+    commitSigningKey: config.getOptionalString('commitSigningKey'),
   };
 }
 

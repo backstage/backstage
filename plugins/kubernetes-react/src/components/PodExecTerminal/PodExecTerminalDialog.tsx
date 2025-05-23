@@ -15,7 +15,6 @@
  */
 
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
-import React from 'react';
 
 import { KubernetesDialog } from '../KubernetesDialog';
 import { useIsPodExecTerminalSupported } from '../../hooks';

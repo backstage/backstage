@@ -15,7 +15,7 @@
  */
 
 import yaml from 'yaml';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 
@@ -177,7 +177,7 @@ export const TemplateFormPreviewer = ({
         )
         .catch(e =>
           alertApi.post({
-            message: `Error loading exisiting templates: ${e.message}`,
+            message: `Error loading existing templates: ${e.message}`,
             severity: 'error',
           }),
         ),

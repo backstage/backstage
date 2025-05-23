@@ -20,12 +20,10 @@ import { useBreakpoint, breakpoints } from './useBreakpoint';
 type ResponsiveValue = string | Partial<Record<Breakpoint, string>>;
 
 export const useResponsiveValue = (value: ResponsiveValue) => {
-  const currentBreakpoint = useBreakpoint();
+  const { breakpoint } = useBreakpoint();
 
   if (typeof value === 'object') {
-    const index = breakpoints.findIndex(
-      breakpoint => breakpoint.id === currentBreakpoint,
-    );
+    const index = breakpoints.findIndex(b => b.id === breakpoint);
 
     for (let i = index; i >= 0; i--) {
       if (value[breakpoints[i].id]) {

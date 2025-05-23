@@ -29,7 +29,6 @@ As an example, we will create a component that validates whether a string is in 
 
 ```tsx
 //packages/app/src/scaffolder/ValidateKebabCase/ValidateKebabCaseExtension.tsx
-import React from 'react';
 import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
 import type { FieldValidation } from '@rjsf/utils';
 import FormControl from '@material-ui/core/FormControl';
@@ -152,7 +151,7 @@ const routes = (
 
 ### Async Validation Function
 
-A validation function can be asyncronous and use [Utility APIs](https://backstage.io/docs/api/utility-apis/) via the `ApiHolder` in the [field validation context](https://backstage.io/docs/reference/plugin-scaffolder-react.customfieldvalidator). The example below uses the `catalogApiRef` to check if the submitted value (in this scenario an entity ref) exists in the catalog.
+A validation function can be asynchronous and use [Utility APIs](https://backstage.io/docs/api/utility-apis/) via the `ApiHolder` in the [field validation context](https://backstage.io/docs/reference/plugin-scaffolder-react.customfieldvalidator). The example below uses the `catalogApiRef` to check if the submitted value (in this scenario an entity ref) exists in the catalog.
 
 ```tsx
 import { FieldValidation } from '@rjsf/utils';

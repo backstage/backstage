@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { renderReactElement } from './renderReactElement';
 import { ThemeProvider } from '@material-ui/core/styles';
 import SvgIcon from '@material-ui/core/SvgIcon';
@@ -67,9 +67,10 @@ const CopyToClipboardButton = ({ text }: CopyToClipboardButtonProps) => {
       leaveDelay={1000}
     >
       <IconButton
-        style={{ color: 'inherit', position: 'absolute' }}
+        style={{ position: 'absolute' }}
         className="md-clipboard md-icon"
         onClick={handleClick}
+        aria-label="Copy to clipboard"
       >
         <CopyToClipboardIcon />
       </IconButton>

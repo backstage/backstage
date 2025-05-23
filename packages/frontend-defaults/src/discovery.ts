@@ -15,7 +15,11 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import { FrontendFeature } from '@backstage/frontend-app-api';
+import {
+  FrontendFeature,
+  FrontendFeatureLoader,
+} from '@backstage/frontend-plugin-api';
+import { isBackstageFeatureLoader } from './resolution';
 
 interface DiscoveryGlobal {
   modules: Array<{ name: string; export?: string; default: unknown }>;
@@ -53,44 +57,49 @@ function readPackageDetectionConfig(config: Config) {
 }
 
 /**
- * @internal
+ * @public
  */
-export function getAvailableFeatures(config: Config): FrontendFeature[] {
+export function discoverAvailableFeatures(config: Config): {
+  features: (FrontendFeature | FrontendFeatureLoader)[];
+} {
   const discovered = (
     window as { '__@backstage/discovered__'?: DiscoveryGlobal }
   )['__@backstage/discovered__'];
 
   const detection = readPackageDetectionConfig(config);
   if (!detection) {
-    return [];
+    return { features: [] };
   }
 
-  return (
-    discovered?.modules
-      .filter(({ name }) => {
-        if (detection.exclude?.includes(name)) {
-          return false;
-        }
-        if (detection.include && !detection.include.includes(name)) {
-          return false;
-        }
-        return true;
-      })
-      .map(m => m.default)
-      .filter(isBackstageFeature) ?? []
-  );
+  return {
+    features:
+      discovered?.modules
+        .filter(({ name }) => {
+          if (detection.exclude?.includes(name)) {
+            return false;
+          }
+          if (detection.include && !detection.include.includes(name)) {
+            return false;
+          }
+          return true;
+        })
+        .map(m => m.default)
+        .filter(isFeatureOrLoader) ?? [],
+  };
 }
 
 function isBackstageFeature(obj: unknown): obj is FrontendFeature {
   if (obj !== null && typeof obj === 'object' && '$$type' in obj) {
     return (
       obj.$$type === '@backstage/FrontendPlugin' ||
-      obj.$$type === '@backstage/FrontendModule' ||
-      // TODO: Remove this once the old plugin type and extension overrides
-      // are no longer supported
-      obj.$$type === '@backstage/BackstagePlugin' ||
-      obj.$$type === '@backstage/ExtensionOverrides'
+      obj.$$type === '@backstage/FrontendModule'
     );
   }
   return false;
+}
+
+function isFeatureOrLoader(
+  obj: unknown,
+): obj is FrontendFeature | FrontendFeatureLoader {
+  return isBackstageFeature(obj) || isBackstageFeatureLoader(obj);
 }

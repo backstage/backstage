@@ -139,17 +139,24 @@ export const createGitlabIssueAction = (options: {
 
         let isEpicScoped = false;
 
-        if (epicId) {
-          isEpicScoped = await checkEpicScope(api, projectId, epicId);
+        isEpicScoped = await ctx.checkpoint({
+          key: `is.epic.scoped.${projectId}.${title}`,
+          fn: async () => {
+            if (epicId) {
+              isEpicScoped = await checkEpicScope(api, projectId, epicId);
 
-          if (isEpicScoped) {
-            ctx.logger.info('Epic is within Project Scope');
-          } else {
-            ctx.logger.warn(
-              'Chosen epic is not within the Project Scope. The issue will be created without an associated epic.',
-            );
-          }
-        }
+              if (isEpicScoped) {
+                ctx.logger.info('Epic is within Project Scope');
+              } else {
+                ctx.logger.warn(
+                  'Chosen epic is not within the Project Scope. The issue will be created without an associated epic.',
+                );
+              }
+            }
+            return isEpicScoped;
+          },
+        });
+
         const mappedCreatedAt = convertDate(
           String(createdAt),
           new Date().toISOString(),
@@ -173,11 +180,22 @@ export const createGitlabIssueAction = (options: {
           weight,
         };
 
-        const response = (await api.Issues.create(
-          projectId,
-          title,
-          issueOptions,
-        )) as IssueSchema;
+        const response = await ctx.checkpoint({
+          key: `issue.${projectId}.${title}`,
+          fn: async () => {
+            const issue = (await api.Issues.create(
+              projectId,
+              title,
+              issueOptions,
+            )) as IssueSchema;
+
+            return {
+              id: issue.id,
+              web_url: issue.web_url,
+              iid: issue.iid,
+            };
+          },
+        });
 
         ctx.output('issueId', response.id);
         ctx.output('issueUrl', response.web_url);

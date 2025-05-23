@@ -82,13 +82,12 @@ export interface SchedulerServiceTaskScheduleDefinition {
          * Overview:
          *
          * ```
-         *   ┌────────────── second (optional)
-         *   │ ┌──────────── minute
-         *   │ │ ┌────────── hour
-         *   │ │ │ ┌──────── day of month
-         *   │ │ │ │ ┌────── month
-         *   │ │ │ │ │ ┌──── day of week
-         *   │ │ │ │ │ │
+         *   ┌────────────── second (0-60, optional)
+         *   │ ┌──────────── minute (0-59)
+         *   │ │ ┌────────── hour (0-23)
+         *   │ │ │ ┌──────── day of month (1-31)
+         *   │ │ │ │ ┌────── month (1-12)
+         *   │ │ │ │ │ ┌──── day of week (0-6, 0 is Sunday)
          *   │ │ │ │ │ │
          *   * * * * * *
          * ```
@@ -180,13 +179,12 @@ export interface SchedulerServiceTaskScheduleDefinitionConfig {
          * Overview:
          *
          * ```
-         *   ┌────────────── second (optional)
-         *   │ ┌──────────── minute
-         *   │ │ ┌────────── hour
-         *   │ │ │ ┌──────── day of month
-         *   │ │ │ │ ┌────── month
-         *   │ │ │ │ │ ┌──── day of week
-         *   │ │ │ │ │ │
+         *   ┌────────────── second (0-60, optional)
+         *   │ ┌──────────── minute (0-59)
+         *   │ │ ┌────────── hour (0-23)
+         *   │ │ │ ┌──────── day of month (1-31)
+         *   │ │ │ │ ┌────── month (1-12)
+         *   │ │ │ │ │ ┌──── day of week (0-6, 0 is Sunday)
          *   │ │ │ │ │ │
          *   * * * * * *
          * ```

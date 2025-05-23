@@ -1,0 +1,76 @@
+.canon-TabsRoot {
+  border: 1px solid var(--color-gray-200);
+  border-radius: .375rem;
+}
+
+.canon-TabsList {
+  z-index: 0;
+  display: flex;
+  position: relative;
+}
+
+.canon-TabsTab {
+  appearance: none;
+  color: var(--canon-fg-secondary);
+  user-select: none;
+  padding-inline: var(--canon-space-3);
+  height: 2rem;
+  font-family: inherit;
+  font-size: .875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  font-size: var(--canon-font-size-2);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  outline: 0;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding-block: 0;
+  transition: color .2s ease-in-out;
+  display: flex;
+
+  &[data-selected] {
+    color: var(--canon-fg-primary);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--canon-fg-primary);
+    }
+  }
+
+  &:focus-visible {
+    position: relative;
+
+    &:before {
+      content: "";
+      outline: 1px solid var(--canon-ring);
+      outline-offset: -1px;
+      border-radius: .25rem;
+      position: absolute;
+      inset: .25rem 0;
+    }
+  }
+}
+
+.canon-TabsIndicator {
+  z-index: -1;
+  translate: var(--active-tab-left) -50%;
+  width: var(--active-tab-width);
+  background-color: var(--canon-bg-solid);
+  height: 1px;
+  transition-property: translate, width;
+  transition-duration: .2s;
+  transition-timing-function: ease-in-out;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.canon-TabsPanel {
+  &[hidden] {
+    display: none;
+  }
+}

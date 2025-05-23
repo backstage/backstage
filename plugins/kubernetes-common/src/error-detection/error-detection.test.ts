@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {
+import type {
   V1Pod,
   V1Deployment,
   V2HorizontalPodAutoscaler,

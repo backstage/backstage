@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { compatWrapper } from '@backstage/core-compat-api';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { isKubernetesAvailable } from '../Router';
 
 export const entityKubernetesContent = EntityContentBlueprint.make({
   name: 'kubernetes',
   params: {
     defaultPath: '/kubernetes',
     defaultTitle: 'Kubernetes',
-    filter: 'kind:component,resource',
+    defaultGroup: 'deployment',
+    filter: isKubernetesAvailable,
     loader: () =>
       import('./KubernetesContentPage').then(m =>
         compatWrapper(<m.KubernetesContentPage />),

@@ -355,8 +355,7 @@ Specifies the app that provides the Kubernetes dashboard.
 This will be used for formatting links to kubernetes objects inside the
 dashboard.
 
-The supported dashboards are: `standard`, `rancher`, `openshift`, `gke`, `aks`,
-`eks`. However, not all of them are implemented yet, so please contribute!
+The supported dashboards are: `aks`, `eks`, `gke`, `headlamp`, `openshift`, `rancher`, `standard`. However, not all of them are implemented yet, so please contribute!
 
 Note that it will default to the regular dashboard provided by the Kubernetes
 project (`standard`), that can run in any Kubernetes cluster.
@@ -447,6 +446,41 @@ cluster locator method can be configured in this way.
 
 Configures which [custom resources][3] to look for when returning an entity's
 Kubernetes resources belonging to the cluster. Same specification as [`customResources`](#customresources-optional)
+
+#### `headlamp`
+
+When using `headlamp` as your dashboard, you have two configuration options:
+
+1. External Headlamp instance:
+
+```yaml
+kubernetes:
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - url: http://127.0.0.1:9999
+          name: my-cluster
+          dashboardUrl: http://headlamp.example.com # Your Headlamp instance URL
+          dashboardApp: 'headlamp'
+          dashboardParameters:
+            clusterName: 'my-cluster' # Optional, defaults to 'default'
+```
+
+2. Internal Headlamp (When using the Headlamp plugin for Backstage):
+
+```yaml
+kubernetes:
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - url: http://127.0.0.1:9999
+          name: my-cluster
+          dashboardApp: 'headlamp'
+          dashboardParameters:
+            internal: true
+            headlampRoute: '/headlamp' # Optional, defaults to '/headlamp'
+            clusterName: 'my-cluster' # Optional, defaults to 'default'
+```
 
 #### `gke`
 

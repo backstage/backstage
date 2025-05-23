@@ -27,11 +27,11 @@ jest.mock(
       commandExists(...args),
 );
 
-import { ContainerRunner } from '@backstage/backend-common';
 import path from 'path';
 import { PassThrough } from 'stream';
 import { RailsNewRunner } from './railsNewRunner';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { ContainerRunner } from './ContainerRunner';
 
 describe('Rails Templater', () => {
   const containerRunner: jest.Mocked<ContainerRunner> = {

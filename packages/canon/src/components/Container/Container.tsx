@@ -19,16 +19,30 @@ import { ContainerProps } from './types';
 import clsx from 'clsx';
 import { displayPropDefs } from '../../props/display.props';
 import { extractProps } from '../../utils/extractProps';
+import { spacingPropDefs } from '../../props/spacing.props';
 
 /** @public */
 export const Container = forwardRef<HTMLDivElement, ContainerProps>(
   (props, ref) => {
     const { children } = props;
 
+    // Create a subset of spacing props that match the interface
+    const containerSpacingProps = {
+      my: spacingPropDefs.my,
+      mt: spacingPropDefs.mt,
+      mb: spacingPropDefs.mb,
+      py: spacingPropDefs.py,
+      pt: spacingPropDefs.pt,
+      pb: spacingPropDefs.pb,
+    };
+
     const propDefs = {
       ...displayPropDefs,
+      ...containerSpacingProps,
     };
     const { className, style } = extractProps(props, propDefs);
+
+    console.log(className, style);
 
     return createElement('div', {
       ref,

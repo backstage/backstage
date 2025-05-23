@@ -116,7 +116,7 @@ export interface Config {
              * The prefix of the target that this matches on, e.g.
              * "https://graph.microsoft.com/v1.0", with no trailing slash.
              */
-            target: string;
+            target?: string;
             /**
              * The auth authority used.
              *
@@ -149,6 +149,12 @@ export interface Config {
             queryMode?: string;
             user?: {
               /**
+               * The url path to fetch groups, defaults to `/users`.
+               *
+               * E.g. "groups/{id}/transitiveMembers/microsoft.graph.user/".
+               */
+              path?: string;
+              /**
                * The "expand" argument to apply to users.
                *
                * E.g. "manager".
@@ -174,6 +180,12 @@ export interface Config {
             };
 
             group?: {
+              /**
+               * The url path to fetch groups, defaults to `/groups`.
+               *
+               * E.g. "groups/{id}/transitiveMembers/microsoft.graph.group/".
+               */
+              path?: string;
               /**
                * The "expand" argument to apply to groups.
                *
@@ -207,6 +219,12 @@ export interface Config {
 
             userGroupMember?: {
               /**
+               * The url path to fetch groups, defaults to `/groups`.
+               *
+               * E.g. "groups/{id}/transitiveMembers/microsoft.graph.group/".
+               */
+              path?: string;
+              /**
                * The filter to apply to extract users by groups memberships.
                *
                * E.g. "displayName eq 'Backstage Users'"
@@ -231,7 +249,7 @@ export interface Config {
                * The prefix of the target that this matches on, e.g.
                * "https://graph.microsoft.com/v1.0", with no trailing slash.
                */
-              target: string;
+              target?: string;
               /**
                * The auth authority used.
                *
@@ -264,6 +282,12 @@ export interface Config {
               queryMode?: string;
               user?: {
                 /**
+                 * The url path to fetch groups, defaults to `/groups`.
+                 *
+                 * E.g. "groups/{id}/transitiveMembers/microsoft.graph.group/".
+                 */
+                path?: string;
+                /**
                  * The "expand" argument to apply to users.
                  *
                  * E.g. "manager".
@@ -289,6 +313,12 @@ export interface Config {
               };
 
               group?: {
+                /**
+                 * The url path to fetch groups, defaults to `/groups`.
+                 *
+                 * E.g. "groups/{id}/transitiveMembers/microsoft.graph.group/".
+                 */
+                path?: string;
                 /**
                  * The "expand" argument to apply to groups.
                  *
@@ -321,6 +351,12 @@ export interface Config {
               };
 
               userGroupMember?: {
+                /**
+                 * The url path to fetch groups, defaults to `/groups`.
+                 *
+                 * E.g. "groups/{id}/transitiveMembers/microsoft.graph.group/".
+                 */
+                path?: string;
                 /**
                  * The filter to apply to extract users by groups memberships.
                  *

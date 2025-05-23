@@ -99,7 +99,7 @@ export type CustomResource = k8sAuthTypes.CustomResource;
 export type CustomResourcesByEntity = k8sAuthTypes.CustomResourcesByEntity;
 
 // @public (undocumented)
-export const DEFAULT_OBJECTS: ObjectToFetch[];
+export const DEFAULT_OBJECTS: ObjectToFetch_2[];
 
 // @public
 export class DispatchStrategy implements AuthenticationStrategy_2 {

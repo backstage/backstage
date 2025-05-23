@@ -23,9 +23,10 @@ import {
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
-import React from 'react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { OwnerPicker } from './OwnerPicker';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
+import { fireEvent, screen } from '@testing-library/react';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'backstage.io/v1beta1',
@@ -58,10 +59,10 @@ describe('<OwnerPicker />', () => {
   const catalogApi = catalogApiMock.mock({
     getEntities: jest.fn(async () => ({ items: entities })),
   });
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
           [catalogApiRef, catalogApi],
@@ -104,13 +105,83 @@ describe('<OwnerPicker />', () => {
             kind: ['Group', 'User'],
           },
           fields: [
+            'kind',
             'metadata.name',
             'metadata.namespace',
             'metadata.title',
-            'kind',
+            'metadata.description',
+            'spec.profile.displayName',
+            'spec.type',
           ],
         }),
       );
+    });
+  });
+
+  describe('ui:disabled OwnerPicker', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          catalogFilter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required: true,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+    it('Prevents user from modifying input when ui:disabled is true', async () => {
+      props.uiSchema = { 'ui:disabled': true };
+      props.formData = 'group:default/myentity';
+
+      await renderInTestApp(
+        <Wrapper>
+          <OwnerPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+
+      // Expect input to be disabled
+      expect(input).toBeDisabled();
+      expect(input).toHaveValue('group:default/myentity');
+    });
+
+    it('Allows user to edit when ui:disabled is false', async () => {
+      props.uiSchema = { 'ui:disabled': false };
+      props.formData = 'group:default/myentity';
+
+      await renderInTestApp(
+        <Wrapper>
+          <OwnerPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = screen.getByRole('textbox');
+      expect(input).not.toBeDisabled();
+
+      fireEvent.change(input, {
+        target: { value: 'group:default/mynewentity' },
+      });
+      fireEvent.blur(input);
+
+      expect(input).toHaveValue('group:default/mynewentity');
+      expect(onChange).toHaveBeenCalledWith('group:default/mynewentity');
     });
   });
 
@@ -140,10 +211,13 @@ describe('<OwnerPicker />', () => {
             kind: ['User'],
           },
           fields: [
+            'kind',
             'metadata.name',
             'metadata.namespace',
             'metadata.title',
-            'kind',
+            'metadata.description',
+            'spec.profile.displayName',
+            'spec.type',
           ],
         }),
       );

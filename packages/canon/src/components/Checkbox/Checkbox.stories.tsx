@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Checkbox } from './Checkbox';
 import { Flex } from '../Flex';
@@ -23,9 +22,6 @@ import { Text } from '../Text';
 const meta = {
   title: 'Components/Checkbox',
   component: Checkbox,
-  parameters: {
-    layout: 'centered',
-  },
 } satisfies Meta<typeof Checkbox>;
 
 export default meta;

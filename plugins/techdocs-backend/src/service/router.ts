@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  createLegacyAuthAdapters,
-  PluginCacheManager,
-} from '@backstage/backend-common';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -40,57 +36,57 @@ import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import * as winston from 'winston';
 import {
   AuthService,
+  CacheService,
   DiscoveryService,
   HttpAuthService,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
  * deployment configuration (prepare/generate/publish all in the Backend).
  *
- * @public
+ * @internal
  */
 export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
   generators: GeneratorBuilder;
   publisher: PublisherBase;
-  logger: winston.Logger;
+  logger: LoggerService;
   discovery: DiscoveryService;
   database?: Knex; // TODO: Make database required when we're implementing database stuff.
   config: Config;
-  cache: PluginCacheManager;
+  cache: CacheService;
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogApi;
-  httpAuth?: HttpAuthService;
-  auth?: AuthService;
+  httpAuth: HttpAuthService;
+  auth: AuthService;
 };
 
 /**
  * Required dependencies for running TechDocs in the "recommended" deployment
  * configuration (prepare/generate handled externally in CI/CD).
  *
- * @public
- * @deprecated This type is only exported for legacy reasons and will be removed in the future.
+ * @internal
  */
 export type RecommendedDeploymentOptions = {
   publisher: PublisherBase;
-  logger: winston.Logger;
+  logger: LoggerService;
   discovery: DiscoveryService;
   config: Config;
-  cache: PluginCacheManager;
+  cache: CacheService;
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogApi;
-  httpAuth?: HttpAuthService;
-  auth?: AuthService;
+  httpAuth: HttpAuthService;
+  auth: AuthService;
 };
 
 /**
  * One of the two deployment configurations must be provided.
  *
- * @public
- * @deprecated This type is only exported for legacy reasons and will be removed in the future.
+ * @internal
  */
 export type RouterOptions =
   | RecommendedDeploymentOptions
@@ -100,7 +96,7 @@ export type RouterOptions =
  * Typeguard to help createRouter() understand when we are in a "recommended"
  * deployment vs. when we are in an out-of-the-box deployment configuration.
  *
- * @public
+ * @internal
  */
 function isOutOfTheBoxOption(
   opt: RouterOptions,
@@ -111,17 +107,13 @@ function isOutOfTheBoxOption(
 /**
  * Creates a techdocs router.
  *
- * @public
- * @deprecated This function is only exported for legacy reasons and will be removed in the future.
- * Please {@link https://backstage.io/docs/backend-system/building-backends/migrating | migrate } to use the new backend system and follow these {@link https://backstage.io/docs/features/techdocs/getting-started#new-backend-system | instructions } to install the user settings backend plugin.
+ * @internal
  */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-  const { publisher, config, logger, discovery } = options;
-
-  const { auth, httpAuth } = createLegacyAuthAdapters(options);
+  const { publisher, config, logger, discovery, httpAuth, auth } = options;
 
   const catalogClient =
     options.catalogClient ?? new CatalogClient({ discoveryApi: discovery });
@@ -133,14 +125,14 @@ export async function createRouter(
   // when loading a single techdocs page.
   const entityLoader = new CachedEntityLoader({
     catalog: catalogClient,
-    cache: options.cache.getClient(),
+    cache: options.cache,
   });
 
   // Set up a cache client if configured.
   let cache: TechDocsCache | undefined;
   const defaultTtl = config.getOptionalNumber('techdocs.cache.ttl');
   if (defaultTtl) {
-    const cacheClient = options.cache.getClient({ defaultTtl });
+    const cacheClient = options.cache.withOptions({ defaultTtl });
     cache = TechDocsCache.fromConfig(config, { cache: cacheClient, logger });
   }
 

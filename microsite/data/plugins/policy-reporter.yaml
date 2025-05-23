@@ -1,0 +1,9 @@
+title: Policy Reporter
+author: kyverno
+authorUrl: https://github.com/kyverno
+category: Observability
+description: Integrates Policy Reporter with Backstage to provide a clear and detailed view of Policies related to components in Backstage
+documentation: https://github.com/kyverno/backstage-policy-reporter-plugin
+iconUrl: https://github.com/cncf/artwork/blob/main/projects/kyverno/icon/color/kyverno-icon-color.png?raw=true
+npmPackageName: '@kyverno/backstage-plugin-policy-reporter'
+addedDate: '2025-01-31'

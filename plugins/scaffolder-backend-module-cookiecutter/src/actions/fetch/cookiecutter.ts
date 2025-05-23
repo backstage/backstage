@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ContainerRunner } from '@backstage/backend-common';
 import {
   UrlReaderService,
   resolveSafeChildPath,
@@ -32,6 +31,7 @@ import {
   executeShellCommand,
 } from '@backstage/plugin-scaffolder-node';
 import { examples } from './cookiecutter.examples';
+import { ContainerRunner } from './ContainerRunner';
 
 export class CookiecutterRunner {
   private readonly containerRunner?: ContainerRunner;

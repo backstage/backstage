@@ -104,15 +104,27 @@ export type AuthResolverCatalogUserQuery =
 
 // @public
 export type AuthResolverContext = {
-  issueToken(params: TokenParams): Promise<{
-    token: string;
-  }>;
+  issueToken(params: TokenParams): Promise<BackstageSignInResult>;
   findCatalogUser(query: AuthResolverCatalogUserQuery): Promise<{
     entity: Entity;
   }>;
   signInWithCatalogUser(
     query: AuthResolverCatalogUserQuery,
+    options?: {
+      dangerousEntityRefFallback?: {
+        entityRef:
+          | string
+          | {
+              kind?: string;
+              namespace?: string;
+              name: string;
+            };
+      };
+    },
   ): Promise<BackstageSignInResult>;
+  resolveOwnershipEntityRefs(entity: Entity): Promise<{
+    ownershipEntityRefs: string[];
+  }>;
 };
 
 // @public
@@ -123,6 +135,7 @@ export interface BackstageIdentityResponse extends BackstageSignInResult {
 
 // @public
 export interface BackstageSignInResult {
+  identity?: BackstageUserIdentity;
   token: string;
 }
 
@@ -144,12 +157,17 @@ export type ClientAuthResponse<TProviderInfo> = {
 export namespace commonSignInResolvers {
   const emailMatchingUserEntityProfileEmail: SignInResolverFactory<
     unknown,
-    unknown
+    | {
+        allowedDomains?: string[] | undefined;
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
   const emailLocalPartMatchingUserEntityName: SignInResolverFactory<
     unknown,
     | {
         allowedDomains?: string[] | undefined;
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
       }
     | undefined
   >;

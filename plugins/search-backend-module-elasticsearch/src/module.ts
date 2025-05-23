@@ -72,16 +72,22 @@ export default createBackendModule({
         const baseConfig = config.getOptional(baseKey);
         if (!baseConfig) {
           logger.warn(
-            'No configuration found under "search.elasticsearch" key.  Skipping search engine inititalization.',
+            'No configuration found under "search.elasticsearch" key.  Skipping search engine initialization.',
           );
           return;
         }
-
+        const indexPrefix = config.getOptionalString(
+          'search.elasticsearch.indexPrefix',
+        );
+        if (indexPrefix) {
+          logger.info(`Index prefix will be used for indices: ${indexPrefix}`);
+        }
         searchEngineRegistry.setSearchEngine(
           await ElasticSearchSearchEngine.fromConfig({
             logger,
             config,
             translator,
+            indexPrefix,
           }),
         );
       },

@@ -32,7 +32,7 @@ This is how to create a minimal plugin:
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
 export const examplePlugin = createFrontendPlugin({
-  id: 'example',
+  pluginId: 'example',
   extensions: [],
 });
 ```
@@ -98,7 +98,7 @@ const exampleNavItem = NavItemBlueprint.make({
 
 // The same plugin as above, now with the extensions added
 export const examplePlugin = createFrontendPlugin({
-  id: 'example',
+  pluginId: 'example',
   extensions: [examplePage, exampleNavItem],
   // We can also make routes available to other plugins.
   // highlight-start
@@ -174,7 +174,7 @@ const exampleApi = ApiBlueprint.make({
 /* Omitted definitions for examplePage, exampleNavItem, and rootRouteRef. */
 
 export const examplePlugin = createFrontendPlugin({
-  id: 'example',
+  pluginId: 'example',
   extensions: [
     // highlight-add-next-line
     exampleApi,
@@ -210,7 +210,7 @@ const exampleEntityContent = EntityContentBlueprint.make({
 });
 
 export const examplePlugin = createFrontendPlugin({
-  id: 'example',
+  pluginId: 'example',
   extensions: [
     // highlight-add-next-line
     exampleEntityContent,

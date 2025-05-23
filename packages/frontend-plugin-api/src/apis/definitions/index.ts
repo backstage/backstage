@@ -42,6 +42,7 @@ export * from './FeatureFlagsApi';
 export * from './FetchApi';
 export * from './IconsApi';
 export * from './IdentityApi';
+export * from './DialogApi';
 export * from './OAuthRequestApi';
 export * from './RouteResolutionApi';
 export * from './StorageApi';

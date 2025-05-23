@@ -21,8 +21,18 @@ import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
 import { v4 as uuid } from 'uuid';
 import { DB_TASKS_TABLE, DbTasksRow } from '../database/tables';
-import { TaskSettingsV2, taskSettingsV2Schema } from './types';
-import { delegateAbortController, nowPlus, sleep } from './util';
+import {
+  TaskSettingsV2,
+  taskSettingsV2Schema,
+  TaskApiTasksResponse,
+} from './types';
+import {
+  delegateAbortController,
+  nowPlus,
+  sleep,
+  dbTime,
+  serializeError,
+} from './util';
 import { SchedulerServiceTaskFunction } from '@backstage/backend-plugin-api';
 
 const DEFAULT_WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
@@ -33,6 +43,10 @@ const DEFAULT_WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
  * @private
  */
 export class TaskWorker {
+  #workerState: TaskApiTasksResponse['workerState'] = {
+    status: 'idle',
+  };
+
   constructor(
     private readonly taskId: string,
     private readonly fn: SchedulerServiceTaskFunction,
@@ -61,24 +75,17 @@ export class TaskWorker {
       }
     }
 
-    let attemptNum = 1;
     (async () => {
+      let attemptNum = 1;
       for (;;) {
         try {
-          if (settings.initialDelayDuration) {
-            await sleep(
-              Duration.fromISO(settings.initialDelayDuration),
-              options.signal,
-            );
-          }
+          await this.performInitialWait(settings, options.signal);
 
           while (!options.signal.aborted) {
             const runResult = await this.runOnce(options.signal);
-
             if (runResult.result === 'abort') {
               break;
             }
-
             await sleep(workCheckFrequency, options.signal);
           }
 
@@ -94,6 +101,24 @@ export class TaskWorker {
         }
       }
     })();
+  }
+
+  /**
+   * Does the once-at-startup initial wait, if configured.
+   */
+  private async performInitialWait(
+    settings: TaskSettingsV2,
+    signal: AbortSignal,
+  ): Promise<void> {
+    if (settings.initialDelayDuration) {
+      this.#workerState = {
+        status: 'initial-wait',
+      };
+      await sleep(Duration.fromISO(settings.initialDelayDuration), signal);
+    }
+    this.#workerState = {
+      status: 'idle',
+    };
   }
 
   static async trigger(knex: Knex, taskId: string): Promise<void> {
@@ -114,6 +139,51 @@ export class TaskWorker {
     if (updatedRows < 1) {
       throw new ConflictError(`Task ${taskId} is currently running`);
     }
+  }
+
+  static async taskStates(
+    knex: Knex,
+  ): Promise<Map<string, TaskApiTasksResponse['taskState']>> {
+    const rows = await knex<DbTasksRow>(DB_TASKS_TABLE);
+    return new Map(
+      rows.map(row => {
+        const startedAt = row.current_run_started_at
+          ? dbTime(row.current_run_started_at).toISO()!
+          : undefined;
+        const timesOutAt = row.current_run_expires_at
+          ? dbTime(row.current_run_expires_at).toISO()!
+          : undefined;
+        const startsAt = row.next_run_start_at
+          ? dbTime(row.next_run_start_at).toISO()!
+          : undefined;
+        const lastRunEndedAt = row.last_run_ended_at
+          ? dbTime(row.last_run_ended_at).toISO()!
+          : undefined;
+        const lastRunError = row.last_run_error_json || undefined;
+
+        return [
+          row.id,
+          startedAt
+            ? {
+                status: 'running',
+                startedAt,
+                timesOutAt,
+                lastRunEndedAt,
+                lastRunError,
+              }
+            : {
+                status: 'idle',
+                startsAt,
+                lastRunEndedAt,
+                lastRunError,
+              },
+        ];
+      }),
+    );
+  }
+
+  workerState(): TaskApiTasksResponse['workerState'] {
+    return this.#workerState;
   }
 
   /**
@@ -153,13 +223,19 @@ export class TaskWorker {
     }, Duration.fromISO(taskSettings.timeoutAfterDuration).as('milliseconds'));
 
     try {
+      this.#workerState = {
+        status: 'running',
+      };
       await this.fn(taskAbortController.signal);
       taskAbortController.abort(); // releases resources
     } catch (e) {
       this.logger.error(e);
-      await this.tryReleaseTask(ticket, taskSettings);
+      await this.tryReleaseTask(ticket, taskSettings, e);
       return { result: 'failed' };
     } finally {
+      this.#workerState = {
+        status: 'idle',
+      };
       clearTimeout(timeoutHandle);
     }
 
@@ -321,6 +397,7 @@ export class TaskWorker {
   async tryReleaseTask(
     ticket: string,
     settings: TaskSettingsV2,
+    error?: Error,
   ): Promise<boolean> {
     const isManual = settings?.cadence === 'manual';
     const isDuration = settings?.cadence.startsWith('P');
@@ -366,6 +443,10 @@ export class TaskWorker {
         current_run_ticket: this.knex.raw('null'),
         current_run_started_at: this.knex.raw('null'),
         current_run_expires_at: this.knex.raw('null'),
+        last_run_ended_at: this.knex.fn.now(),
+        last_run_error_json: error
+          ? serializeError(error)
+          : this.knex.raw('null'),
       });
 
     return rows === 1;

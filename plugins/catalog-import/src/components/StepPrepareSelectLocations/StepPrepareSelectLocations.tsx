@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import ListItem from '@material-ui/core/ListItem';
@@ -21,12 +22,14 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import React, { useCallback, useState } from 'react';
+import partition from 'lodash/partition';
+import { useCallback, useState } from 'react';
+
 import { AnalyzeResult } from '../../api';
+import { catalogImportTranslationRef } from '../../translation';
 import { BackButton, NextButton } from '../Buttons';
 import { EntityListComponent } from '../EntityListComponent';
 import { PrepareResult } from '../useImportState';
-import partition from 'lodash/partition';
 
 type Props = {
   analyzeResult: Extract<AnalyzeResult, { type: 'locations' }>;
@@ -49,6 +52,8 @@ export const StepPrepareSelectLocations = ({
   onPrepare,
   onGoBack,
 }: Props) => {
+  const { t } = useTranslationRef(catalogImportTranslationRef);
+
   const [selectedUrls, setSelectedUrls] = useState<string[]>(
     prepareResult?.locations.map(l => l.target) || [],
   );
@@ -82,8 +87,7 @@ export const StepPrepareSelectLocations = ({
       {locations.length > 0 && (
         <>
           <Typography>
-            Select one or more locations that are present in your git
-            repository:
+            {t('stepPrepareSelectLocations.locations.description')}
           </Typography>
           <EntityListComponent
             firstListItem={
@@ -100,7 +104,9 @@ export const StepPrepareSelectLocations = ({
                     disableRipple
                   />
                 </ListItemIcon>
-                <ListItemText primary="Select All" />
+                <ListItemText
+                  primary={t('stepPrepareSelectLocations.locations.selectAll')}
+                />
               </ListItem>
             }
             onItemClick={onItemClick}
@@ -120,7 +126,9 @@ export const StepPrepareSelectLocations = ({
 
       {existingLocations.length > 0 && (
         <>
-          <Typography>These locations already exist in the catalog:</Typography>
+          <Typography>
+            {t('stepPrepareSelectLocations.existingLocations.description')}
+          </Typography>
           <EntityListComponent
             locations={existingLocations}
             locationListItemIcon={() => <LocationOnIcon />}
@@ -133,7 +141,7 @@ export const StepPrepareSelectLocations = ({
       <Grid container spacing={0}>
         {onGoBack && <BackButton onClick={onGoBack} />}
         <NextButton disabled={selectedUrls.length === 0} onClick={handleResult}>
-          Review
+          {t('stepPrepareSelectLocations.nextButtonText')}
         </NextButton>
       </Grid>
     </>

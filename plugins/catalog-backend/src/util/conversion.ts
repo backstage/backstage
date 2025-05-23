@@ -32,7 +32,6 @@ export function locationSpecToMetadataName(location: LocationSpec) {
   return `generated-${hash}`;
 }
 
-/** @public */
 export function locationSpecToLocationEntity(opts: {
   location: LocationSpec;
   parentEntity?: Entity;

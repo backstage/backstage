@@ -7,6 +7,7 @@
     "build": "node scripts/pre-build.js && docusaurus build",
     "deploy": "docusaurus deploy",
     "docusaurus": "docusaurus",
+    "generate-openapi-docs": "yarn docusaurus clean-api-docs all && yarn docusaurus gen-api-docs all",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "publish-gh-pages": "docusaurus-publish",
@@ -18,6 +19,9 @@
     "write-translations": "docusaurus-write-translations"
   },
   "prettier": "@backstage/cli/config/prettier",
+  "resolutions": {
+    "node-polyfill-webpack-plugin": "^3.0.0"
+  },
   "dependencies": {
     "@docusaurus/core": "^3.1.1",
     "@docusaurus/plugin-client-redirects": "^3.1.1",
@@ -26,8 +30,10 @@
     "@mdx-js/react": "^3.0.0",
     "@swc/core": "^1.3.46",
     "clsx": "^2.0.0",
+    "docusaurus-plugin-openapi-docs": "^4.3.0",
     "docusaurus-plugin-sass": "^0.2.3",
     "docusaurus-pushfeedback": "^1.0.0",
+    "docusaurus-theme-openapi-docs": "^4.3.0",
     "luxon": "^3.0.0",
     "prism-react-renderer": "^2.1.0",
     "react": "^18.0.2",

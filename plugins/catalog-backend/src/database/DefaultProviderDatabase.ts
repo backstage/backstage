@@ -199,6 +199,20 @@ export class DefaultProviderDatabase implements ProviderDatabase {
     }
   }
 
+  async listReferenceSourceKeys(txOpaque: Transaction): Promise<string[]> {
+    const tx = txOpaque as Knex | Knex.Transaction;
+
+    const rows = await tx<DbRefreshStateReferencesRow>(
+      'refresh_state_references',
+    )
+      .distinct('source_key')
+      .whereNotNull('source_key');
+
+    return rows
+      .map(row => row.source_key)
+      .filter((key): key is string => !!key);
+  }
+
   async refreshByRefreshKeys(
     txOpaque: Transaction,
     options: RefreshByKeyOptions,

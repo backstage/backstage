@@ -29,15 +29,6 @@ describe('createExtensionDataRef', () => {
     expect(String(refOptional)).toBe('ExtensionDataRef{id=foo,optional=true}');
   });
 
-  it('can be created and read in the deprecated way', () => {
-    const ref = createExtensionDataRef('foo');
-    expect(ref.id).toBe('foo');
-    expect(String(ref)).toBe('ExtensionDataRef{id=foo,optional=false}');
-    const refOptional = ref.optional();
-    expect(refOptional.id).toBe('foo');
-    expect(String(refOptional)).toBe('ExtensionDataRef{id=foo,optional=true}');
-  });
-
   it('can be used to encapsulate a value', () => {
     const ref = createExtensionDataRef<string>().with({ id: 'foo' });
     const val: ExtensionDataValue<string, 'foo'> = ref('hello');

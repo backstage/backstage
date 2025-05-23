@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { ChangeEvent, useEffect } from 'react';
 import { useSearch } from '@backstage/plugin-search-react';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import { makeStyles } from '@material-ui/core/styles';
 import { Theme } from '@material-ui/core/styles';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchTranslationRef } from '../../translation';
 
 const useStyles = makeStyles((theme: Theme) => ({
   tabs: {
@@ -49,8 +51,9 @@ export const SearchTypeTabs = (props: SearchTypeTabsProps) => {
   const classes = useStyles();
   const { setPageCursor, setTypes, types } = useSearch();
   const { defaultValue, types: givenTypes } = props;
+  const { t } = useTranslationRef(searchTranslationRef);
 
-  const changeTab = (_: React.ChangeEvent<{}>, newType: string) => {
+  const changeTab = (_: ChangeEvent<{}>, newType: string) => {
     setTypes(newType !== '' ? [newType] : []);
     setPageCursor(undefined);
   };
@@ -66,7 +69,7 @@ export const SearchTypeTabs = (props: SearchTypeTabsProps) => {
   const definedTypes = [
     {
       value: '',
-      name: 'All',
+      name: t('searchType.tabs.allTitle'),
     },
     ...givenTypes,
   ];

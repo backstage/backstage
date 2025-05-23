@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React, { forwardRef } from 'react';
-import { Icon } from '../Icon';
+import { forwardRef } from 'react';
 import clsx from 'clsx';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 
@@ -44,18 +43,31 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={disabled}
-        className={clsx(
-          'canon-Button',
-          `canon-Button--size-${responsiveSize}`,
-          `canon-Button--variant-${responsiveVariant}`,
-          className,
-        )}
+        className={clsx('canon-Button', className)}
+        data-size={responsiveSize}
+        data-variant={responsiveVariant}
         style={style}
         {...rest}
       >
-        {iconStart && <Icon name={iconStart} className="canon-Button--icon" />}
+        {iconStart && (
+          <span
+            className="canon-ButtonIcon"
+            aria-hidden="true"
+            data-size={responsiveSize}
+          >
+            {iconStart}
+          </span>
+        )}
         {children}
-        {iconEnd && <Icon name={iconEnd} className="canon-Button--icon" />}
+        {iconEnd && (
+          <span
+            className="canon-ButtonIcon"
+            aria-hidden="true"
+            data-size={responsiveSize}
+          >
+            {iconEnd}
+          </span>
+        )}
       </button>
     );
   },

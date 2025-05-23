@@ -40,7 +40,7 @@ export function exitWithError(error: Error): never {
     process.stderr.write(`\n${chalk.red(error.message)}\n\n`);
     process.exit(error.code);
   } else {
-    process.stderr.write(`\n${chalk.red(`${error}`)}\n\n`);
+    process.stderr.write(`\n${chalk.red(`${error.stack}`)}\n\n`);
     process.exit(1);
   }
 }

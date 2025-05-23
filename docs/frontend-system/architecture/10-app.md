@@ -30,7 +30,7 @@ const root = app.createRoot();
 // Just like any other React we need a root element. No server side rendering is used.
 const rootEl = document.getElementById('root')!;
 
-ReactDOM.createRoot(rootEl).render(app);
+ReactDOM.createRoot(rootEl).render(root);
 ```
 
 We call `createApp` to create a new app instance, which is responsible for wiring together all of the features that we provide to the app. It also provides a set of built-in [Extensions](./20-extensions.md) that help build out the foundations of the app, as well as defaults for many other systems such as [Utility API](./33-utility-apis.md) implementations, components, icons, themes, and how to load configuration. No real work is done at the point of creating the app though, it's all deferred to the rendering of the element returned from `app.createRoot()`.

@@ -20,7 +20,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { BaseRepoBranchPickerProps } from './types';
 
@@ -36,6 +36,7 @@ export const GitHubRepoBranchPicker = ({
   state,
   rawErrors,
   accessToken,
+  isDisabled,
   required,
 }: BaseRepoBranchPickerProps<{
   accessToken?: string;
@@ -86,9 +87,15 @@ export const GitHubRepoBranchPicker = ({
         onChange={(_, newValue) => {
           onChange({ branch: newValue || '' });
         }}
+        disabled={isDisabled}
         options={availableBranches}
         renderInput={params => (
-          <TextField {...params} label="Branch" required={required} />
+          <TextField
+            {...params}
+            label="Branch"
+            disabled={isDisabled}
+            required={required}
+          />
         )}
         freeSolo
         autoSelect

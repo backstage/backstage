@@ -28,13 +28,13 @@ import {
   BitbucketServerAuth,
   OAuthRequestManager,
   WebStorage,
-  UrlPatternDiscovery,
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
   createFetchApi,
   FetchMiddlewares,
   VMwareCloudAuth,
+  FrontendHostDiscovery,
 } from '@backstage/core-app-api';
 
 import {
@@ -68,10 +68,7 @@ export const apis = [
   createApiFactory({
     api: discoveryApiRef,
     deps: { configApi: configApiRef },
-    factory: ({ configApi }) =>
-      UrlPatternDiscovery.compile(
-        `${configApi.getString('backend.baseUrl')}/api/{{ pluginId }}`,
-      ),
+    factory: ({ configApi }) => FrontendHostDiscovery.fromConfig(configApi),
   }),
   createApiFactory({
     api: alertApiRef,

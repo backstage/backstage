@@ -36,7 +36,6 @@ export const catalogModuleUnprocessedEntities = createBackendModule({
         router: coreServices.httpRouter,
         logger: coreServices.logger,
         httpAuth: coreServices.httpAuth,
-        discovery: coreServices.discovery,
         permissions: coreServices.permissions,
         permissionsRegistry: coreServices.permissionsRegistry,
       },
@@ -46,14 +45,12 @@ export const catalogModuleUnprocessedEntities = createBackendModule({
         logger,
         permissions,
         httpAuth,
-        discovery,
         permissionsRegistry,
       }) {
         const module = UnprocessedEntitiesModule.create({
           database: await database.getClient(),
           router,
           permissions,
-          discovery,
           httpAuth,
         });
 

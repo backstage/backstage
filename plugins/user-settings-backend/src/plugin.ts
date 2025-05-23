@@ -18,7 +18,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { createRouterInternal } from './service/router';
+import { createRouter } from './service/router';
 import { signalsServiceRef } from '@backstage/plugin-signals-node';
 import { DatabaseUserSettingsStore } from './database/DatabaseUserSettingsStore';
 
@@ -42,7 +42,7 @@ export default createBackendPlugin({
           database,
         });
         httpRouter.use(
-          await createRouterInternal({ userSettingsStore, httpAuth, signals }),
+          await createRouter({ userSettingsStore, httpAuth, signals }),
         );
       },
     });

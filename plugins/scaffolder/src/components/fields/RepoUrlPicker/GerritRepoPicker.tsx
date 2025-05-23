@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import TextField from '@material-ui/core/TextField';
 import { BaseRepoUrlPickerProps } from './types';
@@ -21,7 +20,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
 
 export const GerritRepoPicker = (props: BaseRepoUrlPickerProps) => {
-  const { onChange, rawErrors, state } = props;
+  const { onChange, rawErrors, state, isDisabled } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const { workspace, owner } = state;
   return (
@@ -32,6 +31,7 @@ export const GerritRepoPicker = (props: BaseRepoUrlPickerProps) => {
           label={t('fields.gerritRepoPicker.owner.title')}
           onChange={e => onChange({ owner: e.target.value })}
           helperText={t('fields.gerritRepoPicker.owner.description')}
+          disabled={isDisabled}
           value={owner}
         />
       </FormControl>
@@ -44,6 +44,7 @@ export const GerritRepoPicker = (props: BaseRepoUrlPickerProps) => {
           id="parentInput"
           label={t('fields.gerritRepoPicker.parent.title')}
           onChange={e => onChange({ workspace: e.target.value })}
+          disabled={isDisabled}
           value={workspace}
           helperText={t('fields.gerritRepoPicker.parent.description')}
         />

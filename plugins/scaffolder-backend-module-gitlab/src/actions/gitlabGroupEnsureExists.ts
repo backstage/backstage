@@ -76,11 +76,7 @@ export const createGitlabGroupEnsureExistsAction = (options: {
 
       let currentPath: string | null = null;
       let parentId: number | null = null;
-      for (const pathElement of path) {
-        const slug =
-          typeof pathElement === 'string' ? pathElement : pathElement.slug;
-        const name =
-          typeof pathElement === 'string' ? pathElement : pathElement.name;
+      for (const { name, slug } of pathIterator(path)) {
         const fullPath: string = currentPath ? `${currentPath}/${slug}` : slug;
         const result = (await api.Groups.search(
           fullPath,
@@ -90,17 +86,24 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         );
         if (!subGroup) {
           ctx.logger.info(`creating missing group ${fullPath}`);
-          parentId = (
-            await api.Groups.create(
-              name,
-              slug,
-              parentId
-                ? {
-                    parentId: parentId,
-                  }
-                : {},
-            )
-          )?.id;
+
+          parentId = await ctx.checkpoint({
+            key: `ensure.${name}.${slug}.${parentId}`,
+            // eslint-disable-next-line no-loop-func
+            fn: async () => {
+              return (
+                await api.Groups.create(
+                  name,
+                  slug,
+                  parentId
+                    ? {
+                        parentId: parentId,
+                      }
+                    : {},
+                )
+              )?.id;
+            },
+          });
         } else {
           parentId = subGroup.id;
         }
@@ -112,3 +115,19 @@ export const createGitlabGroupEnsureExistsAction = (options: {
     },
   });
 };
+
+type PathPart = { name: string; slug: string };
+type PathItem = string | PathPart;
+
+function* pathIterator(items: PathItem[]): Generator<PathPart> {
+  for (const item of items) {
+    if (typeof item === 'string') {
+      const parts = item.split('/');
+      for (const part of parts) {
+        yield { name: part, slug: part };
+      }
+    } else {
+      yield item;
+    }
+  }
+}

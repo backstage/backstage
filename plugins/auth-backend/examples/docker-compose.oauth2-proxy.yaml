@@ -10,10 +10,10 @@
 #   <ProxiedSignInPage {...props} provider="myproxy" />
 #
 # You also need to switch out the baseUrl and listen port of both the frontend and
-# backend, but we can do that through env vars when running `yarn dev`:
+# backend, but we can do that through env vars when running `yarn start`:
 #
 # APP_CONFIG_app_baseUrl=http://localhost APP_CONFIG_app_listen_port=3000 \
-#   APP_CONFIG_backend_baseUrl=http://localhost APP_CONFIG_backend_listen_port=7007 yarn dev
+#   APP_CONFIG_backend_baseUrl=http://localhost APP_CONFIG_backend_listen_port=7007 yarn start
 #
 # Once done, you can run the following from the root and then navigate to http://localhost
 #

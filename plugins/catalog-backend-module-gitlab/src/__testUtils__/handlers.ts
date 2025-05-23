@@ -139,17 +139,27 @@ const httpHandlers = [
 // https://docs.gitlab.com/ee/api/groups.html#list-group-details supports encoded path and id
 const httpGroupFindByEncodedPathDynamic = all_groups_response.flatMap(group => [
   // Handler for apiBaseUrl
-  rest.get(`${apiBaseUrl}/groups/${group.full_path}`, (_, res, ctx) => {
-    return res(
-      ctx.json(all_groups_response.find(g => g.full_path === group.full_path)),
-    );
-  }),
+  rest.get(
+    `${apiBaseUrl}/groups/${encodeURIComponent(group.full_path)}`,
+    (_, res, ctx) => {
+      return res(
+        ctx.json(
+          all_groups_response.find(g => g.full_path === group.full_path),
+        ),
+      );
+    },
+  ),
   // Handler for apiSaaSBaseUrl
-  rest.get(`${apiBaseUrlSaas}/groups/${group.full_path}`, (_, res, ctx) => {
-    return res(
-      ctx.json(all_groups_response.find(g => g.full_path === group.full_path)),
-    );
-  }),
+  rest.get(
+    `${apiBaseUrlSaas}/groups/${encodeURIComponent(group.full_path)}`,
+    (_, res, ctx) => {
+      return res(
+        ctx.json(
+          all_groups_response.find(g => g.full_path === group.full_path),
+        ),
+      );
+    },
+  ),
 ]);
 
 const httpGroupFindByIdDynamic = all_groups_response.map(group => {

@@ -165,7 +165,7 @@ export interface TaskContext {
 export interface TaskBroker {
   cancel?(taskId: string): Promise<void>;
 
-  retry?(taskId: string): Promise<void>;
+  retry?(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
 
   claim(): Promise<TaskContext>;
 

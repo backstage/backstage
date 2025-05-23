@@ -34,12 +34,23 @@ export interface Config {
           skipUserProfile?: boolean;
           signIn?: {
             resolvers: Array<
-              | { resolver: 'emailMatchingUserEntityAnnotation' }
+              | {
+                  resolver: 'emailMatchingUserEntityAnnotation';
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+                }
               | {
                   resolver: 'emailLocalPartMatchingUserEntityName';
                   allowedDomains?: string[];
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
                 }
-              | { resolver: 'emailMatchingUserEntityProfileEmail' }
+              | {
+                  resolver: 'emailMatchingUserEntityProfileEmail';
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+                }
+              | {
+                  resolver: 'userIdMatchingUserEntityAnnotation';
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+                }
             >;
           };
           sessionDuration?: HumanDuration | string;

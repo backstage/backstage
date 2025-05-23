@@ -41,6 +41,8 @@ export type CommonListOptions = {
 interface ListProjectOptions extends CommonListOptions {
   archived?: boolean;
   group?: string;
+  membership?: boolean;
+  topics?: string;
 }
 
 interface UserListOptions extends CommonListOptions {
@@ -174,7 +176,10 @@ export class GitLabClient {
     groupPath: string,
     options?: CommonListOptions,
   ): Promise<GitLabGroup> {
-    return this.nonPagedRequest(`/groups/${groupPath}`, options);
+    return this.nonPagedRequest(
+      `/groups/${encodeURIComponent(groupPath)}`,
+      options,
+    );
   }
 
   async listDescendantGroups(

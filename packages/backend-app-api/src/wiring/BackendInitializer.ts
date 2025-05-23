@@ -24,6 +24,7 @@ import {
   RootLifecycleService,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 import { ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -321,9 +322,19 @@ export class BackendInitializer {
       await this.#serviceRegistry.get(coreServices.rootLogger, 'root'),
     );
 
+    const rootConfig = await this.#serviceRegistry.get(
+      coreServices.rootConfig,
+      'root',
+    );
+
     // All plugins are initialized in parallel
     const results = await Promise.allSettled(
       allPluginIds.map(async pluginId => {
+        const isBootFailurePermitted = this.#getPluginBootFailurePredicate(
+          pluginId,
+          rootConfig,
+        );
+
         try {
           // Initialize all eager services
           await this.#serviceRegistry.initializeEagerServicesWithScope(
@@ -354,17 +365,38 @@ export class BackendInitializer {
             }
             await tree.parallelTopologicalTraversal(
               async ({ moduleId, moduleInit }) => {
-                const moduleDeps = await this.#getInitDeps(
-                  moduleInit.init.deps,
-                  pluginId,
-                  moduleId,
-                );
-                await moduleInit.init.func(moduleDeps).catch(error => {
-                  throw new ForwardedError(
-                    `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
-                    error,
+                const isModuleBootFailurePermitted =
+                  this.#getPluginModuleBootFailurePredicate(
+                    pluginId,
+                    moduleId,
+                    rootConfig,
                   );
-                });
+
+                try {
+                  const moduleDeps = await this.#getInitDeps(
+                    moduleInit.init.deps,
+                    pluginId,
+                    moduleId,
+                  );
+                  await moduleInit.init.func(moduleDeps).catch(error => {
+                    throw new ForwardedError(
+                      `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
+                      error,
+                    );
+                  });
+                } catch (error: unknown) {
+                  assertError(error);
+                  if (isModuleBootFailurePermitted) {
+                    initLogger.onPermittedPluginModuleFailure(
+                      pluginId,
+                      moduleId,
+                      error,
+                    );
+                  } else {
+                    initLogger.onPluginModuleFailed(pluginId, moduleId, error);
+                    throw error;
+                  }
+                }
               },
             );
           }
@@ -392,8 +424,12 @@ export class BackendInitializer {
           await lifecycleService.startup();
         } catch (error: unknown) {
           assertError(error);
-          initLogger.onPluginFailed(pluginId, error);
-          throw error;
+          if (isBootFailurePermitted) {
+            initLogger.onPermittedPluginFailure(pluginId, error);
+          } else {
+            initLogger.onPluginFailed(pluginId, error);
+            throw error;
+          }
         }
       }),
     );
@@ -457,7 +493,7 @@ export class BackendInitializer {
 
     const rootLifecycleService = await this.#getRootLifecycleImpl();
 
-    // Root services like the health one need to immediatelly be notified of the shutdown
+    // Root services like the health one need to immediately be notified of the shutdown
     await rootLifecycleService.beforeShutdown();
 
     // Get all plugins.
@@ -619,6 +655,38 @@ export class BackendInitializer {
         await this.#applyBackendFeatureLoaders(newLoaders);
       }
     }
+  }
+
+  #getPluginBootFailurePredicate(pluginId: string, config?: Config): boolean {
+    const defaultStartupBootFailureValue =
+      config?.getOptionalString(
+        'backend.startup.default.onPluginBootFailure',
+      ) ?? 'abort';
+
+    const pluginStartupBootFailureValue =
+      config?.getOptionalString(
+        `backend.startup.plugins.${pluginId}.onPluginBootFailure`,
+      ) ?? defaultStartupBootFailureValue;
+
+    return pluginStartupBootFailureValue === 'continue';
+  }
+
+  #getPluginModuleBootFailurePredicate(
+    pluginId: string,
+    moduleId: string,
+    config?: Config,
+  ): boolean {
+    const defaultStartupBootFailureValue =
+      config?.getOptionalString(
+        'backend.startup.default.onPluginModuleBootFailure',
+      ) ?? 'abort';
+
+    const pluginModuleStartupBootFailureValue =
+      config?.getOptionalString(
+        `backend.startup.plugins.${pluginId}.modules.${moduleId}.onPluginModuleBootFailure`,
+      ) ?? defaultStartupBootFailureValue;
+
+    return pluginModuleStartupBootFailureValue === 'continue';
   }
 }
 

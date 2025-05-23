@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, ReactElement } from 'react';
+import { ReactNode, isValidElement, Fragment, ReactElement } from 'react';
 import startCase from 'lodash/startCase';
 import Typography from '@material-ui/core/Typography';
 
@@ -52,7 +52,7 @@ const nestedListStyle = (theme: Theme) =>
   });
 
 interface StyleProps extends WithStyles {
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 // Sub Components
 const StyledList = withStyles(listStyle, {
@@ -108,7 +108,7 @@ function toValue(
   options: Options,
   nested: boolean,
 ) {
-  if (React.isValidElement(value)) {
+  if (isValidElement(value)) {
     return <Fragment>{value}</Fragment>;
   }
   if (value !== null && typeof value === 'object') {

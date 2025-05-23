@@ -19,13 +19,20 @@ import { TableColumn } from '@backstage/core-components';
 import { EntityTable } from '@backstage/plugin-catalog-react';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import ToggleButton from '@material-ui/lab/ToggleButton';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ApiTypeTitle } from '../ApiDefinitionCard';
 import { ApiDefinitionDialog } from '../ApiDefinitionDialog';
+import {
+  TranslationFunction,
+  useTranslationRef,
+} from '@backstage/core-plugin-api/alpha';
+import { apiDocsTranslationRef } from '../../translation';
 
-export function createSpecApiTypeColumn(): TableColumn<ApiEntity> {
+export function createSpecApiTypeColumn(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): TableColumn<ApiEntity> {
   return {
-    title: 'Type',
+    title: t('apiEntityColumns.typeTitle'),
     field: 'spec.type',
     render: entity => <ApiTypeTitle apiEntity={entity} />,
   };
@@ -33,10 +40,11 @@ export function createSpecApiTypeColumn(): TableColumn<ApiEntity> {
 
 const ApiDefinitionButton = ({ apiEntity }: { apiEntity: ApiEntity }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { t } = useTranslationRef(apiDocsTranslationRef);
   return (
     <>
       <ToggleButton
-        aria-label="Toggle API Definition Dialog"
+        aria-label={t('apiDefinitionDialog.toggleButtonAriaLabel')}
         onClick={() => setDialogOpen(!dialogOpen)}
         value={dialogOpen}
       >
@@ -51,19 +59,25 @@ const ApiDefinitionButton = ({ apiEntity }: { apiEntity: ApiEntity }) => {
   );
 };
 
-function createApiDefinitionColumn(): TableColumn<ApiEntity> {
+function createApiDefinitionColumn(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): TableColumn<ApiEntity> {
   return {
-    title: 'API Definition',
+    title: t('apiEntityColumns.apiDefinitionTitle'),
     render: entity => <ApiDefinitionButton apiEntity={entity} />,
   };
 }
 
-export const apiEntityColumns: TableColumn<ApiEntity>[] = [
-  EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
-  EntityTable.columns.createSystemColumn(),
-  EntityTable.columns.createOwnerColumn(),
-  createSpecApiTypeColumn(),
-  EntityTable.columns.createSpecLifecycleColumn(),
-  EntityTable.columns.createMetadataDescriptionColumn(),
-  createApiDefinitionColumn(),
-];
+export const getApiEntityColumns = (
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): TableColumn<ApiEntity>[] => {
+  return [
+    EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
+    EntityTable.columns.createSystemColumn(),
+    EntityTable.columns.createOwnerColumn(),
+    createSpecApiTypeColumn(t),
+    EntityTable.columns.createSpecLifecycleColumn(),
+    EntityTable.columns.createMetadataDescriptionColumn(),
+    createApiDefinitionColumn(t),
+  ];
+};

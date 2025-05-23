@@ -15,10 +15,11 @@
  */
 
 import { Breakpoint } from '../../types';
+import type { useRender } from '@base-ui-components/react/use-render';
 
 /** @public */
-export interface HeadingProps {
-  children: React.ReactNode;
+export interface HeadingProps
+  extends Omit<useRender.ComponentProps<'h1'>, 'color'> {
   variant?:
     | 'display'
     | 'title1'
@@ -32,7 +33,11 @@ export interface HeadingProps {
           'display' | 'title1' | 'title2' | 'title3' | 'title4' | 'title5'
         >
       >;
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  color?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+  truncate?: boolean;
   className?: string;
   style?: React.CSSProperties;
 }

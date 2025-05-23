@@ -53,7 +53,8 @@ export function createGithubIssuesLabelAction(options: {
         properties: {
           repoUrl: {
             title: 'Repository Location',
-            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the repository name and 'owner' is an organization or username`,
+            description:
+              'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the repository name and `owner` is an organization or username',
             type: 'string',
           },
           number: {
@@ -72,7 +73,8 @@ export function createGithubIssuesLabelAction(options: {
           token: {
             title: 'Authentication Token',
             type: 'string',
-            description: 'The GITHUB_TOKEN to use for authorization to GitHub',
+            description:
+              'The `GITHUB_TOKEN` to use for authorization to GitHub',
           },
         },
       },
@@ -87,23 +89,30 @@ export function createGithubIssuesLabelAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const client = new Octokit(
-        await getOctokitOptions({
-          integrations,
-          credentialsProvider: githubCredentialsProvider,
-          host,
-          owner,
-          repo,
-          token: providedToken,
-        }),
-      );
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        host,
+        owner,
+        repo,
+        token: providedToken,
+      });
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       try {
-        await client.rest.issues.addLabels({
-          owner,
-          repo,
-          issue_number: number,
-          labels,
+        await ctx.checkpoint({
+          key: `github.issues.add.label.${owner}.${repo}.${number}`,
+          fn: async () => {
+            await client.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: number,
+              labels,
+            });
+          },
         });
       } catch (e) {
         assertError(e);

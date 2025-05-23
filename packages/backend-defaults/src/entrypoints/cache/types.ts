@@ -16,6 +16,24 @@
 
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
+import { RedisClusterOptions, KeyvRedisOptions } from '@keyv/redis';
+
+/**
+ * Options for Redis cache store.
+ *
+ * @public
+ */
+export type RedisCacheStoreOptions = {
+  client?: KeyvRedisOptions;
+  cluster?: RedisClusterOptions;
+};
+
+/**
+ * Union type of all cache store options.
+ *
+ * @public
+ */
+export type CacheStoreOptions = RedisCacheStoreOptions;
 
 /**
  * Options given when constructing a {@link CacheManager}.

@@ -21,24 +21,16 @@ import {
   AuthService,
   DatabaseService,
   DiscoveryService,
-  HttpAuthService,
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { defaultAuthProviderFactories } from '../providers';
 import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
-import {
-  TokenManager,
-  createLegacyAuthAdapters,
-} from '@backstage/backend-common';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import { NotFoundError } from '@backstage/errors';
-import { CatalogApi } from '@backstage/catalog-client';
-import {
-  bindOidcRouter,
-  KeyStores,
-  TokenFactory,
-  UserInfoDatabaseHandler,
-} from '../identity';
+import { bindOidcRouter } from '../identity/router';
+import { KeyStores } from '../identity/KeyStores';
+import { TokenFactory } from '../identity/TokenFactory';
+import { UserInfoDatabaseHandler } from '../identity/UserInfoDatabaseHandler';
 import session from 'express-session';
 import connectSessionKnex from 'connect-session-knex';
 import passport from 'passport';
@@ -49,29 +41,18 @@ import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
 
-/**
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
- */
-export interface RouterOptions {
+interface RouterOptions {
   logger: LoggerService;
   database: DatabaseService;
   config: RootConfigService;
   discovery: DiscoveryService;
-  tokenManager?: TokenManager;
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
+  auth: AuthService;
   tokenFactoryAlgorithm?: string;
   providerFactories?: ProviderFactories;
-  disableDefaultProviderFactories?: boolean;
-  catalogApi?: CatalogApi;
+  catalog: CatalogService;
   ownershipResolver?: AuthOwnershipResolver;
 }
 
-/**
- * @public
- * @deprecated Please migrate to the new backend system as this will be removed in the future.
- */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -83,8 +64,6 @@ export async function createRouter(
     tokenFactoryAlgorithm,
     providerFactories = {},
   } = options;
-
-  const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
   const router = Router();
 
@@ -102,6 +81,12 @@ export async function createRouter(
     await authDb.get(),
   );
 
+  const omitClaimsFromToken = config.getOptionalBoolean(
+    'auth.omitIdentityTokenOwnershipClaim',
+  )
+    ? ['ent']
+    : [];
+
   let tokenIssuer: TokenIssuer;
   if (keyStore instanceof StaticKeyStore) {
     tokenIssuer = new StaticTokenIssuer(
@@ -109,6 +94,8 @@ export async function createRouter(
         logger: logger.child({ component: 'token-factory' }),
         issuer: authUrl,
         sessionExpirationSeconds: backstageTokenExpiration,
+        userInfoDatabaseHandler,
+        omitClaimsFromToken,
       },
       keyStore as StaticKeyStore,
     );
@@ -122,6 +109,7 @@ export async function createRouter(
         tokenFactoryAlgorithm ??
         config.getOptionalString('auth.identityTokenAlgorithm'),
       userInfoDatabaseHandler,
+      omitClaimsFromToken,
     });
   }
 
@@ -151,25 +139,17 @@ export async function createRouter(
   router.use(express.urlencoded({ extended: false }));
   router.use(express.json());
 
-  const providers = options.disableDefaultProviderFactories
-    ? providerFactories
-    : {
-        ...defaultAuthProviderFactories,
-        ...providerFactories,
-      };
-
   bindProviderRouters(router, {
-    providers,
+    providers: providerFactories,
     appUrl,
     baseUrl: authUrl,
     tokenIssuer,
     ...options,
-    auth,
-    httpAuth,
+    auth: options.auth,
   });
 
   bindOidcRouter(router, {
-    auth,
+    auth: options.auth,
     tokenIssuer,
     baseUrl: authUrl,
     userInfoDatabaseHandler,

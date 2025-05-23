@@ -5,43 +5,11 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { EventBroker } from '@backstage/plugin-events-node';
-import { EventParams } from '@backstage/plugin-events-node';
-import { EventPublisher } from '@backstage/plugin-events-node';
 import { EventsService } from '@backstage/plugin-events-node';
-import { EventSubscriber } from '@backstage/plugin-events-node';
 import express from 'express';
+import { HttpBodyParser } from '@backstage/plugin-events-node';
 import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
-import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
-
-// @public @deprecated
-export class DefaultEventBroker implements EventBroker {
-  // @deprecated
-  constructor(logger: LoggerService, events?: EventsService);
-  // (undocumented)
-  publish(params: EventParams): Promise<void>;
-  // (undocumented)
-  subscribe(
-    ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
-  ): void;
-}
-
-// @public @deprecated
-export class EventsBackend {
-  constructor(logger: Logger);
-  // (undocumented)
-  addPublishers(
-    ...publishers: Array<EventPublisher | Array<EventPublisher>>
-  ): EventsBackend;
-  // (undocumented)
-  addSubscribers(
-    ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
-  ): EventsBackend;
-  // (undocumented)
-  setEventBroker(eventBroker: EventBroker): EventsBackend;
-  start(): Promise<void>;
-}
 
 // @public
 const eventsPlugin: BackendFeature;
@@ -57,6 +25,9 @@ export class HttpPostIngressEventPublisher {
     events: EventsService;
     ingresses?: {
       [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
+    };
+    bodyParsers?: {
+      [contentType: string]: HttpBodyParser;
     };
     logger: LoggerService;
   }): HttpPostIngressEventPublisher;

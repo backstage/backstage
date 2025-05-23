@@ -7,6 +7,7 @@ import { AllOfCriteria } from '@backstage/plugin-permission-common';
 import { AnyOfCriteria } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { BackstageUserIdentity } from '@backstage/plugin-auth-node';
@@ -29,7 +30,6 @@ import { PermissionsServiceRequestOptions } from '@backstage/backend-plugin-api'
 import { PolicyDecision } from '@backstage/plugin-permission-common';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
-import { TokenManager } from '@backstage/backend-common';
 import { z } from 'zod';
 
 // @public
@@ -39,7 +39,7 @@ export type ApplyConditionsRequest = {
 
 // @public
 export type ApplyConditionsRequestEntry = IdentifiedPermissionMessage<{
-  resourceRef: string;
+  resourceRef: string | string[];
   resourceType: string;
   conditions: PermissionCriteria<PermissionCondition>;
 }>;
@@ -50,8 +50,12 @@ export type ApplyConditionsResponse = {
 };
 
 // @public
-export type ApplyConditionsResponseEntry =
-  IdentifiedPermissionMessage<DefinitivePolicyDecision>;
+export type ApplyConditionsResponseEntry = IdentifiedPermissionMessage<
+  | DefinitivePolicyDecision
+  | {
+      result: Array<AuthorizeResult.ALLOW | AuthorizeResult.DENY>;
+    }
+>;
 
 // @public
 export type Condition<TRule> = TRule extends PermissionRule<
@@ -139,7 +143,7 @@ export function createConditionTransformer<
   TRules extends PermissionRule<any, TQuery, string>[],
 >(permissionRules: [...TRules]): ConditionTransformer<TQuery>;
 
-// @public
+// @public @deprecated
 export function createPermissionIntegrationRouter<
   TResourceType1 extends string,
   TResource1,
@@ -178,7 +182,7 @@ export function createPermissionIntegrationRouter<
   ): PermissionRuleset<TResource, TQuery, TResourceType>;
 };
 
-// @public
+// @public @deprecated
 export type CreatePermissionIntegrationRouterResourceOptions<
   TResourceType extends string,
   TResource,
@@ -201,20 +205,16 @@ export function createPermissionResourceRef<TResource, TQuery>(): {
 
 // @public
 export function createPermissionRule<
-  TResource,
-  TQuery,
-  TQueryOutput extends TQuery,
-  TResourceType extends string,
+  TRef extends PermissionResourceRef,
   TParams extends PermissionRuleParams = undefined,
 >(
-  rule: CreatePermissionRuleOptions<
-    TResource,
-    TQuery,
-    TQueryOutput,
-    TResourceType,
-    TParams
-  >,
-): PermissionRule<TResource, TQuery, TResourceType, TParams>;
+  rule: CreatePermissionRuleOptions<TRef, TParams>,
+): PermissionRule<
+  TRef['TResource'],
+  TRef['TQuery'],
+  TRef['resourceType'],
+  TParams
+>;
 
 // @public @deprecated
 export function createPermissionRule<
@@ -228,19 +228,18 @@ export function createPermissionRule<
 
 // @public (undocumented)
 export type CreatePermissionRuleOptions<
-  TResource,
-  TQuery,
-  TQueryOutput extends TQuery,
-  TResourceType extends string,
+  TRef extends PermissionResourceRef,
   TParams extends PermissionRuleParams,
-> = {
-  name: string;
-  description: string;
-  resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>;
-  paramsSchema?: z.ZodSchema<TParams>;
-  apply(resource: TResource, params: NoInfer_2<TParams>): boolean;
-  toQuery(params: NoInfer_2<TParams>): PermissionCriteria<TQueryOutput>;
-};
+> = TRef extends PermissionResourceRef<infer IResource, infer IQuery, any>
+  ? {
+      name: string;
+      description: string;
+      resourceRef: TRef;
+      paramsSchema?: z.ZodSchema<TParams>;
+      apply(resource: IResource, params: NoInfer_2<TParams>): boolean;
+      toQuery(params: NoInfer_2<TParams>): PermissionCriteria<IQuery>;
+    }
+  : never;
 
 // @public
 export const isAndCriteria: <T>(
@@ -272,7 +271,7 @@ export type MetadataResponse = MetadataResponse_2;
 // @public @deprecated
 export type MetadataResponseSerializedRule = MetadataResponseSerializedRule_2;
 
-// @public
+// @public @deprecated
 export type PermissionIntegrationRouterOptions<
   TResourceType1 extends string = string,
   TResource1 = any,
@@ -390,8 +389,7 @@ export class ServerPermissionClient implements PermissionsService {
     config: Config,
     options: {
       discovery: DiscoveryService;
-      tokenManager?: TokenManager;
-      auth?: AuthService;
+      auth: AuthService;
     },
   ): ServerPermissionClient;
 }

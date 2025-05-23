@@ -13,15 +13,15 @@ Options:
 
 Commands:
   api-reports [options] [paths...]
-  type-deps
-  peer-deps [options]
   generate-catalog-info [options]
   generate-patch [options] <package>
-  knip-reports [options] [paths...]
-  package [command]
-  repo [command]
-  lint [command]
   help [command]
+  knip-reports [options] [paths...]
+  lint [command]
+  package [command]
+  peer-deps [options]
+  repo [command]
+  type-deps
 ```
 
 ### `backstage-repo-tools api-reports`
@@ -30,17 +30,17 @@ Commands:
 Usage: backstage-repo-tools api-reports [options] [paths...]
 
 Options:
-  --ci
-  --tsc
-  --docs
-  --sql-reports
-  --include <pattern>
-  --exclude <pattern>
-  -a, --allow-warnings <allowWarningsPaths>
   --allow-all-warnings
-  -o, --omit-messages <messageCodes>
+  --ci
+  --docs
+  --exclude <pattern>
+  --include <pattern>
+  --sql-reports
+  --tsc
   --validate-release-tags
+  -a, --allow-warnings <allowWarningsPaths>
   -h, --help
+  -o, --omit-messages <messageCodes>
 ```
 
 ### `backstage-repo-tools generate-catalog-info`
@@ -49,8 +49,8 @@ Options:
 Usage: backstage-repo-tools generate-catalog-info [options]
 
 Options:
-  --dry-run
   --ci
+  --dry-run
   -h, --help
 ```
 
@@ -60,11 +60,11 @@ Options:
 Usage: backstage-repo-tools generate-patch [options] <package>
 
 Options:
-  --target <target-repo>
-  --registry-url <registry-url>
   --base-version <version>
   --query <query>
+  --registry-url <registry-url>
   --skip-install
+  --target <target-repo>
   -h, --help
 ```
 
@@ -87,8 +87,8 @@ Options:
   -h, --help
 
 Commands:
-  legacy-backend-exports [paths...]
   help [command]
+  legacy-backend-exports [paths...]
 ```
 
 ### `backstage-repo-tools lint legacy-backend-exports`
@@ -109,8 +109,8 @@ Options:
   -h, --help
 
 Commands:
-  schema [command]
   help [command]
+  schema [command]
 ```
 
 ### `backstage-repo-tools package schema`
@@ -122,8 +122,8 @@ Options:
   -h, --help
 
 Commands:
-  openapi [command]
   help [command]
+  openapi [command]
 ```
 
 ### `backstage-repo-tools package schema openapi`
@@ -135,10 +135,10 @@ Options:
   -h, --help
 
 Commands:
-  init
-  generate [options]
   fuzz [options]
+  generate [options]
   help [command]
+  init
 ```
 
 ### `backstage-repo-tools package schema openapi fuzz`
@@ -147,10 +147,10 @@ Commands:
 Usage: backstage-repo-tools package schema openapi fuzz [options]
 
 Options:
-  --limit <limit>
-  --workers <workers>
   --debug
   --exclude-checks <excludeChecks>
+  --limit <limit>
+  --workers <workers>
   -h, --help
 ```
 
@@ -192,8 +192,8 @@ Options:
   -h, --help
 
 Commands:
-  schema [command]
   help [command]
+  schema [command]
 ```
 
 ### `backstage-repo-tools repo schema`
@@ -205,8 +205,8 @@ Options:
   -h, --help
 
 Commands:
-  openapi [command]
   help [command]
+  openapi [command]
 ```
 
 ### `backstage-repo-tools repo schema openapi`
@@ -218,12 +218,12 @@ Options:
   -h, --help
 
 Commands:
-  verify [paths...]
+  diff [options]
+  fuzz [options]
+  help [command]
   lint [options] [paths...]
   test [options] [paths...]
-  fuzz [options]
-  diff [options]
-  help [command]
+  verify [paths...]
 ```
 
 ### `backstage-repo-tools repo schema openapi diff`

@@ -21,12 +21,12 @@ import {
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
 import {
+  Camelize,
+  CommitAction,
+  ExpandedMergeRequestSchema,
   Gitlab,
   RepositoryTreeSchema,
-  CommitAction,
   SimpleUserSchema,
-  ExpandedMergeRequestSchema,
-  Camelize,
 } from '@gitbeaker/rest';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -302,7 +302,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
         repoUrl,
       });
 
-      let assigneeId = undefined;
+      let assigneeId: number | undefined = undefined;
 
       if (assignee !== undefined) {
         try {
@@ -317,7 +317,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
         }
       }
 
-      let reviewerIds: number[] | undefined = undefined; // Explicitly set to undefined. Strangely, passing an empty array to the API will result the other options being undefined also being explicity passed to the Gitlab API call (e.g. assigneeId)
+      let reviewerIds: number[] | undefined = undefined; // Explicitly set to undefined. Strangely, passing an empty array to the API will result the other options being undefined also being explicitly passed to the Gitlab API call (e.g. assigneeId)
       if (reviewers !== undefined) {
         reviewerIds = (
           await Promise.all(
@@ -414,20 +414,39 @@ which uses additional API calls in order to detect whether to 'create', 'update'
               execute_filemode: file.executable,
             }));
 
-      let createBranch: boolean;
-      if (actions.length) {
-        createBranch = true;
-      } else {
-        try {
-          await api.Branches.show(repoID, branchName);
-          createBranch = false;
-          ctx.logger.info(
-            `Using existing branch ${branchName} without modification.`,
-          );
-        } catch (e) {
-          createBranch = true;
+      let createBranch = actions.length > 0;
+
+      try {
+        const branch = await api.Branches.show(repoID, branchName);
+        if (createBranch) {
+          const mergeRequests = await api.MergeRequests.all({
+            projectId: repoID,
+            source_branch: branchName,
+          });
+
+          if (mergeRequests.length > 0) {
+            // If an open MR exists, include the MR link in the error message
+            throw new InputError(
+              `The branch creation failed because the branch already exists at: ${branch.web_url}. Additionally, there is a Merge Request for this branch: ${mergeRequests[0].web_url}`,
+            );
+          } else {
+            // If no open MR, just notify about the existing branch
+            throw new InputError(
+              `The branch creation failed because the branch already exists at: ${branch.web_url}.`,
+            );
+          }
         }
+
+        ctx.logger.info(
+          `Using existing branch ${branchName} without modification.`,
+        );
+      } catch (e) {
+        if (e instanceof InputError) {
+          throw e;
+        }
+        createBranch = true;
       }
+
       if (createBranch) {
         try {
           await api.Branches.create(repoID, branchName, String(targetBranch));
@@ -439,74 +458,101 @@ which uses additional API calls in order to detect whether to 'create', 'update'
           );
         }
       }
-      if (actions.length) {
-        try {
-          await api.Commits.create(repoID, branchName, title, actions);
-        } catch (e) {
-          throw new InputError(
-            `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${getErrorMessage(
-              e,
-            )}`,
-          );
-        }
-      }
-      try {
-        let mergeRequest = await api.MergeRequests.create(
-          repoID,
-          branchName,
-          String(targetBranch),
-          title,
-          {
-            description,
-            removeSourceBranch: removeSourceBranch ? removeSourceBranch : false,
-            assigneeId,
-            reviewerIds,
-          },
-        );
 
-        if (ctx.input.assignReviewersFromApprovalRules) {
-          try {
-            const reviewersFromApprovalRules =
-              await getReviewersFromApprovalRules(
-                api,
-                mergeRequest.iid,
+      await ctx.checkpoint({
+        key: `commit.to.${repoID}.${branchName}`,
+        fn: async () => {
+          if (actions.length) {
+            try {
+              const commit = await api.Commits.create(
                 repoID,
-                ctx,
+                branchName,
+                title,
+                actions,
               );
-            if (reviewersFromApprovalRules.length > 0) {
-              const eligibleUserIds = new Set([
-                ...reviewersFromApprovalRules,
-                ...(reviewerIds ?? []),
-              ]);
-
-              mergeRequest = await api.MergeRequests.edit(
-                repoID,
-                mergeRequest.iid,
-                {
-                  reviewerIds: Array.from(eligibleUserIds),
-                },
+              return commit.id;
+            } catch (e) {
+              throw new InputError(
+                `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${getErrorMessage(
+                  e,
+                )}`,
               );
             }
+          }
+          return null;
+        },
+      });
+
+      const { mrId, mrWebUrl } = await ctx.checkpoint({
+        key: `create.mr.${repoID}.${branchName}`,
+        fn: async () => {
+          try {
+            const mergeRequest = await api.MergeRequests.create(
+              repoID,
+              branchName,
+              String(targetBranch),
+              title,
+              {
+                description,
+                removeSourceBranch: removeSourceBranch
+                  ? removeSourceBranch
+                  : false,
+                assigneeId,
+                reviewerIds,
+              },
+            );
+            return {
+              mrId: mergeRequest.iid,
+              mrWebUrl: mergeRequest.web_url ?? mergeRequest.webUrl,
+            };
           } catch (e) {
-            ctx.logger.warn(
-              `Failed to assign reviewers from approval rules: ${getErrorMessage(
-                e,
-              )}.`,
+            throw new InputError(
+              `Merge request creation failed. ${getErrorMessage(e)}`,
             );
           }
-        }
-        ctx.output('projectid', repoID);
-        ctx.output('targetBranchName', targetBranch);
-        ctx.output('projectPath', repoID);
-        ctx.output(
-          'mergeRequestUrl',
-          mergeRequest.web_url ?? mergeRequest.webUrl,
-        );
-      } catch (e) {
-        throw new InputError(
-          `Merge request creation failed. ${getErrorMessage(e)}`,
-        );
-      }
+        },
+      });
+
+      await ctx.checkpoint({
+        key: `create.mr.assign.reviewers.${repoID}.${branchName}`,
+        fn: async () => {
+          if (ctx.input.assignReviewersFromApprovalRules) {
+            try {
+              const reviewersFromApprovalRules =
+                await getReviewersFromApprovalRules(api, mrId, repoID, ctx);
+              if (reviewersFromApprovalRules.length > 0) {
+                const eligibleUserIds = new Set([
+                  ...reviewersFromApprovalRules,
+                  ...(reviewerIds ?? []),
+                ]);
+
+                const mergeRequest = await api.MergeRequests.edit(
+                  repoID,
+                  mrId,
+                  {
+                    reviewerIds: Array.from(eligibleUserIds),
+                  },
+                );
+                return {
+                  mrWebUrl: mergeRequest.web_url ?? mergeRequest.webUrl,
+                };
+              }
+            } catch (e) {
+              ctx.logger.warn(
+                `Failed to assign reviewers from approval rules: ${getErrorMessage(
+                  e,
+                )}.`,
+              );
+            }
+          }
+          return { mrWebUrl };
+        },
+      });
+
+      ctx.output('projectid', repoID);
+      ctx.output('targetBranchName', targetBranch);
+      ctx.output('projectPath', repoID);
+      ctx.output('mergeRequestUrl', mrWebUrl);
     },
   });
 };

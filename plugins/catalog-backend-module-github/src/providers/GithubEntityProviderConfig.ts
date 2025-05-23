@@ -37,12 +37,13 @@ export type GithubEntityProviderConfig = {
   catalogPath: string;
   organization: string;
   host: string;
-  filters?: {
+  filters: {
     repository?: RegExp;
     branch?: string;
     topic?: GithubTopicFilters;
-    allowForks?: boolean;
+    allowForks: boolean;
     visibility?: string[];
+    allowArchived: boolean;
   };
   validateLocationsExist: boolean;
   schedule?: SchedulerServiceTaskScheduleDefinition;
@@ -90,6 +91,8 @@ function readProviderConfig(
   const topicFilterExclude = config?.getOptionalStringArray(
     'filters.topic.exclude',
   );
+  const allowArchived =
+    config.getOptionalBoolean('filters.allowArchived') ?? false;
   const validateLocationsExist =
     config?.getOptionalBoolean('validateLocationsExist') ?? false;
 
@@ -101,6 +104,12 @@ function readProviderConfig(
   if (validateLocationsExist && catalogPathContainsWildcard) {
     throw Error(
       `Error while processing GitHub provider config. The catalog path ${catalogPath} contains a wildcard, which is incompatible with validation of locations existing before emitting them. Ensure that validateLocationsExist is set to false.`,
+    );
+  }
+
+  if (branchPattern?.includes('/')) {
+    throw new Error(
+      'Error while processing GitHub provider config. Slash characters (/) are not allowed in filters.branch',
     );
   }
 
@@ -126,6 +135,7 @@ function readProviderConfig(
         exclude: topicFilterExclude,
       },
       visibility: visibilityFilterInclude,
+      allowArchived,
     },
     schedule,
     validateLocationsExist,

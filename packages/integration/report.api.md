@@ -137,6 +137,7 @@ export interface AzureCredentialsManager {
 // @public
 export type AzureDevOpsCredential =
   | AzureClientSecretCredential
+  | AzureManagedIdentityClientAssertionCredential
   | AzureManagedIdentityCredential
   | PersonalAccessTokenCredential;
 
@@ -144,11 +145,13 @@ export type AzureDevOpsCredential =
 export type AzureDevOpsCredentialKind =
   | 'PersonalAccessToken'
   | 'ClientSecret'
-  | 'ManagedIdentity';
+  | 'ManagedIdentity'
+  | 'ManagedIdentityClientAssertion';
 
 // @public
 export type AzureDevOpsCredentialLike = Omit<
   Partial<AzureClientSecretCredential> &
+    Partial<AzureManagedIdentityClientAssertionCredential> &
     Partial<AzureManagedIdentityCredential> &
     Partial<PersonalAccessTokenCredential>,
   'kind'
@@ -201,12 +204,22 @@ export type AzureIntegrationConfig = {
   token?: string;
   credential?: AzureDevOpsCredential;
   credentials?: AzureDevOpsCredential[];
+  commitSigningKey?: string;
 };
+
+// @public
+export type AzureManagedIdentityClientAssertionCredential =
+  AzureCredentialBase & {
+    kind: 'ManagedIdentityClientAssertion';
+    tenantId: string;
+    clientId: string;
+    managedIdentityClientId: 'system-assigned' | string;
+  };
 
 // @public
 export type AzureManagedIdentityCredential = AzureCredentialBase & {
   kind: 'ManagedIdentity';
-  clientId: string;
+  clientId: 'system-assigned' | string;
 };
 
 // @public
@@ -237,6 +250,7 @@ export type BitbucketCloudIntegrationConfig = {
   username?: string;
   appPassword?: string;
   token?: string;
+  commitSigningKey?: string;
 };
 
 // @public @deprecated
@@ -267,6 +281,7 @@ export type BitbucketIntegrationConfig = {
   token?: string;
   username?: string;
   appPassword?: string;
+  commitSigningKey?: string;
 };
 
 // @public
@@ -297,6 +312,7 @@ export type BitbucketServerIntegrationConfig = {
   token?: string;
   username?: string;
   password?: string;
+  commitSigningKey?: string;
 };
 
 // @public @deprecated
@@ -392,9 +408,11 @@ export type GerritIntegrationConfig = {
   host: string;
   baseUrl?: string;
   cloneUrl?: string;
+  disableEditUrl?: boolean;
   gitilesBaseUrl: string;
   username?: string;
   password?: string;
+  commitSigningKey?: string;
 };
 
 // @public
@@ -562,6 +580,11 @@ export function getGitHubRequestOptions(
 };
 
 // @public
+export function getGitilesAuthenticationUrl(
+  config: GerritIntegrationConfig,
+): string;
+
+// @public
 export function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,
@@ -630,13 +653,14 @@ export type GiteaIntegrationConfig = {
   baseUrl?: string;
   username?: string;
   password?: string;
+  commitSigningKey?: string;
 };
 
 // @public
 export type GithubAppConfig = {
   appId: number;
   privateKey: string;
-  webhookSecret: string;
+  webhookSecret?: string;
   clientId: string;
   clientSecret: string;
   allowedInstallationOwners?: string[];
@@ -744,6 +768,7 @@ export type GitLabIntegrationConfig = {
   apiBaseUrl: string;
   token?: string;
   baseUrl: string;
+  commitSigningKey?: string;
 };
 
 // @public

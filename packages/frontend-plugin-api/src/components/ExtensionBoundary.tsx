@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
+import {
   PropsWithChildren,
   ReactNode,
   Suspense,
@@ -69,14 +69,14 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
     node.instance?.getData(coreExtensionData.routePath),
   );
 
-  const plugin = node.spec.source;
+  const plugin = node.spec.plugin;
   const Progress = useComponentRef(coreComponentRefs.progress);
   const fallback = useComponentRef(coreComponentRefs.errorBoundaryFallback);
 
   // Skipping "routeRef" attribute in the new system, the extension "id" should provide more insight
   const attributes = {
     extensionId: node.spec.id,
-    pluginId: node.spec.source?.id ?? 'app',
+    pluginId: node.spec.plugin?.id ?? 'app',
   };
 
   return (
@@ -96,14 +96,29 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
 export namespace ExtensionBoundary {
   export function lazy(
     appNode: AppNode,
-    lazyElement: () => Promise<JSX.Element>,
+    loader: () => Promise<JSX.Element>,
   ): JSX.Element {
     const ExtensionComponent = reactLazy(() =>
-      lazyElement().then(element => ({ default: () => element })),
+      loader().then(element => ({ default: () => element })),
     );
     return (
       <ExtensionBoundary node={appNode}>
         <ExtensionComponent />
+      </ExtensionBoundary>
+    );
+  }
+
+  export function lazyComponent<TProps extends {}>(
+    appNode: AppNode,
+    loader: () => Promise<(props: TProps) => JSX.Element>,
+  ): (props: TProps) => JSX.Element {
+    const ExtensionComponent = reactLazy(() =>
+      loader().then(Component => ({ default: Component })),
+    ) as unknown as React.ComponentType<TProps>;
+
+    return (props: TProps) => (
+      <ExtensionBoundary node={appNode}>
+        <ExtensionComponent {...props} />
       </ExtensionBoundary>
     );
   }

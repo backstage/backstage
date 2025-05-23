@@ -29,6 +29,27 @@ export interface Config {
           clientSecret: string;
           host: string;
           callbackUrl?: string;
+          signIn?: {
+            resolvers: Array<
+              | {
+                  resolver: 'userIdMatchingUserEntityAnnotation';
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+                }
+              | {
+                  resolver: 'usernameMatchingUserEntityAnnotation';
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+                }
+              | {
+                  resolver: 'emailLocalPartMatchingUserEntityName';
+                  allowedDomains?: string[];
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+                }
+              | {
+                  resolver: 'emailMatchingUserEntityProfileEmail';
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+                }
+            >;
+          };
           sessionDuration?: HumanDuration | string;
         };
       };

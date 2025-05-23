@@ -17,7 +17,6 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { OpenApiDefinition } from './OpenApiDefinition';
 
 describe('<OpenApiDefinition />', () => {

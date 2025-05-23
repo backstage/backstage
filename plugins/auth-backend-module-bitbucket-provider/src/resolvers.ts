@@ -20,6 +20,7 @@ import {
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
+import { z } from 'zod';
 
 /**
  * Available sign-in resolvers for the Bitbucket auth provider.
@@ -32,7 +33,12 @@ export namespace bitbucketSignInResolvers {
    */
   export const userIdMatchingUserEntityAnnotation = createSignInResolverFactory(
     {
-      create() {
+      optionsSchema: z
+        .object({
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        })
+        .optional(),
+      create(options = {}) {
         return async (
           info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
           ctx,
@@ -44,11 +50,19 @@ export namespace bitbucketSignInResolvers {
             throw new Error('Bitbucket user profile does not contain an ID');
           }
 
-          return ctx.signInWithCatalogUser({
-            annotations: {
-              'bitbucket.org/user-id': id,
+          return ctx.signInWithCatalogUser(
+            {
+              annotations: {
+                'bitbucket.org/user-id': id,
+              },
             },
-          });
+            {
+              dangerousEntityRefFallback:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                  ? { entityRef: { name: id } }
+                  : undefined,
+            },
+          );
         };
       },
     },
@@ -59,7 +73,12 @@ export namespace bitbucketSignInResolvers {
    */
   export const usernameMatchingUserEntityAnnotation =
     createSignInResolverFactory({
-      create() {
+      optionsSchema: z
+        .object({
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        })
+        .optional(),
+      create(options = {}) {
         return async (
           info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
           ctx,
@@ -73,11 +92,19 @@ export namespace bitbucketSignInResolvers {
             );
           }
 
-          return ctx.signInWithCatalogUser({
-            annotations: {
-              'bitbucket.org/username': username,
+          return ctx.signInWithCatalogUser(
+            {
+              annotations: {
+                'bitbucket.org/username': username,
+              },
             },
-          });
+            {
+              dangerousEntityRefFallback:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                  ? { entityRef: { name: username } }
+                  : undefined,
+            },
+          );
         };
       },
     });
