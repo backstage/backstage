@@ -20,6 +20,7 @@ import { HistoryConfig } from '../config';
 import { ackHistorySubscription } from '../database/operations/ackHistorySubscription';
 import { readHistorySubscription } from '../database/operations/readHistorySubscription';
 import { upsertHistorySubscription } from '../database/operations/upsertHistorySubscription';
+import { sleep } from '../helpers';
 import { CATALOG_HISTORY_EVENT_TOPIC, CatalogHistoryEvent } from './types';
 
 const SUBSCRIPTION_ID = 'backstage-catalog-history-events-emitter';
@@ -96,7 +97,7 @@ export class HistoryEventEmitter {
           ackId: data.ackId,
         });
       } else {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await sleep({ seconds: 1 }, this.#shutdownSignal);
       }
     }
   }
