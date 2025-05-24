@@ -9,7 +9,6 @@ import { ClientContainerStatus } from '@backstage/plugin-kubernetes-common';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 import { ClusterObjects } from '@backstage/plugin-kubernetes-common';
-import { Context } from 'react';
 import { CustomObjectsByEntityRequest } from '@backstage/plugin-kubernetes-common';
 import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { DetectedError } from '@backstage/plugin-kubernetes-common';
@@ -17,15 +16,13 @@ import { DetectedErrorsByCluster } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { Event as Event_2 } from 'kubernetes-models/v1';
-import { FC } from 'react';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { GroupedResponses } from '@backstage/plugin-kubernetes-common';
 import { IContainer } from 'kubernetes-models/v1';
 import { IContainerStatus } from 'kubernetes-models/v1';
-import type { IIoK8sApimachineryPkgApisMetaV1ObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
-import type { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
+import { IIoK8sApimachineryPkgApisMetaV1ObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
+import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import { JsonObject } from '@backstage/types';
-import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
@@ -33,13 +30,13 @@ import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { Pod } from 'kubernetes-models/v1';
 import { Pod as Pod_2 } from 'kubernetes-models/v1/Pod';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
-import { ReactNode } from 'react';
-import { TranslationRef } from '@backstage/frontend-plugin-api';
-import type { TypeMeta } from '@kubernetes-models/base';
-import type { V1Job } from '@kubernetes/client-node';
-import type { V1ObjectMeta } from '@kubernetes/client-node';
-import type { V1Pod } from '@kubernetes/client-node';
-import type { V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
+import { default as React_2 } from 'react';
+import * as React_3 from 'react';
+import { TypeMeta } from '@kubernetes-models/base';
+import { V1Job } from '@kubernetes/client-node';
+import { V1ObjectMeta } from '@kubernetes/client-node';
+import { V1Pod } from '@kubernetes/client-node';
+import { V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { WorkloadsByEntityRequest } from '@backstage/plugin-kubernetes-common';
 
 // @public (undocumented)
@@ -62,10 +59,13 @@ export class AksKubernetesAuthProvider implements KubernetesAuthProvider {
 }
 
 // @public
-export const Cluster: (input: ClusterProps) => JSX_2.Element;
+export const Cluster: ({
+  clusterObjects,
+  podsWithErrors,
+}: ClusterProps) => React_2.JSX.Element;
 
 // @public (undocumented)
-export const ClusterContext: Context<ClusterAttributes>;
+export const ClusterContext: React_2.Context<ClusterAttributes>;
 
 // @public (undocumented)
 export interface ClusterLinksFormatter {
@@ -89,11 +89,11 @@ export interface ClusterLinksFormatterOptions {
 export type ClusterProps = {
   clusterObjects: ClusterObjects;
   podsWithErrors: Set<string>;
-  children?: ReactNode;
+  children?: React_2.ReactNode;
 };
 
 // @public
-export const ContainerCard: FC<ContainerCardProps>;
+export const ContainerCard: React_2.FC<ContainerCardProps>;
 
 // @public
 export interface ContainerCardProps {
@@ -114,29 +114,27 @@ export interface ContainerScope extends PodScope {
 }
 
 // @public (undocumented)
-export const CronJobsAccordions: (
-  input: CronJobsAccordionsProps,
-) => JSX_2.Element;
+export const CronJobsAccordions: ({}: CronJobsAccordionsProps) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type CronJobsAccordionsProps = {
-  children?: ReactNode;
+  children?: React_2.ReactNode;
 };
 
 // @public (undocumented)
-export const CustomResources: (input: CustomResourcesProps) => JSX_2.Element;
+export const CustomResources: ({}: CustomResourcesProps) => React_2.JSX.Element;
 
 // @public (undocumented)
 export interface CustomResourcesProps {
   // (undocumented)
-  children?: ReactNode;
+  children?: React_2.ReactNode;
 }
 
 // @public (undocumented)
 export const DEFAULT_FORMATTER_NAME = 'standard';
 
 // @public
-export const DetectedErrorsContext: Context<DetectedError[]>;
+export const DetectedErrorsContext: React_2.Context<DetectedError[]>;
 
 // @public (undocumented)
 export class EksClusterLinksFormatter implements ClusterLinksFormatter {
@@ -145,7 +143,9 @@ export class EksClusterLinksFormatter implements ClusterLinksFormatter {
 }
 
 // @public
-export const ErrorList: (input: ErrorListProps) => JSX_2.Element;
+export const ErrorList: ({
+  podAndErrors,
+}: ErrorListProps) => React_2.JSX.Element;
 
 // @public
 export interface ErrorListProps {
@@ -159,18 +159,25 @@ export type ErrorMatcher = {
 } & TypeMeta;
 
 // @public (undocumented)
-export const ErrorPanel: (input: ErrorPanelProps) => JSX_2.Element;
+export const ErrorPanel: ({
+  entityName,
+  errorMessage,
+  clustersWithErrors,
+}: ErrorPanelProps) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type ErrorPanelProps = {
   entityName: string;
   errorMessage?: string;
   clustersWithErrors?: ClusterObjects[];
-  children?: ReactNode;
+  children?: React_2.ReactNode;
 };
 
 // @public (undocumented)
-export const ErrorReporting: (input: ErrorReportingProps) => JSX_2.Element;
+export const ErrorReporting: ({
+  detectedErrors,
+  clusters,
+}: ErrorReportingProps) => React_3.JSX.Element;
 
 // @public (undocumented)
 export type ErrorReportingProps = {
@@ -179,10 +186,18 @@ export type ErrorReportingProps = {
 };
 
 // @public
-export const Events: (input: EventsProps) => JSX_2.Element;
+export const Events: ({
+  involvedObjectName,
+  namespace,
+  clusterName,
+  warningEventsOnly,
+}: EventsProps) => React_2.JSX.Element;
 
 // @public
-export const EventsContent: (input: EventsContentProps) => JSX_2.Element;
+export const EventsContent: ({
+  events,
+  warningEventsOnly,
+}: EventsContentProps) => React_2.JSX.Element;
 
 // @public
 export interface EventsContentProps {
@@ -215,7 +230,7 @@ export interface EventsProps {
 }
 
 // @public
-export const FixDialog: FC<FixDialogProps>;
+export const FixDialog: React_2.FC<FixDialogProps>;
 
 // @public
 export interface FixDialogProps {
@@ -266,36 +281,30 @@ export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
 }
 
 // @public (undocumented)
-export const GroupedResponsesContext: Context<GroupedResponses>;
-
-// @public (undocumented)
-export class HeadlampClusterLinksFormatter implements ClusterLinksFormatter {
-  // (undocumented)
-  formatClusterLink(options: ClusterLinksFormatterOptions): Promise<URL>;
-}
+export const GroupedResponsesContext: React_2.Context<GroupedResponses>;
 
 // @public (undocumented)
 export const HorizontalPodAutoscalerDrawer: (props: {
   hpa: V2HorizontalPodAutoscaler;
   expanded?: boolean;
-  children?: ReactNode;
-}) => JSX_2.Element;
+  children?: React_2.ReactNode;
+}) => React_2.JSX.Element;
 
 // @public (undocumented)
-export const IngressesAccordions: (
-  input: IngressesAccordionsProps,
-) => JSX_2.Element;
+export const IngressesAccordions: ({}: IngressesAccordionsProps) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type IngressesAccordionsProps = {};
 
 // @public (undocumented)
-export const JobsAccordions: (input: JobsAccordionsProps) => JSX_2.Element;
+export const JobsAccordions: ({
+  jobs,
+}: JobsAccordionsProps) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type JobsAccordionsProps = {
   jobs: V1Job[];
-  children?: ReactNode;
+  children?: React_2.ReactNode;
 };
 
 // @public (undocumented)
@@ -455,7 +464,13 @@ export interface KubernetesClusterLinkFormatterApi {
 export const kubernetesClusterLinkFormatterApiRef: ApiRef<KubernetesClusterLinkFormatterApi>;
 
 // @public
-export const KubernetesDrawer: (input: KubernetesDrawerProps) => JSX_2.Element;
+export const KubernetesDrawer: ({
+  open,
+  label,
+  drawerContentsHeader,
+  kubernetesObject,
+  children,
+}: KubernetesDrawerProps) => React_2.JSX.Element;
 
 // @public (undocumented)
 export interface KubernetesDrawerable {
@@ -466,13 +481,13 @@ export interface KubernetesDrawerable {
 // @public
 export interface KubernetesDrawerProps {
   // (undocumented)
-  children?: ReactNode;
+  children?: React_2.ReactNode;
   // (undocumented)
-  drawerContentsHeader?: ReactNode;
+  drawerContentsHeader?: React_2.ReactNode;
   // (undocumented)
   kubernetesObject: KubernetesObject;
   // (undocumented)
-  label: ReactNode;
+  label: React_2.ReactNode;
   // (undocumented)
   open?: boolean;
 }
@@ -643,9 +658,14 @@ export const kubernetesReactTranslationRef: TranslationRef<
 // @public (undocumented)
 export const KubernetesStructuredMetadataTableDrawer: <
   T extends KubernetesDrawerable,
->(
-  input: KubernetesStructuredMetadataTableDrawerProps<T>,
-) => JSX_2.Element;
+>({
+  object,
+  renderObject,
+  kind,
+  buttonVariant,
+  expanded,
+  children,
+}: KubernetesStructuredMetadataTableDrawerProps<T>) => React_2.JSX.Element;
 
 // @public (undocumented)
 export interface KubernetesStructuredMetadataTableDrawerProps<
@@ -654,7 +674,7 @@ export interface KubernetesStructuredMetadataTableDrawerProps<
   // (undocumented)
   buttonVariant?: 'h5' | 'subtitle2';
   // (undocumented)
-  children?: ReactNode;
+  children?: React_2.ReactNode;
   // (undocumented)
   expanded?: boolean;
   // (undocumented)
@@ -666,17 +686,22 @@ export interface KubernetesStructuredMetadataTableDrawerProps<
 }
 
 // @public (undocumented)
-export const LinkErrorPanel: (input: LinkErrorPanelProps) => JSX_2.Element;
+export const LinkErrorPanel: ({
+  cluster,
+  errorMessage,
+}: LinkErrorPanelProps) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type LinkErrorPanelProps = {
   cluster: ClusterAttributes;
   errorMessage?: string;
-  children?: ReactNode;
+  children?: React_2.ReactNode;
 };
 
 // @public
-export const ManifestYaml: (input: ManifestYamlProps) => JSX_2.Element;
+export const ManifestYaml: ({
+  object,
+}: ManifestYamlProps) => React_2.JSX.Element;
 
 // @public
 export interface ManifestYamlProps {
@@ -686,9 +711,13 @@ export interface ManifestYamlProps {
 
 // @public (undocumented)
 export class OidcKubernetesAuthProvider implements KubernetesAuthProvider {
-  constructor(providerName: string, authProvider: OpenIdConnectApi);
+  constructor(
+    providerName: string,
+    idTokenProviderApi: OpenIdConnectApi,
+    accessTokenProviderApi?: OAuthApi,
+  );
   // (undocumented)
-  authProvider: OpenIdConnectApi;
+  accessTokenProviderApi?: OAuthApi;
   // (undocumented)
   decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
@@ -697,6 +726,10 @@ export class OidcKubernetesAuthProvider implements KubernetesAuthProvider {
   getCredentials(): Promise<{
     token: string;
   }>;
+  // (undocumented)
+  idTokenProviderApi: OpenIdConnectApi;
+  // (undocumented)
+  microsoftAccessTokenProviderScope: string;
   // (undocumented)
   providerName: string;
 }
@@ -708,9 +741,9 @@ export class OpenshiftClusterLinksFormatter {
 }
 
 // @public
-export const PendingPodContent: (
-  input: PendingPodContentProps,
-) => JSX_2.Element;
+export const PendingPodContent: ({
+  pod,
+}: PendingPodContentProps) => React_2.JSX.Element;
 
 // @public
 export interface PendingPodContentProps {
@@ -732,7 +765,10 @@ export interface PodAndErrors {
 export type PodColumns = 'READY' | 'RESOURCE';
 
 // @public
-export const PodDrawer: (input: PodDrawerProps) => JSX_2.Element;
+export const PodDrawer: ({
+  podAndErrors,
+  open,
+}: PodDrawerProps) => React_2.JSX.Element;
 
 // @public
 export interface PodDrawerProps {
@@ -743,12 +779,14 @@ export interface PodDrawerProps {
 }
 
 // @public
-export const PodExecTerminal: (props: PodExecTerminalProps) => JSX_2.Element;
+export const PodExecTerminal: (
+  props: PodExecTerminalProps,
+) => React_2.JSX.Element;
 
 // @public
 export const PodExecTerminalDialog: (
   props: PodExecTerminalProps,
-) => false | JSX_2.Element | undefined;
+) => false | React_2.JSX.Element | undefined;
 
 // @public
 export interface PodExecTerminalProps {
@@ -763,10 +801,12 @@ export interface PodExecTerminalProps {
 }
 
 // @public
-export const PodLogs: FC<PodLogsProps>;
+export const PodLogs: React_2.FC<PodLogsProps>;
 
 // @public
-export const PodLogsDialog: (input: PodLogsDialogProps) => JSX_2.Element;
+export const PodLogsDialog: ({
+  containerScope,
+}: PodLogsDialogProps) => React_2.JSX.Element;
 
 // @public
 export interface PodLogsDialogProps {
@@ -791,7 +831,7 @@ export interface PodLogsProps {
 }
 
 // @public
-export const PodMetricsContext: Context<Map<string, ClientPodStatus[]>>;
+export const PodMetricsContext: React_2.Context<Map<string, ClientPodStatus[]>>;
 
 // @public (undocumented)
 export type PodMetricsMatcher = {
@@ -799,10 +839,12 @@ export type PodMetricsMatcher = {
 };
 
 // @public (undocumented)
-export const PodNamesWithErrorsContext: Context<Set<string>>;
+export const PodNamesWithErrorsContext: React_2.Context<Set<string>>;
 
 // @public (undocumented)
-export const PodNamesWithMetricsContext: Context<Map<string, ClientPodStatus>>;
+export const PodNamesWithMetricsContext: React_2.Context<
+  Map<string, ClientPodStatus>
+>;
 
 // @public
 export interface PodScope {
@@ -815,13 +857,16 @@ export interface PodScope {
 }
 
 // @public (undocumented)
-export const PodsTable: (input: PodsTablesProps) => JSX_2.Element;
+export const PodsTable: ({
+  pods,
+  extraColumns,
+}: PodsTablesProps) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type PodsTablesProps = {
   pods: Pod_2 | V1Pod[];
   extraColumns?: PodColumns[];
-  children?: ReactNode;
+  children?: React_2.ReactNode;
 };
 
 // @public (undocumented)
@@ -837,9 +882,13 @@ export const READY_COLUMNS: PodColumns;
 export const RESOURCE_COLUMNS: PodColumns;
 
 // @public
-export const ResourceUtilization: (
-  input: ResourceUtilizationProps,
-) => JSX_2.Element;
+export const ResourceUtilization: ({
+  compressed,
+  title,
+  usage,
+  total,
+  totalFormatted,
+}: ResourceUtilizationProps) => React_2.JSX.Element;
 
 // @public
 export interface ResourceUtilizationProps {
@@ -868,9 +917,7 @@ export class ServerSideKubernetesAuthProvider
 }
 
 // @public (undocumented)
-export const ServicesAccordions: (
-  input: ServicesAccordionsProps,
-) => JSX_2.Element;
+export const ServicesAccordions: ({}: ServicesAccordionsProps) => React_2.JSX.Element;
 
 // @public (undocumented)
 export type ServicesAccordionsProps = {};
