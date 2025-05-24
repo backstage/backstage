@@ -89,6 +89,10 @@ export const catalogReactTranslationRef = createTranslationRef({
         description:
           'This is the raw entity data as received from the catalog, on YAML form.',
       },
+      eventsPage: {
+        title: 'Entity events',
+        description: 'This is history of events related to this entity.',
+      },
     },
     unregisterEntityDialog: {
       title: 'Are you sure you want to unregister this entity?',

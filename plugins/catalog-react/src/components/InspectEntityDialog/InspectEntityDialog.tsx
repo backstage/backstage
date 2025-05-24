@@ -27,6 +27,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { ComponentProps, useEffect, useState, ReactNode } from 'react';
 import { AncestryPage } from './components/AncestryPage';
 import { ColocatedPage } from './components/ColocatedPage';
+import { EventsPage } from './components/EventsPage';
 import { JsonPage } from './components/JsonPage';
 import { OverviewPage } from './components/OverviewPage';
 import { YamlPage } from './components/YamlPage';
@@ -94,6 +95,7 @@ const tabNames: Record<
   colocated: 'Colocated',
   json: 'Raw JSON',
   yaml: 'Raw YAML',
+  events: 'Events',
 } as const;
 
 const tabs = Object.keys(tabNames) as Array<keyof typeof tabNames>;
@@ -106,7 +108,13 @@ const tabs = Object.keys(tabNames) as Array<keyof typeof tabNames>;
 export function InspectEntityDialog(props: {
   open: boolean;
   entity: Entity;
-  initialTab?: 'overview' | 'ancestry' | 'colocated' | 'json' | 'yaml';
+  initialTab?:
+    | 'overview'
+    | 'ancestry'
+    | 'colocated'
+    | 'json'
+    | 'yaml'
+    | 'events';
   onClose: () => void;
   onSelect?: (tab: string) => void;
 }) {
@@ -169,6 +177,9 @@ export function InspectEntityDialog(props: {
           </TabPanel>
           <TabPanel value={activeTab} index={4}>
             <YamlPage entity={props.entity} />
+          </TabPanel>
+          <TabPanel value={activeTab} index={5}>
+            <EventsPage entity={props.entity} />
           </TabPanel>
         </div>
       </DialogContent>

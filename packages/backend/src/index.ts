@@ -15,7 +15,16 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createBackendFeatureLoader,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import {
+  CATALOG_HISTORY_EVENT_TOPIC,
+  CatalogHistoryEvent,
+} from '@backstage/plugin-catalog-backend-module-history';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 
 const backend = createBackend();
 
@@ -27,6 +36,33 @@ const searchLoader = createBackendFeatureLoader({
     yield import('@backstage/plugin-search-backend-module-catalog');
     yield import('@backstage/plugin-search-backend-module-explore');
     yield import('@backstage/plugin-search-backend-module-techdocs');
+  },
+});
+
+const eventLogger = createBackendPlugin({
+  pluginId: 'catalog-history-event-logger',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        logger: coreServices.logger,
+        events: eventsServiceRef,
+      },
+      async init({ logger, events }) {
+        await events.subscribe({
+          id: 'catalog-history-event-logger-2',
+          topics: [CATALOG_HISTORY_EVENT_TOPIC],
+          onEvent: async event => {
+            logger.info(
+              JSON.stringify(
+                event.eventPayload as unknown as CatalogHistoryEvent,
+                null,
+                2,
+              ),
+            );
+          },
+        });
+      },
+    });
   },
 });
 
@@ -62,5 +98,13 @@ backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(import('./instanceMetadata'));
 
+backend.add(import('@backstage/plugin-events-backend-module-github'));
 backend.add(import('@backstage/plugin-events-backend-module-google-pubsub'));
+backend.add(
+  import(
+    '@internal/backstage-backstage-plugin-catalog-backend-module-ghe-events'
+  ),
+);
+backend.add(eventLogger);
+
 backend.start();

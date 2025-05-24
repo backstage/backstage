@@ -81,6 +81,7 @@
     "@react-hookz/web": "^24.0.0",
     "classnames": "^2.2.6",
     "lodash": "^4.17.21",
+    "luxon": "^3.0.0",
     "material-ui-popup-state": "^1.9.3",
     "qs": "^6.9.4",
     "react-use": "^17.2.4",

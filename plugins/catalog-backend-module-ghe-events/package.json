@@ -1,0 +1,55 @@
+{
+  "name": "@internal/backstage-backstage-plugin-catalog-backend-module-ghe-events",
+  "version": "0.1.0",
+  "description": "The ghe-events backend module for the catalog plugin.",
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "private": true,
+  "license": "UNLICENSED",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/integration": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@octokit/auth-callback": "^5.0.0",
+    "@octokit/webhooks-types": "^7.6.1",
+    "@opentelemetry/api": "^1.7.0",
+    "lodash": "^4.17.21",
+    "octokit": "^3.0.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/plugin-catalog-backend-module-logs": "workspace:^",
+    "@backstage/plugin-events-backend": "workspace:^",
+    "@backstage/plugin-events-backend-module-github": "workspace:^",
+    "@backstage/plugin-events-backend-module-google-pubsub": "workspace:^",
+    "wait-for-expect": "^3.0.2"
+  }
+}

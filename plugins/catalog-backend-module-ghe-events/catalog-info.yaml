@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: internal-backstage-backstage-plugin-catalog-backend-module-ghe-events
+  title: '@internal/backstage-backstage-plugin-catalog-backend-module-ghe-events'
+  description: The ghe-events backend module for the catalog plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers
