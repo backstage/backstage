@@ -59,15 +59,11 @@ The actual framework that Backstage [plugins](#plugin) sit on. This spans both t
 
 A set of technologies that "empower organizations to build and run scalable applications in modern, dynamic environments such as public, private, and hybrid clouds. Containers, service meshes, microservices, immutable infrastructure, and declarative APIs exemplify this approach." ([CNCF Cloud Native Definition v1.0](https://github.com/cncf/toc/blob/main/DEFINITION.md)).
 
-## Cloud Native Computing Foundation
+## Cloud Native Computing Foundation (AKA CNCF)
 
 A foundation dedicated to the promotion and advancement of [Cloud Native Computing](#Cloud-Native-Computing). The mission of the Cloud Native Computing Foundation (CNCF) is "to make cloud native computing ubiquitous" ([CNCF Charter](https://github.com/cncf/foundation/blob/main/charter.md)).
 
 CNCF is part of the [Linux Foundation](https://www.linuxfoundation.org/).
-
-## CNCF
-
-[Cloud Native Computing Foundation](#cloud-native-computing-foundation).
 
 ## Code Grant
 
@@ -107,7 +103,7 @@ An executable or package file with all of the necessary information required to 
 
 ## Developer
 
-1. A professional who designs, builds, tests, deploys, and maintains software applications and systems. They essentially turn ideas or requirements into functional digital products.
+1. A professional who designs, builds, tests, deploys, and maintains software applications and systems. Developers essentially turn ideas or requirements into functional digital products.
 
 2. A [user role](#user-role) defined as someone who uses a Backstage [app](#app). Might or might not actually be a software developer.
 
@@ -155,13 +151,9 @@ A write stream of [documents](#documents).
 
 Someone who develops one or more plugins that enable Backstage to interoperate with another software system. A [user role](#user-role).
 
-## JSON Web Token
+## JSON Web Token (AKA JWT)
 
 A popular, compact, and self-contained open standard for securely transmitting information between parties as a JSON object. It is commonly used to verify a user's identity [authentication](#authentication) and permissions [authorization](#authorization). Each JWT consists of a header, payload, and digital signature separated by dots. While often encrypted, JWTs are always signed for integrity. This standard is a key component of [OpenID Connect](#openid-connect). For more details, see [the Wikipedia article](https://en.wikipedia.org/wiki/JSON_Web_Token).
-
-## JWT
-
-[JSON Web Token](#json-web-token).
 
 ## Kind
 
@@ -331,7 +323,7 @@ A string containing information.
 
 ## Use Case
 
-A purpose for which a [user role](#User-Role) interacts with Backstage. Related to [Objective](#objective): An objective is _what_ the user wants to do; a use case is _how_ the user does it.
+A purpose for which a [user role](#User-Role) interacts with Backstage. Related to [Objective](#objective): An objective is _what_ the user wants to do, a use case is _how_ the user does it.
 
 ## User
 
