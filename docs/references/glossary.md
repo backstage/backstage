@@ -103,7 +103,7 @@ An executable or package file with all of the necessary information required to 
 
 ## Developer
 
-1. A professional who designs, builds, tests, deploys, and maintains software applications and systems. They essentially turn ideas or requirements into functional digital products.
+1. A professional who designs, builds, tests, deploys, and maintains software applications and systems. Developers essentially turn ideas or requirements into functional digital products.
 
 2. A [user role](#user-role) defined as someone who uses a Backstage [app](#app). Might or might not actually be a software developer.
 
@@ -323,7 +323,7 @@ A string containing information.
 
 ## Use Case
 
-A purpose for which a [user role](#User-Role) interacts with Backstage. Related to [Objective](#objective): An objective is _what_ the user wants to do; a use case is _how_ the user does it.
+A purpose for which a [user role](#User-Role) interacts with Backstage. Related to [Objective](#objective): An objective is _what_ the user wants to do, a use case is _how_ the user does it.
 
 ## User
 
