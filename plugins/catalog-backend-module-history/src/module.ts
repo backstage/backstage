@@ -64,35 +64,29 @@ export const catalogModuleHistory = createBackendModule({
 
         const historyConfig = getHistoryConfig({ config });
 
-        const controller = new AbortController();
-        lifecycle.addShutdownHook(() => {
-          controller.abort();
-        });
-
         await scheduler.scheduleTask({
           id: 'catalog-history-janitor',
           frequency: { seconds: 30 },
-          timeout: { minutes: 10 },
+          timeout: { seconds: 30 },
+          initialDelay: { seconds: 10 },
           async fn() {
             const knex = await knexPromise;
-            if (!controller.signal.aborted) {
-              await runJanitorCleanup(knex, historyConfig);
-            }
+            await runJanitorCleanup(knex, historyConfig);
           },
         });
 
         await HistoryEventEmitter.create({
           knexPromise,
+          lifecycle,
           events,
           historyConfig,
-          shutdownSignal: controller.signal,
         });
 
         httpRouter.use(
           await createRouter({
             knexPromise,
+            lifecycle,
             historyConfig,
-            shutdownSignal: controller.signal,
           }),
         );
       },

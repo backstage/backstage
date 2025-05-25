@@ -30,8 +30,7 @@ describe('bindGetEventsEndpoint', () => {
   const logger = mockServices.logger.mock();
 
   const model = {
-    readEventsNonblocking: jest.fn(),
-    blockUntilDataIsReady: jest.fn(),
+    getEvents: jest.fn(),
   } satisfies GetEventsModel;
   let app: express.Express;
 
@@ -44,7 +43,8 @@ describe('bindGetEventsEndpoint', () => {
   });
 
   it('rejects illegal values', async () => {
-    model.readEventsNonblocking.mockResolvedValue({
+    model.getEvents.mockResolvedValue({
+      type: 'data',
       events: [],
       cursor: null,
     });
@@ -128,7 +128,8 @@ describe('bindGetEventsEndpoint', () => {
   });
 
   it('decodes query and prefers cursor', async () => {
-    model.readEventsNonblocking.mockResolvedValue({
+    model.getEvents.mockResolvedValue({
+      type: 'data',
       events: [],
       cursor: null,
     });
@@ -153,7 +154,7 @@ describe('bindGetEventsEndpoint', () => {
         block: false,
       });
     expect(response.status).toBe(200);
-    expect(model.readEventsNonblocking).toHaveBeenCalledWith({
+    expect(model.getEvents).toHaveBeenCalledWith({
       readOptions: {
         afterEventId: 'a',
         entityRef: 'b',
@@ -162,6 +163,7 @@ describe('bindGetEventsEndpoint', () => {
         order: 'desc',
       },
       block: true,
+      signal: expect.any(AbortSignal),
     });
 
     response = await request(app).get('/history/v1/events').query({
@@ -173,7 +175,7 @@ describe('bindGetEventsEndpoint', () => {
       block: false,
     });
     expect(response.status).toBe(200);
-    expect(model.readEventsNonblocking).toHaveBeenCalledWith({
+    expect(model.getEvents).toHaveBeenCalledWith({
       readOptions: {
         afterEventId: 'd',
         entityRef: 'e',
@@ -182,6 +184,7 @@ describe('bindGetEventsEndpoint', () => {
         order: 'asc',
       },
       block: false,
+      signal: expect.any(AbortSignal),
     });
   });
 
@@ -195,13 +198,11 @@ describe('bindGetEventsEndpoint', () => {
       order: 'asc',
       block: true,
     };
-    model.readEventsNonblocking.mockResolvedValue({
-      events: [],
+    model.getEvents.mockResolvedValue({
+      type: 'block',
+      wait: jest.fn(async () => await new Promise(r => setTimeout(r, 20))),
       cursor,
     });
-    model.blockUntilDataIsReady.mockReturnValue(
-      new Promise(r => setTimeout(r, 20)),
-    );
 
     const response = await request(app).get('/history/v1/events').query({
       afterEventId: 'a',
@@ -213,12 +214,11 @@ describe('bindGetEventsEndpoint', () => {
     });
     expect(response.status).toBe(202);
     expect(response.body).toEqual({
-      items: [],
       pageInfo: {
         cursor: stringifyCursor(cursor),
       },
     });
-    expect(model.readEventsNonblocking).toHaveBeenCalledWith({
+    expect(model.getEvents).toHaveBeenCalledWith({
       readOptions: {
         afterEventId: 'a',
         entityRef: 'b',
@@ -227,15 +227,6 @@ describe('bindGetEventsEndpoint', () => {
         order: 'asc',
       },
       block: true,
-    });
-    expect(model.blockUntilDataIsReady).toHaveBeenCalledWith({
-      readOptions: {
-        afterEventId: 'a',
-        entityRef: 'b',
-        entityId: 'c',
-        limit: 1,
-        order: 'asc',
-      },
       signal: expect.any(AbortSignal),
     });
   });
@@ -250,7 +241,8 @@ describe('bindGetEventsEndpoint', () => {
       order: 'asc',
       block: true,
     };
-    model.readEventsNonblocking.mockResolvedValue({
+    model.getEvents.mockResolvedValue({
+      type: 'data',
       events: [
         {
           eventId: 'a',

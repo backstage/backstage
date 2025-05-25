@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LifecycleService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 import { HistoryConfig } from '../config';
 import { createOpenApiRouter } from '../schema/openapi';
@@ -23,22 +24,28 @@ import { GetEventsModelImpl } from './endpoints/GetEvents.model';
 import { bindGetEventsEndpoint } from './endpoints/GetEvents.router';
 import { ReadSubscriptionModelImpl } from './endpoints/ReadSubscription.model';
 import { bindReadSubscriptionEndpoint } from './endpoints/ReadSubscription.router';
-import { bindUpsertSubscriptionEndpoint } from './endpoints/UpsertSubscription.router';
 import { UpsertSubscriptionModelImpl } from './endpoints/UpsertSubscription.model';
+import { bindUpsertSubscriptionEndpoint } from './endpoints/UpsertSubscription.router';
 
 export async function createRouter(options: {
   knexPromise: Promise<Knex>;
+  lifecycle: LifecycleService;
   historyConfig: HistoryConfig;
-  shutdownSignal: AbortSignal;
 }) {
   const router = await createOpenApiRouter();
+
+  const controller = new AbortController();
+  const shutdownSignal = controller.signal;
+  options.lifecycle.addShutdownHook(() => {
+    controller.abort();
+  });
 
   bindGetEventsEndpoint(
     router,
     new GetEventsModelImpl({
       knexPromise: options.knexPromise,
       historyConfig: options.historyConfig,
-      shutdownSignal: options.shutdownSignal,
+      shutdownSignal,
     }),
   );
 
@@ -54,7 +61,7 @@ export async function createRouter(options: {
     new ReadSubscriptionModelImpl({
       knexPromise: options.knexPromise,
       historyConfig: options.historyConfig,
-      shutdownSignal: options.shutdownSignal,
+      shutdownSignal,
     }),
   );
 

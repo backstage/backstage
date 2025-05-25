@@ -16,10 +16,8 @@
 
 import { TypedRouter } from '@backstage/backend-openapi-utils';
 import { EndpointMap } from '../../schema/openapi';
-import {
-  ReadSubscriptionModel,
-  ReadSubscriptionOptions,
-} from './ReadSubscription.model';
+import { ReadSubscriptionModel } from './ReadSubscription.model';
+import { toResponseEvent } from './types';
 
 export function bindReadSubscriptionEndpoint(
   router: TypedRouter<EndpointMap>,
@@ -31,42 +29,31 @@ export function bindReadSubscriptionEndpoint(
       const { subscriptionId } = req.params;
       const { limit = 100, block = false } = req.query;
 
-      const readOptions: ReadSubscriptionOptions = {
-        subscriptionId,
-        limit,
-      };
+      const controller = new AbortController();
+      req.on('close', () => {
+        controller.abort();
+      });
 
       res.setHeader('Cache-Control', 'no-store');
 
-      const result = await model.readSubscriptionNonblocking({ readOptions });
-      if (result) {
+      const result = await model.readSubscription({
+        readOptions: { subscriptionId, limit, block },
+        signal: controller.signal,
+      });
+
+      if (result.type === 'data') {
         res.json({
-          items: result.events.map(row => ({
-            eventId: row.eventId,
-            eventAt: row.eventAt.toISOString(),
-            eventType: row.eventType,
-            entityRef: row.entityRef,
-            entityId: row.entityId,
-            entityJson: row.entityJson,
-          })),
+          items: result.events.map(toResponseEvent),
           ackId: result.ackId,
         });
-      } else if (!block) {
-        res.json({ items: [] });
+      } else if (result.type === 'empty') {
+        res.json({
+          items: [],
+        });
       } else {
         res.status(202);
         res.flushHeaders();
-
-        const controller = new AbortController();
-        req.on('close', () => {
-          controller.abort();
-        });
-
-        await model.blockUntilDataIsReady({
-          readOptions,
-          signal: controller.signal,
-        });
-
+        await result.wait();
         res.end();
       }
     },

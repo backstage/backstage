@@ -353,19 +353,12 @@ export const spec = {
               'application/json': {
                 schema: {
                   type: 'object',
-                  required: ['items', 'pageInfo'],
+                  required: ['pageInfo'],
                   additionalProperties: false,
                   properties: {
-                    items: {
-                      type: 'array',
-                      description:
-                        'The list of events. The number of returned items may be fewer than requested.',
-                      items: {
-                        $ref: '#/components/schemas/Event',
-                      },
-                    },
                     pageInfo: {
                       type: 'object',
+                      required: ['cursor'],
                       description:
                         'Pagination information. If the "cursor" property is set, it can be used for requesting subsequent pages of data.',
                       properties: {

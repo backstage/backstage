@@ -82,7 +82,7 @@ describe('GetEventsModelImpl', () => {
       .merge(['final_entity']);
   }
 
-  describe('readEventsNonblocking', () => {
+  describe('getEvents', () => {
     it.each(databases.eachSupportedId())(
       'reads properly from empty table and then with content, %p',
       async databaseId => {
@@ -94,31 +94,31 @@ describe('GetEventsModelImpl', () => {
           historyConfig: getHistoryConfig(),
         });
 
-        await waitFor(async () => {
-          await expect(
-            model.readEventsNonblocking({
-              readOptions: { order: 'asc', limit: 10 },
-              block: false,
-            }),
-          ).resolves.toEqual({
-            events: [],
-            cursor: {
-              version: 1,
-              order: 'asc',
-              limit: 10,
-              block: false,
-            },
-          });
+        await expect(
+          model.getEvents({
+            readOptions: { order: 'asc', limit: 10 },
+            block: false,
+          }),
+        ).resolves.toEqual({
+          type: 'data',
+          events: [],
+          cursor: {
+            version: 1,
+            order: 'asc',
+            limit: 10,
+            block: false,
+          },
         });
 
         await setEntity(knex, 'foo', 1);
 
         await expect(
-          model.readEventsNonblocking({
+          model.getEvents({
             readOptions: { order: 'asc', limit: 10 },
             block: false,
           }),
         ).resolves.toEqual({
+          type: 'data',
           events: [
             {
               eventId: '1',
@@ -158,11 +158,12 @@ describe('GetEventsModelImpl', () => {
         await setEntity(knex, 'foo', 3);
 
         await expect(
-          model.readEventsNonblocking({
+          model.getEvents({
             readOptions: { order: 'desc', limit: 2 },
             block: false,
           }),
         ).resolves.toEqual({
+          type: 'data',
           events: [
             {
               eventId: '3',
@@ -191,11 +192,12 @@ describe('GetEventsModelImpl', () => {
         });
 
         await expect(
-          model.readEventsNonblocking({
+          model.getEvents({
             readOptions: { afterEventId: '2', order: 'desc', limit: 2 },
             block: false,
           }),
         ).resolves.toEqual({
+          type: 'data',
           events: [
             {
               eventId: '1',
@@ -210,7 +212,7 @@ describe('GetEventsModelImpl', () => {
         });
 
         await expect(
-          model.readEventsNonblocking({
+          model.getEvents({
             readOptions: {
               afterEventId: '2',
               order: 'desc',
@@ -220,6 +222,7 @@ describe('GetEventsModelImpl', () => {
             block: false,
           }),
         ).resolves.toEqual({
+          type: 'data',
           events: [],
           cursor: undefined,
         });
@@ -243,12 +246,13 @@ describe('GetEventsModelImpl', () => {
         await setEntity(knex, 'foo', 2);
 
         await expect(
-          model.readEventsNonblocking({
+          model.getEvents({
             readOptions: { afterEventId: 'last', order: 'asc', limit: 1 },
             block: true,
           }),
         ).resolves.toEqual({
-          events: [],
+          type: 'block',
+          wait: expect.any(Function),
           cursor: {
             version: 1,
             afterEventId: '2',
@@ -261,9 +265,7 @@ describe('GetEventsModelImpl', () => {
         await backend.stop();
       },
     );
-  });
 
-  describe('blockUntilDataIsReady', () => {
     it.each(databases.eachSupportedId())(
       'resolves when entities are added, %p',
       async databaseId => {
@@ -281,16 +283,26 @@ describe('GetEventsModelImpl', () => {
         });
 
         let resolution: string = '';
-        model
-          .blockUntilDataIsReady({
-            readOptions: {
-              order: 'asc',
-              limit: 10,
-            },
-          })
-          .then(r => {
-            resolution = r;
-          });
+        const result = await model.getEvents({
+          readOptions: {
+            order: 'asc',
+            limit: 10,
+          },
+          block: true,
+        });
+        expect(result).toEqual({
+          type: 'block',
+          wait: expect.any(Function),
+          cursor: {
+            version: 1,
+            order: 'asc',
+            limit: 10,
+            block: true,
+          },
+        });
+        (result as { wait: () => Promise<string> }).wait().then(r => {
+          resolution = r;
+        });
 
         // TODO(freben): Use fake timers to speed this up. But it did not play
         // well with the way that these promises work, so left that for later
@@ -325,28 +337,51 @@ describe('GetEventsModelImpl', () => {
 
         let resolution1: string = '';
         let resolution2: string = '';
-        model
-          .blockUntilDataIsReady({
-            readOptions: {
-              entityRef: 'k:ns/foo1',
-              order: 'asc',
-              limit: 10,
-            },
-          })
-          .then(r => {
-            resolution1 = r;
-          });
-        model
-          .blockUntilDataIsReady({
-            readOptions: {
-              entityRef: 'k:ns/foo2',
-              order: 'asc',
-              limit: 10,
-            },
-          })
-          .then(r => {
-            resolution2 = r;
-          });
+        let result = await model.getEvents({
+          readOptions: {
+            entityRef: 'k:ns/foo1',
+            order: 'asc',
+            limit: 10,
+          },
+          block: true,
+        });
+        expect(result).toEqual({
+          type: 'block',
+          wait: expect.any(Function),
+          cursor: {
+            version: 1,
+            entityRef: 'k:ns/foo1',
+            order: 'asc',
+            limit: 10,
+            block: true,
+          },
+        });
+        (result as { wait: () => Promise<string> }).wait().then(r => {
+          resolution1 = r;
+        });
+
+        result = await model.getEvents({
+          readOptions: {
+            entityRef: 'k:ns/foo2',
+            order: 'asc',
+            limit: 10,
+          },
+          block: true,
+        });
+        expect(result).toEqual({
+          type: 'block',
+          wait: expect.any(Function),
+          cursor: {
+            version: 1,
+            entityRef: 'k:ns/foo2',
+            order: 'asc',
+            limit: 10,
+            block: true,
+          },
+        });
+        (result as { wait: () => Promise<string> }).wait().then(r => {
+          resolution2 = r;
+        });
 
         await setEntity(knex, 'foo1', 1);
 
@@ -377,17 +412,28 @@ describe('GetEventsModelImpl', () => {
         });
 
         let resolution: string = '';
-        model
-          .blockUntilDataIsReady({
-            readOptions: {
-              entityRef: 'component:default/foo1',
-              order: 'asc',
-              limit: 10,
-            },
-          })
-          .then(r => {
-            resolution = r;
-          });
+        const result = await model.getEvents({
+          readOptions: {
+            entityRef: 'component:default/foo1',
+            order: 'asc',
+            limit: 10,
+          },
+          block: true,
+        });
+        expect(result).toEqual({
+          type: 'block',
+          wait: expect.any(Function),
+          cursor: {
+            version: 1,
+            order: 'asc',
+            entityRef: 'component:default/foo1',
+            limit: 10,
+            block: true,
+          },
+        });
+        (result as { wait: () => Promise<string> }).wait().then(r => {
+          resolution = r;
+        });
 
         abortController.abort();
         await waitFor(() => {
@@ -416,18 +462,29 @@ describe('GetEventsModelImpl', () => {
 
         const abortController = new AbortController();
         let resolution: string = '';
-        model
-          .blockUntilDataIsReady({
-            readOptions: {
-              entityRef: 'component:default/foo1',
-              order: 'asc',
-              limit: 10,
-            },
-            signal: abortController.signal,
-          })
-          .then(r => {
-            resolution = r;
-          });
+        const result = await model.getEvents({
+          readOptions: {
+            entityRef: 'component:default/foo1',
+            order: 'asc',
+            limit: 10,
+          },
+          block: true,
+          signal: abortController.signal,
+        });
+        expect(result).toEqual({
+          type: 'block',
+          wait: expect.any(Function),
+          cursor: {
+            version: 1,
+            order: 'asc',
+            entityRef: 'component:default/foo1',
+            limit: 10,
+            block: true,
+          },
+        });
+        (result as { wait: () => Promise<string> }).wait().then(r => {
+          resolution = r;
+        });
 
         abortController.abort();
         await waitFor(() => {

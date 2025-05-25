@@ -22,26 +22,27 @@ import { readHistorySubscription } from '../database/operations/readHistorySubsc
 import { upsertHistorySubscription } from '../database/operations/upsertHistorySubscription';
 import { sleep } from '../helpers';
 import { CATALOG_HISTORY_EVENT_TOPIC, CatalogHistoryEvent } from './types';
+import { LifecycleService } from '@backstage/backend-plugin-api';
 
 const SUBSCRIPTION_ID = 'backstage-catalog-history-events-emitter';
 
 export class HistoryEventEmitter {
   #knexPromise: Promise<Knex>;
+  #lifecycle: LifecycleService;
   #events: EventsService;
   #historyConfig: HistoryConfig;
-  #shutdownSignal: AbortSignal;
 
   public static async create(options: {
     knexPromise: Promise<Knex>;
+    lifecycle: LifecycleService;
     events: EventsService;
     historyConfig: HistoryConfig;
-    shutdownSignal: AbortSignal;
   }): Promise<HistoryEventEmitter> {
     const emitter = new HistoryEventEmitter(
       options.knexPromise,
+      options.lifecycle,
       options.events,
       options.historyConfig,
-      options.shutdownSignal,
     );
 
     emitter.start();
@@ -51,24 +52,31 @@ export class HistoryEventEmitter {
 
   constructor(
     knexPromise: Promise<Knex>,
+    lifecycle: LifecycleService,
     events: EventsService,
     historyConfig: HistoryConfig,
-    shutdownSignal: AbortSignal,
   ) {
     this.#knexPromise = knexPromise;
+    this.#lifecycle = lifecycle;
     this.#events = events;
-    this.#shutdownSignal = shutdownSignal;
     this.#historyConfig = historyConfig;
   }
 
   async start() {
     const knex = await this.#knexPromise;
 
-    const subscription = await upsertHistorySubscription(knex, {
-      subscriptionId: SUBSCRIPTION_ID,
+    const controller = new AbortController();
+    const signal = controller.signal;
+    this.#lifecycle.addShutdownHook(() => {
+      controller.abort();
     });
 
-    while (!this.#shutdownSignal.aborted) {
+    const subscription = await upsertHistorySubscription(knex, {
+      subscriptionId: SUBSCRIPTION_ID,
+      _from: 'beginning',
+    });
+
+    while (!signal.aborted) {
       const data = await readHistorySubscription(knex, {
         subscriptionId: subscription.subscriptionId,
         operation: 'read',
@@ -103,7 +111,7 @@ export class HistoryEventEmitter {
           ackId: data.ackId,
         });
       } else {
-        await sleep({ seconds: 1 }, this.#shutdownSignal);
+        await sleep(this.#historyConfig.blockPollFrequency, signal);
       }
     }
   }

@@ -26,14 +26,22 @@ import { Cursor } from './GetEvents.utils';
 import { CatalogEvent } from './types';
 
 export interface GetEventsModel {
-  readEventsNonblocking(options: {
+  getEvents(options: {
     readOptions: ReadHistoryEventsOptions;
     block: boolean;
-  }): Promise<{ events: CatalogEvent[]; cursor?: Cursor }>;
-  blockUntilDataIsReady(options: {
-    readOptions: ReadHistoryEventsOptions;
     signal?: AbortSignal;
-  }): Promise<'timeout' | 'aborted' | 'ready'>;
+  }): Promise<
+    | {
+        type: 'data';
+        events: CatalogEvent[];
+        cursor?: Cursor;
+      }
+    | {
+        type: 'block';
+        wait: () => Promise<'timeout' | 'aborted' | 'ready'>;
+        cursor: Cursor;
+      }
+  >;
 }
 
 export class GetEventsModelImpl implements GetEventsModel {
@@ -51,10 +59,22 @@ export class GetEventsModelImpl implements GetEventsModel {
     this.#historyConfig = options.historyConfig;
   }
 
-  async readEventsNonblocking(options: {
+  async getEvents(options: {
     readOptions: ReadHistoryEventsOptions;
     block: boolean;
-  }): Promise<{ events: CatalogEvent[]; cursor?: Cursor }> {
+    signal?: AbortSignal;
+  }): Promise<
+    | {
+        type: 'data';
+        events: CatalogEvent[];
+        cursor?: Cursor;
+      }
+    | {
+        type: 'block';
+        wait: () => Promise<'timeout' | 'aborted' | 'ready'>;
+        cursor: Cursor;
+      }
+  > {
     const knex = await this.#knexPromise;
 
     let readOptions = options.readOptions;
@@ -62,6 +82,9 @@ export class GetEventsModelImpl implements GetEventsModel {
     if (readOptions.afterEventId === 'last') {
       readOptions = { ...readOptions, afterEventId: await getMaxEventId(knex) };
     } else {
+      // if (!readOptions.afterEventId && readOptions.order === 'asc') {
+      //   readOptions = { ...readOptions, afterEventId: '0' };
+      // }
       events = await readHistoryEvents(knex, readOptions);
     }
 
@@ -70,40 +93,45 @@ export class GetEventsModelImpl implements GetEventsModel {
     // events next time around)
     const shouldReturnCursor =
       readOptions.order === 'asc' || events.length >= readOptions.limit;
-    let cursor: Cursor | undefined;
-    if (shouldReturnCursor) {
-      cursor = {
-        version: 1,
-        afterEventId:
-          events.length > 0
-            ? events[events.length - 1].eventId
-            : readOptions.afterEventId,
-        entityRef: readOptions.entityRef,
-        entityId: readOptions.entityId,
-        order: readOptions.order,
-        limit: readOptions.limit,
-        block: options.block,
+    const cursor: Cursor | undefined = shouldReturnCursor
+      ? {
+          version: 1,
+          afterEventId:
+            events.length > 0
+              ? events[events.length - 1].eventId
+              : readOptions.afterEventId,
+          entityRef: readOptions.entityRef,
+          entityId: readOptions.entityId,
+          order: readOptions.order,
+          limit: readOptions.limit,
+          block: options.block,
+        }
+      : undefined;
+
+    if (events.length || !options.block || !cursor) {
+      return {
+        type: 'data',
+        events,
+        cursor,
       };
     }
 
-    return { events, cursor };
-  }
-
-  async blockUntilDataIsReady(options: {
-    readOptions: ReadHistoryEventsOptions;
-    signal?: AbortSignal;
-  }): Promise<'timeout' | 'aborted' | 'ready'> {
-    const knex = await this.#knexPromise;
-    return await waitForEvents({
-      historyConfig: this.#historyConfig,
-      signal: AbortSignal.any([
-        this.#shutdownSignal,
-        ...(options.signal ? [options.signal] : []),
-      ]),
-      checker: () =>
-        readHistoryEvents(knex, { ...options.readOptions, limit: 1 }).then(
-          rows => rows.length > 0,
-        ),
-    });
+    return {
+      type: 'block',
+      wait: async () => {
+        return await waitForEvents({
+          historyConfig: this.#historyConfig,
+          signal: AbortSignal.any([
+            this.#shutdownSignal,
+            ...(options.signal ? [options.signal] : []),
+          ]),
+          checker: () =>
+            readHistoryEvents(knex, { ...options.readOptions, limit: 1 }).then(
+              rows => rows.length > 0,
+            ),
+        });
+      },
+      cursor,
+    };
   }
 }

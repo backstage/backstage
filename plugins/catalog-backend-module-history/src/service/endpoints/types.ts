@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Event } from '../../schema/openapi/generated/models';
+
 /**
  * A single history event, received through a consumer's subscription.
  *
@@ -36,6 +38,19 @@ export interface CatalogEvent {
   locationId?: string;
   /** The location ref related to the event, where applicable */
   locationRef?: string;
+}
+
+export function toResponseEvent(event: CatalogEvent): Event {
+  return {
+    eventId: event.eventId,
+    eventAt: event.eventAt.toISOString(),
+    eventType: event.eventType,
+    entityRef: event.entityRef,
+    entityId: event.entityId,
+    entityJson: event.entityJson ? JSON.parse(event.entityJson) : undefined,
+    locationId: event.locationId,
+    locationRef: event.locationRef,
+  };
 }
 
 /**

@@ -19,6 +19,7 @@ import { ReadHistoryEventsOptions } from '../../database/operations/readHistoryE
 import { EndpointMap } from '../../schema/openapi';
 import { GetEventsModel } from './GetEvents.model';
 import { parseCursor, stringifyCursor } from './GetEvents.utils';
+import { toResponseEvent } from './types';
 
 export function bindGetEventsEndpoint(
   router: TypedRouter<EndpointMap>,
@@ -27,6 +28,11 @@ export function bindGetEventsEndpoint(
   router.get('/history/v1/events', async (req, res) => {
     let readOptions: ReadHistoryEventsOptions;
     let block: boolean = false;
+
+    const controller = new AbortController();
+    req.on('close', () => {
+      controller.abort();
+    });
 
     if (req.query.cursor) {
       const cursor = parseCursor(req.query.cursor);
@@ -49,49 +55,32 @@ export function bindGetEventsEndpoint(
       block = req.query.block ?? false;
     }
 
-    const result = await model.readEventsNonblocking({
+    const result = await model.getEvents({
       readOptions,
       block,
+      signal: controller.signal,
     });
 
-    res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');
 
-    if (result.events.length === 0 && result.cursor) {
+    if (result.type === 'data') {
+      res.json({
+        items: result.events.map(toResponseEvent),
+        pageInfo: {
+          cursor: result.cursor ? stringifyCursor(result.cursor) : undefined,
+        },
+      });
+    } else {
+      res.setHeader('Content-Type', 'application/json');
       res.status(202);
       res.flushHeaders();
 
-      const controller = new AbortController();
-      req.on('close', () => {
-        controller.abort();
-      });
+      await result.wait();
 
-      await model.blockUntilDataIsReady({
-        readOptions: {
-          ...readOptions,
-          // If it was specified as "last" in the request, the cursor contains
-          // the real last ID
-          afterEventId: result.cursor.afterEventId,
-        },
-        signal: controller.signal,
-      });
-    }
-
-    if (!res.closed) {
       res.end(
         JSON.stringify({
-          items: result.events.map(row => ({
-            eventId: row.eventId,
-            eventAt: row.eventAt.toISOString(),
-            eventType: row.eventType,
-            entityRef: row.entityRef,
-            entityId: row.entityId,
-            entityJson: row.entityJson ? JSON.parse(row.entityJson) : undefined,
-            locationId: row.locationId,
-            locationRef: row.locationRef,
-          })),
           pageInfo: {
-            cursor: result.cursor ? stringifyCursor(result.cursor) : undefined,
+            cursor: stringifyCursor(result.cursor),
           },
         }),
       );

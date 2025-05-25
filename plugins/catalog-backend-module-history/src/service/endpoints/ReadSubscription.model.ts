@@ -23,17 +23,18 @@ import { CatalogEvent } from './types';
 export interface ReadSubscriptionOptions {
   subscriptionId: string;
   limit: number;
+  block: boolean;
 }
 
 export interface ReadSubscriptionModel {
-  readSubscriptionNonblocking(options: {
-    readOptions: ReadSubscriptionOptions;
-    peek?: boolean;
-  }): Promise<{ events: CatalogEvent[]; ackId: string } | undefined>;
-  blockUntilDataIsReady(options: {
+  readSubscription(options: {
     readOptions: ReadSubscriptionOptions;
     signal?: AbortSignal;
-  }): Promise<'timeout' | 'aborted' | 'ready'>;
+  }): Promise<
+    | { type: 'data'; events: CatalogEvent[]; ackId: string }
+    | { type: 'empty' }
+    | { type: 'block'; wait: () => Promise<'timeout' | 'aborted' | 'ready'> }
+  >;
 }
 
 export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
@@ -49,6 +50,59 @@ export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
     this.#knexPromise = options.knexPromise;
     this.#shutdownSignal = options.shutdownSignal;
     this.#historyConfig = options.historyConfig;
+  }
+
+  async readSubscription(options: {
+    readOptions: ReadSubscriptionOptions;
+    signal?: AbortSignal;
+  }): Promise<
+    | { type: 'data'; events: CatalogEvent[]; ackId: string }
+    | { type: 'empty' }
+    | { type: 'block'; wait: () => Promise<'timeout' | 'aborted' | 'ready'> }
+  > {
+    const { subscriptionId, limit, block } = options.readOptions;
+    const knex = await this.#knexPromise;
+
+    const result = await readHistorySubscription(knex, {
+      subscriptionId,
+      operation: 'read',
+      limit,
+      historyConfig: this.#historyConfig,
+    });
+
+    if (result) {
+      return {
+        type: 'data',
+        events: result.events,
+        ackId: result.ackId,
+      };
+    }
+
+    if (!block) {
+      return {
+        type: 'empty',
+      };
+    }
+
+    return {
+      type: 'block',
+      wait: async () => {
+        return await waitForEvents({
+          historyConfig: this.#historyConfig,
+          signal: AbortSignal.any([
+            this.#shutdownSignal,
+            ...(options.signal ? [options.signal] : []),
+          ]),
+          checker: () =>
+            readHistorySubscription(knex, {
+              subscriptionId,
+              operation: 'peek',
+              limit: 1,
+              historyConfig: this.#historyConfig,
+            }).then(r => r !== undefined),
+        });
+      },
+    };
   }
 
   async readSubscriptionNonblocking(options: {
