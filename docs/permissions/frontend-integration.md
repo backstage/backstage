@@ -4,6 +4,10 @@ title: Frontend Integration
 description: How to place your Backstage frontend components behind authorization
 ---
 
+:::info
+Starting with a [fresh Backstage installation](https://backstage.io/docs/getting-started/), the code example below is already implemented, so there are no code actual code changes required.
+:::
+
 Now that we understand how to [author a permission policy](./writing-a-policy.md), let's consider cases where we'll need to supplement our policy with authorization checks on the frontend.
 
 In most cases, actual functionality that live within various plugins will already have been placed behind authorization by the plugin authors. The permission backend will use your permission policy to return an authorization result, and the plugin frontend will correspondingly show/hide/disable the relevant UI component.
