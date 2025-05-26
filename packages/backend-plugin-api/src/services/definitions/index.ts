@@ -15,6 +15,12 @@
  */
 
 export type {
+  ActionsRegistryService,
+  ActionsRegistryActionOptions,
+  ActionsRegistryActionContext,
+  ActionsRegistryAction,
+} from './ActionsRegistryService';
+export type {
   AuditorService,
   AuditorServiceCreateEventOptions,
   AuditorServiceEvent,

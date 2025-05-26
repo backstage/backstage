@@ -36,6 +36,21 @@ export namespace coreServices {
   });
 
   /**
+   * Service for registering and managing actions.
+   *
+   * See {@link ActionsRegistryService}
+   * and {@link https://backstage.io/docs/backend-system/core-services/actions-registry | the service docs}
+   * for more information.
+   *
+   * @public
+   */
+  export const actionsRegistry = createServiceRef<
+    import('./ActionsRegistryService').ActionsRegistryService
+  >({
+    id: 'core.actionsRegistry',
+  });
+
+  /**
    * Authenticated user information retrieval.
    *
    * See {@link UserInfoService}
