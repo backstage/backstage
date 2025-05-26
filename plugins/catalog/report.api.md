@@ -43,6 +43,8 @@ import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 // @public
 export interface AboutCardProps {
   // (undocumented)
+  subheader?: JSX.Element;
+  // (undocumented)
   variant?: InfoCardVariants;
 }
 

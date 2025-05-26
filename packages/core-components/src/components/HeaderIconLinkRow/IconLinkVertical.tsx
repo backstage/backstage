@@ -29,6 +29,7 @@ export type IconLinkVerticalProps = {
   label: string;
   onClick?: MouseEventHandler<HTMLAnchorElement>;
   title?: string;
+  hidden?: boolean;
 };
 
 /** @public */
@@ -75,8 +76,13 @@ export function IconLinkVertical({
   label,
   onClick,
   title,
+  hidden,
 }: IconLinkVerticalProps) {
   const classes = useIconStyles();
+
+  if (hidden) {
+    return null;
+  }
 
   if (disabled) {
     return (

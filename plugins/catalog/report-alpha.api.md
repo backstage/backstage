@@ -18,6 +18,7 @@ import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
@@ -336,8 +337,6 @@ const _default: FrontendPlugin<
       };
     }>;
     'entity-card:catalog/about': ExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'about';
       config: {
         filter: EntityPredicate | undefined;
         type: 'content' | 'summary' | 'info' | undefined;
@@ -369,7 +368,21 @@ const _default: FrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        iconLinks: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            () => IconLinkVerticalProps,
+            'entity-icon-link-props',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      };
+      kind: 'entity-card';
+      name: 'about';
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
@@ -922,6 +935,93 @@ const _default: FrontendPlugin<
           >;
       inputs: {};
       params: EntityContextMenuItemParams;
+    }>;
+    'entity-icon-link:catalog/catalog-view-source': ExtensionDefinition<{
+      kind: 'entity-icon-link';
+      name: 'catalog-view-source';
+      config: {
+        label: string | undefined;
+        title: string | undefined;
+        color: 'primary' | 'secondary' | undefined;
+        href: string | undefined;
+        hidden: boolean | undefined;
+        disabled: boolean | undefined;
+      };
+      configInput: {
+        color?: 'primary' | 'secondary' | undefined;
+        hidden?: boolean | undefined;
+        label?: string | undefined;
+        title?: string | undefined;
+        disabled?: boolean | undefined;
+        href?: string | undefined;
+      };
+      output: ConfigurableExtensionDataRef<
+        () => IconLinkVerticalProps,
+        'entity-icon-link-props',
+        {}
+      >;
+      inputs: {};
+      params: {
+        props: IconLinkVerticalProps | (() => IconLinkVerticalProps);
+      };
+    }>;
+    'entity-icon-link:catalog/scaffolder-launch-template': ExtensionDefinition<{
+      kind: 'entity-icon-link';
+      name: 'scaffolder-launch-template';
+      config: {
+        label: string | undefined;
+        title: string | undefined;
+        color: 'primary' | 'secondary' | undefined;
+        href: string | undefined;
+        hidden: boolean | undefined;
+        disabled: boolean | undefined;
+      };
+      configInput: {
+        color?: 'primary' | 'secondary' | undefined;
+        hidden?: boolean | undefined;
+        label?: string | undefined;
+        title?: string | undefined;
+        disabled?: boolean | undefined;
+        href?: string | undefined;
+      };
+      output: ConfigurableExtensionDataRef<
+        () => IconLinkVerticalProps,
+        'entity-icon-link-props',
+        {}
+      >;
+      inputs: {};
+      params: {
+        props: IconLinkVerticalProps | (() => IconLinkVerticalProps);
+      };
+    }>;
+    'entity-icon-link:catalog/techdocs-view-documentation': ExtensionDefinition<{
+      kind: 'entity-icon-link';
+      name: 'techdocs-view-documentation';
+      config: {
+        label: string | undefined;
+        title: string | undefined;
+        color: 'primary' | 'secondary' | undefined;
+        href: string | undefined;
+        hidden: boolean | undefined;
+        disabled: boolean | undefined;
+      };
+      configInput: {
+        color?: 'primary' | 'secondary' | undefined;
+        hidden?: boolean | undefined;
+        label?: string | undefined;
+        title?: string | undefined;
+        disabled?: boolean | undefined;
+        href?: string | undefined;
+      };
+      output: ConfigurableExtensionDataRef<
+        () => IconLinkVerticalProps,
+        'entity-icon-link-props',
+        {}
+      >;
+      inputs: {};
+      params: {
+        props: IconLinkVerticalProps | (() => IconLinkVerticalProps);
+      };
     }>;
     'nav-item:catalog': ExtensionDefinition<{
       kind: 'nav-item';

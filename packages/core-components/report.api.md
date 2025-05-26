@@ -582,7 +582,8 @@ export function IconLinkVertical({
   label,
   onClick,
   title,
-}: IconLinkVerticalProps): JSX_2.Element;
+  hidden,
+}: IconLinkVerticalProps): JSX_2.Element | null;
 
 // @public (undocumented)
 export type IconLinkVerticalClassKey =
@@ -603,6 +604,7 @@ export type IconLinkVerticalProps = {
   label: string;
   onClick?: MouseEventHandler<HTMLAnchorElement>;
   title?: string;
+  hidden?: boolean;
 };
 
 // @public (undocumented)

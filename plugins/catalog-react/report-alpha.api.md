@@ -9,6 +9,7 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
 import { ReactNode } from 'react';
@@ -385,6 +386,44 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
     element: ConfigurableExtensionDataRef<
       JSX_2.Element,
       'core.reactElement',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export const EntityIconLinkBlueprint: ExtensionBlueprint<{
+  kind: 'entity-icon-link';
+  name: undefined;
+  params: {
+    props: IconLinkVerticalProps | (() => IconLinkVerticalProps);
+  };
+  output: ConfigurableExtensionDataRef<
+    () => IconLinkVerticalProps,
+    'entity-icon-link-props',
+    {}
+  >;
+  inputs: {};
+  config: {
+    label: string | undefined;
+    title: string | undefined;
+    color: 'primary' | 'secondary' | undefined;
+    href: string | undefined;
+    hidden: boolean | undefined;
+    disabled: boolean | undefined;
+  };
+  configInput: {
+    color?: 'primary' | 'secondary' | undefined;
+    hidden?: boolean | undefined;
+    label?: string | undefined;
+    title?: string | undefined;
+    disabled?: boolean | undefined;
+    href?: string | undefined;
+  };
+  dataRefs: {
+    props: ConfigurableExtensionDataRef<
+      () => IconLinkVerticalProps,
+      'entity-icon-link-props',
       {}
     >;
   };

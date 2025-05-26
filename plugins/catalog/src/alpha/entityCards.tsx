@@ -14,17 +14,37 @@
  * limitations under the License.
  */
 
-import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import {
+  EntityIconLinkBlueprint,
+  EntityCardBlueprint,
+} from '@backstage/plugin-catalog-react/alpha';
 import { compatWrapper } from '@backstage/core-compat-api';
+import { createExtensionInput } from '@backstage/frontend-plugin-api';
+import { HeaderIconLinkRow } from '@backstage/core-components';
 
-export const catalogAboutEntityCard = EntityCardBlueprint.make({
+export const catalogAboutEntityCard = EntityCardBlueprint.makeWithOverrides({
   name: 'about',
-  params: {
-    type: 'info',
-    loader: async () =>
-      import('../components/AboutCard').then(m =>
-        compatWrapper(<m.AboutCard variant="gridItem" />),
-      ),
+  inputs: {
+    iconLinks: createExtensionInput([EntityIconLinkBlueprint.dataRefs.props]),
+  },
+  factory(originalFactory, { inputs }) {
+    function Subheader() {
+      // The props input functions may be calling other hooks, so we need to
+      // call them in a component function to avoid breaking the rules of hooks.
+      const links = inputs.iconLinks.map(iconLink =>
+        iconLink.get(EntityIconLinkBlueprint.dataRefs.props)(),
+      );
+      return <HeaderIconLinkRow links={links} />;
+    }
+    return originalFactory({
+      type: 'info',
+      async loader() {
+        const { AboutCard } = await import('../components/AboutCard');
+        return compatWrapper(
+          <AboutCard variant="gridItem" subheader={<Subheader />} />,
+        );
+      },
+    });
   },
 });
 

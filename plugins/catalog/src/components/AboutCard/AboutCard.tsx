@@ -28,7 +28,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
   AppIcon,
   HeaderIconLinkRow,
-  IconLinkVerticalProps,
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
@@ -70,6 +69,63 @@ import {
   TECHDOCS_EXTERNAL_ANNOTATION,
 } from '@backstage/plugin-techdocs-common';
 
+export function useCatalogViewSourceEntityIconLinkProps() {
+  const { entity } = useEntity();
+  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const entitySourceLocation = getEntitySourceLocation(
+    entity,
+    scmIntegrationsApi,
+  );
+  return {
+    label: t('aboutCard.viewSource'),
+    disabled: !entitySourceLocation,
+    icon: <ScmIntegrationIcon type={entitySourceLocation?.integrationType} />,
+    href: entitySourceLocation?.locationTargetUrl,
+  };
+}
+
+export function useTechdocsViewDocumentionIconLinkProps() {
+  const { entity } = useEntity();
+  const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
+  const { t } = useTranslationRef(catalogTranslationRef);
+
+  return {
+    label: t('aboutCard.viewTechdocs'),
+    disabled:
+      !(
+        entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
+        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
+      ) || !viewTechdocLink,
+    icon: <DocsIcon />,
+    href: buildTechDocsURL(entity, viewTechdocLink),
+  };
+}
+
+export function useScaffolderLaunchTemplateEntityIconLinkProps() {
+  const app = useApp();
+  const { entity } = useEntity();
+  const templateRoute = useRouteRef(createFromTemplateRouteRef);
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const Icon = app.getSystemIcon('scaffolder') ?? CreateComponentIcon;
+  const { allowed: canCreateTemplateTask } = usePermission({
+    permission: taskCreatePermission,
+  });
+
+  return {
+    label: t('aboutCard.launchTemplate'),
+    icon: <Icon />,
+    hidden: !isTemplateEntityV1beta3(entity),
+    disabled: !templateRoute || !canCreateTemplateTask,
+    href:
+      templateRoute &&
+      templateRoute({
+        templateName: entity.metadata.name,
+        namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+      }),
+  };
+}
+
 const useStyles = makeStyles({
   gridItemCard: {
     display: 'flex',
@@ -97,6 +153,7 @@ const useStyles = makeStyles({
  */
 export interface AboutCardProps {
   variant?: InfoCardVariants;
+  subheader?: JSX.Element;
 }
 
 /**
@@ -107,15 +164,12 @@ export interface AboutCardProps {
  * card in your own repository instead, that is perfect for your own needs.
  */
 export function AboutCard(props: AboutCardProps) {
-  const { variant } = props;
-  const app = useApp();
+  const { variant, subheader } = props;
   const classes = useStyles();
   const { entity } = useEntity();
-  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
   const errorApi = useApi(errorApiRef);
-  const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(createFromTemplateRouteRef);
   const sourceTemplateRef = useSourceTemplateCompoundEntityRef(entity);
   const { allowed: canRefresh } = useEntityPermission(
@@ -123,53 +177,14 @@ export function AboutCard(props: AboutCardProps) {
   );
   const { t } = useTranslationRef(catalogTranslationRef);
 
-  const { allowed: canCreateTemplateTask } = usePermission({
-    permission: taskCreatePermission,
-  });
-
-  const entitySourceLocation = getEntitySourceLocation(
-    entity,
-    scmIntegrationsApi,
-  );
   const entityMetadataEditUrl =
     entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
 
-  const viewInSource: IconLinkVerticalProps = {
-    label: t('aboutCard.viewSource'),
-    disabled: !entitySourceLocation,
-    icon: <ScmIntegrationIcon type={entitySourceLocation?.integrationType} />,
-    href: entitySourceLocation?.locationTargetUrl,
-  };
-  const viewInTechDocs: IconLinkVerticalProps = {
-    label: t('aboutCard.viewTechdocs'),
-    disabled:
-      !(
-        entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
-        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
-      ) || !viewTechdocLink,
-    icon: <DocsIcon />,
-    href: buildTechDocsURL(entity, viewTechdocLink),
-  };
-
-  const subHeaderLinks = [viewInSource, viewInTechDocs];
-
-  if (isTemplateEntityV1beta3(entity)) {
-    const Icon = app.getSystemIcon('scaffolder') ?? CreateComponentIcon;
-
-    const launchTemplate: IconLinkVerticalProps = {
-      label: t('aboutCard.launchTemplate'),
-      icon: <Icon />,
-      disabled: !templateRoute || !canCreateTemplateTask,
-      href:
-        templateRoute &&
-        templateRoute({
-          templateName: entity.metadata.name,
-          namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
-        }),
-    };
-
-    subHeaderLinks.push(launchTemplate);
-  }
+  const viewCatalogSourceIconLink = useCatalogViewSourceEntityIconLinkProps();
+  const viewTechdocsDocumentationIconLink =
+    useTechdocsViewDocumentionIconLinkProps();
+  const launchScaffolderTemplateIconLink =
+    useScaffolderLaunchTemplateEntityIconLinkProps();
 
   let cardClass = '';
   if (variant === 'gridItem') {
@@ -240,7 +255,17 @@ export function AboutCard(props: AboutCardProps) {
             )}
           </>
         }
-        subheader={<HeaderIconLinkRow links={subHeaderLinks} />}
+        subheader={
+          subheader ?? (
+            <HeaderIconLinkRow
+              links={[
+                viewCatalogSourceIconLink,
+                viewTechdocsDocumentationIconLink,
+                launchScaffolderTemplateIconLink,
+              ]}
+            />
+          )
+        }
       />
       <Divider />
       <CardContent className={cardContentClass}>
