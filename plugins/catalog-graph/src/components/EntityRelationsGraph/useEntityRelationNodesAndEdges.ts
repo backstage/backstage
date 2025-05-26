@@ -96,6 +96,21 @@ export function useEntityRelationNodesAndEdges({
       const visitedNodes = new Set<string>();
       const nodeQueue = [...rootEntityRefs];
 
+      const hasEdge = (
+        fromRef: string,
+        toRef: string,
+        relation: [string, string?],
+      ): boolean => {
+        return edges.some(
+          edge =>
+            fromRef === edge.from &&
+            toRef === edge.to &&
+            edge.relations.some(
+              rel => rel[0] === relation[0] && rel[1] === relation[1],
+            ),
+        );
+      };
+
       while (nodeQueue.length > 0) {
         const entityRef = nodeQueue.pop()!;
         const entity = entities[entityRef];
@@ -122,20 +137,26 @@ export function useEntityRelationNodesAndEdges({
               return;
             }
 
-            if (!unidirectional || !visitedNodes.has(rel.targetRef)) {
-              if (mergeRelations) {
-                const pair = relationPairs.find(
-                  ([l, r]) => l === rel.type || r === rel.type,
-                ) ?? [rel.type];
-                const [left] = pair;
-
+            if (mergeRelations) {
+              const pair = relationPairs.find(
+                ([l, r]) => l === rel.type || r === rel.type,
+              ) ?? [rel.type];
+              const [left] = pair;
+              const from = left === rel.type ? entityRef : rel.targetRef;
+              const to = left === rel.type ? rel.targetRef : entityRef;
+              if (!unidirectional || !hasEdge(from, to, pair)) {
                 edges.push({
-                  from: left === rel.type ? entityRef : rel.targetRef,
-                  to: left === rel.type ? rel.targetRef : entityRef,
+                  from,
+                  to,
                   relations: pair,
                   label: 'visible',
                 });
-              } else {
+              }
+            } else {
+              if (
+                !unidirectional ||
+                !hasEdge(entityRef, rel.targetRef, [rel.type])
+              ) {
                 edges.push({
                   from: entityRef,
                   to: rel.targetRef,

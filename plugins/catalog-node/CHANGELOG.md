@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-node
 
+## 1.17.0
+
+### Minor Changes
+
+- a459f17: Added `parseEntityYaml` from `@backstage/plugin-catalog-backend`, to make it more easily usable by custom plugins and modules
+- 1a003ff: Add `getLocations` method to `CatalogApi` and `CatalogClient`. This method calls the [`GET /locations`](https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-locations) endpoint from the catalog backend.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.0
+  - @backstage/catalog-client@1.10.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+
 ## 1.17.0-next.2
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend-module-logs
 
+## 0.1.10
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@2.0.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-events-node@0.4.11
+
 ## 0.1.10-next.3
 
 ### Patch Changes

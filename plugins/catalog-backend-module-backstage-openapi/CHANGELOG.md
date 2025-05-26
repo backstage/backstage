@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.5.2
+
+### Patch Changes
+
+- d385854: Do not swallow errors; instead allow them to bubble up to the task scheduler for better tracking and logging.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/backend-openapi-utils@0.5.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.5.2-next.2
 
 ### Patch Changes

@@ -1,5 +1,29 @@
 # @backstage/plugin-catalog-import
 
+## 0.13.0
+
+### Minor Changes
+
+- e2fd549: **BREAKING**: `generateStepper` and `defaultGenerateStepper` now require a translation argument to be passed through for supporting translations.
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 66a1140: Add i18n support for `catalog-import` plugin.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/integration@1.17.0
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+  - @backstage/integration-react@1.2.7
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.4
+
 ## 0.13.0-next.3
 
 ### Patch Changes

@@ -1,5 +1,38 @@
 # @backstage/plugin-scaffolder
 
+## 1.31.0
+
+### Minor Changes
+
+- 4235e87: add templating extensions page
+
+### Patch Changes
+
+- 92c3658: Full support in EntityPicker (and derivatives) for default EntityPresentationApi
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- d7da01d: Fix EntityPicker field to render description as markdown, matching other form components in the system.
+- 36ae651: Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
+- 72d019d: Removed various typos
+- a274e0a: Migrate custom fields to new schema factory function;
+  standardize field descriptions to prefer ui:description and present consistently,
+  utilizing ScaffolderField component where possible.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/integration@1.17.0
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/plugin-scaffolder-react@1.16.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/catalog-client@1.10.0
+  - @backstage/integration-react@1.2.7
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-scaffolder-common@1.5.11
+
 ## 1.31.0-next.3
 
 ### Patch Changes

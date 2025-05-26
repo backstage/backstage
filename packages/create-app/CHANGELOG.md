@@ -1,5 +1,16 @@
 # @backstage/create-app
 
+## 0.6.2
+
+### Patch Changes
+
+- 8448948: Removed `lerna-debug.log*` pattern from `.gitignore` as Lerna was removed from the package in version `@backstage/create-app@0.5.19`.
+- ce2cf32: Bumped create-app version.
+- 125d096: Bumped create-app version.
+- 1c0cb7b: Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.6.2-next.3
 
 ### Patch Changes

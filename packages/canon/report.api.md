@@ -453,9 +453,8 @@ export type GetPropDefTypes<P> = {
 };
 
 // @public (undocumented)
-export const Grid: ForwardRefExoticComponent<
-  GridProps & RefAttributes<HTMLDivElement>
-> & {
+export const Grid: {
+  Root: ForwardRefExoticComponent<GridProps & RefAttributes<HTMLDivElement>>;
   Item: ForwardRefExoticComponent<
     GridItemProps & RefAttributes<HTMLDivElement>
   >;
