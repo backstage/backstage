@@ -21,6 +21,13 @@ import {
   KubernetesObjectsProvider,
   KubernetesServiceLocator,
 } from '@backstage/plugin-kubernetes-node';
+import { Entity } from '@backstage/catalog-model';
+import { EntitiesSearchFilter } from '@backstage/plugin-catalog-node';
+import {
+  Permission,
+  PermissionRuleParams,
+} from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 
 /**
  * The interface for {@link kubernetesObjectsProviderExtensionPoint}.
@@ -115,4 +122,34 @@ export interface KubernetesServiceLocatorExtensionPoint {
 export const kubernetesServiceLocatorExtensionPoint =
   createExtensionPoint<KubernetesServiceLocatorExtensionPoint>({
     id: 'kubernetes.service-locator',
+  });
+
+/**
+ * @alpha
+ * @deprecated
+ */
+export type KubernetesPermissionRuleInput<
+  Tparams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<Entity, EntitiesSearchFilter, 'kubernetes-entity', Tparams>;
+
+/**
+ * @alpha
+ * @deprecated Use the `coreServices.permissionsRegistry` instead.
+ */
+export interface KubernetesPermissionExtensionPoint {
+  addPermissions(...permissions: Array<Permission | Array<Permission>>): void;
+  addPermissionRules(
+    ...rules: Array<
+      KubernetesPermissionRuleInput | Array<KubernetesPermissionRuleInput>
+    >
+  ): void;
+}
+
+/**
+ * @alpha
+ * @deprecated
+ */
+export const kubernetesPermissionExtensionPoint =
+  createExtensionPoint<KubernetesPermissionExtensionPoint>({
+    id: 'kubernetes.permission',
   });

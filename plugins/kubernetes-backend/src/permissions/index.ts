@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * A Backstage backend plugin that integrates towards Kubernetes
- *
- * @packageDocumentation
- */
-
-export { kubernetesPlugin as default } from './plugin';
-export * from './auth';
 export {
-  createKubernetesConditionalDecision,
   kubernetesCondition,
-} from './permissions';
-export * from './service';
-export * from './types';
+  createKubernetesConditionalDecision,
+} from './conditions';
+export * from './rules';

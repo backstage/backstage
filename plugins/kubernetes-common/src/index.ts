@@ -24,9 +24,12 @@ export * from './types';
 export * from './catalog-entity-constants';
 export * from './certificate-authority-constants';
 export {
+  KUBERNETES_RESOURCES_RESOURCE_TYPE,
   kubernetesProxyPermission,
   kubernetesClustersReadPermission,
+  kubernetesClustersPermissions,
   kubernetesResourcesReadPermission,
+  kubernetesResourcesPermissions,
   kubernetesPermissions,
 } from './permissions';
 export * from './error-detection';

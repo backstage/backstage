@@ -16,6 +16,11 @@
 
 import { createPermission } from '@backstage/plugin-permission-common';
 
+/**
+ * Permission resource type which corresponds to kubernetes resources
+ */
+export const KUBERNETES_RESOURCES_RESOURCE_TYPE = 'kubernetes-entity';
+
 /** This permission is used to check access to the proxy endpoint
  * @public
  */
@@ -29,9 +34,8 @@ export const kubernetesProxyPermission = createPermission({
  */
 export const kubernetesResourcesReadPermission = createPermission({
   name: 'kubernetes.resources.read',
-  attributes: {
-    action: 'read',
-  },
+  attributes: { action: 'read' },
+  resourceType: KUBERNETES_RESOURCES_RESOURCE_TYPE,
 });
 
 /** This permission is used to check access to the /clusters endpoint
@@ -39,17 +43,35 @@ export const kubernetesResourcesReadPermission = createPermission({
  */
 export const kubernetesClustersReadPermission = createPermission({
   name: 'kubernetes.clusters.read',
-  attributes: {
-    action: 'read',
-  },
+  attributes: { action: 'read' },
 });
 
 /**
- * List of all Kubernetes permissions.
+ * List of the kubernetes proxy permissions
+ * @public
+ */
+export const kubernetesProxyPermissions = [kubernetesProxyPermission];
+
+/**
+ * List of the kubernetes resources permissions
+ * @public
+ */
+export const kubernetesResourcesPermissions = [
+  kubernetesResourcesReadPermission,
+];
+
+/**
+ * List of the kubernetes cluster permissions
+ * @public
+ */
+export const kubernetesClustersPermissions = [kubernetesClustersReadPermission];
+
+/**
+ * List of all kubernetes permissions.
  * @public
  */
 export const kubernetesPermissions = [
-  kubernetesProxyPermission,
-  kubernetesResourcesReadPermission,
-  kubernetesClustersReadPermission,
+  ...kubernetesProxyPermissions,
+  ...kubernetesResourcesPermissions,
+  ...kubernetesClustersPermissions,
 ];
