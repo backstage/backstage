@@ -32,7 +32,6 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { createRouter, DatabaseTaskStore } from '../index';
 import {
   TaskBroker,
   TemplateFilter,
@@ -66,6 +65,8 @@ import {
   extractGlobalValueMetadata,
 } from '../util/templating';
 import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
+import { createRouter } from './router';
+import { DatabaseTaskStore } from '../scaffolder/tasks/DatabaseTaskStore';
 
 const mockAccess = jest.fn();
 
@@ -194,7 +195,6 @@ describe.each([
     } as unknown as PermissionEvaluator;
     const auth = mockServices.auth();
     const httpAuth = mockServices.httpAuth();
-    const discovery = mockServices.discovery();
     const events = {
       publish: jest.fn(),
     } as unknown as EventsService;
@@ -309,7 +309,6 @@ describe.each([
           permissions: permissionApi,
           auth,
           httpAuth,
-          discovery,
           events,
           additionalTemplateFilters,
           additionalTemplateGlobals,
@@ -886,7 +885,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           permissions: permissionApi,
           auth,
           httpAuth,
-          discovery,
         });
         app = express().use(router);
 
@@ -1657,7 +1655,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             permissions: permissionApi,
             auth,
             httpAuth,
-            discovery,
             autocompleteHandlers: {
               'test-provider': handleAutocompleteRequest,
             },

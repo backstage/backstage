@@ -2,6 +2,8 @@
 '@backstage/plugin-scaffolder-backend': major
 ---
 
+**BREAKING CHANGES**
+
 Removal of deprecated re-exports from module packages.
 
 The following functions have been re-exported from the `scaffolder-backend` plugin for quite some time, and now it's time to clean them up. They've been moved as follows:
