@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.7.0-next.0
+
+### Minor Changes
+
+- 30474c4: Add .cache directory to shipped gitignore.
+
 ## 0.6.2
 
 ### Patch Changes

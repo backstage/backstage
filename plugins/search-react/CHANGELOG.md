@@ -1,5 +1,12 @@
 # @backstage/plugin-search-react
 
+## 1.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+
 ## 1.9.0
 
 ### Minor Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend
 
+## 2.0.1-next.0
+
+### Patch Changes
+
+- 4654a78: Update `refresh_state_references.id` to be a big int
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.0
+  - @backstage/plugin-events-node@0.4.12-next.0
+  - @backstage/plugin-permission-node@0.10.1-next.0
+  - @backstage/backend-openapi-utils@0.5.4-next.0
+
 ## 2.0.0
 
 ### Major Changes

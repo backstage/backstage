@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-react
 
+## 1.3.0-next.0
+
+### Minor Changes
+
+- ec7b35d: Introduced `backstage.io/techdocs-entity-path` annotation which allows deep linking into another entities TechDocs in conjunction with `backstage.io/techdocs-entity`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/plugin-techdocs-common@0.1.1-next.0
+
 ## 1.2.17
 
 ### Patch Changes

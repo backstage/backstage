@@ -1,5 +1,19 @@
 # @backstage/backend-defaults
 
+## 0.10.1-next.0
+
+### Patch Changes
+
+- c999c25: Added some default implementations for the `ActionsService` and `ActionsRegistryService` that allow registration of actions for a particular plugin.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/backend-app-api@1.2.4-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+  - @backstage/plugin-auth-node@0.6.4-next.0
+  - @backstage/plugin-events-node@0.4.12-next.0
+  - @backstage/plugin-permission-node@0.10.1-next.0
+
 ## 0.10.0
 
 ### Minor Changes
