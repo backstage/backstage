@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 import {
-  ActionsRegistryAction,
   ActionsService,
   ActionsServiceAction,
+  AuthService,
+  BackstageCredentials,
   DiscoveryService,
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { NotFoundError, ResponseError } from '@backstage/errors';
+import { ResponseError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 
 export class DefaultActionsService implements ActionsService {
@@ -29,35 +30,43 @@ export class DefaultActionsService implements ActionsService {
     private readonly discovery: DiscoveryService,
     private readonly config: RootConfigService,
     private readonly logger: LoggerService,
+    private readonly auth: AuthService,
   ) {}
 
   static create({
     discovery,
     config,
     logger,
+    auth,
   }: {
     discovery: DiscoveryService;
     config: RootConfigService;
     logger: LoggerService;
+    auth: AuthService;
   }) {
-    return new DefaultActionsService(discovery, config, logger);
+    return new DefaultActionsService(discovery, config, logger, auth);
   }
 
-  async listActions() {
+  async listActions({ credentials }: { credentials: BackstageCredentials }) {
     const pluginSources =
-      this.config.getOptionalStringArray('actions.pluginSources') ?? [];
+      this.config.getOptionalStringArray('backend.actions.pluginSources') ?? [];
 
     const remoteActionsList = await Promise.all(
       pluginSources.map(async source => {
         const pluginBaseUrl = await this.discovery.getBaseUrl(source);
-        const response = await fetch(`${pluginBaseUrl}/.backstage/v1/actions`);
+        const response = await this.makeRequest({
+          url: `${pluginBaseUrl}/.backstage/actions/v1/actions`,
+          pluginId: source,
+          credentials,
+        });
+
         if (!response.ok) {
           this.logger.warn(`Failed to fetch actions from ${source}`);
           return [];
         }
 
         const { actions } = (await response.json()) as {
-          actions: Omit<ActionsRegistryAction<any, any>, 'action'>[];
+          actions: ActionsServiceAction;
         };
 
         return actions;
@@ -67,26 +76,55 @@ export class DefaultActionsService implements ActionsService {
     return { actions: remoteActionsList.flat() };
   }
 
-  async invokeAction(opts: { id: string; input?: JsonObject }) {
+  async invokeAction(opts: {
+    id: string;
+    input?: JsonObject;
+    credentials: BackstageCredentials;
+  }) {
     const pluginId = this.pluginIdFromActionId(opts.id);
 
     const baseUrl = await this.discovery.getBaseUrl(pluginId);
-    const response = await fetch(
-      `${baseUrl}/.backstage/v1/actions/${opts.id}/invoke`,
-      {
+
+    const response = await this.makeRequest({
+      url: `${baseUrl}/.backstage/actions/v1/actions/${opts.id}/invoke`,
+      pluginId,
+      credentials: opts.credentials,
+      options: {
         method: 'POST',
         body: JSON.stringify(opts.input),
         headers: {
           'Content-Type': 'application/json',
         },
       },
-    );
+    });
 
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }
+
     const { output } = await response.json();
     return { output };
+  }
+
+  private async makeRequest(opts: {
+    url: string;
+    pluginId: string;
+    options?: RequestInit;
+    credentials: BackstageCredentials;
+  }) {
+    const { url, credentials, options } = opts;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: credentials,
+      targetPluginId: opts.pluginId,
+    });
+
+    return fetch(url, {
+      ...options,
+      headers: {
+        ...options?.headers,
+        Authorization: `Bearer ${token}`,
+      },
+    });
   }
 
   private pluginIdFromActionId(id: string): string {

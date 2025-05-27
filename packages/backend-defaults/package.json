@@ -20,6 +20,7 @@
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
+    "./actions": "./src/entrypoints/actions/index.ts",
     "./actionsRegistry": "./src/entrypoints/actionsRegistry/index.ts",
     "./auditor": "./src/entrypoints/auditor/index.ts",
     "./auth": "./src/entrypoints/auth/index.ts",
@@ -46,6 +47,9 @@
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
+      "actions": [
+        "src/entrypoints/actions/index.ts"
+      ],
       "actionsRegistry": [
         "src/entrypoints/actionsRegistry/index.ts"
       ],

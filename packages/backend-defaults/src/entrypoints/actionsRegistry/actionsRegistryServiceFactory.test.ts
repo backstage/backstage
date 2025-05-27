@@ -63,7 +63,7 @@ describe('actionsRegistryServiceFactory', () => {
                 action: async ({ input: { test } }) => {
                   // @ts-expect-error - test is not a boolean
                   const _t: boolean = test;
-                  return { ok: true };
+                  return { output: { ok: true } };
                 },
               });
             },
@@ -99,7 +99,7 @@ describe('actionsRegistryServiceFactory', () => {
                 },
                 // @ts-expect-error - ok is not a boolean
                 action: async () => {
-                  return { ok: 'bo' };
+                  return { output: { ok: 'bo' } };
                 },
               });
             },
@@ -135,7 +135,7 @@ describe('actionsRegistryServiceFactory', () => {
                       ok: z.boolean(),
                     }),
                 },
-                action: async () => ({ ok: true }),
+                action: async () => ({ output: { ok: true } }),
               });
             },
           });
@@ -194,7 +194,7 @@ describe('actionsRegistryServiceFactory', () => {
                 name: 'test',
                 title: 'Test',
                 description: 'Test',
-                action: async () => ({ ok: true }),
+                action: async () => ({ output: { ok: true } }),
               });
             },
           });

@@ -23,11 +23,13 @@ export const actionsServiceFactory = createServiceFactory({
     discovery: coreServices.discovery,
     config: coreServices.rootConfig,
     logger: coreServices.logger,
+    auth: coreServices.auth,
   },
-  factory: ({ discovery, config, logger }) =>
+  factory: ({ discovery, config, logger, auth }) =>
     DefaultActionsService.create({
       discovery,
       config,
       logger,
+      auth,
     }),
 });
