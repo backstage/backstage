@@ -1,5 +1,36 @@
 # example-app
 
+## 0.2.110-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder@1.31.1-next.0
+  - @backstage/plugin-catalog-unprocessed-entities@0.2.18-next.0
+  - @backstage/plugin-catalog-import@0.13.1-next.0
+  - @backstage/plugin-catalog-graph@0.4.20-next.0
+  - @backstage/plugin-notifications@0.5.6-next.0
+  - @backstage/plugin-user-settings@0.8.23-next.0
+  - @backstage/plugin-kubernetes@0.12.8-next.0
+  - @backstage/plugin-api-docs@0.12.8-next.0
+  - @backstage/plugin-devtools@0.1.28-next.0
+  - @backstage/plugin-techdocs@1.13.0-next.0
+  - @backstage/plugin-catalog@1.31.0-next.0
+  - @backstage/plugin-signals@0.0.20-next.0
+  - @backstage/plugin-search@1.4.27-next.0
+  - @backstage/plugin-home@0.8.9-next.0
+  - @backstage/plugin-org@0.6.40-next.0
+  - @backstage/plugin-techdocs-react@1.3.0-next.0
+  - @backstage/frontend-app-api@0.11.3-next.0
+  - @backstage/canon@0.5.0-next.0
+  - @backstage/plugin-scaffolder-react@1.16.1-next.0
+  - @backstage/cli@0.32.1
+  - @backstage/plugin-catalog-react@1.18.1-next.0
+  - @backstage/plugin-search-react@1.9.1-next.0
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.25-next.0
+  - @backstage/plugin-kubernetes-cluster@0.0.26-next.0
+  - @backstage/integration-react@1.2.7
+
 ## 0.2.109
 
 ### Patch Changes

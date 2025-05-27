@@ -1,5 +1,14 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.0
+  - @backstage/plugin-notifications-node@0.2.16-next.0
+
 ## 0.3.9
 
 ### Patch Changes
