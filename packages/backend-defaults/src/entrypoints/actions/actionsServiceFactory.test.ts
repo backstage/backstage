@@ -66,6 +66,10 @@ describe('actionsServiceFactory', () => {
       id: 'my-plugin:test',
       name: 'testy',
       title: 'Test',
+      schema: {
+        input: {},
+        output: {},
+      },
     };
 
     beforeEach(() => {
@@ -89,13 +93,13 @@ describe('actionsServiceFactory', () => {
       );
     });
 
-    describe('listActions', () => {
+    describe('list', () => {
       it('should list all plugins in config to find actions and handle failures gracefully', async () => {
         const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
           dependencies: defaultServices,
         }).getSubject();
 
-        const { actions } = await subject.listActions({
+        const { actions } = await subject.list({
           credentials: mockCredentials.service('user:default/mock'),
         });
 
@@ -106,7 +110,7 @@ describe('actionsServiceFactory', () => {
       });
     });
 
-    describe('invokeAction', () => {
+    describe('invoke', () => {
       it('should invoke the action and return the output', async () => {
         server.use(
           rest.post(
@@ -118,7 +122,7 @@ describe('actionsServiceFactory', () => {
           dependencies: defaultServices,
         }).getSubject();
 
-        const { output } = await subject.invokeAction({
+        const { output } = await subject.invoke({
           id: 'my-plugin:test',
           credentials: mockCredentials.service('user:default/mock'),
         });
@@ -139,7 +143,7 @@ describe('actionsServiceFactory', () => {
         }).getSubject();
 
         await expect(
-          subject.invokeAction({
+          subject.invoke({
             id: 'my-plugin:test',
             credentials: mockCredentials.service('user:default/mock'),
           }),
@@ -159,7 +163,7 @@ describe('actionsServiceFactory', () => {
         }).getSubject();
 
         await expect(
-          subject.invokeAction({
+          subject.invoke({
             id: 'my-plugin:test',
             credentials: mockCredentials.service('user:default/mock'),
           }),
@@ -238,7 +242,7 @@ describe('actionsServiceFactory', () => {
 
                 innerRouter.post('/invoke', async (req, res) => {
                   const { id, input } = req.body;
-                  const response = await actionsService.invokeAction({
+                  const response = await actionsService.invoke({
                     id,
                     input,
                     credentials: await httpAuth.credentials(req),
@@ -247,7 +251,7 @@ describe('actionsServiceFactory', () => {
                 });
 
                 innerRouter.get('/actions', async (req, res) => {
-                  const response = await actionsService.listActions({
+                  const response = await actionsService.list({
                     credentials: await httpAuth.credentials(req),
                   });
 

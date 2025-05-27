@@ -34,19 +34,15 @@ import {
 } from '@backstage/errors';
 
 export class DefaultActionsRegistryService implements ActionsRegistryService {
+  private actions: Map<string, ActionsRegistryActionOptions<any, any>> =
+    new Map();
+
   private constructor(
-    private readonly actions: Map<
-      string,
-      ActionsRegistryActionOptions<any, any>
-    >,
-    private readonly router: Router,
     private readonly logger: LoggerService,
     private readonly httpAuth: HttpAuthService,
     private readonly auth: AuthService,
     private readonly metadata: PluginMetadataService,
-  ) {
-    this.bindRoutes();
-  }
+  ) {}
 
   static create({
     httpAuth,
@@ -59,36 +55,14 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     auth: AuthService;
     metadata: PluginMetadataService;
   }): DefaultActionsRegistryService {
-    return new DefaultActionsRegistryService(
-      new Map(),
-      PromiseRouter(),
-      logger,
-      httpAuth,
-      auth,
-      metadata,
-    );
+    return new DefaultActionsRegistryService(logger, httpAuth, auth, metadata);
   }
 
-  getRouter(): Router {
-    return this.router;
-  }
+  createRouter(): Router {
+    const router = PromiseRouter();
+    router.use(json());
 
-  register<TInputSchema extends ZodType, TOutputSchema extends ZodType>(
-    options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>,
-  ): void {
-    const id = `${this.metadata.getId()}:${options.name}`;
-
-    if (this.actions.has(id)) {
-      throw new Error(`Action with id "${id}" is already registered`);
-    }
-
-    this.actions.set(id, options);
-  }
-
-  private bindRoutes() {
-    this.router.use(json());
-
-    this.router.get('/.backstage/actions/v1/actions', (_, res) => {
+    router.get('/.backstage/actions/v1/actions', (_, res) => {
       return res.json({
         actions: Array.from(this.actions.entries()).map(([id, action]) => ({
           id,
@@ -105,7 +79,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
       });
     });
 
-    this.router.post(
+    router.post(
       '/.backstage/actions/v1/actions/:actionId/invoke',
       async (req, res) => {
         const action = this.actions.get(req.params.actionId);
@@ -165,5 +139,18 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
         }
       },
     );
+    return router;
+  }
+
+  register<TInputSchema extends ZodType, TOutputSchema extends ZodType>(
+    options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>,
+  ): void {
+    const id = `${this.metadata.getId()}:${options.name}`;
+
+    if (this.actions.has(id)) {
+      throw new Error(`Action with id "${id}" is already registered`);
+    }
+
+    this.actions.set(id, options);
   }
 }

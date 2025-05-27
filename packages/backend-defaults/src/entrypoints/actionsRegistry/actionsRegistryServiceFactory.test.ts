@@ -194,7 +194,11 @@ describe('actionsRegistryServiceFactory', () => {
                 name: 'test',
                 title: 'Test',
                 description: 'Test',
-                action: async () => ({ output: { ok: true } }),
+                schema: {
+                  input: z => z.undefined(),
+                  output: z => z.string(),
+                },
+                action: async () => ({ output: 'ok' }),
               });
             },
           });

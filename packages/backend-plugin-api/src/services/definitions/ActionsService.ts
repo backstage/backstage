@@ -25,9 +25,9 @@ export type ActionsServiceAction = {
   name: string;
   title: string;
   description: string;
-  schema?: {
-    input?: JSONSchema7;
-    output?: JSONSchema7;
+  schema: {
+    input: JSONSchema7;
+    output: JSONSchema7;
   };
 };
 
@@ -35,10 +35,10 @@ export type ActionsServiceAction = {
  * @public
  */
 export interface ActionsService {
-  listActions: (opts: {
+  list: (opts: {
     credentials: BackstageCredentials;
   }) => Promise<{ actions: ActionsServiceAction[] }>;
-  invokeAction(opts: {
+  invoke(opts: {
     id: string;
     input?: JsonObject;
     credentials: BackstageCredentials;

@@ -36,14 +36,16 @@ export type ActionsRegistryActionOptions<
   name: string;
   title: string;
   description: string;
-  schema?: {
-    input?: (zod: typeof z) => TInputSchema;
-    output?: (zod: typeof z) => TOutputSchema;
+  schema: {
+    input: (zod: typeof z) => TInputSchema;
+    output: (zod: typeof z) => TOutputSchema;
   };
   action: (
     context: ActionsRegistryActionContext<TInputSchema>,
   ) => Promise<
-    TOutputSchema extends ZodType ? { output: z.infer<TOutputSchema> } : void
+    z.infer<TOutputSchema> extends void
+      ? void
+      : { output: z.infer<TOutputSchema> }
   >;
 };
 

@@ -47,15 +47,14 @@ export class DefaultActionsService implements ActionsService {
     return new DefaultActionsService(discovery, config, logger, auth);
   }
 
-  async listActions({ credentials }: { credentials: BackstageCredentials }) {
+  async list({ credentials }: { credentials: BackstageCredentials }) {
     const pluginSources =
       this.config.getOptionalStringArray('backend.actions.pluginSources') ?? [];
 
     const remoteActionsList = await Promise.all(
       pluginSources.map(async source => {
-        const pluginBaseUrl = await this.discovery.getBaseUrl(source);
         const response = await this.makeRequest({
-          url: `${pluginBaseUrl}/.backstage/actions/v1/actions`,
+          path: `/.backstage/actions/v1/actions`,
           pluginId: source,
           credentials,
         });
@@ -76,17 +75,16 @@ export class DefaultActionsService implements ActionsService {
     return { actions: remoteActionsList.flat() };
   }
 
-  async invokeAction(opts: {
+  async invoke(opts: {
     id: string;
     input?: JsonObject;
     credentials: BackstageCredentials;
   }) {
     const pluginId = this.pluginIdFromActionId(opts.id);
-
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const response = await this.makeRequest({
-      url: `${baseUrl}/.backstage/actions/v1/actions/${opts.id}/invoke`,
+      path: `/.backstage/actions/v1/actions/${encodeURIComponent(
+        opts.id,
+      )}/invoke`,
       pluginId,
       credentials: opts.credentials,
       options: {
@@ -107,18 +105,20 @@ export class DefaultActionsService implements ActionsService {
   }
 
   private async makeRequest(opts: {
-    url: string;
+    path: string;
     pluginId: string;
     options?: RequestInit;
     credentials: BackstageCredentials;
   }) {
-    const { url, credentials, options } = opts;
+    const { path, pluginId, credentials, options } = opts;
+    const baseUrl = await this.discovery.getBaseUrl(pluginId);
+
     const { token } = await this.auth.getPluginRequestToken({
       onBehalfOf: credentials,
       targetPluginId: opts.pluginId,
     });
 
-    return fetch(url, {
+    return fetch(`${baseUrl}${path}`, {
       ...options,
       headers: {
         ...options?.headers,

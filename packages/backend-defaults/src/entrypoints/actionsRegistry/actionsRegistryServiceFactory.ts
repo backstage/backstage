@@ -40,7 +40,7 @@ export const actionsRegistryServiceFactory = createServiceFactory({
       metadata,
     });
 
-    httpRouter.use(actionsRegistryService.getRouter());
+    httpRouter.use(actionsRegistryService.createRouter());
 
     return actionsRegistryService;
   },

@@ -44,16 +44,16 @@ export type ActionsRegistryActionOptions<
   name: string;
   title: string;
   description: string;
-  schema?: {
-    input?: (zod: typeof z) => TInputSchema;
-    output?: (zod: typeof z) => TOutputSchema;
+  schema: {
+    input: (zod: typeof z) => TInputSchema;
+    output: (zod: typeof z) => TOutputSchema;
   };
   action: (context: ActionsRegistryActionContext<TInputSchema>) => Promise<
-    TOutputSchema extends ZodType
-      ? {
+    z.infer<TOutputSchema> extends void
+      ? void
+      : {
           output: z.infer<TOutputSchema>;
         }
-      : void
   >;
 };
 
@@ -68,7 +68,7 @@ export interface ActionsRegistryService {
 // @public (undocumented)
 export interface ActionsService {
   // (undocumented)
-  invokeAction(opts: {
+  invoke(opts: {
     id: string;
     input?: JsonObject;
     credentials: BackstageCredentials;
@@ -76,7 +76,7 @@ export interface ActionsService {
     output: JsonValue;
   }>;
   // (undocumented)
-  listActions: (opts: { credentials: BackstageCredentials }) => Promise<{
+  list: (opts: { credentials: BackstageCredentials }) => Promise<{
     actions: ActionsServiceAction[];
   }>;
 }
@@ -87,9 +87,9 @@ export type ActionsServiceAction = {
   name: string;
   title: string;
   description: string;
-  schema?: {
-    input?: JSONSchema7;
-    output?: JSONSchema7;
+  schema: {
+    input: JSONSchema7;
+    output: JSONSchema7;
   };
 };
 
