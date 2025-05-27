@@ -4,18 +4,16 @@
 
 Introduces a new `EntityIconLinkBlueprint` that customizes the `About` card icon links on the `Catalog` entity page.
 
-The blueprint currently accepts the following `params`:
+The blueprint currently accepts a `useProps` hook as `param` and this function returns the following props that will be passed to the icon link component:
 
-| Name       | Description                                         | Type                       | Default Value |
-| ---------- | --------------------------------------------------- | -------------------------- | ------------- |
-| `icon`     | The icon to display.                                | `JSX.Element`              | N/A           |
-| `label`    | The label for the element.                          | `string`                   | N/A           |
-| `title`    | The title for the element.                          | `string`                   | N/A           |
-| `color`    | The color of the element.                           | `'primary' \| 'secondary'` | `primary`     |
-| `disabled` | Whether the element is disabled.                    | `boolean`                  | `false`       |
-| `href`     | The URL to navigate to when the element is clicked. | `string`                   | N/A           |
-| `onClick`  | A function to call when the element is clicked.     | `() => void`               | N/A           |
-| `hidden`   | Whether the element is hidden.                      | `boolean`                  | `false`       |
+| Name       | Description                                         | Type          | Default Value |
+| ---------- | --------------------------------------------------- | ------------- | ------------- |
+| `icon`     | The icon to display.                                | `JSX.Element` | N/A           |
+| `label`    | The label for the element.                          | `string`      | N/A           |
+| `title`    | The title for the element.                          | `string`      | N/A           |
+| `disabled` | Whether the element is disabled.                    | `boolean`     | `false`       |
+| `href`     | The URL to navigate to when the element is clicked. | `string`      | N/A           |
+| `onClick`  | A function to call when the element is clicked.     | `() => void`  | N/A           |
 
 Here is an usage example:
 
@@ -23,32 +21,10 @@ Here is an usage example:
 import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
 //...
 
-// Defining the icon link properties using an object
 EntityIconLinkBlueprint.make({
   name: 'my-icon-link',
   params: {
-    props: {
-      label: 'My Icon Link Label',
-      icon: <MyIconLinkIcon />,
-      href: '/my-plugin',
-    },
-  },
-});
-```
-
-or
-
-```tsx
-import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
-//...
-
-// Defining the icon link properties using a function
-EntityIconLinkBlueprint.make({
-  name: 'my-icon-link',
-  params: {
-    props: function useMyIconLinkProps() {
-      // Use a function when you would like use a hook for defining the
-      // icon link props on runtime
+    useProps() {
       const { t } = useTranslationRef(myIconLinkTranslationRef);
       return {
         label: t('myIconLink.label'),
@@ -60,7 +36,7 @@ EntityIconLinkBlueprint.make({
 });
 ```
 
-Additionally, the `app-config.yaml` file allows you to override some of the default icon link parameters, including `label`, `title`, `color`, `href`, `disabled`, and `hidden` values. Here's how to set them:
+Additionally, the `app-config.yaml` file allows you to override some of the default icon link parameters, including `label` and `title` values. Here's how to set them:
 
 ```yaml
 app:
@@ -69,3 +45,5 @@ app:
         config:
           label: 'My Custom Icon Link label'
 ```
+
+Finally, you can disable all links if you want to hide the About card header completely (useful, for example, when links are displayed on separate cards). The header is hidden when no icon links extensions are enabled.

@@ -26,6 +26,8 @@ import {
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 
+export { useTechdocsReaderIconLinkProps } from './hooks';
+
 /** @alpha */
 export type { TechDocsAddonOptions, TechDocsAddonLocations } from './types';
 

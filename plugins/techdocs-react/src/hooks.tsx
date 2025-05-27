@@ -15,7 +15,45 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import debounce from 'lodash/debounce';
+import DocsIcon from '@material-ui/icons/Description';
+
+import { ExternalRouteRef, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  TranslationRef,
+  useTranslationRef,
+} from '@backstage/core-plugin-api/alpha';
+
+import {
+  TECHDOCS_ANNOTATION,
+  TECHDOCS_EXTERNAL_ANNOTATION,
+} from '@backstage/plugin-techdocs-common';
+
+import { useEntity } from '@backstage/plugin-catalog-react';
+
 import { useTechDocsReaderPage } from './context';
+import { buildTechDocsURL } from './helpers';
+
+/** @alpha */
+export function useTechdocsReaderIconLinkProps(options: {
+  translationRef: TranslationRef;
+  externalRouteRef: ExternalRouteRef;
+}) {
+  const { translationRef, externalRouteRef } = options;
+  const { entity } = useEntity();
+  const viewTechdocLink = useRouteRef(externalRouteRef);
+  const { t } = useTranslationRef(translationRef);
+
+  return {
+    label: t('aboutCard.viewTechdocs'),
+    disabled:
+      !(
+        entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
+        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
+      ) || !viewTechdocLink,
+    icon: <DocsIcon />,
+    href: buildTechDocsURL(entity, viewTechdocLink),
+  };
+}
 
 /**
  * Hook for use within TechDocs addons that provides access to the underlying

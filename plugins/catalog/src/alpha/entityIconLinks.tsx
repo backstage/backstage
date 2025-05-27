@@ -15,35 +15,13 @@
  */
 
 import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
-import {
-  useCatalogViewSourceEntityIconLinkProps,
-  useScaffolderLaunchTemplateEntityIconLinkProps,
-  useTechdocsViewDocumentionIconLinkProps,
-} from '../components/AboutCard/AboutCard';
+import { useCatalogSourceIconLinkProps } from '../components/AboutCard/AboutCard';
 
 const catalogViewSourceEntityIconLink = EntityIconLinkBlueprint.make({
-  name: 'catalog-view-source',
+  name: 'view-source',
   params: {
-    props: useCatalogViewSourceEntityIconLinkProps,
+    useProps: useCatalogSourceIconLinkProps,
   },
 });
 
-const techdocsViewDocumentationAboutEntityLink = EntityIconLinkBlueprint.make({
-  name: 'techdocs-view-documentation',
-  params: {
-    props: useTechdocsViewDocumentionIconLinkProps,
-  },
-});
-
-const scaffolderLaunchTemplateEntityIconLink = EntityIconLinkBlueprint.make({
-  name: 'scaffolder-launch-template',
-  params: {
-    props: useScaffolderLaunchTemplateEntityIconLinkProps,
-  },
-});
-
-export default [
-  catalogViewSourceEntityIconLink,
-  techdocsViewDocumentationAboutEntityLink,
-  scaffolderLaunchTemplateEntityIconLink,
-];
+export default [catalogViewSourceEntityIconLink];

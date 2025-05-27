@@ -40,13 +40,10 @@ import { TableProps } from '@backstage/core-components';
 import { TabProps } from '@material-ui/core/Tab';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
+// Warning: (ae-forgotten-export) The symbol "InternalAboutCardProps" needs to be exported by the entry point index.d.ts
+//
 // @public
-export interface AboutCardProps {
-  // (undocumented)
-  subheader?: JSX.Element;
-  // (undocumented)
-  variant?: InfoCardVariants;
-}
+export type AboutCardProps = Pick<InternalAboutCardProps, 'variant'>;
 
 // @public (undocumented)
 export function AboutContent(props: AboutContentProps): JSX_2.Element;

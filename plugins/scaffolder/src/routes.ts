@@ -32,6 +32,13 @@ export const viewTechDocRouteRef = createExternalRouteRef({
   defaultTarget: 'techdocs.docRoot',
 });
 
+export const createFromTemplateRouteRef = createExternalRouteRef({
+  id: 'create-from-template',
+  optional: true,
+  params: ['namespace', 'templateName'],
+  defaultTarget: 'scaffolder.selectedTemplate',
+});
+
 /**
  * @public
  */

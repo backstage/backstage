@@ -20,28 +20,45 @@ import {
 } from '@backstage/plugin-catalog-react/alpha';
 import { compatWrapper } from '@backstage/core-compat-api';
 import { createExtensionInput } from '@backstage/frontend-plugin-api';
-import { HeaderIconLinkRow } from '@backstage/core-components';
+import {
+  HeaderIconLinkRow,
+  IconLinkVerticalProps,
+} from '@backstage/core-components';
+import { useEntity } from '@backstage/plugin-catalog-react';
 
 export const catalogAboutEntityCard = EntityCardBlueprint.makeWithOverrides({
   name: 'about',
   inputs: {
-    iconLinks: createExtensionInput([EntityIconLinkBlueprint.dataRefs.props]),
+    iconLinks: createExtensionInput([
+      EntityIconLinkBlueprint.dataRefs.useProps,
+      EntityIconLinkBlueprint.dataRefs.filterFunction.optional(),
+    ]),
   },
   factory(originalFactory, { inputs }) {
     function Subheader() {
-      // The props input functions may be calling other hooks, so we need to
+      const { entity } = useEntity();
+      // The "useProps" functions may be calling other hooks, so we need to
       // call them in a component function to avoid breaking the rules of hooks.
-      const links = inputs.iconLinks.map(iconLink =>
-        iconLink.get(EntityIconLinkBlueprint.dataRefs.props)(),
-      );
-      return <HeaderIconLinkRow links={links} />;
+      const links = inputs.iconLinks.reduce((rest, iconLink) => {
+        const props = iconLink.get(EntityIconLinkBlueprint.dataRefs.useProps)();
+        const filter =
+          iconLink.get(EntityIconLinkBlueprint.dataRefs.filterFunction) ??
+          (() => true);
+        if (filter(entity)) {
+          return [...rest, props];
+        }
+        return rest;
+      }, new Array<IconLinkVerticalProps>());
+      return links.length ? <HeaderIconLinkRow links={links} /> : null;
     }
     return originalFactory({
       type: 'info',
       async loader() {
-        const { AboutCard } = await import('../components/AboutCard');
+        const { InternalAboutCard } = await import(
+          '../components/AboutCard/AboutCard'
+        );
         return compatWrapper(
-          <AboutCard variant="gridItem" subheader={<Subheader />} />,
+          <InternalAboutCard variant="gridItem" subheader={<Subheader />} />,
         );
       },
     });

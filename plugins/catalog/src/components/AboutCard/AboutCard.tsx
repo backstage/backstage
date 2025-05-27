@@ -16,7 +16,6 @@
 import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_LOCATION,
-  DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import Card from '@material-ui/core/Card';
@@ -40,7 +39,6 @@ import {
   alertApiRef,
   errorApiRef,
   useApi,
-  useApp,
   useRouteRef,
 } from '@backstage/core-plugin-api';
 import {
@@ -52,24 +50,17 @@ import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 
 import { AboutContent } from './AboutContent';
 import CachedIcon from '@material-ui/icons/Cached';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
-import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
 import { useSourceTemplateCompoundEntityRef } from './hooks';
-import { taskCreatePermission } from '@backstage/plugin-scaffolder-common/alpha';
-import { usePermission } from '@backstage/plugin-permission-react';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
-import {
-  TECHDOCS_ANNOTATION,
-  TECHDOCS_EXTERNAL_ANNOTATION,
-} from '@backstage/plugin-techdocs-common';
+import { useTechdocsReaderIconLinkProps } from '@backstage/plugin-techdocs-react/alpha';
+import { useScaffolderTemplateIconLinkProps } from '@backstage/plugin-scaffolder-react/alpha';
+import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
-export function useCatalogViewSourceEntityIconLinkProps() {
+export function useCatalogSourceIconLinkProps() {
   const { entity } = useEntity();
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
   const { t } = useTranslationRef(catalogTranslationRef);
@@ -85,45 +76,24 @@ export function useCatalogViewSourceEntityIconLinkProps() {
   };
 }
 
-export function useTechdocsViewDocumentionIconLinkProps() {
+function DefaultAboutCardSubheader() {
   const { entity } = useEntity();
-  const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
-  const { t } = useTranslationRef(catalogTranslationRef);
-
-  return {
-    label: t('aboutCard.viewTechdocs'),
-    disabled:
-      !(
-        entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
-        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
-      ) || !viewTechdocLink,
-    icon: <DocsIcon />,
-    href: buildTechDocsURL(entity, viewTechdocLink),
-  };
-}
-
-export function useScaffolderLaunchTemplateEntityIconLinkProps() {
-  const app = useApp();
-  const { entity } = useEntity();
-  const templateRoute = useRouteRef(createFromTemplateRouteRef);
-  const { t } = useTranslationRef(catalogTranslationRef);
-  const Icon = app.getSystemIcon('scaffolder') ?? CreateComponentIcon;
-  const { allowed: canCreateTemplateTask } = usePermission({
-    permission: taskCreatePermission,
+  const catalogSourceIconLink = useCatalogSourceIconLinkProps();
+  const techdocsreaderIconLink = useTechdocsReaderIconLinkProps({
+    translationRef: catalogTranslationRef,
+    externalRouteRef: viewTechDocRouteRef,
+  });
+  const scaffolderTemplateIconLink = useScaffolderTemplateIconLinkProps({
+    translationRef: catalogTranslationRef,
+    externalRouteRef: createFromTemplateRouteRef,
   });
 
-  return {
-    label: t('aboutCard.launchTemplate'),
-    icon: <Icon />,
-    hidden: !isTemplateEntityV1beta3(entity),
-    disabled: !templateRoute || !canCreateTemplateTask,
-    href:
-      templateRoute &&
-      templateRoute({
-        templateName: entity.metadata.name,
-        namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
-      }),
-  };
+  const links = [catalogSourceIconLink, techdocsreaderIconLink];
+  if (isTemplateEntityV1beta3(entity)) {
+    links.push(scaffolderTemplateIconLink);
+  }
+
+  return <HeaderIconLinkRow links={links} />;
 }
 
 const useStyles = makeStyles({
@@ -146,24 +116,12 @@ const useStyles = makeStyles({
   },
 });
 
-/**
- * Props for {@link EntityAboutCard}.
- *
- * @public
- */
-export interface AboutCardProps {
+export interface InternalAboutCardProps {
   variant?: InfoCardVariants;
   subheader?: JSX.Element;
 }
 
-/**
- * Exported publicly via the EntityAboutCard
- *
- * NOTE: We generally do not accept pull requests to extend this class with more
- * props and customizability. If you need to tweak it, consider making a bespoke
- * card in your own repository instead, that is perfect for your own needs.
- */
-export function AboutCard(props: AboutCardProps) {
+export function InternalAboutCard(props: InternalAboutCardProps) {
   const { variant, subheader } = props;
   const classes = useStyles();
   const { entity } = useEntity();
@@ -179,12 +137,6 @@ export function AboutCard(props: AboutCardProps) {
 
   const entityMetadataEditUrl =
     entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
-
-  const viewCatalogSourceIconLink = useCatalogViewSourceEntityIconLinkProps();
-  const viewTechdocsDocumentationIconLink =
-    useTechdocsViewDocumentionIconLinkProps();
-  const launchScaffolderTemplateIconLink =
-    useScaffolderLaunchTemplateEntityIconLinkProps();
 
   let cardClass = '';
   if (variant === 'gridItem') {
@@ -255,17 +207,7 @@ export function AboutCard(props: AboutCardProps) {
             )}
           </>
         }
-        subheader={
-          subheader ?? (
-            <HeaderIconLinkRow
-              links={[
-                viewCatalogSourceIconLink,
-                viewTechdocsDocumentationIconLink,
-                launchScaffolderTemplateIconLink,
-              ]}
-            />
-          )
-        }
+        subheader={subheader ?? <DefaultAboutCardSubheader />}
       />
       <Divider />
       <CardContent className={cardContentClass}>
@@ -273,4 +215,22 @@ export function AboutCard(props: AboutCardProps) {
       </CardContent>
     </Card>
   );
+}
+
+/**
+ * Props for {@link EntityAboutCard}.
+ *
+ * @public
+ */
+export type AboutCardProps = Pick<InternalAboutCardProps, 'variant'>;
+
+/**
+ * Exported publicly via the EntityAboutCard
+ *
+ * NOTE: We generally do not accept pull requests to extend this class with more
+ * props and customizability. If you need to tweak it, consider making a bespoke
+ * card in your own repository instead, that is perfect for your own needs.
+ */
+export function AboutCard(props: AboutCardProps) {
+  return <InternalAboutCard {...props} />;
 }

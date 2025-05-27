@@ -396,34 +396,42 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
   kind: 'entity-icon-link';
   name: undefined;
   params: {
-    props: IconLinkVerticalProps | (() => IconLinkVerticalProps);
+    useProps: () => Omit<IconLinkVerticalProps, 'color'>;
+    filter?: EntityPredicate | ((entity: Entity) => boolean);
   };
-  output: ConfigurableExtensionDataRef<
-    () => IconLinkVerticalProps,
-    'entity-icon-link-props',
-    {}
-  >;
+  output:
+    | ConfigurableExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        () => IconLinkVerticalProps,
+        'entity-icon-link-props',
+        {}
+      >;
   inputs: {};
   config: {
     label: string | undefined;
     title: string | undefined;
-    color: 'primary' | 'secondary' | undefined;
-    href: string | undefined;
-    hidden: boolean | undefined;
-    disabled: boolean | undefined;
+    filter: EntityPredicate | undefined;
   };
   configInput: {
-    color?: 'primary' | 'secondary' | undefined;
-    hidden?: boolean | undefined;
+    filter?: EntityPredicate | undefined;
     label?: string | undefined;
     title?: string | undefined;
-    disabled?: boolean | undefined;
-    href?: string | undefined;
   };
   dataRefs: {
-    props: ConfigurableExtensionDataRef<
+    useProps: ConfigurableExtensionDataRef<
       () => IconLinkVerticalProps,
       'entity-icon-link-props',
+      {}
+    >;
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
       {}
     >;
   };

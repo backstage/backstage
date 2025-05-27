@@ -6,6 +6,9 @@
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha
 export const AddonBlueprint: ExtensionBlueprint<{
@@ -57,6 +60,17 @@ export type TechDocsAddonOptions<TAddonProps = {}> = {
   name: string;
   location: keyof typeof TechDocsAddonLocations;
   component: ComponentType<TAddonProps>;
+};
+
+// @alpha (undocumented)
+export function useTechdocsReaderIconLinkProps(options: {
+  translationRef: TranslationRef;
+  externalRouteRef: ExternalRouteRef;
+}): {
+  label: string;
+  disabled: boolean;
+  icon: JSX_2.Element;
+  href: string | undefined;
 };
 
 // (No @packageDocumentation comment for this package)

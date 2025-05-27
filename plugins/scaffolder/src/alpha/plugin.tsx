@@ -26,6 +26,7 @@ import {
   selectedTemplateRouteRef,
   templatingExtensionsRouteRef,
   viewTechDocRouteRef,
+  createFromTemplateRouteRef,
 } from '../routes';
 import {
   repoUrlPickerFormField,
@@ -33,8 +34,28 @@ import {
   scaffolderPage,
   scaffolderApi,
 } from './extensions';
-import { formFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
+import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import {
+  formFieldsApi,
+  useScaffolderTemplateIconLinkProps,
+} from '@backstage/plugin-scaffolder-react/alpha';
 import { formDecoratorsApi } from './api';
+import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { scaffolderTranslationRef } from '../translation';
+
+/** @alpha */
+const scaffolderEntityIconLink = EntityIconLinkBlueprint.make({
+  name: 'launch-template',
+  params: {
+    filter: isTemplateEntityV1beta3,
+    useProps: () => {
+      return useScaffolderTemplateIconLinkProps({
+        translationRef: scaffolderTranslationRef,
+        externalRouteRef: createFromTemplateRouteRef,
+      });
+    },
+  },
+});
 
 /** @alpha */
 export default createFrontendPlugin({
@@ -51,12 +72,14 @@ export default createFrontendPlugin({
   }),
   externalRoutes: convertLegacyRouteRefs({
     registerComponent: registerComponentRouteRef,
+    createFromTemplate: createFromTemplateRouteRef,
     viewTechDoc: viewTechDocRouteRef,
   }),
   extensions: [
     scaffolderApi,
     scaffolderPage,
     scaffolderNavItem,
+    scaffolderEntityIconLink,
     formDecoratorsApi,
     formFieldsApi,
     repoUrlPickerFormField,

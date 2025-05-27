@@ -20,6 +20,15 @@ import {
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 
+import {
+  EntityPredicate,
+  entityPredicateToFilterFunction,
+} from '../predicates';
+import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
+
+import { entityFilterFunctionDataRef } from './extensionData';
+import { Entity } from '@backstage/catalog-model';
+
 const entityIconLinkPropsDataRef = createExtensionDataRef<
   () => IconLinkVerticalProps
 >().with({
@@ -30,28 +39,27 @@ const entityIconLinkPropsDataRef = createExtensionDataRef<
 export const EntityIconLinkBlueprint = createExtensionBlueprint({
   kind: 'entity-icon-link',
   attachTo: { id: 'entity-card:catalog/about', input: 'iconLinks' },
-  output: [entityIconLinkPropsDataRef],
+  output: [entityIconLinkPropsDataRef, entityFilterFunctionDataRef.optional()],
   dataRefs: {
-    props: entityIconLinkPropsDataRef,
+    useProps: entityIconLinkPropsDataRef,
+    filterFunction: entityFilterFunctionDataRef,
   },
   config: {
     schema: {
       label: z => z.string().optional(),
       title: z => z.string().optional(),
-      color: z => z.enum(['primary', 'secondary']).optional(),
-      href: z => z.string().optional(),
-      hidden: z => z.boolean().optional(),
-      disabled: z => z.boolean().optional(),
+      filter: z => createEntityPredicateSchema(z).optional(),
     },
   },
   *factory(
     params: {
-      props: IconLinkVerticalProps | (() => IconLinkVerticalProps);
+      useProps: () => Omit<IconLinkVerticalProps, 'color'>;
+      filter?: EntityPredicate | ((entity: Entity) => boolean);
     },
     { config },
   ) {
     yield entityIconLinkPropsDataRef(() => ({
-      ...(typeof params.props === 'function' ? params.props() : params.props),
+      ...params.useProps(),
       ...Object.entries(config).reduce((rest, [key, value]) => {
         // Only include properties that are defined in the config
         // to avoid overriding defaults with undefined values
@@ -59,13 +67,22 @@ export const EntityIconLinkBlueprint = createExtensionBlueprint({
           return {
             ...rest,
             [key]: value,
-            // Removing the "onClick" handler if href is provided prevents the handler
-            // from redirecting to a different page
-            ...(key === 'href' ? { onClick: undefined } : {}),
           };
         }
         return rest;
       }, {}),
     }));
+
+    if (config.filter) {
+      yield entityFilterFunctionDataRef(
+        entityPredicateToFilterFunction(config.filter),
+      );
+    } else if (typeof params.filter === 'function') {
+      yield entityFilterFunctionDataRef(params.filter);
+    } else if (params.filter) {
+      yield entityFilterFunctionDataRef(
+        entityPredicateToFilterFunction(params.filter),
+      );
+    }
   },
 });

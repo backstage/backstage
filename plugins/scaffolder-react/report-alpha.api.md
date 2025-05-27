@@ -14,6 +14,7 @@ import { Dispatch } from 'react';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { FieldSchema } from '@backstage/plugin-scaffolder-react';
@@ -344,8 +345,8 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'stepper.backButtonText': 'Back';
     readonly 'stepper.createButtonText': 'Create';
     readonly 'stepper.reviewButtonText': 'Review';
-    readonly 'stepper.nextButtonText': 'Next';
     readonly 'stepper.stepIndexLabel': 'Step {{index, number}}';
+    readonly 'stepper.nextButtonText': 'Next';
     readonly 'templateCategoryPicker.title': 'Categories';
     readonly 'templateCard.noDescription': 'No description';
     readonly 'templateCard.chooseButtonText': 'Choose';
@@ -483,6 +484,17 @@ export const useFilteredSchemaProperties: (
 export const useFormDataFromQuery: (
   initialState?: Record<string, JsonValue>,
 ) => [Record<string, any>, Dispatch<SetStateAction<Record<string, any>>>];
+
+// @alpha (undocumented)
+export function useScaffolderTemplateIconLinkProps(options: {
+  translationRef: TranslationRef;
+  externalRouteRef: ExternalRouteRef;
+}): {
+  label: string;
+  icon: JSX_2.Element;
+  disabled: boolean;
+  href: string | undefined;
+};
 
 // @alpha (undocumented)
 export const useTemplateParameterSchema: (templateRef: string) => {

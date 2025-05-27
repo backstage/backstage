@@ -12,14 +12,17 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
 import { TechDocsAddonOptions } from '@backstage/plugin-techdocs-react';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
 const _default: FrontendPlugin<
@@ -32,7 +35,13 @@ const _default: FrontendPlugin<
     }>;
     entityContent: RouteRef<undefined>;
   },
-  {},
+  {
+    viewTechDoc: ExternalRouteRef<{
+      name: string;
+      kind: string;
+      namespace: string;
+    }>;
+  },
   {
     'api:techdocs': ExtensionDefinition<{
       kind: 'api';
@@ -171,6 +180,38 @@ const _default: FrontendPlugin<
         defaultGroup?: keyof defaultEntityContentGroups | (string & {});
         routeRef?: RouteRef;
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+      };
+    }>;
+    'entity-icon-link:techdocs/read-docs': ExtensionDefinition<{
+      kind: 'entity-icon-link';
+      name: 'read-docs';
+      config: {
+        label: string | undefined;
+        title: string | undefined;
+        filter: EntityPredicate | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+        label?: string | undefined;
+        title?: string | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            () => IconLinkVerticalProps,
+            'entity-icon-link-props',
+            {}
+          >;
+      inputs: {};
+      params: {
+        useProps: () => Omit<IconLinkVerticalProps, 'color'>;
+        filter?: EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
     'nav-item:techdocs': ExtensionDefinition<{
@@ -339,6 +380,14 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
   name: undefined;
   params: SearchResultListItemBlueprintParams;
 }>;
+
+// @alpha (undocumented)
+export const techdocsTranslationRef: TranslationRef<
+  'techdocs',
+  {
+    readonly 'aboutCard.viewTechdocs': 'View TechDocs';
+  }
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

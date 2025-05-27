@@ -35,7 +35,10 @@ import {
   convertLegacyRouteRef,
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
-import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import {
+  EntityContentBlueprint,
+  EntityIconLinkBlueprint,
+} from '@backstage/plugin-catalog-react/alpha';
 import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
 import { AddonBlueprint } from '@backstage/plugin-techdocs-react/alpha';
 import { TechDocsClient, TechDocsStorageClient } from './client';
@@ -43,14 +46,35 @@ import {
   rootCatalogDocsRouteRef,
   rootDocsRouteRef,
   rootRouteRef,
+  viewTechDocRouteRef,
 } from './routes';
 import { TechDocsReaderLayout } from './reader';
-import { attachTechDocsAddonComponentData } from '@backstage/plugin-techdocs-react/alpha';
+import {
+  attachTechDocsAddonComponentData,
+  useTechdocsReaderIconLinkProps,
+} from '@backstage/plugin-techdocs-react/alpha';
 import {
   TechDocsAddons,
   techdocsApiRef,
   techdocsStorageApiRef,
 } from '@backstage/plugin-techdocs-react';
+
+import { techdocsTranslationRef } from './translation';
+
+export { techdocsTranslationRef } from './translation';
+
+/** @alpha */
+const techdocsEntityIconLink = EntityIconLinkBlueprint.make({
+  name: 'read-docs',
+  params: {
+    useProps: () => {
+      return useTechdocsReaderIconLinkProps({
+        translationRef: techdocsTranslationRef,
+        externalRouteRef: viewTechDocRouteRef,
+      });
+    },
+  },
+});
 
 /** @alpha */
 const techDocsStorageApi = ApiBlueprint.make({
@@ -243,6 +267,7 @@ export default createFrontendPlugin({
     techDocsNavItem,
     techDocsPage,
     techDocsReaderPage,
+    techdocsEntityIconLink,
     techDocsEntityContent,
     techDocsEntityContentEmptyState,
     techDocsSearchResultListItemExtension,
@@ -251,5 +276,8 @@ export default createFrontendPlugin({
     root: rootRouteRef,
     docRoot: rootDocsRouteRef,
     entityContent: rootCatalogDocsRouteRef,
+  }),
+  externalRoutes: convertLegacyRouteRefs({
+    viewTechDoc: viewTechDocRouteRef,
   }),
 });
