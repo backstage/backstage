@@ -36,13 +36,11 @@ module.exports = {
     },
   },
   create(context) {
-    const packages = getPackageMap(context.getCwd());
+    const packages = getPackageMap(context.cwd);
     if (!packages) {
       return {};
     }
-    const filePath = context.getPhysicalFilename
-      ? context.getPhysicalFilename()
-      : context.getFilename();
+    const filePath = context.physicalFilename;
 
     const localPkg = packages.byPath(filePath);
     if (!localPkg) {
