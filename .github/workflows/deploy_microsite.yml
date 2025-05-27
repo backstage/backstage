@@ -90,9 +90,11 @@ jobs:
             ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-
 
       - name: build API reference (beta)
+        continue-on-error: true # Do not fail the build if the command fails
         run: yarn backstage-repo-tools package-docs
 
       - name: upload API reference (beta)
+        continue-on-error: true # Do not fail the build if the command fails
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: stable-reference-beta
@@ -102,6 +104,7 @@ jobs:
 
       # Always save success cache even if there were failures, that way it can be used in re-triggered builds
       - name: save package-docs cache
+        continue-on-error: true # Do not fail the build if the command fails
         uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
         if: always()
         with:
