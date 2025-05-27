@@ -228,6 +228,7 @@ const apiDocsApisEntityContent = EntityContentBlueprint.make({
 
 export default createFrontendPlugin({
   pluginId: 'api-docs',
+  info: { packageJson: () => import('../package.json') },
   routes: {
     root: convertLegacyRouteRef(rootRoute),
   },

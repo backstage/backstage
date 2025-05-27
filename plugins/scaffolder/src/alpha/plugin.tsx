@@ -39,6 +39,7 @@ import { formDecoratorsApi } from './api';
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'scaffolder',
+  info: { packageJson: () => import('../../package.json') },
   routes: convertLegacyRouteRefs({
     root: rootRouteRef,
     selectedTemplate: selectedTemplateRouteRef,

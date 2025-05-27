@@ -9,6 +9,8 @@ import { ConfigApi } from '@backstage/core-plugin-api';
 import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendFeature as FrontendFeature_2 } from '@backstage/frontend-plugin-api';
+import { FrontendPluginInfo } from '@backstage/frontend-plugin-api';
+import { JsonObject } from '@backstage/types';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
@@ -27,7 +29,7 @@ export type CreateAppRouteBinder = <
 
 // @public
 export function createSpecializedApp(options?: {
-  features?: FrontendFeature[];
+  features?: FrontendFeature_2[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   apis?: ApiHolder;
@@ -37,6 +39,7 @@ export function createSpecializedApp(options?: {
   flags?: {
     allowUnknownExtensionConfig?: boolean;
   };
+  pluginInfoResolver?: FrontendPluginInfoResolver;
 }): {
   apis: ApiHolder;
   tree: AppTree;
@@ -44,4 +47,18 @@ export function createSpecializedApp(options?: {
 
 // @public @deprecated (undocumented)
 export type FrontendFeature = FrontendFeature_2;
+
+// @public
+export type FrontendPluginInfoResolver = (ctx: {
+  packageJson(): Promise<JsonObject | undefined>;
+  manifest(): Promise<JsonObject | undefined>;
+  defaultResolver(sources: {
+    packageJson: JsonObject | undefined;
+    manifest: JsonObject | undefined;
+  }): Promise<{
+    info: FrontendPluginInfo;
+  }>;
+}) => Promise<{
+  info: FrontendPluginInfo;
+}>;
 ```
