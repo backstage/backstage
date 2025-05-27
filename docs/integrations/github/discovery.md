@@ -54,7 +54,7 @@ Certain actions like `transferred` by the `repository` event type will not be su
 
 #### Install and Configure GitHub Events Module
 
-In order to use the builtin events support you'll need to install and configure `@backstage/plugin-events-backend-module-github`. This module will route received events from the generic topic `github` to more specific ones based on the event type (e.g., `github.push`). These more specific events are what the builtin events support is expecting.
+In order to use the built-in events support you'll need to install and configure `@backstage/plugin-events-backend-module-github`. This module will route received events from the generic topic `github` to more specific ones based on the event type (e.g., `github.push`). These more specific events are what the builtin events support is expecting.
 
 First we need to add the package:
 
