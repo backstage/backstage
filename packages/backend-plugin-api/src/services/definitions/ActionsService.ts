@@ -15,6 +15,7 @@
  */
 import { JsonObject, JsonValue } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
+import { BackstageCredentials } from './AuthService';
 
 export type ActionsServiceAction = {
   id: string;
@@ -28,9 +29,12 @@ export type ActionsServiceAction = {
 };
 
 export interface ActionsService {
-  listActions: () => Promise<{ actions: ActionsServiceAction[] }>;
+  listActions: (opts: {
+    credentials: BackstageCredentials;
+  }) => Promise<{ actions: ActionsServiceAction[] }>;
   invokeAction(opts: {
     id: string;
     input?: JsonObject;
+    credentials: BackstageCredentials;
   }): Promise<{ output: JsonValue }>;
 }
