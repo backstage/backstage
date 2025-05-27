@@ -15,12 +15,10 @@
  */
 
 import {
-  ActionsRegistryActionOptions,
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { PluginActionsRegistry } from './PluginActionsRegistry';
-import { z, ZodType } from 'zod';
+import { DefaultActionsRegistryService } from './DefaultActionsRegistryService';
 
 export const actionsRegistryServiceFactory = createServiceFactory({
   service: coreServices.actionsRegistry,
@@ -29,29 +27,18 @@ export const actionsRegistryServiceFactory = createServiceFactory({
     httpRouter: coreServices.httpRouter,
     httpAuth: coreServices.httpAuth,
     logger: coreServices.logger,
+    auth: coreServices.auth,
   },
-  factory: ({ metadata, httpRouter, httpAuth, logger }) => {
-    const pluginActionsRegistry = PluginActionsRegistry.create({
+  factory: ({ metadata, httpRouter, httpAuth, logger, auth }) => {
+    const actionsRegistryService = DefaultActionsRegistryService.create({
       httpAuth,
       logger,
+      auth,
+      metadata,
     });
 
-    httpRouter.use(pluginActionsRegistry.getRouter());
+    httpRouter.use(actionsRegistryService.getRouter());
 
-    return {
-      async register<
-        TInputSchema extends ZodType,
-        TOutputSchema extends ZodType,
-      >(options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>) {
-        pluginActionsRegistry.register({
-          ...options,
-          id: `${metadata.getId()}:${options.name}`,
-          schema: {
-            input: options.schema?.input?.(z),
-            output: options.schema?.output?.(z),
-          },
-        });
-      },
-    };
+    return actionsRegistryService;
   },
 });

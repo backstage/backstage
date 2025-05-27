@@ -15,25 +15,30 @@
  */
 
 import {
-  ActionsRegistryAction,
+  ActionsRegistryActionOptions,
+  ActionsRegistryService,
+  AuthService,
   HttpAuthService,
   LoggerService,
+  PluginMetadataService,
 } from '@backstage/backend-plugin-api';
 import PromiseRouter from 'express-promise-router';
 import { Router, json } from 'express';
 import { z, ZodType } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
-import { InputError, NotFoundError } from '@backstage/errors';
+import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
 
-export class PluginActionsRegistry {
+export class DefaultActionsRegistryService implements ActionsRegistryService {
   private constructor(
     private readonly actions: Map<
       string,
-      ActionsRegistryAction<ZodType, ZodType>
+      ActionsRegistryActionOptions<any, any>
     >,
     private readonly router: Router,
     private readonly logger: LoggerService,
     private readonly httpAuth: HttpAuthService,
+    private readonly auth: AuthService,
+    private readonly metadata: PluginMetadataService,
   ) {
     this.bindRoutes();
   }
@@ -41,15 +46,21 @@ export class PluginActionsRegistry {
   static create({
     httpAuth,
     logger,
+    auth,
+    metadata,
   }: {
     httpAuth: HttpAuthService;
     logger: LoggerService;
-  }): PluginActionsRegistry {
-    return new PluginActionsRegistry(
+    auth: AuthService;
+    metadata: PluginMetadataService;
+  }): DefaultActionsRegistryService {
+    return new DefaultActionsRegistryService(
       new Map(),
       PromiseRouter(),
       logger,
       httpAuth,
+      auth,
+      metadata,
     );
   }
 
@@ -58,24 +69,31 @@ export class PluginActionsRegistry {
   }
 
   register<TInputSchema extends ZodType, TOutputSchema extends ZodType>(
-    options: ActionsRegistryAction<TInputSchema, TOutputSchema>,
+    options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>,
   ): void {
-    this.actions.set(options.id, options as ActionsRegistryAction<any, any>);
+    const id = `${this.metadata.getId()}:${options.name}`;
+
+    if (this.actions.has(id)) {
+      throw new Error(`Action with id "${id}" is already registered`);
+    }
+
+    this.actions.set(id, options);
   }
 
   private bindRoutes() {
     this.router.use(json());
 
-    this.router.get('/.backstage/v1/actions', (_, res) => {
+    this.router.get('/.backstage/actions/v1/actions', (_, res) => {
       return res.json({
-        actions: Array.from(this.actions.entries()).map(([_id, action]) => ({
+        actions: Array.from(this.actions.entries()).map(([id, action]) => ({
+          id,
           ...action,
           schema: {
             input: action.schema?.input
-              ? zodToJsonSchema(action.schema.input)
+              ? zodToJsonSchema(action.schema.input(z))
               : zodToJsonSchema(z.any()),
             output: action.schema?.output
-              ? zodToJsonSchema(action.schema.output)
+              ? zodToJsonSchema(action.schema.output(z))
               : zodToJsonSchema(z.any()),
           },
         })),
@@ -83,7 +101,7 @@ export class PluginActionsRegistry {
     });
 
     this.router.post(
-      '/.backstage/v1/actions/:actionId/invoke',
+      '/.backstage/actions/v1/actions/:actionId/invoke',
       async (req, res) => {
         const action = this.actions.get(req.params.actionId);
 
@@ -92,7 +110,7 @@ export class PluginActionsRegistry {
         }
 
         const input = action.schema?.input
-          ? action.schema.input.safeParse(req.body)
+          ? action.schema.input(z).safeParse(req.body)
           : ({ success: true, data: undefined } as const);
 
         if (!input.success) {
@@ -103,7 +121,19 @@ export class PluginActionsRegistry {
         }
 
         const credentials = await this.httpAuth.credentials(req);
+        if (this.auth.isPrincipal(credentials, 'user')) {
+          if (!credentials.principal.actor) {
+            throw new NotAllowedError(
+              `Actions must be invoked by a service, not a user`,
+            );
+          }
+        } else if (this.auth.isPrincipal(credentials, 'none')) {
+          throw new NotAllowedError(
+            `Actions must be invoked by a service, not an anonymous request`,
+          );
+        }
 
+        // todo: wrap up in forwardederror?
         const result = await action.action({
           input: input.data,
           credentials,
@@ -111,8 +141,8 @@ export class PluginActionsRegistry {
         });
 
         const output = action.schema?.output
-          ? action.schema.output.safeParse(result)
-          : ({ success: true, data: result } as const);
+          ? action.schema.output(z).safeParse(result?.output)
+          : ({ success: true, data: result?.output } as const);
 
         if (!output.success) {
           throw new InputError(
@@ -121,7 +151,7 @@ export class PluginActionsRegistry {
           );
         }
 
-        return res.json({ response: output.data });
+        return res.json({ output: output.data });
       },
     );
   }

@@ -23,25 +23,6 @@ export type ActionsRegistryActionContext<TInputSchema extends ZodType> = {
   credentials: BackstageCredentials;
 };
 
-// todo: opaque type?
-export type ActionsRegistryAction<
-  TInputSchema extends ZodType,
-  TOutputSchema extends ZodType,
-> = {
-  id: string;
-  name: string;
-  title: string;
-  description: string;
-  // todo: what about additional metadata?
-  schema?: {
-    input?: TInputSchema;
-    output?: TOutputSchema;
-  };
-  action: (
-    context: ActionsRegistryActionContext<TInputSchema>,
-  ) => Promise<TOutputSchema extends ZodType ? z.infer<TOutputSchema> : void>;
-};
-
 export type ActionsRegistryActionOptions<
   TInputSchema extends ZodType,
   TOutputSchema extends ZodType,
@@ -49,14 +30,15 @@ export type ActionsRegistryActionOptions<
   name: string;
   title: string;
   description: string;
-  // todo: what about additional metadata?
   schema?: {
     input?: (zod: typeof z) => TInputSchema;
     output?: (zod: typeof z) => TOutputSchema;
   };
   action: (
     context: ActionsRegistryActionContext<TInputSchema>,
-  ) => Promise<TOutputSchema extends ZodType ? z.infer<TOutputSchema> : void>;
+  ) => Promise<
+    TOutputSchema extends ZodType ? { output: z.infer<TOutputSchema> } : void
+  >;
 };
 
 export interface ActionsRegistryService {

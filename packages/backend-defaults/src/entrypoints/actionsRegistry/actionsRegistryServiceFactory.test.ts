@@ -25,13 +25,14 @@ import {
 import { httpRouterServiceFactory } from '../httpRouter';
 import request from 'supertest';
 import { actionsRegistryServiceFactory } from './actionsRegistryServiceFactory';
+import { InputError } from '@backstage/errors';
 
 describe('actionsRegistryServiceFactory', () => {
   const defaultServices = [
     actionsRegistryServiceFactory,
     httpRouterServiceFactory,
     mockServices.httpAuth.factory({
-      defaultCredentials: mockCredentials.user(),
+      defaultCredentials: mockCredentials.service('user:default/mock'),
     }),
   ];
 
@@ -110,7 +111,7 @@ describe('actionsRegistryServiceFactory', () => {
     });
   });
 
-  describe('/.backstage/v1/actions', () => {
+  describe('/.backstage/actions/v1/actions', () => {
     it('should allow registering of actions', async () => {
       const pluginSubject = createBackendPlugin({
         pluginId: 'my-plugin',
@@ -146,7 +147,7 @@ describe('actionsRegistryServiceFactory', () => {
       });
 
       const { body, status } = await request(server).get(
-        '/api/my-plugin/.backstage/v1/actions',
+        '/api/my-plugin/.backstage/actions/v1/actions',
       );
 
       expect(status).toBe(200);
@@ -205,7 +206,7 @@ describe('actionsRegistryServiceFactory', () => {
       });
 
       const { body, status } = await request(server).get(
-        '/api/my-plugin/.backstage/v1/actions',
+        '/api/my-plugin/.backstage/actions/v1/actions',
       );
 
       expect(status).toBe(200);
@@ -226,11 +227,11 @@ describe('actionsRegistryServiceFactory', () => {
     });
   });
 
-  describe('/.backstage/v1/actions/:actionId/invoke', () => {
+  describe('/.backstage/actions/v1/actions/:actionId/invoke', () => {
     const mockAction = jest.fn();
 
     beforeEach(() => {
-      mockAction.mockResolvedValue({ ok: true });
+      mockAction.mockResolvedValue({ output: { ok: true } });
     });
 
     const pluginSubject = createBackendPlugin({
@@ -268,7 +269,7 @@ describe('actionsRegistryServiceFactory', () => {
       });
 
       const { body, status } = await request(server).post(
-        '/api/my-plugin/.backstage/v1/actions/test/invoke',
+        '/api/my-plugin/.backstage/actions/v1/actions/test/invoke',
       );
 
       expect(status).toBe(404);
@@ -285,7 +286,9 @@ describe('actionsRegistryServiceFactory', () => {
       });
 
       const { body, status } = await request(server)
-        .post('/api/my-plugin/.backstage/v1/actions/my-plugin:test/invoke')
+        .post(
+          '/api/my-plugin/.backstage/actions/v1/actions/my-plugin:test/invoke',
+        )
         .send({
           name: 123,
         });
@@ -306,7 +309,9 @@ describe('actionsRegistryServiceFactory', () => {
       });
 
       await request(server)
-        .post('/api/my-plugin/.backstage/v1/actions/my-plugin:test/invoke')
+        .post(
+          '/api/my-plugin/.backstage/actions/v1/actions/my-plugin:test/invoke',
+        )
         .send({
           name: 'test',
         });
@@ -318,11 +323,40 @@ describe('actionsRegistryServiceFactory', () => {
         credentials: {
           $$type: '@backstage/BackstageCredentials',
           principal: {
-            type: 'user',
-            userEntityRef: 'user:default/mock',
+            type: 'service',
+            subject: 'user:default/mock',
           },
         },
         logger: expect.anything(),
+      });
+    });
+
+    it('should throw an error if the action is invoked by a user', async () => {
+      const testServices = [
+        actionsRegistryServiceFactory,
+        httpRouterServiceFactory,
+        mockServices.httpAuth.factory({
+          defaultCredentials: mockCredentials.user(),
+        }),
+      ];
+
+      const { server } = await startTestBackend({
+        features: [pluginSubject, ...testServices],
+      });
+
+      const { body, status } = await request(server)
+        .post(
+          '/api/my-plugin/.backstage/actions/v1/actions/my-plugin:test/invoke',
+        )
+        .send({
+          name: 'test',
+        });
+
+      expect(status).toBe(403);
+      expect(body).toMatchObject({
+        error: {
+          message: 'Actions must be invoked by a service, not a user',
+        },
       });
     });
 
@@ -334,7 +368,9 @@ describe('actionsRegistryServiceFactory', () => {
       mockAction.mockResolvedValue({ ok: 'blob' });
 
       const { body, status } = await request(server)
-        .post('/api/my-plugin/.backstage/v1/actions/my-plugin:test/invoke')
+        .post(
+          '/api/my-plugin/.backstage/actions/v1/actions/my-plugin:test/invoke',
+        )
         .send({
           name: 'test',
         });
@@ -355,13 +391,38 @@ describe('actionsRegistryServiceFactory', () => {
       });
 
       const { body, status } = await request(server)
-        .post('/api/my-plugin/.backstage/v1/actions/my-plugin:test/invoke')
+        .post(
+          '/api/my-plugin/.backstage/actions/v1/actions/my-plugin:test/invoke',
+        )
         .send({
           name: 'test',
         });
 
       expect(status).toBe(200);
-      expect(body).toMatchObject({ response: { ok: true } });
+      expect(body).toMatchObject({ output: { ok: true } });
+    });
+
+    it('should return the error from the action if it throws', async () => {
+      const { server } = await startTestBackend({
+        features: [pluginSubject, ...defaultServices],
+      });
+
+      mockAction.mockRejectedValue(new InputError('test'));
+
+      const { body, status } = await request(server)
+        .post(
+          '/api/my-plugin/.backstage/actions/v1/actions/my-plugin:test/invoke',
+        )
+        .send({
+          name: 'test',
+        });
+
+      expect(status).toBe(400);
+      expect(body).toMatchObject({
+        error: {
+          message: 'test',
+        },
+      });
     });
   });
 });

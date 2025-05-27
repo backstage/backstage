@@ -36,7 +36,22 @@ export namespace coreServices {
   });
 
   /**
-   * Service for registering and managing actions.
+   * Service for calling distributed actions
+   *
+   * See {@link ActionsService}
+   * and {@link https://backstage.io/docs/backend-system/core-services/actions | the service docs}
+   * for more information.
+   *
+   * @public
+   */
+  export const actions = createServiceRef<
+    import('./ActionsService').ActionsService
+  >({
+    id: 'core.actions',
+  });
+
+  /**
+   * Service for registering and managing distributed actions.
    *
    * See {@link ActionsRegistryService}
    * and {@link https://backstage.io/docs/backend-system/core-services/actions-registry | the service docs}

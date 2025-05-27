@@ -18,8 +18,9 @@ export type {
   ActionsRegistryService,
   ActionsRegistryActionOptions,
   ActionsRegistryActionContext,
-  ActionsRegistryAction,
 } from './ActionsRegistryService';
+
+export type { ActionsService, ActionsServiceAction } from './ActionsService';
 export type {
   AuditorService,
   AuditorServiceCreateEventOptions,
