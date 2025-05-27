@@ -176,7 +176,9 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 
 ### Authorizing scaffolder tasks
 
-The scaffolder plugin also exposes permissions that can restrict access to tasks, task logs, task creation, and task cancellation. This can be useful if you want to control who has access to these areas of the scaffolder.
+The scaffolder plugin also exposes permissions that can restrict access to tasks, task logs, task creation, and task cancellation. This can be useful if you want to control who has access to these areas of the scaffolder. You can also restrict access to tasks to allow template owners to view all runs of their templates.
+
+The following is a simple example of how to do this:
 
 ```ts title="packages/src/backend/plugins/permissions.ts"
 /* highlight-add-start */
@@ -185,6 +187,21 @@ import {
   taskCreatePermission,
   taskReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
+import {
+  AuthorizeResult,
+  isPermission,
+  PolicyDecision,
+} from '@backstage/plugin-permission-common';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+  PolicyQueryUser,
+} from '@backstage/plugin-permission-node';
+import {
+  createScaffolderTaskConditionalDecision,
+  scaffolderTaskConditions,
+} from '@backstage/plugin-scaffolder-backend/alpha';
+import { CatalogClient } from '@backstage/catalog-client';
 /* highlight-add-end */
 
 class ExamplePermissionPolicy implements PermissionPolicy {
@@ -193,26 +210,49 @@ class ExamplePermissionPolicy implements PermissionPolicy {
     user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
     /* highlight-add-start */
-    if (isPermission(request.permission, taskCreatePermission)) {
-      if (user?.info.userEntityRef === 'user:default/spiderman') {
+    if (isPermission(request.permission, taskReadPermission)) {
+      // Allow admin1 to read any task
+      if (user?.info.userEntityRef === 'user:default/admin1') {
         return {
           result: AuthorizeResult.ALLOW,
         };
       }
+
+      // Allow users to read task runs of templates they own
+      return createScaffolderTaskConditionalDecision(
+        request.permission,
+        scaffolderTaskConditions.hasTemplateOwners({
+          templateOwners: user?.info.userEntityRef
+            ? [user?.info.userEntityRef]
+            : [],
+        }),
+      );
+    }
+
+    if (isPermission(request.permission, taskCreatePermission)) {
+      const userArray = ['user:default/spiderman', 'user:default/admin1'];
+      const allowed = userArray.some(
+        allowedUser => user?.info.userEntityRef === allowedUser,
+      );
+      if (allowed) {
+        return {
+          result: AuthorizeResult.ALLOW,
+        };
+      }
+      return {
+        result: AuthorizeResult.DENY,
+      };
     }
     if (isPermission(request.permission, taskCancelPermission)) {
-      if (user?.info.userEntityRef === 'user:default/spiderman') {
+      // Allow admin1 to cancel any task
+      if (user?.info.userEntityRef === 'user:default/admin1') {
         return {
           result: AuthorizeResult.ALLOW,
         };
       }
-    }
-    if (isPermission(request.permission, taskReadPermission)) {
-      if (user?.info.userEntityRef === 'user:default/spiderman') {
-        return {
-          result: AuthorizeResult.ALLOW,
-        };
-      }
+      return {
+        result: AuthorizeResult.DENY,
+      };
     }
     /* highlight-add-end */
 
@@ -225,11 +265,19 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 
 In the provided example permission policy, we only grant the `spiderman` user permissions to perform/access the following actions/resources:
 
-- Read all scaffolder tasks and their associated events/logs.
-- Cancel any ongoing scaffolder tasks.
+- Read scaffolder task runs of templates owned by `spiderman`
+- Cancel ongoing scaffolder tasks created by `spiderman`.
 - Trigger software templates, which effectively creates new scaffolder tasks.
 
-Any other user would be denied access to these actions/resources.
+On the other hand, the `admin1` user is granted:
+
+- Read access to all scaffolder tasks and their associated events/logs.
+- The ability to cancel any ongoing scaffolder task.
+- The ability to trigger software templates.
+
+All other users are granted permissions to perform/access the following actions/resources:
+
+- Read scaffolder task runs of the templates owned by the user
 
 Although the rules exported by the scaffolder are simple, combining them can help you achieve more complex use cases.
 

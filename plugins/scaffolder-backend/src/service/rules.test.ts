@@ -22,10 +22,13 @@ import {
   hasProperty,
   hasStringProperty,
   hasTag,
+  hasTemplateOwners,
 } from './rules';
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { SerializedTask } from '@backstage/plugin-scaffolder-node';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 
 describe('hasTag', () => {
   describe('apply', () => {
@@ -521,5 +524,84 @@ describe('hasStringProperty', () => {
         ).toEqual(true);
       },
     );
+  });
+});
+
+describe('hasTemplateOwners', () => {
+  describe('apply', () => {
+    const task: SerializedTask = {
+      id: 'a-random-id',
+      spec: {
+        templateInfo: { entityRef: 'template:default/test-1' },
+      } as TaskSpec,
+      status: 'completed',
+      createdAt: '',
+      templateOwner: 'template:default/test-1',
+    };
+    it('returns false when templateOwners is an empty array', () => {
+      expect(
+        hasTemplateOwners.apply(task, {
+          templateOwners: [],
+        }),
+      ).toEqual(false);
+    });
+    it('returns false when templateOwner is not matched (single entityRef in templateOwners)', () => {
+      expect(
+        hasTemplateOwners.apply(task, {
+          templateOwners: ['template:default/not-matched'],
+        }),
+      ).toEqual(false);
+    });
+    it('returns true when templateOwner matches (single entityRef in templateOwners)', () => {
+      expect(
+        hasTemplateOwners.apply(task, {
+          templateOwners: ['template:default/test-1'],
+        }),
+      ).toEqual(true);
+    });
+    it('returns false when templateOwners is not matched (multiple entitRefs in templateOwners)', () => {
+      expect(
+        hasTemplateOwners.apply(task, {
+          templateOwners: [
+            'template:default/test-2',
+            'template:default/test-3',
+            'template:default/test-4',
+          ],
+        }),
+      ).toEqual(false);
+    });
+    it('returns true when templateOwners matches (multiple entityRefs in templateOwners)', () => {
+      expect(
+        hasTemplateOwners.apply(task, {
+          templateOwners: [
+            'template:default/test-2',
+            'template:default/test-1',
+            'template:default/test-3',
+          ],
+        }),
+      ).toEqual(true);
+    });
+  });
+  describe('toQuery', () => {
+    it('returns the correct query filter with values (single entityRef in templateOwners)', () => {
+      expect(
+        hasTemplateOwners.toQuery({
+          templateOwners: ['template:default/test-1'],
+        }),
+      ).toEqual({
+        property: 'templateOwners',
+        values: ['template:default/test-1'],
+      });
+    });
+  });
+  it('returns the correct query filter with values (multiple entityRefs in templateEntityRefs)', () => {
+    expect(
+      hasTemplateOwners.toQuery({
+        templateOwners: ['template:default/test-1', 'template:default/test-2'],
+      }),
+    ).toEqual({
+      property: 'templateOwners',
+      values: ['template:default/test-1', 'template:default/test-2'],
+    });
   });
 });

@@ -25,6 +25,7 @@ import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker, TaskManager } from './StorageTaskBroker';
 import { mockServices } from '@backstage/backend-test-utils';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 async function createStore(): Promise<DatabaseTaskStore> {
   const manager = DatabaseManager.fromConfig(
@@ -40,6 +41,7 @@ async function createStore(): Promise<DatabaseTaskStore> {
 
   return await DatabaseTaskStore.create({
     database: manager,
+    catalog: catalogServiceMock.mock(),
   });
 }
 

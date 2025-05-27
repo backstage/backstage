@@ -15,15 +15,19 @@
  */
 
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
+
 import {
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  RESOURCE_TYPE_SCAFFOLDER_TASK,
 } from '@backstage/plugin-scaffolder-common/alpha';
 
 import {
   TemplateEntityStepV1beta3,
   TemplateParametersV1beta3,
 } from '@backstage/plugin-scaffolder-common';
+
+import { SerializedTask, TaskFilter } from '@backstage/plugin-scaffolder-node';
 
 import { z } from 'zod';
 import { JsonObject, JsonPrimitive } from '@backstage/types';
@@ -129,6 +133,40 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
   });
 }
 
+export const createTaskPermissionRule = makeCreatePermissionRule<
+  SerializedTask,
+  {
+    property: TaskFilter['property'];
+    values: any;
+  },
+  typeof RESOURCE_TYPE_SCAFFOLDER_TASK
+>();
+
+export const hasTemplateOwners = createTaskPermissionRule({
+  name: 'HAS_TEMPLATE_OWNERS',
+  description: 'Match tasks with the given template owners',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
+  paramsSchema: z.object({
+    templateOwners: z
+      .array(z.string())
+      .describe(
+        'List of template owners; only tasks related to the templates owned by these users will be viewable',
+      ),
+  }),
+  apply: (resource, { templateOwners }) => {
+    if (!resource.templateOwner) {
+      return false;
+    }
+    return templateOwners.includes(resource.templateOwner);
+  },
+  toQuery: ({ templateOwners }) => {
+    return {
+      property: 'templateOwners' as TaskFilter['property'],
+      values: templateOwners,
+    };
+  },
+});
+
 export const scaffolderTemplateRules = { hasTag };
 export const scaffolderActionRules = {
   hasActionId,
@@ -136,3 +174,4 @@ export const scaffolderActionRules = {
   hasNumberProperty,
   hasStringProperty,
 };
+export const scaffolderTaskRules = { hasTemplateOwners };

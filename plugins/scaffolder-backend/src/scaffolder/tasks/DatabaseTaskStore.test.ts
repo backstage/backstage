@@ -22,6 +22,7 @@ import { ConflictError } from '@backstage/errors';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import { EventsService } from '@backstage/plugin-events-node';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 const createStore = async (events?: EventsService) => {
   const manager = DatabaseManager.fromConfig(
@@ -37,6 +38,7 @@ const createStore = async (events?: EventsService) => {
   const store = await DatabaseTaskStore.create({
     database: manager,
     events,
+    catalog: catalogServiceMock.mock(),
   });
   return { store, manager };
 };
@@ -360,6 +362,7 @@ describe('DatabaseTaskStore', () => {
         createdAt: expect.any(String),
         lastHeartbeatAt: null,
         createdBy: 'me',
+        templateOwner: null,
       },
     });
   });
@@ -462,6 +465,7 @@ describe('DatabaseTaskStore', () => {
         createdAt: expect.any(String),
         lastHeartbeatAt: expect.any(String),
         createdBy: 'me',
+        templateOwner: null,
       },
     });
   });

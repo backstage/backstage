@@ -290,6 +290,7 @@ describe.each([
         const logger = loggerToWinstonLogger(mockServices.logger.mock());
         const databaseTaskStore = await DatabaseTaskStore.create({
           database: createDatabase(),
+          catalog: catalogClient,
         });
         taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
 
@@ -520,6 +521,7 @@ describe.each([
                 status: 'completed',
                 createdAt: '',
                 createdBy: '',
+                templateOwner: '',
               },
             ],
             totalTasks: 1,
@@ -539,6 +541,7 @@ describe.each([
                 status: 'completed',
                 createdAt: '',
                 createdBy: '',
+                templateOwner: '',
               },
             ],
             totalTasks: 1,
@@ -556,6 +559,7 @@ describe.each([
                 status: 'completed',
                 createdAt: '',
                 createdBy: 'user:default/foo',
+                templateOwner: '',
               },
             ],
             totalTasks: 1,
@@ -574,6 +578,7 @@ describe.each([
                 status: 'completed',
                 createdAt: '',
                 createdBy: 'user:default/foo',
+                templateOwner: '',
               },
             ],
             totalTasks: 1,
@@ -604,6 +609,7 @@ describe.each([
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
+            templateOwner: '',
           });
 
           const response = await request(app).get(`/v2/tasks/a-random-id`);
@@ -611,10 +617,57 @@ describe.each([
           expect(response.body.status).toBe('completed');
           expect(response.body.secrets).toBeUndefined();
         });
+        it('disallows users from seeing runs of templates they do not own', async () => {
+          jest
+            .spyOn(permissionApi, 'authorizeConditional')
+            .mockImplementationOnce(async () => [
+              {
+                conditions: {
+                  resourceType: 'scaffolder-task',
+                  rule: 'HAS_TEMPLATE_OWNERS',
+                  params: {
+                    templateOwners: ['user'],
+                  },
+                },
+                pluginId: 'scaffolder',
+                resourceType: 'scaffolder-task',
+                result: AuthorizeResult.CONDITIONAL,
+              },
+            ]);
+          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+            id: 'a-random-id',
+            spec: {
+              templateInfo: { entityRef: 'template:default/not-foobar' },
+            } as any,
+            status: 'completed',
+            createdAt: '',
+            secrets: {
+              backstageToken: token,
+              __initiatorCredentials: JSON.stringify(credentials),
+            },
+            templateOwner: 'not-user',
+          });
+
+          const response = await request(app).get(`/v2/tasks/a-random-id`);
+          expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
+          expect(response.error).not.toBeFalsy();
+        });
       });
 
       describe('GET /v2/tasks/:taskId/eventstream', () => {
         it('should return log messages', async () => {
+          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            secrets: {
+              backstageToken: token,
+              __initiatorCredentials: JSON.stringify(credentials),
+            },
+            createdBy: '',
+            templateOwner: '',
+          });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
             taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
@@ -694,6 +747,18 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         });
 
         it('should return log messages with after query', async () => {
+          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            secrets: {
+              backstageToken: token,
+              __initiatorCredentials: JSON.stringify(credentials),
+            },
+            createdBy: '',
+            templateOwner: '',
+          });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
             taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
@@ -752,6 +817,18 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
       describe('GET /v2/tasks/:taskId/events', () => {
         it('should return log messages', async () => {
+          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            secrets: {
+              backstageToken: token,
+              __initiatorCredentials: JSON.stringify(credentials),
+            },
+            createdBy: '',
+            templateOwner: '',
+          });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
             taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
@@ -809,6 +886,18 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         });
 
         it('should return log messages with after query', async () => {
+          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            secrets: {
+              backstageToken: token,
+              __initiatorCredentials: JSON.stringify(credentials),
+            },
+            createdBy: '',
+            templateOwner: '',
+          });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
             taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
@@ -832,6 +921,43 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             after: 10,
           });
           expect(subscriber!.closed).toBe(true);
+        });
+        it('disallows users from seeing runs of templates they do not own', async () => {
+          jest
+            .spyOn(permissionApi, 'authorizeConditional')
+            .mockImplementationOnce(async () => [
+              {
+                conditions: {
+                  resourceType: 'scaffolder-task',
+                  rule: 'HAS_TEMPLATE_OWNERS',
+                  params: {
+                    templateOwners: ['user'],
+                  },
+                },
+                pluginId: 'scaffolder',
+                resourceType: 'scaffolder-task',
+                result: AuthorizeResult.CONDITIONAL,
+              },
+            ]);
+          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+            id: 'a-random-id',
+            spec: {
+              templateInfo: { entityRef: 'template:default/not-foobar' },
+            } as any,
+            status: 'completed',
+            createdAt: '',
+            secrets: {
+              backstageToken: token,
+              __initiatorCredentials: JSON.stringify(credentials),
+            },
+            templateOwner: 'not-user',
+          });
+
+          const response = await request(app).get(
+            `/v2/tasks/a-random-id/events`,
+          );
+          expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
+          expect(response.error).not.toBeFalsy();
         });
       });
 
@@ -867,6 +993,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         const logger = loggerToWinstonLogger(mockServices.logger.mock());
         const databaseTaskStore = await DatabaseTaskStore.create({
           database: createDatabase(),
+          catalog: catalogClient,
         });
         taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
 
@@ -1329,6 +1456,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
                 status: 'completed',
                 createdAt: '',
                 createdBy: '',
+                templateOwner: '',
               },
             ],
             totalTasks: 1,
@@ -1348,6 +1476,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
                 status: 'completed',
                 createdAt: '',
                 createdBy: '',
+                templateOwner: '',
               },
             ],
             totalTasks: 1,
@@ -1365,6 +1494,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
                 status: 'completed',
                 createdAt: '',
                 createdBy: 'user:default/foo',
+                templateOwner: '',
               },
             ],
             totalTasks: 1,
@@ -1389,6 +1519,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
                 status: 'completed',
                 createdAt: '',
                 createdBy: 'user:default/foo',
+                templateOwner: '',
               },
             ],
             totalTasks: 1,
@@ -1408,6 +1539,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
+            templateOwner: '',
           });
 
           const response = await request(app).get(`/v2/tasks/a-random-id`);
@@ -1415,10 +1547,57 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           expect(response.body.status).toBe('completed');
           expect(response.body.secrets).toBeUndefined();
         });
+        it('disallows users from seeing runs of templates they do not own', async () => {
+          jest
+            .spyOn(permissionApi, 'authorizeConditional')
+            .mockImplementationOnce(async () => [
+              {
+                conditions: {
+                  resourceType: 'scaffolder-task',
+                  rule: 'HAS_TEMPLATE_OWNERS',
+                  params: {
+                    templateOwners: ['user'],
+                  },
+                },
+                pluginId: 'scaffolder',
+                resourceType: 'scaffolder-task',
+                result: AuthorizeResult.CONDITIONAL,
+              },
+            ]);
+          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+            id: 'a-random-id',
+            spec: {
+              templateInfo: { entityRef: 'template:default/not-foobar' },
+            } as any,
+            status: 'completed',
+            createdAt: '',
+            templateOwner: 'not-user',
+            secrets: {
+              backstageToken: token,
+              __initiatorCredentials: JSON.stringify(credentials),
+            },
+          });
+
+          const response = await request(app).get(`/v2/tasks/a-random-id`);
+          expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
+          expect(response.error).not.toBeFalsy();
+        });
       });
 
       describe('GET /v2/tasks/:taskId/eventstream', () => {
         it('should return log messages', async () => {
+          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            secrets: {
+              backstageToken: token,
+              __initiatorCredentials: JSON.stringify(credentials),
+            },
+            createdBy: '',
+            templateOwner: '',
+          });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
             taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
@@ -1498,6 +1677,18 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         });
 
         it('should return log messages with after query', async () => {
+          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            secrets: {
+              backstageToken: token,
+              __initiatorCredentials: JSON.stringify(credentials),
+            },
+            createdBy: '',
+            templateOwner: '',
+          });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
             taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
@@ -1552,10 +1743,59 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
           expect(subscriber!.closed).toBe(true);
         });
+        it('disallows users from seeing runs of templates they do not own', async () => {
+          jest
+            .spyOn(permissionApi, 'authorizeConditional')
+            .mockImplementationOnce(async () => [
+              {
+                conditions: {
+                  resourceType: 'scaffolder-task',
+                  rule: 'HAS_TEMPLATE_OWNERS',
+                  params: {
+                    templateOwners: ['user'],
+                  },
+                },
+                pluginId: 'scaffolder',
+                resourceType: 'scaffolder-task',
+                result: AuthorizeResult.CONDITIONAL,
+              },
+            ]);
+          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+            id: 'a-random-id',
+            spec: {
+              templateInfo: { entityRef: 'template:default/not-foobar' },
+            } as any,
+            status: 'completed',
+            createdAt: '',
+            templateOwner: 'not-user',
+            secrets: {
+              backstageToken: token,
+              __initiatorCredentials: JSON.stringify(credentials),
+            },
+          });
+
+          const response = await request(app).get(
+            `/v2/tasks/a-random-id/eventstream`,
+          );
+          expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
+          expect(response.error).not.toBeFalsy();
+        });
       });
 
       describe('GET /v2/tasks/:taskId/events', () => {
         it('should return log messages', async () => {
+          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            secrets: {
+              backstageToken: token,
+              __initiatorCredentials: JSON.stringify(credentials),
+            },
+            createdBy: '',
+            templateOwner: '',
+          });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
             taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
@@ -1613,6 +1853,18 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         });
 
         it('should return log messages with after query', async () => {
+          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            secrets: {
+              backstageToken: token,
+              __initiatorCredentials: JSON.stringify(credentials),
+            },
+            createdBy: '',
+            templateOwner: '',
+          });
           let subscriber: ZenObservable.SubscriptionObserver<any>;
           (
             taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
@@ -1636,6 +1888,43 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             after: 10,
           });
           expect(subscriber!.closed).toBe(true);
+        });
+        it('disallows users from seeing runs of templates they do not own', async () => {
+          jest
+            .spyOn(permissionApi, 'authorizeConditional')
+            .mockImplementationOnce(async () => [
+              {
+                conditions: {
+                  resourceType: 'scaffolder-task',
+                  rule: 'HAS_TEMPLATE_OWNERS',
+                  params: {
+                    templateOwners: ['user'],
+                  },
+                },
+                pluginId: 'scaffolder',
+                resourceType: 'scaffolder-task',
+                result: AuthorizeResult.CONDITIONAL,
+              },
+            ]);
+          (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+            id: 'a-random-id',
+            spec: {
+              templateInfo: { entityRef: 'template:default/not-foobar' },
+            } as any,
+            status: 'completed',
+            createdAt: '',
+            secrets: {
+              backstageToken: token,
+              __initiatorCredentials: JSON.stringify(credentials),
+            },
+            templateOwner: 'not-user',
+          });
+
+          const response = await request(app).get(
+            `/v2/tasks/a-random-id/events`,
+          );
+          expect(taskBroker.get).toHaveBeenCalledWith('a-random-id');
+          expect(response.error).not.toBeFalsy();
         });
       });
 
