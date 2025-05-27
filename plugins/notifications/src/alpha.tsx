@@ -54,6 +54,7 @@ const api = ApiBlueprint.make({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'notifications',
+  info: { packageJson: () => import('../package.json') },
   routes: convertLegacyRouteRefs({
     root: rootRouteRef,
   }),

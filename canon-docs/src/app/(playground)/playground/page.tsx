@@ -80,11 +80,11 @@ const Content = () => {
 
 const Line = ({ content, title }: { content: ReactNode; title: string }) => {
   return (
-    <Grid gap={{ xs: '2', md: '4' }}>
+    <Grid.Root gap={{ xs: '2', md: '4' }}>
       <Grid.Item colSpan="2">
         <Text>{title}</Text>
       </Grid.Item>
       <Grid.Item colSpan="10">{content}</Grid.Item>
-    </Grid>
+    </Grid.Root>
   );
 };
