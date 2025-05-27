@@ -94,6 +94,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-
 
+      # use backstage-repo-tools from main branch for releases
+      - name: use backstage-repo-tools from main branch
+        run: |
+          git fetch origin master --depth 1
+          git checkout FETCH_HEAD -- packages/repo-tools
+
       - name: build API reference (beta)
         run: yarn backstage-repo-tools package-docs
 
