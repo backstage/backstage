@@ -50,7 +50,7 @@ You can check the official docs to [configure your webhook](https://docs.github.
 
 The webhook(s) will need to be configured to react to `push` and `repository` events.
 
-Certain actions like `transferred` by the `repository` event type will not be supported when you use repository webhooks. Please check the GitHubs documentation for these event types and its actions.
+Certain actions like `transferred` by the `repository` event type will not be supported when you use repository webhooks. Please check the GitHub documentation for these event types and their actions.
 
 #### Install and Configure GitHub Events Module
 
