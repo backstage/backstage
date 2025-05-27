@@ -420,7 +420,9 @@ describe('actionsRegistryServiceFactory', () => {
       expect(status).toBe(400);
       expect(body).toMatchObject({
         error: {
-          message: 'test',
+          message: expect.stringContaining(
+            'Failed execution of action "my-plugin:test"',
+          ),
         },
       });
     });

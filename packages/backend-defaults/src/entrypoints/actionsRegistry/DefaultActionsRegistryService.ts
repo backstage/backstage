@@ -26,7 +26,12 @@ import PromiseRouter from 'express-promise-router';
 import { Router, json } from 'express';
 import { z, ZodType } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
-import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
+import {
+  ForwardedError,
+  InputError,
+  NotAllowedError,
+  NotFoundError,
+} from '@backstage/errors';
 
 export class DefaultActionsRegistryService implements ActionsRegistryService {
   private constructor(
@@ -133,25 +138,31 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
           );
         }
 
-        // todo: wrap up in forwardederror?
-        const result = await action.action({
-          input: input.data,
-          credentials,
-          logger: this.logger,
-        });
+        try {
+          const result = await action.action({
+            input: input.data,
+            credentials,
+            logger: this.logger,
+          });
 
-        const output = action.schema?.output
-          ? action.schema.output(z).safeParse(result?.output)
-          : ({ success: true, data: result?.output } as const);
+          const output = action.schema?.output
+            ? action.schema.output(z).safeParse(result?.output)
+            : ({ success: true, data: result?.output } as const);
 
-        if (!output.success) {
-          throw new InputError(
-            `Invalid output from action "${req.params.actionId}"`,
-            output.error,
+          if (!output.success) {
+            throw new InputError(
+              `Invalid output from action "${req.params.actionId}"`,
+              output.error,
+            );
+          }
+
+          res.json({ output: output.data });
+        } catch (error) {
+          throw new ForwardedError(
+            `Failed execution of action "${req.params.actionId}"`,
+            error,
           );
         }
-
-        return res.json({ output: output.data });
       },
     );
   }
