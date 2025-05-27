@@ -53,22 +53,24 @@ export class DefaultActionsService implements ActionsService {
 
     const remoteActionsList = await Promise.all(
       pluginSources.map(async source => {
-        const response = await this.makeRequest({
-          path: `/.backstage/actions/v1/actions`,
-          pluginId: source,
-          credentials,
-        });
+        try {
+          const response = await this.makeRequest({
+            path: `/.backstage/actions/v1/actions`,
+            pluginId: source,
+            credentials,
+          });
+          if (!response.ok) {
+            throw await ResponseError.fromResponse(response);
+          }
+          const { actions } = (await response.json()) as {
+            actions: ActionsServiceAction;
+          };
 
-        if (!response.ok) {
-          this.logger.warn(`Failed to fetch actions from ${source}`);
+          return actions;
+        } catch (error) {
+          this.logger.warn(`Failed to fetch actions from ${source}`, error);
           return [];
         }
-
-        const { actions } = (await response.json()) as {
-          actions: ActionsServiceAction;
-        };
-
-        return actions;
       }),
     );
 
