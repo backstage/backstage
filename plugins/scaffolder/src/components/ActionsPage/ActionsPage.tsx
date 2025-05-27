@@ -235,6 +235,7 @@ export const ActionPageContent = () => {
   );
 };
 
+/** @public */
 export type ActionsPageProps = {
   contextMenu?: {
     editor?: boolean;
@@ -243,6 +244,7 @@ export type ActionsPageProps = {
   };
 };
 
+/** @public */
 export const ActionsPage = (props: ActionsPageProps) => {
   const navigate = useNavigate();
   const editorLink = useRouteRef(editRouteRef);

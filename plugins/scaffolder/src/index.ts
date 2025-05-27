@@ -32,8 +32,11 @@ export {
   MultiEntityPickerFieldExtension,
   RepoBranchPickerFieldExtension,
   ScaffolderPage,
+  ActionsPage,
+  ListTasksTable,
   scaffolderPlugin,
 } from './plugin';
+export type { ActionsPageProps, ListTasksTableProps } from './plugin';
 
 export * from './components';
 export * from './deprecated';

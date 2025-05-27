@@ -12,6 +12,7 @@ import { createScaffolderLayout as createScaffolderLayout_2 } from '@backstage/p
 import { CustomFieldExtensionSchema as CustomFieldExtensionSchema_2 } from '@backstage/plugin-scaffolder-react';
 import { CustomFieldValidator as CustomFieldValidator_2 } from '@backstage/plugin-scaffolder-react';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { Dispatch } from 'react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { FieldExtensionComponent as FieldExtensionComponent_2 } from '@backstage/plugin-scaffolder-react';
@@ -47,6 +48,7 @@ import { ScaffolderTaskOutput as ScaffolderTaskOutput_2 } from '@backstage/plugi
 import { ScaffolderTaskStatus as ScaffolderTaskStatus_2 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderUseTemplateSecrets as ScaffolderUseTemplateSecrets_2 } from '@backstage/plugin-scaffolder-react';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { SetStateAction } from 'react';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
@@ -54,6 +56,18 @@ import { TemplateListPageProps } from '@backstage/plugin-scaffolder/alpha';
 import { TemplateParameterSchema as TemplateParameterSchema_2 } from '@backstage/plugin-scaffolder-react';
 import { TemplateWizardPageProps } from '@backstage/plugin-scaffolder/alpha';
 import { z } from 'zod';
+
+// @public (undocumented)
+export const ActionsPage: (props: ActionsPageProps) => JSX_2.Element;
+
+// @public (undocumented)
+export type ActionsPageProps = {
+  contextMenu?: {
+    editor?: boolean;
+    tasks?: boolean;
+    create?: boolean;
+  };
+};
 
 // @public @deprecated (undocumented)
 export const createScaffolderFieldExtension: typeof createScaffolderFieldExtension_2;
@@ -186,6 +200,32 @@ export type LayoutTemplate = LayoutTemplate_2;
 
 // @public @deprecated (undocumented)
 export type ListActionsResponse = ListActionsResponse_2;
+
+// @public (undocumented)
+export function ListTasksTable({
+  page,
+  setPage,
+  limit,
+  setLimit,
+  tasks,
+  totalTasks,
+}: Readonly<ListTasksTableProps>): JSX_2.Element;
+
+// @public (undocumented)
+export interface ListTasksTableProps {
+  // (undocumented)
+  limit: number;
+  // (undocumented)
+  page: number;
+  // (undocumented)
+  setLimit: Dispatch<SetStateAction<number>>;
+  // (undocumented)
+  setPage: Dispatch<SetStateAction<number>>;
+  // (undocumented)
+  tasks?: ScaffolderTask_2[];
+  // (undocumented)
+  totalTasks?: number;
+}
 
 // @public @deprecated (undocumented)
 export type LogEvent = LogEvent_2;

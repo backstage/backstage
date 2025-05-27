@@ -13,4 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { ListTasksPage } from './ListTasksPage';
+export { ListTasksTable, ListTasksPage } from './ListTasksPage';
+export type { ListTasksTableProps } from './ListTasksPage';
