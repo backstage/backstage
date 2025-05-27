@@ -20,6 +20,9 @@ import {
 } from '@backstage/backend-plugin-api';
 import { DefaultActionsRegistryService } from './DefaultActionsRegistryService';
 
+/**
+ * @public
+ */
 export const actionsRegistryServiceFactory = createServiceFactory({
   service: coreServices.actionsRegistry,
   deps: {

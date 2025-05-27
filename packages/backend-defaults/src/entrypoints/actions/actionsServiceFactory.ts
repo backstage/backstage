@@ -17,6 +17,9 @@ import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { coreServices } from '@backstage/backend-plugin-api';
 import { DefaultActionsService } from './DefaultActionsService';
 
+/**
+ * @public
+ */
 export const actionsServiceFactory = createServiceFactory({
   service: coreServices.actions,
   deps: {

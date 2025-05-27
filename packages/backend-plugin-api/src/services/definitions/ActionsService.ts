@@ -17,6 +17,9 @@ import { JsonObject, JsonValue } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { BackstageCredentials } from './AuthService';
 
+/**
+ * @public
+ */
 export type ActionsServiceAction = {
   id: string;
   name: string;
@@ -28,6 +31,9 @@ export type ActionsServiceAction = {
   };
 };
 
+/**
+ * @public
+ */
 export interface ActionsService {
   listActions: (opts: {
     credentials: BackstageCredentials;

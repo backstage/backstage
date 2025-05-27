@@ -17,12 +17,18 @@ import { z, ZodType } from 'zod';
 import { LoggerService } from './LoggerService';
 import { BackstageCredentials } from './AuthService';
 
+/**
+ * @public
+ */
 export type ActionsRegistryActionContext<TInputSchema extends ZodType> = {
   input: z.infer<TInputSchema>;
   logger: LoggerService;
   credentials: BackstageCredentials;
 };
 
+/**
+ * @public
+ */
 export type ActionsRegistryActionOptions<
   TInputSchema extends ZodType,
   TOutputSchema extends ZodType,
@@ -41,6 +47,9 @@ export type ActionsRegistryActionOptions<
   >;
 };
 
+/**
+ * @public
+ */
 export interface ActionsRegistryService {
   register<TInputSchema extends ZodType, TOutputSchema extends ZodType>(
     options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>,
