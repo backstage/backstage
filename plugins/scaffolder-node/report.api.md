@@ -316,6 +316,9 @@ export function initRepoAndPush(input: {
   commitHash: string;
 }>;
 
+// @public
+export function isNotGitDirectoryOrContents(path: string): boolean;
+
 // @public (undocumented)
 export const parseRepoUrl: (
   repoUrl: string,

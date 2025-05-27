@@ -186,3 +186,12 @@ export const parseSchemas = (
     outputSchema: action.schema.output,
   };
 };
+
+/**
+ * Filter function to exclude the .git directory and its contents
+ * while keeping other files like .gitignore
+ * @public
+ */
+export function isNotGitDirectoryOrContents(path: string): boolean {
+  return !(path.endsWith('.git') || path.includes('.git/'));
+}
