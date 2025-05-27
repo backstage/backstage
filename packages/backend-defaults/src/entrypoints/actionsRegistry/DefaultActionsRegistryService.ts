@@ -82,6 +82,19 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     router.post(
       '/.backstage/actions/v1/actions/:actionId/invoke',
       async (req, res) => {
+        const credentials = await this.httpAuth.credentials(req);
+        if (this.auth.isPrincipal(credentials, 'user')) {
+          if (!credentials.principal.actor) {
+            throw new NotAllowedError(
+              `Actions must be invoked by a service, not a user`,
+            );
+          }
+        } else if (this.auth.isPrincipal(credentials, 'none')) {
+          throw new NotAllowedError(
+            `Actions must be invoked by a service, not an anonymous request`,
+          );
+        }
+
         const action = this.actions.get(req.params.actionId);
 
         if (!action) {
@@ -96,19 +109,6 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
           throw new InputError(
             `Invalid input to action "${req.params.actionId}"`,
             input.error,
-          );
-        }
-
-        const credentials = await this.httpAuth.credentials(req);
-        if (this.auth.isPrincipal(credentials, 'user')) {
-          if (!credentials.principal.actor) {
-            throw new NotAllowedError(
-              `Actions must be invoked by a service, not a user`,
-            );
-          }
-        } else if (this.auth.isPrincipal(credentials, 'none')) {
-          throw new NotAllowedError(
-            `Actions must be invoked by a service, not an anonymous request`,
           );
         }
 
