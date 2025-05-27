@@ -30,7 +30,7 @@ export type SidebarOptions = {
 export type SubmenuOptions = {
   drawerWidthClosed?: number;
   drawerWidthOpen?: number;
-  subMenuType: 'default' | 'popper';
+  subMenuType?: 'default' | 'popper';
 };
 
 /** @internal */
