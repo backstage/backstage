@@ -1,5 +1,12 @@
 # @backstage/plugin-org-react
 
+## 0.1.39-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.1-next.0
+
 ## 0.1.38
 
 ### Patch Changes

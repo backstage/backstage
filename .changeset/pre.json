@@ -201,5 +201,25 @@
     "@backstage/plugin-user-settings-backend": "0.3.2",
     "@backstage/plugin-user-settings-common": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "eight-planets-see",
+    "evil-cooks-watch",
+    "good-paths-act",
+    "grumpy-dryers-act",
+    "honest-moles-bet",
+    "petite-candies-tan",
+    "puny-pillows-wave",
+    "salty-worlds-float",
+    "six-mangos-yell",
+    "small-dots-march",
+    "smooth-eels-think",
+    "spotty-cases-show",
+    "stupid-flies-speak",
+    "sweet-ducks-wait",
+    "tough-heads-knock",
+    "warm-taxes-show",
+    "wet-bars-report",
+    "wet-bars-reporting",
+    "yummy-donuts-peel"
+  ]
 }
