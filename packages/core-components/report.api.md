@@ -1285,7 +1285,7 @@ export interface StructuredMetadataTableProps {
 export type SubmenuOptions = {
   drawerWidthClosed?: number;
   drawerWidthOpen?: number;
-  subMenuType: 'default' | 'popper';
+  subMenuType?: 'default' | 'popper';
 };
 
 // Warning: (ae-forgotten-export) The symbol "SubvalueCellProps" needs to be exported by the entry point index.d.ts
