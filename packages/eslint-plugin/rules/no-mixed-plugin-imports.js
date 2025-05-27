@@ -108,10 +108,7 @@ module.exports = {
       return {};
     }
 
-    const filePath = context.physicalFilename
-      ? context.physicalFilename
-      : context.filename;
-
+    const filePath = context.physicalFilename;
     /** @type {ExtendedPackage | undefined} */
     const pkg = packages.byPath(filePath);
     if (!pkg) {
