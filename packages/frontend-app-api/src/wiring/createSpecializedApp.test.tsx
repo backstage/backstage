@@ -671,4 +671,123 @@ describe('createSpecializedApp', () => {
 
     expect(render(root).container.textContent).toBe('1-2-test-1-2');
   });
+
+  describe('plugin info', () => {
+    const testExtension = createExtension({
+      attachTo: { id: 'root', input: 'app' },
+      output: [coreExtensionData.reactElement],
+      factory: () => [coreExtensionData.reactElement(<div>Test</div>)],
+    });
+
+    it('should throw unless accessed via an app', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        extensions: [testExtension],
+      });
+
+      const errorMsg =
+        "Attempted to load plugin info for plugin 'test', but the plugin instance is not installed in an app";
+      await expect(plugin.info()).rejects.toThrow(errorMsg);
+
+      const app = createSpecializedApp({ features: [plugin] });
+
+      await expect(plugin.info()).rejects.toThrow(errorMsg);
+
+      const installedPlugin = app.tree.nodes.get('test')?.spec.source;
+      expect(installedPlugin).toBeDefined();
+      const info = await installedPlugin?.info();
+      expect(info).toEqual({});
+    });
+
+    it('should forward plugin info', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        info: {
+          packageJson: () => import('../../package.json'),
+        },
+        extensions: [testExtension],
+      });
+
+      const app = createSpecializedApp({ features: [plugin] });
+      const info = await app.tree.nodes.get('test')?.spec.source?.info();
+      expect(info).toMatchObject({
+        packageName: '@backstage/frontend-app-api',
+      });
+    });
+
+    it('should allow overriding plugin info per plugin', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        info: {
+          packageJson: () => import('../../package.json'),
+        },
+        extensions: [testExtension],
+      });
+
+      const overriddenPlugin = plugin.withOverrides({
+        extensions: [],
+        info: {
+          packageJson: () => Promise.resolve({ name: 'test-override' }),
+        },
+      });
+
+      const app = createSpecializedApp({ features: [overriddenPlugin] });
+      const info = await app.tree.nodes.get('test')?.spec.source?.info();
+      expect(info).toMatchObject({
+        packageName: 'test-override',
+      });
+    });
+
+    it('should merge with plugin info from manifest', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        info: {
+          packageJson: () => import('../../package.json'),
+          manifest: async () => ({
+            metadata: {
+              links: [{ title: 'Example', url: 'https://example.com' }],
+            },
+            spec: {
+              owner: 'cubic-belugas',
+            },
+          }),
+        },
+        extensions: [testExtension],
+      });
+
+      const app = createSpecializedApp({ features: [plugin] });
+      const info = await app.tree.nodes.get('test')?.spec.source?.info();
+      expect(info).toEqual({
+        packageName: '@backstage/frontend-app-api',
+        version: expect.any(String),
+        links: [{ title: 'Example', url: 'https://example.com' }],
+        ownerEntityRefs: ['group:default/cubic-belugas'],
+      });
+    });
+
+    it('should allow overriding of the plugin info resolver', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        info: {
+          packageJson: () => import('../../package.json'),
+        },
+        extensions: [testExtension],
+      });
+
+      const app = createSpecializedApp({
+        features: [plugin],
+        async pluginInfoResolver(ctx) {
+          const { info } = await ctx.defaultResolver({
+            packageJson: await ctx.packageJson(),
+            manifest: await ctx.manifest(),
+          });
+          return { info: { packageName: `decorated:${info.packageName}` } };
+        },
+      });
+      const info = await app.tree.nodes.get('test')?.spec.source?.info();
+      expect(info).toEqual({
+        packageName: 'decorated:@backstage/frontend-app-api',
+      });
+    });
+  });
 });
