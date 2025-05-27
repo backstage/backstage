@@ -24,5 +24,3 @@ export { scaffolderPlugin as default } from './ScaffolderPlugin';
 export * from './scaffolder';
 export * from './service/router';
 export * from './lib';
-
-export * from './deprecated';
