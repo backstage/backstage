@@ -22,7 +22,6 @@
 
 export { scaffolderPlugin as default } from './ScaffolderPlugin';
 export * from './scaffolder';
-export * from './lib';
 export {
   type TemplatePermissionRuleInput,
   type ActionPermissionRuleInput,

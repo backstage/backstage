@@ -23,23 +23,20 @@ import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScmIntegrations } from '@backstage/integration';
-import { SerializedTask as SerializedTask_2 } from '@backstage/plugin-scaffolder-node';
-import { SerializedTaskEvent as SerializedTaskEvent_2 } from '@backstage/plugin-scaffolder-node';
-import { TaskBroker as TaskBroker_2 } from '@backstage/plugin-scaffolder-node';
-import { TaskBrokerDispatchOptions as TaskBrokerDispatchOptions_2 } from '@backstage/plugin-scaffolder-node';
-import { TaskBrokerDispatchResult as TaskBrokerDispatchResult_2 } from '@backstage/plugin-scaffolder-node';
-import { TaskCompletionState as TaskCompletionState_2 } from '@backstage/plugin-scaffolder-node';
-import { TaskContext as TaskContext_2 } from '@backstage/plugin-scaffolder-node';
-import { TaskEventType as TaskEventType_2 } from '@backstage/plugin-scaffolder-node';
+import { SerializedTask } from '@backstage/plugin-scaffolder-node';
+import { SerializedTaskEvent } from '@backstage/plugin-scaffolder-node';
+import { TaskBroker } from '@backstage/plugin-scaffolder-node';
+import { TaskCompletionState } from '@backstage/plugin-scaffolder-node';
+import { TaskContext } from '@backstage/plugin-scaffolder-node';
 import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TaskStatus as TaskStatus_2 } from '@backstage/plugin-scaffolder-node';
+import { TaskStatus } from '@backstage/plugin-scaffolder-node';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
-import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
+import { TemplateFilter } from '@backstage/plugin-scaffolder-node';
+import { TemplateGlobal } from '@backstage/plugin-scaffolder-node';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
@@ -61,9 +58,9 @@ export const createBuiltinActions: (
 
 // @public
 export interface CreateBuiltInActionsOptions {
-  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
   // (undocumented)
-  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   auth?: AuthService;
   catalogClient: CatalogApi;
   config: Config;
@@ -154,15 +151,14 @@ export function createFetchPlainFileAction(options: {
 export function createFetchTemplateAction(options: {
   reader: UrlReaderService;
   integrations: ScmIntegrations;
-  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }): TemplateAction<
   {
     url: string;
     targetPath?: string;
     values: any;
     templateFileExtension?: string | boolean;
-    copyWithoutRender?: string[];
     copyWithoutTemplating?: string[];
     cookiecutterCompat?: boolean;
     replace?: boolean;
@@ -178,8 +174,8 @@ export function createFetchTemplateAction(options: {
 export function createFetchTemplateFileAction(options: {
   reader: UrlReaderService;
   integrations: ScmIntegrations;
-  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }): TemplateAction<
   {
     url: string;
@@ -243,17 +239,17 @@ export function createWaitAction(options?: {
   maxWaitTime?: Duration | HumanDuration;
 }): TemplateAction<HumanDuration, JsonObject, 'v1'>;
 
-// @public
+// @public @deprecated
 export type CreateWorkerOptions = {
-  taskBroker: TaskBroker_2;
+  taskBroker: TaskBroker;
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: Logger;
   auditor?: AuditorService;
-  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
   concurrentTasksLimit?: number;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionEvaluator;
   gracefulShutdown?: boolean;
 };
@@ -268,7 +264,7 @@ export interface CurrentClaimedTask {
   workspace?: Promise<Buffer>;
 }
 
-// @public
+// @public @deprecated
 export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   cancelTask(
@@ -279,13 +275,13 @@ export class DatabaseTaskStore implements TaskStore {
     >,
   ): Promise<void>;
   // (undocumented)
-  claimTask(): Promise<SerializedTask_2 | undefined>;
+  claimTask(): Promise<SerializedTask | undefined>;
   // (undocumented)
   cleanWorkspace({ taskId }: { taskId: string }): Promise<void>;
   // (undocumented)
   completeTask(options: {
     taskId: string;
-    status: TaskStatus_2;
+    status: TaskStatus;
     eventBody: JsonObject;
   }): Promise<void>;
   // (undocumented)
@@ -303,7 +299,7 @@ export class DatabaseTaskStore implements TaskStore {
     >,
   ): Promise<void>;
   // (undocumented)
-  getTask(taskId: string): Promise<SerializedTask_2>;
+  getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
   getTaskState({ taskId }: { taskId: string }): Promise<
     | {
@@ -316,10 +312,10 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   list(options: {
     createdBy?: string;
-    status?: TaskStatus_2;
+    status?: TaskStatus;
     filters?: {
       createdBy?: string | string[];
-      status?: TaskStatus_2 | TaskStatus_2[];
+      status?: TaskStatus | TaskStatus[];
     };
     pagination?: {
       limit?: number;
@@ -330,12 +326,12 @@ export class DatabaseTaskStore implements TaskStore {
       field: string;
     }[];
   }): Promise<{
-    tasks: SerializedTask_2[];
+    tasks: SerializedTask[];
     totalTasks?: number;
   }>;
   // (undocumented)
   listEvents(options: TaskStoreListEventsOptions): Promise<{
-    events: SerializedTaskEvent_2[];
+    events: SerializedTaskEvent[];
   }>;
   // (undocumented)
   listStaleTasks(options: { timeoutS: number }): Promise<{
@@ -363,7 +359,7 @@ export class DatabaseTaskStore implements TaskStore {
   shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export type DatabaseTaskStoreOptions = {
   database: DatabaseService | Knex;
   events?: EventsService;
@@ -374,37 +370,13 @@ const scaffolderPlugin: BackendFeature;
 export default scaffolderPlugin;
 
 // @public @deprecated
-export type SerializedTask = SerializedTask_2;
-
-// @public @deprecated
-export type SerializedTaskEvent = SerializedTaskEvent_2;
-
-// @public @deprecated
-export type TaskBroker = TaskBroker_2;
-
-// @public @deprecated
-export type TaskBrokerDispatchOptions = TaskBrokerDispatchOptions_2;
-
-// @public @deprecated
-export type TaskBrokerDispatchResult = TaskBrokerDispatchResult_2;
-
-// @public @deprecated
-export type TaskCompletionState = TaskCompletionState_2;
-
-// @public @deprecated
-export type TaskContext = TaskContext_2;
-
-// @public @deprecated
-export type TaskEventType = TaskEventType_2;
-
-// @public
-export class TaskManager implements TaskContext_2 {
+export class TaskManager implements TaskContext {
   // (undocumented)
   get cancelSignal(): AbortSignal;
   // (undocumented)
   cleanWorkspace?(): Promise<void>;
   // (undocumented)
-  complete(result: TaskCompletionState_2, metadata?: JsonObject): Promise<void>;
+  complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   static create(
     task: CurrentClaimedTask,
@@ -460,9 +432,6 @@ export class TaskManager implements TaskContext_2 {
 }
 
 // @public @deprecated
-export type TaskStatus = TaskStatus_2;
-
-// @public
 export interface TaskStore {
   // (undocumented)
   cancelTask?(options: TaskStoreEmitOptions): Promise<void>;
@@ -569,42 +538,42 @@ export interface TaskStore {
   shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export type TaskStoreCreateTaskOptions = {
   spec: TaskSpec;
   createdBy?: string;
   secrets?: TaskSecrets;
 };
 
-// @public
+// @public @deprecated
 export type TaskStoreCreateTaskResult = {
   taskId: string;
 };
 
-// @public
+// @public @deprecated
 export type TaskStoreEmitOptions<TBody = JsonObject> = {
   taskId: string;
   body: TBody;
 };
 
-// @public
+// @public @deprecated
 export type TaskStoreListEventsOptions = {
   isTaskRecoverable?: boolean;
   taskId: string;
   after?: number | undefined;
 };
 
-// @public
+// @public @deprecated
 export type TaskStoreRecoverTaskOptions = {
   timeout: HumanDuration;
 };
 
-// @public
+// @public @deprecated
 export type TaskStoreShutDownTaskOptions = {
   taskId: string;
 };
 
-// @public
+// @public @deprecated
 export class TaskWorker {
   // (undocumented)
   static create(options: CreateWorkerOptions): Promise<TaskWorker>;
@@ -613,14 +582,14 @@ export class TaskWorker {
   // (undocumented)
   recoverTasks(): Promise<void>;
   // (undocumented)
-  runOneTask(task: TaskContext_2): Promise<void>;
+  runOneTask(task: TaskContext): Promise<void>;
   // (undocumented)
   start(): void;
   // (undocumented)
   stop(): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export class TemplateActionRegistry {
   // (undocumented)
   get(actionId: string): TemplateAction<any, any, any>;
@@ -629,12 +598,6 @@ export class TemplateActionRegistry {
   // (undocumented)
   register(action: TemplateAction<any, any, any>): void;
 }
-
-// @public @deprecated (undocumented)
-export type TemplateFilter = TemplateFilter_2;
-
-// @public @deprecated (undocumented)
-export type TemplateGlobal = TemplateGlobal_2;
 
 // @public (undocumented)
 export type TemplatePermissionRuleInput<

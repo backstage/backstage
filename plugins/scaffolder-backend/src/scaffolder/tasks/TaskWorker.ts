@@ -33,7 +33,7 @@ import { setTimeout } from 'timers/promises';
 
 /**
  * TaskWorkerOptions
- *
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  * @public
  */
 export type TaskWorkerOptions = {
@@ -50,7 +50,7 @@ export type TaskWorkerOptions = {
 
 /**
  * CreateWorkerOptions
- *
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  * @public
  */
 export type CreateWorkerOptions = {
@@ -81,7 +81,7 @@ export type CreateWorkerOptions = {
 
 /**
  * TaskWorker
- *
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  * @public
  */
 export class TaskWorker {
