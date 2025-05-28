@@ -24,15 +24,15 @@ import Keyv from 'keyv';
 import { DefaultCacheClient } from './CacheClient';
 import {
   CacheManagerOptions,
-  ttlToMilliseconds,
   CacheStoreOptions,
-  RedisCacheStoreOptions,
+  InfinispanAuthOptions,
   InfinispanCacheStoreOptions,
   InfinispanClientBehaviorOptions,
+  InfinispanDataFormatOptions,
   InfinispanServerConfig,
   InfinispanSslOptions,
-  InfinispanAuthOptions,
-  InfinispanDataFormatOptions,
+  RedisCacheStoreOptions,
+  ttlToMilliseconds,
 } from './types';
 import { durationToMilliseconds } from '@backstage/types';
 import { readDurationFromConfig } from '@backstage/config';
@@ -96,7 +96,7 @@ export class CacheManager {
 
     const storeOptions = CacheManager.parseStoreOptions(store, config, logger);
 
-    const manager = new CacheManager(
+    return new CacheManager(
       store,
       connectionString,
       options.onError,
@@ -104,7 +104,6 @@ export class CacheManager {
       defaultTtl,
       storeOptions,
     );
-    return manager;
   }
 
   private static parseStoreOptions(

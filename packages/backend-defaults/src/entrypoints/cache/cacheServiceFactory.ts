@@ -37,8 +37,7 @@ export const cacheServiceFactory = createServiceFactory({
     logger: coreServices.rootLogger,
   },
   async createRootContext({ config, logger }) {
-    const manager = CacheManager.fromConfig(config, { logger });
-    return manager;
+    return CacheManager.fromConfig(config, { logger });
   },
   async factory({ plugin }, manager: CacheManager) {
     return manager.forPlugin(plugin.getId());
