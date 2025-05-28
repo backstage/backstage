@@ -20,6 +20,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { UnprocessedEntity } from '../types';
+import { isJsonContentType } from './util';
 
 /**
  * {@link @backstage/core-plugin-api#ApiRef} for the {@link CatalogUnprocessedEntitiesApi}
@@ -82,7 +83,13 @@ export class CatalogUnprocessedEntitiesClient
       throw await ResponseError.fromResponse(resp);
     }
 
-    return resp.status === 204 ? (resp as T) : await resp.json();
+    if (resp.status === 204) {
+      return resp as T;
+    }
+    if (isJsonContentType(resp.headers.get('Content-Type'))) {
+      return await resp.json();
+    }
+    return resp as T;
   }
 
   async pending(): Promise<CatalogUnprocessedEntitiesApiResponse> {
