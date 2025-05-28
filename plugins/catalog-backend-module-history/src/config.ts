@@ -26,7 +26,8 @@ export interface HistoryConfig {
   blockDuration: HumanDuration;
 
   /**
-   * How often to poll for events in a blocked call.
+   * How often to poll for events in a blocked call, when using a polling
+   * strategy rather than an event based one.
    */
   blockPollFrequency: HumanDuration;
 

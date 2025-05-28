@@ -38,9 +38,9 @@ export interface ReadSubscriptionModel {
 }
 
 export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
-  #knexPromise: Promise<Knex>;
-  #shutdownSignal: AbortSignal;
-  #historyConfig: HistoryConfig;
+  readonly #knexPromise: Promise<Knex>;
+  readonly #shutdownSignal: AbortSignal;
+  readonly #historyConfig: HistoryConfig;
 
   constructor(options: {
     knexPromise: Promise<Knex>;
@@ -103,46 +103,5 @@ export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
         });
       },
     };
-  }
-
-  async readSubscriptionNonblocking(options: {
-    readOptions: ReadSubscriptionOptions;
-  }): Promise<{ events: CatalogEvent[]; ackId: string } | undefined> {
-    const { subscriptionId, limit } = options.readOptions;
-    const knex = await this.#knexPromise;
-
-    return await readHistorySubscription(knex, {
-      subscriptionId,
-      operation: 'read',
-      limit,
-      historyConfig: this.#historyConfig,
-    });
-  }
-
-  // TODO(freben): Implement a more efficient way to wait for new events. See
-  // the events backend using LISTEN/NOTIFY for inspiration. For now, wait for
-  // up until the deadline and stop early if the request closes, or if we are
-  // shutting down, or we start finding some rows.
-  async blockUntilDataIsReady(options: {
-    readOptions: ReadSubscriptionOptions;
-    signal?: AbortSignal;
-  }): Promise<'timeout' | 'aborted' | 'ready'> {
-    const { subscriptionId } = options.readOptions;
-    const knex = await this.#knexPromise;
-
-    return await waitForEvents({
-      historyConfig: this.#historyConfig,
-      signal: AbortSignal.any([
-        this.#shutdownSignal,
-        ...(options.signal ? [options.signal] : []),
-      ]),
-      checker: () =>
-        readHistorySubscription(knex, {
-          subscriptionId,
-          operation: 'peek',
-          limit: 1,
-          historyConfig: this.#historyConfig,
-        }).then(r => r !== undefined),
-    });
   }
 }

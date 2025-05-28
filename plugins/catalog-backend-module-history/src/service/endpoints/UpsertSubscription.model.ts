@@ -30,7 +30,7 @@ export interface UpsertSubscriptionModel {
 }
 
 export class UpsertSubscriptionModelImpl implements UpsertSubscriptionModel {
-  #knexPromise: Promise<Knex>;
+  readonly #knexPromise: Promise<Knex>;
 
   constructor(options: { knexPromise: Promise<Knex> }) {
     this.#knexPromise = options.knexPromise;

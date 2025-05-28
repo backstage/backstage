@@ -46,6 +46,7 @@
     "express": "^4.17.1",
     "knex": "^3.0.0",
     "lodash": "^4.17.21",
+    "p-limit": "^3.0.2",
     "zod": "^3.22.4"
   },
   "devDependencies": {

@@ -45,9 +45,9 @@ export interface GetEventsModel {
 }
 
 export class GetEventsModelImpl implements GetEventsModel {
-  #knexPromise: Promise<Knex>;
-  #shutdownSignal: AbortSignal;
-  #historyConfig: HistoryConfig;
+  readonly #knexPromise: Promise<Knex>;
+  readonly #shutdownSignal: AbortSignal;
+  readonly #historyConfig: HistoryConfig;
 
   constructor(options: {
     knexPromise: Promise<Knex>;

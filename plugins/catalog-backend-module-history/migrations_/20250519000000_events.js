@@ -123,6 +123,8 @@ exports.up = async function up(knex) {
           location_ref
         );
 
+        PERFORM PG_NOTIFY('event_bus_publish', 'history_event_created');
+
         RETURN null;
       END;
       $$ LANGUAGE plpgsql;

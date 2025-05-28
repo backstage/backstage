@@ -17,17 +17,25 @@
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Knex } from 'knex';
 
-export function knexRawNowPlus(knex: Knex, duration: HumanDuration) {
+/**
+ * Returns a knex representation of "now + duration", allowing the database to
+ * be the authority of timestamps.
+ */
+export function knexRawNowPlus(knex: Knex, duration: HumanDuration): Knex.Raw {
   const seconds = durationToMilliseconds(duration) / 1000;
   if (knex.client.config.client.includes('sqlite3')) {
     return knex.raw(`datetime('now', ?)`, [`${seconds} seconds`]);
   } else if (knex.client.config.client.includes('mysql')) {
-    return knex.raw(`now() + interval ${seconds} second`);
+    return knex.raw(`now() + interval ? second`, [seconds]);
   }
-  return knex.raw(`now() + interval '${seconds} seconds'`);
+  return knex.raw(`now() + (? || ' seconds')::interval`, [seconds]);
 }
 
-export function knexRawNowMinus(knex: Knex, duration: HumanDuration) {
+/**
+ * Returns a knex representation of "now - duration", allowing the database to
+ * be the authority of timestamps.
+ */
+export function knexRawNowMinus(knex: Knex, duration: HumanDuration): Knex.Raw {
   return knexRawNowPlus(knex, {
     milliseconds: -durationToMilliseconds(duration),
   });

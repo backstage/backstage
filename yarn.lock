@@ -4542,6 +4542,7 @@ __metadata:
     express: "npm:^4.17.1"
     knex: "npm:^3.0.0"
     lodash: "npm:^4.17.21"
+    p-limit: "npm:^3.0.2"
     supertest: "npm:^7.0.0"
     wait-for-expect: "npm:^3.0.2"
     zod: "npm:^3.22.4"

@@ -29,7 +29,7 @@ export interface AckSubscriptionModel {
 }
 
 export class AckSubscriptionModelImpl implements AckSubscriptionModel {
-  #knexPromise: Promise<Knex>;
+  readonly #knexPromise: Promise<Knex>;
 
   constructor(options: { knexPromise: Promise<Knex> }) {
     this.#knexPromise = options.knexPromise;

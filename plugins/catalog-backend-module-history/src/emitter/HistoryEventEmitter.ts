@@ -26,11 +26,15 @@ import { LifecycleService } from '@backstage/backend-plugin-api';
 
 const SUBSCRIPTION_ID = 'backstage-catalog-history-events-emitter';
 
+/**
+ * Consumes catalog history events (using a subscription), and emits them to the
+ * events backend where others can consume them.
+ */
 export class HistoryEventEmitter {
-  #knexPromise: Promise<Knex>;
-  #lifecycle: LifecycleService;
-  #events: EventsService;
-  #historyConfig: HistoryConfig;
+  readonly #knexPromise: Promise<Knex>;
+  readonly #lifecycle: LifecycleService;
+  readonly #events: EventsService;
+  readonly #historyConfig: HistoryConfig;
 
   public static async create(options: {
     knexPromise: Promise<Knex>;
