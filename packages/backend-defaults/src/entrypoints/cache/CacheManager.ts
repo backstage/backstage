@@ -37,7 +37,7 @@ import {
 import { durationToMilliseconds } from '@backstage/types';
 import { readDurationFromConfig } from '@backstage/config';
 
-import { createInfinispanStoreFactory_sync_facade } from './InfispanStoreFactory.ts';
+import { createInfinispanStoreFactory_sync_facade } from './InfinispanStoreFactory';
 
 type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
 
@@ -63,8 +63,7 @@ export class CacheManager {
   private readonly errorHandler: CacheManagerOptions['onError'];
   private readonly defaultTtl?: number;
   private readonly storeOptions?: CacheStoreOptions;
-
-  public infinispanClientShutdownMethod?: () => Promise<void>;
+  private infinispanClientShutdownMethod?: () => Promise<void>;
 
   static fromConfig(
     config: RootConfigService,
@@ -376,6 +375,13 @@ export class CacheManager {
       );
       this.storeFactories.infinispan = factory;
       this.infinispanClientShutdownMethod = shutdown;
+
+      // Automatically register shutdown hook
+      if (this.infinispanClientShutdownMethod) {
+        process.on('beforeExit', () => this.infinispanClientShutdownMethod?.());
+        process.on('SIGINT', () => this.infinispanClientShutdownMethod?.());
+        process.on('SIGTERM', () => this.infinispanClientShutdownMethod?.());
+      }
     }
 
     // Validate that the selected store has a configured factory
@@ -402,21 +408,6 @@ export class CacheManager {
       );
     };
     return new DefaultCacheClient(clientFactory({}), clientFactory, {});
-  }
-
-  // Method specific to shutting down the Infinispan client if it was initialized.
-  public async stopInfinispanClient(): Promise<void> {
-    if (this.infinispanClientShutdownMethod) {
-      this.logger?.info('CacheManager is stopping the Infinispan client...');
-      await this.infinispanClientShutdownMethod();
-      this.logger?.info(
-        'Infinispan client shutdown process completed via CacheManager.',
-      );
-    } else {
-      this.logger?.debug(
-        'No Infinispan client shutdown method registered with CacheManager.',
-      );
-    }
   }
 
   private createRedisStoreFactory(): StoreFactory {
@@ -523,5 +514,14 @@ export class CacheManager {
         emitErrors: false,
         store,
       });
+  }
+
+  /** @internal */
+  async shutdown(): Promise<void> {
+    if (this.infinispanClientShutdownMethod) {
+      this.logger?.info('CacheManager is shutting down Infinispan client...');
+      await this.infinispanClientShutdownMethod();
+      this.logger?.info('Infinispan client shutdown completed.');
+    }
   }
 }

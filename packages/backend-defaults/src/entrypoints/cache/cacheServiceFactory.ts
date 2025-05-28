@@ -21,15 +21,6 @@ import {
 import { CacheManager } from './CacheManager';
 
 /**
- * Defines the structure of the root context for the CacheService,
- * including the CacheManager instance and an optional shutdown method.
- */
-interface CacheManagerRootContext {
-  manager: CacheManager;
-  shutdown?: () => Promise<void>;
-}
-
-/**
  * Key-value store for caching data.
  *
  * See {@link @backstage/code-plugin-api#CacheService}
@@ -45,35 +36,11 @@ export const cacheServiceFactory = createServiceFactory({
     plugin: coreServices.pluginMetadata,
     logger: coreServices.rootLogger,
   },
-  async createRootContext({
-    config,
-    logger,
-  }): Promise<CacheManagerRootContext> {
+  async createRootContext({ config, logger }) {
     const manager = CacheManager.fromConfig(config, { logger });
-
-    if (
-      typeof manager.stopInfinispanClient === 'function' &&
-      manager.infinispanClientShutdownMethod
-    ) {
-      logger.info(
-        'Infinispan cache store detected, registering shutdown hook for CacheManager.',
-      );
-      return {
-        manager,
-        shutdown: async () => {
-          logger.info(
-            'Executing CacheManager shutdown hook for Infinispan client...',
-          );
-          await manager.stopInfinispanClient();
-        },
-      };
-    }
-
-    // For other cache stores, or if Infinispan is not configured with a shutdown method,
-    // no specific shutdown hook is needed at this level for the CacheManager itself.
-    return { manager };
+    return manager;
   },
-  async factory({ plugin }, rootContext: CacheManagerRootContext) {
-    return rootContext.manager.forPlugin(plugin.getId());
+  async factory({ plugin }, manager: CacheManager) {
+    return manager.forPlugin(plugin.getId());
   },
 });

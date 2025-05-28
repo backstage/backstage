@@ -59,7 +59,7 @@ export interface InfinispanKeyvStoreOptions {
  * This store implements the Keyv store interface and provides caching functionality
  * using Infinispan's distributed cache capabilities.
  *
- * @public
+ * @internal
  */
 export class InfinispanKeyvStore extends EventEmitter {
   private readonly clientPromise: Promise<ClientInterface>;
