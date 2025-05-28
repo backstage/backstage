@@ -17,96 +17,19 @@
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
 import {
-  SerializedTask as _SerializedTask,
-  SerializedTaskEvent as _SerializedTaskEvent,
-  TaskBroker as _TaskBroker,
-  TaskBrokerDispatchOptions as _TaskBrokerDispatchOptions,
-  TaskBrokerDispatchResult as _TaskBrokerDispatchResult,
-  TaskCompletionState as _TaskCompletionState,
-  TaskContext as _TaskContext,
-  TaskEventType as _TaskEventType,
   TaskSecrets,
-  TaskStatus as _TaskStatus,
   TemplateAction,
+  TaskContext,
+  SerializedTaskEvent,
+  SerializedTask,
+  TaskStatus,
 } from '@backstage/plugin-scaffolder-node';
-
-/**
- * The status of each step of the Task
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TaskStatus = _TaskStatus;
-
-/**
- * The state of a completed task.
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TaskCompletionState = _TaskCompletionState;
-
-/**
- * SerializedTask
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type SerializedTask = _SerializedTask;
-
-/**
- * TaskEventType
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TaskEventType = _TaskEventType;
-
-/**
- * SerializedTaskEvent
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type SerializedTaskEvent = _SerializedTaskEvent;
-
-/**
- * The result of `TaskBroker.dispatch`.
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TaskBrokerDispatchResult = _TaskBrokerDispatchResult;
-
-/**
- * The options passed to `TaskBroker.dispatch`.
- * Currently a spec and optional secrets
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TaskBrokerDispatchOptions = _TaskBrokerDispatchOptions;
-
-/**
- * Task
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TaskContext = _TaskContext;
-
-/**
- * TaskBroker
- *
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TaskBroker = _TaskBroker;
 
 /**
  * TaskStoreEmitOptions
  *
  * @public
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  */
 export type TaskStoreEmitOptions<TBody = JsonObject> = {
   taskId: string;
@@ -117,6 +40,7 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
  * TaskStoreListEventsOptions
  *
  * @public
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  */
 export type TaskStoreListEventsOptions = {
   isTaskRecoverable?: boolean;
@@ -128,6 +52,7 @@ export type TaskStoreListEventsOptions = {
  * TaskStoreShutDownTaskOptions
  *
  * @public
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  */
 export type TaskStoreShutDownTaskOptions = {
   taskId: string;
@@ -136,6 +61,7 @@ export type TaskStoreShutDownTaskOptions = {
 /**
  * The options passed to {@link TaskStore.createTask}
  * @public
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  */
 export type TaskStoreCreateTaskOptions = {
   spec: TaskSpec;
@@ -146,6 +72,7 @@ export type TaskStoreCreateTaskOptions = {
 /**
  * The options passed to {@link TaskStore.recoverTasks}
  * @public
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  */
 export type TaskStoreRecoverTaskOptions = {
   timeout: HumanDuration;
@@ -154,6 +81,7 @@ export type TaskStoreRecoverTaskOptions = {
 /**
  * The response from {@link TaskStore.createTask}
  * @public
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  */
 export type TaskStoreCreateTaskResult = {
   taskId: string;
@@ -163,6 +91,7 @@ export type TaskStoreCreateTaskResult = {
  * TaskStore
  *
  * @public
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  */
 export interface TaskStore {
   cancelTask?(options: TaskStoreEmitOptions): Promise<void>;
