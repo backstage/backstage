@@ -59,7 +59,7 @@ type TaskState = {
 };
 /**
  * TaskManager
- *
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  * @public
  */
 export class TaskManager implements TaskContext {

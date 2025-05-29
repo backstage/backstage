@@ -48,10 +48,6 @@ export function createFetchTemplateAction(options: {
     templateFileExtension?: string | boolean;
 
     // Cookiecutter compat options
-    /**
-     * @deprecated This field is deprecated in favor of copyWithoutTemplating.
-     */
-    copyWithoutRender?: string[];
     copyWithoutTemplating?: string[];
     cookiecutterCompat?: boolean;
     replace?: boolean;
