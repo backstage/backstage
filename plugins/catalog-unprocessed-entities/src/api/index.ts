@@ -20,7 +20,6 @@ import {
 } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { UnprocessedEntity } from '../types';
-import { isJsonContentType } from './util';
 
 /**
  * {@link @backstage/core-plugin-api#ApiRef} for the {@link CatalogUnprocessedEntitiesApi}
@@ -59,10 +58,6 @@ export interface CatalogUnprocessedEntitiesApi {
    * Deletes an entity from the refresh_state table
    */
   delete(entityId: string): Promise<void>;
-  /**
-   * Refreshes an entity
-   */
-  refresh(entityRef: string): Promise<void>;
 }
 
 /**
@@ -83,13 +78,7 @@ export class CatalogUnprocessedEntitiesClient
       throw await ResponseError.fromResponse(resp);
     }
 
-    if (resp.status === 204) {
-      return resp as T;
-    }
-    if (isJsonContentType(resp.headers.get('Content-Type'))) {
-      return await resp.json();
-    }
-    return resp as T;
+    return resp.status === 204 ? (resp as T) : await resp.json();
   }
 
   async pending(): Promise<CatalogUnprocessedEntitiesApiResponse> {
@@ -103,18 +92,6 @@ export class CatalogUnprocessedEntitiesClient
   async delete(entityId: string): Promise<void> {
     await this.fetch(`entities/unprocessed/delete/${entityId}`, {
       method: 'DELETE',
-    });
-  }
-
-  async refresh(entityRef: string): Promise<void> {
-    await this.fetch(`refresh`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        entityRef,
-      }),
     });
   }
 }

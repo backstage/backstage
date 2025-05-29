@@ -27,7 +27,11 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import { Theme, makeStyles } from '@material-ui/core/styles';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+
+import { alertApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogTranslationRef } from '@backstage/plugin-catalog/alpha';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 import { UnprocessedEntity } from '../types';
 import { EntityDialog } from './EntityDialog';
@@ -35,7 +39,6 @@ import { catalogUnprocessedEntitiesApiRef } from '../api';
 import useAsync from 'react-use/esm/useAsync';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { RefreshEntityConfirmationDialog } from './RefreshEntityConfirmationDialog';
 import { DeleteEntityConfirmationDialog } from './DeleteEntityConfirmationDialog';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -108,15 +111,15 @@ export const convertTimeToLocalTimezone = (dateTime: string | Date) => {
 
 export const FailedEntities = () => {
   const classes = useStyles();
-  const unprocessedApi = useApi(catalogUnprocessedEntitiesApiRef);
-  const {
-    loading,
-    error,
-    value: data,
-  } = useAsync(async () => await unprocessedApi.failed());
   const [, setSelectedSearchTerm] = useState<string>('');
-  const unprocessedEntityApi = useApi(catalogUnprocessedEntitiesApiRef);
+
+  const catalogUnprocessedEntitiesApi = useApi(
+    catalogUnprocessedEntitiesApiRef,
+  );
+  const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
+  const errorApi = useApi(errorApiRef);
+
   const [selectedEntityId, setSelectedEntityId] = useState<string | undefined>(
     undefined,
   );
@@ -125,8 +128,14 @@ export const FailedEntities = () => {
   >(undefined);
   const [deleteConfirmationDialogOpen, setDeleteConfirmationDialogOpen] =
     useState(false);
-  const [refreshConfirmationDialogOpen, setRefreshConfirmationDialogOpen] =
-    useState(false);
+
+  const { t } = useTranslationRef(catalogTranslationRef);
+
+  const {
+    loading,
+    error,
+    value: data,
+  } = useAsync(async () => await catalogUnprocessedEntitiesApi.failed());
 
   if (loading) {
     return <Progress />;
@@ -135,52 +144,10 @@ export const FailedEntities = () => {
     return <ErrorPanel error={error} />;
   }
 
-  const handleRefresh = ({
-    entityId,
-    entityRef,
-  }: {
-    entityId: string;
-    entityRef: string;
-  }) => {
-    setSelectedEntityId(entityId);
-    setSelectedEntityRef(entityRef);
-    setRefreshConfirmationDialogOpen(true);
-  };
-
-  const handleDelete = ({
-    entityId,
-    entityRef,
-  }: {
-    entityId: string;
-    entityRef: string;
-  }) => {
-    setSelectedEntityId(entityId);
-    setSelectedEntityRef(entityRef);
-    setDeleteConfirmationDialogOpen(true);
-  };
-
-  const refreshEntity = async () => {
-    try {
-      if (selectedEntityId) {
-        await unprocessedEntityApi.refresh(selectedEntityRef!);
-        alertApi.post({
-          message: `Entity ${selectedEntityRef} has been refreshed`,
-          severity: 'success',
-        });
-      }
-    } catch (e) {
-      alertApi.post({
-        message: `Ran into an issue when refreshing ${selectedEntityRef}. Please try again later.`,
-        severity: 'error',
-      });
-    }
-    setRefreshConfirmationDialogOpen(false);
-  };
-
   const deleteEntity = async () => {
     try {
       if (selectedEntityId) {
-        await unprocessedEntityApi.delete(selectedEntityId);
+        await catalogUnprocessedEntitiesApi.delete(selectedEntityId);
         alertApi.post({
           message: `Entity ${selectedEntityRef} has been deleted`,
           severity: 'success',
@@ -193,6 +160,31 @@ export const FailedEntities = () => {
       });
     }
     setDeleteConfirmationDialogOpen(false);
+  };
+
+  const handleRefresh = async ({ entityRef }: { entityRef: string }) => {
+    try {
+      await catalogApi.refreshEntity(entityRef!);
+      alertApi.post({
+        message: t('aboutCard.refreshScheduledMessage'),
+        severity: 'info',
+        display: 'transient',
+      });
+    } catch (e) {
+      errorApi.post(e);
+    }
+  };
+
+  const handleDelete = ({
+    entityId,
+    entityRef,
+  }: {
+    entityId: string;
+    entityRef: string;
+  }) => {
+    setSelectedEntityId(entityId);
+    setSelectedEntityRef(entityRef);
+    setDeleteConfirmationDialogOpen(true);
   };
 
   const columns: TableColumn[] = [
@@ -265,7 +257,6 @@ export const FailedEntities = () => {
               aria-label="refresh"
               onClick={() =>
                 handleRefresh({
-                  entityId: entity_id,
                   entityRef: entity_ref,
                 })
               }
@@ -324,11 +315,6 @@ export const FailedEntities = () => {
             </>
           );
         }}
-      />
-      <RefreshEntityConfirmationDialog
-        open={refreshConfirmationDialogOpen}
-        onClose={() => setRefreshConfirmationDialogOpen(false)}
-        onConfirm={refreshEntity}
       />
       <DeleteEntityConfirmationDialog
         open={deleteConfirmationDialogOpen}
