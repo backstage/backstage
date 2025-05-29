@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LifecycleService } from '@backstage/backend-plugin-api';
+import { LifecycleService, LoggerService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 import { HistoryConfig } from '../config';
 import { createOpenApiRouter } from '../schema/openapi';
@@ -26,9 +26,12 @@ import { ReadSubscriptionModelImpl } from './endpoints/ReadSubscription.model';
 import { bindReadSubscriptionEndpoint } from './endpoints/ReadSubscription.router';
 import { UpsertSubscriptionModelImpl } from './endpoints/UpsertSubscription.model';
 import { bindUpsertSubscriptionEndpoint } from './endpoints/UpsertSubscription.router';
+import { createChangeHandler } from '../database/changeDetection/createChangeHandler';
+import { UpdateListenerImpl } from './UpdateListener';
 
 export async function createRouter(options: {
   knexPromise: Promise<Knex>;
+  logger: LoggerService;
   lifecycle: LifecycleService;
   historyConfig: HistoryConfig;
 }) {
@@ -39,6 +42,17 @@ export async function createRouter(options: {
   options.lifecycle.addShutdownHook(() => {
     controller.abort();
   });
+
+  // const updateListener = new UpdateListenerImpl({
+  //   changeHandler: createChangeHandler({
+  //     knexPromise: options.knexPromise,
+  //     logger: options.logger,
+  //     lifecycle: options.lifecycle,
+  //     historyConfig: options.historyConfig,
+  //   }),
+  //   historyConfig: options.historyConfig,
+  //   shutdownSignal,
+  // });
 
   bindGetEventsEndpoint(
     router,

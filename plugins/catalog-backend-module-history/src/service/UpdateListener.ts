@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  createDeferred,
-  DeferredPromise,
-  durationToMilliseconds,
-} from '@backstage/types';
-import { randomUUID } from 'crypto';
+import { createDeferred, durationToMilliseconds } from '@backstage/types';
+import pLimit, { Limit } from 'p-limit';
 import { HistoryConfig } from '../config';
 import { ChangeHandler } from '../database/changeDetection/types';
-import pLimit, { Limit } from 'p-limit';
 
 export interface SetupListenerOptions {
   /**
@@ -39,7 +34,37 @@ export interface SetupListenerOptions {
  * Handles sets of listners that are waiting for changes to happen in the
  * database.
  */
-export class UpdateListener {
+export interface UpdateListener {
+  /**
+   * Set up a listener for changes in the database.
+   *
+   * @remarks
+   *
+   * Setting up a listener is cheap. You should set it up "eagerly", even before
+   * performing an initial read that might or might not turn out to return any
+   * data. That way you will be sure that no events are missed in the time
+   * between that initial read and starting to listen for changes.
+   *
+   * The checker is used to determine whether data is ready (as deterined by the
+   * caller), and is called zero or more times as the underlying database is
+   * determined to have changes worth inspecting.
+   *
+   * It is important that the signal passed in gets marked as aborted as soon as
+   * you are finished with the listener, because that releases all resources
+   * associated with the listener.
+   */
+  setupListener(options: SetupListenerOptions): Promise<{
+    /**
+     * Blocks until there are any updates, or the operation is aborted, or a
+     * pre-set timeout occurs - whichever happens first.
+     *
+     * This method can be called repeatedly if needed.
+     */
+    waitForUpdate(): Promise<'timeout' | 'aborted' | 'ready'>;
+  }>;
+}
+
+export class UpdateListenerImpl implements UpdateListener {
   readonly #changeHandler: ChangeHandler;
   readonly #historyConfig: HistoryConfig;
   readonly #shutdownSignal: AbortSignal;
@@ -105,6 +130,8 @@ export class UpdateListener {
               } else if (checkPassed) {
                 result.resolve('ready');
                 done = true;
+                clearTimeout(timeoutHandle);
+                return;
               }
             } catch {
               if (!done) {

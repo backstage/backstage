@@ -40,6 +40,7 @@ export const catalogModuleHistory = createBackendModule({
         config: coreServices.rootConfig,
         database: coreServices.database,
         httpRouter: coreServices.httpRouter,
+        logger: coreServices.logger,
         lifecycle: coreServices.lifecycle,
         scheduler: coreServices.scheduler,
         catalogProcessing: catalogProcessingExtensionPoint,
@@ -49,6 +50,7 @@ export const catalogModuleHistory = createBackendModule({
         config,
         database,
         httpRouter,
+        logger,
         lifecycle,
         scheduler,
         catalogProcessing,
@@ -85,6 +87,7 @@ export const catalogModuleHistory = createBackendModule({
         httpRouter.use(
           await createRouter({
             knexPromise,
+            logger,
             lifecycle,
             historyConfig,
           }),

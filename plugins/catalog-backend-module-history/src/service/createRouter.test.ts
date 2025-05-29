@@ -45,10 +45,17 @@ describe('createRouter', () => {
         deps: {
           database: coreServices.database,
           httpRouter: coreServices.httpRouter,
+          logger: coreServices.logger,
           lifecycle: coreServices.lifecycle,
           catalogProcessing: catalogProcessingExtensionPoint,
         },
-        async init({ database, httpRouter, lifecycle, catalogProcessing }) {
+        async init({
+          database,
+          httpRouter,
+          logger,
+          lifecycle,
+          catalogProcessing,
+        }) {
           const dbPromise = initializeDatabaseAfterCatalog({
             database,
             lifecycle,
@@ -57,8 +64,9 @@ describe('createRouter', () => {
           httpRouter.use(
             await createRouter({
               knexPromise: dbPromise,
+              logger,
+              lifecycle,
               historyConfig: getHistoryConfig(),
-              shutdownSignal: new AbortController().signal,
             }),
           );
         },
