@@ -36,14 +36,14 @@ jest.mock('@backstage/plugin-scaffolder-node', () => ({
 
 type FetchTemplateInput = ReturnType<
   typeof createFetchTemplateFileAction
-> extends TemplateAction<infer U>
+> extends TemplateAction<infer U, any, any>
   ? U
   : never;
 
 const mockFetchFile = fetchFile as jest.MockedFunction<typeof fetchFile>;
 
 describe('fetch:template:file examples', () => {
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, 'v2'>;
 
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');

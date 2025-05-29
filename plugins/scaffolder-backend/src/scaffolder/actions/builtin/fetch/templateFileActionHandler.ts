@@ -38,7 +38,7 @@ export type TemplateFileActionInput = {
 export async function createTemplateFileActionHandler<
   I extends TemplateFileActionInput = TemplateFileActionInput,
 >(options: {
-  ctx: ActionContext<I, any>;
+  ctx: ActionContext<I, any, 'v2'>;
   resolveTemplateFile: () => Promise<string>;
   integrations: ScmIntegrations;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
