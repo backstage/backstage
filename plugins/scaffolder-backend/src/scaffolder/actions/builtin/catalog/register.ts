@@ -35,84 +35,71 @@ export function createCatalogRegisterAction(options: {
 }) {
   const { catalogClient, integrations, auth } = options;
 
-  return createTemplateAction<
-    | { catalogInfoUrl: string; optional?: boolean }
-    | { repoContentsUrl: string; catalogInfoPath?: string; optional?: boolean }
-  >({
+  return createTemplateAction({
     id,
     description:
       'Registers entities from a catalog descriptor file in the workspace into the software catalog.',
     examples,
     schema: {
       input: {
-        oneOf: [
-          {
-            type: 'object',
-            required: ['catalogInfoUrl'],
-            properties: {
-              catalogInfoUrl: {
-                title: 'Catalog Info URL',
-                description:
-                  'An absolute URL pointing to the catalog info file location',
-                type: 'string',
-              },
-              optional: {
-                title: 'Optional',
-                description:
-                  'Permit the registered location to optionally exist. Default: false',
-                type: 'boolean',
-              },
-            },
-          },
-          {
-            type: 'object',
-            required: ['repoContentsUrl'],
-            properties: {
-              repoContentsUrl: {
-                title: 'Repository Contents URL',
-                description:
-                  'An absolute URL pointing to the root of a repository directory tree',
-                type: 'string',
-              },
-              catalogInfoPath: {
-                title: 'Fetch URL',
-                description:
-                  'A relative path from the repo root pointing to the catalog info file, defaults to /catalog-info.yaml',
-                type: 'string',
-              },
-              optional: {
-                title: 'Optional',
-                description:
-                  'Permit the registered location to optionally exist. Default: false',
-                type: 'boolean',
-              },
-            },
-          },
-        ],
+        catalogInfoUrl: z =>
+          z
+            .string({
+              description:
+                'An absolute URL pointing to the catalog info file location',
+            })
+            .optional(),
+        repoContentsUrl: z =>
+          z
+            .string({
+              description:
+                'An absolute URL pointing to the root of a repository directory tree',
+            })
+            .optional(),
+        catalogInfoPath: z =>
+          z
+            .string({
+              description:
+                'A relative path from the repo root pointing to the catalog info file, defaults to /catalog-info.yaml',
+            })
+            .optional(),
+        optional: z =>
+          z
+            .boolean({
+              description:
+                'Permit the registered location to optionally exist. Default: false',
+            })
+            .optional(),
       },
       output: {
-        type: 'object',
-        required: ['catalogInfoUrl'],
-        properties: {
-          entityRef: {
-            type: 'string',
-          },
-          catalogInfoUrl: {
-            type: 'string',
-          },
-        },
+        entityRef: z =>
+          z
+            .string({
+              description: 'The entity reference of the registered entity',
+            })
+            .optional(),
+        catalogInfoUrl: z =>
+          z.string({
+            description: 'The URL of the registered catalog info file',
+          }),
       },
     },
     async handler(ctx) {
       const { input } = ctx;
 
+      if (!input.catalogInfoUrl && !input.repoContentsUrl) {
+        throw new InputError(
+          'Either catalogInfoUrl or repoContentsUrl must be provided',
+        );
+      }
+
       let catalogInfoUrl;
-      if ('catalogInfoUrl' in input) {
+      if (input.catalogInfoUrl) {
         catalogInfoUrl = input.catalogInfoUrl;
       } else {
         const { repoContentsUrl, catalogInfoPath = '/catalog-info.yaml' } =
           input;
-        const integration = integrations.byUrl(repoContentsUrl);
+        const integration = integrations.byUrl(repoContentsUrl!);
         if (!integration) {
           throw new InputError(
             `No integration found for host ${repoContentsUrl}`,
@@ -120,7 +107,7 @@ export function createCatalogRegisterAction(options: {
         }
 
         catalogInfoUrl = integration.resolveUrl({
-          base: repoContentsUrl,
+          base: repoContentsUrl!,
           url: catalogInfoPath,
         });
       }

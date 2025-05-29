@@ -41,89 +41,83 @@ export function createFetchTemplateAction(options: {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }) {
-  return createTemplateAction<{
-    url: string;
-    targetPath?: string;
-    values: any;
-    templateFileExtension?: string | boolean;
-
-    // Cookiecutter compat options
-    copyWithoutTemplating?: string[];
-    cookiecutterCompat?: boolean;
-    replace?: boolean;
-    trimBlocks?: boolean;
-    lstripBlocks?: boolean;
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'fetch:template',
     description:
       'Downloads a skeleton, templates variables into file and directory names and content, and places the result in the workspace, or optionally in a subdirectory specified by the `targetPath` input option.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['url'],
-        properties: {
-          url: {
-            title: 'Fetch URL',
+        url: z =>
+          z.string({
             description:
               'Relative path or absolute URL pointing to the directory tree to fetch',
-            type: 'string',
-          },
-          targetPath: {
-            title: 'Target Path',
-            description:
-              'Target path within the working directory to download the contents to. Defaults to the working directory root.',
-            type: 'string',
-          },
-          values: {
-            title: 'Template Values',
+          }),
+        targetPath: z =>
+          z
+            .string({
+              description:
+                'Target path within the working directory to download the contents to. Defaults to the working directory root.',
+            })
+            .optional(),
+        values: z =>
+          z.record(z.any(), {
             description: 'Values to pass on to the templating engine',
-            type: 'object',
-          },
-          copyWithoutRender: {
-            title: '[Deprecated] Copy Without Render',
-            description:
-              'An array of glob patterns. Any files or directories which match are copied without being processed as templates.',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          copyWithoutTemplating: {
-            title: 'Copy Without Templating',
-            description:
-              'An array of glob patterns. Contents of matched files or directories are copied without being processed, but paths are subject to rendering.',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          cookiecutterCompat: {
-            title: 'Cookiecutter compatibility mode',
-            description:
-              'Enable features to maximise compatibility with templates built for fetch:cookiecutter',
-            type: 'boolean',
-          },
-          templateFileExtension: {
-            title: 'Template File Extension',
-            description:
-              'If set, only files with the given extension will be templated. If set to `true`, the default extension `.njk` is used.',
-            type: ['string', 'boolean'],
-          },
-          replace: {
-            title: 'Replace files',
-            description:
-              'If set, replace files in targetPath instead of skipping existing ones.',
-            type: 'boolean',
-          },
-          token: {
-            title: 'Token',
-            description:
-              'An optional token to use for authentication when reading the resources.',
-            type: 'string',
-          },
-        },
+          }),
+        copyWithoutRender: z =>
+          z
+            .array(z.string(), {
+              description:
+                '[Deprecated] An array of glob patterns. Any files or directories which match are copied without being processed as templates.',
+            })
+            .optional(),
+        copyWithoutTemplating: z =>
+          z
+            .array(z.string(), {
+              description:
+                'An array of glob patterns. Contents of matched files or directories are copied without being processed, but paths are subject to rendering.',
+            })
+            .optional(),
+        cookiecutterCompat: z =>
+          z
+            .boolean({
+              description:
+                'Enable features to maximise compatibility with templates built for fetch:cookiecutter',
+            })
+            .optional(),
+        templateFileExtension: z =>
+          z
+            .union([z.string(), z.boolean()], {
+              description:
+                'If set, only files with the given extension will be templated. If set to `true`, the default extension `.njk` is used.',
+            })
+            .optional(),
+        replace: z =>
+          z
+            .boolean({
+              description:
+                'If set, replace files in targetPath instead of skipping existing ones.',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description:
+                'An optional token to use for authentication when reading the resources.',
+            })
+            .optional(),
+        trimBlocks: z =>
+          z
+            .boolean({
+              description: 'Trim blocks in nunjucks templates',
+            })
+            .optional(),
+        lstripBlocks: z =>
+          z
+            .boolean({
+              description: 'Left strip blocks in nunjucks templates',
+            })
+            .optional(),
       },
     },
     supportsDryRun: true,
