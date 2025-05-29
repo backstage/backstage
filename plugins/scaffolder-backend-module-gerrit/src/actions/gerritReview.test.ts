@@ -61,6 +61,7 @@ describe('publish:gerrit:review', () => {
         ...mockContext,
         input: {
           repoUrl: 'gerrithost.org?workspace=w&owner=o',
+          gitCommitMessage: 'blob',
         },
       }),
     ).rejects.toThrow(/missing repo/);
@@ -70,7 +71,10 @@ describe('publish:gerrit:review', () => {
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'gerrithost.org?workspace=w&owner=o&repo=r' },
+        input: {
+          repoUrl: 'gerrithost.org?workspace=w&owner=o&repo=r',
+          gitCommitMessage: '',
+        },
       }),
     ).rejects.toThrow(/Missing gitCommitMessage input/);
   });
@@ -81,6 +85,7 @@ describe('publish:gerrit:review', () => {
         ...mockContext,
         input: {
           repoUrl: 'missing.com?workspace=w&owner=o&repo=repo',
+          gitCommitMessage: 'ads',
         },
       }),
     ).rejects.toThrow(/No matching integration configuration/);
