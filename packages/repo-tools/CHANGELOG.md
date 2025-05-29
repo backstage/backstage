@@ -1,5 +1,20 @@
 # @backstage/repo-tools
 
+## 0.14.0-next.0
+
+### Minor Changes
+
+- bf9a173: Add support for caching the per-package output from the `package-docs` command.
+
+### Patch Changes
+
+- 2d20024: Fix an issue where errors were not printed to console when running `backstage-repo-tools schema openapi generate` without the `--watch` flag.
+- e643ee4: Add missing highlight language for the `package-docs` command.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+
 ## 0.13.3
 
 ### Patch Changes

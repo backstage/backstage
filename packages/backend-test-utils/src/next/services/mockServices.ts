@@ -53,6 +53,8 @@ import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockUserInfoService } from './MockUserInfoService';
 import { mockCredentials } from './mockCredentials';
 import { MockEventsService } from './MockEventsService';
+import { actionsServiceFactory } from '@backstage/backend-defaults/actions';
+import { actionsRegistryServiceFactory } from '@backstage/backend-defaults/actionsRegistry';
 
 /** @internal */
 function createLoggerMock() {
@@ -516,6 +518,20 @@ export namespace mockServices {
       readTree: jest.fn(),
       readUrl: jest.fn(),
       search: jest.fn(),
+    }));
+  }
+  export namespace actions {
+    export const factory = () => actionsServiceFactory;
+    export const mock = simpleMock(coreServices.actions, () => ({
+      list: jest.fn(),
+      invoke: jest.fn(),
+    }));
+  }
+
+  export namespace actionsRegistry {
+    export const factory = () => actionsRegistryServiceFactory;
+    export const mock = simpleMock(coreServices.actionsRegistry, () => ({
+      register: jest.fn(),
     }));
   }
 

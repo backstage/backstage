@@ -1,5 +1,14 @@
 # @backstage/frontend-app-api
 
+## 0.11.3-next.0
+
+### Patch Changes
+
+- c38c9e8: Implemented support for the `plugin.info()` method in specialized apps with a default resolved for `package.json` and `catalog-info.yaml`. The default resolution logic can be overridden via the `pluginInfoResolver` option to `createSpecializedApp`, and plugin-specific overrides can be applied via the new `app.pluginOverrides` key in static configuration.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/frontend-defaults@0.2.3-next.0
+
 ## 0.11.2
 
 ### Patch Changes

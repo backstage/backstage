@@ -122,6 +122,16 @@ export interface Config {
     };
 
     /**
+     * Options used by the default actions service.
+     */
+    actions?: {
+      /**
+       * List of plugin sources to load actions from.
+       */
+      pluginSources?: string[];
+    };
+
+    /**
      * Options used by the default auth, httpAuth and userInfo services.
      */
     auth?: {

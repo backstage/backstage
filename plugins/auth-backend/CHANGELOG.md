@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend
 
+## 0.25.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-auth-node@0.6.4-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.0
+
 ## 0.25.0
 
 ### Minor Changes

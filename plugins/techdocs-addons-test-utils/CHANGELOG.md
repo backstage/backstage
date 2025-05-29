@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.49-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.13.0-next.0
+  - @backstage/plugin-catalog@1.31.0-next.0
+  - @backstage/plugin-techdocs-react@1.3.0-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.0
+  - @backstage/plugin-search-react@1.9.1-next.0
+  - @backstage/integration-react@1.2.7
+
 ## 1.0.48
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-defaults",
-  "version": "0.10.0",
+  "version": "0.10.1-next.0",
   "description": "Backend defaults used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -20,6 +20,8 @@
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
+    "./actions": "./src/entrypoints/actions/index.ts",
+    "./actionsRegistry": "./src/entrypoints/actionsRegistry/index.ts",
     "./auditor": "./src/entrypoints/auditor/index.ts",
     "./auth": "./src/entrypoints/auth/index.ts",
     "./cache": "./src/entrypoints/cache/index.ts",
@@ -45,6 +47,12 @@
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
+      "actions": [
+        "src/entrypoints/actions/index.ts"
+      ],
+      "actionsRegistry": [
+        "src/entrypoints/actionsRegistry/index.ts"
+      ],
       "auditor": [
         "src/entrypoints/auditor/index.ts"
       ],
@@ -188,7 +196,8 @@
     "winston-transport": "^4.5.0",
     "yauzl": "^3.0.0",
     "yn": "^4.0.0",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.20.4"
   },
   "devDependencies": {
     "@aws-sdk/util-stream-node": "^3.350.0",
