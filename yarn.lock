@@ -5751,6 +5751,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@material-ui/icons": "npm:^4.9.1"
   languageName: unknown
   linkType: soft

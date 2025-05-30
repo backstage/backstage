@@ -53,7 +53,7 @@ const NOTIFICATION_COLUMNS = [
   'user',
   'read',
   'saved',
-  'attributes',
+  'metadata',
 ];
 
 type NotificationRowType = {
@@ -165,7 +165,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         severity: row.severity,
         scope: row.scope,
         icon: row.icon,
-        attributes: row.attributes ? JSON.parse(row.attributes) : undefined,
+        metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
       },
     }));
   };
@@ -229,8 +229,8 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       icon: notification.payload?.icon,
       saved: notification.saved,
       read: notification.read,
-      attributes: notification.payload?.attributes
-        ? JSON.stringify(notification.payload.attributes)
+      metadata: notification.payload?.metadata
+        ? JSON.stringify(notification.payload.metadata)
         : undefined,
     };
   };
@@ -247,8 +247,8 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       severity: normalizeSeverity(notification.payload?.severity),
       icon: notification.payload.icon,
       scope: notification.payload?.scope,
-      attributes: notification.payload?.attributes
-        ? JSON.stringify(notification.payload.attributes)
+      metadata: notification.payload?.metadata
+        ? JSON.stringify(notification.payload.metadata)
         : undefined,
     };
   };

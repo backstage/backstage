@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { JsonValue } from '@backstage/types';
+
 /** @public */
 export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
 
 /** @public */
-export type NotificationPayload<
-  T extends Record<string, unknown> = Record<string, unknown>,
-> = {
+export type NotificationPayload = {
   /**
    * Notification title
    */
@@ -53,15 +53,13 @@ export type NotificationPayload<
    */
   icon?: string;
   /**
-   * Optional additional customizable attributes.
+   * Optional additional customizable metadata.
    */
-  attributes?: T;
+  metadata?: { [KMetadataKey in string]?: JsonValue };
 };
 
 /** @public */
-export type Notification<
-  T extends Record<string, unknown> = Record<string, unknown>,
-> = {
+export type Notification = {
   /**
    * Unique identifier for the notification
    */
@@ -95,7 +93,7 @@ export type Notification<
   /**
    * Actual notification payload
    */
-  payload: NotificationPayload<T>;
+  payload: NotificationPayload;
 };
 
 /** @public */
