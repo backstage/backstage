@@ -20,12 +20,28 @@ import {
   Workspace,
 } from '@yarnpkg/core';
 import { suggestUtils } from '@yarnpkg/plugin-essentials';
+import { getPackageVersion } from '../util';
 import { afterWorkspaceDependencyAddition } from './afterWorkspaceDependencyAddition';
 
+jest.mock('../util', () => ({
+  getPackageVersion: jest.fn(),
+}));
+
 describe('afterWorkspaceDependencyAddition', () => {
-  const workspace = {} as Workspace;
+  const workspace = {
+    project: {
+      configuration: {},
+    },
+  } as Workspace;
   const target = {} as suggestUtils.Target;
   const strategies: Array<suggestUtils.Strategy> = [];
+  const mockGetPackageVersion = getPackageVersion as jest.MockedFunction<
+    typeof getPackageVersion
+  >;
+
+  beforeEach(() => {
+    mockGetPackageVersion.mockReset();
+  });
 
   it('should replace the range for a backstage scoped dependency', async () => {
     const input: Descriptor = {
@@ -36,6 +52,8 @@ describe('afterWorkspaceDependencyAddition', () => {
       identHash: {} as IdentHash,
     };
 
+    mockGetPackageVersion.mockImplementation(() => Promise.resolve('success'));
+
     await afterWorkspaceDependencyAddition(
       workspace,
       target,
@@ -44,6 +62,39 @@ describe('afterWorkspaceDependencyAddition', () => {
     );
 
     expect(input.range).toBe('backstage:^');
+    expect(mockGetPackageVersion).toHaveBeenCalledTimes(1);
+    expect(mockGetPackageVersion).toHaveBeenCalledWith(
+      input,
+      workspace.project.configuration,
+    );
+  });
+
+  it('should not replace the range for a backstage scoped dependency where it cant find a version from remote', async () => {
+    const input: Descriptor = {
+      scope: 'backstage',
+      name: 'test-package',
+      range: '^1.0.0',
+      descriptorHash: {} as DescriptorHash,
+      identHash: {} as IdentHash,
+    };
+
+    mockGetPackageVersion.mockImplementation(() =>
+      Promise.reject(new Error('test error')),
+    );
+
+    await afterWorkspaceDependencyAddition(
+      workspace,
+      target,
+      input,
+      strategies,
+    );
+
+    expect(input.range).toBe('^1.0.0');
+    expect(mockGetPackageVersion).toHaveBeenCalledTimes(1);
+    expect(mockGetPackageVersion).toHaveBeenCalledWith(
+      input,
+      workspace.project.configuration,
+    );
   });
 
   it('should not replace the range for a non-backstage scoped dependency', async () => {
@@ -63,5 +114,6 @@ describe('afterWorkspaceDependencyAddition', () => {
     );
 
     expect(input.range).toBe('^1.0.0');
+    expect(mockGetPackageVersion).not.toHaveBeenCalled();
   });
 });

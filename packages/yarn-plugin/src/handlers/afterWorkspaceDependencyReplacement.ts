@@ -14,22 +14,33 @@
  * limitations under the License.
  */
 
-import { Descriptor, Workspace } from '@yarnpkg/core';
+import { Descriptor, structUtils, Workspace } from '@yarnpkg/core';
 import { suggestUtils } from '@yarnpkg/plugin-essentials';
+import { getPackageVersion } from '../util';
+import { PROTOCOL } from '../constants';
 
 export const afterWorkspaceDependencyReplacement = async (
-  _workspace: Workspace,
+  workspace: Workspace,
   _target: suggestUtils.Target,
   fromDescriptor: Descriptor,
   toDescriptor: Descriptor,
 ) => {
+  const toDescriptorRange = structUtils.parseRange(toDescriptor.range);
+
   if (
     toDescriptor.scope === 'backstage' &&
-    toDescriptor.range !== 'backstage:^'
+    toDescriptorRange.protocol !== PROTOCOL
   ) {
-    // is there a better way to log than console.log?
-    console.log(
-      `afterWorkspaceDependencyReplacement hook: Setting descriptor range from '${fromDescriptor.range}' to '${toDescriptor.range}' for ${fromDescriptor.scope}/${fromDescriptor.name}.  Are you sure you want to be doing that?`,
-    );
+    try {
+      await getPackageVersion(toDescriptor, workspace.project.configuration);
+      // is there a better way to log than console.log?
+      console.log(
+        `afterWorkspaceDependencyReplacement hook: Setting descriptor range from '${fromDescriptor.range}' to '${toDescriptor.range}' for ${fromDescriptor.scope}/${fromDescriptor.name}.  Are you sure you want to be doing that?`,
+      );
+    } catch (_error: any) {
+      // if there's no found version then this is likely a deprecated package
+      // or otherwise the plugin won't be able to resolve the real version
+      // and we should not warn them.
+    }
   }
 };
