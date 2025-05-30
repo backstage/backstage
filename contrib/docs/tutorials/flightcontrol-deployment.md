@@ -23,7 +23,7 @@ The following two code snippets demonstrate this method. The first block of code
 # yarn build:backend
 #
 # Once the commands have been run, you can build the image using `yarn build-image`
-FROM node:20-bookworm-slim as build
+FROM node:22-bookworm-slim as build
 
 USER node
 WORKDIR /app
@@ -38,7 +38,7 @@ RUN yarn tsc
 # The configuration files here should match the one you use inside the Dockerfile below.
 RUN yarn build:backend --config ../../app-config.yaml
 
-FROM node:20-bookworm-slim
+FROM node:22-bookworm-slim
 
 # Install isolate-vm dependencies, these are needed by the @backstage/plugin-scaffolder-backend.
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \

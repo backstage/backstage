@@ -3877,7 +3877,7 @@ __metadata:
   resolution: "@backstage/cli-common@workspace:packages/cli-common"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@types/node": "npm:^20.16.0"
+    "@types/node": "npm:^22.15.0"
   languageName: unknown
   linkType: soft
 
@@ -3960,7 +3960,7 @@ __metadata:
     "@types/http-proxy": "npm:^1.17.4"
     "@types/inquirer": "npm:^8.1.3"
     "@types/jest": "npm:^29.5.11"
-    "@types/node": "npm:^20.16.0"
+    "@types/node": "npm:^22.15.0"
     "@types/npm-packlist": "npm:^3.0.0"
     "@types/recursive-readdir": "npm:^2.2.0"
     "@types/rollup-plugin-peer-deps-external": "npm:^2.2.0"
@@ -4077,7 +4077,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@types/jscodeshift": "npm:^0.12.0"
-    "@types/node": "npm:^20.16.0"
+    "@types/node": "npm:^22.15.0"
     chalk: "npm:^4.0.0"
     commander: "npm:^12.0.0"
     jscodeshift: "npm:^0.16.0"
@@ -4451,7 +4451,7 @@ __metadata:
     "@types/command-exists": "npm:^1.2.0"
     "@types/fs-extra": "npm:^11.0.0"
     "@types/inquirer": "npm:^8.1.3"
-    "@types/node": "npm:^20.16.0"
+    "@types/node": "npm:^22.15.0"
     "@types/recursive-readdir": "npm:^2.2.0"
     chalk: "npm:^4.0.0"
     commander: "npm:^12.0.0"
@@ -6860,7 +6860,7 @@ __metadata:
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
-    "@types/node": "npm:^20.16.0"
+    "@types/node": "npm:^22.15.0"
     "@types/react": "npm:^18.0.0"
     cronstrue: "npm:^2.2.0"
     js-yaml: "npm:^4.0.0"
@@ -7659,7 +7659,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/command-exists": "npm:^1.2.0"
     "@types/fs-extra": "npm:^11.0.0"
-    "@types/node": "npm:^20.16.0"
+    "@types/node": "npm:^22.15.0"
     command-exists: "npm:^1.2.9"
     fs-extra: "npm:^11.0.0"
     jest-when: "npm:^3.1.0"
@@ -7747,7 +7747,7 @@ __metadata:
     fs-extra: "npm:^11.2.0"
     globby: "npm:^11.0.0"
     isbinaryfile: "npm:^5.0.0"
-    isolated-vm: "npm:^5.0.1"
+    isolated-vm: "npm:^6.0.0"
     jsonschema: "npm:^1.5.0"
     knex: "npm:^3.0.0"
     lodash: "npm:^4.17.21"
@@ -8716,7 +8716,7 @@ __metadata:
     "@stoplight/spectral-runtime": "npm:^1.1.2"
     "@stoplight/types": "npm:^14.0.0"
     "@types/is-glob": "npm:^4.0.2"
-    "@types/node": "npm:^20.16.0"
+    "@types/node": "npm:^22.15.0"
     "@types/prettier": "npm:^2.0.0"
     "@useoptic/openapi-utilities": "npm:^0.55.0"
     chalk: "npm:^4.0.0"
@@ -19385,7 +19385,7 @@ __metadata:
     "@types/commander": "npm:^2.12.2"
     "@types/fs-extra": "npm:^11.0.0"
     "@types/http-proxy": "npm:^1.17.4"
-    "@types/node": "npm:^20.16.0"
+    "@types/node": "npm:^22.15.0"
     "@types/serve-handler": "npm:^6.1.0"
     "@types/webpack-env": "npm:^1.15.3"
     commander: "npm:^12.0.0"
@@ -20647,12 +20647,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=12, @types/node@npm:>=12.0.0, @types/node@npm:>=13.7.0, @types/node@npm:>=18.0.0, @types/node@npm:^22.0.0":
-  version: 22.13.10
-  resolution: "@types/node@npm:22.13.10"
+"@types/node@npm:*, @types/node@npm:>=12, @types/node@npm:>=12.0.0, @types/node@npm:>=13.7.0, @types/node@npm:>=18.0.0, @types/node@npm:^22.0.0, @types/node@npm:^22.15.0":
+  version: 22.15.28
+  resolution: "@types/node@npm:22.15.28"
   dependencies:
-    undici-types: "npm:~6.20.0"
-  checksum: 10/57dc6a5e0110ca9edea8d7047082e649fa7fa813f79e4a901653b9174141c622f4336435648baced5b38d9f39843f404fa2d8d7a10981610da26066bc8caab48
+    undici-types: "npm:~6.21.0"
+  checksum: 10/82ee399642729755f09aa59284f4ecf155451a39d268fd1c1f464aed9e1107842753cecab2058ad5f322a5487e534c1d7abe50801106f8844e74f0d1463dddc3
   languageName: node
   linkType: hard
 
@@ -20693,7 +20693,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.1.1, @types/node@npm:^20.16.0":
+"@types/node@npm:^20.1.1":
   version: 20.17.30
   resolution: "@types/node@npm:20.17.30"
   dependencies:
@@ -28165,7 +28165,7 @@ __metadata:
     "@backstage/create-app": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@types/fs-extra": "npm:^11.0.0"
-    "@types/node": "npm:^20.16.0"
+    "@types/node": "npm:^22.15.0"
     chalk: "npm:^4.0.0"
     commander: "npm:^12.0.0"
     cross-fetch: "npm:^4.0.0"
@@ -33700,13 +33700,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"isolated-vm@npm:^5.0.1":
-  version: 5.0.4
-  resolution: "isolated-vm@npm:5.0.4"
+"isolated-vm@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "isolated-vm@npm:6.0.0"
   dependencies:
     node-gyp: "npm:latest"
     prebuild-install: "npm:^7.1.2"
-  checksum: 10/f48e69ecf907645711d0a372cb6adb28cf72499e34b6e008ed597994bfd90d41dd11dc478a41fc21a25aaef424ab5a95a372286e4daf7f61e231d028c0fd64ec
+  checksum: 10/18f9cf96fbc6870102ce4bbad0188558c2bf35d27f112e3d486aa55d51edd4935a0f28e9eb4e7e0d1bc78e3d30180517a2c07f1eca37b8ed4dd4a5a65e136024
   languageName: node
   linkType: hard
 
@@ -43724,7 +43724,7 @@ __metadata:
     "@types/cacheable-request": "npm:^8.3.6"
     "@types/global-agent": "npm:^2.1.3"
     "@types/memjs": "npm:^1.3.3"
-    "@types/node": "npm:^20.16.0"
+    "@types/node": "npm:^22.15.0"
     "@types/webpack": "npm:^5.28.0"
     "@useoptic/optic": "npm:^1.0.0"
     array-to-table: "npm:^1.0.1"
@@ -47276,10 +47276,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~6.20.0":
-  version: 6.20.0
-  resolution: "undici-types@npm:6.20.0"
-  checksum: 10/583ac7bbf4ff69931d3985f4762cde2690bb607844c16a5e2fbb92ed312fe4fa1b365e953032d469fa28ba8b224e88a595f0b10a449332f83fa77c695e567dbe
+"undici-types@npm:~6.21.0":
+  version: 6.21.0
+  resolution: "undici-types@npm:6.21.0"
+  checksum: 10/ec8f41aa4359d50f9b59fa61fe3efce3477cc681908c8f84354d8567bb3701fafdddf36ef6bff307024d3feb42c837cf6f670314ba37fc8145e219560e473d14
   languageName: node
   linkType: hard
 

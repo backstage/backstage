@@ -23,7 +23,7 @@ RUN --mount=type=cache,target=/home/nonroot/.cache/pip,uid=65532,gid=65532 \
 # Build Node environment in a separate builder stage
 FROM cgr.dev/chainguard/wolfi-base:latest as node-builder
 
-ENV NODE_VERSION="20=~20.11"
+ENV NODE_VERSION="22=~22.16"
 ENV NODE_ENV=production
 
 RUN --mount=type=cache,target=/var/cache/apk,sharing=locked,uid=65532,gid=65532 \
