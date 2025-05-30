@@ -78,49 +78,33 @@ export function createBitbucketCloudBranchRestrictionAction(options: {
   integrations: ScmIntegrationRegistry;
 }) {
   const { integrations } = options;
-  return createTemplateAction<{
-    repoUrl: string;
-    kind: string;
-    branchMatchKind?: string;
-    branchType?: string;
-    pattern?: string;
-    value?: number;
-    users?: { uuid: string }[];
-    groups?: { slug: string }[];
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'bitbucketCloud:branchRestriction:create',
     examples,
     description:
       'Creates branch restrictions for a Bitbucket Cloud repository.',
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl', 'kind'],
-        properties: {
-          repoUrl: inputProps.repoUrl,
-          kind: inputProps.restriction.kind,
-          branchMatchKind: inputProps.restriction.branchMatchKind,
-          branchType: inputProps.restriction.branchType,
-          pattern: inputProps.restriction.pattern,
-          value: inputProps.restriction.value,
-          users: inputProps.restriction.users,
-          groups: inputProps.restriction.groups,
-          token: inputProps.token,
-        },
+        repoUrl: inputProps.repoUrl,
+        kind: z => inputProps.restriction(z).kind,
+        branchMatchKind: z =>
+          inputProps.restriction(z).branchMatchKind.optional(),
+        branchType: z => inputProps.restriction(z).branchType.optional(),
+        pattern: z => inputProps.restriction(z).pattern.optional(),
+        value: z => inputProps.restriction(z).value.optional(),
+        users: z => inputProps.restriction(z).users.optional(),
+        groups: z => inputProps.restriction(z).groups.optional(),
+        token: z => inputProps.token(z).optional(),
       },
       output: {
-        type: 'object',
-        properties: {
-          json: {
-            title: 'The response from bitbucket cloud',
-            type: 'string',
-          },
-          statusCode: {
-            title: 'The status code of the response',
-            type: 'number',
-          },
-        },
+        json: z =>
+          z.string({
+            description: 'The response from bitbucket cloud',
+          }),
+        statusCode: z =>
+          z.number({
+            description: 'The status code of the response',
+          }),
       },
     },
     async handler(ctx) {
@@ -161,8 +145,14 @@ export function createBitbucketCloudBranchRestrictionAction(options: {
         branchType: branchType,
         pattern: pattern,
         value: value,
-        users: users.map(user => ({ uuid: user.uuid, type: 'user' })),
-        groups: groups.map(group => ({ slug: group.slug, type: 'group' })),
+        users: users.map((user: { uuid: string }) => ({
+          uuid: user.uuid,
+          type: 'user',
+        })),
+        groups: groups.map((group: { slug: string }) => ({
+          slug: group.slug,
+          type: 'group',
+        })),
         authorization,
       });
       if (response.data.errors) {

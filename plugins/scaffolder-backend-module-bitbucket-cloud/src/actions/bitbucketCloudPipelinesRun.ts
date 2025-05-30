@@ -18,6 +18,7 @@ import { examples } from './bitbucketCloudPipelinesRun.examples';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { getAuthorizationHeader } from './helpers';
+import * as inputProps from './inputProperties';
 
 const id = 'bitbucket:pipelines:run';
 /**
@@ -35,14 +36,8 @@ export const createBitbucketPipelinesRunAction = (options: {
     examples,
     schema: {
       input: {
-        workspace: z =>
-          z.string({
-            description: 'Bitbucket workspace name',
-          }),
-        repo_slug: z =>
-          z.string({
-            description: 'Repository slug',
-          }),
+        workspace: inputProps.workspace,
+        repo_slug: inputProps.repo_slug,
         body: z =>
           z
             .object(
@@ -53,13 +48,7 @@ export const createBitbucketPipelinesRunAction = (options: {
             )
             .passthrough()
             .optional(),
-        token: z =>
-          z
-            .string({
-              description:
-                'The token to use for authorization to Bitbucket Cloud',
-            })
-            .optional(),
+        token: inputProps.token,
       },
       output: {
         buildNumber: z =>

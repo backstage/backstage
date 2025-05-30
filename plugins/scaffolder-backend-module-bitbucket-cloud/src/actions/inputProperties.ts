@@ -14,156 +14,132 @@
  * limitations under the License.
  */
 
-const repoUrl = {
-  title: 'Repository Location',
-  description: `Accepts the format 'bitbucket.org?repo=reponame&workspace=workspace&project=project' where 'reponame' is the new repository name`,
-  type: 'string',
-};
+const repoUrl = (z: any) =>
+  z.string({
+    description: `Accepts the format 'bitbucket.org?repo=reponame&workspace=workspace&project=project' where 'reponame' is the new repository name`,
+  });
 
-const workspace = {
-  title: 'Workspace',
-  description: `The workspace name`,
-  type: 'string',
-};
+const workspace = (z: any) =>
+  z.string({
+    description: `The workspace name`,
+  });
 
-const repo_slug = {
-  title: 'Repository name',
-  description: 'The repository name',
-  type: 'string',
-};
+const repo_slug = (z: any) =>
+  z.string({
+    description: 'The repository name',
+  });
 
-const ref_type = {
-  title: 'ref_type',
-  type: 'string',
-};
+const ref_type = (z: any) =>
+  z.string({
+    description: 'The ref type',
+  });
 
-const type = {
-  title: 'type',
-  type: 'string',
-};
+const type = (z: any) =>
+  z.string({
+    description: 'The type',
+  });
 
-const ref_name = {
-  title: 'ref_name',
-  type: 'string',
-};
-const source = {
-  title: 'source',
-  type: 'string',
-};
-const destination = {
-  title: 'destination',
-  type: 'string',
-};
-const hash = {
-  title: 'hash',
-  type: 'string',
-};
+const ref_name = (z: any) =>
+  z.string({
+    description: 'The ref name',
+  });
 
-const pattern = {
-  title: 'pattern',
-  type: 'string',
-};
+const source = (z: any) =>
+  z.string({
+    description: 'The source',
+  });
 
-const id = {
-  title: 'id',
-  type: 'string',
-};
+const destination = (z: any) =>
+  z.string({
+    description: 'The destination',
+  });
 
-const key = {
-  title: 'key',
-  type: 'string',
-};
-const value = {
-  title: 'value',
-  type: 'string',
-};
-const secured = {
-  title: 'secured',
-  type: 'boolean',
-};
+const hash = (z: any) =>
+  z.string({
+    description: 'The hash',
+  });
 
-const token = {
-  title: 'Authentication Token',
-  type: 'string',
-  description: 'The token to use for authorization to BitBucket Cloud',
-};
+const pattern = (z: any) =>
+  z.string({
+    description: 'The pattern',
+  });
 
-const destination_commit = {
-  title: 'destination_commit',
-  type: 'object',
-  properties: {
-    hash,
-  },
-};
+const id = (z: any) =>
+  z.string({
+    description: 'The id',
+  });
 
-const commit = {
-  title: 'commit',
-  type: 'object',
-  properties: {
-    type,
-    hash,
-  },
-};
+const key = (z: any) =>
+  z.string({
+    description: 'The key',
+  });
 
-const selector = {
-  title: 'selector',
-  type: 'object',
-  properties: {
-    type,
-    pattern,
-  },
-};
+const value = (z: any) =>
+  z.string({
+    description: 'The value',
+  });
 
-const pull_request = {
-  title: 'pull_request',
-  type: 'object',
-  properties: {
-    id,
-  },
-};
+const secured = (z: any) =>
+  z.boolean({
+    description: 'Whether the value is secured',
+  });
 
-const pipelinesRunBody = {
-  title: 'Request Body',
-  description:
-    'Request body properties: see Bitbucket Cloud Rest API documentation for more details',
-  type: 'object',
-  properties: {
-    target: {
-      title: 'target',
-      type: 'object',
-      properties: {
-        ref_type,
-        type,
-        ref_name,
-        source,
-        destination,
-        destination_commit,
-        commit,
-        selector,
-        pull_request,
-      },
-    },
-    variables: {
-      title: 'variables',
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          key,
-          value,
-          secured,
-        },
-      },
-    },
-  },
-};
+const token = (z: any) =>
+  z.string({
+    description: 'The token to use for authorization to BitBucket Cloud',
+  });
 
-const restriction = {
-  kind: {
-    title: 'kind',
-    description: 'The kind of restriction.',
-    type: 'string',
-    enum: [
+const destination_commit = (z: any) =>
+  z.object({
+    hash: hash(z),
+  });
+
+const commit = (z: any) =>
+  z.object({
+    type: type(z),
+    hash: hash(z),
+  });
+
+const selector = (z: any) =>
+  z.object({
+    type: type(z),
+    pattern: pattern(z),
+  });
+
+const pull_request = (z: any) =>
+  z.object({
+    id: id(z),
+  });
+
+const pipelinesRunBody = (z: any) =>
+  z.object({
+    target: z
+      .object({
+        ref_type: ref_type(z).optional(),
+        type: type(z).optional(),
+        ref_name: ref_name(z).optional(),
+        source: source(z).optional(),
+        destination: destination(z).optional(),
+        destination_commit: destination_commit(z).optional(),
+        commit: commit(z).optional(),
+        selector: selector(z).optional(),
+        pull_request: pull_request(z).optional(),
+      })
+      .optional(),
+    variables: z
+      .array(
+        z.object({
+          key: key(z),
+          value: value(z),
+          secured: secured(z).optional(),
+        }),
+      )
+      .optional(),
+  });
+
+const restriction = (z: any) => ({
+  kind: z.enum(
+    [
       'push',
       'force',
       'delete',
@@ -181,72 +157,51 @@ const restriction = {
       'enforce_merge_checks',
       'allow_auto_merge_when_builds_pass',
     ],
-  },
-  branchMatchKind: {
-    title: 'branch_match_kind',
+    {
+      description: 'The kind of restriction.',
+    },
+  ),
+  branchMatchKind: z.enum(['glob', 'branching_model'], {
     description: 'The branch match kind.',
-    type: 'string',
-    enum: ['glob', 'branching_model'],
-  },
-  branchType: {
-    title: 'branch_type',
-    description:
-      'The branch type. When branchMatchKind is set to branching_model, this field is required.',
-    type: 'string',
-    enum: [
-      'feature',
-      'bugfix',
-      'release',
-      'hotfix',
-      'development',
-      'production',
-    ],
-  },
-  pattern: {
-    title: 'pattern',
+  }),
+  branchType: z.enum(
+    ['feature', 'bugfix', 'release', 'hotfix', 'development', 'production'],
+    {
+      description:
+        'The branch type. When branchMatchKind is set to branching_model, this field is required.',
+    },
+  ),
+  pattern: z.string({
     description:
       'The pattern to match branches against. This field is required when branchMatchKind is set to glob.',
-    type: 'string',
-  },
-  value: {
-    title: 'value',
+  }),
+  value: z.number({
     description:
       'The value of the restriction. This field is required when kind is one of require_approvals_to_merge / require_default_reviewer_approvals_to_merge / require_passing_builds_to_merge / require_commits_behind.',
-    type: 'number',
-  },
-  users: {
-    title: 'users',
-    description:
-      'Names of users that can bypass the push / restrict_merges restriction kind. For any other kind, this field will be ignored.',
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        uuid: {
-          title: 'uuid',
-          description: 'The UUID of the user in the format "{a-b-c-d}".',
-          type: 'string',
-        },
-      },
+  }),
+  users: z.array(
+    z.object({
+      uuid: z.string({
+        description: 'The UUID of the user in the format "{a-b-c-d}".',
+      }),
+    }),
+    {
+      description:
+        'Names of users that can bypass the push / restrict_merges restriction kind. For any other kind, this field will be ignored.',
     },
-  },
-  groups: {
-    title: 'groups',
-    description:
-      'Names of groups that can bypass the push / restrict_merges restriction kind. For any other kind, this field will be ignored.',
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        slug: {
-          title: 'slug',
-          description: 'The name of the group.',
-          type: 'string',
-        },
-      },
+  ),
+  groups: z.array(
+    z.object({
+      slug: z.string({
+        description: 'The name of the group.',
+      }),
+    }),
+    {
+      description:
+        'Names of groups that can bypass the push / restrict_merges restriction kind. For any other kind, this field will be ignored.',
     },
-  },
-};
+  ),
+});
 
 export { workspace, repo_slug, pipelinesRunBody, token };
 export { repoUrl, restriction };
