@@ -514,7 +514,7 @@ Options:
 ### `backstage-cli repo start`
 
 ```
-Usage: program [options] [...packageNameOrPath]
+Usage: program [options] [packageNameOrPath...]
 
 Options:
   --config <path>
