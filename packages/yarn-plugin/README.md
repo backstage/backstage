@@ -85,9 +85,9 @@ the appropriate npm version ranges. This is handled by the
 
 ### `afterWorkspaceDependencyAddition` hook
 
-\_Replaces npm version ranges with `backstage:^` ranges for `@backstage/*` dependencies added after
-the plugin has converted existing dependencies to `backstage:^` range
+_Replaces npm version ranges with `backstage:^` ranges for `@backstage/*` dependencies added after
+the plugin has converted existing dependencies to `backstage:^` range_
 
 ### `afterWorkspaceDependencyReplacement` hook
 
-\_warns user with console message when running `yarn add` for a `@backstage/*` scoped dependency that is already a dependency in the target package. Doing so will remove the `backstage:^` scope and replace it with the actual npm version range, which may not be desired.
+_warns user with console message when running `yarn add` for a `@backstage/*` scoped dependency that is already a dependency in the target package. Doing so will remove the `backstage:^` scope and replace it with the actual npm version range, which may not be desired._
