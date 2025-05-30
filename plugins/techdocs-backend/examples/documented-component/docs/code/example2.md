@@ -4,6 +4,8 @@ This page provides some sample code which may be used in your example component.
 
 This code uses TypeScript, and the Markdown code fence to wrap the code.
 
+# Placeholder text for nested folders.
+
 ```typescript
 const serviceEntityPage = (
   <EntityLayout>
