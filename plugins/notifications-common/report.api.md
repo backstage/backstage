@@ -4,6 +4,7 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 
 // @public (undocumented)
 export type ChannelSetting = {
@@ -31,9 +32,7 @@ export type NewNotificationSignal = {
 };
 
 // @public (undocumented)
-type Notification_2<
-  T extends Record<string, unknown> = Record<string, unknown>,
-> = {
+type Notification_2 = {
   id: string;
   user: string | null;
   created: Date;
@@ -41,14 +40,12 @@ type Notification_2<
   read?: Date;
   updated?: Date;
   origin: string;
-  payload: NotificationPayload<T>;
+  payload: NotificationPayload;
 };
 export { Notification_2 as Notification };
 
 // @public (undocumented)
-export type NotificationPayload<
-  T extends Record<string, unknown> = Record<string, unknown>,
-> = {
+export type NotificationPayload = {
   title: string;
   description?: string;
   link?: string;
@@ -56,7 +53,9 @@ export type NotificationPayload<
   topic?: string;
   scope?: string;
   icon?: string;
-  attributes?: T;
+  metadata?: {
+    [KMetadataKey in string]?: JsonValue;
+  };
 };
 
 // @public (undocumented)

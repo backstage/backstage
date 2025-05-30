@@ -16,18 +16,18 @@
 
 exports.up = async function up(knex) {
   await knex.schema.alterTable('notification', table => {
-    table.text('attributes').nullable();
+    table.text('metadata').nullable();
   });
   await knex.schema.alterTable('broadcast', table => {
-    table.text('attributes').nullable();
+    table.text('metadata').nullable();
   });
 };
 
 exports.down = async function down(knex) {
   await knex.schema.alterTable('notification', table => {
-    table.dropColumn('attributes');
+    table.dropColumn('metadata');
   });
   await knex.schema.alterTable('broadcast', table => {
-    table.dropColumn('attributes');
+    table.dropColumn('metadata');
   });
 };
