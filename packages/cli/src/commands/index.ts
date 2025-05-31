@@ -21,10 +21,6 @@ import {
   registerRepoCommands as registerRepoBuildCommands,
   registerCommands as registerBuildCommands,
 } from '../modules/build';
-import {
-  registerPackageCommands as registerPackageStartCommands,
-  registerRepoCommands as registerRepoStartCommands,
-} from '../modules/start';
 import { registerCommands as registerInfoCommands } from '../modules/info';
 import { registerCommands as registerMigrateCommand } from '../modules/migrate';
 import {
@@ -48,7 +44,6 @@ export function registerRepoCommand(program: Command) {
     .command('repo [command]')
     .description('Command that run across an entire Backstage project');
 
-  registerRepoStartCommands(command);
   registerRepoBuildCommands(command);
   registerRepoTestCommands(command);
   registerRepoLintCommands(command);
@@ -60,7 +55,6 @@ export function registerScriptCommand(program: Command) {
     .command('package [command]')
     .description('Lifecycle scripts for individual packages');
 
-  registerPackageStartCommands(command);
   registerPackageBuildCommands(command);
   registerPackageTestCommands(command);
   registerMaintenancePackageCommands(command);
