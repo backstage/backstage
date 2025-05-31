@@ -24,7 +24,7 @@ import type { IconButtonProps } from './types';
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   (props: IconButtonProps, ref) => {
     const {
-      size = 'medium',
+      size = 'small',
       variant = 'primary',
       icon,
       className,
