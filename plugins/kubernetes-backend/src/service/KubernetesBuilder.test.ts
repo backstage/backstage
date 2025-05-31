@@ -20,6 +20,7 @@ import {
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
   ANNOTATION_KUBERNETES_DASHBOARD_URL,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
+  ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE,
   KubernetesRequestAuth,
 } from '@backstage/plugin-kubernetes-common';
 import request from 'supertest';
@@ -223,6 +224,8 @@ describe('API integration tests', () => {
                   'https://127.0.0.1:8443/dashboard',
                 [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: '12650152165654',
                 [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'my_aws_role',
+                [ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE]:
+                  'microsoft-entra-id/scope.verb',
               },
             },
           ]),
