@@ -21,8 +21,9 @@ import {
   AuthConnectorRefreshSessionOptions,
   openLoginPopup,
   OAuth2CreateOptionsWithAuthConnector,
-  OAuth2Response,
 } from '../../../../index';
+import { waitFor } from '@testing-library/react';
+import { BackstageUserIdentity, ProfileInfo } from '@backstage/core-plugin-api';
 
 const scopeTransform = (x: string[]) => x;
 
@@ -31,6 +32,27 @@ type Options = {
    * Function used to transform an auth response into the session type.
    */
   sessionTransform?(response: any): OAuth2Session | Promise<OAuth2Session>;
+};
+
+/**
+ * A replica of private `OAuth2Response` from OAuth2.ts.
+ * `OAuth2Response` represents raw OAuth2 response from the `auth-backend` plugin.
+ * If custom auth connector calls `auth-backend` plugin, it will have to transform `OAuth2Response` into
+ * `OAuth2Session`.
+ */
+type OAuth2Response = {
+  providerInfo: {
+    accessToken: string;
+    idToken: string;
+    scope: string;
+    expiresInSeconds?: number;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: {
+    token: string;
+    expiresInSeconds?: number;
+    identity: BackstageUserIdentity;
+  };
 };
 
 class CustomAuthConnector implements AuthConnector<OAuth2Session> {
@@ -53,8 +75,8 @@ class CustomAuthConnector implements AuthConnector<OAuth2Session> {
   async removeSession(): Promise<void> {}
 }
 
-describe('OAuth2', () => {
-  it('should use provided auth provider', async () => {
+describe('OAuth2CustomAuthConnector', () => {
+  it('should use custom auth connector', async () => {
     const popupMock = { closed: false };
 
     jest.spyOn(window, 'open').mockReturnValue(popupMock as Window);
@@ -69,10 +91,9 @@ describe('OAuth2', () => {
           providerInfo: {
             idToken: res.providerInfo.idToken,
             accessToken: res.providerInfo.accessToken,
-            scopes: OAuth2.normalizeScopes(
+            scopes: OAuth2.normalizeScopes(res.providerInfo.scope, {
               scopeTransform,
-              res.providerInfo.scope,
-            ),
+            }),
             expiresAt: res.providerInfo.expiresInSeconds
               ? new Date(Date.now() + res.providerInfo.expiresInSeconds * 1000)
               : undefined,
@@ -88,11 +109,10 @@ describe('OAuth2', () => {
     };
     const oauth2 = OAuth2.create(options);
 
-    // so that AuthConnector calls openLoginPopup synchronously (not try to refresh the token)
-    const accessToken = oauth2.getAccessToken('myScope', {
-      instantPopup: true,
-      optional: false,
-    });
+    const accessToken = oauth2.getAccessToken('myScope');
+
+    // wait until `openLoginPopup` has been called
+    await waitFor(() => expect(addEventListenerSpy).toHaveBeenCalled());
 
     const listener = addEventListenerSpy.mock.calls[0][1] as EventListener;
 

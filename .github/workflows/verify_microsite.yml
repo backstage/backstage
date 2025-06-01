@@ -116,7 +116,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-
 
-      - name: build API reference
+      - name: build API reference (beta)
         run: yarn backstage-repo-tools package-docs
 
       - name: upload API reference
@@ -189,7 +189,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-next-
 
-      - name: build API reference
+      - name: build API reference (beta)
         run: yarn backstage-repo-tools package-docs
 
       - name: upload API reference
@@ -206,8 +206,9 @@ jobs:
           path: .cache/package-docs
           key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-next-${{ github.run_id }}
 
-      - name: Build Storybook
-        run: yarn build-storybook
+        # Also build and upload storybook
+      - name: storybook yarn install
+        run: yarn install --immutable
         working-directory: storybook
 
       - name: Upload Storybook
@@ -332,3 +333,15 @@ jobs:
       - name: build microsite
         run: yarn build
         working-directory: microsite
+
+      - name: download stable reference (beta)
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        with:
+          name: stable-reference-beta
+          path: api/stable/
+
+      - name: download next reference (beta)
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        with:
+          name: next-reference-beta
+          path: api/next/
