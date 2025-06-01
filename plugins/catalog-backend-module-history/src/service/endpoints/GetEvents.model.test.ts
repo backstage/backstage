@@ -24,8 +24,8 @@ import {
 import catalogBackend from '@backstage/plugin-catalog-backend';
 import { Knex } from 'knex';
 import waitFor from 'wait-for-expect';
+import { createMockChangeHandler } from '../../__fixtures__/createMockChangeHandler';
 import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
-import { getHistoryConfig } from '../../config';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import { GetEventsModelImpl } from './GetEvents.model';
 
@@ -90,14 +90,14 @@ describe('GetEventsModelImpl', () => {
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          shutdownSignal: new AbortController().signal,
-          historyConfig: getHistoryConfig(),
+          changeHandler: createMockChangeHandler(),
         });
 
         await expect(
           model.getEvents({
             readOptions: { order: 'asc', limit: 10 },
             block: false,
+            signal: new AbortController().signal,
           }),
         ).resolves.toEqual({
           type: 'data',
@@ -116,6 +116,7 @@ describe('GetEventsModelImpl', () => {
           model.getEvents({
             readOptions: { order: 'asc', limit: 10 },
             block: false,
+            signal: new AbortController().signal,
           }),
         ).resolves.toEqual({
           type: 'data',
@@ -149,8 +150,7 @@ describe('GetEventsModelImpl', () => {
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          shutdownSignal: new AbortController().signal,
-          historyConfig: getHistoryConfig(),
+          changeHandler: createMockChangeHandler(),
         });
 
         await setEntity(knex, 'foo', 1);
@@ -161,6 +161,7 @@ describe('GetEventsModelImpl', () => {
           model.getEvents({
             readOptions: { order: 'desc', limit: 2 },
             block: false,
+            signal: new AbortController().signal,
           }),
         ).resolves.toEqual({
           type: 'data',
@@ -195,6 +196,7 @@ describe('GetEventsModelImpl', () => {
           model.getEvents({
             readOptions: { afterEventId: '2', order: 'desc', limit: 2 },
             block: false,
+            signal: new AbortController().signal,
           }),
         ).resolves.toEqual({
           type: 'data',
@@ -220,6 +222,7 @@ describe('GetEventsModelImpl', () => {
               entityId: 'wrong',
             },
             block: false,
+            signal: new AbortController().signal,
           }),
         ).resolves.toEqual({
           type: 'data',
@@ -238,8 +241,7 @@ describe('GetEventsModelImpl', () => {
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          shutdownSignal: new AbortController().signal,
-          historyConfig: getHistoryConfig(),
+          changeHandler: createMockChangeHandler(),
         });
 
         await setEntity(knex, 'foo', 1);
@@ -249,6 +251,7 @@ describe('GetEventsModelImpl', () => {
           model.getEvents({
             readOptions: { afterEventId: 'last', order: 'asc', limit: 1 },
             block: true,
+            signal: new AbortController().signal,
           }),
         ).resolves.toEqual({
           type: 'block',
@@ -273,13 +276,7 @@ describe('GetEventsModelImpl', () => {
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          shutdownSignal: new AbortController().signal,
-          historyConfig: getHistoryConfig({
-            overrides: {
-              blockDuration: { seconds: 1 },
-              blockPollFrequency: { milliseconds: 100 },
-            },
-          }),
+          changeHandler: createMockChangeHandler(),
         });
 
         let resolution: string = '';
@@ -289,6 +286,7 @@ describe('GetEventsModelImpl', () => {
             limit: 10,
           },
           block: true,
+          signal: new AbortController().signal,
         });
         expect(result).toEqual({
           type: 'block',
@@ -326,13 +324,7 @@ describe('GetEventsModelImpl', () => {
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          shutdownSignal: new AbortController().signal,
-          historyConfig: getHistoryConfig({
-            overrides: {
-              blockDuration: { seconds: 1 },
-              blockPollFrequency: { milliseconds: 100 },
-            },
-          }),
+          changeHandler: createMockChangeHandler({ timeout: { seconds: 1 } }),
         });
 
         let resolution1: string = '';
@@ -344,6 +336,7 @@ describe('GetEventsModelImpl', () => {
             limit: 10,
           },
           block: true,
+          signal: new AbortController().signal,
         });
         expect(result).toEqual({
           type: 'block',
@@ -367,6 +360,7 @@ describe('GetEventsModelImpl', () => {
             limit: 10,
           },
           block: true,
+          signal: new AbortController().signal,
         });
         expect(result).toEqual({
           type: 'block',
@@ -395,69 +389,13 @@ describe('GetEventsModelImpl', () => {
     );
 
     it.each(databases.eachSupportedId())(
-      'aborts early on shutdown signal, %p',
-      async databaseId => {
-        const { knex, backend } = await init(databaseId);
-
-        const abortController = new AbortController();
-        const model = new GetEventsModelImpl({
-          knexPromise: Promise.resolve(knex),
-          shutdownSignal: abortController.signal,
-          historyConfig: getHistoryConfig({
-            overrides: {
-              blockDuration: { seconds: 1 },
-              blockPollFrequency: { milliseconds: 100 },
-            },
-          }),
-        });
-
-        let resolution: string = '';
-        const result = await model.getEvents({
-          readOptions: {
-            entityRef: 'component:default/foo1',
-            order: 'asc',
-            limit: 10,
-          },
-          block: true,
-        });
-        expect(result).toEqual({
-          type: 'block',
-          wait: expect.any(Function),
-          cursor: {
-            version: 1,
-            order: 'asc',
-            entityRef: 'component:default/foo1',
-            limit: 10,
-            block: true,
-          },
-        });
-        (result as { wait: () => Promise<string> }).wait().then(r => {
-          resolution = r;
-        });
-
-        abortController.abort();
-        await waitFor(() => {
-          expect(resolution).toBe('aborted');
-        });
-
-        await backend.stop();
-      },
-    );
-
-    it.each(databases.eachSupportedId())(
       'aborts early on request signal, %p',
       async databaseId => {
         const { knex, backend } = await init(databaseId);
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          shutdownSignal: new AbortController().signal, // not used here
-          historyConfig: getHistoryConfig({
-            overrides: {
-              blockDuration: { seconds: 1 },
-              blockPollFrequency: { milliseconds: 100 },
-            },
-          }),
+          changeHandler: createMockChangeHandler(),
         });
 
         const abortController = new AbortController();

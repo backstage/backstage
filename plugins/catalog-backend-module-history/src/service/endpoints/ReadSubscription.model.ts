@@ -26,15 +26,16 @@ export interface ReadSubscriptionOptions {
   block: boolean;
 }
 
+export type ReadSubscriptionResult =
+  | { type: 'data'; events: CatalogEvent[]; ackId: string }
+  | { type: 'empty' }
+  | { type: 'block'; wait: () => Promise<'timeout' | 'aborted' | 'ready'> };
+
 export interface ReadSubscriptionModel {
   readSubscription(options: {
     readOptions: ReadSubscriptionOptions;
     signal?: AbortSignal;
-  }): Promise<
-    | { type: 'data'; events: CatalogEvent[]; ackId: string }
-    | { type: 'empty' }
-    | { type: 'block'; wait: () => Promise<'timeout' | 'aborted' | 'ready'> }
-  >;
+  }): Promise<ReadSubscriptionResult>;
 }
 
 export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
@@ -55,11 +56,7 @@ export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
   async readSubscription(options: {
     readOptions: ReadSubscriptionOptions;
     signal?: AbortSignal;
-  }): Promise<
-    | { type: 'data'; events: CatalogEvent[]; ackId: string }
-    | { type: 'empty' }
-    | { type: 'block'; wait: () => Promise<'timeout' | 'aborted' | 'ready'> }
-  > {
+  }): Promise<ReadSubscriptionResult> {
     const { subscriptionId, limit, block } = options.readOptions;
     const knex = await this.#knexPromise;
 

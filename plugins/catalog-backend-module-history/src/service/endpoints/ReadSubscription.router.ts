@@ -34,12 +34,12 @@ export function bindReadSubscriptionEndpoint(
         controller.abort();
       });
 
-      res.setHeader('Cache-Control', 'no-store');
-
       const result = await model.readSubscription({
         readOptions: { subscriptionId, limit, block },
         signal: controller.signal,
       });
+
+      res.setHeader('Cache-Control', 'no-store');
 
       if (result.type === 'data') {
         res.json({

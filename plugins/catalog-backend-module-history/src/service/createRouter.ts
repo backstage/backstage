@@ -27,7 +27,6 @@ import { bindReadSubscriptionEndpoint } from './endpoints/ReadSubscription.route
 import { UpsertSubscriptionModelImpl } from './endpoints/UpsertSubscription.model';
 import { bindUpsertSubscriptionEndpoint } from './endpoints/UpsertSubscription.router';
 import { createChangeHandler } from '../database/changeDetection/createChangeHandler';
-import { UpdateListenerImpl } from './UpdateListener';
 
 export async function createRouter(options: {
   knexPromise: Promise<Knex>;
@@ -43,23 +42,18 @@ export async function createRouter(options: {
     controller.abort();
   });
 
-  // const updateListener = new UpdateListenerImpl({
-  //   changeHandler: createChangeHandler({
-  //     knexPromise: options.knexPromise,
-  //     logger: options.logger,
-  //     lifecycle: options.lifecycle,
-  //     historyConfig: options.historyConfig,
-  //   }),
-  //   historyConfig: options.historyConfig,
-  //   shutdownSignal,
-  // });
+  const changeHandler = createChangeHandler({
+    knexPromise: options.knexPromise,
+    logger: options.logger,
+    lifecycle: options.lifecycle,
+    historyConfig: options.historyConfig,
+  });
 
   bindGetEventsEndpoint(
     router,
     new GetEventsModelImpl({
       knexPromise: options.knexPromise,
-      historyConfig: options.historyConfig,
-      shutdownSignal,
+      changeHandler,
     }),
   );
 
