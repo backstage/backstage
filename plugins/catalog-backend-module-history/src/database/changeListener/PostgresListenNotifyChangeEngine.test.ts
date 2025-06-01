@@ -22,14 +22,14 @@ import {
 import catalogBackend from '@backstage/plugin-catalog-backend';
 import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
 import {
-  PostgresListenNotifyChangeHandler,
+  PostgresListenNotifyChangeEngine,
   TOPIC_PUBLISH,
-} from './PostgresListenNotifyChangeHandler';
+} from './PostgresListenNotifyChangeEngine';
 import { applyDatabaseMigrations } from '../migrations';
 
 jest.setTimeout(60_000);
 
-describe('PostgresListenNotifyChangeHandler', () => {
+describe('PostgresListenNotifyChangeEngine', () => {
   const logger = mockServices.logger.mock();
   const databases = TestDatabases.create();
 
@@ -41,7 +41,7 @@ describe('PostgresListenNotifyChangeHandler', () => {
       }
 
       const knex = await databases.init(databaseId);
-      const store = new PostgresListenNotifyChangeHandler(knex, logger);
+      const store = new PostgresListenNotifyChangeEngine(knex, logger);
 
       const controller = new AbortController();
       const listener = await store.setupListenerInternal(
@@ -82,7 +82,7 @@ describe('PostgresListenNotifyChangeHandler', () => {
       await provider.ready;
       await applyDatabaseMigrations(knex);
 
-      const store = new PostgresListenNotifyChangeHandler(knex, logger);
+      const store = new PostgresListenNotifyChangeEngine(knex, logger);
 
       const controller = new AbortController();
       const listener = await store.setupListenerInternal(

@@ -24,7 +24,7 @@ import {
 import catalogBackend from '@backstage/plugin-catalog-backend';
 import { Knex } from 'knex';
 import waitFor from 'wait-for-expect';
-import { createMockChangeHandler } from '../../__fixtures__/createMockChangeHandler';
+import { createMockChangeListener } from '../../__fixtures__/createMockChangeListener';
 import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import { GetEventsModelImpl } from './GetEvents.model';
@@ -90,7 +90,7 @@ describe('GetEventsModelImpl', () => {
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          changeHandler: createMockChangeHandler(),
+          changeListener: createMockChangeListener(),
         });
 
         await expect(
@@ -150,7 +150,7 @@ describe('GetEventsModelImpl', () => {
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          changeHandler: createMockChangeHandler(),
+          changeListener: createMockChangeListener(),
         });
 
         await setEntity(knex, 'foo', 1);
@@ -241,7 +241,7 @@ describe('GetEventsModelImpl', () => {
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          changeHandler: createMockChangeHandler(),
+          changeListener: createMockChangeListener(),
         });
 
         await setEntity(knex, 'foo', 1);
@@ -276,7 +276,7 @@ describe('GetEventsModelImpl', () => {
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          changeHandler: createMockChangeHandler(),
+          changeListener: createMockChangeListener(),
         });
 
         let resolution: string = '';
@@ -324,7 +324,9 @@ describe('GetEventsModelImpl', () => {
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          changeHandler: createMockChangeHandler({ timeout: { seconds: 1 } }),
+          changeListener: createMockChangeListener({
+            timeout: { seconds: 1 },
+          }),
         });
 
         let resolution1: string = '';
@@ -395,7 +397,7 @@ describe('GetEventsModelImpl', () => {
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
-          changeHandler: createMockChangeHandler(),
+          changeListener: createMockChangeListener(),
         });
 
         const abortController = new AbortController();

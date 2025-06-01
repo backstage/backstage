@@ -15,11 +15,11 @@
  */
 
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
-import { UpdateListener } from '../database/changeDetection/types';
+import { ChangeListener } from '../database/changeListener/types';
 
-export function createMockChangeHandler(options?: {
+export function createMockChangeListener(options?: {
   timeout?: HumanDuration;
-}): UpdateListener {
+}): ChangeListener {
   const deadline = options?.timeout
     ? Date.now() + durationToMilliseconds(options.timeout)
     : undefined;

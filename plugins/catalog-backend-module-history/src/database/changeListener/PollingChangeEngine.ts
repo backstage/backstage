@@ -22,7 +22,7 @@ import {
 import { Knex } from 'knex';
 import { EventsTableRow } from '../tables';
 import { HistoryConfig } from '../../config';
-import { ChangeHandler } from './types';
+import { ChangeEngine } from './types';
 
 /**
  * Encapsulates a single subscription to changes.
@@ -75,7 +75,7 @@ class Subscription {
 /**
  * Notifies callers about changes to the history events table, by using polling.
  */
-export class PollingChangeHandler implements ChangeHandler {
+export class PollingChangeEngine implements ChangeEngine {
   readonly #knex: Knex;
   readonly #historyConfig: HistoryConfig;
   readonly #subscriptions = new Set<Subscription>();
@@ -95,7 +95,7 @@ export class PollingChangeHandler implements ChangeHandler {
     signal: AbortSignal,
   ): Promise<{ waitForUpdate(): Promise<void> }> {
     if (this.#isShuttingDown) {
-      throw new Error('PollingChangeHandler is shutting down');
+      throw new Error('PollingChangeEngine is shutting down');
     }
 
     await this.#ensurePollingLoop();
@@ -135,7 +135,7 @@ export class PollingChangeHandler implements ChangeHandler {
     this.#subscriptions.clear();
 
     for (const subscription of subscriptions) {
-      subscription.reject(new Error('PollingChangeHandler is shutting down'));
+      subscription.reject(new Error('PollingChangeEngine is shutting down'));
     }
   }
 

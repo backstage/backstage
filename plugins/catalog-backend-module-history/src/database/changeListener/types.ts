@@ -15,38 +15,14 @@
  */
 
 /**
- * Allows for the detection of changes in the database, that you want to react
- * to.
+ * Handles sets of listners that are waiting for changes to happen in the
+ * database.
  *
  * @remarks
  *
- * One important function of the change handlers is that they maintain a
- * constant amount of actual database work, no matter how many listeners there
- * are for the outcomes of that work. So they shield the rest of the system from
- * rising costs of change detection under load.
+ * This is the "public" facing interface used by the model layer.
  */
-export interface ChangeHandler {
-  setupListener(
-    signal: AbortSignal,
-  ): Promise<{ waitForUpdate(): Promise<void> }>;
-}
-
-export interface SetupListenerOptions {
-  /**
-   * A function that returns true if data is ready.
-   */
-  checker: () => Promise<boolean>;
-  /**
-   * A signal to abort the listener.
-   */
-  signal: AbortSignal;
-}
-
-/**
- * Handles sets of listners that are waiting for updates to happen in the
- * database.
- */
-export interface UpdateListener {
+export interface ChangeListener {
   /**
    * Set up a listener for changes in the database.
    *
@@ -74,4 +50,35 @@ export interface UpdateListener {
      */
     waitForUpdate(): Promise<'timeout' | 'aborted' | 'ready'>;
   }>;
+}
+
+export interface SetupListenerOptions {
+  /**
+   * A function that returns true if data is ready.
+   */
+  checker: () => Promise<boolean>;
+  /**
+   * A signal to abort the listener.
+   */
+  signal: AbortSignal;
+}
+
+/**
+ * Underyling lower level engine for detecting changes.
+ *
+ * @remarks
+ *
+ * This provides "raw" change detection of the events table (for any reason) and
+ * then the higher level ChangeListener implementation can check whether the new
+ * contents of the table fulfill the reader's needs.
+ *
+ * One important function of the engines is that they maintain a constant amount
+ * of actual database work, no matter how many listeners there are for the
+ * outcomes of that work. So they shield the rest of the system from rising
+ * costs of change detection under load.
+ */
+export interface ChangeEngine {
+  setupListener(
+    signal: AbortSignal,
+  ): Promise<{ waitForUpdate(): Promise<void> }>;
 }

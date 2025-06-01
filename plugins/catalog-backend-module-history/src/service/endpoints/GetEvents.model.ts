@@ -15,7 +15,7 @@
  */
 
 import { Knex } from 'knex';
-import { UpdateListener } from '../../database/changeDetection/types';
+import { ChangeListener } from '../../database/changeListener/types';
 import { getMaxEventId } from '../../database/operations/getMaxEventId';
 import {
   readHistoryEvents,
@@ -47,14 +47,14 @@ export interface GetEventsModel {
 
 export class GetEventsModelImpl implements GetEventsModel {
   readonly #knexPromise: Promise<Knex>;
-  readonly #changeHandler: UpdateListener;
+  readonly #changeListener: ChangeListener;
 
   constructor(options: {
     knexPromise: Promise<Knex>;
-    changeHandler: UpdateListener;
+    changeListener: ChangeListener;
   }) {
     this.#knexPromise = options.knexPromise;
-    this.#changeHandler = options.changeHandler;
+    this.#changeListener = options.changeListener;
   }
 
   async getEvents(options: GetEventsOptions): Promise<GetEventsResult> {
@@ -83,10 +83,10 @@ export class GetEventsModelImpl implements GetEventsModel {
 
     // We set up the listener before doing the read, to ensure that no events
     // ever get missed
-    const listener = await this.#changeHandler.setupListener({
+    const listener = await this.#changeListener.setupListener({
       signal: options.signal,
       checker: () =>
-        readHistoryEvents(knex, { ...options.readOptions, limit: 1 }).then(
+        readHistoryEvents(knex, { ...readOptions, limit: 1 }).then(
           rows => rows.length > 0,
         ),
     });

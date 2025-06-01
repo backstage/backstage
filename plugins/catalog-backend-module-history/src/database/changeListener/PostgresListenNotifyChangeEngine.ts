@@ -23,7 +23,7 @@ import {
   HumanDuration,
 } from '@backstage/types';
 import { Knex } from 'knex';
-import { ChangeHandler } from './types';
+import { ChangeEngine } from './types';
 
 interface InternalDbClient {
   acquireRawConnection(): Promise<InternalDbConnection>;
@@ -109,7 +109,7 @@ class Subscription {
  * This class only works for postgres databases, since they are the ones that
  * implement the notify/listen commands.
  */
-export class PostgresListenNotifyChangeHandler implements ChangeHandler {
+export class PostgresListenNotifyChangeEngine implements ChangeEngine {
   readonly #client: InternalDbClient;
   readonly #logger: LoggerService;
   readonly #subscriptions = new Set<Subscription>();
@@ -122,11 +122,11 @@ export class PostgresListenNotifyChangeHandler implements ChangeHandler {
   constructor(knex: Knex, logger: LoggerService) {
     if (!knex.client.config.client.includes('pg')) {
       throw new Error(
-        'PostgresListenNotifyChangeHandler only works for postgres databases',
+        'PostgresListenNotifyChangeEngine only works for postgres databases',
       );
     }
     this.#client = knex.client;
-    this.#logger = logger.child({ type: 'PostgresListenNotifyChangeHandler' });
+    this.#logger = logger.child({ type: 'PostgresListenNotifyChangeEngine' });
   }
 
   async setupListener(

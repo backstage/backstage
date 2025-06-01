@@ -20,28 +20,27 @@ import { LifecycleService, LoggerService } from '@backstage/backend-plugin-api';
 import { createDeferred, durationToMilliseconds } from '@backstage/types';
 import { Knex } from 'knex';
 import pLimit from 'p-limit';
-import { PollingChangeHandler } from './PollingChangeHandler';
-import { PostgresListenNotifyChangeHandler } from './PostgresListenNotifyChangeHandler';
-import { SetupListenerOptions, UpdateListener } from './types';
+import { PollingChangeEngine } from './PollingChangeEngine';
+import { PostgresListenNotifyChangeEngine } from './PostgresListenNotifyChangeEngine';
+import { SetupListenerOptions, ChangeListener } from './types';
 import { sleep } from '../../helpers';
 import { once } from 'events';
 
 /**
- * Helps in the creation of a change handler, by allowing the deferred creation
- * of the knex client.
+ * Creates an object that can be used to listen for changes in the database.
  */
-export function createChangeHandler(options: {
+export function createChangeListener(options: {
   knexPromise: Promise<Knex>;
   logger: LoggerService;
   lifecycle: LifecycleService;
   historyConfig: HistoryConfig;
-}): UpdateListener {
+}): ChangeListener {
   const { knexPromise, logger, lifecycle, historyConfig } = options;
 
   // the underlying notification mechanism is created lazily later
   let implementation:
-    | PostgresListenNotifyChangeHandler
-    | PollingChangeHandler
+    | PostgresListenNotifyChangeEngine
+    | PollingChangeEngine
     | undefined;
 
   // avoid stampeding the database on events
@@ -69,8 +68,8 @@ export function createChangeHandler(options: {
       if (!implementation) {
         const knex = await knexPromise;
         implementation = knex.client.config.client.includes('pg')
-          ? new PostgresListenNotifyChangeHandler(knex, logger)
-          : new PollingChangeHandler(knex, historyConfig);
+          ? new PostgresListenNotifyChangeEngine(knex, logger)
+          : new PollingChangeEngine(knex, historyConfig);
       }
 
       const subscription = await implementation.setupListener(abortSignal);
