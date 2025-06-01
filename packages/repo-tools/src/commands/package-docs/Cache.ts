@@ -16,12 +16,11 @@
 import { readFile, writeFile, cp } from 'fs/promises';
 import globby from 'globby';
 import { dirname, join as joinPath, relative } from 'path';
-import { dirname, join as joinPath, relative } from 'path';
 import crypto from 'crypto';
 import { Lockfile } from '@backstage/cli-node';
-import { paths as cliPaths } from '../../lib/paths';
-import { mkdirp } from 'fs-extra';
+import { exists, rm, mkdirp } from 'fs-extra';
 import { z } from 'zod';
+import { CACHE_DIR, CACHE_FILE } from './constants';
 
 const version = '1';
 
@@ -39,20 +38,11 @@ const cacheEntrySchema = z.object({
   version: z.string(),
 });
 
-const cacheEntrySchema = z.object({
-  hash: z.string(),
-  packageName: z.string(),
-  restoreTo: z.string(),
-  version: z.string(),
-});
-
 export class PackageDocsCache {
-  // A map of package directory to package hash.
   // A map of package directory to package hash.
   private keyCache: Map<string, string>;
   constructor(
     private readonly lockfile: Lockfile,
-    // A map of package directory to cache entry.
     // A map of package directory to cache entry.
     private readonly cache: Map<string, CacheEntry>,
     private readonly baseDirectory: string,
@@ -72,6 +62,12 @@ export class PackageDocsCache {
       try {
         const cacheJson = JSON.parse(cache);
         const parsed = cacheEntrySchema.parse(cacheJson);
+        if (parsed.version !== version) {
+          console.warn(
+            `Skipping cache file ${file} due to version mismatch: ${parsed.version} !== ${version}`,
+          );
+          continue;
+        }
         map.set(pkg, parsed);
       } catch (e) {
         console.error(`Skipping unparseable cache file ${file}: ${e}`);
@@ -82,7 +78,7 @@ export class PackageDocsCache {
 
   async directoryToName(directory: string) {
     const packageJson = await readFile(
-      joinPath(directory, 'package.json'),
+      joinPath(this.baseDirectory, directory, 'package.json'),
       'utf-8',
     );
     return JSON.parse(packageJson).name;
@@ -104,7 +100,7 @@ export class PackageDocsCache {
     hash.update('\0');
 
     for (const path of result.sort()) {
-      const absPath = cliPaths.resolveTargetRoot(pkg, path);
+      const absPath = joinPath(this.baseDirectory, pkg, path);
       const pathInPackage = joinPath(absPath, path);
       hash.update(pathInPackage);
       hash.update('\0');
@@ -133,7 +129,7 @@ export class PackageDocsCache {
     }
     const cacheEntry = this.cache.get(pkg);
     const restoreTo = cacheEntry!.restoreTo;
-    const cacheDir = joinPath(this.cacheDir, pkg);
+    const cacheDir = joinPath(this.baseDirectory, CACHE_DIR, pkg);
     const contentsDir = joinPath(cacheDir, 'contents');
 
     const targetDir = joinPath(this.baseDirectory, restoreTo);
@@ -142,18 +138,21 @@ export class PackageDocsCache {
   }
 
   async write(pkg: string, contentDirectory: string) {
-    const cacheDir = joinPath(this.cacheDir, pkg);
+    const cacheDir = joinPath(this.baseDirectory, CACHE_DIR, pkg);
     const contentsDir = joinPath(cacheDir, 'contents');
-    await mkdirp(contentsDir);
+    if (await exists(contentsDir)) {
+      await rm(contentsDir, { recursive: true });
+    } else {
+      await mkdirp(contentsDir);
+    }
     const hashString = await this.toKey(pkg);
     await cp(contentDirectory, contentsDir, { recursive: true });
     const cacheEntry: CacheEntry = {
       hash: hashString,
       packageName: await this.directoryToName(pkg),
-      restoreTo: relative(cliPaths.resolveTargetRoot(), contentDirectory),
+      restoreTo: relative(this.baseDirectory, contentDirectory),
       version,
     };
-    await writeFile(joinPath(cacheDir, CACHE_FILE), JSON.stringify(cacheEntry));
     await writeFile(joinPath(cacheDir, CACHE_FILE), JSON.stringify(cacheEntry));
   }
 }
