@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { LifecycleService, LoggerService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 import { HistoryConfig } from '../config';
+import { ChangeListener } from '../database/changeListener/types';
 import { createOpenApiRouter } from '../schema/openapi';
 import { AckSubscriptionModelImpl } from './endpoints/AckSubscription.model';
 import { bindAckSubscriptionEndpoint } from './endpoints/AckSubscription.router';
@@ -26,33 +26,20 @@ import { ReadSubscriptionModelImpl } from './endpoints/ReadSubscription.model';
 import { bindReadSubscriptionEndpoint } from './endpoints/ReadSubscription.router';
 import { UpsertSubscriptionModelImpl } from './endpoints/UpsertSubscription.model';
 import { bindUpsertSubscriptionEndpoint } from './endpoints/UpsertSubscription.router';
-import { createChangeListener } from '../database/changeListener/createChangeListener';
 
 export async function createRouter(options: {
   knexPromise: Promise<Knex>;
-  logger: LoggerService;
-  lifecycle: LifecycleService;
   historyConfig: HistoryConfig;
+  changeListener: ChangeListener;
 }) {
+  const { knexPromise, historyConfig, changeListener } = options;
+
   const router = await createOpenApiRouter();
-
-  const controller = new AbortController();
-  const shutdownSignal = controller.signal;
-  options.lifecycle.addShutdownHook(() => {
-    controller.abort();
-  });
-
-  const changeListener = createChangeListener({
-    knexPromise: options.knexPromise,
-    logger: options.logger,
-    lifecycle: options.lifecycle,
-    historyConfig: options.historyConfig,
-  });
 
   bindGetEventsEndpoint(
     router,
     new GetEventsModelImpl({
-      knexPromise: options.knexPromise,
+      knexPromise,
       changeListener,
     }),
   );
@@ -60,23 +47,23 @@ export async function createRouter(options: {
   bindUpsertSubscriptionEndpoint(
     router,
     new UpsertSubscriptionModelImpl({
-      knexPromise: options.knexPromise,
+      knexPromise,
     }),
   );
 
   bindReadSubscriptionEndpoint(
     router,
     new ReadSubscriptionModelImpl({
-      knexPromise: options.knexPromise,
-      historyConfig: options.historyConfig,
-      shutdownSignal,
+      knexPromise,
+      historyConfig,
+      changeListener,
     }),
   );
 
   bindAckSubscriptionEndpoint(
     router,
     new AckSubscriptionModelImpl({
-      knexPromise: options.knexPromise,
+      knexPromise,
     }),
   );
 

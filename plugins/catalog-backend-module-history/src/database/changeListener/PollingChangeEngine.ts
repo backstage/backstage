@@ -109,12 +109,8 @@ export class PollingChangeEngine implements ChangeEngine {
         this.#stopPollingLoop();
       }
       subscription.reject(signal.reason);
-      cleanup();
-    };
-
-    function cleanup() {
       signal.removeEventListener('abort', onAbort);
-    }
+    };
 
     signal.addEventListener('abort', onAbort);
 

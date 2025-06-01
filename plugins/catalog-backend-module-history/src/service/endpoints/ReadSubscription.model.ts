@@ -16,8 +16,8 @@
 
 import { Knex } from 'knex';
 import { HistoryConfig } from '../../config';
+import { ChangeListener } from '../../database/changeListener/types';
 import { readHistorySubscription } from '../../database/operations/readHistorySubscription';
-import { waitForEvents } from '../../database/operations/waitForEvents';
 import { CatalogEvent } from './types';
 
 export interface ReadSubscriptionOptions {
@@ -34,31 +34,44 @@ export type ReadSubscriptionResult =
 export interface ReadSubscriptionModel {
   readSubscription(options: {
     readOptions: ReadSubscriptionOptions;
-    signal?: AbortSignal;
+    signal: AbortSignal;
   }): Promise<ReadSubscriptionResult>;
 }
 
 export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
   readonly #knexPromise: Promise<Knex>;
-  readonly #shutdownSignal: AbortSignal;
   readonly #historyConfig: HistoryConfig;
+  readonly #changeListener: ChangeListener;
 
   constructor(options: {
     knexPromise: Promise<Knex>;
     historyConfig: HistoryConfig;
-    shutdownSignal: AbortSignal;
+    changeListener: ChangeListener;
   }) {
     this.#knexPromise = options.knexPromise;
-    this.#shutdownSignal = options.shutdownSignal;
     this.#historyConfig = options.historyConfig;
+    this.#changeListener = options.changeListener;
   }
 
   async readSubscription(options: {
     readOptions: ReadSubscriptionOptions;
-    signal?: AbortSignal;
+    signal: AbortSignal;
   }): Promise<ReadSubscriptionResult> {
     const { subscriptionId, limit, block } = options.readOptions;
     const knex = await this.#knexPromise;
+
+    // We set up the listener before doing the read, to ensure that no events
+    // ever get missed
+    const listener = await this.#changeListener.setupListener({
+      signal: options.signal,
+      checker: () =>
+        readHistorySubscription(knex, {
+          subscriptionId,
+          operation: 'peek',
+          limit: 1,
+          historyConfig: this.#historyConfig,
+        }).then(r => r !== undefined),
+    });
 
     const result = await readHistorySubscription(knex, {
       subscriptionId,
@@ -83,22 +96,7 @@ export class ReadSubscriptionModelImpl implements ReadSubscriptionModel {
 
     return {
       type: 'block',
-      wait: async () => {
-        return await waitForEvents({
-          historyConfig: this.#historyConfig,
-          signal: AbortSignal.any([
-            this.#shutdownSignal,
-            ...(options.signal ? [options.signal] : []),
-          ]),
-          checker: () =>
-            readHistorySubscription(knex, {
-              subscriptionId,
-              operation: 'peek',
-              limit: 1,
-              historyConfig: this.#historyConfig,
-            }).then(r => r !== undefined),
-        });
-      },
+      wait: () => listener.waitForUpdate(),
     };
   }
 }

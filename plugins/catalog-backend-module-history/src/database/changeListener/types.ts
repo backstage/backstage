@@ -15,8 +15,7 @@
  */
 
 /**
- * Handles sets of listners that are waiting for changes to happen in the
- * database.
+ * Allows listeners to wait for changes to happen in the database.
  *
  * @remarks
  *

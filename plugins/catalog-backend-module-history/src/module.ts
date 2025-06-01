@@ -21,6 +21,7 @@ import {
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { getHistoryConfig } from './config';
+import { createChangeListener } from './database/changeListener/createChangeListener';
 import { initializeDatabaseAfterCatalog } from './database/migrations';
 import { runJanitorCleanup } from './database/operations/runJanitorCleanup';
 import { HistoryEventEmitter } from './emitter/HistoryEventEmitter';
@@ -84,12 +85,18 @@ export const catalogModuleHistory = createBackendModule({
           historyConfig,
         });
 
+        const changeListener = createChangeListener({
+          knexPromise,
+          logger,
+          lifecycle,
+          historyConfig,
+        });
+
         httpRouter.use(
           await createRouter({
             knexPromise,
-            logger,
-            lifecycle,
             historyConfig,
+            changeListener,
           }),
         );
       },

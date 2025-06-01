@@ -26,11 +26,12 @@ import {
 import catalogBackend from '@backstage/plugin-catalog-backend';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import request from 'supertest';
+import { createMockChangeListener } from '../__fixtures__/createMockChangeListener';
 import { createMockEntityProvider } from '../__fixtures__/createMockEntityProvider';
+import { getHistoryConfig } from '../config';
 import { initializeDatabaseAfterCatalog } from '../database/migrations';
 import { createRouter } from './createRouter';
 import { parseCursor } from './endpoints/GetEvents.utils';
-import { getHistoryConfig } from '../config';
 
 jest.setTimeout(60_000);
 
@@ -45,17 +46,10 @@ describe('createRouter', () => {
         deps: {
           database: coreServices.database,
           httpRouter: coreServices.httpRouter,
-          logger: coreServices.logger,
           lifecycle: coreServices.lifecycle,
           catalogProcessing: catalogProcessingExtensionPoint,
         },
-        async init({
-          database,
-          httpRouter,
-          logger,
-          lifecycle,
-          catalogProcessing,
-        }) {
+        async init({ database, httpRouter, lifecycle, catalogProcessing }) {
           const dbPromise = initializeDatabaseAfterCatalog({
             database,
             lifecycle,
@@ -64,9 +58,10 @@ describe('createRouter', () => {
           httpRouter.use(
             await createRouter({
               knexPromise: dbPromise,
-              logger,
-              lifecycle,
               historyConfig: getHistoryConfig(),
+              changeListener: createMockChangeListener({
+                timeout: { seconds: 1 },
+              }),
             }),
           );
         },
@@ -97,7 +92,7 @@ describe('createRouter', () => {
       let response = await request(backend.server).get(
         '/api/catalog/history/v1/events',
       );
-      expect(response.status).toBe(202);
+      expect(response.status).toBe(200);
       expect(response.body).toEqual({
         items: [],
         pageInfo: { cursor: expect.any(String) },
@@ -146,7 +141,6 @@ describe('createRouter', () => {
       response = await blocked;
       expect(response.status).toBe(202);
       expect(response.body).toEqual({
-        items: [],
         pageInfo: { cursor: expect.any(String) },
       });
       expect(parseCursor(response.body.pageInfo.cursor)).toEqual({
@@ -218,7 +212,6 @@ describe('createRouter', () => {
       response = await blocked;
       expect(response.status).toBe(202);
       expect(response.body).toEqual({
-        items: [],
         pageInfo: { cursor: expect.any(String) },
       });
       expect(parseCursor(response.body.pageInfo.cursor)).toEqual({
@@ -333,9 +326,9 @@ describe('createRouter', () => {
       expect(response.body).toEqual({ items: [], pageInfo: {} });
 
       // Read filtering by entity ref, blocking, from last. Since there by
-      // definition are no new entities after "last" yet, it immediately returns
-      // an empty response and a cursor that is used to make a blocking request
-      // for the next data.
+      // definition are no new entities after "last" yet, it blocks (in this
+      // case until the 1s timeout) and returns an empty response and a cursor
+      // that is used to make a blocking request for the next data.
       response = await request(backend.server)
         .get('/api/catalog/history/v1/events')
         .query({
@@ -345,7 +338,6 @@ describe('createRouter', () => {
         });
       expect(response.status).toBe(202);
       expect(response.body).toEqual({
-        items: [],
         pageInfo: { cursor: expect.any(String) },
       });
       expect(parseCursor(response.body.pageInfo.cursor)).toEqual({
@@ -372,7 +364,6 @@ describe('createRouter', () => {
       response = await blocked;
       expect(response.status).toBe(202);
       expect(response.body).toEqual({
-        items: [],
         pageInfo: { cursor: expect.any(String) },
       });
       expect(parseCursor(response.body.pageInfo.cursor)).toEqual({

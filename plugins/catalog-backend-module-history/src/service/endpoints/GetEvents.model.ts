@@ -113,6 +113,7 @@ export class GetEventsModelImpl implements GetEventsModel {
         }
       : undefined;
 
+    console.log(events.length, options.block, cursor);
     if (events.length || !options.block || !cursor) {
       return {
         type: 'data',
@@ -121,6 +122,7 @@ export class GetEventsModelImpl implements GetEventsModel {
       };
     }
 
+    console.log('block', readOptions, options.block, cursor);
     return {
       type: 'block',
       wait: () => listener.waitForUpdate(),

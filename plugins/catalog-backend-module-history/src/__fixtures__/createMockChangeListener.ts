@@ -20,12 +20,12 @@ import { ChangeListener } from '../database/changeListener/types';
 export function createMockChangeListener(options?: {
   timeout?: HumanDuration;
 }): ChangeListener {
-  const deadline = options?.timeout
-    ? Date.now() + durationToMilliseconds(options.timeout)
-    : undefined;
-
   return {
     setupListener: async ({ signal, checker }) => {
+      const deadline = options?.timeout
+        ? Date.now() + durationToMilliseconds(options.timeout)
+        : undefined;
+
       return {
         waitForUpdate: async () => {
           while (!signal.aborted) {
