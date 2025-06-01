@@ -23,12 +23,18 @@ import { Config } from '@backstage/config';
 import {
   AuthenticationStrategy,
   AuthMetadata,
+  ClusterDetails,
   KubernetesCredential,
 } from '@backstage/plugin-kubernetes-node';
+import { ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE } from '@backstage/plugin-kubernetes-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 const env = process.env.NODE_ENV || 'development';
 
+/**
+ *
+ * @public
+ */
 export type MicrosoftEntraIdStrategyOptions = {
   config: Config;
 };
@@ -44,20 +50,22 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
   constructor(
     private readonly logger: LoggerService,
     private readonly options: MicrosoftEntraIdStrategyOptions,
-    private readonly tokenCredential: TokenCredential = new ClientSecretCredential(
-      options.config.getString(`auth.providers.microsoft.${env}.tenantId`),
-      options.config.getString(`auth.providers.microsoft.${env}.clientId`),
-      options.config.getString(`auth.providers.microsoft.${env}.clientSecret`),
-    ),
+    private tokenCredential: TokenCredential,
   ) {}
 
-  public async getCredential(): Promise<KubernetesCredential> {
+  public async getCredential(
+    clusterDetails: ClusterDetails,
+  ): Promise<KubernetesCredential> {
     if (!this.tokenRequiresRefresh()) {
       return { type: 'bearer token', token: this.accessToken.token };
     }
 
     if (!this.newTokenPromise) {
-      this.newTokenPromise = this.fetchNewToken();
+      this.newTokenPromise = this.fetchNewToken(
+        clusterDetails.authMetadata[
+          ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE
+        ],
+      );
     }
 
     return this.newTokenPromise
@@ -69,14 +77,24 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
     return [];
   }
 
-  private async fetchNewToken(): Promise<string> {
+  private async fetchNewToken(microsftEntraIdScope: string): Promise<string> {
     try {
       this.logger.info('Fetching new Microsoft Entra ID token');
 
-      const newAccessToken = await this.tokenCredential.getToken(
+      this.tokenCredential = new ClientSecretCredential(
         this.options.config.getString(
-          `kubernetes.auth.providers.microsoft.${env}.scope`,
+          `auth.providers.microsoft.${env}.tenantId`,
         ),
+        this.options.config.getString(
+          `auth.providers.microsoft.${env}.clientId`,
+        ),
+        this.options.config.getString(
+          `auth.providers.microsoft.${env}.clientSecret`,
+        ),
+      );
+
+      const newAccessToken = await this.tokenCredential.getToken(
+        microsftEntraIdScope,
         {
           requestOptions: { timeout: 10_000 }, // 10 seconds
         },

@@ -20,6 +20,7 @@ import {
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
+  ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE,
 } from '@backstage/plugin-kubernetes-common';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
@@ -60,6 +61,8 @@ const entities: Entity[] = [
         [ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE]: 'my-role',
         [ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID]: 'my-id',
         [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: 'google',
+        [ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE]:
+          'microsoft-entra-id/scope.verb',
         'kubernetes.io/dashboard-url': 'my-url',
         'kubernetes.io/dashboard-app': 'my-app',
       },

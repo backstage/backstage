@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { ConfigReader } from '@backstage/config';
+import { ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE } from '@backstage/plugin-kubernetes-common';
 import { AccessToken, TokenCredential } from '@azure/identity';
 import { MicrosoftEntraIdStrategy } from './MicrosoftEntraIdStrategy';
 import { mockServices } from '@backstage/backend-test-utils';
@@ -34,16 +35,30 @@ const mockConfig = {
       },
     },
     kubernetes: {
-      auth: {
-        providers: {
-          microsoft: {
-            development: {
-              scope: 'microsoft-enterprise-app-id/mapped.permission',
+      clusterLocatorMethods: [
+        {
+          type: 'config',
+          clusters: [
+            {
+              title: 'Mocked Kubernetes cluster',
+              name: 'cluster0',
+              url: 'http://kubernetes-cluster.mock',
+              authProvider: 'microsoft',
+              microsoftEntraIdScope: 'microsoft-entra-id/scope.verb',
             },
-          },
+          ],
         },
-      },
+      ],
     },
+  },
+};
+
+const mockClusterDetails = {
+  name: 'test-cluster',
+  url: '',
+  authMetadata: {
+    [ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE]:
+      'microsoft-entra-id/scope.verb',
   },
 };
 
@@ -73,14 +88,14 @@ describe('MicrosoftEntraIdStrategy tests', () => {
 
   const config = new ConfigReader(mockConfig);
 
-  it('should get Azure token', async () => {
+  it('should get Microsoft Entra Id token', async () => {
     const strategy = new MicrosoftEntraIdStrategy(
       logger,
       { config: config },
       new StaticTokenCredential(5 * 60 * 1000),
     );
 
-    const credential = await strategy.getCredential();
+    const credential = await strategy.getCredential(mockClusterDetails);
     expect(credential).toEqual({ type: 'bearer token', token: 'MY_TOKEN_1' });
   });
 
@@ -91,10 +106,10 @@ describe('MicrosoftEntraIdStrategy tests', () => {
       new StaticTokenCredential(20 * 60 * 1000),
     );
 
-    const credential = await strategy.getCredential();
+    const credential = await strategy.getCredential(mockClusterDetails);
     expect(credential).toEqual({ type: 'bearer token', token: 'MY_TOKEN_1' });
 
-    const credential2 = await strategy.getCredential();
+    const credential2 = await strategy.getCredential(mockClusterDetails);
     expect(credential2).toEqual({ type: 'bearer token', token: 'MY_TOKEN_1' });
   });
 
@@ -107,12 +122,12 @@ describe('MicrosoftEntraIdStrategy tests', () => {
       new StaticTokenCredential(16 * 60 * 1000), // token expires in 16min
     );
 
-    const credential = await strategy.getCredential();
+    const credential = await strategy.getCredential(mockClusterDetails);
     expect(credential).toEqual({ type: 'bearer token', token: 'MY_TOKEN_1' });
 
     jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2mins
 
-    const credential2 = await strategy.getCredential();
+    const credential2 = await strategy.getCredential(mockClusterDetails);
     expect(credential2).toEqual({ type: 'bearer token', token: 'MY_TOKEN_2' });
   });
 
@@ -125,20 +140,20 @@ describe('MicrosoftEntraIdStrategy tests', () => {
       new StaticTokenCredential(16 * 60 * 1000), // new tokens expires in 16min
     );
 
-    const credential = await strategy.getCredential();
+    const credential = await strategy.getCredential(mockClusterDetails);
     expect(credential).toEqual({ type: 'bearer token', token: 'MY_TOKEN_1' });
 
     jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
 
-    const credential2 = await strategy.getCredential();
+    const credential2 = await strategy.getCredential(mockClusterDetails);
     expect(credential2).toEqual({ type: 'bearer token', token: 'MY_TOKEN_2' });
 
     jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
 
-    const credential3 = await strategy.getCredential();
+    const credential3 = await strategy.getCredential(mockClusterDetails);
     expect(credential3).toEqual({ type: 'bearer token', token: 'MY_TOKEN_2' });
 
-    const credential4 = await strategy.getCredential();
+    const credential4 = await strategy.getCredential(mockClusterDetails);
     expect(credential4).toEqual({ type: 'bearer token', token: 'MY_TOKEN_4' });
   });
 
@@ -151,16 +166,16 @@ describe('MicrosoftEntraIdStrategy tests', () => {
       new StaticTokenCredential(16 * 60 * 1000), // new tokens expires in 16min
     );
 
-    const credential = await strategy.getCredential();
+    const credential = await strategy.getCredential(mockClusterDetails);
     expect(credential).toEqual({ type: 'bearer token', token: 'MY_TOKEN_1' });
 
     jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
 
-    const credential2 = await strategy.getCredential();
+    const credential2 = await strategy.getCredential(mockClusterDetails);
     expect(credential2).toEqual({ type: 'bearer token', token: 'MY_TOKEN_2' });
 
     jest.setSystemTime(Date.now() + 17 * 60 * 1000); // advance time by 17min
 
-    await expect(strategy.getCredential()).rejects.toThrow();
+    await expect(strategy.getCredential(mockClusterDetails)).rejects.toThrow();
   });
 });
