@@ -77,9 +77,37 @@ jobs:
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: stable-reference
+          path: docs/reference/
+          if-no-files-found: error
+          retention-days: 1
+
+      # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
+      - name: restore package-docs cache
+        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-
+
+      - name: build API reference (beta)
+        run: yarn backstage-repo-tools package-docs
+
+      - name: upload API reference (beta)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: stable-reference-beta
           path: type-docs/
           if-no-files-found: error
           retention-days: 1
+
+      # Always save success cache even if there were failures, that way it can be used in re-triggered builds
+      - name: save package-docs cache
+        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        if: always()
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-${{ github.run_id }}
 
       - name: microsite yarn install
         run: yarn install --immutable
@@ -133,9 +161,37 @@ jobs:
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: next-reference
+          path: docs/reference/
+          if-no-files-found: error
+          retention-days: 1
+
+      # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
+      - name: restore package-docs cache
+        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-
+
+      - name: build API reference (beta)
+        run: yarn backstage-repo-tools package-docs
+
+      - name: upload API reference (beta)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: next-reference-beta
           path: type-docs/
           if-no-files-found: error
           retention-days: 1
+
+      # Always save success cache even if there were failures, that way it can be used in re-triggered builds
+      - name: save package-docs cache
+        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        if: always()
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-${{ github.run_id }}
 
         # Also build and upload storybook
       - name: storybook yarn install
@@ -267,16 +323,6 @@ jobs:
           name: storybook
           path: microsite/build/storybook
 
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          name: stable-reference
-          path: microsite/build/api/stable/
-
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          name: next-reference
-          path: microsite/build/api/next/
-
       - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
         with:
           name: stable-reference-beta
@@ -288,7 +334,7 @@ jobs:
           path: microsite/build/api/next/
 
       - name: Check the build output
-        run: ls microsite/build && ls microsite/build/storybook && ls microsite/build/api/stable && ls microsite/build/api/next/
+        run: ls microsite/build && ls microsite/build/storybook && ls microsite/build/api/stable && ls microsite/build/api/next
 
       - name: Deploy both microsite and storybook to gh-pages
         uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
