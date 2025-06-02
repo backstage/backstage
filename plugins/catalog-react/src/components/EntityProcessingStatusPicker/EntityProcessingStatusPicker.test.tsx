@@ -109,4 +109,23 @@ describe('<EntityProcessingStatusPicker/>', () => {
       error: undefined,
     });
   });
+
+  it('is initiated with the correct values from the URL querystring', async () => {
+    const updateFilters = jest.fn();
+    const queryParameters = { orphan: 'true', error: 'true' };
+    await renderInTestApp(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters,
+        }}
+      >
+        <EntityProcessingStatusPicker />
+      </MockEntityListContextProvider>,
+    );
+
+    expect(screen.getByText('Processing Status')).toBeInTheDocument();
+    expect(screen.getByText('Is Orphan')).toBeInTheDocument();
+    expect(screen.getByText('Has Error')).toBeInTheDocument();
+  });
 });
