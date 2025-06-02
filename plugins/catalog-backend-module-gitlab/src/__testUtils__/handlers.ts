@@ -89,6 +89,14 @@ const httpHandlers = [
     },
   ),
 
+  rest.get(`${apiBaseUrlSaas}/groups/456/members/all`, (_req, res, ctx) => {
+    return res(ctx.json(all_saas_users_response));
+  }),
+
+  rest.get(`${apiBaseUrlSaas}/groups/1/members/all`, (_req, res, ctx) => {
+    return res(ctx.json(all_saas_users_response));
+  }),
+
   /**
    * Users REST endpoint mocks
    */
