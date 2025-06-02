@@ -30,7 +30,6 @@ import {
   some_endpoint,
   unhealthy_endpoint,
   userID,
-  all_saas_group_with_subgroups_members,
   all_saas_subgroup_1_members,
   all_saas_subgroup_2_members,
   group_with_subgroups_response,
