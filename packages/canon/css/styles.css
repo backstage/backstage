@@ -10095,6 +10095,7 @@
   border: none;
   border-bottom: 1px solid var(--canon-border);
   background-color: var(--canon-bg-surface-1);
+  width: 100%;
   height: 32px;
   color: var(--canon-fg-primary);
   line-height: 140%;
