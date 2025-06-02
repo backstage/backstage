@@ -5,7 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
@@ -126,13 +125,17 @@ export const createGitlabRepoPushAction: (options: {
     repoUrl: string;
     branchName: string;
     commitMessage: string;
-    sourcePath?: string;
-    targetPath?: string;
-    token?: string;
-    commitAction?: 'create' | 'delete' | 'update';
+    sourcePath?: string | undefined;
+    targetPath?: string | undefined;
+    token?: string | undefined;
+    commitAction?: 'update' | 'delete' | 'create' | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    projectid: string;
+    projectPath: string;
+    commitHash: string;
+  },
+  'v2'
 >;
 
 // @public
@@ -142,49 +145,66 @@ export function createPublishGitlabAction(options: {
 }): TemplateAction<
   {
     repoUrl: string;
-    defaultBranch?: string;
-    repoVisibility?: 'private' | 'internal' | 'public';
-    sourcePath?: string | boolean;
-    skipExisting?: boolean;
-    token?: string;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    signCommit?: boolean;
-    setUserAsOwner?: boolean;
-    topics?: string[];
-    settings?: {
-      path?: string;
-      auto_devops_enabled?: boolean;
-      ci_config_path?: string;
-      description?: string;
-      merge_method?: 'merge' | 'rebase_merge' | 'ff';
-      squash_option?: 'default_off' | 'default_on' | 'never' | 'always';
-      topics?: string[];
-      visibility?: 'private' | 'internal' | 'public';
-      only_allow_merge_if_all_discussions_are_resolved?: boolean;
-      only_allow_merge_if_pipeline_succeeds?: boolean;
-      allow_merge_on_skipped_pipeline?: boolean;
-    };
-    branches?: Array<{
-      name: string;
-      protect?: boolean;
-      create?: boolean;
-      ref?: string;
-    }>;
-    projectVariables?: Array<{
-      key: string;
-      value: string;
-      description?: string;
-      variable_type?: string;
-      protected?: boolean;
-      masked?: boolean;
-      raw?: boolean;
-      environment_scope?: string;
-    }>;
+    defaultBranch?: string | undefined;
+    gitCommitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+    signCommit?: boolean | undefined;
+    sourcePath?: string | boolean | undefined;
+    skipExisting?: boolean | undefined;
+    token?: string | undefined;
+    setUserAsOwner?: boolean | undefined;
+    settings?:
+      | {
+          visibility?: 'internal' | 'private' | 'public' | undefined;
+          path?: string | undefined;
+          description?: string | undefined;
+          merge_method?: 'merge' | 'rebase_merge' | 'ff' | undefined;
+          topics?: string[] | undefined;
+          auto_devops_enabled?: boolean | undefined;
+          only_allow_merge_if_pipeline_succeeds?: boolean | undefined;
+          allow_merge_on_skipped_pipeline?: boolean | undefined;
+          only_allow_merge_if_all_discussions_are_resolved?:
+            | boolean
+            | undefined;
+          squash_option?:
+            | 'always'
+            | 'never'
+            | 'default_on'
+            | 'default_off'
+            | undefined;
+          ci_config_path?: string | undefined;
+        }
+      | undefined;
+    branches?:
+      | {
+          name: string;
+          ref?: string | undefined;
+          create?: boolean | undefined;
+          protect?: boolean | undefined;
+        }[]
+      | undefined;
+    projectVariables?:
+      | {
+          key: string;
+          value: string;
+          raw?: boolean | undefined;
+          description?: string | undefined;
+          protected?: boolean | undefined;
+          variable_type?: 'file' | 'env_var' | undefined;
+          masked?: boolean | undefined;
+          environment_scope?: string | undefined;
+        }[]
+      | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    remoteUrl: string;
+    repoContentsUrl: string;
+    projectId: number;
+    commitHash: string;
+    created: boolean;
+  },
+  'v2'
 >;
 
 // @public

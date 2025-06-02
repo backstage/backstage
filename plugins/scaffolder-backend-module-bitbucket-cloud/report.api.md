@@ -5,9 +5,15 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
+import { objectOutputType } from 'zod';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { ZodArray } from 'zod';
+import { ZodBoolean } from 'zod';
+import { ZodObject } from 'zod';
+import { ZodOptional } from 'zod';
+import { ZodString } from 'zod';
+import { ZodTypeAny } from 'zod';
 
 // @public
 const bitbucketCloudModule: BackendFeature;
@@ -20,15 +26,183 @@ export const createBitbucketPipelinesRunAction: (options: {
   {
     workspace: string;
     repo_slug: string;
-    body?: object;
-    token?: string;
+    body?:
+      | objectOutputType<
+          {
+            target: ZodOptional<
+              ZodObject<
+                {
+                  ref_type: ZodOptional<ZodString>;
+                  type: ZodOptional<ZodString>;
+                  ref_name: ZodOptional<ZodString>;
+                  source: ZodOptional<ZodString>;
+                  destination: ZodOptional<ZodString>;
+                  destination_commit: ZodOptional<
+                    ZodObject<
+                      {
+                        hash: ZodString;
+                      },
+                      'strip',
+                      ZodTypeAny,
+                      {
+                        hash: string;
+                      },
+                      {
+                        hash: string;
+                      }
+                    >
+                  >;
+                  commit: ZodOptional<
+                    ZodObject<
+                      {
+                        type: ZodString;
+                        hash: ZodString;
+                      },
+                      'strip',
+                      ZodTypeAny,
+                      {
+                        type: string;
+                        hash: string;
+                      },
+                      {
+                        type: string;
+                        hash: string;
+                      }
+                    >
+                  >;
+                  selector: ZodOptional<
+                    ZodObject<
+                      {
+                        type: ZodString;
+                        pattern: ZodString;
+                      },
+                      'strip',
+                      ZodTypeAny,
+                      {
+                        type: string;
+                        pattern: string;
+                      },
+                      {
+                        type: string;
+                        pattern: string;
+                      }
+                    >
+                  >;
+                  pull_request: ZodOptional<
+                    ZodObject<
+                      {
+                        id: ZodString;
+                      },
+                      'strip',
+                      ZodTypeAny,
+                      {
+                        id: string;
+                      },
+                      {
+                        id: string;
+                      }
+                    >
+                  >;
+                },
+                'strip',
+                ZodTypeAny,
+                {
+                  type?: string | undefined;
+                  source?: string | undefined;
+                  selector?:
+                    | {
+                        type: string;
+                        pattern: string;
+                      }
+                    | undefined;
+                  pull_request?:
+                    | {
+                        id: string;
+                      }
+                    | undefined;
+                  commit?:
+                    | {
+                        type: string;
+                        hash: string;
+                      }
+                    | undefined;
+                  destination?: string | undefined;
+                  ref_name?: string | undefined;
+                  ref_type?: string | undefined;
+                  destination_commit?:
+                    | {
+                        hash: string;
+                      }
+                    | undefined;
+                },
+                {
+                  type?: string | undefined;
+                  source?: string | undefined;
+                  selector?:
+                    | {
+                        type: string;
+                        pattern: string;
+                      }
+                    | undefined;
+                  pull_request?:
+                    | {
+                        id: string;
+                      }
+                    | undefined;
+                  commit?:
+                    | {
+                        type: string;
+                        hash: string;
+                      }
+                    | undefined;
+                  destination?: string | undefined;
+                  ref_name?: string | undefined;
+                  ref_type?: string | undefined;
+                  destination_commit?:
+                    | {
+                        hash: string;
+                      }
+                    | undefined;
+                }
+              >
+            >;
+            variables: ZodOptional<
+              ZodArray<
+                ZodObject<
+                  {
+                    key: ZodString;
+                    value: ZodString;
+                    secured: ZodOptional<ZodBoolean>;
+                  },
+                  'strip',
+                  ZodTypeAny,
+                  {
+                    key: string;
+                    value: string;
+                    secured?: boolean | undefined;
+                  },
+                  {
+                    key: string;
+                    value: string;
+                    secured?: boolean | undefined;
+                  }
+                >,
+                'many'
+              >
+            >;
+          },
+          ZodTypeAny,
+          'passthrough'
+        >
+      | undefined;
+    token?: string | undefined;
   },
   {
     buildNumber: number;
     repoUrl: string;
     pipelinesUrl: string;
   },
-  'v1'
+  'v2'
 >;
 
 // @public
@@ -38,16 +212,21 @@ export function createPublishBitbucketCloudAction(options: {
 }): TemplateAction<
   {
     repoUrl: string;
-    description?: string;
-    defaultBranch?: string;
-    repoVisibility?: 'private' | 'public';
-    gitCommitMessage?: string;
-    sourcePath?: string;
-    token?: string;
-    signCommit?: boolean;
+    description?: string | undefined;
+    repoVisibility?: 'private' | 'public' | undefined;
+    defaultBranch?: string | undefined;
+    gitCommitMessage?: string | undefined;
+    sourcePath?: string | undefined;
+    enableLFS?: boolean | undefined;
+    signCommit?: boolean | undefined;
+    token?: string | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    remoteUrl: string;
+    repoContentsUrl: string;
+    commitHash: string;
+  },
+  'v2'
 >;
 
 // @public
@@ -58,14 +237,16 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
   {
     repoUrl: string;
     title: string;
-    description?: string;
-    targetBranch?: string;
     sourceBranch: string;
-    token?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
+    description?: string | undefined;
+    targetBranch?: string | undefined;
+    token?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    pullRequestUrl: string;
+  },
+  'v2'
 >;
 ```
