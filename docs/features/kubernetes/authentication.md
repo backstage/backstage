@@ -27,6 +27,7 @@ The server side providers are:
 
 - `aws`
 - `azure`
+- `microsoft`
 - `googleServiceAccount`
 - `localKubectlProxy`
 - `serviceAccount`
@@ -130,6 +131,36 @@ page for the cluster resource, go to `Overview` > `Properties` tab >
 `Networking` section and copy paste the API server address directly in that
 `url` field.
 
+### Microsoft
+
+The Microsoft provider addresses the topoloy where a custom Microsoft Entra App and [OpenID Connect][9] is used to authenticate to Kubernetes clusters hosted on-premise or in any alternative cloud provider to Azure (e.g. [Amazon EKS][10]);
+
+> AKS users should generally finde the [Azure provider](#azure) more suitable.
+
+```yaml
+kubernetes:
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - title: My Self Hosted Kubernetes Cluster
+          name: on-prem-cluster0
+          url: https://k8s.example.com
+          authProvider: microsoft
+          authMetadata:
+            kubernetes.io/microsoft-entra-id-scope: ${KUBERNETES_ENTERPRISE_APP_SCOPE}
+
+auth:
+  providers:
+    microsoft:
+      <env>:
+        clientId: ${AZURE_CLIENT_ID}
+        clientSecret: ${AZURE_CLIENT_SECRET}
+        tenantId: ${AZURE_TENANT_ID}
+        ...
+```
+
+The configuration of the [Microsoft Azure authententication provider](../../auth/microsoft/provider.md) is required as the Enterprise Application created for Backstage will be used to get users authorized against the Kubernetes clusters.
+
 ## Client Side Providers
 
 These providers authenticate a _user_ with the cluster. Each Backstage user will
@@ -153,3 +184,5 @@ The providers available as client side are:
 [6]: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html
 [7]: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 [8]: https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+[9]: https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens
+[10]: https://aws.amazon.com/blogs/containers/using-azure-active-directory-to-authenticate-to-amazon-eks
