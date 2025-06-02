@@ -71,7 +71,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   secrets: { [key: string]: string } | undefined,
   oidcCustomization:
     | {
-        useDefault: boolean;
+        useDefault?: boolean;
         includeClaimKeys?: string[];
       }
     | undefined,
@@ -254,7 +254,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
       {
         owner,
         repo,
-        use_default: oidcCustomization.useDefault,
+        use_default: oidcCustomization.useDefault ?? false,
         include_claim_keys: oidcCustomization.includeClaimKeys,
       },
     );

@@ -21,7 +21,6 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { examples } from './githubBranchProtection.examples';
-import * as inputProps from './inputProperties';
 import { getOctokitOptions } from '../util';
 import { Octokit } from 'octokit';
 import { enableBranchProtectionOnDefaultRepoBranch } from './gitHelpers';
@@ -36,64 +35,127 @@ export function createGithubBranchProtectionAction(options: {
 }) {
   const { integrations } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    branch?: string;
-    enforceAdmins?: boolean;
-    requiredApprovingReviewCount?: number;
-    requireCodeOwnerReviews?: boolean;
-    dismissStaleReviews?: boolean;
-    bypassPullRequestAllowances?:
-      | {
-          users?: string[];
-          teams?: string[];
-          apps?: string[];
-        }
-      | undefined;
-    restrictions?:
-      | {
-          users: string[];
-          teams: string[];
-          apps?: string[];
-        }
-      | undefined;
-    requiredStatusCheckContexts?: string[];
-    requireBranchesToBeUpToDate?: boolean;
-    requiredConversationResolution?: boolean;
-    requireLastPushApproval?: boolean;
-    requiredCommitSigning?: boolean;
-    requiredLinearHistory?: boolean;
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'github:branch-protection:create',
     description: 'Configures Branch Protection',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl'],
-        properties: {
-          repoUrl: inputProps.repoUrl,
-          branch: {
-            title: 'Branch name',
-            description: `The branch to protect. Defaults to the repository's default branch`,
-            type: 'string',
-          },
-          enforceAdmins: inputProps.protectEnforceAdmins,
-          requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
-          requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
-          dismissStaleReviews: inputProps.dismissStaleReviews,
-          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
-          restrictions: inputProps.restrictions,
-          requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
-          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
-          requiredConversationResolution:
-            inputProps.requiredConversationResolution,
-          requireLastPushApproval: inputProps.requireLastPushApproval,
-          requiredCommitSigning: inputProps.requiredCommitSigning,
-          requiredLinearHistory: inputProps.requiredLinearHistory,
-          token: inputProps.token,
-        },
+        repoUrl: z =>
+          z.string({
+            description:
+              'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
+          }),
+        branch: z =>
+          z
+            .string({
+              description: `The branch to protect. Defaults to the repository's default branch`,
+            })
+            .optional(),
+        enforceAdmins: z =>
+          z
+            .boolean({
+              description:
+                'Enforce admins to adhere to default branch protection. The default value is `true`',
+            })
+            .optional(),
+        requiredApprovingReviewCount: z =>
+          z
+            .number({
+              description:
+                'Specify the number of reviewers required to approve pull requests. Use a number between `1` and `6` or `0` to not require reviewers. Defaults to `1`.',
+            })
+            .optional(),
+        requireCodeOwnerReviews: z =>
+          z
+            .boolean({
+              description:
+                'Require an approved review in PR including files with a designated Code Owner',
+            })
+            .optional(),
+        dismissStaleReviews: z =>
+          z
+            .boolean({
+              description:
+                'New reviewable commits pushed to a matching branch will dismiss pull request review approvals.',
+            })
+            .optional(),
+        bypassPullRequestAllowances: z =>
+          z
+            .object(
+              {
+                apps: z.array(z.string()).optional(),
+                users: z.array(z.string()).optional(),
+                teams: z.array(z.string()).optional(),
+              },
+              {
+                description:
+                  'Allow specific users, teams, or apps to bypass pull request requirements.',
+              },
+            )
+            .optional(),
+        restrictions: z =>
+          z
+            .object(
+              {
+                users: z.array(z.string()),
+                teams: z.array(z.string()),
+                apps: z.array(z.string()).optional(),
+              },
+              {
+                description:
+                  'Restrict who can push to the protected branch. User, app, and team restrictions are only available for organization-owned repositories.',
+              },
+            )
+            .optional(),
+        requiredStatusCheckContexts: z =>
+          z
+            .array(z.string(), {
+              description:
+                'The list of status checks to require in order to merge into this branch',
+            })
+            .optional(),
+        requireBranchesToBeUpToDate: z =>
+          z
+            .boolean({
+              description:
+                'Require branches to be up to date before merging. The default value is `true`',
+            })
+            .optional(),
+        requiredConversationResolution: z =>
+          z
+            .boolean({
+              description:
+                'Requires all conversations on code to be resolved before a pull request can be merged into this branch',
+            })
+            .optional(),
+        requireLastPushApproval: z =>
+          z
+            .boolean({
+              description:
+                'Whether the most recent push to a PR must be approved by someone other than the person who pushed it. The default value is `false`',
+            })
+            .optional(),
+        requiredCommitSigning: z =>
+          z
+            .boolean({
+              description:
+                'Require commit signing so that you must sign commits on this branch.',
+            })
+            .optional(),
+        requiredLinearHistory: z =>
+          z
+            .boolean({
+              description:
+                'Prevent merge commits from being pushed to matching branches.',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to GitHub',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {

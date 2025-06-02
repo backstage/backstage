@@ -47,7 +47,7 @@ describe('github:branch-protection:create', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, 'v2'>;
 
   const mockContext = createMockActionContext({
     input: {

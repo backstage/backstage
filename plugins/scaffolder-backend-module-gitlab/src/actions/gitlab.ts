@@ -344,6 +344,7 @@ export function createPublishGitlabAction(options: {
 
       if (!skipExisting || (skipExisting && !existingProject)) {
         ctx.logger.info(`Creating repo ${repo} in namespace ${owner}.`);
+
         const { id: projectId, http_url_to_repo } =
           await client.Projects.create({
             namespaceId: targetNamespaceId,

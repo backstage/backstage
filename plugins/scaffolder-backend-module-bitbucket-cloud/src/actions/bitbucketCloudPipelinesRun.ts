@@ -18,7 +18,6 @@ import { examples } from './bitbucketCloudPipelinesRun.examples';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { getAuthorizationHeader } from './helpers';
-import * as inputProps from './inputProperties';
 
 const id = 'bitbucket:pipelines:run';
 /**
@@ -36,19 +35,112 @@ export const createBitbucketPipelinesRunAction = (options: {
     examples,
     schema: {
       input: {
-        workspace: inputProps.workspace,
-        repo_slug: inputProps.repo_slug,
+        workspace: z =>
+          z.string({
+            description: 'The workspace name',
+          }),
+        repo_slug: z =>
+          z.string({
+            description: 'The repository name',
+          }),
         body: z =>
           z
             .object(
-              {},
+              {
+                target: z
+                  .object({
+                    ref_type: z
+                      .string({
+                        description: 'The ref type',
+                      })
+                      .optional(),
+                    type: z
+                      .string({
+                        description: 'The type',
+                      })
+                      .optional(),
+                    ref_name: z
+                      .string({
+                        description: 'The ref name',
+                      })
+                      .optional(),
+                    source: z
+                      .string({
+                        description: 'The source',
+                      })
+                      .optional(),
+                    destination: z
+                      .string({
+                        description: 'The destination',
+                      })
+                      .optional(),
+                    destination_commit: z
+                      .object({
+                        hash: z.string({
+                          description: 'The hash',
+                        }),
+                      })
+                      .optional(),
+                    commit: z
+                      .object({
+                        type: z.string({
+                          description: 'The type',
+                        }),
+                        hash: z.string({
+                          description: 'The hash',
+                        }),
+                      })
+                      .optional(),
+                    selector: z
+                      .object({
+                        type: z.string({
+                          description: 'The type',
+                        }),
+                        pattern: z.string({
+                          description: 'The pattern',
+                        }),
+                      })
+                      .optional(),
+                    pull_request: z
+                      .object({
+                        id: z.string({
+                          description: 'The id',
+                        }),
+                      })
+                      .optional(),
+                  })
+                  .optional(),
+                variables: z
+                  .array(
+                    z.object({
+                      key: z.string({
+                        description: 'The key',
+                      }),
+                      value: z.string({
+                        description: 'The value',
+                      }),
+                      secured: z
+                        .boolean({
+                          description: 'Whether the value is secured',
+                        })
+                        .optional(),
+                    }),
+                  )
+                  .optional(),
+              },
               {
                 description: 'Pipeline configuration body',
               },
             )
             .passthrough()
             .optional(),
-        token: inputProps.token,
+        token: z =>
+          z
+            .string({
+              description:
+                'The token to use for authorization to BitBucket Cloud',
+            })
+            .optional(),
       },
       output: {
         buildNumber: z =>

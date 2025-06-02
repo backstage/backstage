@@ -7447,6 +7447,7 @@ __metadata:
     fs-extra: "npm:^11.2.0"
     msw: "npm:^1.0.0"
     yaml: "npm:^2.0.0"
+    zod: "npm:^3.24.2"
   languageName: unknown
   linkType: soft
 
@@ -7605,6 +7606,7 @@ __metadata:
     octokit: "npm:^3.0.0"
     octokit-plugin-create-pull-request: "npm:^5.0.0"
     yaml: "npm:^2.0.0"
+    zod: "npm:^3.25.42"
   languageName: unknown
   linkType: soft
 
@@ -49174,10 +49176,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.22.4":
-  version: 3.24.4
-  resolution: "zod@npm:3.24.4"
-  checksum: 10/3d545792fa54bb27ee5dbc34a5709e81f603185fcc94c8204b5d95c20dc4c81d870ff9c51f3884a30ef05cdc601449f4c4df254ac4783f0827b1faed7c1cdb48
+"zod@npm:^3.22.4, zod@npm:^3.24.2, zod@npm:^3.25.42":
+  version: 3.25.42
+  resolution: "zod@npm:3.25.42"
+  checksum: 10/eb1f86ef6c29f1cb35245b671a1f2a6ad1a40b3b56acd98d72afb1775c12d72631ad161fdf5e5041bcc78560df6a135096244f74734885458ee0aeec8ccb288d
   languageName: node
   linkType: hard
 

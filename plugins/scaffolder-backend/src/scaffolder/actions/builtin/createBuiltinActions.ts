@@ -264,5 +264,5 @@ export const createBuiltinActions = (
     }),
   ];
 
-  return actions as TemplateAction[];
+  return actions as TemplateAction<any, any, any>[];
 };

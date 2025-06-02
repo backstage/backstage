@@ -30,8 +30,6 @@ import {
   initRepoPushAndProtect,
 } from './helpers';
 import { getOctokitOptions } from '../util';
-import * as inputProps from './inputProperties';
-import * as outputProps from './outputProperties';
 import { examples } from './github.examples';
 
 /**
@@ -47,140 +45,360 @@ export function createPublishGithubAction(options: {
 }) {
   const { integrations, config, githubCredentialsProvider } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    description?: string;
-    homepage?: string;
-    access?: string;
-    defaultBranch?: string;
-    protectDefaultBranch?: boolean;
-    protectEnforceAdmins?: boolean;
-    deleteBranchOnMerge?: boolean;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    allowRebaseMerge?: boolean;
-    allowSquashMerge?: boolean;
-    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE';
-    squashMergeCommitMessage?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
-    allowMergeCommit?: boolean;
-    allowAutoMerge?: boolean;
-    allowUpdateBranch?: boolean;
-    sourcePath?: string;
-    bypassPullRequestAllowances?:
-      | {
-          users?: string[];
-          teams?: string[];
-          apps?: string[];
-        }
-      | undefined;
-    requiredApprovingReviewCount?: number;
-    restrictions?:
-      | {
-          users: string[];
-          teams: string[];
-          apps?: string[];
-        }
-      | undefined;
-    requireCodeOwnerReviews?: boolean;
-    dismissStaleReviews?: boolean;
-    requiredStatusCheckContexts?: string[];
-    requireBranchesToBeUpToDate?: boolean;
-    requiredConversationResolution?: boolean;
-    requireLastPushApproval?: boolean;
-    repoVisibility?: 'private' | 'internal' | 'public';
-    collaborators?: Array<
-      | {
-          user: string;
-          access: string;
-        }
-      | {
-          team: string;
-          access: string;
-        }
-      | {
-          /** @deprecated This field is deprecated in favor of team */
-          username: string;
-          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-        }
-    >;
-    hasProjects?: boolean | undefined;
-    hasWiki?: boolean | undefined;
-    hasIssues?: boolean | undefined;
-    token?: string;
-    topics?: string[];
-    repoVariables?: { [key: string]: string };
-    secrets?: { [key: string]: string };
-    oidcCustomization?: {
-      useDefault: boolean;
-      includeClaimKeys?: string[];
-    };
-    requiredCommitSigning?: boolean;
-    requiredLinearHistory?: boolean;
-    customProperties?: { [key: string]: string };
-    subscribe?: boolean;
-  }>({
+  return createTemplateAction({
     id: 'publish:github',
     description:
       'Initializes a git repository of contents in workspace and publishes it to GitHub.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl'],
-        properties: {
-          repoUrl: inputProps.repoUrl,
-          description: inputProps.description,
-          homepage: inputProps.homepage,
-          access: inputProps.access,
-          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
-          requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
-          restrictions: inputProps.restrictions,
-          requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
-          dismissStaleReviews: inputProps.dismissStaleReviews,
-          requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
-          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
-          requiredConversationResolution:
-            inputProps.requiredConversationResolution,
-          requireLastPushApproval: inputProps.requireLastPushApproval,
-          repoVisibility: inputProps.repoVisibility,
-          defaultBranch: inputProps.defaultBranch,
-          protectDefaultBranch: inputProps.protectDefaultBranch,
-          protectEnforceAdmins: inputProps.protectEnforceAdmins,
-          deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
-          gitCommitMessage: inputProps.gitCommitMessage,
-          gitAuthorName: inputProps.gitAuthorName,
-          gitAuthorEmail: inputProps.gitAuthorEmail,
-          allowMergeCommit: inputProps.allowMergeCommit,
-          allowSquashMerge: inputProps.allowSquashMerge,
-          squashMergeCommitTitle: inputProps.squashMergeCommitTitle,
-          squashMergeCommitMessage: inputProps.squashMergeCommitMessage,
-          allowRebaseMerge: inputProps.allowRebaseMerge,
-          allowAutoMerge: inputProps.allowAutoMerge,
-          allowUpdateBranch: inputProps.allowUpdateBranch,
-          sourcePath: inputProps.sourcePath,
-          collaborators: inputProps.collaborators,
-          hasProjects: inputProps.hasProjects,
-          hasWiki: inputProps.hasWiki,
-          hasIssues: inputProps.hasIssues,
-          token: inputProps.token,
-          topics: inputProps.topics,
-          repoVariables: inputProps.repoVariables,
-          secrets: inputProps.secrets,
-          oidcCustomization: inputProps.oidcCustomization,
-          requiredCommitSigning: inputProps.requiredCommitSigning,
-          requiredLinearHistory: inputProps.requiredLinearHistory,
-          customProperties: inputProps.customProperties,
-          subscribe: inputProps.subscribe,
-        },
+        repoUrl: z =>
+          z.string({
+            description:
+              'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
+          }),
+        description: z =>
+          z
+            .string({
+              description: 'Repository Description',
+            })
+            .optional(),
+        homepage: z =>
+          z
+            .string({
+              description: 'Repository Homepage',
+            })
+            .optional(),
+        access: z =>
+          z
+            .string({
+              description:
+                'Sets an admin collaborator on the repository. Can either be a user reference different from `owner` in `repoUrl` or team reference, eg. `org/team-name`',
+            })
+            .optional(),
+        bypassPullRequestAllowances: z =>
+          z
+            .object(
+              {
+                apps: z.array(z.string()).optional(),
+                users: z.array(z.string()).optional(),
+                teams: z.array(z.string()).optional(),
+              },
+              {
+                description:
+                  'Allow specific users, teams, or apps to bypass pull request requirements.',
+              },
+            )
+            .optional(),
+        requiredApprovingReviewCount: z =>
+          z
+            .number({
+              description:
+                'Specify the number of reviewers required to approve pull requests. Use a number between `1` and `6` or `0` to not require reviewers. Defaults to `1`.',
+            })
+            .optional(),
+        restrictions: z =>
+          z
+            .object(
+              {
+                users: z.array(z.string()),
+                teams: z.array(z.string()),
+                apps: z.array(z.string()).optional(),
+              },
+              {
+                description:
+                  'Restrict who can push to the protected branch. User, app, and team restrictions are only available for organization-owned repositories.',
+              },
+            )
+            .optional(),
+        requireCodeOwnerReviews: z =>
+          z
+            .boolean({
+              description:
+                'Require an approved review in PR including files with a designated Code Owner',
+            })
+            .optional(),
+        dismissStaleReviews: z =>
+          z
+            .boolean({
+              description:
+                'New reviewable commits pushed to a matching branch will dismiss pull request review approvals.',
+            })
+            .optional(),
+        requiredStatusCheckContexts: z =>
+          z
+            .array(z.string(), {
+              description:
+                'The list of status checks to require in order to merge into this branch',
+            })
+            .optional(),
+        requireBranchesToBeUpToDate: z =>
+          z
+            .boolean({
+              description:
+                'Require branches to be up to date before merging. The default value is `true`',
+            })
+            .optional(),
+        requiredConversationResolution: z =>
+          z
+            .boolean({
+              description:
+                'Requires all conversations on code to be resolved before a pull request can be merged into this branch',
+            })
+            .optional(),
+        requireLastPushApproval: z =>
+          z
+            .boolean({
+              description:
+                'Whether the most recent push to a PR must be approved by someone other than the person who pushed it. The default value is `false`',
+            })
+            .optional(),
+        repoVisibility: z =>
+          z
+            .enum(['private', 'public', 'internal'], {
+              description: 'Repository Visibility',
+            })
+            .optional(),
+        defaultBranch: z =>
+          z
+            .string({
+              description:
+                'Sets the default branch on the repository. The default value is `master`',
+            })
+            .optional(),
+        protectDefaultBranch: z =>
+          z
+            .boolean({
+              description:
+                'Protect the default branch after creating the repository. The default value is `true`',
+            })
+            .optional(),
+        protectEnforceAdmins: z =>
+          z
+            .boolean({
+              description:
+                'Enforce admins to adhere to default branch protection. The default value is `true`',
+            })
+            .optional(),
+        deleteBranchOnMerge: z =>
+          z
+            .boolean({
+              description:
+                'Delete the branch after merging the PR. The default value is `false`',
+            })
+            .optional(),
+        gitCommitMessage: z =>
+          z
+            .string({
+              description:
+                'Sets the commit message on the repository. The default value is `initial commit`',
+            })
+            .optional(),
+        gitAuthorName: z =>
+          z
+            .string({
+              description:
+                'Sets the default author name for the commit. The default value is `Scaffolder`',
+            })
+            .optional(),
+        gitAuthorEmail: z =>
+          z
+            .string({
+              description: 'Sets the default author email for the commit.',
+            })
+            .optional(),
+        allowMergeCommit: z =>
+          z
+            .boolean({
+              description: 'Allow merge commits. The default value is `true`',
+            })
+            .optional(),
+        allowSquashMerge: z =>
+          z
+            .boolean({
+              description: 'Allow squash merges. The default value is `true`',
+            })
+            .optional(),
+        squashMergeCommitTitle: z =>
+          z
+            .enum(['PR_TITLE', 'COMMIT_OR_PR_TITLE'], {
+              description:
+                'Sets the default value for a squash merge commit title. The default value is `COMMIT_OR_PR_TITLE`',
+            })
+            .optional(),
+        squashMergeCommitMessage: z =>
+          z
+            .enum(['PR_BODY', 'COMMIT_MESSAGES', 'BLANK'], {
+              description:
+                'Sets the default value for a squash merge commit message. The default value is `COMMIT_MESSAGES`',
+            })
+            .optional(),
+        allowRebaseMerge: z =>
+          z
+            .boolean({
+              description: 'Allow rebase merges. The default value is `true`',
+            })
+            .optional(),
+        allowAutoMerge: z =>
+          z
+            .boolean({
+              description:
+                'Allow individual PRs to merge automatically when all merge requirements are met. The default value is `false`',
+            })
+            .optional(),
+        allowUpdateBranch: z =>
+          z
+            .boolean({
+              description:
+                'Allow branch to be updated. The default value is `false`',
+            })
+            .optional(),
+        sourcePath: z =>
+          z
+            .string({
+              description:
+                'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
+            })
+            .optional(),
+        collaborators: z =>
+          z
+            .array(
+              z.union([
+                z.object({
+                  access: z.string({
+                    description: 'The type of access for the user',
+                  }),
+                  user: z.string({
+                    description:
+                      'The name of the user that will be added as a collaborator',
+                  }),
+                }),
+                z.object({
+                  access: z.string({
+                    description: 'The type of access for the user',
+                  }),
+                  team: z.string({
+                    description:
+                      'The name of the team that will be added as a collaborator',
+                  }),
+                }),
+              ]),
+              {
+                description:
+                  'Provide additional users or teams with permissions',
+              },
+            )
+            .optional(),
+        hasProjects: z =>
+          z
+            .boolean({
+              description:
+                'Enable projects for the repository. The default value is `true` unless the organization has disabled repository projects',
+            })
+            .optional(),
+        hasWiki: z =>
+          z
+            .boolean({
+              description:
+                'Enable the wiki for the repository. The default value is `true`',
+            })
+            .optional(),
+        hasIssues: z =>
+          z
+            .boolean({
+              description:
+                'Enable issues for the repository. The default value is `true`',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to GitHub',
+            })
+            .optional(),
+        topics: z =>
+          z
+            .array(z.string(), {
+              description: 'Topics',
+            })
+            .optional(),
+        repoVariables: z =>
+          z
+            .record(z.string(), {
+              description: 'Variables attached to the repository',
+            })
+            .optional(),
+        secrets: z =>
+          z
+            .record(z.string(), {
+              description: 'Secrets attached to the repository',
+            })
+            .optional(),
+        oidcCustomization: z =>
+          z
+            .object(
+              {
+                useDefault: z
+                  .boolean({
+                    description:
+                      'Whether to use the default OIDC template or not.',
+                  })
+                  .optional(),
+                includeClaimKeys: z
+                  .array(z.string(), {
+                    description:
+                      'Array of unique strings. Each claim key can only contain alphanumeric characters and underscores.',
+                  })
+                  .optional(),
+              },
+              {
+                description:
+                  'OIDC customization template attached to the repository.',
+              },
+            )
+            .optional(),
+        requiredCommitSigning: z =>
+          z
+            .boolean({
+              description:
+                'Require commit signing so that you must sign commits on this branch.',
+            })
+            .optional(),
+        requiredLinearHistory: z =>
+          z
+            .boolean({
+              description:
+                'Prevent merge commits from being pushed to matching branches.',
+            })
+            .optional(),
+        customProperties: z =>
+          z
+            .record(z.string(), {
+              description:
+                'Custom properties to be added to the repository (note, this only works for organization repositories)',
+            })
+            .optional(),
+        subscribe: z =>
+          z
+            .boolean({
+              description:
+                "Subscribe to the repository. The default value is 'false'",
+            })
+            .optional(),
       },
       output: {
-        type: 'object',
-        properties: {
-          remoteUrl: outputProps.remoteUrl,
-          repoContentsUrl: outputProps.repoContentsUrl,
-          commitHash: outputProps.commitHash,
-        },
+        remoteUrl: z =>
+          z.string({
+            description: 'A URL to the repository with the provider',
+          }),
+        repoContentsUrl: z =>
+          z.string({
+            description: 'A URL to the root of the repository',
+          }),
+        commitHash: z =>
+          z.string({
+            description: 'The git commit hash of the initial commit',
+          }),
       },
     },
     async handler(ctx) {

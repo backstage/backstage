@@ -16,20 +16,20 @@
 
 import path from 'path';
 import {
-  GithubCredentialsProvider,
-  ScmIntegrationRegistry,
-} from '@backstage/integration';
-import {
   createTemplateAction,
   parseRepoUrl,
   SerializedFile,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
-import { Octokit } from 'octokit';
-import { CustomErrorBase, InputError } from '@backstage/errors';
-import { createPullRequest } from 'octokit-plugin-create-pull-request';
-import { getOctokitOptions } from '../util';
 import { examples } from './githubPullRequest.examples';
+import { CustomErrorBase, InputError } from '@backstage/errors';
+import {
+  GithubCredentialsProvider,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
+import { Octokit } from 'octokit';
+import { getOctokitOptions } from '../util';
+import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import {
   LoggerService,
   resolveSafeChildPath,
@@ -128,169 +128,145 @@ export const createPublishGithubPullRequestAction = (
     config,
   } = options;
 
-  return createTemplateAction<{
-    title: string;
-    branchName: string;
-    targetBranchName?: string;
-    description: string;
-    repoUrl: string;
-    draft?: boolean;
-    targetPath?: string;
-    sourcePath?: string;
-    token?: string;
-    reviewers?: string[];
-    assignees?: string[];
-    teamReviewers?: string[];
-    commitMessage?: string;
-    update?: boolean;
-    forceFork?: boolean;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    forceEmptyGitAuthor?: boolean;
-    createWhenEmpty?: boolean;
-  }>({
+  return createTemplateAction({
     id: 'publish:github:pull-request',
     examples,
     supportsDryRun: true,
     schema: {
       input: {
-        required: ['repoUrl', 'title', 'description', 'branchName'],
-        type: 'object',
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
+        repoUrl: z =>
+          z.string({
             description:
               'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the repository name and `owner` is an organization or username',
-            type: 'string',
-          },
-          branchName: {
-            type: 'string',
-            title: 'Branch Name',
+          }),
+        branchName: z =>
+          z.string({
             description: 'The name for the branch',
-          },
-          targetBranchName: {
-            type: 'string',
-            title: 'Target Branch Name',
-            description: 'The target branch name of the pull request',
-          },
-          title: {
-            type: 'string',
-            title: 'Pull Request Name',
+          }),
+        targetBranchName: z =>
+          z
+            .string({
+              description: 'The target branch name of the pull request',
+            })
+            .optional(),
+        title: z =>
+          z.string({
             description: 'The name for the pull request',
-          },
-          description: {
-            type: 'string',
-            title: 'Pull Request Description',
+          }),
+        description: z =>
+          z.string({
             description: 'The description of the pull request',
-          },
-          draft: {
-            type: 'boolean',
-            title: 'Create as Draft',
-            description: 'Create a draft pull request',
-          },
-          sourcePath: {
-            type: 'string',
-            title: 'Working Subdirectory',
-            description:
-              'Subdirectory of working directory to copy changes from',
-          },
-          targetPath: {
-            type: 'string',
-            title: 'Repository Subdirectory',
-            description: 'Subdirectory of repository to apply changes to',
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitHub',
-          },
-          reviewers: {
-            title: 'Pull Request Reviewers',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-            description:
-              'The users that will be added as reviewers to the pull request',
-          },
-          assignees: {
-            title: 'Pull Request Assignees',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-            description:
-              'The users that will be added as assignees to the pull request',
-          },
-          teamReviewers: {
-            title: 'Pull Request Team Reviewers',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-            description:
-              'The teams that will be added as reviewers to the pull request',
-          },
-          commitMessage: {
-            type: 'string',
-            title: 'Commit Message',
-            description: 'The commit message for the pull request commit',
-          },
-          update: {
-            type: 'boolean',
-            title: 'Update',
-            description: 'Update pull request if already exists',
-          },
-          forceFork: {
-            type: 'boolean',
-            title: 'Force Fork',
-            description: 'Create pull request from a fork',
-          },
-          gitAuthorName: {
-            type: 'string',
-            title: 'Default Author Name',
-            description:
-              'Sets the default author name for the commit. The default value is the authenticated user or `Scaffolder`',
-          },
-          gitAuthorEmail: {
-            type: 'string',
-            title: 'Default Author Email',
-            description:
-              'Sets the default author email for the commit. The default value is the authenticated user or `scaffolder@backstage.io`',
-          },
-          forceEmptyGitAuthor: {
-            type: 'boolean',
-            title: 'Force Empty Git Author',
-            description:
-              'Forces the author to be empty. This is useful when using a Github App, it permit the commit to be verified on Github',
-          },
-          createWhenEmpty: {
-            type: 'boolean',
-            title: 'Create When Empty',
-            description:
-              'Set whether to create pull request when there are no changes to commit. The default value is true. If set to false, remoteUrl is no longer a required output.',
-          },
-        },
+          }),
+        draft: z =>
+          z
+            .boolean({
+              description: 'Create a draft pull request',
+            })
+            .optional(),
+        sourcePath: z =>
+          z
+            .string({
+              description:
+                'Subdirectory of working directory to copy changes from',
+            })
+            .optional(),
+        targetPath: z =>
+          z
+            .string({
+              description: 'Subdirectory of repository to apply changes to',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to GitHub',
+            })
+            .optional(),
+        reviewers: z =>
+          z
+            .array(z.string(), {
+              description:
+                'The users that will be added as reviewers to the pull request',
+            })
+            .optional(),
+        assignees: z =>
+          z
+            .array(z.string(), {
+              description:
+                'The users that will be added as assignees to the pull request',
+            })
+            .optional(),
+        teamReviewers: z =>
+          z
+            .array(z.string(), {
+              description:
+                'The teams that will be added as reviewers to the pull request',
+            })
+            .optional(),
+        commitMessage: z =>
+          z
+            .string({
+              description: 'The commit message for the changes',
+            })
+            .optional(),
+        update: z =>
+          z
+            .boolean({
+              description:
+                'Whether to update the existing PR with changes instead of creating a new one',
+            })
+            .optional(),
+        forceFork: z =>
+          z
+            .boolean({
+              description:
+                'Force creation of a fork for the PR even if you have write permissions',
+            })
+            .optional(),
+        gitAuthorName: z =>
+          z
+            .string({
+              description: 'Sets the commit author name',
+            })
+            .optional(),
+        gitAuthorEmail: z =>
+          z
+            .string({
+              description: 'Sets the commit author email',
+            })
+            .optional(),
+        forceEmptyGitAuthor: z =>
+          z
+            .boolean({
+              description:
+                'Force the git commit author name and email to be empty',
+            })
+            .optional(),
+        createWhenEmpty: z =>
+          z
+            .boolean({
+              description:
+                'Create the pull request even if there are no changes',
+            })
+            .optional(),
       },
       output: {
-        required: [],
-        type: 'object',
-        properties: {
-          targetBranchName: {
-            title: 'Target branch name of the merge request',
-            type: 'string',
-          },
-          remoteUrl: {
-            type: 'string',
-            title: 'Pull Request URL',
-            description: 'Link to the pull request in Github',
-          },
-          pullRequestNumber: {
-            type: 'number',
-            title: 'Pull Request Number',
+        remoteUrl: z =>
+          z.string({
+            description: 'A URL to the repository with the provider',
+          }),
+        pullRequestUrl: z =>
+          z.string({
+            description: 'A URL to the pull request',
+          }),
+        pullRequestNumber: z =>
+          z.number({
             description: 'The pull request number',
-          },
-        },
+          }),
+        targetBranchName: z =>
+          z.string({
+            description: 'The target branch name',
+          }),
       },
     },
     async handler(ctx) {

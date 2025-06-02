@@ -50,7 +50,7 @@ describe('github:actions:dispatch', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, 'v2'>;
 
   const mockContext = createMockActionContext({
     input: {

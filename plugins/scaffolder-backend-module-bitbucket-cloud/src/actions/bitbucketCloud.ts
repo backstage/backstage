@@ -114,7 +114,7 @@ export function createPublishBitbucketCloudAction(options: {
       input: {
         repoUrl: z =>
           z.string({
-            description: 'Repository Location',
+            description: `Accepts the format 'bitbucket.org?repo=reponame&workspace=workspace&project=project' where 'reponame' is the new repository name`,
           }),
         description: z =>
           z
@@ -131,7 +131,7 @@ export function createPublishBitbucketCloudAction(options: {
         defaultBranch: z =>
           z
             .string({
-              description: `Sets the default branch on the repository. The default value is 'master'`,
+              description: `Sets the default branch on the repository. The default value is 'main'`,
             })
             .optional(),
         gitCommitMessage: z =>
@@ -147,17 +147,23 @@ export function createPublishBitbucketCloudAction(options: {
                 'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
             })
             .optional(),
-        token: z =>
+        enableLFS: z =>
           z
-            .string({
-              description:
-                'The token to use for authorization to BitBucket Cloud',
+            .boolean({
+              description: 'Enable LFS for the repository.',
             })
             .optional(),
         signCommit: z =>
           z
             .boolean({
               description: 'Sign commit with configured PGP private key',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description:
+                'The token to use for authorization to BitBucket Cloud',
             })
             .optional(),
       },

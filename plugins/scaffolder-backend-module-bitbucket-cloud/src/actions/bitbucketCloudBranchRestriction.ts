@@ -20,7 +20,6 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { InputError } from '@backstage/errors';
 import { getBitbucketClient } from './helpers';
-import * as inputProps from './inputProperties';
 import { examples } from './bitbucketCloudBranchRestriction.examples';
 
 const createBitbucketCloudBranchRestriction = async (opts: {
@@ -85,16 +84,107 @@ export function createBitbucketCloudBranchRestrictionAction(options: {
       'Creates branch restrictions for a Bitbucket Cloud repository.',
     schema: {
       input: {
-        repoUrl: inputProps.repoUrl,
-        kind: z => inputProps.restriction(z).kind,
+        repoUrl: z =>
+          z.string({
+            description: `Accepts the format 'bitbucket.org?repo=reponame&workspace=workspace&project=project' where 'reponame' is the new repository name`,
+          }),
+        kind: z =>
+          z.enum(
+            [
+              'push',
+              'force',
+              'delete',
+              'restrict_merges',
+              'require_tasks_to_be_completed',
+              'require_approvals_to_merge',
+              'require_default_reviewer_approvals_to_merge',
+              'require_no_changes_requested',
+              'require_passing_builds_to_merge',
+              'require_commits_behind',
+              'reset_pullrequest_approvals_on_change',
+              'smart_reset_pullrequest_approvals',
+              'reset_pullrequest_changes_requested_on_change',
+              'require_all_dependencies_merged',
+              'enforce_merge_checks',
+              'allow_auto_merge_when_builds_pass',
+            ],
+            {
+              description: 'The kind of restriction.',
+            },
+          ),
         branchMatchKind: z =>
-          inputProps.restriction(z).branchMatchKind.optional(),
-        branchType: z => inputProps.restriction(z).branchType.optional(),
-        pattern: z => inputProps.restriction(z).pattern.optional(),
-        value: z => inputProps.restriction(z).value.optional(),
-        users: z => inputProps.restriction(z).users.optional(),
-        groups: z => inputProps.restriction(z).groups.optional(),
-        token: z => inputProps.token(z).optional(),
+          z
+            .enum(['glob', 'branching_model'], {
+              description: 'The branch match kind.',
+            })
+            .optional(),
+        branchType: z =>
+          z
+            .enum(
+              [
+                'feature',
+                'bugfix',
+                'release',
+                'hotfix',
+                'development',
+                'production',
+              ],
+              {
+                description:
+                  'The branch type. When branchMatchKind is set to branching_model, this field is required.',
+              },
+            )
+            .optional(),
+        pattern: z =>
+          z
+            .string({
+              description:
+                'The pattern to match branches against. This field is required when branchMatchKind is set to glob.',
+            })
+            .optional(),
+        value: z =>
+          z
+            .number({
+              description:
+                'The value of the restriction. This field is required when kind is one of require_approvals_to_merge / require_default_reviewer_approvals_to_merge / require_passing_builds_to_merge / require_commits_behind.',
+            })
+            .optional(),
+        users: z =>
+          z
+            .array(
+              z.object({
+                uuid: z.string({
+                  description:
+                    'The UUID of the user in the format "{a-b-c-d}".',
+                }),
+              }),
+              {
+                description:
+                  'Names of users that can bypass the push / restrict_merges restriction kind. For any other kind, this field will be ignored.',
+              },
+            )
+            .optional(),
+        groups: z =>
+          z
+            .array(
+              z.object({
+                slug: z.string({
+                  description: 'The name of the group.',
+                }),
+              }),
+              {
+                description:
+                  'Names of groups that can bypass the push / restrict_merges restriction kind. For any other kind, this field will be ignored.',
+              },
+            )
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description:
+                'The token to use for authorization to BitBucket Cloud',
+            })
+            .optional(),
       },
       output: {
         json: z =>
