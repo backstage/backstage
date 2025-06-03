@@ -348,7 +348,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     indexPrefix: string,
     logger: LoggerService,
     batchSize: number,
-    batchKeyField: string,
+    batchKeyField?: string | undefined,
     highlightOptions?: ElasticSearchHighlightOptions,
     queryOptions?: ElasticSearchQueryConfig,
   );
