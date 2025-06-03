@@ -20,14 +20,15 @@ import {
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 
-import {
-  EntityPredicate,
-  entityPredicateToFilterFunction,
-} from '../predicates';
+import { EntityPredicate } from '../predicates';
 import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
 
-import { entityFilterFunctionDataRef } from './extensionData';
+import {
+  entityFilterExpressionDataRef,
+  entityFilterFunctionDataRef,
+} from './extensionData';
 import { Entity } from '@backstage/catalog-model';
+import { resolveEntityFilterData } from './resolveEntityFilterData';
 
 const entityIconLinkPropsDataRef = createExtensionDataRef<
   () => IconLinkVerticalProps
@@ -39,10 +40,15 @@ const entityIconLinkPropsDataRef = createExtensionDataRef<
 export const EntityIconLinkBlueprint = createExtensionBlueprint({
   kind: 'entity-icon-link',
   attachTo: { id: 'entity-card:catalog/about', input: 'iconLinks' },
-  output: [entityIconLinkPropsDataRef, entityFilterFunctionDataRef.optional()],
+  output: [
+    entityFilterFunctionDataRef.optional(),
+    entityFilterExpressionDataRef.optional(),
+    entityIconLinkPropsDataRef,
+  ],
   dataRefs: {
     useProps: entityIconLinkPropsDataRef,
     filterFunction: entityFilterFunctionDataRef,
+    filterExpression: entityFilterExpressionDataRef,
   },
   config: {
     schema: {
@@ -56,33 +62,22 @@ export const EntityIconLinkBlueprint = createExtensionBlueprint({
       useProps: () => Omit<IconLinkVerticalProps, 'color'>;
       filter?: EntityPredicate | ((entity: Entity) => boolean);
     },
-    { config },
+    { config, node },
   ) {
-    yield entityIconLinkPropsDataRef(() => ({
-      ...params.useProps(),
-      ...Object.entries(config).reduce((rest, [key, value]) => {
-        // Only include properties that are defined in the config
-        // to avoid overriding defaults with undefined values
-        if (value !== undefined) {
-          return {
-            ...rest,
-            [key]: value,
-          };
-        }
-        return rest;
-      }, {}),
-    }));
-
-    if (config.filter) {
-      yield entityFilterFunctionDataRef(
-        entityPredicateToFilterFunction(config.filter),
-      );
-    } else if (typeof params.filter === 'function') {
-      yield entityFilterFunctionDataRef(params.filter);
-    } else if (params.filter) {
-      yield entityFilterFunctionDataRef(
-        entityPredicateToFilterFunction(params.filter),
-      );
-    }
+    const { filter, useProps } = params;
+    yield* resolveEntityFilterData(filter, config, node);
+    // Only include properties that are defined in the config
+    // to avoid overriding defaults with undefined values
+    const configProps = Object.entries(config).reduce(
+      (rest, [key, value]) =>
+        value !== undefined
+          ? {
+              ...rest,
+              [key]: value,
+            }
+          : rest,
+      {},
+    );
+    yield entityIconLinkPropsDataRef(() => ({ ...useProps(), ...configProps }));
   },
 });

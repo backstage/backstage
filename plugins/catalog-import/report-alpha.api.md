@@ -63,15 +63,15 @@ export const catalogImportTranslationRef: TranslationRef<
     readonly 'stepInitAnalyzeUrl.error.url': 'Must start with http:// or https://.';
     readonly 'stepInitAnalyzeUrl.error.repository': "Couldn't generate entities for your repository";
     readonly 'stepInitAnalyzeUrl.error.locations': 'There are no entities at this location';
-    readonly 'stepInitAnalyzeUrl.nextButtonText': 'Analyze';
     readonly 'stepInitAnalyzeUrl.urlHelperText': 'Enter the full path to your entity file to start tracking your component';
+    readonly 'stepInitAnalyzeUrl.nextButtonText': 'Analyze';
     readonly 'stepPrepareCreatePullRequest.nextButtonText': 'Create PR';
     readonly 'stepPrepareCreatePullRequest.previewPr.title': 'Preview Pull Request';
     readonly 'stepPrepareCreatePullRequest.previewPr.subheader': 'Create a new Pull Request';
     readonly 'stepPrepareCreatePullRequest.previewCatalogInfo.title': 'Preview Entities';
-    readonly 'stepPrepareSelectLocations.nextButtonText': 'Review';
     readonly 'stepPrepareSelectLocations.locations.description': 'Select one or more locations that are present in your git repository:';
     readonly 'stepPrepareSelectLocations.locations.selectAll': 'Select All';
+    readonly 'stepPrepareSelectLocations.nextButtonText': 'Review';
     readonly 'stepPrepareSelectLocations.existingLocations.description': 'These locations already exist in the catalog:';
     readonly 'stepReviewLocation.refresh': 'Refresh';
     readonly 'stepReviewLocation.import': 'Import';

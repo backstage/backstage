@@ -17,5 +17,3 @@
 export * from './next';
 
 export { scaffolderReactTranslationRef } from './translation';
-
-export { useScaffolderTemplateIconLinkProps } from './hooks/useScaffolderTemplateIconLinkProps';

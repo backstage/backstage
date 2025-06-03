@@ -13,52 +13,70 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  ANNOTATION_EDIT_URL,
-  ANNOTATION_LOCATION,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+
+import { useCallback } from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
+import CachedIcon from '@material-ui/icons/Cached';
+import EditIcon from '@material-ui/icons/Edit';
+import DocsIcon from '@material-ui/icons/Description';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+
 import {
   AppIcon,
   HeaderIconLinkRow,
+  IconLinkVerticalProps,
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
-import { useCallback } from 'react';
+import {
+  alertApiRef,
+  errorApiRef,
+  useApp,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+
 import {
   ScmIntegrationIcon,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
+
 import {
-  alertApiRef,
-  errorApiRef,
-  useApi,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+  DEFAULT_NAMESPACE,
+  ANNOTATION_EDIT_URL,
+  ANNOTATION_LOCATION,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import {
   catalogApiRef,
   getEntitySourceLocation,
   useEntity,
 } from '@backstage/plugin-catalog-react';
-import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
-
-import { AboutContent } from './AboutContent';
-import CachedIcon from '@material-ui/icons/Cached';
-import EditIcon from '@material-ui/icons/Edit';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
-import { useSourceTemplateCompoundEntityRef } from './hooks';
-import { catalogTranslationRef } from '../../alpha/translation';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { useTechdocsReaderIconLinkProps } from '@backstage/plugin-techdocs-react/alpha';
-import { useScaffolderTemplateIconLinkProps } from '@backstage/plugin-scaffolder-react/alpha';
+
+import {
+  TECHDOCS_ANNOTATION,
+  TECHDOCS_EXTERNAL_ANNOTATION,
+} from '@backstage/plugin-techdocs-common';
+import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
+
 import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { taskCreatePermission } from '@backstage/plugin-scaffolder-common/alpha';
+
+import { usePermission } from '@backstage/plugin-permission-react';
+
+import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
+import { catalogTranslationRef } from '../../alpha/translation';
+import { useSourceTemplateCompoundEntityRef } from './hooks';
+import { AboutContent } from './AboutContent';
 
 export function useCatalogSourceIconLinkProps() {
   const { entity } = useEntity();
@@ -76,17 +94,55 @@ export function useCatalogSourceIconLinkProps() {
   };
 }
 
+// TODO: This hook is duplicated from the TechDocs plugin for backwards compatibility
+// Remove it when the the legacy frontend system support is dropped.
+function useTechdocsReaderIconLinkProps(): IconLinkVerticalProps {
+  const { entity } = useEntity();
+  const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
+  const { t } = useTranslationRef(catalogTranslationRef);
+
+  return {
+    label: t('aboutCard.viewTechdocs'),
+    disabled:
+      !(
+        entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
+        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
+      ) || !viewTechdocLink,
+    icon: <DocsIcon />,
+    href: buildTechDocsURL(entity, viewTechdocLink),
+  };
+}
+
+// TODO: This hook is duplicated from the Scaffolder plugin for backwards compatibility
+// Remove it when the the legacy frontend system support is dropped.
+function useScaffolderTemplateIconLinkProps(): IconLinkVerticalProps {
+  const app = useApp();
+  const { entity } = useEntity();
+  const templateRoute = useRouteRef(createFromTemplateRouteRef);
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const Icon = app.getSystemIcon('scaffolder') ?? CreateComponentIcon;
+  const { allowed: canCreateTemplateTask } = usePermission({
+    permission: taskCreatePermission,
+  });
+
+  return {
+    label: t('aboutCard.launchTemplate'),
+    icon: <Icon />,
+    disabled: !templateRoute || !canCreateTemplateTask,
+    href:
+      templateRoute &&
+      templateRoute({
+        templateName: entity.metadata.name,
+        namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+      }),
+  };
+}
+
 function DefaultAboutCardSubheader() {
   const { entity } = useEntity();
   const catalogSourceIconLink = useCatalogSourceIconLinkProps();
-  const techdocsreaderIconLink = useTechdocsReaderIconLinkProps({
-    translationRef: catalogTranslationRef,
-    externalRouteRef: viewTechDocRouteRef,
-  });
-  const scaffolderTemplateIconLink = useScaffolderTemplateIconLinkProps({
-    translationRef: catalogTranslationRef,
-    externalRouteRef: createFromTemplateRouteRef,
-  });
+  const techdocsreaderIconLink = useTechdocsReaderIconLinkProps();
+  const scaffolderTemplateIconLink = useScaffolderTemplateIconLinkProps();
 
   const links = [catalogSourceIconLink, techdocsreaderIconLink];
   if (isTemplateEntityV1beta3(entity)) {
@@ -116,8 +172,16 @@ const useStyles = makeStyles({
   },
 });
 
-export interface InternalAboutCardProps {
+/**
+ * Props for {@link EntityAboutCard}.
+ *
+ * @public
+ */
+export type AboutCardProps = {
   variant?: InfoCardVariants;
+};
+
+export interface InternalAboutCardProps extends AboutCardProps {
   subheader?: JSX.Element;
 }
 
@@ -216,13 +280,6 @@ export function InternalAboutCard(props: InternalAboutCardProps) {
     </Card>
   );
 }
-
-/**
- * Props for {@link EntityAboutCard}.
- *
- * @public
- */
-export type AboutCardProps = Pick<InternalAboutCardProps, 'variant'>;
 
 /**
  * Exported publicly via the EntityAboutCard

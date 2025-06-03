@@ -48,10 +48,6 @@ const _default: FrontendPlugin<
   },
   {
     registerComponent: ExternalRouteRef<undefined>;
-    createFromTemplate: ExternalRouteRef<{
-      namespace: string;
-      templateName: string;
-    }>;
     viewTechDoc: ExternalRouteRef<{
       name: string;
       kind: string;
@@ -145,6 +141,13 @@ const _default: FrontendPlugin<
         | ConfigurableExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
             {
               optional: true;
             }

@@ -15,31 +15,25 @@
  */
 
 import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
-import {
-  ExternalRouteRef,
-  useApp,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { useApp, useRouteRef } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import { taskCreatePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
-import {
-  TranslationRef,
-  useTranslationRef,
-} from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
+import { scaffolderTranslationRef } from '../../translation';
+import { selectedTemplateRouteRef } from '../../routes';
+
+// Note: If you update this hook, please also update the "useScaffolderTemplateIconLinkProps" hook
+// in the "plugins/catalog/src/components/AboutCard/AboutCard.tsx" file
 /** @alpha */
-export function useScaffolderTemplateIconLinkProps(options: {
-  translationRef: TranslationRef;
-  externalRouteRef: ExternalRouteRef;
-}) {
-  const { translationRef, externalRouteRef } = options;
+export function useScaffolderTemplateIconLinkProps() {
   const app = useApp();
   const { entity } = useEntity();
-  const templateRoute = useRouteRef(externalRouteRef);
-  const { t } = useTranslationRef(translationRef);
+  const templateRoute = useRouteRef(selectedTemplateRouteRef);
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const Icon = app.getSystemIcon('scaffolder') ?? CreateComponentIcon;
   const { allowed: canCreateTemplateTask } = usePermission({
     permission: taskCreatePermission,

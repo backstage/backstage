@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  createRouteRef,
-  createExternalRouteRef,
-} from '@backstage/core-plugin-api';
+import { createRouteRef } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
   id: 'techdocs:index-page',
@@ -30,11 +27,4 @@ export const rootDocsRouteRef = createRouteRef({
 
 export const rootCatalogDocsRouteRef = createRouteRef({
   id: 'techdocs:catalog-reader-view',
-});
-
-export const viewTechDocRouteRef = createExternalRouteRef({
-  id: 'view-techdoc',
-  optional: true,
-  params: ['namespace', 'kind', 'name'],
-  defaultTarget: 'techdocs.docRoot',
 });

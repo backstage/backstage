@@ -378,6 +378,13 @@ const _default: FrontendPlugin<
               }
             >
           | ConfigurableExtensionDataRef<
+              string,
+              'catalog.entity-filter-expression',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
               () => IconLinkVerticalProps,
               'entity-icon-link-props',
               {}
@@ -960,6 +967,13 @@ const _default: FrontendPlugin<
         | ConfigurableExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
             {
               optional: true;
             }

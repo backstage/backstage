@@ -408,6 +408,13 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
         }
       >
     | ConfigurableExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
         () => IconLinkVerticalProps,
         'entity-icon-link-props',
         {}
@@ -432,6 +439,11 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
     filterFunction: ConfigurableExtensionDataRef<
       (entity: Entity) => boolean,
       'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
       {}
     >;
   };

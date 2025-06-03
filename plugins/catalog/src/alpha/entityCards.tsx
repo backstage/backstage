@@ -25,13 +25,15 @@ import {
   IconLinkVerticalProps,
 } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
+import { buildFilterFn } from './filter/FilterWrapper';
 
 export const catalogAboutEntityCard = EntityCardBlueprint.makeWithOverrides({
   name: 'about',
   inputs: {
     iconLinks: createExtensionInput([
-      EntityIconLinkBlueprint.dataRefs.useProps,
       EntityIconLinkBlueprint.dataRefs.filterFunction.optional(),
+      EntityIconLinkBlueprint.dataRefs.filterExpression.optional(),
+      EntityIconLinkBlueprint.dataRefs.useProps,
     ]),
   },
   factory(originalFactory, { inputs }) {
@@ -41,9 +43,10 @@ export const catalogAboutEntityCard = EntityCardBlueprint.makeWithOverrides({
       // call them in a component function to avoid breaking the rules of hooks.
       const links = inputs.iconLinks.reduce((rest, iconLink) => {
         const props = iconLink.get(EntityIconLinkBlueprint.dataRefs.useProps)();
-        const filter =
-          iconLink.get(EntityIconLinkBlueprint.dataRefs.filterFunction) ??
-          (() => true);
+        const filter = buildFilterFn(
+          iconLink.get(EntityIconLinkBlueprint.dataRefs.filterFunction),
+          iconLink.get(EntityIconLinkBlueprint.dataRefs.filterExpression),
+        );
         if (filter(entity)) {
           return [...rest, props];
         }
