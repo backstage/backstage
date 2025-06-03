@@ -231,8 +231,8 @@ export async function createConfig(
     const isRemote = options.moduleFederation?.mode === 'remote';
 
     const AdaptedModuleFederationPlugin = rspack
-      ? (rspack.container
-          .ModuleFederationPlugin as unknown as typeof ModuleFederationPlugin)
+      ? (require('@module-federation/enhanced/rspack')
+          .ModuleFederationPlugin as typeof ModuleFederationPlugin)
       : ModuleFederationPlugin;
 
     const exposes = options.moduleFederation?.exposes
