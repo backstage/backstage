@@ -30,8 +30,6 @@ import { Theme, makeStyles } from '@material-ui/core/styles';
 
 import { alertApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { catalogTranslationRef } from '@backstage/plugin-catalog/alpha';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 import { UnprocessedEntity } from '../types';
 import { EntityDialog } from './EntityDialog';
@@ -129,8 +127,6 @@ export const FailedEntities = () => {
   const [deleteConfirmationDialogOpen, setDeleteConfirmationDialogOpen] =
     useState(false);
 
-  const { t } = useTranslationRef(catalogTranslationRef);
-
   const {
     loading,
     error,
@@ -166,7 +162,7 @@ export const FailedEntities = () => {
     try {
       await catalogApi.refreshEntity(entityRef!);
       alertApi.post({
-        message: t('aboutCard.refreshScheduledMessage'),
+        message: 'Refresh scheduled',
         severity: 'info',
         display: 'transient',
       });
