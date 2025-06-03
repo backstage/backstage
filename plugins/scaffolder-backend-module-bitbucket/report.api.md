@@ -7,7 +7,6 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
 import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 import { Config } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
@@ -40,19 +39,23 @@ export function createPublishBitbucketAction(options: {
 }): TemplateAction<
   {
     repoUrl: string;
-    description?: string;
-    defaultBranch?: string;
-    repoVisibility?: 'private' | 'public';
-    sourcePath?: string;
-    enableLFS?: boolean;
-    token?: string;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    signCommit?: boolean;
+    description?: string | undefined;
+    repoVisibility?: 'private' | 'public' | undefined;
+    defaultBranch?: string | undefined;
+    sourcePath?: string | undefined;
+    enableLFS?: boolean | undefined;
+    token?: string | undefined;
+    gitCommitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+    signCommit?: boolean | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    remoteUrl?: string | undefined;
+    repoContentsUrl?: string | undefined;
+    commitHash?: string | undefined;
+  },
+  'v2'
 >;
 
 // @public @deprecated (undocumented)
