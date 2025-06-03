@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ComponentType, useCallback, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import {
   stringifyEntityRef,
@@ -82,6 +82,9 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const { templateName, namespace } = useRouteRefParams(
     selectedTemplateRouteRef,
   );
+  const location = useLocation();
+  const templateTitle = location.state?.templateTitle;
+
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const templateRef = stringifyEntityRef({
@@ -138,7 +141,9 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     <AnalyticsContext attributes={{ entityRef: templateRef }}>
       <Page themeId="website">
         <Header
-          pageTitleOverride={t('templateWizardPage.pageTitle')}
+          pageTitleOverride={`${t(
+            'templateWizardPage.template',
+          )} ${templateTitle}`}
           title={t('templateWizardPage.title')}
           subtitle={t('templateWizardPage.subtitle')}
           {...props.headerOptions}
