@@ -2,4 +2,4 @@
 '@backstage/repo-tools': patch
 ---
 
-Remove exported `const` objects from the `modelEnum` template files for the server and client, as they were causing issues when defining `enum` schemas
+Fixed a bug where linting would fail with the generated clients when defining top-level `enum` schema values.
