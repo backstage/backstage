@@ -14,7 +14,6 @@ export interface CatalogUnprocessedEntitiesApi {
   delete(entityId: string): Promise<void>;
   failed(): Promise<CatalogUnprocessedEntitiesApiResponse>;
   pending(): Promise<CatalogUnprocessedEntitiesApiResponse>;
-  refresh(entityRef: string): Promise<void>;
 }
 
 // @public
