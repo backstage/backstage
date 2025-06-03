@@ -353,7 +353,7 @@ export const scaffolderTranslationRef = createTranslationRef({
       pageContextMenu: {
         editConfigurationTitle: 'Edit Configuration',
       },
-      template: 'Template',
+      templateWithTitle: 'Template {{templateTitle}}',
     },
     templateEditorToolbar: {
       customFieldExplorerTooltip: 'Custom Fields Explorer',
