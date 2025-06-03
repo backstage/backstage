@@ -4,7 +4,6 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
@@ -48,13 +47,15 @@ export function createFetchCookiecutterAction(options: {
 }): TemplateAction<
   {
     url: string;
-    targetPath?: string;
-    values: JsonObject;
-    copyWithoutRender?: string[];
-    extensions?: string[];
-    imageName?: string;
+    values: Record<string, unknown>;
+    targetPath?: string | undefined;
+    copyWithoutRender?: string[] | undefined;
+    extensions?: string[] | undefined;
+    imageName?: string | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 ```

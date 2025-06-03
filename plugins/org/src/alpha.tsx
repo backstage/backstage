@@ -98,3 +98,5 @@ export default createFrontendPlugin({
     catalogIndex: catalogIndexRouteRef,
   }),
 });
+
+export { orgTranslationRef } from './translation';

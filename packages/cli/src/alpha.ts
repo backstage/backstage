@@ -33,7 +33,6 @@ import chalk from 'chalk';
   initializer.add(import('./modules/maintenance/alpha'));
   initializer.add(import('./modules/migrate/alpha'));
   initializer.add(import('./modules/new/alpha'));
-  initializer.add(import('./modules/start/alpha'));
   initializer.add(import('./modules/test/alpha'));
   await initializer.run();
 })();
