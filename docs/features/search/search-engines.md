@@ -239,6 +239,18 @@ search:
 
 > You can also increase the batch size if you are using a large ES instance.
 
+### Elasticsearch batch key field
+
+By default, during bulk uploads with the Elasticsearch indexer, each document is assigned a custom `_id` because no explicit ID is provided. However, by setting the `batchKeyField`, you can standardize the identifier used for documents within the index. This helps streamline direct searches and prevents duplicate entries when adding new documents.
+
+**Set batch key field to id**
+
+```yaml
+search:
+  elasticsearch:
+    batchKeyField: id
+```
+
 ### Elasticsearch Index Name Customization
 
 By default, the Elasticsearch indexer creates index names based on their type, a separator, and the current date as a postfix. You can configure a custom prefix for all indices by adding the following section to your app configuration.
