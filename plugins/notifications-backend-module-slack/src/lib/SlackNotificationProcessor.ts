@@ -334,6 +334,10 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     // First try to get Slack ID from annotations
     const slackId = entity.metadata?.annotations?.[ANNOTATION_SLACK_BOT_NOTIFY];
     if (slackId) {
+      // If slack id is an email, look up for the id
+      if (slackId.includes('@')) {
+        return this.findSlackIdByEmail(slackId);
+      }
       return slackId;
     }
 
@@ -346,9 +350,15 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   }
 
   private async findSlackIdByEmail(
-    entity: UserEntity,
+    entity: UserEntity | string,
   ): Promise<string | undefined> {
-    const email = entity.spec?.profile?.email;
+    let email: string | undefined;
+
+    if (typeof entity === 'string') {
+      email = entity;
+    } else {
+      email = entity.spec?.profile?.email;
+    }
     if (!email) {
       return undefined;
     }
