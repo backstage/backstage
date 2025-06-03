@@ -351,4 +351,80 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     expect(bulkSpy).toHaveBeenCalledTimes(1);
     expect(refreshSpy).toHaveBeenCalledTimes(0);
   });
+
+  it('indexes documents with custom batch key field', async () => {
+    indexer = new ElasticSearchSearchEngineIndexer({
+      type: 'some-type',
+      indexPrefix: '',
+      indexSeparator: '-index__',
+      alias: 'some-type-index__search',
+      logger: mockServices.logger.mock(),
+      elasticSearchClientWrapper: clientWrapper,
+      batchSize: 1000,
+      skipRefresh: false,
+      batchKeyField: 'customId',
+    });
+
+    const documents = [
+      {
+        title: 'testTerm',
+        text: 'testText',
+        location: 'test/location',
+        customId: '123',
+      },
+      {
+        title: 'Another test',
+        text: 'Some more text',
+        location: 'test/location/2',
+        customId: '456',
+      },
+    ];
+
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
+
+    expect(bulkSpy).toHaveBeenCalled();
+
+    const bulkBody = bulkSpy.mock.calls[0][0].body;
+
+    expect(bulkBody[0]).toEqual(
+      expect.objectContaining({
+        _id: '123',
+        index: expect.objectContaining({
+          _index: expect.stringContaining('some-type-index__'),
+        }),
+      }),
+    );
+    expect(bulkBody[2]).toEqual(
+      expect.objectContaining({
+        _id: '456',
+        index: expect.objectContaining({
+          _index: expect.stringContaining('some-type-index__'),
+        }),
+      }),
+    );
+  }, 40000);
+
+  it('indexes documents without custom batch key field when not specified', async () => {
+    const documents = [
+      {
+        title: 'testTerm',
+        text: 'testText',
+        location: 'test/location',
+        customId: '123',
+      },
+    ];
+
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
+
+    const bulkBody = bulkSpy.mock.calls[0][0].body;
+
+    expect(bulkBody[0]).not.toHaveProperty('_id');
+    expect(bulkBody[0]).toEqual(
+      expect.objectContaining({
+        index: expect.objectContaining({
+          _index: expect.stringContaining('some-type-index__'),
+        }),
+      }),
+    );
+  });
 });
