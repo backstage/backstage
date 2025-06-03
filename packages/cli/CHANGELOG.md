@@ -1,5 +1,27 @@
 # @backstage/cli
 
+## 0.32.2-next.0
+
+### Patch Changes
+
+- ce70439: The `BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE` flag has been removed. Existing users are encouraged to switch to `EXPERIMENTAL_RSPACK` instead.
+- 1d8f00b: Switched to using the `ModuleFederationPlugin` from `@module-federation/enhanced/rspack` for Rspack, rather than the built-in one.
+- 2b9633f: The experimental `FORCE_REACT_DEVELOPMENT` flag has been removed.
+- d8c4a54: Only use the caching Jest module loader for frontend packages in order to avoid breaking real ESM module imports.
+- 1bab255: Internal refactor to combine alpha `build` and `start` modules.
+- 713e957: fix: merge eslint reports when using json format
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.1
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.1.10
+  - @backstage/integration@1.17.0
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.1
+
 ## 0.32.1
 
 ### Patch Changes
