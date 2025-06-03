@@ -62,8 +62,6 @@ declare module 'react-dev-utils/ModuleScopePlugin' {
 }
 
 declare module 'react-dev-utils/FileSizeReporter' {
-  import webpack = require('webpack');
-
   export interface OpaqueFileSizes {
     root: string;
     sizes: Record<string, number>;
@@ -85,7 +83,7 @@ declare module 'react-dev-utils/FileSizeReporter' {
    * the main bundle or a chunk exceeds the specified size (in bytes).
    */
   export function printFileSizesAfterBuild(
-    webpackStats: webpack.Stats,
+    stats: import('@rspack/core').Stats,
     previousFileSizes: OpaqueFileSizes,
     buildFolder: string,
     maxBundleGzipSize?: number,
