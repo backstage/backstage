@@ -22,8 +22,7 @@ import { bindGetEventsEndpoint } from './GetEvents.router';
 import { Cursor, stringifyCursor } from './GetEvents.utils';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { mockServices } from '@backstage/backend-test-utils';
-
-jest.setTimeout(60_000);
+import waitFor from 'wait-for-expect';
 
 describe('bindGetEventsEndpoint', () => {
   const config = mockServices.rootConfig();
@@ -164,6 +163,11 @@ describe('bindGetEventsEndpoint', () => {
       },
       block: true,
       signal: expect.any(AbortSignal),
+    });
+
+    // the signal must always get aborted at the end of the request cycle
+    await waitFor(() => {
+      expect(model.getEvents.mock.calls[0][0].signal.aborted).toBeTruthy();
     });
 
     response = await request(app).get('/history/v1/events').query({

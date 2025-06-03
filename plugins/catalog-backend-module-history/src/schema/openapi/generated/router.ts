@@ -217,6 +217,7 @@ export const spec = {
         description:
           'The specification for a single subscription, used in an upsert',
         type: 'object',
+        additionalProperties: false,
         properties: {
           subscriptionId: {
             type: 'string',
