@@ -28,23 +28,31 @@ export function createCredentialsWithServicePrincipal(
   token?: string,
   accessRestrictions?: BackstagePrincipalAccessRestrictions,
 ): InternalBackstageCredentials<BackstageServicePrincipal> {
-  return Object.defineProperty(
-    {
-      $$type: '@backstage/BackstageCredentials',
-      version: 'v1',
-      principal: {
+  const result = {
+    $$type: '@backstage/BackstageCredentials',
+    version: 'v1',
+    principal: {
+      type: 'service',
+      subject: sub,
+      accessRestrictions,
+    },
+  } as const;
+  Object.defineProperty(result, 'token', {
+    enumerable: false,
+    configurable: true,
+    value: token,
+  });
+  Object.defineProperty(result, 'toString', {
+    enumerable: false,
+    configurable: true,
+    value: () =>
+      JSON.stringify({
+        $$type: '@backstage/BackstageCredentials',
         type: 'service',
         subject: sub,
-        accessRestrictions,
-      },
-    },
-    'token',
-    {
-      enumerable: false,
-      configurable: true,
-      value: token,
-    },
-  );
+      }),
+  });
+  return result;
 }
 
 export function createCredentialsWithUserPrincipal(
@@ -53,36 +61,57 @@ export function createCredentialsWithUserPrincipal(
   expiresAt?: Date,
   actor?: string,
 ): InternalBackstageCredentials<BackstageUserPrincipal> {
-  return Object.defineProperty(
-    {
-      $$type: '@backstage/BackstageCredentials',
-      version: 'v1',
-      expiresAt,
-      principal: {
+  const result = {
+    $$type: '@backstage/BackstageCredentials',
+    version: 'v1',
+    expiresAt,
+    principal: {
+      type: 'user',
+      userEntityRef: sub,
+      ...(actor && {
+        actor: { type: 'service', subject: actor } as const,
+      }),
+    },
+  } as const;
+  Object.defineProperty(result, 'token', {
+    enumerable: false,
+    configurable: true,
+    value: token,
+  });
+  Object.defineProperty(result, 'toString', {
+    enumerable: false,
+    configurable: true,
+    value: () =>
+      JSON.stringify({
+        $$type: '@backstage/BackstageCredentials',
         type: 'user',
         userEntityRef: sub,
         ...(actor && {
           actor: { type: 'service', subject: actor },
         }),
-      },
-    },
-    'token',
-    {
-      enumerable: false,
-      configurable: true,
-      value: token,
-    },
-  );
+      }),
+  });
+  return result;
 }
 
 export function createCredentialsWithNonePrincipal(): InternalBackstageCredentials<BackstageNonePrincipal> {
-  return {
+  const result = {
     $$type: '@backstage/BackstageCredentials',
     version: 'v1',
     principal: {
       type: 'none',
     },
-  };
+  } as const;
+  Object.defineProperty(result, 'toString', {
+    enumerable: false,
+    configurable: true,
+    value: () =>
+      JSON.stringify({
+        $$type: '@backstage/BackstageCredentials',
+        type: 'none',
+      }),
+  });
+  return result;
 }
 
 export function toInternalBackstageCredentials(
