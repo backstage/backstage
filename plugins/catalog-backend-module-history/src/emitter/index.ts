@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export { type CatalogHistoryEvent, CATALOG_HISTORY_EVENT_TOPIC } from './types';
+export {
+  type CatalogHistoryEventPayload,
+  CATALOG_HISTORY_EVENT_TOPIC,
+} from './types';

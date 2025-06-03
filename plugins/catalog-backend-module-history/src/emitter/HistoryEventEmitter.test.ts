@@ -92,7 +92,7 @@ describe('HistoryEventEmitter', () => {
             eventType: 'entity_created',
             entityRef: 'component:default/foo',
             entityId: 'foo',
-            entityJson: { kind: 'Component' },
+            entity: { kind: 'Component' },
             locationId: 'bar',
             locationRef: 'url:http://mockEntityProvider.com',
           },

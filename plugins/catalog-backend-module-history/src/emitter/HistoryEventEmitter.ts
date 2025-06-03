@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LifecycleService } from '@backstage/backend-plugin-api';
 import { EventsService } from '@backstage/plugin-events-node';
 import { Knex } from 'knex';
 import { HistoryConfig } from '../config';
@@ -21,8 +22,7 @@ import { ackHistorySubscription } from '../database/operations/ackHistorySubscri
 import { readHistorySubscription } from '../database/operations/readHistorySubscription';
 import { upsertHistorySubscription } from '../database/operations/upsertHistorySubscription';
 import { sleep } from '../helpers';
-import { CATALOG_HISTORY_EVENT_TOPIC, CatalogHistoryEvent } from './types';
-import { LifecycleService } from '@backstage/backend-plugin-api';
+import { CATALOG_HISTORY_EVENT_TOPIC, toEventPayload } from './types';
 
 const SUBSCRIPTION_ID = 'backstage-catalog-history-events-emitter';
 
@@ -90,26 +90,13 @@ export class HistoryEventEmitter {
 
       if (data) {
         for (const event of data.events) {
-          const eventPayload: CatalogHistoryEvent = {
-            eventId: event.eventId,
-            eventAt: event.eventAt.toISOString(),
-            eventType: event.eventType,
-            entityId: event.entityId,
-            entityRef: event.entityRef,
-            entityJson: event.entityJson
-              ? JSON.parse(event.entityJson)
-              : undefined,
-            locationId: event.locationId,
-            locationRef: event.locationRef,
-          };
           await this.#events.publish({
             topic: CATALOG_HISTORY_EVENT_TOPIC,
-            eventPayload,
-            metadata: {
-              eventType: event.eventType,
-            },
+            eventPayload: toEventPayload(event),
+            metadata: { eventType: event.eventType },
           });
         }
+
         await ackHistorySubscription(knex, {
           subscriptionId: subscription.subscriptionId,
           ackId: data.ackId,

@@ -18,11 +18,9 @@ import { Event } from '../../schema/openapi/generated/models';
 
 /**
  * A single history event, received through a consumer's subscription.
- *
- * @public
  */
 export interface CatalogEvent {
-  /** A unique identifier for this particular event */
+  /** A unique identifier for this particular event; a string form of an ever increasing big integer */
   eventId: string;
   /** When the event happened */
   eventAt: Date;
@@ -55,8 +53,6 @@ export function toResponseEvent(event: CatalogEvent): Event {
 
 /**
  * A subscription to catalog events.
- *
- * @public
  */
 export interface CatalogEventSubscription {
   /** The ID of the subscription */

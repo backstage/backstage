@@ -15,6 +15,7 @@
  */
 
 import { JsonObject } from '@backstage/types';
+import { CatalogEvent } from '../service/endpoints/types';
 
 /**
  * The events backend topic that the catalog history events are emitted on.
@@ -24,17 +25,40 @@ import { JsonObject } from '@backstage/types';
 export const CATALOG_HISTORY_EVENT_TOPIC = 'backstage.catalog.history.event';
 
 /**
- * A history event as emitted by the catalog backend.
+ * A history event as emitted by the catalog backend to the events backend.
  *
  * @public
  */
-export interface CatalogHistoryEvent {
+export interface CatalogHistoryEventPayload {
+  /** A unique identifier for this particular event; a string form of an ever increasing big integer */
   eventId: string;
+  /** When the event happened, as an ISO timestamp string */
   eventAt: string;
+  /** The distinct type of event */
   eventType: string;
-  entityId?: string;
+  /** The entity ref related to the event, where applicable */
   entityRef?: string;
-  entityJson?: JsonObject;
+  /** The entity uid related to the event, where applicable */
+  entityId?: string;
+  /** The body of the entity related to the event, where applicable */
+  entity?: JsonObject;
+  /** The location id related to the event, where applicable */
   locationId?: string;
+  /** The location ref related to the event, where applicable */
   locationRef?: string;
+}
+
+export function toEventPayload(
+  event: CatalogEvent,
+): CatalogHistoryEventPayload {
+  return {
+    eventId: event.eventId,
+    eventAt: event.eventAt.toISOString(),
+    eventType: event.eventType,
+    entityId: event.entityId,
+    entityRef: event.entityRef,
+    entity: event.entityJson ? JSON.parse(event.entityJson) : undefined,
+    locationId: event.locationId,
+    locationRef: event.locationRef,
+  };
 }

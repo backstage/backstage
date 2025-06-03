@@ -20,7 +20,10 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
-import { CATALOG_HISTORY_EVENT_TOPIC, CatalogHistoryEvent } from '../src';
+import {
+  CATALOG_HISTORY_EVENT_TOPIC,
+  CatalogHistoryEventPayload,
+} from '../src';
 
 const eventLogger = createBackendPlugin({
   pluginId: 'catalog-history-event-logger',
@@ -37,7 +40,7 @@ const eventLogger = createBackendPlugin({
           onEvent: async event => {
             logger.info(
               JSON.stringify(
-                event.eventPayload as unknown as CatalogHistoryEvent,
+                event.eventPayload as unknown as CatalogHistoryEventPayload,
                 null,
                 2,
               ),

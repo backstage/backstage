@@ -4,22 +4,21 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { JsonObject } from '@backstage/types';
 
 // @public
 export const CATALOG_HISTORY_EVENT_TOPIC = 'backstage.catalog.history.event';
 
 // @public
-export interface CatalogHistoryEvent {
-  // (undocumented)
-  entityId: string;
-  // (undocumented)
-  entityRef: string;
-  // (undocumented)
+export interface CatalogHistoryEventPayload {
+  entity?: JsonObject;
+  entityId?: string;
+  entityRef?: string;
   eventAt: string;
-  // (undocumented)
   eventId: string;
-  // (undocumented)
   eventType: string;
+  locationId?: string;
+  locationRef?: string;
 }
 
 // @public

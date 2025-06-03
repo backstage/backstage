@@ -22,6 +22,6 @@
 
 export {
   CATALOG_HISTORY_EVENT_TOPIC,
-  type CatalogHistoryEvent,
+  type CatalogHistoryEventPayload,
 } from './emitter';
 export { catalogModuleHistory as default } from './module';
