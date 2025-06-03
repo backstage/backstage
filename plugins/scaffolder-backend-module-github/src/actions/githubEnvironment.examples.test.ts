@@ -69,7 +69,7 @@ describe('github:environment:create examples', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext();
 

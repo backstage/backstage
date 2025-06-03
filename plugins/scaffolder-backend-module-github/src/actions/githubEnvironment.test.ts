@@ -80,7 +80,7 @@ describe('github:environment:create', () => {
     targetPluginId: 'catalog',
   });
 
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext({
     input: {
