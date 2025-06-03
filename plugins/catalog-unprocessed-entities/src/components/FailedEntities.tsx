@@ -25,19 +25,19 @@ import {
 
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
 import { Theme, makeStyles } from '@material-ui/core/styles';
 
 import { alertApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { usePermission } from '@backstage/plugin-permission-react';
+import { unprocessedEntitiesDeletePermission } from '@backstage/plugin-catalog-unprocessed-entities-common';
 
 import { UnprocessedEntity } from '../types';
 import { EntityDialog } from './EntityDialog';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
 import useAsync from 'react-use/esm/useAsync';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { DeleteEntityConfirmationDialog } from './DeleteEntityConfirmationDialog';
+import { FailedEntityActions } from './FailedEntityActions';
 
 const useStyles = makeStyles((theme: Theme) => ({
   errorBox: {
@@ -117,6 +117,10 @@ export const FailedEntities = () => {
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
   const errorApi = useApi(errorApiRef);
+
+  const canDelete = usePermission({
+    permission: unprocessedEntitiesDeletePermission,
+  });
 
   const [selectedEntityId, setSelectedEntityId] = useState<string | undefined>(
     undefined,
@@ -244,35 +248,14 @@ export const FailedEntities = () => {
     },
     {
       title: <Typography>Actions</Typography>,
-      render: (rowData: UnprocessedEntity | {}) => {
-        const { entity_id, entity_ref } = rowData as UnprocessedEntity;
-
-        return (
-          <>
-            <IconButton
-              aria-label="refresh"
-              onClick={() =>
-                handleRefresh({
-                  entityRef: entity_ref,
-                })
-              }
-            >
-              <RefreshIcon fontSize="small" data-testid="refresh-icon" />
-            </IconButton>
-            <IconButton
-              aria-label="delete"
-              onClick={() =>
-                handleDelete({
-                  entityId: entity_id,
-                  entityRef: entity_ref,
-                })
-              }
-            >
-              <DeleteIcon fontSize="small" data-testid="delete-icon" />
-            </IconButton>
-          </>
-        );
-      },
+      render: (rowData: UnprocessedEntity | {}) => (
+        <FailedEntityActions
+          entity={rowData as UnprocessedEntity}
+          canDelete={canDelete.allowed}
+          handleRefresh={handleRefresh}
+          handleDelete={handleDelete}
+        />
+      ),
     },
   ];
 
