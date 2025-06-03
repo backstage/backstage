@@ -409,7 +409,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
 
       const groupPaths = this.config.restrictUsersToGroup
         ? [this.config.group]
-        : [rootGroupSplit[0], ...descendantGroups.map(g => g.id)];
+        : [rootGroupSplit[0], ...descendantGroups.map(g => `${g.id}`)];
 
       // Fetch users group and descendant groups
       for (const group of groupPaths) {
@@ -418,7 +418,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
           paginated<GitLabUser>(
             options =>
               this.gitLabClient.listSaaSUsers(
-                String(group),
+                group,
                 options,
                 this.config.includeUsersWithoutSeat,
               ),
