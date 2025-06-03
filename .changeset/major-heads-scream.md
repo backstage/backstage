@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend-module-gitlab': minor
 ---
 
-Changing default SAAS discovery to include members from subgroups of the root group
+Breaking: User and Group discovery will default to ingesting all users in sub groups that belong to the specified root group in config. Disable setting config `restrictUsersToGroup: true`.
