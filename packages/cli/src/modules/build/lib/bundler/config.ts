@@ -39,8 +39,6 @@ import { hasReactDomClient } from './hasReactDomClient';
 import { createWorkspaceLinkingPlugins } from './linkWorkspaces';
 import { ConfigInjectingHtmlWebpackPlugin } from './ConfigInjectingHtmlWebpackPlugin';
 
-const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
-
 export function resolveBaseUrl(
   config: Config,
   moduleFederation?: ModuleFederationOptions,
@@ -389,8 +387,6 @@ export async function createConfig(
     );
   }
 
-  const withCache = yn(process.env[BUILD_CACHE_ENV_VAR], { default: false });
-
   return {
     mode,
     profile: false,
@@ -473,13 +469,5 @@ export async function createConfig(
       }),
     },
     plugins,
-    ...(withCache && {
-      cache: {
-        type: 'filesystem',
-        buildDependencies: {
-          config: [__filename],
-        },
-      },
-    }),
   };
 }
