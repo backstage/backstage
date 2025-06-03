@@ -15,6 +15,7 @@
  */
 import { Command, Option } from 'commander';
 import { lazy } from '../../lib/lazy';
+import { configOption } from '../config';
 
 export function registerRepoCommands(command: Command) {
   command
@@ -35,6 +36,35 @@ export function registerRepoCommands(command: Command) {
       'Minify the generated code. Does not apply to app package (app is minified by default).',
     )
     .action(lazy(() => import('./commands/repo/build'), 'command'));
+
+  command
+    .command('start')
+    .description('Starts packages in the repo for local development')
+    .argument(
+      '[packageNameOrPath...]',
+      'Run the specified package instead of the defaults.',
+    )
+    .option(
+      '--plugin <pluginId>',
+      'Start the dev entry-point for any matching plugin package in the repo',
+      (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
+      Array<string>(),
+    )
+    .option(...configOption)
+    .option(
+      '--inspect [host]',
+      'Enable debugger in Node.js environments. Applies to backend package only',
+    )
+    .option(
+      '--inspect-brk [host]',
+      'Enable debugger in Node.js environments, breaking before code starts. Applies to backend package only',
+    )
+    .option(
+      '--require <path...>',
+      'Add a --require argument to the node process. Applies to backend package only',
+    )
+    .option('--link <path>', 'Link an external workspace for module resolution')
+    .action(lazy(() => import('../build/commands/repo/start'), 'command'));
 }
 
 export function registerPackageCommands(command: Command) {
@@ -61,6 +91,24 @@ export function registerPackageCommands(command: Command) {
       Array<string>(),
     )
     .action(lazy(() => import('./commands/package/build'), 'command'));
+
+  command
+    .command('start')
+    .description('Start a package for local development')
+    .option(...configOption)
+    .option('--role <name>', 'Run the command with an explicit package role')
+    .option('--check', 'Enable type checking and linting if available')
+    .option('--inspect [host]', 'Enable debugger in Node.js environments')
+    .option(
+      '--inspect-brk [host]',
+      'Enable debugger in Node.js environments, breaking before code starts',
+    )
+    .option(
+      '--require <path...>',
+      'Add a --require argument to the node process',
+    )
+    .option('--link <path>', 'Link an external workspace for module resolution')
+    .action(lazy(() => import('./commands/package/start'), 'command'));
 }
 
 export function registerCommands(program: Command) {
