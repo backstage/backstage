@@ -40,8 +40,9 @@ import {
 export async function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,
+  token?: string,
 ): Promise<string> {
-  const projectID = await getProjectId(url, config);
+  const projectID = await getProjectId(url, config, token);
   return buildProjectUrl(url, projectID, config).toString();
 }
 
@@ -113,6 +114,7 @@ export function buildProjectUrl(
 export async function getProjectId(
   target: string,
   config: GitLabIntegrationConfig,
+  token?: string,
 ): Promise<number> {
   const url = new URL(target);
 
@@ -143,7 +145,7 @@ export async function getProjectId(
 
     const response = await fetch(
       repoIDLookup.toString(),
-      getGitLabRequestOptions(config),
+      getGitLabRequestOptions(config, token),
     );
 
     const data = await response.json();
