@@ -19,7 +19,6 @@ import { join, relative } from 'path';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { examples } from './log.examples';
 import fs from 'fs';
-import { z } from 'zod';
 
 const id = 'debug:log';
 
@@ -34,24 +33,23 @@ const id = 'debug:log';
  * @public
  */
 export function createDebugLogAction() {
-  return createTemplateAction<{
-    message?: string;
-    listWorkspace?: boolean | 'with-filenames' | 'with-contents';
-  }>({
+  return createTemplateAction({
     id,
     description:
       'Writes a message into the log and/or lists all files in the workspace.',
     examples,
     schema: {
-      input: z.object({
-        message: z.string({ description: 'Message to output.' }).optional(),
-        listWorkspace: z
-          .union([z.boolean(), z.enum(['with-filenames', 'with-contents'])], {
-            description:
-              'List all files in the workspace. If used with "with-contents", also the file contents are listed.',
-          })
-          .optional(),
-      }),
+      input: {
+        message: z =>
+          z.string({ description: 'Message to output.' }).optional(),
+        listWorkspace: z =>
+          z
+            .union([z.boolean(), z.enum(['with-filenames', 'with-contents'])], {
+              description:
+                'List all files in the workspace. If used with "with-contents", also the file contents are listed.',
+            })
+            .optional(),
+      },
     },
     supportsDryRun: true,
     async handler(ctx) {

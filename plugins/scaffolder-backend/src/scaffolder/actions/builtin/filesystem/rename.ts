@@ -16,7 +16,6 @@
 
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
-import { InputError } from '@backstage/errors';
 import fs from 'fs-extra';
 import { examples } from './rename.examples';
 
@@ -25,80 +24,60 @@ import { examples } from './rename.examples';
  * @public
  */
 export const createFilesystemRenameAction = () => {
-  return createTemplateAction<{
-    files: Array<{
-      from: string;
-      to: string;
-      overwrite?: boolean;
-    }>;
-  }>({
+  return createTemplateAction({
     id: 'fs:rename',
     description: 'Renames files and directories within the workspace',
     examples,
     schema: {
       input: {
-        required: ['files'],
-        type: 'object',
-        properties: {
-          files: {
-            title: 'Files',
-            description:
-              'A list of file and directory names that will be renamed',
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['from', 'to'],
-              properties: {
-                from: {
-                  type: 'string',
-                  title: 'The source location of the file to be renamed',
-                },
-                to: {
-                  type: 'string',
-                  title: 'The destination of the new file',
-                },
-                overwrite: {
-                  type: 'boolean',
-                  title:
+        files: z =>
+          z.array(
+            z.object({
+              from: z.string({
+                description: 'The source location of the file to be renamed',
+              }),
+              to: z.string({
+                description: 'The destination of the new file',
+              }),
+              overwrite: z
+                .boolean({
+                  description:
                     'Overwrite existing file or directory, default is false',
-                },
-              },
+                })
+                .optional(),
+            }),
+            {
+              description:
+                'A list of file and directory names that will be renamed',
             },
-          },
-        },
+          ),
       },
     },
     supportsDryRun: true,
     async handler(ctx) {
-      if (!Array.isArray(ctx.input?.files)) {
-        throw new InputError('files must be an Array');
-      }
-
       for (const file of ctx.input.files) {
-        if (!file.from || !file.to) {
-          throw new InputError('each file must have a from and to property');
-        }
-
         const sourceFilepath = resolveSafeChildPath(
           ctx.workspacePath,
           file.from,
         );
         const destFilepath = resolveSafeChildPath(ctx.workspacePath, file.to);
 
-        try {
-          await fs.move(sourceFilepath, destFilepath, {
-            overwrite: file.overwrite ?? false,
-          });
-          ctx.logger.info(
-            `File ${sourceFilepath} renamed to ${destFilepath} successfully`,
+        if (!fs.existsSync(sourceFilepath)) {
+          throw new Error(
+            `File ${sourceFilepath} does not exist, so rename cannot succeed.`,
           );
-        } catch (err) {
-          ctx.logger.error(
-            `Failed to rename file ${sourceFilepath} to ${destFilepath}:`,
-            err,
-          );
-          throw err;
         }
+
+        const destExists = fs.existsSync(destFilepath);
+
+        if (destExists && !file.overwrite) {
+          throw new Error(
+            `File ${destFilepath} already exists, refusing to overwrite.`,
+          );
+        }
+
+        await fs.move(sourceFilepath, destFilepath, { overwrite: true });
+        ctx.logger.info(`Moved file from ${sourceFilepath} to ${destFilepath}`);
       }
     },
   });

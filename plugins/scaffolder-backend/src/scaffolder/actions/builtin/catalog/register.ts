@@ -35,73 +35,45 @@ export function createCatalogRegisterAction(options: {
 }) {
   const { catalogClient, integrations, auth } = options;
 
-  return createTemplateAction<
-    | { catalogInfoUrl: string; optional?: boolean }
-    | { repoContentsUrl: string; catalogInfoPath?: string; optional?: boolean }
-  >({
+  return createTemplateAction({
     id,
     description:
       'Registers entities from a catalog descriptor file in the workspace into the software catalog.',
     examples,
     schema: {
-      input: {
-        oneOf: [
-          {
-            type: 'object',
-            required: ['catalogInfoUrl'],
-            properties: {
-              catalogInfoUrl: {
-                title: 'Catalog Info URL',
-                description:
-                  'An absolute URL pointing to the catalog info file location',
-                type: 'string',
-              },
-              optional: {
-                title: 'Optional',
+      input: z =>
+        z.union([
+          z.object({
+            catalogInfoUrl: z.string({
+              description:
+                'An absolute URL pointing to the catalog info file location',
+            }),
+            optional: z
+              .boolean({
                 description:
                   'Permit the registered location to optionally exist. Default: false',
-                type: 'boolean',
-              },
-            },
-          },
-          {
-            type: 'object',
-            required: ['repoContentsUrl'],
-            properties: {
-              repoContentsUrl: {
-                title: 'Repository Contents URL',
-                description:
-                  'An absolute URL pointing to the root of a repository directory tree',
-                type: 'string',
-              },
-              catalogInfoPath: {
-                title: 'Fetch URL',
+              })
+              .optional(),
+          }),
+          z.object({
+            repoContentsUrl: z.string({
+              description:
+                'An absolute URL pointing to the root of a repository directory tree',
+            }),
+            catalogInfoPath: z
+              .string({
                 description:
                   'A relative path from the repo root pointing to the catalog info file, defaults to /catalog-info.yaml',
-                type: 'string',
-              },
-              optional: {
-                title: 'Optional',
+              })
+              .optional(),
+            optional: z
+              .boolean({
                 description:
                   'Permit the registered location to optionally exist. Default: false',
-                type: 'boolean',
-              },
-            },
-          },
-        ],
-      },
-      output: {
-        type: 'object',
-        required: ['catalogInfoUrl'],
-        properties: {
-          entityRef: {
-            type: 'string',
-          },
-          catalogInfoUrl: {
-            type: 'string',
-          },
-        },
-      },
+              })
+              .optional(),
+          }),
+        ]),
     },
     async handler(ctx) {
       const { input } = ctx;
