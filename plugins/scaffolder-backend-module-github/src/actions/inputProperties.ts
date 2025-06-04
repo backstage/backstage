@@ -13,28 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z as zod } from 'zod';
 
-const repoUrl = (z: typeof import('zod').z) =>
+const repoUrl = (z: typeof zod) =>
   z.string({
     description:
       'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
   });
 
-const description = (z: typeof import('zod').z) =>
+const description = (z: typeof zod) =>
   z
     .string({
       description: 'Repository Description',
     })
     .optional();
 
-const homepage = (z: typeof import('zod').z) =>
+const homepage = (z: typeof zod) =>
   z
     .string({
       description: 'Repository Homepage',
     })
     .optional();
 
-const access = (z: typeof import('zod').z) =>
+const access = (z: typeof zod) =>
   z
     .string({
       description:
@@ -42,7 +43,7 @@ const access = (z: typeof import('zod').z) =>
     })
     .optional();
 
-const requireCodeOwnerReviews = (z: typeof import('zod').z) =>
+const requireCodeOwnerReviews = (z: typeof zod) =>
   z
     .boolean({
       description:
@@ -50,7 +51,7 @@ const requireCodeOwnerReviews = (z: typeof import('zod').z) =>
     })
     .optional();
 
-const dismissStaleReviews = (z: typeof import('zod').z) =>
+const dismissStaleReviews = (z: typeof zod) =>
   z
     .boolean({
       description:
@@ -58,7 +59,7 @@ const dismissStaleReviews = (z: typeof import('zod').z) =>
     })
     .optional();
 
-const requiredStatusCheckContexts = (z: typeof import('zod').z) =>
+const requiredStatusCheckContexts = (z: typeof zod) =>
   z
     .array(z.string(), {
       description:
@@ -66,7 +67,7 @@ const requiredStatusCheckContexts = (z: typeof import('zod').z) =>
     })
     .optional();
 
-const requireBranchesToBeUpToDate = (z: typeof import('zod').z) =>
+const requireBranchesToBeUpToDate = (z: typeof zod) =>
   z
     .boolean({
       description:
@@ -75,7 +76,7 @@ const requireBranchesToBeUpToDate = (z: typeof import('zod').z) =>
     .default(true)
     .optional();
 
-const requiredConversationResolution = (z: typeof import('zod').z) =>
+const requiredConversationResolution = (z: typeof zod) =>
   z
     .boolean({
       description:
@@ -83,7 +84,7 @@ const requiredConversationResolution = (z: typeof import('zod').z) =>
     })
     .optional();
 
-const requireLastPushApproval = (z: typeof import('zod').z) =>
+const requireLastPushApproval = (z: typeof zod) =>
   z
     .boolean({
       description:
@@ -92,14 +93,14 @@ const requireLastPushApproval = (z: typeof import('zod').z) =>
     .default(false)
     .optional();
 
-const repoVisibility = (z: typeof import('zod').z) =>
+const repoVisibility = (z: typeof zod) =>
   z
     .enum(['private', 'public', 'internal'], {
       description: 'Repository Visibility',
     })
     .optional();
 
-const deleteBranchOnMerge = (z: typeof import('zod').z) =>
+const deleteBranchOnMerge = (z: typeof zod) =>
   z
     .boolean({
       description:
@@ -108,7 +109,7 @@ const deleteBranchOnMerge = (z: typeof import('zod').z) =>
     .default(false)
     .optional();
 
-const gitAuthorName = (z: typeof import('zod').z) =>
+const gitAuthorName = (z: typeof zod) =>
   z
     .string({
       description:
@@ -117,14 +118,14 @@ const gitAuthorName = (z: typeof import('zod').z) =>
     .default('Scaffolder')
     .optional();
 
-const gitAuthorEmail = (z: typeof import('zod').z) =>
+const gitAuthorEmail = (z: typeof zod) =>
   z
     .string({
       description: `Sets the default author email for the commit.`,
     })
     .optional();
 
-const allowMergeCommit = (z: typeof import('zod').z) =>
+const allowMergeCommit = (z: typeof zod) =>
   z
     .boolean({
       description: 'Allow merge commits. The default value is `true`',
@@ -132,7 +133,7 @@ const allowMergeCommit = (z: typeof import('zod').z) =>
     .default(true)
     .optional();
 
-const allowSquashMerge = (z: typeof import('zod').z) =>
+const allowSquashMerge = (z: typeof zod) =>
   z
     .boolean({
       description: 'Allow squash merges. The default value is `true`',
@@ -140,7 +141,7 @@ const allowSquashMerge = (z: typeof import('zod').z) =>
     .default(true)
     .optional();
 
-const allowUpdateBranch = (z: typeof import('zod').z) =>
+const allowUpdateBranch = (z: typeof zod) =>
   z
     .boolean({
       description: 'Allow branch to be updated. The default value is `false`',
@@ -148,7 +149,7 @@ const allowUpdateBranch = (z: typeof import('zod').z) =>
     .default(false)
     .optional();
 
-const squashMergeCommitTitle = (z: typeof import('zod').z) =>
+const squashMergeCommitTitle = (z: typeof zod) =>
   z
     .enum(['PR_TITLE', 'COMMIT_OR_PR_TITLE'], {
       description:
@@ -157,7 +158,7 @@ const squashMergeCommitTitle = (z: typeof import('zod').z) =>
     .default('COMMIT_OR_PR_TITLE')
     .optional();
 
-const squashMergeCommitMessage = (z: typeof import('zod').z) =>
+const squashMergeCommitMessage = (z: typeof zod) =>
   z
     .enum(['PR_BODY', 'COMMIT_MESSAGES', 'BLANK'], {
       description:
@@ -166,7 +167,7 @@ const squashMergeCommitMessage = (z: typeof import('zod').z) =>
     .default('COMMIT_MESSAGES')
     .optional();
 
-const allowRebaseMerge = (z: typeof import('zod').z) =>
+const allowRebaseMerge = (z: typeof zod) =>
   z
     .boolean({
       description: 'Allow rebase merges. The default value is `true`',
@@ -174,7 +175,7 @@ const allowRebaseMerge = (z: typeof import('zod').z) =>
     .default(true)
     .optional();
 
-const allowAutoMerge = (z: typeof import('zod').z) =>
+const allowAutoMerge = (z: typeof zod) =>
   z
     .boolean({
       description:
@@ -183,7 +184,7 @@ const allowAutoMerge = (z: typeof import('zod').z) =>
     .default(false)
     .optional();
 
-const collaborators = (z: typeof import('zod').z) =>
+const collaborators = (z: typeof zod) =>
   z
     .array(
       z.union([
@@ -212,7 +213,7 @@ const collaborators = (z: typeof import('zod').z) =>
     )
     .optional();
 
-const hasProjects = (z: typeof import('zod').z) =>
+const hasProjects = (z: typeof zod) =>
   z
     .boolean({
       description:
@@ -220,7 +221,7 @@ const hasProjects = (z: typeof import('zod').z) =>
     })
     .optional();
 
-const hasWiki = (z: typeof import('zod').z) =>
+const hasWiki = (z: typeof zod) =>
   z
     .boolean({
       description:
@@ -229,7 +230,7 @@ const hasWiki = (z: typeof import('zod').z) =>
     .default(true)
     .optional();
 
-const hasIssues = (z: typeof import('zod').z) =>
+const hasIssues = (z: typeof zod) =>
   z
     .boolean({
       description:
@@ -238,21 +239,21 @@ const hasIssues = (z: typeof import('zod').z) =>
     .default(true)
     .optional();
 
-const token = (z: typeof import('zod').z) =>
+const token = (z: typeof zod) =>
   z
     .string({
       description: 'The token to use for authorization to GitHub',
     })
     .optional();
 
-const topics = (z: typeof import('zod').z) =>
+const topics = (z: typeof zod) =>
   z
     .array(z.string(), {
       description: 'Adds topics to the repository',
     })
     .optional();
 
-const defaultBranch = (z: typeof import('zod').z) =>
+const defaultBranch = (z: typeof zod) =>
   z
     .string({
       description: `Sets the default branch on the repository. The default value is 'master'`,
@@ -260,7 +261,7 @@ const defaultBranch = (z: typeof import('zod').z) =>
     .default('master')
     .optional();
 
-const protectDefaultBranch = (z: typeof import('zod').z) =>
+const protectDefaultBranch = (z: typeof zod) =>
   z
     .boolean({
       description:
@@ -269,7 +270,7 @@ const protectDefaultBranch = (z: typeof import('zod').z) =>
     .default(true)
     .optional();
 
-const protectEnforceAdmins = (z: typeof import('zod').z) =>
+const protectEnforceAdmins = (z: typeof zod) =>
   z
     .boolean({
       description:
@@ -278,7 +279,7 @@ const protectEnforceAdmins = (z: typeof import('zod').z) =>
     .default(true)
     .optional();
 
-const bypassPullRequestAllowances = (z: typeof import('zod').z) =>
+const bypassPullRequestAllowances = (z: typeof zod) =>
   z
     .object(
       {
@@ -293,7 +294,7 @@ const bypassPullRequestAllowances = (z: typeof import('zod').z) =>
     )
     .optional();
 
-const gitCommitMessage = (z: typeof import('zod').z) =>
+const gitCommitMessage = (z: typeof zod) =>
   z
     .string({
       description:
@@ -302,7 +303,7 @@ const gitCommitMessage = (z: typeof import('zod').z) =>
     .default('initial commit')
     .optional();
 
-const sourcePath = (z: typeof import('zod').z) =>
+const sourcePath = (z: typeof zod) =>
   z
     .string({
       description:
@@ -310,7 +311,7 @@ const sourcePath = (z: typeof import('zod').z) =>
     })
     .optional();
 
-const requiredApprovingReviewCount = (z: typeof import('zod').z) =>
+const requiredApprovingReviewCount = (z: typeof zod) =>
   z
     .number({
       description:
@@ -318,7 +319,7 @@ const requiredApprovingReviewCount = (z: typeof import('zod').z) =>
     })
     .optional();
 
-const restrictions = (z: typeof import('zod').z) =>
+const restrictions = (z: typeof zod) =>
   z
     .object(
       {
@@ -333,35 +334,35 @@ const restrictions = (z: typeof import('zod').z) =>
     )
     .optional();
 
-const requiredCommitSigning = (z: typeof import('zod').z) =>
+const requiredCommitSigning = (z: typeof zod) =>
   z
     .boolean({
       description: `Require commit signing so that you must sign commits on this branch.`,
     })
     .optional();
 
-const requiredLinearHistory = (z: typeof import('zod').z) =>
+const requiredLinearHistory = (z: typeof zod) =>
   z
     .boolean({
       description: `Prevent merge commits from being pushed to matching branches.`,
     })
     .optional();
 
-const repoVariables = (z: typeof import('zod').z) =>
+const repoVariables = (z: typeof zod) =>
   z
     .record(z.string(), {
       description: 'Variables attached to the repository',
     })
     .optional();
 
-const secrets = (z: typeof import('zod').z) =>
+const secrets = (z: typeof zod) =>
   z
     .record(z.string(), {
       description: 'Secrets attached to the repository',
     })
     .optional();
 
-const oidcCustomization = (z: typeof import('zod').z) =>
+const oidcCustomization = (z: typeof zod) =>
   z
     .object(
       {
@@ -382,7 +383,7 @@ const oidcCustomization = (z: typeof import('zod').z) =>
     )
     .optional();
 
-const customProperties = (z: typeof import('zod').z) =>
+const customProperties = (z: typeof zod) =>
   z
     .record(z.string(), {
       description:
@@ -390,14 +391,14 @@ const customProperties = (z: typeof import('zod').z) =>
     })
     .optional();
 
-const subscribe = (z: typeof import('zod').z) =>
+const subscribe = (z: typeof zod) =>
   z
     .boolean({
       description: `Subscribe to the repository. The default value is 'false'`,
     })
     .optional();
 
-const branch = (z: typeof import('zod').z) =>
+const branch = (z: typeof zod) =>
   z
     .string({
       description: `The branch to protect. Defaults to the repository's default branch`,

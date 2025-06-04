@@ -7619,6 +7619,7 @@ __metadata:
     octokit: "npm:^3.0.0"
     octokit-plugin-create-pull-request: "npm:^5.0.0"
     yaml: "npm:^2.0.0"
+    zod: "npm:^3.22.4"
   languageName: unknown
   linkType: soft
 

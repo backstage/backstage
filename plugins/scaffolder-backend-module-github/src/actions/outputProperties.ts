@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-const remoteUrl = (z: typeof import('zod').z) =>
+import { z as zod } from 'zod';
+
+const remoteUrl = (z: typeof zod) =>
   z.string({
     description: 'A URL to the repository with the provider',
   });
 
-const repoContentsUrl = (z: typeof import('zod').z) =>
+const repoContentsUrl = (z: typeof zod) =>
   z.string({
     description: 'A URL to the root of the repository',
   });
 
-const commitHash = (z: typeof import('zod').z) =>
+const commitHash = (z: typeof zod) =>
   z.string({
     description: 'The git commit hash of the initial commit',
   });
