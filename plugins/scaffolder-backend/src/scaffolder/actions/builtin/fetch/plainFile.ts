@@ -63,8 +63,9 @@ export function createFetchPlainFileAction(options: {
     },
     supportsDryRun: true,
     async handler(ctx) {
-      ctx.logger.info('Fetching plain file content from remote URL');
+      ctx.logger.info('Fetching plain content from remote URL');
 
+      // Finally move the template result into the task workspace
       const outputPath = resolveSafeChildPath(
         ctx.workspacePath,
         ctx.input.targetPath,
