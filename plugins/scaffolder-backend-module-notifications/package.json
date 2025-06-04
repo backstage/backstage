@@ -37,7 +37,6 @@
     "@backstage/plugin-notifications-common": "workspace:^",
     "@backstage/plugin-notifications-node": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "octokit": "^3.0.0",
     "yaml": "^2.0.0"
   },
   "devDependencies": {

@@ -7653,7 +7653,6 @@ __metadata:
     "@backstage/plugin-notifications-node": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
-    octokit: "npm:^3.0.0"
     yaml: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
