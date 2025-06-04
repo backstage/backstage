@@ -31,7 +31,6 @@ export class ExpiryMap<K, V> extends Map<K, V> {
   }
 
   get(key: K) {
-    this.prune();
     if (!this.has(key)) {
       return undefined;
     }

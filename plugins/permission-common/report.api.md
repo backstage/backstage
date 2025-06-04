@@ -187,9 +187,6 @@ export class PermissionClient implements PermissionEvaluator {
 export type PermissionClientOptions = {
   discovery: DiscoveryApi;
   config: Config;
-  loaderCacheTtl?: number;
-  cacheTtl?: number;
-  batchDelay?: number;
 };
 
 // @public
