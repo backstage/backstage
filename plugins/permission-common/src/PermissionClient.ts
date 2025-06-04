@@ -120,7 +120,7 @@ const responseSchema = <T>(
  */
 export type PermissionClientRequestOptions = {
   token?: string;
-  identifier?: string;
+  identityKey?: string;
 };
 
 /**
@@ -332,10 +332,11 @@ export class PermissionClient implements PermissionEvaluator {
   }
 
   private getAuthorizeLoader(options?: PermissionClientRequestOptions) {
-    const key = options?.identifier ?? btoa(JSON.stringify(options));
-    const loader = this.authorizeLoaderMap.get(key);
-    if (loader) {
-      return loader;
+    if (options?.identityKey) {
+      const loader = this.authorizeLoaderMap.get(options.identityKey);
+      if (loader) {
+        return loader;
+      }
     }
 
     const newLoader = new DataLoader<
@@ -358,22 +359,26 @@ export class PermissionClient implements PermissionEvaluator {
         cacheMap: new ExpiryMap(this.cacheTtl),
         maxBatchSize: MAX_BATCH_SIZE,
         batchScheduleFn: cb => setTimeout(cb, this.batchDelay),
-        cacheKeyFn: req => {
+        cacheKeyFn: (req: AuthorizePermissionRequest) => {
           return btoa(JSON.stringify(req));
         },
       },
     );
-    this.authorizeLoaderMap.set(key, newLoader);
+
+    if (options?.identityKey) {
+      this.authorizeLoaderMap.set(options.identityKey, newLoader);
+    }
     return newLoader;
   }
 
   private getAuthorizeConditionalLoader(
     options?: PermissionClientRequestOptions,
   ) {
-    const key = options?.identifier ?? btoa(JSON.stringify(options));
-    const loader = this.authorizeConditionalLoaderMap.get(key);
-    if (loader) {
-      return loader;
+    if (options?.identityKey) {
+      const loader = this.authorizeLoaderMap.get(options.identityKey);
+      if (loader) {
+        return loader;
+      }
     }
 
     const newLoader = new DataLoader<
@@ -393,12 +398,15 @@ export class PermissionClient implements PermissionEvaluator {
         cacheMap: new ExpiryMap(this.cacheTtl),
         maxBatchSize: MAX_BATCH_SIZE,
         batchScheduleFn: cb => setTimeout(cb, this.batchDelay),
-        cacheKeyFn: req => {
+        cacheKeyFn: (req: QueryPermissionRequest) => {
           return btoa(JSON.stringify(req));
         },
       },
     );
-    this.authorizeConditionalLoaderMap.set(key, newLoader);
+
+    if (options?.identityKey) {
+      this.authorizeConditionalLoaderMap.set(options.identityKey, newLoader);
+    }
     return newLoader;
   }
 
