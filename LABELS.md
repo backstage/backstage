@@ -26,6 +26,7 @@ These labels indicate what is needed to move an issue forward before it can be a
 
 - `needs:bep` - The issue is an advanced addition that needs a [Backstage Enhancement Proposal](./beps/README.md).
 - `needs:direction` - The issue needs direction from the owners of the area.
+- `needs:discussion` - The way forward for this issue is unclear and it needs further discussion with the author and other participants.
 - `needs:more-info` - The issue needs more information from the author.
 - `needs:motivation` - It is not clear why this change is needed. The author should provide motivation for the change, for instance by giving examples of concrete use cases or scenarios.
 - `needs:repro` - The issue cannot be reproduced by the owners of the area. The author should provide more information to help them reproduce the issue, if possible with a minimal reproduction repository.

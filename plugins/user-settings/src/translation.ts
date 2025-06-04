@@ -119,5 +119,11 @@ export const userSettingsTranslationRef = createTranslationRef({
       title: 'Settings',
     },
     sidebarTitle: 'Settings',
+    profileCard: {
+      title: 'Profile',
+    },
+    appearanceCard: {
+      title: 'Appearance',
+    },
   },
 });

@@ -1,5 +1,44 @@
 # example-backend
 
+## 0.0.39-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-notifications@0.1.11-next.1
+  - @backstage/plugin-notifications-backend@0.5.7-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.4.3-next.1
+  - @backstage/plugin-scaffolder-backend@2.0.0-next.1
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/plugin-catalog-backend@2.0.1-next.1
+  - @backstage/plugin-kubernetes-backend@0.19.7-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.2-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.3.5-next.1
+  - @backstage/plugin-techdocs-backend@2.0.3-next.1
+  - @backstage/backend-defaults@0.10.1-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-app-backend@0.5.3-next.1
+  - @backstage/plugin-auth-backend@0.25.1-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.3.4-next.1
+  - @backstage/plugin-auth-backend-module-guest-provider@0.2.9-next.1
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.5.3-next.1
+  - @backstage/plugin-catalog-backend-module-openapi@0.2.11-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.9-next.1
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.6.1-next.1
+  - @backstage/plugin-devtools-backend@0.5.6-next.1
+  - @backstage/plugin-events-backend@0.5.3-next.1
+  - @backstage/plugin-events-backend-module-google-pubsub@0.1.1-next.1
+  - @backstage/plugin-permission-backend@0.7.1-next.1
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.2.9-next.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1-next.1
+  - @backstage/plugin-proxy-backend@0.6.3-next.1
+  - @backstage/plugin-search-backend@2.0.3-next.1
+  - @backstage/plugin-search-backend-module-explore@0.3.3-next.1
+  - @backstage/plugin-search-backend-node@1.3.12-next.1
+  - @backstage/plugin-signals-backend@0.3.5-next.1
+
 ## 0.0.39-next.0
 
 ### Patch Changes

@@ -30,12 +30,12 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 
 type GithubPullRequestActionInput = ReturnType<
   typeof createPublishGithubPullRequestAction
-> extends TemplateAction<infer U>
+> extends TemplateAction<infer U, any, any>
   ? U
   : never;
 
 describe('createPublishGithubPullRequestAction', () => {
-  let instance: TemplateAction<GithubPullRequestActionInput>;
+  let instance: TemplateAction<GithubPullRequestActionInput, any, any>;
   let fakeClient: {
     createPullRequest: jest.Mock;
     rest: {

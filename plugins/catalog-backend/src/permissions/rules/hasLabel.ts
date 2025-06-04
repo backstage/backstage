@@ -29,10 +29,18 @@ export const hasLabel = createPermissionRule({
   resourceRef: catalogEntityPermissionResourceRef,
   paramsSchema: z.object({
     label: z.string().describe('Name of the label to match on'),
+    value: z.string().optional().describe('Value of the label to match on'),
   }),
-  apply: (resource, { label }) =>
-    !!resource.metadata.labels?.hasOwnProperty(label),
-  toQuery: ({ label }) => ({
-    key: `metadata.labels.${label}`,
-  }),
+  apply: (resource, { label, value }) =>
+    !!resource.metadata.labels?.hasOwnProperty(label) &&
+    (value === undefined ? true : resource.metadata.labels?.[label] === value),
+  toQuery: ({ label, value }) =>
+    value === undefined
+      ? {
+          key: `metadata.labels.${label}`,
+        }
+      : {
+          key: `metadata.labels.${label}`,
+          values: [value],
+        },
 });

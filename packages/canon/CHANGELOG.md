@@ -1,5 +1,12 @@
 # @backstage/canon
 
+## 0.5.0-next.1
+
+### Minor Changes
+
+- 621fac9: We are updating the default size of the Button component in Canon to be small instead of medium.
+- a842554: We set the default size for IconButton in Canon to be small instead of medium.
+
 ## 0.5.0-next.0
 
 ### Minor Changes
