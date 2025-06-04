@@ -53,7 +53,6 @@ import {
   createTemplateGlobalFunction,
   createTemplateGlobalValue,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { EventsService } from '@backstage/plugin-events-node';
 import { DatabaseService } from '@backstage/backend-plugin-api';
@@ -95,11 +94,6 @@ function createDatabase(): DatabaseService {
     }),
   ).forPlugin('scaffolder');
 }
-
-const mockUrlReader = UrlReaders.default({
-  logger: mockServices.logger.mock(),
-  config: new ConfigReader({}),
-});
 
 const config = new ConfigReader({});
 
@@ -188,7 +182,7 @@ describe.each([
     let app: express.Express;
     let loggerSpy: jest.SpyInstance;
     let taskBroker: TaskBroker;
-    const catalogClient = catalogServiceMock.mock();
+    const catalogService = catalogServiceMock.mock();
     const permissionApi = {
       authorize: jest.fn(),
       authorizeConditional: jest.fn(),
@@ -303,8 +297,7 @@ describe.each([
           logger: logger,
           config: new ConfigReader({}),
           database: createDatabase(),
-          catalogClient,
-          reader: mockUrlReader,
+          catalogService,
           taskBroker,
           permissions: permissionApi,
           auth,
@@ -315,7 +308,7 @@ describe.each([
         });
         app = express().use(router);
 
-        catalogClient.getEntityByRef.mockImplementation(async ref => {
+        catalogService.getEntityByRef.mockImplementation(async ref => {
           const { kind } = parseEntityRef(ref);
 
           if (kind.toLocaleLowerCase() === 'template') {
@@ -851,9 +844,9 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               directoryContents: [],
             });
 
-          expect(catalogClient.getEntityByRef).toHaveBeenCalledTimes(1);
+          expect(catalogService.getEntityByRef).toHaveBeenCalledTimes(1);
 
-          expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(
+          expect(catalogService.getEntityByRef).toHaveBeenCalledWith(
             'user:default/mock',
             expect.anything(),
           );
@@ -879,8 +872,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           logger: logger,
           config: new ConfigReader({}),
           database: createDatabase(),
-          catalogClient,
-          reader: mockUrlReader,
+          catalogService,
           taskBroker,
           permissions: permissionApi,
           auth,
@@ -888,7 +880,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         });
         app = express().use(router);
 
-        catalogClient.getEntityByRef.mockImplementation(async ref => {
+        catalogService.getEntityByRef.mockImplementation(async ref => {
           const { kind } = parseEntityRef(ref);
 
           if (kind.toLocaleLowerCase() === 'template') {
@@ -1649,8 +1641,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             logger: loggerToWinstonLogger(mockServices.logger.mock()),
             config: new ConfigReader({}),
             database: createDatabase(),
-            catalogClient,
-            reader: mockUrlReader,
+            catalogService,
             taskBroker,
             permissions: permissionApi,
             auth,

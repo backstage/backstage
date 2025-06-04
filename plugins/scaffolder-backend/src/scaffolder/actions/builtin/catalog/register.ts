@@ -16,11 +16,10 @@
 
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { CatalogApi } from '@backstage/catalog-client';
 import { stringifyEntityRef, Entity } from '@backstage/catalog-model';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { examples } from './register.examples';
-import { AuthService } from '@backstage/backend-plugin-api';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 
 const id = 'catalog:register';
 
@@ -29,11 +28,10 @@ const id = 'catalog:register';
  * @public
  */
 export function createCatalogRegisterAction(options: {
-  catalogClient: CatalogApi;
+  catalogService: CatalogService;
   integrations: ScmIntegrations;
-  auth?: AuthService;
 }) {
-  const { catalogClient, integrations, auth } = options;
+  const { catalogService, integrations } = options;
 
   return createTemplateAction({
     id,
@@ -99,19 +97,14 @@ export function createCatalogRegisterAction(options: {
 
       ctx.logger.info(`Registering ${catalogInfoUrl} in the catalog`);
 
-      const { token } = (await auth?.getPluginRequestToken({
-        onBehalfOf: await ctx.getInitiatorCredentials(),
-        targetPluginId: 'catalog',
-      })) ?? { token: ctx.secrets?.backstageToken };
-
       try {
         // 1st try to register the location, this will throw an error if the location already exists (see catch)
-        await catalogClient.addLocation(
+        await catalogService.addLocation(
           {
             type: 'url',
             target: catalogInfoUrl,
           },
-          token ? { token } : {},
+          { credentials: await ctx.getInitiatorCredentials() },
         );
       } catch (e) {
         if (!input.optional) {
@@ -122,13 +115,13 @@ export function createCatalogRegisterAction(options: {
 
       try {
         // 2nd retry the registration as a dry run, this will not throw an error if the location already exists
-        const result = await catalogClient.addLocation(
+        const result = await catalogService.addLocation(
           {
             dryRun: true,
             type: 'url',
             target: catalogInfoUrl,
           },
-          token ? { token } : {},
+          { credentials: await ctx.getInitiatorCredentials() },
         );
 
         if (result.entities.length) {

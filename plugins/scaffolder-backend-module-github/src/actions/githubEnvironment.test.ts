@@ -19,10 +19,10 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { CatalogApi } from '@backstage/catalog-client';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials } from '@backstage/backend-test-utils';
 
 import { Octokit } from 'octokit';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 const octokitMock = Octokit as unknown as jest.Mock;
 
@@ -47,16 +47,8 @@ const mockOctokit = {
   },
 };
 
-const mockCatalogClient: Partial<CatalogApi> = {
-  getEntitiesByRefs: jest.fn(),
-};
-
 jest.mock('octokit', () => ({
   Octokit: jest.fn(),
-}));
-
-jest.mock('@backstage/catalog-client', () => ({
-  CatalogClient: mockCatalogClient,
 }));
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
@@ -72,13 +64,9 @@ describe('github:environment:create', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
+  const mockCatalogService = catalogServiceMock.mock();
 
   const credentials = mockCredentials.user();
-
-  const token = mockCredentials.service.token({
-    onBehalfOf: credentials,
-    targetPluginId: 'catalog',
-  });
 
   let action: TemplateAction<any, any, any>;
 
@@ -87,7 +75,6 @@ describe('github:environment:create', () => {
       repoUrl: 'github.com?repo=repository&owner=owner',
       name: 'envname',
     },
-    secrets: { backstageToken: token },
   });
 
   beforeEach(() => {
@@ -114,15 +101,18 @@ describe('github:environment:create', () => {
         id: 2,
       },
     });
-    (mockCatalogClient.getEntitiesByRefs as jest.Mock).mockResolvedValue({
+
+    mockCatalogService.getEntitiesByRefs.mockResolvedValue({
       items: [
         {
+          apiVersion: '1',
           kind: 'User',
           metadata: {
             name: 'johndoe',
           },
         },
         {
+          apiVersion: '1',
           kind: 'Group',
           metadata: {
             name: 'team-a',
@@ -133,8 +123,7 @@ describe('github:environment:create', () => {
 
     action = createGithubEnvironmentAction({
       integrations,
-      catalogClient: mockCatalogClient as CatalogApi,
-      auth: mockServices.auth(),
+      catalogService: mockCatalogService,
     });
   });
 
@@ -496,11 +485,11 @@ describe('github:environment:create', () => {
       },
     });
 
-    expect(mockCatalogClient.getEntitiesByRefs).toHaveBeenCalledWith(
+    expect(mockCatalogService.getEntitiesByRefs).toHaveBeenCalledWith(
       {
         entityRefs: ['group:default/team-a', 'user:default/johndoe'],
       },
-      { token },
+      { credentials },
     );
 
     expect(

@@ -19,7 +19,7 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { TaskBroker, TemplateAction } from '@backstage/plugin-scaffolder-node';
 import {
@@ -137,7 +137,7 @@ export const scaffolderPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         httpAuth: coreServices.httpAuth,
         auditor: coreServices.auditor,
-        catalogClient: catalogServiceRef,
+        catalogService: catalogServiceRef,
         events: eventsServiceRef,
       },
       async init({
@@ -149,7 +149,7 @@ export const scaffolderPlugin = createBackendPlugin({
         auth,
         httpRouter,
         httpAuth,
-        catalogClient,
+        catalogService,
         permissions,
         events,
         auditor,
@@ -191,8 +191,8 @@ export const scaffolderPlugin = createBackendPlugin({
           createDebugLogAction(),
           createWaitAction(),
           // todo(blam): maybe these should be a -catalog module?
-          createCatalogRegisterAction({ catalogClient, integrations, auth }),
-          createFetchCatalogEntityAction({ catalogClient, auth }),
+          createCatalogRegisterAction({ catalogService, integrations }),
+          createFetchCatalogEntityAction({ catalogService }),
           createCatalogWriteAction(),
           createFilesystemDeleteAction(),
           createFilesystemRenameAction(),
@@ -206,11 +206,10 @@ export const scaffolderPlugin = createBackendPlugin({
         );
 
         const router = await createRouter({
-          logger: log,
+          logger,
           config,
           database,
-          catalogClient,
-          reader,
+          catalogService,
           lifecycle,
           actions,
           taskBroker,
