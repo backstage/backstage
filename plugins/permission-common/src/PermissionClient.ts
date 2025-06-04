@@ -131,9 +131,6 @@ export type PermissionClientRequestOptions = {
 export type PermissionClientOptions = {
   discovery: DiscoveryApi;
   config: Config;
-  loaderCacheTtl?: number;
-  cacheTtl?: number;
-  batchDelay?: number;
 };
 
 const MAX_BATCH_SIZE = 50;
@@ -150,13 +147,14 @@ export class PermissionClient implements PermissionEvaluator {
   private readonly discovery: DiscoveryApi;
   private readonly enableBatchedRequests: boolean;
   private readonly enableDataloaderRequests: boolean;
-  private readonly cacheTtl: number;
-  private readonly batchDelay: number;
-  private readonly authorizeLoaderMap: ExpiryMap<
+  private loaderCacheTtl = DEFAULT_LOADER_CACHE_TTL;
+  private cacheTtl = DEFAULT_CACHE_TTL;
+  private batchDelay = DEFAULT_BATCH_DELAY;
+  private authorizeLoaderMap: ExpiryMap<
     string,
     DataLoader<AuthorizePermissionRequest, AuthorizePermissionResponse>
   >;
-  private readonly authorizeConditionalLoaderMap: ExpiryMap<
+  private authorizeConditionalLoaderMap: ExpiryMap<
     string,
     DataLoader<QueryPermissionRequest, QueryPermissionResponse>
   >;
@@ -176,12 +174,8 @@ export class PermissionClient implements PermissionEvaluator {
         'permission.EXPERIMENTAL_enableDataloaderRequests',
       ) ?? false;
 
-    this.cacheTtl = options?.cacheTtl ?? DEFAULT_CACHE_TTL;
-    this.batchDelay = options?.batchDelay ?? DEFAULT_BATCH_DELAY;
-
-    const loaderCacheTtl = options?.loaderCacheTtl ?? DEFAULT_LOADER_CACHE_TTL;
-    this.authorizeLoaderMap = new ExpiryMap(loaderCacheTtl);
-    this.authorizeConditionalLoaderMap = new ExpiryMap(loaderCacheTtl);
+    this.authorizeLoaderMap = new ExpiryMap(this.loaderCacheTtl);
+    this.authorizeConditionalLoaderMap = new ExpiryMap(this.loaderCacheTtl);
   }
 
   /**
@@ -406,6 +400,20 @@ export class PermissionClient implements PermissionEvaluator {
     );
     this.authorizeConditionalLoaderMap.set(key, newLoader);
     return newLoader;
+  }
+
+  /** @internal */
+  protected setDataLoaderParamsForTests(options: {
+    loaderCacheTtl?: number;
+    cacheTtl?: number;
+    batchDelay?: number;
+  }) {
+    const { loaderCacheTtl, cacheTtl, batchDelay } = options;
+    this.cacheTtl = cacheTtl ?? DEFAULT_CACHE_TTL;
+    this.batchDelay = batchDelay ?? DEFAULT_BATCH_DELAY;
+    this.loaderCacheTtl = loaderCacheTtl ?? DEFAULT_LOADER_CACHE_TTL;
+    this.authorizeLoaderMap = new ExpiryMap(this.loaderCacheTtl);
+    this.authorizeConditionalLoaderMap = new ExpiryMap(this.loaderCacheTtl);
   }
 }
 
