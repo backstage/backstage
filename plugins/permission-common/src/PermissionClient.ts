@@ -42,6 +42,8 @@ import { isResourcePermission } from './permissions';
 import DataLoader from 'dataloader';
 import { durationToMilliseconds } from '@backstage/types';
 import { ExpiryMap } from './utils.ts';
+import { PermissionIdentity } from './types';
+import { permissionIdentityToString } from './types/identity.ts';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -120,7 +122,7 @@ const responseSchema = <T>(
  */
 export type PermissionClientRequestOptions = {
   token?: string;
-  identifier?: string;
+  permissionIdentity?: PermissionIdentity;
 };
 
 /**
@@ -332,7 +334,7 @@ export class PermissionClient implements PermissionEvaluator {
   }
 
   private getAuthorizeLoader(options?: PermissionClientRequestOptions) {
-    const key = options?.identifier ?? btoa(JSON.stringify(options));
+    const key = permissionIdentityToString(options?.permissionIdentity);
     const loader = this.authorizeLoaderMap.get(key);
     if (loader) {
       return loader;
@@ -358,7 +360,7 @@ export class PermissionClient implements PermissionEvaluator {
         cacheMap: new ExpiryMap(this.cacheTtl),
         maxBatchSize: MAX_BATCH_SIZE,
         batchScheduleFn: cb => setTimeout(cb, this.batchDelay),
-        cacheKeyFn: req => {
+        cacheKeyFn: (req: AuthorizePermissionRequest) => {
           return btoa(JSON.stringify(req));
         },
       },
@@ -370,7 +372,7 @@ export class PermissionClient implements PermissionEvaluator {
   private getAuthorizeConditionalLoader(
     options?: PermissionClientRequestOptions,
   ) {
-    const key = options?.identifier ?? btoa(JSON.stringify(options));
+    const key = permissionIdentityToString(options?.permissionIdentity);
     const loader = this.authorizeConditionalLoaderMap.get(key);
     if (loader) {
       return loader;
@@ -393,7 +395,7 @@ export class PermissionClient implements PermissionEvaluator {
         cacheMap: new ExpiryMap(this.cacheTtl),
         maxBatchSize: MAX_BATCH_SIZE,
         batchScheduleFn: cb => setTimeout(cb, this.batchDelay),
-        cacheKeyFn: req => {
+        cacheKeyFn: (req: QueryPermissionRequest) => {
           return btoa(JSON.stringify(req));
         },
       },

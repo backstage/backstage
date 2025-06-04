@@ -192,7 +192,7 @@ export type PermissionClientOptions = {
 // @public
 export type PermissionClientRequestOptions = {
   token?: string;
-  identifier?: string;
+  permissionIdentity?: PermissionIdentity;
 };
 
 // @public
@@ -227,6 +227,23 @@ export interface PermissionEvaluator {
     },
   ): Promise<QueryPermissionResponse[]>;
 }
+
+// @public
+export type PermissionIdentity =
+  | {
+      type: 'user';
+      userEntityRef: string;
+    }
+  | {
+      type: 'service';
+      subject: string;
+    }
+  | {
+      type: 'none';
+    }
+  | {
+      type: 'unknown';
+    };
 
 // @public
 export type PermissionMessageBatch<T> = {
