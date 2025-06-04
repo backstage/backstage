@@ -24,6 +24,7 @@ import { Knex } from 'knex';
 import waitFor from 'wait-for-expect';
 import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
 import { getHistoryConfig } from '../../config';
+import { sleep } from '../../helpers';
 import { applyDatabaseMigrations } from '../migrations';
 import { PollingChangeEngine } from './PollingChangeEngine';
 
@@ -73,7 +74,7 @@ describe('PollingChangeEngine', () => {
       listener.waitForUpdate().then(() => {
         resolved = true;
       });
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await sleep({ milliseconds: 100 });
       expect(resolved).toBe(false);
 
       // Adding a new event eventually triggers the change
@@ -87,7 +88,7 @@ describe('PollingChangeEngine', () => {
       listener.waitForUpdate().then(() => {
         resolved = true;
       });
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await sleep({ milliseconds: 100 });
       expect(resolved).toBe(false);
       await touch(knex);
       await waitFor(() => {
@@ -96,9 +97,9 @@ describe('PollingChangeEngine', () => {
 
       // If we make changes in between calls to waitForUpdate, we should still get an "immediate" signal - but just a single one
       await touch(knex);
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await sleep({ milliseconds: 100 });
       await touch(knex);
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await sleep({ milliseconds: 100 });
       resolved = false;
       listener.waitForUpdate().then(() => {
         resolved = true;
@@ -117,11 +118,11 @@ describe('PollingChangeEngine', () => {
           rejected = true;
         },
       );
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await sleep({ milliseconds: 100 });
       expect(resolved).toBe(false);
 
       controller.abort();
-      await new Promise(resolve => setTimeout(resolve, 1));
+      await sleep({ milliseconds: 1 });
       expect(rejected).toBe(true);
 
       await store.shutdown();

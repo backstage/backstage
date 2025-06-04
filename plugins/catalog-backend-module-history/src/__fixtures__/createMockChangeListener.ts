@@ -16,6 +16,7 @@
 
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { ChangeListener } from '../database/changeListener/types';
+import { sleep } from '../helpers';
 
 export function createMockChangeListener(options?: {
   timeout?: HumanDuration;
@@ -35,7 +36,7 @@ export function createMockChangeListener(options?: {
             if (deadline && Date.now() > deadline) {
               return 'timeout';
             }
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await sleep({ milliseconds: 100 });
           }
           return 'aborted';
         },

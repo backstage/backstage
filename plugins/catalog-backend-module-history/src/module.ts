@@ -81,6 +81,7 @@ export const catalogModuleHistory = createBackendModule({
         await HistoryEventEmitter.create({
           knexPromise,
           lifecycle,
+          logger,
           events,
           historyConfig,
         });

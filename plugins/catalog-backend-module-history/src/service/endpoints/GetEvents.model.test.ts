@@ -27,6 +27,7 @@ import waitFor from 'wait-for-expect';
 import { createMockChangeListener } from '../../__fixtures__/createMockChangeListener';
 import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
 import { applyDatabaseMigrations } from '../../database/migrations';
+import { sleep } from '../../helpers';
 import { GetEventsModelImpl } from './GetEvents.model';
 
 jest.setTimeout(60_000);
@@ -304,7 +305,7 @@ describe('GetEventsModelImpl', () => {
 
         // TODO(freben): Use fake timers to speed this up. But it did not play
         // well with the way that these promises work, so left that for later
-        await new Promise(r => setTimeout(r, 100));
+        await sleep({ milliseconds: 100 });
         expect(resolution).toBe('');
 
         await setEntity(knex, 'foo', 1);

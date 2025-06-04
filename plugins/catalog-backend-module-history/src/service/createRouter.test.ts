@@ -30,6 +30,7 @@ import { createMockChangeListener } from '../__fixtures__/createMockChangeListen
 import { createMockEntityProvider } from '../__fixtures__/createMockEntityProvider';
 import { getHistoryConfig } from '../config';
 import { initializeDatabaseAfterCatalog } from '../database/migrations';
+import { sleep } from '../helpers';
 import { createRouter } from './createRouter';
 import { parseCursor } from './endpoints/GetEvents.utils';
 
@@ -121,7 +122,7 @@ describe('createRouter', () => {
         .then(r => r);
 
       // Eventually add an entity
-      await new Promise(r => setTimeout(r, 200));
+      await sleep({ milliseconds: 200 });
       provider.addEntity({
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -192,7 +193,7 @@ describe('createRouter', () => {
         .query({ cursor: response.body.pageInfo.cursor });
 
       // Eventually modify the previously addded entity
-      await new Promise(r => setTimeout(r, 200));
+      await sleep({ milliseconds: 200 });
       provider.addEntity({
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -357,7 +358,7 @@ describe('createRouter', () => {
         .then(r => r);
 
       // Soon after, remove the entity
-      await new Promise(r => setTimeout(r, 2000));
+      await sleep({ milliseconds: 2000 });
       provider.removeEntity('component:default/foo');
 
       // Shortly after removing the entity, the blocking request should resolve

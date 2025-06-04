@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LifecycleService } from '@backstage/backend-plugin-api';
+import { LifecycleService, LoggerService } from '@backstage/backend-plugin-api';
 import { EventsService } from '@backstage/plugin-events-node';
 import { Knex } from 'knex';
 import { HistoryConfig } from '../config';
@@ -22,7 +22,7 @@ import { ackHistorySubscription } from '../database/operations/ackHistorySubscri
 import { readHistorySubscription } from '../database/operations/readHistorySubscription';
 import { upsertHistorySubscription } from '../database/operations/upsertHistorySubscription';
 import { sleep } from '../helpers';
-import { CATALOG_HISTORY_EVENT_TOPIC, toEventPayload } from './types';
+import { CATALOG_HISTORY_EVENT_TOPIC, toBackstageEventPayload } from './types';
 
 const SUBSCRIPTION_ID = 'backstage-catalog-history-events-emitter';
 
@@ -33,18 +33,21 @@ const SUBSCRIPTION_ID = 'backstage-catalog-history-events-emitter';
 export class HistoryEventEmitter {
   readonly #knexPromise: Promise<Knex>;
   readonly #lifecycle: LifecycleService;
+  readonly #logger: LoggerService;
   readonly #events: EventsService;
   readonly #historyConfig: HistoryConfig;
 
   public static async create(options: {
     knexPromise: Promise<Knex>;
     lifecycle: LifecycleService;
+    logger: LoggerService;
     events: EventsService;
     historyConfig: HistoryConfig;
   }): Promise<HistoryEventEmitter> {
     const emitter = new HistoryEventEmitter(
       options.knexPromise,
       options.lifecycle,
+      options.logger,
       options.events,
       options.historyConfig,
     );
@@ -57,11 +60,13 @@ export class HistoryEventEmitter {
   constructor(
     knexPromise: Promise<Knex>,
     lifecycle: LifecycleService,
+    logger: LoggerService,
     events: EventsService,
     historyConfig: HistoryConfig,
   ) {
     this.#knexPromise = knexPromise;
     this.#lifecycle = lifecycle;
+    this.#logger = logger;
     this.#events = events;
     this.#historyConfig = historyConfig;
   }
@@ -77,31 +82,41 @@ export class HistoryEventEmitter {
 
     const subscription = await upsertHistorySubscription(knex, {
       subscriptionId: SUBSCRIPTION_ID,
-      _from: 'beginning',
+      _from: 'now',
     });
 
     while (!signal.aborted) {
-      const data = await readHistorySubscription(knex, {
-        subscriptionId: subscription.subscriptionId,
-        operation: 'read',
-        limit: 100,
-        historyConfig: this.#historyConfig,
-      });
+      let sent = false;
 
-      if (data) {
-        for (const event of data.events) {
-          await this.#events.publish({
-            topic: CATALOG_HISTORY_EVENT_TOPIC,
-            eventPayload: toEventPayload(event),
-            metadata: { eventType: event.eventType },
-          });
-        }
-
-        await ackHistorySubscription(knex, {
+      try {
+        const data = await readHistorySubscription(knex, {
           subscriptionId: subscription.subscriptionId,
-          ackId: data.ackId,
+          operation: 'read',
+          limit: 100,
+          historyConfig: this.#historyConfig,
         });
-      } else {
+
+        if (data) {
+          for (const event of data.events) {
+            await this.#events.publish({
+              topic: CATALOG_HISTORY_EVENT_TOPIC,
+              eventPayload: toBackstageEventPayload(event),
+              metadata: { eventType: event.eventType },
+            });
+          }
+
+          await ackHistorySubscription(knex, {
+            subscriptionId: subscription.subscriptionId,
+            ackId: data.ackId,
+          });
+
+          sent = true;
+        }
+      } catch (error) {
+        this.#logger.error('Error pushing catalog history events', error);
+      }
+
+      if (!sent) {
         await sleep(this.#historyConfig.blockPollFrequency, signal);
       }
     }

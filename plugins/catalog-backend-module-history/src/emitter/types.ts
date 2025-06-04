@@ -48,7 +48,7 @@ export interface CatalogHistoryEventPayload {
   locationRef?: string;
 }
 
-export function toEventPayload(
+export function toBackstageEventPayload(
   event: CatalogEvent,
 ): CatalogHistoryEventPayload {
   return {

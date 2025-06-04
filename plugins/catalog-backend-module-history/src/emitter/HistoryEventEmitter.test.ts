@@ -29,11 +29,13 @@ import { applyDatabaseMigrations } from '../database/migrations';
 import { EventsTableRow } from '../database/tables';
 import { HistoryEventEmitter } from './HistoryEventEmitter';
 import waitFor from 'wait-for-expect';
+import { sleep } from '../helpers';
 
 jest.setTimeout(60_000);
 
 describe('HistoryEventEmitter', () => {
   const databases = TestDatabases.create();
+  const logger = mockServices.logger.mock();
 
   // Helper to ensure the catalog is started and our migrations are applied
   async function init(databaseId: TestDatabaseId): Promise<{
@@ -62,18 +64,10 @@ describe('HistoryEventEmitter', () => {
       const lifecycle = mockServices.lifecycle.mock();
       const events = mockServices.events.mock();
 
-      await knex<EventsTableRow>('module_history__events').insert({
-        event_type: 'entity_created',
-        entity_ref: 'component:default/foo',
-        entity_id: 'foo',
-        entity_json: JSON.stringify({ kind: 'Component' }),
-        location_id: 'bar',
-        location_ref: 'url:http://mockEntityProvider.com',
-      });
-
       HistoryEventEmitter.create({
         knexPromise: Promise.resolve(knex),
         lifecycle,
+        logger,
         events,
         historyConfig: getHistoryConfig({
           overrides: {
@@ -81,6 +75,17 @@ describe('HistoryEventEmitter', () => {
             blockPollFrequency: { milliseconds: 100 },
           },
         }),
+      });
+
+      await sleep({ seconds: 1 });
+
+      await knex<EventsTableRow>('module_history__events').insert({
+        event_type: 'entity_created',
+        entity_ref: 'component:default/foo',
+        entity_id: 'foo',
+        entity_json: JSON.stringify({ kind: 'Component' }),
+        location_id: 'bar',
+        location_ref: 'url:http://mockEntityProvider.com',
       });
 
       await waitFor(() => {

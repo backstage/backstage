@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import { mockServices } from '@backstage/backend-test-utils';
 import express from 'express';
 import request from 'supertest';
+import waitFor from 'wait-for-expect';
+import { sleep } from '../../helpers';
 import { createOpenApiRouter } from '../../schema/openapi/generated';
 import { GetEventsModel } from './GetEvents.model';
 import { bindGetEventsEndpoint } from './GetEvents.router';
 import { Cursor, stringifyCursor } from './GetEvents.utils';
-import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
-import { mockServices } from '@backstage/backend-test-utils';
-import waitFor from 'wait-for-expect';
 
 describe('bindGetEventsEndpoint', () => {
   const config = mockServices.rootConfig();
@@ -204,7 +205,7 @@ describe('bindGetEventsEndpoint', () => {
     };
     model.getEvents.mockResolvedValue({
       type: 'block',
-      wait: jest.fn(async () => await new Promise(r => setTimeout(r, 20))),
+      wait: jest.fn(async () => await sleep({ milliseconds: 20 })),
       cursor,
     });
 
