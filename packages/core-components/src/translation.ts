@@ -104,6 +104,9 @@ export const coreComponentsTranslationRef = createTranslationRef({
       toolbar: {
         search: 'Filter',
       },
+      header: {
+        actions: 'Actions',
+      },
     },
     alertDisplay: {
       message_one: '({{ count }} newer message)',
