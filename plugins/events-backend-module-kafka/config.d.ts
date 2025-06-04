@@ -60,16 +60,16 @@ export interface Config {
            */
           retry: {
             /**
-             * (Optional) Maximum wait time for a retry in milliseconds
+             * (Optional) Maximum wait time for a retry
              * Default: 30000 ms.
              */
-            maxRetryTime: number;
+            maxRetryTime: HumanDuration | string;
 
             /**
-             * (Optional) Initial value used to calculate the retry in milliseconds (This is still randomized following the randomization factor)
+             * (Optional) Initial value used to calculate the retry (This is still randomized following the randomization factor)
              * Default: 300 ms.
              */
-            initialRetryTime: number;
+            initialRetryTime: HumanDuration | string;
 
             /**
              * (Optional) Randomization factor
@@ -91,22 +91,22 @@ export interface Config {
           };
 
           /**
-           * (Optional) Timeout in ms for authentication requests.
+           * (Optional) Timeout for authentication requests.
            * Default: 10000 ms.
            */
-          authenticationTimeout: number;
+          authenticationTimeout: HumanDuration | string;
 
           /**
-           * (Optional) Time in milliseconds to wait for a successful connection.
+           * (Optional) Time to wait for a successful connection.
            * Default: 1000 ms.
            */
-          connectionTimeout: number;
+          connectionTimeout: HumanDuration | string;
 
           /**
-           * (Optional) Time in milliseconds to wait for a successful request.
+           * (Optional) Time to wait for a successful request.
            * Default: 30000 ms.
            */
-          requestTimeout: number;
+          requestTimeout: HumanDuration | string;
 
           /**
            * (Optional) The request timeout can be disabled by setting enforceRequestTimeout to false.
@@ -137,34 +137,34 @@ export interface Config {
               groupId: string;
 
               /**
-               * (Optional) Timeout in milliseconds used to detect failures.
+               * (Optional) Timeout used to detect failures.
                * The consumer sends periodic heartbeats to indicate its liveness to the broker.
                * If no heartbeats are received by the broker before the expiration of this session timeout,
                * then the broker will remove this consumer from the group and initiate a rebalance
                * Default: 30000 ms.
                */
-              sessionTimeout: number;
+              sessionTimeout: HumanDuration | string;
 
               /**
                * (Optional) The maximum time that the coordinator will wait for each member to rejoin when rebalancing the group
                * Default: 60000 ms.
                */
-              rebalanceTimeout: number;
+              rebalanceTimeout: HumanDuration | string;
 
               /**
-               * (Optional) The expected time in milliseconds between heartbeats to the consumer coordinator.
+               * (Optional) The expected time between heartbeats to the consumer coordinator.
                * Heartbeats are used to ensure that the consumer's session stays active.
                * The value must be set lower than session timeout
                * Default: 3000 ms.
                */
-              heartbeatInterval: number;
+              heartbeatInterval: HumanDuration | string;
 
               /**
-               * (Optional) The period of time in milliseconds after which we force a refresh of metadata
+               * (Optional) The period of time after which we force a refresh of metadata
                * even if we haven't seen any partition leadership changes to proactively discover any new brokers or partitions
                * Default: 300000 ms (5 minutes).
                */
-              metadataMaxAge: number;
+              metadataMaxAge: HumanDuration | string;
 
               /**
                * (Optional) The maximum amount of data per-partition the server will return.
@@ -176,7 +176,7 @@ export interface Config {
               maxBytesPerPartition: number;
 
               /**
-               * (Optional) Minimum amount of data the server should return for a fetch request, otherwise wait up to maxWaitTimeInMs for more data to accumulate.
+               * (Optional) Minimum amount of data the server should return for a fetch request, otherwise wait up to maxWaitTime for more data to accumulate.
                * Default: 1
                */
               minBytes: number;
@@ -188,11 +188,11 @@ export interface Config {
               maxBytes: number;
 
               /**
-               * (Optional) The maximum amount of time in milliseconds the server will block before answering the fetch request
+               * (Optional) The maximum amount of time the server will block before answering the fetch request
                * if there isn’t sufficient data to immediately satisfy the requirement given by minBytes
                * Default: 5000
                */
-              maxWaitTimeInMs: number;
+              maxWaitTime: HumanDuration | string;
             };
           }>;
         };

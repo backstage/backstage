@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { ConsumerConfig, ConsumerSubscribeTopics, KafkaConfig } from 'kafkajs';
+import { Duration } from 'luxon';
 
 /**
  * @public
@@ -36,6 +37,26 @@ export interface KafkaEventSourceConfig {
 const CONFIG_PREFIX_PUBLISHER =
   'events.modules.kafka.kafkaConsumingEventPublisher';
 
+/**
+ * Reads an optional HumanDuration from the config and returns the value in milliseconds if the key is defined.
+ *
+ * @param config - The configuration object to read from.
+ * @param key - The key to look up in the configuration.
+ * @returns The duration in milliseconds, or undefined if the key is not defined.
+ */
+const readOptionalHumanDurationInMs = (
+  config: Config,
+  key: string,
+): number | undefined => {
+  const humanDuration = config.has(key)
+    ? readDurationFromConfig(config, { key })
+    : undefined;
+
+  if (!humanDuration) return undefined;
+
+  return Duration.fromObject(humanDuration).as('milliseconds');
+};
+
 export const readConfig = (
   config: Config,
 ): KafkaEventSourceConfig | undefined => {
@@ -48,18 +69,39 @@ export const readConfig = (
   const clientId = kafkaConfig.getString('clientId');
   const brokers = kafkaConfig.getStringArray('brokers');
 
-  const authenticationTimeout = kafkaConfig.getOptionalNumber(
+  const authenticationTimeout = readOptionalHumanDurationInMs(
+    kafkaConfig,
     'authenticationTimeout',
   );
-  const connectionTimeout = kafkaConfig.getOptionalNumber('connectionTimeout');
-  const requestTimeout = kafkaConfig.getOptionalNumber('requestTimeout');
+
+  const connectionTimeout = readOptionalHumanDurationInMs(
+    kafkaConfig,
+    'connectionTimeout',
+  );
+  const requestTimeout = readOptionalHumanDurationInMs(
+    kafkaConfig,
+    'requestTimeout',
+  );
   const enforceRequestTimeout = kafkaConfig.getOptionalBoolean(
     'enforceRequestTimeout',
   );
 
   const ssl = kafkaConfig.getOptional('ssl') as KafkaConfig['ssl'];
   const sasl = kafkaConfig.getOptional('sasl') as KafkaConfig['sasl'];
-  const retry = kafkaConfig.getOptional('retry') as KafkaConfig['retry'];
+
+  const retry: KafkaConfig['retry'] = {
+    maxRetryTime: readOptionalHumanDurationInMs(
+      kafkaConfig,
+      'retry.maxRetryTime',
+    ),
+    initialRetryTime: readOptionalHumanDurationInMs(
+      kafkaConfig,
+      'retry.initialRetryTime',
+    ),
+    factor: kafkaConfig.getOptionalNumber('retry.factor'),
+    multiplier: kafkaConfig.getOptionalNumber('retry.multiplier'),
+    retries: kafkaConfig.getOptionalNumber('retry.retries'),
+  };
 
   const kafkaConsumerConfigs: KafkaConsumerConfig[] = kafkaConfig
     .getConfigArray('topics')
@@ -68,16 +110,31 @@ export const readConfig = (
         backstageTopic: topic.getString('topic'),
         consumerConfig: {
           groupId: topic.getString('kafka.groupId'),
-          sessionTimeout: topic.getOptionalNumber('kafka.sessionTimeout'),
-          rebalanceTimeout: topic.getOptionalNumber('kafka.rebalanceTimeout'),
-          heartbeatInterval: topic.getOptionalNumber('kafka.heartbeatInterval'),
-          metadataMaxAge: topic.getOptionalNumber('kafka.metadataMaxAge'),
+          sessionTimeout: readOptionalHumanDurationInMs(
+            topic,
+            'kafka.sessionTimeout',
+          ),
+          rebalanceTimeout: readOptionalHumanDurationInMs(
+            topic,
+            'kafka.rebalanceTimeout',
+          ),
+          heartbeatInterval: readOptionalHumanDurationInMs(
+            topic,
+            'kafka.heartbeatInterval',
+          ),
+          metadataMaxAge: readOptionalHumanDurationInMs(
+            topic,
+            'kafka.metadataMaxAge',
+          ),
           maxBytesPerPartition: topic.getOptionalNumber(
             'kafka.maxBytesPerPartition',
           ),
           minBytes: topic.getOptionalNumber('kafka.minBytes'),
           maxBytes: topic.getOptionalNumber('kafka.maxBytes'),
-          maxWaitTimeInMs: topic.getOptionalNumber('kafka.maxWaitTimeInMs'),
+          maxWaitTimeInMs: readOptionalHumanDurationInMs(
+            topic,
+            'kafka.maxWaitTime',
+          ),
         },
         consumerSubscribeTopics: {
           topics: topic.getStringArray('kafka.topics'),
