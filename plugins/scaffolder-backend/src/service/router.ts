@@ -131,9 +131,7 @@ import {
   scaffolderTaskRules,
 } from './rules';
 
-import {
-  TaskFilters,
-} from '@backstage/plugin-scaffolder-node';
+import { TaskFilters } from '@backstage/plugin-scaffolder-node';
 
 /**
  * RouterOptions
