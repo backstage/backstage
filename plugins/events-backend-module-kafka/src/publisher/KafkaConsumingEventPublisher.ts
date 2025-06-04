@@ -69,7 +69,6 @@ export class KafkaConsumingEventPublisher {
   async start(): Promise<void> {
     try {
       await this.kafkaConsumer.connect();
-      this.logger.info('Kafka consumer connected');
 
       await this.kafkaConsumer.subscribe(this.consumerSubscribeTopics);
 
@@ -89,7 +88,6 @@ export class KafkaConsumingEventPublisher {
 
   async shutdown(): Promise<void> {
     await this.kafkaConsumer.disconnect();
-    this.logger.info('Kafka consumer disconnected');
   }
 
   private convertHeadersToMetadata = (
