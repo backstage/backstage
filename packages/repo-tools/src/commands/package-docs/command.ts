@@ -52,6 +52,7 @@ const HIGHLIGHT_LANGUAGES = [
   'diff',
   'js',
   'json',
+  'docker',
 ];
 
 function getExports(packageJson: any) {
