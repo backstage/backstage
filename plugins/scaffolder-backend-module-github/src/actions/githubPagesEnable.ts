@@ -38,55 +38,46 @@ export function createGithubPagesEnableAction(options: {
 }) {
   const { integrations, githubCredentialsProvider } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    buildType?: 'legacy' | 'workflow';
-    sourceBranch?: string;
-    sourcePath?: '/' | '/docs';
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'github:pages:enable',
     examples,
     description: 'Enables GitHub Pages for a repository.',
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl'],
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
+        repoUrl: z =>
+          z.string({
             description:
               'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
-            type: 'string',
-          },
-          buildType: {
-            title: 'Build Type',
-            type: 'string',
-            default: 'workflow',
-            description:
-              'The GitHub Pages build type - `legacy` or `workflow`. Default is `workflow`',
-            enum: ['legacy', 'workflow'],
-          },
-          sourceBranch: {
-            title: 'Source Branch',
-            type: 'string',
-            default: 'main',
-            description: 'The GitHub Pages source branch. Default is "main"',
-          },
-          sourcePath: {
-            title: 'Source Path',
-            type: 'string',
-            default: '/',
-            description:
-              'The GitHub Pages source path - "/" or "/docs". Default is "/"',
-            enum: ['/', '/docs'],
-          },
-          token: {
-            title: 'Authorization Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitHub',
-          },
-        },
+          }),
+        buildType: z =>
+          z
+            .enum(['legacy', 'workflow'], {
+              description:
+                'The GitHub Pages build type - `legacy` or `workflow`. Default is `workflow`',
+            })
+            .default('workflow')
+            .optional(),
+        sourceBranch: z =>
+          z
+            .string({
+              description: 'The GitHub Pages source branch. Default is "main"',
+            })
+            .default('main')
+            .optional(),
+        sourcePath: z =>
+          z
+            .enum(['/', '/docs'], {
+              description:
+                'The GitHub Pages source path - "/" or "/docs". Default is "/"',
+            })
+            .default('/')
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to GitHub',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {

@@ -20,15 +20,56 @@ export const createBitbucketPipelinesRunAction: (options: {
   {
     workspace: string;
     repo_slug: string;
-    body?: object;
-    token?: string;
+    body?:
+      | {
+          target?:
+            | {
+                type?: string | undefined;
+                source?: string | undefined;
+                selector?:
+                  | {
+                      type: string;
+                      pattern: string;
+                    }
+                  | undefined;
+                pull_request?:
+                  | {
+                      id: string;
+                    }
+                  | undefined;
+                commit?:
+                  | {
+                      type: string;
+                      hash: string;
+                    }
+                  | undefined;
+                destination?: string | undefined;
+                ref_name?: string | undefined;
+                ref_type?: string | undefined;
+                destination_commit?:
+                  | {
+                      hash: string;
+                    }
+                  | undefined;
+              }
+            | undefined;
+          variables?:
+            | {
+                key: string;
+                value: string;
+                secured: boolean;
+              }[]
+            | undefined;
+        }
+      | undefined;
+    token?: string | undefined;
   },
   {
-    buildNumber: number;
-    repoUrl: string;
-    pipelinesUrl: string;
+    buildNumber?: number | undefined;
+    repoUrl?: string | undefined;
+    pipelinesUrl?: string | undefined;
   },
-  'v1'
+  'v2'
 >;
 
 // @public
@@ -38,16 +79,20 @@ export function createPublishBitbucketCloudAction(options: {
 }): TemplateAction<
   {
     repoUrl: string;
-    description?: string;
-    defaultBranch?: string;
-    repoVisibility?: 'private' | 'public';
-    gitCommitMessage?: string;
-    sourcePath?: string;
-    token?: string;
-    signCommit?: boolean;
+    description?: string | undefined;
+    defaultBranch?: string | undefined;
+    repoVisibility?: 'private' | 'public' | undefined;
+    gitCommitMessage?: string | undefined;
+    sourcePath?: string | undefined;
+    token?: string | undefined;
+    signCommit?: boolean | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    remoteUrl?: string | undefined;
+    repoContentsUrl?: string | undefined;
+    commitHash?: string | undefined;
+  },
+  'v2'
 >;
 
 // @public

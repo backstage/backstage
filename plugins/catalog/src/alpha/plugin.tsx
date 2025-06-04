@@ -33,6 +33,7 @@ import filters from './filters';
 import navItems from './navItems';
 import entityCards from './entityCards';
 import entityContents from './entityContents';
+import entityIconLinks from './entityIconLinks';
 import searchResultItems from './searchResultItems';
 import contextMenuItems from './contextMenuItems';
 
@@ -57,6 +58,7 @@ export default createFrontendPlugin({
     ...navItems,
     ...entityCards,
     ...entityContents,
+    ...entityIconLinks,
     ...contextMenuItems,
     ...searchResultItems,
   ],
