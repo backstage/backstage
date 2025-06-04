@@ -20,6 +20,7 @@ import { ConfigReader } from '@backstage/config';
 import {
   BatchedAuthorizePermissionRequest,
   PermissionClient,
+  PermissionClientOptions,
 } from './PermissionClient';
 import {
   AuthorizeResult,
@@ -47,6 +48,22 @@ const mockPermission = createPermission({
   resourceType: 'foo',
 });
 
+class PermissionClientForTests extends PermissionClient {
+  constructor(
+    options: PermissionClientOptions,
+    dataLoaderOptions?: {
+      loaderCacheTtl?: number;
+      cacheTtl?: number;
+      batchDelay?: number;
+    },
+  ) {
+    super(options);
+    if (dataLoaderOptions) {
+      this.setDataLoaderParamsForTests(dataLoaderOptions);
+    }
+  }
+}
+
 describe('PermissionClient', () => {
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterAll(() => server.close());
@@ -54,12 +71,16 @@ describe('PermissionClient', () => {
 
   describe('authorize', () => {
     beforeAll(() => {
-      client = new PermissionClient({
-        discovery,
-        config: new ConfigReader({ permission: { enabled: true } }),
-        batchDelay: 0,
-        cacheTtl: 0,
-      });
+      client = new PermissionClientForTests(
+        {
+          discovery,
+          config: new ConfigReader({ permission: { enabled: true } }),
+        },
+        {
+          batchDelay: 0,
+          cacheTtl: 0,
+        },
+      );
     });
 
     const mockAuthorizeConditional = {
@@ -182,7 +203,7 @@ describe('PermissionClient', () => {
           return res(json({ items: responses }));
         },
       );
-      const disabled = new PermissionClient({
+      const disabled = new PermissionClientForTests({
         discovery,
         config: new ConfigReader({ permission: { enabled: false } }),
       });
@@ -206,7 +227,7 @@ describe('PermissionClient', () => {
           return res(json(responses));
         },
       );
-      const disabled = new PermissionClient({
+      const disabled = new PermissionClientForTests({
         discovery,
         config: new ConfigReader({}),
       });
@@ -220,7 +241,7 @@ describe('PermissionClient', () => {
 
   describe('authorize with dataloader', () => {
     beforeAll(() => {
-      client = new PermissionClient({
+      client = new PermissionClientForTests({
         discovery,
         config: new ConfigReader({
           permission: {
@@ -284,17 +305,21 @@ describe('PermissionClient', () => {
 
   describe('authorize (batched)', () => {
     beforeAll(() => {
-      client = new PermissionClient({
-        discovery,
-        config: new ConfigReader({
-          permission: {
-            enabled: true,
-            EXPERIMENTAL_enableBatchedRequests: true,
-          },
-        }),
-        batchDelay: 0,
-        cacheTtl: 0,
-      });
+      client = new PermissionClientForTests(
+        {
+          discovery,
+          config: new ConfigReader({
+            permission: {
+              enabled: true,
+              EXPERIMENTAL_enableBatchedRequests: true,
+            },
+          }),
+        },
+        {
+          batchDelay: 0,
+          cacheTtl: 0,
+        },
+      );
     });
 
     const mockAuthorizeConditional = {
@@ -427,7 +452,7 @@ describe('PermissionClient', () => {
     });
 
     it('should allow all when permission.enabled is false', async () => {
-      const disabled = new PermissionClient({
+      const disabled = new PermissionClientForTests({
         discovery,
         config: new ConfigReader({ permission: { enabled: false } }),
       });
@@ -439,7 +464,7 @@ describe('PermissionClient', () => {
     });
 
     it('should allow all when permission.enabled is not configured', async () => {
-      const disabled = new PermissionClient({
+      const disabled = new PermissionClientForTests({
         discovery,
         config: new ConfigReader({}),
       });
@@ -556,12 +581,16 @@ describe('PermissionClient', () => {
 
   describe('authorizeConditional', () => {
     beforeAll(() => {
-      client = new PermissionClient({
-        discovery,
-        config: new ConfigReader({ permission: { enabled: true } }),
-        batchDelay: 0,
-        cacheTtl: 0,
-      });
+      client = new PermissionClientForTests(
+        {
+          discovery,
+          config: new ConfigReader({ permission: { enabled: true } }),
+        },
+        {
+          batchDelay: 0,
+          cacheTtl: 0,
+        },
+      );
     });
 
     const mockResourceAuthorizeConditional = {
@@ -746,7 +775,7 @@ describe('PermissionClient', () => {
           return res(json({ items: responses }));
         },
       );
-      const disabled = new PermissionClient({
+      const disabled = new PermissionClientForTests({
         discovery,
         config: new ConfigReader({ permission: { enabled: false } }),
       });
@@ -775,7 +804,7 @@ describe('PermissionClient', () => {
           return res(json({ items: responses }));
         },
       );
-      const disabled = new PermissionClient({
+      const disabled = new PermissionClientForTests({
         discovery,
         config: new ConfigReader({}),
       });
