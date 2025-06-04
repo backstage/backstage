@@ -19,7 +19,7 @@ import { EventsService } from '@backstage/plugin-events-node';
 import { Kafka } from 'kafkajs';
 import { KafkaEventSourceConfig, readConfig } from './config';
 import { KafkaConsumingEventPublisher } from './KafkaConsumingEventPublisher';
-import { LoggerServiceAdapter } from './LoggerServiceAdapter';
+import { loggerServiceAdapter } from './LoggerServiceAdapter';
 
 /**
  * KafkaConsumerClient
@@ -51,7 +51,7 @@ export class KafkaConsumerClient {
   ) {
     this.kafka = new Kafka({
       ...config.kafkaConfig,
-      logCreator: LoggerServiceAdapter(logger),
+      logCreator: loggerServiceAdapter(logger),
     });
 
     this.consumers = config.kafkaConsumerConfigs.map(consumerConfig =>
