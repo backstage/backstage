@@ -32,16 +32,21 @@ export class KafkaConsumerClient {
   private readonly kafka: Kafka;
   private readonly consumers: KafkaConsumingEventPublisher[];
 
-  static fromConfig(env: {
+  static fromConfig(options: {
     config: Config;
     events: EventsService;
     logger: LoggerService;
-  }): KafkaConsumerClient {
-    return new KafkaConsumerClient(
-      env.logger,
-      env.events,
-      readConfig(env.config),
-    );
+  }): KafkaConsumerClient | undefined {
+    const kafkaConfig = readConfig(options.config);
+
+    if (!kafkaConfig) {
+      options.logger.info(
+        'Kafka consumer not configured, skipping initialization',
+      );
+      return undefined;
+    }
+
+    return new KafkaConsumerClient(options.logger, options.events, kafkaConfig);
   }
 
   private constructor(

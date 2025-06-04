@@ -18,11 +18,9 @@ import { readConfig } from './config';
 
 describe('readConfig', () => {
   it('not configured', () => {
-    const config = new ConfigReader({});
+    const publisherConfigs = readConfig(new ConfigReader({}));
 
-    expect(() => {
-      readConfig(config);
-    }).toThrow();
+    expect(publisherConfigs).toBeUndefined();
   });
 
   it('only required fields configured', () => {
@@ -57,21 +55,23 @@ describe('readConfig', () => {
 
     const publisherConfigs = readConfig(config);
 
-    expect(publisherConfigs.kafkaConsumerConfigs.length).toBe(2);
+    expect(publisherConfigs).toBeDefined();
 
-    expect(publisherConfigs.kafkaConfig.clientId).toEqual('backstage-events');
-    expect(publisherConfigs.kafkaConfig.brokers).toEqual([
+    expect(publisherConfigs?.kafkaConsumerConfigs.length).toBe(2);
+
+    expect(publisherConfigs?.kafkaConfig.clientId).toEqual('backstage-events');
+    expect(publisherConfigs?.kafkaConfig.brokers).toEqual([
       'kafka1:9092',
       'kafka2:9092',
     ]);
-    expect(publisherConfigs.kafkaConsumerConfigs[0].backstageTopic).toEqual(
+    expect(publisherConfigs?.kafkaConsumerConfigs[0].backstageTopic).toEqual(
       'fake1',
     );
     expect(
-      publisherConfigs.kafkaConsumerConfigs[0].consumerConfig.groupId,
+      publisherConfigs?.kafkaConsumerConfigs[0].consumerConfig.groupId,
     ).toEqual('my-group');
     expect(
-      publisherConfigs.kafkaConsumerConfigs[0].consumerSubscribeTopics.topics,
+      publisherConfigs?.kafkaConsumerConfigs[0].consumerSubscribeTopics.topics,
     ).toEqual(['topic-A']);
   });
 
@@ -132,23 +132,25 @@ describe('readConfig', () => {
 
     const publisherConfigs = readConfig(config);
 
+    expect(publisherConfigs).toBeDefined();
+
     // Client configuration
-    expect(publisherConfigs.kafkaConfig.clientId).toEqual('backstage-events');
-    expect(publisherConfigs.kafkaConfig.brokers).toEqual([
+    expect(publisherConfigs?.kafkaConfig.clientId).toEqual('backstage-events');
+    expect(publisherConfigs?.kafkaConfig.brokers).toEqual([
       'kafka1:9092',
       'kafka2:9092',
     ]);
-    expect(publisherConfigs.kafkaConfig.ssl).toBeTruthy();
-    expect(publisherConfigs.kafkaConfig.sasl).toStrictEqual({
+    expect(publisherConfigs?.kafkaConfig.ssl).toBeTruthy();
+    expect(publisherConfigs?.kafkaConfig.sasl).toStrictEqual({
       mechanism: 'plain',
       username: 'username',
       password: 'password',
     });
-    expect(publisherConfigs.kafkaConfig.authenticationTimeout).toBe(20000);
-    expect(publisherConfigs.kafkaConfig.connectionTimeout).toBe(1500);
-    expect(publisherConfigs.kafkaConfig.requestTimeout).toBe(20000);
-    expect(publisherConfigs.kafkaConfig.enforceRequestTimeout).toBeFalsy();
-    expect(publisherConfigs.kafkaConfig.retry).toStrictEqual({
+    expect(publisherConfigs?.kafkaConfig.authenticationTimeout).toBe(20000);
+    expect(publisherConfigs?.kafkaConfig.connectionTimeout).toBe(1500);
+    expect(publisherConfigs?.kafkaConfig.requestTimeout).toBe(20000);
+    expect(publisherConfigs?.kafkaConfig.enforceRequestTimeout).toBeFalsy();
+    expect(publisherConfigs?.kafkaConfig.retry).toStrictEqual({
       maxRetryTime: '20000',
       initialRetryTime: '200',
       factor: '0.4',
@@ -157,41 +159,42 @@ describe('readConfig', () => {
     });
 
     // Consumer configuration
-    expect(publisherConfigs.kafkaConsumerConfigs.length).toBe(2);
-    expect(publisherConfigs.kafkaConsumerConfigs[0].backstageTopic).toEqual(
+    expect(publisherConfigs?.kafkaConsumerConfigs.length).toBe(2);
+    expect(publisherConfigs?.kafkaConsumerConfigs[0].backstageTopic).toEqual(
       'fake1',
     );
     expect(
-      publisherConfigs.kafkaConsumerConfigs[0].consumerConfig.groupId,
+      publisherConfigs?.kafkaConsumerConfigs[0].consumerConfig.groupId,
     ).toEqual('my-group');
     expect(
-      publisherConfigs.kafkaConsumerConfigs[0].consumerSubscribeTopics.topics,
+      publisherConfigs?.kafkaConsumerConfigs[0].consumerSubscribeTopics.topics,
     ).toEqual(['topic-A']);
 
     expect(
-      publisherConfigs.kafkaConsumerConfigs[0].consumerConfig.sessionTimeout,
+      publisherConfigs?.kafkaConsumerConfigs[0].consumerConfig.sessionTimeout,
     ).toBe(20000);
     expect(
-      publisherConfigs.kafkaConsumerConfigs[0].consumerConfig.rebalanceTimeout,
+      publisherConfigs?.kafkaConsumerConfigs[0].consumerConfig.rebalanceTimeout,
     ).toBe(50000);
     expect(
-      publisherConfigs.kafkaConsumerConfigs[0].consumerConfig.heartbeatInterval,
+      publisherConfigs?.kafkaConsumerConfigs[0].consumerConfig
+        .heartbeatInterval,
     ).toBe(2000);
     expect(
-      publisherConfigs.kafkaConsumerConfigs[0].consumerConfig.metadataMaxAge,
+      publisherConfigs?.kafkaConsumerConfigs[0].consumerConfig.metadataMaxAge,
     ).toBe(400000);
     expect(
-      publisherConfigs.kafkaConsumerConfigs[0].consumerConfig
+      publisherConfigs?.kafkaConsumerConfigs[0].consumerConfig
         .maxBytesPerPartition,
     ).toBe(50000);
     expect(
-      publisherConfigs.kafkaConsumerConfigs[0].consumerConfig.minBytes,
+      publisherConfigs?.kafkaConsumerConfigs[0].consumerConfig.minBytes,
     ).toBe(2);
     expect(
-      publisherConfigs.kafkaConsumerConfigs[0].consumerConfig.maxBytes,
+      publisherConfigs?.kafkaConsumerConfigs[0].consumerConfig.maxBytes,
     ).toBe(500000);
     expect(
-      publisherConfigs.kafkaConsumerConfigs[0].consumerConfig.maxWaitTimeInMs,
+      publisherConfigs?.kafkaConsumerConfigs[0].consumerConfig.maxWaitTimeInMs,
     ).toBe(4000);
   });
 });

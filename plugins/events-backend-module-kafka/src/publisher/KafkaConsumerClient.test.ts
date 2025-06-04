@@ -68,6 +68,16 @@ describe('KafkaConsumerClient', () => {
     expect(client).toBeInstanceOf(KafkaConsumerClient);
   });
 
+  it('should not create an instance from config', () => {
+    const client = KafkaConsumerClient.fromConfig({
+      config: new ConfigReader({}),
+      events: mockEvents,
+      logger: mockLogger,
+    });
+
+    expect(client).toBeUndefined();
+  });
+
   it('should create a consumer for each topic from config', () => {
     KafkaConsumerClient.fromConfig({
       config: mockConfig,
@@ -92,7 +102,9 @@ describe('KafkaConsumerClient', () => {
       logger: mockLogger,
     });
 
-    await client.start();
+    expect(client).toBeDefined();
+
+    await client?.start();
 
     expect(mockConsumer.start).toHaveBeenCalled();
   });
@@ -111,7 +123,9 @@ describe('KafkaConsumerClient', () => {
       logger: mockLogger,
     });
 
-    await client.shutdown();
+    expect(client).toBeDefined();
+
+    await client?.shutdown();
 
     expect(mockConsumer.shutdown).toHaveBeenCalled();
   });

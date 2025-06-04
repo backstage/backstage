@@ -36,8 +36,14 @@ export interface KafkaEventSourceConfig {
 const CONFIG_PREFIX_PUBLISHER =
   'events.modules.kafka.kafkaConsumingEventPublisher';
 
-export const readConfig = (config: Config): KafkaEventSourceConfig => {
-  const kafkaConfig = config.getConfig(CONFIG_PREFIX_PUBLISHER);
+export const readConfig = (
+  config: Config,
+): KafkaEventSourceConfig | undefined => {
+  const kafkaConfig = config.getOptionalConfig(CONFIG_PREFIX_PUBLISHER);
+
+  if (!kafkaConfig) {
+    return undefined;
+  }
 
   const clientId = kafkaConfig.getString('clientId');
   const brokers = kafkaConfig.getStringArray('brokers');

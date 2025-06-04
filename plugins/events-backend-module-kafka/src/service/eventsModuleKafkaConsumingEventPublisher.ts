@@ -43,6 +43,10 @@ export const eventsModuleKafkaConsumingEventPublisher = createBackendModule({
           logger,
         });
 
+        if (!kafka) {
+          return;
+        }
+
         await kafka.start();
 
         lifecycle.addShutdownHook(async () => await kafka.shutdown());
