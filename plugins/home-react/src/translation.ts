@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createTranslationRef } from '@backstage/frontend-plugin-api';
 
-import { useTranslationRef } from '@backstage/frontend-plugin-api';
-import Typography from '@material-ui/core/Typography';
-import { homeTranslationRef } from '../../translation';
-
-export const VisitListFew = () => {
-  const { t } = useTranslationRef(homeTranslationRef);
-  return (
-    <>
-      <Typography variant="body2" color="textSecondary">
-        {t('visitList.few.title')}
-      </Typography>
-    </>
-  );
-};
+/**
+ * @public
+ */
+export const homeReactTranslationRef = createTranslationRef({
+  id: 'home-react',
+  messages: {
+    settingsModal: {
+      title: 'Settings',
+      closeButtonTitle: 'Close',
+    },
+    cardExtension: {
+      settingsButtonTitle: 'Settings',
+    },
+  },
+});

@@ -9,6 +9,7 @@ import { JSX as JSX_3 } from 'react';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { RJSFSchema } from '@rjsf/utils';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { UiSchema } from '@rjsf/utils';
 
 // @public (undocumented)
@@ -80,6 +81,16 @@ export function createCardExtension<T>(options: {
   layout?: CardLayout;
   settings?: CardSettings;
 }): Extension<(props: CardExtensionProps<T>) => JSX_2.Element>;
+
+// @public (undocumented)
+export const homeReactTranslationRef: TranslationRef<
+  'home-react',
+  {
+    readonly 'settingsModal.title': 'Settings';
+    readonly 'settingsModal.closeButtonTitle': 'Close';
+    readonly 'cardExtension.settingsButtonTitle': 'Settings';
+  }
+>;
 
 // @public (undocumented)
 export type PluginHomeComponentsNameToClassKey = {
