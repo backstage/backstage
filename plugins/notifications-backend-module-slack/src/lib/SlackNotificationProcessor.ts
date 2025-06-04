@@ -350,15 +350,12 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   }
 
   private async findSlackIdByEmail(
-    entity: UserEntity | string,
+    entityOrEmail: UserEntity | string,
   ): Promise<string | undefined> {
-    let email: string | undefined;
-
-    if (typeof entity === 'string') {
-      email = entity;
-    } else {
-      email = entity.spec?.profile?.email;
-    }
+    const email =
+      typeof entityOrEmail === 'string'
+        ? entityOrEmail
+        : entityOrEmail.spec?.profile?.email;
     if (!email) {
       return undefined;
     }
