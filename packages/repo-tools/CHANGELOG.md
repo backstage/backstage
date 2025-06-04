@@ -1,5 +1,11 @@
 # @backstage/repo-tools
 
+## 0.13.4
+
+### Patch Changes
+
+- 209c679: Add missing highlight language for the `package-docs` command.
+
 ## 0.13.3
 
 ### Patch Changes
