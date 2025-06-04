@@ -25,9 +25,7 @@ import {
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
-import {
-  SerializedTask,
-} from '@backstage/plugin-scaffolder-node';
+import { SerializedTask } from '@backstage/plugin-scaffolder-node';
 
 /**
  *
