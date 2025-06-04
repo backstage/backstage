@@ -26,6 +26,8 @@ export const catalogImportTranslationRef: TranslationRef<
     readonly 'importInfoCard.fileLinkTitle': 'Link to an existing entity file';
     readonly 'importInfoCard.examplePrefix': 'Example: ';
     readonly 'importInfoCard.fileLinkDescription': 'The wizard analyzes the file, previews the entities, and adds them to the {{appTitle}} catalog.';
+    readonly 'importInfoCard.exampleDescription': 'The wizard discovers all {{catalogFilename}} files in the repository, previews the entities, and adds them to the {{appTitle}} catalog.';
+    readonly 'importInfoCard.preparePullRequestDescription': 'If no entities are found, the wizard will prepare a Pull Request that adds an example {{catalogFilename}} and prepares the {{appTitle}} catalog to load all entities as soon as the Pull Request is merged.';
     readonly 'importInfoCard.githubIntegration.label': 'GitHub only';
     readonly 'importInfoCard.githubIntegration.title': 'Link to a repository';
     readonly 'importStepper.finish.title': 'Finish';
@@ -65,6 +67,7 @@ export const catalogImportTranslationRef: TranslationRef<
     readonly 'stepInitAnalyzeUrl.error.locations': 'There are no entities at this location';
     readonly 'stepInitAnalyzeUrl.urlHelperText': 'Enter the full path to your entity file to start tracking your component';
     readonly 'stepInitAnalyzeUrl.nextButtonText': 'Analyze';
+    readonly 'stepPrepareCreatePullRequest.description': 'You entered a link to a {{integrationType}} repository but a {{catalogFilename}} could not be found. Use this form to open a Pull Request that creates one.';
     readonly 'stepPrepareCreatePullRequest.nextButtonText': 'Create PR';
     readonly 'stepPrepareCreatePullRequest.previewPr.title': 'Preview Pull Request';
     readonly 'stepPrepareCreatePullRequest.previewPr.subheader': 'Create a new Pull Request';
