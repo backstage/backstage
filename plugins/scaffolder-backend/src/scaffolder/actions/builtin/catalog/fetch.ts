@@ -27,9 +27,9 @@ const id = 'catalog:fetch';
  * @public
  */
 export function createFetchCatalogEntityAction(options: {
-  catalogService: CatalogService;
+  catalog: CatalogService;
 }) {
-  const { catalogService } = options;
+  const { catalog } = options;
 
   return createTemplateAction({
     id,
@@ -94,7 +94,7 @@ export function createFetchCatalogEntityAction(options: {
       }
 
       if (entityRef) {
-        const entity = await catalogService.getEntityByRef(
+        const entity = await catalog.getEntityByRef(
           stringifyEntityRef(
             parseEntityRef(entityRef, { defaultKind, defaultNamespace }),
           ),
@@ -110,7 +110,7 @@ export function createFetchCatalogEntityAction(options: {
       }
 
       if (entityRefs) {
-        const entities = await catalogService.getEntitiesByRefs(
+        const entities = await catalog.getEntitiesByRefs(
           {
             entityRefs: entityRefs.map(ref =>
               stringifyEntityRef(

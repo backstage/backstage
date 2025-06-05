@@ -187,7 +187,7 @@ describe.each([
     let app: express.Express;
     let loggerSpy: jest.SpyInstance;
     let taskBroker: TaskBroker;
-    const catalogService = catalogServiceMock.mock();
+    const catalogMock = catalogServiceMock.mock();
     const permissionApi = {
       authorize: jest.fn(),
       authorizeConditional: jest.fn(),
@@ -298,7 +298,7 @@ describe.each([
           logger: logger,
           config: new ConfigReader({}),
           database: createDatabase(),
-          catalogService,
+          catalog: catalogMock,
           taskBroker,
           permissions: permissionApi,
           auth,
@@ -322,7 +322,7 @@ describe.each([
         });
         app = express().use(router);
 
-        catalogService.getEntityByRef.mockImplementation(async ref => {
+        catalogMock.getEntityByRef.mockImplementation(async ref => {
           const { kind } = parseEntityRef(ref);
 
           if (kind.toLocaleLowerCase() === 'template') {
@@ -856,9 +856,9 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               directoryContents: [],
             });
 
-          expect(catalogService.getEntityByRef).toHaveBeenCalledTimes(1);
+          expect(catalogMock.getEntityByRef).toHaveBeenCalledTimes(1);
 
-          expect(catalogService.getEntityByRef).toHaveBeenCalledWith(
+          expect(catalogMock.getEntityByRef).toHaveBeenCalledWith(
             'user:default/mock',
             expect.anything(),
           );
@@ -884,7 +884,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           logger: logger,
           config: new ConfigReader({}),
           database: createDatabase(),
-          catalogService,
+          catalog: catalogMock,
           taskBroker,
           permissions: permissionApi,
           auth,
@@ -905,7 +905,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         });
         app = express().use(router);
 
-        catalogService.getEntityByRef.mockImplementation(async ref => {
+        catalogMock.getEntityByRef.mockImplementation(async ref => {
           const { kind } = parseEntityRef(ref);
 
           if (kind.toLocaleLowerCase() === 'template') {
@@ -1662,7 +1662,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             logger: loggerToWinstonLogger(mockServices.logger.mock()),
             config: new ConfigReader({}),
             database: createDatabase(),
-            catalogService,
+            catalog: catalogMock,
             taskBroker,
             permissions: permissionApi,
             auth,

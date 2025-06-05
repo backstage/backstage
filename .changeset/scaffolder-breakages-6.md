@@ -13,6 +13,9 @@ Unless you're providing your own override action to the default, this should be 
 You can migrate using the following if you're getting typescript errors:
 
 ```ts
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+
 export const myModule = createBackendModule({
   pluginId: 'scaffolder',
   moduleId: 'test',
@@ -20,15 +23,15 @@ export const myModule = createBackendModule({
     registerInit({
       deps: {
         scaffolder: scaffolderActionsExtensionPoint,
-        catalogService: catalogServiceRef,
+        catalog: catalogServiceRef,
       },
-      async init({ scaffolder, catalogService }) {
+      async init({ scaffolder, catalog }) {
         scaffolder.addActions(
           createCatalogRegisterAction({
-            catalogService,
+            catalog,
           }),
           createFetchCatalogEntityAction({
-            catalogService,
+            catalog,
             integrations,
           }),
         );

@@ -122,7 +122,7 @@ export interface RouterOptions {
   config: Config;
   lifecycle?: LifecycleService;
   database: DatabaseService;
-  catalogService: CatalogService;
+  catalog: CatalogService;
   scheduler?: SchedulerService;
   actions?: TemplateAction<any, any, any>[];
   /**
@@ -178,7 +178,7 @@ export async function createRouter(
     logger: parentLogger,
     config,
     database,
-    catalogService,
+    catalog,
     actions,
     scheduler,
     additionalTemplateFilters,
@@ -439,7 +439,7 @@ export async function createRouter(
           : undefined;
 
         const userEntity = userEntityRef
-          ? await catalogService.getEntityByRef(userEntityRef, { credentials })
+          ? await catalog.getEntityByRef(userEntityRef, { credentials })
           : undefined;
 
         let auditLog = `Scaffolding task for ${templateRef}`;
@@ -862,7 +862,7 @@ export async function createRouter(
           : undefined;
 
         const userEntity = userEntityRef
-          ? await catalogService.getEntityByRef(userEntityRef, { credentials })
+          ? await catalog.getEntityByRef(userEntityRef, { credentials })
           : undefined;
 
         const templateRef: string = `${template.kind}:${
@@ -994,7 +994,7 @@ export async function createRouter(
     credentials: BackstageCredentials,
   ) {
     const template = await findTemplate({
-      catalogService,
+      catalog,
       entityRef,
       credentials,
     });

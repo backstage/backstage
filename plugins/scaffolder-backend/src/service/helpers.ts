@@ -92,16 +92,16 @@ export function getEntityBaseUrl(entity: Entity): string | undefined {
  */
 export async function findTemplate(options: {
   entityRef: CompoundEntityRef;
-  catalogService: CatalogService;
+  catalog: CatalogService;
   credentials: BackstageCredentials;
 }): Promise<TemplateEntityV1beta3> {
-  const { entityRef, catalogService, credentials } = options;
+  const { entityRef, catalog, credentials } = options;
 
   if (entityRef.kind.toLocaleLowerCase('en-US') !== 'template') {
     throw new InputError(`Invalid kind, only 'Template' kind is supported`);
   }
 
-  const template = await catalogService.getEntityByRef(entityRef, {
+  const template = await catalog.getEntityByRef(entityRef, {
     credentials,
   });
   if (!template) {

@@ -31,10 +31,10 @@ describe('catalog:fetch examples', () => {
     },
   } as Entity;
 
-  const catalogService = catalogServiceMock({ entities: [entity] });
+  const catalogMock = catalogServiceMock({ entities: [entity] });
 
   const action = createFetchCatalogEntityAction({
-    catalogService,
+    catalog: catalogMock,
   });
 
   const credentials = mockCredentials.user();
@@ -43,7 +43,7 @@ describe('catalog:fetch examples', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    jest.spyOn(catalogService, 'getEntityByRef');
+    jest.spyOn(catalogMock, 'getEntityByRef');
   });
 
   describe('fetch single entity', () => {
@@ -53,7 +53,7 @@ describe('catalog:fetch examples', () => {
         input: yaml.parse(examples[0].example).steps[0].input,
       });
 
-      expect(catalogService.getEntityByRef).toHaveBeenCalledWith(
+      expect(catalogMock.getEntityByRef).toHaveBeenCalledWith(
         'component:default/name',
         { credentials },
       );

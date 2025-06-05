@@ -53,7 +53,7 @@ export type ActionPermissionRuleInput<
 
 // @public
 export function createCatalogRegisterAction(options: {
-  catalogService: CatalogService;
+  catalog: CatalogService;
   integrations: ScmIntegrations;
 }): TemplateAction<
   | {
@@ -106,7 +106,7 @@ export function createDebugLogAction(): TemplateAction<
 
 // @public
 export function createFetchCatalogEntityAction(options: {
-  catalogService: CatalogService;
+  catalog: CatalogService;
 }): TemplateAction<
   {
     entityRef?: string | undefined;

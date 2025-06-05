@@ -112,7 +112,7 @@ describe('github:environment:create examples', () => {
 
     action = createGithubEnvironmentAction({
       integrations,
-      catalogService: mockCatalogService,
+      catalog: mockCatalogService,
     });
   });
 

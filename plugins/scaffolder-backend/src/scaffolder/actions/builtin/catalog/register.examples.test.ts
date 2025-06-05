@@ -33,11 +33,11 @@ describe('catalog:register', () => {
     }),
   );
 
-  const catalogService = catalogServiceMock.mock();
+  const catalogMock = catalogServiceMock.mock();
 
   const action = createCatalogRegisterAction({
     integrations,
-    catalogService,
+    catalog: catalogMock,
   });
 
   const credentials = mockCredentials.user();
@@ -48,7 +48,7 @@ describe('catalog:register', () => {
   });
 
   it('should register location in catalog', async () => {
-    catalogService.addLocation
+    catalogMock.addLocation
       .mockResolvedValueOnce({
         location: null as any,
         entities: [],
@@ -65,12 +65,13 @@ describe('catalog:register', () => {
           } as Entity,
         ],
       });
+
     await action.handler({
       ...mockContext,
       input: yaml.parse(examples[0].example).steps[0].input,
     });
 
-    expect(catalogService.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       1,
       {
         type: 'url',
@@ -79,7 +80,7 @@ describe('catalog:register', () => {
       },
       { credentials },
     );
-    expect(catalogService.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       2,
       {
         dryRun: true,

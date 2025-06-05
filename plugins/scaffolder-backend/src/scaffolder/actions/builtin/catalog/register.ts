@@ -28,10 +28,10 @@ const id = 'catalog:register';
  * @public
  */
 export function createCatalogRegisterAction(options: {
-  catalogService: CatalogService;
+  catalog: CatalogService;
   integrations: ScmIntegrations;
 }) {
-  const { catalogService, integrations } = options;
+  const { catalog, integrations } = options;
 
   return createTemplateAction({
     id,
@@ -99,7 +99,7 @@ export function createCatalogRegisterAction(options: {
 
       try {
         // 1st try to register the location, this will throw an error if the location already exists (see catch)
-        await catalogService.addLocation(
+        await catalog.addLocation(
           {
             type: 'url',
             target: catalogInfoUrl,
@@ -115,7 +115,7 @@ export function createCatalogRegisterAction(options: {
 
       try {
         // 2nd retry the registration as a dry run, this will not throw an error if the location already exists
-        const result = await catalogService.addLocation(
+        const result = await catalog.addLocation(
           {
             dryRun: true,
             type: 'url',

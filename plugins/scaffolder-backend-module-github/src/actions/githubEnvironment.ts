@@ -34,9 +34,9 @@ import { CatalogService } from '@backstage/plugin-catalog-node';
  */
 export function createGithubEnvironmentAction(options: {
   integrations: ScmIntegrationRegistry;
-  catalogService: CatalogService;
+  catalog: CatalogService;
 }) {
-  const { integrations, catalogService } = options;
+  const { integrations, catalog } = options;
   // For more information on how to define custom actions, see
   //   https://backstage.io/docs/features/software-templates/writing-custom-actions
   return createTemplateAction({
@@ -183,7 +183,7 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
       if (reviewers) {
         let reviewersEntityRefs: Array<Entity | undefined> = [];
         // Fetch reviewers from Catalog
-        const catalogResponse = await catalogService?.getEntitiesByRefs(
+        const catalogResponse = await catalog.getEntitiesByRefs(
           {
             entityRefs: reviewers,
           },

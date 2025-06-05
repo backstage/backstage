@@ -110,7 +110,7 @@ export function createGithubDeployKeyAction(options: {
 // @public
 export function createGithubEnvironmentAction(options: {
   integrations: ScmIntegrationRegistry;
-  catalogService: CatalogService;
+  catalog: CatalogService;
 }): TemplateAction<
   {
     repoUrl: string;

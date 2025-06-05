@@ -31,11 +31,11 @@ describe('catalog:register', () => {
     }),
   );
 
-  const catalogService = catalogServiceMock.mock();
+  const catalogMock = catalogServiceMock.mock();
 
   const action = createCatalogRegisterAction({
     integrations,
-    catalogService,
+    catalog: catalogMock,
   });
 
   const credentials = mockCredentials.user();
@@ -60,7 +60,7 @@ describe('catalog:register', () => {
   });
 
   it('should register location in catalog', async () => {
-    catalogService.addLocation
+    catalogMock.addLocation
       .mockResolvedValueOnce({
         location: null as any,
         entities: [],
@@ -84,7 +84,7 @@ describe('catalog:register', () => {
       },
     });
 
-    expect(catalogService.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       1,
       {
         type: 'url',
@@ -92,7 +92,7 @@ describe('catalog:register', () => {
       },
       { credentials },
     );
-    expect(catalogService.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       2,
       {
         dryRun: true,
@@ -113,7 +113,7 @@ describe('catalog:register', () => {
   });
 
   it('should return entityRef with the Component entity and not the generated location', async () => {
-    catalogService.addLocation
+    catalogMock.addLocation
       .mockResolvedValueOnce({
         location: null as any,
         entities: [],
@@ -164,7 +164,7 @@ describe('catalog:register', () => {
   });
 
   it('should return entityRef with the next non-generated entity if no Component kind can be found', async () => {
-    catalogService.addLocation
+    catalogMock.addLocation
       .mockResolvedValueOnce({
         location: null as any,
         entities: [],
@@ -208,7 +208,7 @@ describe('catalog:register', () => {
   });
 
   it('should return entityRef with the first entity if no non-generated entities can be found', async () => {
-    catalogService.addLocation
+    catalogMock.addLocation
       .mockResolvedValueOnce({
         location: null as any,
         entities: [],
@@ -245,7 +245,7 @@ describe('catalog:register', () => {
   });
 
   it('should not return entityRef if there are no entities', async () => {
-    catalogService.addLocation
+    catalogMock.addLocation
       .mockResolvedValueOnce({
         location: null as any,
         entities: [],
@@ -267,7 +267,7 @@ describe('catalog:register', () => {
   });
 
   it('should ignore failures when dry running the location in the catalog if `optional` is set', async () => {
-    catalogService.addLocation
+    catalogMock.addLocation
       .mockRejectedValueOnce(new Error('Not found'))
       .mockRejectedValueOnce(new Error('Not found'));
     await action.handler({
@@ -278,7 +278,7 @@ describe('catalog:register', () => {
       },
     });
 
-    expect(catalogService.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       1,
       {
         type: 'url',
@@ -286,7 +286,7 @@ describe('catalog:register', () => {
       },
       { credentials },
     );
-    expect(catalogService.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       2,
       {
         dryRun: true,
@@ -303,7 +303,7 @@ describe('catalog:register', () => {
   });
 
   it('should fetch entities when adding location in the catalog fails and `optional` is set', async () => {
-    catalogService.addLocation
+    catalogMock.addLocation
       .mockRejectedValueOnce(new Error('Already registered'))
       .mockResolvedValueOnce({
         location: null as any,
@@ -325,7 +325,7 @@ describe('catalog:register', () => {
       },
     });
 
-    expect(catalogService.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       1,
       {
         type: 'url',
@@ -333,7 +333,7 @@ describe('catalog:register', () => {
       },
       { credentials },
     );
-    expect(catalogService.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       2,
       {
         dryRun: true,
