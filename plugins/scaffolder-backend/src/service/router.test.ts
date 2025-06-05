@@ -26,6 +26,10 @@ import ObservableImpl from 'zen-observable';
  * Due to a circular dependency between this plugin and the
  * plugin-scaffolder-backend-module-cookiecutter plugin, it results in an error:
  * TypeError: _pluginscaffolderbackend.createTemplateAction is not a function
+ *
+ * TODO: These tests need refactoring. Seems like the identityApi tests don't do anything different anymore.
+ * And there's very little value re-reunning all the tests again with just additional template filters and values.
+ * Let's break them out into better tests. Didn't want to do it in the same PR i'm working on right now.
  */
 import {
   parseEntityRef,
@@ -33,6 +37,7 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import {
+  createTemplateAction,
   TaskBroker,
   TemplateFilter,
   TemplateGlobal,
@@ -194,10 +199,6 @@ describe.each([
     } as unknown as EventsService;
 
     const credentials = mockCredentials.user();
-    const token = mockCredentials.service.token({
-      onBehalfOf: credentials,
-      targetPluginId: 'catalog',
-    });
 
     const getMockTemplate = (): TemplateEntityV1beta3 => ({
       apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -305,6 +306,19 @@ describe.each([
           events,
           additionalTemplateFilters,
           additionalTemplateGlobals,
+          actions: [
+            createTemplateAction({
+              id: 'test',
+              description: 'test',
+              schema: {
+                input: z =>
+                  z.object({
+                    test: z.string(),
+                  }),
+              },
+              handler: async () => {},
+            }),
+          ],
         });
         app = express().use(router);
 
@@ -348,7 +362,7 @@ describe.each([
           const response = await request(app).get('/v2/actions').send();
           expect(response.status).toEqual(200);
           expect(response.body[0].id).toBeDefined();
-          expect(response.body.length).toBeGreaterThan(8);
+          expect(response.body.length).toBe(1);
         });
       });
 
@@ -440,7 +454,6 @@ describe.each([
             expect.objectContaining({
               createdBy: 'user:default/mock',
               secrets: {
-                backstageToken: token,
                 __initiatorCredentials: JSON.stringify(credentials),
               },
 
@@ -592,7 +605,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
@@ -877,6 +889,19 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           permissions: permissionApi,
           auth,
           httpAuth,
+          actions: [
+            createTemplateAction({
+              id: 'test',
+              description: 'test',
+              schema: {
+                input: z =>
+                  z.object({
+                    test: z.string(),
+                  }),
+              },
+              handler: async () => {},
+            }),
+          ],
         });
         app = express().use(router);
 
@@ -919,7 +944,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           const response = await request(app).get('/v2/actions').send();
           expect(response.status).toEqual(200);
           expect(response.body[0].id).toBeDefined();
-          expect(response.body.length).toBeGreaterThan(8);
+          expect(response.body.length).toBe(1);
         });
       });
 
@@ -1091,7 +1116,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             expect.objectContaining({
               createdBy: 'user:default/mock',
               secrets: {
-                backstageToken: token,
                 __initiatorCredentials: JSON.stringify(credentials),
               },
 
@@ -1161,7 +1185,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             expect.objectContaining({
               createdBy: 'user:default/mock',
               secrets: {
-                backstageToken: token,
                 __initiatorCredentials: JSON.stringify(credentials),
               },
 
@@ -1250,7 +1273,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             expect.objectContaining({
               createdBy: 'user:default/mock',
               secrets: {
-                backstageToken: token,
                 __initiatorCredentials: JSON.stringify(credentials),
               },
 
@@ -1394,7 +1416,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
