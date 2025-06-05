@@ -91,7 +91,7 @@ Scope: The Backstage home page and information architecture
 
 | Name                     | Organization | Team            | GitHub                                    | Discord |
 | ------------------------ | ------------ | --------------- | ----------------------------------------- | ------- |
-| Ainhoa Ainhoa Larumbe    | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)      | -       |
+| Ainhoa Larumbe    | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)      | -       |
 | Avantika Iyer            | Spotify      | Imaginary Goats | [tikabom](http://github.com/tikabom)      | -       |
 | Daniel Jelčić            | Spotify      | Imaginary Goats | [djelcic](http://github.com/danieljelcic)| -       |
 | Eric Peterson            | Spotify      | Imaginary Goats | [iamEAP](http://github.com/iamEAP)        | -       |
