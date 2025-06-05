@@ -18,20 +18,15 @@ import {
   EmptyState,
   ErrorPanel,
   Header,
-  Link,
   Page,
   Progress,
-  Table,
 } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
-import {
-  ScaffolderTask,
-  scaffolderApiRef,
-} from '@backstage/plugin-scaffolder-react';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import {
@@ -41,82 +36,8 @@ import {
   templatingExtensionsRouteRef,
 } from '../../routes';
 import { scaffolderTranslationRef } from '../../translation';
+import ListTasksTable from './ListTasksTable';
 import { OwnerListPicker } from './OwnerListPicker';
-import {
-  CreatedAtColumn,
-  OwnerEntityColumn,
-  TaskStatusColumn,
-  TemplateTitleColumn,
-} from './columns';
-
-/** @public */
-export interface ListTasksTableProps {
-  page: number;
-  setPage: Dispatch<SetStateAction<number>>;
-  limit: number;
-  setLimit: Dispatch<SetStateAction<number>>;
-  tasks?: ScaffolderTask[];
-  totalTasks?: number;
-}
-
-/** @public */
-export function ListTasksTable({
-  page,
-  setPage,
-  limit,
-  setLimit,
-  tasks,
-  totalTasks,
-}: Readonly<ListTasksTableProps>) {
-  const { t } = useTranslationRef(scaffolderTranslationRef);
-  const rootLink = useRouteRef(rootRouteRef);
-
-  return (
-    <Table<ScaffolderTask>
-      onRowsPerPageChange={pageSize => {
-        setPage(0);
-        setLimit(pageSize);
-      }}
-      onPageChange={newPage => setPage(newPage)}
-      options={{ pageSize: limit, emptyRowsWhenPaging: false }}
-      data={tasks ?? []}
-      page={page}
-      totalCount={totalTasks ?? 0}
-      title={t('listTaskPage.content.tableTitle')}
-      columns={[
-        {
-          title: t('listTaskPage.content.tableCell.taskID'),
-          field: 'id',
-          render: row => (
-            <Link to={`${rootLink()}/tasks/${row.id}`}>{row.id}</Link>
-          ),
-        },
-        {
-          title: t('listTaskPage.content.tableCell.template'),
-          field: 'spec.templateInfo.entity.metadata.title',
-          render: row => (
-            <TemplateTitleColumn entityRef={row.spec.templateInfo?.entityRef} />
-          ),
-        },
-        {
-          title: t('listTaskPage.content.tableCell.created'),
-          field: 'createdAt',
-          render: row => <CreatedAtColumn createdAt={row.createdAt} />,
-        },
-        {
-          title: t('listTaskPage.content.tableCell.owner'),
-          field: 'createdBy',
-          render: row => <OwnerEntityColumn entityRef={row.spec?.user?.ref} />,
-        },
-        {
-          title: t('listTaskPage.content.tableCell.status'),
-          field: 'status',
-          render: row => <TaskStatusColumn status={row.status} />,
-        },
-      ]}
-    />
-  );
-}
 
 export interface MyTaskPageProps {
   initiallySelectedFilter?: 'owned' | 'all';
