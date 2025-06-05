@@ -699,6 +699,7 @@ rules:
       - '*'
     resources:
       - pods
+      - pods/log
       - configmaps
       - services
       - deployments
