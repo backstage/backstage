@@ -15,11 +15,11 @@
  */
 
 import {
+  AuthService,
+  BackstageCredentials,
+  coreServices,
   createServiceFactory,
   createServiceRef,
-  coreServices,
-  BackstageCredentials,
-  AuthService,
 } from '@backstage/backend-plugin-api';
 import {
   AddLocationRequest,
@@ -39,6 +39,7 @@ import {
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  StreamEntitiesRequest,
   ValidateEntityResponse,
 } from '@backstage/catalog-client';
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
@@ -141,6 +142,11 @@ export interface CatalogService {
     location: AnalyzeLocationRequest,
     options: CatalogServiceRequestOptions,
   ): Promise<AnalyzeLocationResponse>;
+
+  streamEntities(
+    request: StreamEntitiesRequest | undefined,
+    options: CatalogServiceRequestOptions,
+  ): AsyncIterable<Entity>;
 }
 
 class DefaultCatalogService implements CatalogService {
@@ -316,6 +322,16 @@ class DefaultCatalogService implements CatalogService {
   ): Promise<AnalyzeLocationResponse> {
     return this.#catalogApi.analyzeLocation(
       location,
+      await this.#getOptions(options),
+    );
+  }
+
+  async *streamEntities(
+    request: StreamEntitiesRequest | undefined,
+    options: CatalogServiceRequestOptions,
+  ): AsyncIterable<Entity> {
+    yield* this.#catalogApi.streamEntities(
+      request,
       await this.#getOptions(options),
     );
   }

@@ -123,6 +123,16 @@ describe('InMemoryCatalogClient', () => {
     });
   });
 
+  it('streamEntities', async () => {
+    const client = new InMemoryCatalogClient({ entities });
+    const stream = client.streamEntities();
+    const results: Entity[] = [];
+    for await (const entity of stream) {
+      results.push(entity);
+    }
+    expect(results).toEqual(entities);
+  });
+
   it('getEntityAncestors', async () => {
     const client = new InMemoryCatalogClient({ entities });
     await expect(

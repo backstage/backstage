@@ -466,6 +466,16 @@ export type QueryEntitiesResponse = {
 };
 
 /**
+ * Stream entities request for {@link CatalogClient.streamEntities}.
+ *
+ * @public
+ */
+export type StreamEntitiesRequest = Omit<
+  QueryEntitiesRequest,
+  'limit' | 'offset'
+>;
+
+/**
  * A client for interacting with the Backstage software catalog through its API.
  *
  * @public
@@ -692,4 +702,18 @@ export interface CatalogApi {
     location: AnalyzeLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AnalyzeLocationResponse>;
+
+  /**
+   * Asynchronously streams entities from the catalog. Uses `queryEntities`
+   * to fetch entities in batches, and yields them one by one.
+   *
+   * @public
+   *
+   * @param request - Request parameters
+   * @param options - Additional options
+   */
+  streamEntities(
+    request?: StreamEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): AsyncIterable<Entity>;
 }

@@ -40,6 +40,7 @@ import {
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  StreamEntitiesRequest,
   ValidateEntityResponse,
 } from './types/api';
 import { isQueryEntitiesInitialRequest, splitRefsIntoChunks } from './utils';
@@ -48,6 +49,9 @@ import type {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
 } from '@backstage/plugin-catalog-common';
+
+// Number of entities to return in a single streamEntities request
+const STREAM_ENTITIES_LIMIT = 500;
 
 /**
  * A frontend and backend compatible client for communicating with the Backstage
@@ -454,6 +458,29 @@ export class CatalogClient implements CatalogApi {
     }
 
     return response.json() as Promise<AnalyzeLocationResponse>;
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.streamEntities}
+   */
+  async *streamEntities(
+    request?: StreamEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): AsyncIterable<Entity> {
+    let cursor: string | undefined = undefined;
+    do {
+      const res = await this.queryEntities(
+        cursor
+          ? { ...request, cursor, limit: STREAM_ENTITIES_LIMIT }
+          : { ...request, limit: STREAM_ENTITIES_LIMIT },
+        options,
+      );
+      for (const entity of res.items) {
+        yield entity;
+      }
+
+      cursor = res.pageInfo.nextCursor;
+    } while (cursor);
   }
 
   //

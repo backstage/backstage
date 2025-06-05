@@ -540,6 +540,71 @@ describe('CatalogClient', () => {
     });
   });
 
+  describe('streamEntities', () => {
+    const defaultResponse: QueryEntitiesResponse = {
+      items: [
+        {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: {
+            name: 'Test2',
+            namespace: 'test1',
+          },
+        },
+        {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: {
+            name: 'Test1',
+            namespace: 'test1',
+          },
+        },
+      ],
+      pageInfo: {
+        nextCursor: 'next',
+        prevCursor: 'prev',
+      },
+      totalItems: 10,
+    };
+
+    beforeEach(() => {
+      server.use(
+        rest.get(`${mockBaseUrl}/entities/by-query`, (req, res, ctx) => {
+          const cursor = req.url.searchParams.get('cursor');
+          if (cursor === 'next') {
+            return res(ctx.json({ items: [], pageInfo: {}, totalItems: 0 }));
+          }
+          return res(ctx.json(defaultResponse));
+        }),
+      );
+    });
+
+    it('should stream entities', async () => {
+      const stream = client.streamEntities({}, { token });
+      const results: Entity[] = [];
+      for await (const entity of stream) {
+        results.push(entity);
+      }
+      expect(results).toEqual(defaultResponse.items);
+    });
+
+    it('should handle errors', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) => res(ctx.status(401)));
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      const stream = client.streamEntities({}, { token });
+      await expect(async () => {
+        const results: Entity[] = [];
+        for await (const entity of stream) {
+          results.push(entity);
+        }
+      }).rejects.toThrow(/Request failed with 401 Unauthorized/);
+    });
+  });
+
   describe('getEntityByRef', () => {
     const existingEntity: Entity = {
       apiVersion: 'v1',

@@ -32,6 +32,7 @@ import {
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  StreamEntitiesRequest,
   ValidateEntityResponse,
 } from '@backstage/catalog-client';
 import {
@@ -277,6 +278,22 @@ export class InMemoryCatalogClient implements CatalogApi {
     _location: AnalyzeLocationRequest,
   ): Promise<AnalyzeLocationResponse> {
     throw new NotImplementedError('Method not implemented.');
+  }
+
+  async *streamEntities(
+    request?: StreamEntitiesRequest,
+  ): AsyncIterable<Entity> {
+    let cursor: string | undefined = undefined;
+    do {
+      const res = await this.queryEntities(
+        cursor ? { ...request, cursor } : request,
+      );
+      for (const entity of res.items) {
+        yield entity;
+      }
+
+      cursor = res.pageInfo.nextCursor;
+    } while (cursor);
   }
 
   #createEntityRefMap() {
