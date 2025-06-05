@@ -21,12 +21,11 @@ import {
   DatabaseService,
   HttpAuthService,
   LifecycleService,
+  LoggerService,
   PermissionsService,
   resolveSafeChildPath,
   SchedulerService,
-  UrlReaderService,
 } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
 import {
   CompoundEntityRef,
   Entity,
@@ -81,10 +80,8 @@ import { validate } from 'jsonschema';
 import { Duration } from 'luxon';
 import { pathToFileURL } from 'url';
 import { v4 as uuid } from 'uuid';
-import { Logger } from 'winston';
 import { z } from 'zod';
 import {
-  createBuiltinActions,
   DatabaseTaskStore,
   TaskWorker,
   TemplateActionRegistry,
@@ -115,17 +112,17 @@ import {
   isTemplatePermissionRuleInput,
   TemplatePermissionRuleInput,
 } from './permissions';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 
 /**
  * RouterOptions
  */
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
-  reader: UrlReaderService;
   lifecycle?: LifecycleService;
   database: DatabaseService;
-  catalogClient: CatalogApi;
+  catalog: CatalogService;
   scheduler?: SchedulerService;
   actions?: TemplateAction<any, any, any>[];
   /**
@@ -180,9 +177,8 @@ export async function createRouter(
   const {
     logger: parentLogger,
     config,
-    reader,
     database,
-    catalogClient,
+    catalog,
     actions,
     scheduler,
     additionalTemplateFilters,
@@ -285,18 +281,7 @@ export async function createRouter(
     workers.push(worker);
   }
 
-  const actionsToRegister = Array.isArray(actions)
-    ? actions
-    : createBuiltinActions({
-        integrations,
-        catalogClient,
-        reader,
-        config,
-        auth,
-        ...templateExtensions,
-      });
-
-  actionsToRegister.forEach(action => actionRegistry.register(action));
+  actions?.forEach(action => actionRegistry.register(action));
 
   const launchWorkers = () => workers.forEach(worker => worker.start());
 
@@ -370,16 +355,7 @@ export async function createRouter(
         try {
           const credentials = await httpAuth.credentials(req);
 
-          const { token } = await auth.getPluginRequestToken({
-            onBehalfOf: credentials,
-            targetPluginId: 'catalog',
-          });
-
-          const template = await authorizeTemplate(
-            req.params,
-            token,
-            credentials,
-          );
+          const template = await authorizeTemplate(req.params, credentials);
 
           const parameters = [template.spec.parameters ?? []].flat();
 
@@ -458,17 +434,12 @@ export async function createRouter(
           permissionService: permissions,
         });
 
-        const { token } = await auth.getPluginRequestToken({
-          onBehalfOf: credentials,
-          targetPluginId: 'catalog',
-        });
-
         const userEntityRef = auth.isPrincipal(credentials, 'user')
           ? credentials.principal.userEntityRef
           : undefined;
 
         const userEntity = userEntityRef
-          ? await catalogClient.getEntityByRef(userEntityRef, { token })
+          ? await catalog.getEntityByRef(userEntityRef, { credentials })
           : undefined;
 
         let auditLog = `Scaffolding task for ${templateRef}`;
@@ -481,7 +452,6 @@ export async function createRouter(
 
         const template = await authorizeTemplate(
           { kind, namespace, name },
-          token,
           credentials,
         );
 
@@ -529,7 +499,7 @@ export async function createRouter(
 
         const secrets: InternalTaskSecrets = {
           ...req.body.secrets,
-          backstageToken: token,
+          backstageToken: (credentials as any).token,
           __initiatorCredentials: JSON.stringify({
             ...credentials,
             // credentials.token is nonenumerable and will not be serialized, so we need to add it explicitly
@@ -887,17 +857,12 @@ export async function createRouter(
           throw new InputError('Input template is not a template');
         }
 
-        const { token } = await auth.getPluginRequestToken({
-          onBehalfOf: credentials,
-          targetPluginId: 'catalog',
-        });
-
         const userEntityRef = auth.isPrincipal(credentials, 'user')
           ? credentials.principal.userEntityRef
           : undefined;
 
         const userEntity = userEntityRef
-          ? await catalogClient.getEntityByRef(userEntityRef, { token })
+          ? await catalog.getEntityByRef(userEntityRef, { credentials })
           : undefined;
 
         const templateRef: string = `${template.kind}:${
@@ -963,7 +928,7 @@ export async function createRouter(
           })),
           secrets: {
             ...body.secrets,
-            ...(token && { backstageToken: token }),
+            backstageToken: (credentials as any).token,
           },
           credentials,
         });
@@ -1026,13 +991,12 @@ export async function createRouter(
 
   async function authorizeTemplate(
     entityRef: CompoundEntityRef,
-    token: string | undefined,
     credentials: BackstageCredentials,
   ) {
     const template = await findTemplate({
-      catalogApi: catalogClient,
+      catalog,
       entityRef,
-      token,
+      credentials,
     });
 
     if (!isSupportedTemplate(template)) {

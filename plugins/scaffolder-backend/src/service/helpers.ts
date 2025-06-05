@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { CatalogApi } from '@backstage/catalog-client';
+import {
+  BackstageCredentials,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_SOURCE_LOCATION,
@@ -25,14 +28,14 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError, InputError, NotFoundError } from '@backstage/errors';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import fs from 'fs-extra';
 import os from 'os';
-import { Logger } from 'winston';
 
 export async function getWorkingDirectory(
   config: Config,
-  logger: Logger,
+  logger: LoggerService,
 ): Promise<string> {
   if (!config.has('backend.workingDirectory')) {
     return os.tmpdir();
@@ -89,16 +92,18 @@ export function getEntityBaseUrl(entity: Entity): string | undefined {
  */
 export async function findTemplate(options: {
   entityRef: CompoundEntityRef;
-  token?: string;
-  catalogApi: CatalogApi;
+  catalog: CatalogService;
+  credentials: BackstageCredentials;
 }): Promise<TemplateEntityV1beta3> {
-  const { entityRef, token, catalogApi } = options;
+  const { entityRef, catalog, credentials } = options;
 
   if (entityRef.kind.toLocaleLowerCase('en-US') !== 'template') {
     throw new InputError(`Invalid kind, only 'Template' kind is supported`);
   }
 
-  const template = await catalogApi.getEntityByRef(entityRef, { token });
+  const template = await catalog.getEntityByRef(entityRef, {
+    credentials,
+  });
   if (!template) {
     throw new NotFoundError(
       `Template ${stringifyEntityRef(entityRef)} not found`,

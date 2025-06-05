@@ -7,7 +7,7 @@ import { AuditorService } from '@backstage/backend-plugin-api';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
@@ -16,7 +16,7 @@ import { HumanDuration } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
@@ -52,27 +52,9 @@ export type ActionPermissionRuleInput<
 >;
 
 // @public
-export const createBuiltinActions: (
-  options: CreateBuiltInActionsOptions,
-) => TemplateAction[];
-
-// @public
-export interface CreateBuiltInActionsOptions {
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-  // (undocumented)
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-  auth?: AuthService;
-  catalogClient: CatalogApi;
-  config: Config;
-  integrations: ScmIntegrations;
-  reader: UrlReaderService;
-}
-
-// @public
 export function createCatalogRegisterAction(options: {
-  catalogClient: CatalogApi;
+  catalog: CatalogService;
   integrations: ScmIntegrations;
-  auth?: AuthService;
 }): TemplateAction<
   | {
       catalogInfoUrl: string;
@@ -124,8 +106,7 @@ export function createDebugLogAction(): TemplateAction<
 
 // @public
 export function createFetchCatalogEntityAction(options: {
-  catalogClient: CatalogApi;
-  auth?: AuthService;
+  catalog: CatalogService;
 }): TemplateAction<
   {
     entityRef?: string | undefined;
@@ -290,7 +271,7 @@ export type CreateWorkerOptions = {
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
-  logger: Logger;
+  logger: LoggerService;
   auditor?: AuditorService;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   concurrentTasksLimit?: number;
@@ -427,7 +408,7 @@ export class TaskManager implements TaskContext {
     task: CurrentClaimedTask,
     storage: TaskStore,
     abortSignal: AbortSignal,
-    logger: Logger,
+    logger: LoggerService,
     auth?: AuthService,
     config?: Config,
     additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,

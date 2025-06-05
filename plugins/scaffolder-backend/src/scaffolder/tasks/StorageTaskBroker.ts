@@ -18,6 +18,7 @@ import {
   AuditorService,
   AuthService,
   BackstageCredentials,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
@@ -38,7 +39,6 @@ import {
   Observable,
   createDeferred,
 } from '@backstage/types';
-import { Logger } from 'winston';
 import ObservableImpl from 'zen-observable';
 import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
 import { readDuration } from './helper';
@@ -71,7 +71,7 @@ export class TaskManager implements TaskContext {
     task: CurrentClaimedTask,
     storage: TaskStore,
     abortSignal: AbortSignal,
-    logger: Logger,
+    logger: LoggerService,
     auth?: AuthService,
     config?: Config,
     additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
@@ -100,7 +100,7 @@ export class TaskManager implements TaskContext {
     private readonly task: CurrentClaimedTask,
     private readonly storage: TaskStore,
     private readonly signal: AbortSignal,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly workspaceService: WorkspaceService,
     private readonly auth?: AuthService,
   ) {}
@@ -269,7 +269,7 @@ export interface CurrentClaimedTask {
 export class StorageTaskBroker implements TaskBroker {
   constructor(
     private readonly storage: TaskStore,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly config?: Config,
     private readonly auth?: AuthService,
     private readonly additionalWorkspaceProviders?: Record<

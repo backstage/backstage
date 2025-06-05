@@ -24,11 +24,14 @@ import {
   configApiRef,
   createApiFactory,
   discoveryApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { AuthProxyDiscoveryApi } from './AuthProxyDiscoveryApi';
 import { formDecoratorsApiRef } from '@backstage/plugin-scaffolder/alpha';
 import { DefaultScaffolderFormDecoratorsApi } from '@backstage/plugin-scaffolder/alpha';
 import { mockDecorator } from './components/scaffolder/decorators';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderClient } from '@backstage/plugin-scaffolder';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -40,6 +43,22 @@ export const apis: AnyApiFactory[] = [
     api: scmIntegrationsApiRef,
     deps: { configApi: configApiRef },
     factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+  }),
+
+  createApiFactory({
+    api: scaffolderApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      fetchApi: fetchApiRef,
+      scmIntegrationsApi: scmIntegrationsApiRef,
+    },
+    factory: ({ discoveryApi, fetchApi, scmIntegrationsApi }) =>
+      new ScaffolderClient({
+        useLongPollingLogs: true,
+        discoveryApi,
+        fetchApi,
+        scmIntegrationsApi,
+      }),
   }),
 
   createApiFactory({
