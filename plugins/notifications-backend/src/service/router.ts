@@ -23,7 +23,7 @@ import {
   TopicGetOptions,
 } from '../database';
 import { v4 as uuid } from 'uuid';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import {
   NotificationProcessor,
   NotificationSendOptions,
@@ -63,7 +63,7 @@ export interface RouterOptions {
   httpAuth: HttpAuthService;
   userInfo: UserInfoService;
   signals?: SignalsService;
-  catalog: CatalogApi;
+  catalog: CatalogService;
   processors?: NotificationProcessor[];
 }
 
@@ -672,7 +672,7 @@ export async function createRouter(
         users = await getUsersForEntityRef(
           entityRef,
           recipients.excludeEntityRef ?? [],
-          { auth, catalogClient: catalog },
+          { auth, catalog },
         );
       } catch (e) {
         throw new InputError('Failed to resolve notification receivers', e);
