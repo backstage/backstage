@@ -42,4 +42,3 @@ export * from './assets';
 export * from './homePageComponents';
 export * from './deprecated';
 export * from './api';
-export { homeTranslationRef } from './translation';
