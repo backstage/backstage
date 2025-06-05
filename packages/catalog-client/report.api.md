@@ -82,6 +82,10 @@ export interface CatalogApi {
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
+  streamEntities(
+    request?: StreamEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): AsyncIterable<Entity>;
   validateEntity(
     entity: Entity,
     locationRef: string,
@@ -160,6 +164,10 @@ export class CatalogClient implements CatalogApi {
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
+  streamEntities(
+    request?: StreamEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): AsyncIterable<Entity>;
   validateEntity(
     entity: Entity,
     locationRef: string,
@@ -306,6 +314,12 @@ export type QueryEntitiesResponse = {
     prevCursor?: string;
   };
 };
+
+// @public
+export type StreamEntitiesRequest = Omit<
+  QueryEntitiesRequest,
+  'limit' | 'offset'
+>;
 
 // @public
 export type ValidateEntityResponse =
