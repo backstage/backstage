@@ -79,9 +79,9 @@ Scope: The Backstage [Helm Chart(s)](https://github.com/backstage/charts).
 
 | Name                 | Organization | Team | GitHub                                   | Discord        |
 | -------------------- | ------------ | ---- | ---------------------------------------- | -------------- |
-| Andrew Block         | Red Hat      |      | [sabre1041](http://github.com/sabre1041) | sabre1041#2622 |
-| Tom Coufal           | Red Hat      |      | [tumido](http://github.com/tumido)       | Tumi#4346      |
-| Vincenzo Scamporlino | Spotify      |      | [vinzscam](http://github.com/vinzscam)   | vinzscam#6944  |
+| Andrew Block         | Red Hat      |      | [sabre1041](http://github.com/sabre1041) | `sabre1041#2622` |
+| Tom Coufal           | Red Hat      |      | [tumido](http://github.com/tumido)       | `Tumi#4346`      |
+| Vincenzo Scamporlino | Spotify      |      | [vinzscam](http://github.com/vinzscam)   | `vinzscam#6944`  |
 
 ### Home
 
