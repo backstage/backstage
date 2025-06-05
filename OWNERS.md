@@ -89,12 +89,13 @@ Team: @backstage/home-maintainers
 
 Scope: The Backstage home page and information architecture
 
-| Name                     | Organization | Team           | GitHub                                   | Discord           |
-| ------------------------ | ------------ | -------------- | ---------------------------------------- | ----------------- |
-| Avantika Iyer            | Spotify      | Infinite Buck$ | [tikabom](http://github.com/tikabom)     | -                 |
-| Emma Indal               | Spotify      | Infinite Buck$ | [emmaindal](http://github.com/emmaindal) | emmaindal#7503    |
-| Djamaile Rahamat         | Spotify      | Infinite Buck$ | [djamaile](http://github.com/djamaile)   | dyoqi             |
-| Raghunandan Balachandran | Spotify      | Infinite Buck$ | [soapraj](http://github.com/soapraj)     | raghunandanb#1114 |
+| Name                     | Organization | Team            | GitHub                                    | Discord |
+| ------------------------ | ------------ | --------------- | ----------------------------------------- | ------- |
+| Avantika Iyer            | Spotify      | Imaginary Goats | [tikabom](http://github.com/tikabom)      | -       |
+| Eric Peterson            | Spotify      | Imaginary Goats | [iamEAP](http://github.com/iamEAP)        | -       |
+| Daniel Jelčić            | Spotify      | Imaginary Goats | [djamaile](http://github.com/danieljelcic)| -       |
+| Musaab Elfaqih           | Spotify      | Imaginary Goats | [TheSabby](http://github.com/TheSabby)    | -       |
+| Ainhoa Ainhoa Larumbe    | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)      | -       |
 
 ### Kubernetes
 
