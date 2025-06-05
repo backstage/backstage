@@ -110,7 +110,7 @@ describe('<EntityProcessingStatusPicker/>', () => {
     });
   });
 
-  it('is initiated with the correct values from the URL querystring', async () => {
+  it('select the corresponding label when the querystring value is true', async () => {
     const updateFilters = jest.fn();
     const queryParameters = { orphan: 'true', error: 'true' };
     await renderInTestApp(
@@ -128,4 +128,25 @@ describe('<EntityProcessingStatusPicker/>', () => {
     expect(screen.getByText('Is Orphan')).toBeInTheDocument();
     expect(screen.getByText('Has Error')).toBeInTheDocument();
   });
+
+  it.each([{}, { orphan: 'false', error: 'false' }])(
+    'do not select the corresponding label when the querystring value is falsy [%s]',
+    async queryParameters => {
+      const updateFilters = jest.fn();
+      await renderInTestApp(
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters,
+          }}
+        >
+          <EntityProcessingStatusPicker />
+        </MockEntityListContextProvider>,
+      );
+
+      expect(screen.getByText('Processing Status')).toBeInTheDocument();
+      expect(screen.queryByText('Is Orphan')).not.toBeInTheDocument();
+      expect(screen.queryByText('Has Error')).not.toBeInTheDocument();
+    },
+  );
 });

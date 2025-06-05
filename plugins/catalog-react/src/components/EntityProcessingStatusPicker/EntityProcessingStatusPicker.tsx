@@ -26,7 +26,6 @@ import { useEntityList } from '../../hooks';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogAutocomplete } from '../CatalogAutocomplete';
-import { EntityFilter } from '../../types';
 
 /** @public */
 export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
@@ -43,12 +42,7 @@ const useStyles = makeStyles(
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-const advanceFilterOptions: {
-  [key: string]: {
-    label: string;
-    createFilterFn: () => EntityFilter;
-  };
-} = {
+const advanceFilterOptions = {
   orphan: {
     label: 'Is Orphan',
     createFilterFn: () => new EntityOrphanFilter(true),
@@ -57,7 +51,9 @@ const advanceFilterOptions: {
     label: 'Has Error',
     createFilterFn: () => new EntityErrorFilter(true),
   },
-};
+} as const;
+
+type AdvancedFilterOptionType = keyof typeof advanceFilterOptions;
 
 /** @public */
 export const EntityProcessingStatusPicker = () => {
@@ -66,22 +62,25 @@ export const EntityProcessingStatusPicker = () => {
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const [selectedAdvancedItems, setSelectedAdvancedItems] = useState<string[]>(
-    Object.keys(queryParameters)
-      .filter(key => key in advanceFilterOptions)
+    (Object.keys(queryParameters) as AdvancedFilterOptionType[])
+      .filter(
+        key => key in advanceFilterOptions && queryParameters[key] === 'true',
+      )
       .map(key => advanceFilterOptions[key].label),
   );
 
   useEffect(() => {
-    updateFilters(
-      Object.fromEntries(
-        Object.keys(advanceFilterOptions).map(key => [
+    const updatedFilters = Object.fromEntries(
+      (Object.keys(advanceFilterOptions) as AdvancedFilterOptionType[]).map(
+        key => [
           key,
           selectedAdvancedItems.includes(advanceFilterOptions[key].label)
             ? advanceFilterOptions[key].createFilterFn()
             : undefined,
-        ]),
+        ],
       ),
     );
+    updateFilters(updatedFilters);
   }, [selectedAdvancedItems, updateFilters]);
 
   const availableAdvancedItems = Object.values(advanceFilterOptions).map(
