@@ -58,12 +58,12 @@ describe('bindUpsertSubscriptionEndpoint', () => {
     `);
 
     response = await request(app).post('/history/v1/subscriptions').send({
-      from: 7,
+      afterEventId: 7,
     });
     expect(response.status).toBe(400);
     expect(response.body.error).toMatchInlineSnapshot(`
       {
-        "message": "request/body/from must be string",
+        "message": "request/body/afterEventId must be string",
         "name": "InputError",
       }
     `);
@@ -147,7 +147,7 @@ describe('bindUpsertSubscriptionEndpoint', () => {
 
     const response = await request(app).post('/history/v1/subscriptions').send({
       subscriptionId: '234',
-      from: '1',
+      afterEventId: '1',
       entityRef: 'component:default/test',
       entityId: 'test',
     });
@@ -155,7 +155,7 @@ describe('bindUpsertSubscriptionEndpoint', () => {
     expect(model.upsertSubscription).toHaveBeenLastCalledWith({
       subscriptionSpec: {
         subscriptionId: '234',
-        from: '1',
+        afterEventId: '1',
         entityRef: 'component:default/test',
         entityId: 'test',
       },

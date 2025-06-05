@@ -28,9 +28,9 @@ export interface SubscriptionSpec {
    */
   subscriptionId?: string;
   /**
-   * Where the subscription should start from. Reading always happen in ascending order (from older to newer events). Either an event ID to start from (not including itself), or the special strings \"beginning\" or \"now\" for those respective ends of the event stream. If not specified, \"now\" is assumed. This parameter only has an effect on the actual current stream position upon initial creation; after that, only reads can move it.
+   * Return events that are after (newer than) but not equal to the given event ID. Use the special value \"last\" to start reading from the very end of the events list. Use the value \"0\" if you want to start reading from the first history event ever emitted. If not specified, \"last\" is assumed. This parameter only has an effect on the actual current stream position upon initial creation; after that, only reads can move it.
    */
-  _from?: string;
+  afterEventId?: string;
   /**
    * Filter to only events pertaining to this entity ref
    */

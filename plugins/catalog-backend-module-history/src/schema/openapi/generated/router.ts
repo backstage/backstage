@@ -224,10 +224,10 @@ export const spec = {
             description:
               'A unique identifier of this subscription.\nIt is recommended that this ID only consist of URL safe characters, and it must be no more than 250 characters long.\nIf not specified, a new subscription with a random ID will be created.\n',
           },
-          from: {
+          afterEventId: {
             type: 'string',
             description:
-              'Where the subscription should start from. Reading always happen in ascending order (from older to newer events).\nEither an event ID to start from (not including itself), or the special strings "beginning" or "now" for those respective ends of the event stream.\nIf not specified, "now" is assumed.\nThis parameter only has an effect on the actual current stream position upon initial creation; after that, only reads can move it.\n',
+              'Return events that are after (newer than) but not equal to the given event ID. Use the special value "last" to start reading from the very end of the events list. Use the value "0" if you want to start reading from the first history event ever emitted.\nIf not specified, "last" is assumed.\nThis parameter only has an effect on the actual current stream position upon initial creation; after that, only reads can move it.\n',
           },
           entityRef: {
             type: 'string',

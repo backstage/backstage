@@ -163,7 +163,7 @@ describe('ReadSubscriptionModelImpl', () => {
         await setEntity(knex, 'foo', 2);
         await upsertHistorySubscription(knex, {
           subscriptionId: '1',
-          _from: 'beginning',
+          afterEventId: '0',
         });
 
         let result = await model.readSubscription({
@@ -265,12 +265,12 @@ describe('ReadSubscriptionModelImpl', () => {
 
         await upsertHistorySubscription(knex, {
           subscriptionId: '1',
-          _from: 'beginning',
+          afterEventId: '0',
           entityRef: 'k:ns/foo1',
         });
         await upsertHistorySubscription(knex, {
           subscriptionId: '2',
-          _from: 'beginning',
+          afterEventId: '0',
           entityRef: 'k:ns/foo2',
         });
 
@@ -332,7 +332,7 @@ describe('ReadSubscriptionModelImpl', () => {
 
         await upsertHistorySubscription(knex, {
           subscriptionId: '1',
-          _from: 'beginning',
+          afterEventId: '0',
         });
 
         const abortController = new AbortController();

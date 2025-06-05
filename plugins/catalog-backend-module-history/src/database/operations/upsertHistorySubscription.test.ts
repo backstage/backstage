@@ -195,7 +195,7 @@ describe('upsertHistorySubscription', () => {
   );
 
   it.each(databases.eachSupportedId())(
-    'supports all valid forms of "from" values and rejects invalid ones, %p',
+    'supports all valid forms of "afterEventId" values and rejects invalid ones, %p',
     async databaseId => {
       const { knex, backend } = await init(databaseId);
 
@@ -207,7 +207,7 @@ describe('upsertHistorySubscription', () => {
 
       let subscription = await upsertHistorySubscription(knex, {
         subscriptionId: 'beginning',
-        _from: 'beginning',
+        afterEventId: '0',
       });
       expect(subscription).toEqual({
         subscriptionId: 'beginning',
@@ -232,7 +232,7 @@ describe('upsertHistorySubscription', () => {
 
       subscription = await upsertHistorySubscription(knex, {
         subscriptionId: 'now',
-        _from: 'now',
+        afterEventId: 'last',
       });
       expect(subscription).toEqual({
         subscriptionId: 'now',
@@ -257,7 +257,7 @@ describe('upsertHistorySubscription', () => {
 
       subscription = await upsertHistorySubscription(knex, {
         subscriptionId: 'number',
-        _from: '2',
+        afterEventId: '2',
       });
       expect(subscription).toEqual({
         subscriptionId: 'number',
@@ -283,10 +283,10 @@ describe('upsertHistorySubscription', () => {
       await expect(
         upsertHistorySubscription(knex, {
           subscriptionId: 'wrong',
-          _from: 'blah',
+          afterEventId: 'blah',
         }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"Invalid from value, expected a string of digits or "beginning" or "now", got "blah""`,
+        `"Invalid afterEventId value, expected a string of digits or "last", got "blah""`,
       );
 
       await backend.stop();

@@ -130,21 +130,17 @@ async function getStartingEventId(
   knex: Knex,
   subscription: SubscriptionSpec,
 ): Promise<string> {
-  const from = subscription._from ?? 'now';
+  const afterEventId = subscription.afterEventId ?? 'last';
 
-  if (from === 'beginning') {
-    return '0';
-  }
-
-  if (from === 'now') {
+  if (afterEventId === 'last') {
     return await getMaxEventId(knex);
   }
 
-  if (!from.match(/^\d+$/)) {
+  if (!afterEventId.match(/^\d+$/)) {
     throw new Error(
-      `Invalid from value, expected a string of digits or "beginning" or "now", got "${from}"`,
+      `Invalid afterEventId value, expected a string of digits or "last", got "${afterEventId}"`,
     );
   }
 
-  return from;
+  return afterEventId;
 }
