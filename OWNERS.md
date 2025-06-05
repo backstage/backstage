@@ -96,6 +96,7 @@ Scope: The Backstage home page and information architecture
 | Daniel Jelčić            | Spotify      | Imaginary Goats | [djelcic](http://github.com/danieljelcic)| -       |
 | Eric Peterson            | Spotify      | Imaginary Goats | [iamEAP](http://github.com/iamEAP)        | -       |
 | Musaab Elfaqih           | Spotify      | Imaginary Goats | [TheSabby](http://github.com/TheSabby)    | -       |
+| Landry Zinda-Snead  | Spotify      | Imaginary Goats | [landryzs](http://github.com/landryzs)          | -       |
 
 ### Kubernetes
 
