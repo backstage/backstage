@@ -30,14 +30,10 @@ describe('createTemplateAction', () => {
       handler: async ctx => {
         // @ts-expect-error - repoUrl is string
         const a: number = ctx.input.repoUrl;
-
         const b: string = ctx.input.repoUrl;
-        expect(b).toBeDefined();
 
-        // @ts-expect-error - logStream is not available
-        const stream = ctx.logStream;
-
-        expect(stream).toBeDefined();
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        [a, b];
 
         ctx.output('test', 'value');
 
@@ -84,17 +80,19 @@ describe('createTemplateAction', () => {
           const a: number = ctx.input.repoUrl;
 
           const b: string = ctx.input.repoUrl;
-          // eslint-disable-next-line jest/no-conditional-expect
-          expect(b).toBeDefined();
+
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          [a, b];
         }
 
         if ('numberThing' in ctx.input) {
           const a: number = ctx.input.numberThing;
-          // eslint-disable-next-line jest/no-conditional-expect
-          expect(a).toBeDefined();
 
           // @ts-expect-error - not valid input type
           const b: string = ctx.input.numberThing;
+
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          [a, b];
         }
       },
     });
