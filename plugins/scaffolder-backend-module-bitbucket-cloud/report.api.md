@@ -5,7 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
@@ -103,14 +102,16 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
   {
     repoUrl: string;
     title: string;
-    description?: string;
-    targetBranch?: string;
     sourceBranch: string;
-    token?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
+    description?: string | undefined;
+    targetBranch?: string | undefined;
+    token?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    pullRequestUrl: string;
+  },
+  'v2'
 >;
 ```
