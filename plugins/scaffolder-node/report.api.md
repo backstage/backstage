@@ -95,7 +95,7 @@ export function addFiles(options: {
     | {
         token: string;
       };
-  logger?: Logger | undefined;
+  logger?: LoggerService | undefined;
 }): Promise<void>;
 
 // @public (undocumented)
@@ -110,7 +110,7 @@ export function cloneRepo(options: {
     | {
         token: string;
       };
-  logger?: Logger | undefined;
+  logger?: LoggerService | undefined;
   ref?: string | undefined;
   depth?: number | undefined;
   noCheckout?: boolean | undefined;
@@ -127,7 +127,7 @@ export function commitAndPushBranch(options: {
     | {
         token: string;
       };
-  logger?: Logger | undefined;
+  logger?: LoggerService | undefined;
   commitMessage: string;
   gitAuthorInfo?: {
     name?: string;
@@ -152,7 +152,7 @@ export function commitAndPushRepo(input: {
     | {
         token: string;
       };
-  logger: Logger;
+  logger: LoggerService;
   commitMessage: string;
   gitAuthorInfo?: {
     name?: string;
@@ -177,7 +177,7 @@ export function createBranch(options: {
     | {
         token: string;
       };
-  logger?: Logger | undefined;
+  logger?: LoggerService | undefined;
 }): Promise<void>;
 
 // @public @deprecated (undocumented)
@@ -304,7 +304,7 @@ export function initRepoAndPush(input: {
     | {
         token: string;
       };
-  logger: Logger;
+  logger: LoggerService;
   defaultBranch?: string;
   commitMessage?: string;
   gitAuthorInfo?: {

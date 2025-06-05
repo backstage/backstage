@@ -51,7 +51,7 @@ describe('github:repository:webhook:create', () => {
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
   const defaultWebhookSecret = 'aafdfdivierernfdk23f';
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   beforeEach(() => {
     jest.resetAllMocks();

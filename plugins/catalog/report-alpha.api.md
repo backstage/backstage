@@ -18,6 +18,7 @@ import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
@@ -336,8 +337,6 @@ const _default: FrontendPlugin<
       };
     }>;
     'entity-card:catalog/about': ExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'about';
       config: {
         filter: EntityPredicate | undefined;
         type: 'content' | 'summary' | 'info' | undefined;
@@ -369,7 +368,35 @@ const _default: FrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        iconLinks: ExtensionInput<
+          | ConfigurableExtensionDataRef<
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'catalog.entity-filter-expression',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              () => IconLinkVerticalProps,
+              'entity-icon-link-props',
+              {}
+            >,
+          {
+            singleton: false;
+            optional: false;
+          }
+        >;
+      };
+      kind: 'entity-card';
+      name: 'about';
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
@@ -922,6 +949,45 @@ const _default: FrontendPlugin<
           >;
       inputs: {};
       params: EntityContextMenuItemParams;
+    }>;
+    'entity-icon-link:catalog/view-source': ExtensionDefinition<{
+      kind: 'entity-icon-link';
+      name: 'view-source';
+      config: {
+        label: string | undefined;
+        title: string | undefined;
+        filter: EntityPredicate | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+        label?: string | undefined;
+        title?: string | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            () => IconLinkVerticalProps,
+            'entity-icon-link-props',
+            {}
+          >;
+      inputs: {};
+      params: {
+        useProps: () => Omit<IconLinkVerticalProps, 'color'>;
+        filter?: EntityPredicate | ((entity: Entity) => boolean);
+      };
     }>;
     'nav-item:catalog': ExtensionDefinition<{
       kind: 'nav-item';

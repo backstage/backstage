@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.3.11-next.1
+
+### Patch Changes
+
+- 0b2bbf1: Migrate using new actions format
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.3-next.1
+  - @backstage/backend-defaults@0.10.1-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+
 ## 0.3.11-next.0
 
 ### Patch Changes

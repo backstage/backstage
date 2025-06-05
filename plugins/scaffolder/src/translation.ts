@@ -19,6 +19,9 @@ import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 export const scaffolderTranslationRef = createTranslationRef({
   id: 'scaffolder',
   messages: {
+    aboutCard: {
+      launchTemplate: 'Launch Template',
+    },
     actionsPage: {
       title: 'Installed actions',
       pageTitle: 'Create a New Component',

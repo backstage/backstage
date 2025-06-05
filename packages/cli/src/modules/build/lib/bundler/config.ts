@@ -15,8 +15,7 @@
  */
 
 import { BundlingOptions, ModuleFederationOptions } from './types';
-import { resolve as resolvePath, dirname } from 'path';
-import chalk from 'chalk';
+import { resolve as resolvePath } from 'path';
 import webpack from 'webpack';
 
 import { BundlingPaths } from './paths';
@@ -345,47 +344,6 @@ export async function createConfig(
 
   const mode = isDev ? 'development' : 'production';
   const optimization = optimizationConfig(options);
-
-  if (
-    mode === 'production' &&
-    process.env.EXPERIMENTAL_MODULE_FEDERATION &&
-    process.env.FORCE_REACT_DEVELOPMENT
-  ) {
-    console.log(
-      chalk.yellow(
-        `⚠️  WARNING: Forcing react and react-dom into development mode. This build should not be used in production.`,
-      ),
-    );
-
-    const reactPackageDirs = [
-      `${dirname(require.resolve('react/package.json'))}/`,
-      `${dirname(require.resolve('react-dom/package.json'))}/`,
-    ];
-
-    // Don't define process.env.NODE_ENV with value matching config.mode. If we
-    // don't set this to false, webpack will define the value of
-    // process.env.NODE_ENV for us, and the definition below will be ignored.
-    optimization.nodeEnv = false;
-
-    // Instead, provide a custom definition which always uses "development" if
-    // the module is part of `react` or `react-dom`, and `config.mode` otherwise.
-    plugins.push(
-      new bundler.DefinePlugin({
-        'process.env.NODE_ENV': rspack
-          ? // FIXME: see also https://github.com/web-infra-dev/rspack/issues/5606
-            JSON.stringify(mode)
-          : webpack.DefinePlugin.runtimeValue(({ module }) => {
-              if (
-                reactPackageDirs.some(val => module.resource.startsWith(val))
-              ) {
-                return '"development"';
-              }
-
-              return `"${mode}"`;
-            }),
-      }),
-    );
-  }
 
   return {
     mode,
