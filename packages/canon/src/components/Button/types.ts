@@ -16,14 +16,14 @@
 
 import type { ButtonOwnProps } from './Button.props';
 import { ReactElement } from 'react';
+import type { useRender } from '@base-ui-components/react/use-render';
 
 /**
  * Properties for {@link Button}
  *
  * @public
  */
-export interface ButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
+export interface ButtonProps extends useRender.ComponentProps<'button'> {
   /**
    * The size of the button
    * @defaultValue 'medium'
@@ -35,11 +35,6 @@ export interface ButtonProps
    * @defaultValue 'primary'
    */
   variant?: ButtonOwnProps['variant'];
-
-  /**
-   * The content of the button
-   */
-  children: React.ReactNode;
 
   /**
    * Optional icon to display at the start of the button
