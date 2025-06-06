@@ -398,6 +398,12 @@ export class GitlabUrlReader implements UrlReaderService {
     );
     const data = await result.json();
     if (!result.ok) {
+      if (result.status === 401) {
+        throw new Error(
+          'GitLab Error: 401 - Unauthorized. The access token used is either expired, or does not have permission to read the project',
+        );
+      }
+
       throw new Error(`Gitlab error: ${data.error}, ${data.error_description}`);
     }
     return Number(data.id);
