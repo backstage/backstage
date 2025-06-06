@@ -126,3 +126,22 @@ export const catalogReactTranslationRef = createTranslationRef({
     },
   },
 });
+
+/** @alpha */
+export const entityTableColumnTitleTranslationRef = createTranslationRef({
+  id: 'catalog-react.entityTableColumnTitle',
+  messages: {
+    name: 'Name',
+    system: 'System',
+    owner: 'Owner',
+    type: 'Type',
+    lifecycle: 'Lifecycle',
+    namespace: 'Namespace',
+    description: 'Description',
+    tags: 'Tags',
+    targets: 'Targets',
+    title: 'Title',
+    label: 'Label',
+    domain: 'Domain',
+  },
+});
