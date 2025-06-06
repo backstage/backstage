@@ -38,6 +38,7 @@ const tryInitGitRepositoryMock = jest.spyOn(tasks, 'tryInitGitRepository');
 const readGitConfig = jest.spyOn(tasks, 'readGitConfig');
 const moveAppMock = jest.spyOn(tasks, 'moveAppTask');
 const buildAppMock = jest.spyOn(tasks, 'buildAppTask');
+const tryCommandForVersionMock = jest.spyOn(tasks, 'tryCommandForVersion');
 
 describe('command entrypoint', () => {
   const mockDir = createMockDirectory({ mockOsTmpDir: true });
@@ -49,6 +50,10 @@ describe('command entrypoint', () => {
     });
     readGitConfig.mockResolvedValue({
       defaultBranch: 'git-default-branch',
+    });
+    tryCommandForVersionMock.mockResolvedValue({
+      version: '1.2.3',
+      error: undefined,
     });
   });
 
