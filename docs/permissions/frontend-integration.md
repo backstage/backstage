@@ -5,7 +5,7 @@ description: How to place your Backstage frontend components behind authorizatio
 ---
 
 :::info
-Starting with a [fresh Backstage installation](https://backstage.io/docs/getting-started/), the code example below is already implemented, so there are no code actual code changes required.
+Starting with a [fresh Backstage installation](https://backstage.io/docs/getting-started/), the code example below is already implemented, so there are no actual code changes required.
 :::
 
 Now that we understand how to [author a permission policy](./writing-a-policy.md), let's consider cases where we'll need to supplement our policy with authorization checks on the frontend.
