@@ -343,13 +343,14 @@ const config: Config = {
     ],
 
     colorMode: {
+      disableSwitch: false,
       defaultMode: 'dark',
-      disableSwitch: true,
     },
     navbar: {
       logo: {
         alt: 'Backstage Software Catalog and Developer Platform',
-        src: 'img/logo.svg',
+        src: 'img/logo-black.svg',
+        srcDark: 'img/logo.svg',
       },
       items: [
         {

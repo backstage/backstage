@@ -154,6 +154,8 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly 'defaultSettingsPage.tabsTitle.general': 'General';
     readonly 'settingsLayout.title': 'Settings';
     readonly sidebarTitle: 'Settings';
+    readonly 'profileCard.title': 'Profile';
+    readonly 'appearanceCard.title': 'Appearance';
   }
 >;
 

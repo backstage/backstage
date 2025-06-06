@@ -87,6 +87,7 @@ const EntityUserProfileCard = EntityCardBlueprint.makeWithOverrides({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'org',
+  info: { packageJson: () => import('../package.json') },
   extensions: [
     EntityGroupProfileCard,
     EntityMembersListCard,
@@ -97,3 +98,5 @@ export default createFrontendPlugin({
     catalogIndex: catalogIndexRouteRef,
   }),
 });
+
+export { orgTranslationRef } from './translation';

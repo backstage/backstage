@@ -1,5 +1,27 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.25-next.1
+
+### Patch Changes
+
+- 9dde3ba: Improved Keyboard accessibility in techdocs.
+- Updated dependencies
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/integration@1.17.0
+  - @backstage/integration-react@1.2.7
+  - @backstage/plugin-techdocs-react@1.3.0-next.0
+
+## 1.1.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/plugin-techdocs-react@1.3.0-next.0
+  - @backstage/integration-react@1.2.7
+
 ## 1.1.24
 
 ### Patch Changes

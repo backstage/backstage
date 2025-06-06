@@ -18,3 +18,6 @@
 export const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 /** @public */
 export const TECHDOCS_EXTERNAL_ANNOTATION = 'backstage.io/techdocs-entity';
+/** @public */
+export const TECHDOCS_EXTERNAL_PATH_ANNOTATION =
+  'backstage.io/techdocs-entity-path';

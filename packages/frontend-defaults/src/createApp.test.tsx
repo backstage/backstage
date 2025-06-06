@@ -23,12 +23,15 @@ import {
   createFrontendPlugin,
   ThemeBlueprint,
   createFrontendModule,
+  useAppNode,
+  FrontendPluginInfo,
 } from '@backstage/frontend-plugin-api';
 import { screen, waitFor } from '@testing-library/react';
 import { CreateAppFeatureLoader, createApp } from './createApp';
 import { mockApis, renderWithEffects } from '@backstage/test-utils';
 import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
 import { default as appPluginOriginal } from '@backstage/plugin-app';
+import { useState, useEffect } from 'react';
 
 describe('createApp', () => {
   const appPlugin = appPluginOriginal.withOverrides({
@@ -117,6 +120,52 @@ describe('createApp', () => {
     await waitFor(() =>
       expect(screen.getByText('Last Page')).toBeInTheDocument(),
     );
+  });
+
+  it('should allow overriding the plugin info resolver', async () => {
+    function TestComponent() {
+      const appNode = useAppNode();
+      const [info, setInfo] = useState<FrontendPluginInfo | undefined>(
+        undefined,
+      );
+
+      useEffect(() => {
+        appNode?.spec.source?.info().then(setInfo);
+      }, [appNode]);
+
+      return <div>Package name: {info?.packageName}</div>;
+    }
+
+    const app = createApp({
+      configLoader: async () => ({ config: mockApis.config() }),
+      features: [
+        appPlugin,
+        createFrontendPlugin({
+          pluginId: 'test',
+          extensions: [
+            PageBlueprint.make({
+              params: {
+                defaultPath: '/',
+                loader: async () => <TestComponent />,
+              },
+            }),
+          ],
+        }),
+      ],
+      pluginInfoResolver: async () => {
+        return {
+          info: {
+            packageName: '@test/test',
+          },
+        };
+      },
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(
+      screen.findByText('Package name: @test/test'),
+    ).resolves.toBeInTheDocument();
   });
 
   it('should support feature loaders', async () => {

@@ -28,6 +28,7 @@ import {
 
 export default createFrontendPlugin({
   pluginId: 'kubernetes',
+  info: { packageJson: () => import('../../package.json') },
   extensions: [
     kubernetesPage,
     entityKubernetesContent,

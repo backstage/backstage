@@ -36,12 +36,6 @@ export type TemplateActionInput = {
   targetPath?: string;
   values: any;
   templateFileExtension?: string | boolean;
-
-  // Cookiecutter compat options
-  /**
-   * @deprecated This field is deprecated in favor of copyWithoutTemplating.
-   */
-  copyWithoutRender?: string[];
   copyWithoutTemplating?: string[];
   cookiecutterCompat?: boolean;
   replace?: boolean;
@@ -206,26 +200,12 @@ function resolveTemplateActionSettings<I extends TemplateActionInput>(
   const targetPath = ctx.input.targetPath ?? './';
   const outputDir = resolveSafeChildPath(ctx.workspacePath, targetPath);
 
-  if (ctx.input.copyWithoutRender && ctx.input.copyWithoutTemplating) {
-    throw new InputError(
-      'Fetch action input copyWithoutRender and copyWithoutTemplating can not be used at the same time',
-    );
-  }
-  let copyOnlyPatterns: string[] | undefined;
-  let renderFilename: boolean;
-  if (ctx.input.copyWithoutRender) {
-    ctx.logger.warn(
-      '[Deprecated] copyWithoutRender is deprecated Please use copyWithoutTemplating instead.',
-    );
-    copyOnlyPatterns = ctx.input.copyWithoutRender;
-    renderFilename = false;
-  } else {
-    copyOnlyPatterns = ctx.input.copyWithoutTemplating;
-    renderFilename = true;
-  }
+  const copyOnlyPatterns = ctx.input.copyWithoutTemplating;
+  const renderFilename = true;
+
   if (copyOnlyPatterns && !Array.isArray(copyOnlyPatterns)) {
     throw new InputError(
-      'Fetch action input copyWithoutRender/copyWithoutTemplating must be an Array',
+      'Fetch action input copyWithoutTemplating must be an Array',
     );
   }
   if (
@@ -233,7 +213,7 @@ function resolveTemplateActionSettings<I extends TemplateActionInput>(
     (copyOnlyPatterns || ctx.input.cookiecutterCompat)
   ) {
     throw new InputError(
-      'Fetch action input extension incompatible with copyWithoutRender/copyWithoutTemplating and cookiecutterCompat',
+      'Fetch action input extension incompatible with copyWithoutTemplating and cookiecutterCompat',
     );
   }
   let extension: string | false = false;

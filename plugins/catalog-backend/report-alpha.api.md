@@ -30,6 +30,7 @@ export const catalogConditions: Conditions<{
     'catalog-entity',
     {
       label: string;
+      value?: string | undefined;
     }
   >;
   hasMetadata: PermissionRule<
@@ -103,6 +104,7 @@ export const permissionRules: {
     'catalog-entity',
     {
       label: string;
+      value?: string | undefined;
     }
   >;
   hasMetadata: PermissionRule<

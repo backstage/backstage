@@ -1,5 +1,15 @@
 # @backstage/frontend-defaults
 
+## 0.2.3-next.0
+
+### Patch Changes
+
+- fa5650c: Forwarded the new `pluginInfoResolver` option for `createApp`.
+- Updated dependencies
+  - @backstage/plugin-app@0.1.10-next.0
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/frontend-app-api@0.11.3-next.0
+
 ## 0.2.2
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # @backstage/canon
 
+## 0.5.0-next.1
+
+### Minor Changes
+
+- 621fac9: We are updating the default size of the Button component in Canon to be small instead of medium.
+- a842554: We set the default size for IconButton in Canon to be small instead of medium.
+
+## 0.5.0-next.0
+
+### Minor Changes
+
+- 24b45ef: Fixes spacing props on layout components and aligned on naming for the Grid component. You should now call the Grid root component using <Grid.Root /> instead of just <Grid />.
+
+### Patch Changes
+
+- 269316d: Remove leftover console.log from Container component.
+
 ## 0.4.0
 
 ### Minor Changes

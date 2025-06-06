@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.2.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3-next.1
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+
+## 0.2.18-next.0
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/core-compat-api@0.4.3-next.0
+
 ## 0.2.17
 
 ### Patch Changes

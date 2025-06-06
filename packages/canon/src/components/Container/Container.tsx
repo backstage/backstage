@@ -42,8 +42,6 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
     };
     const { className, style } = extractProps(props, propDefs);
 
-    console.log(className, style);
-
     return createElement('div', {
       ref,
       className: clsx('canon-Container', className),

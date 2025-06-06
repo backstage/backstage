@@ -26,14 +26,18 @@ import ObservableImpl from 'zen-observable';
  * Due to a circular dependency between this plugin and the
  * plugin-scaffolder-backend-module-cookiecutter plugin, it results in an error:
  * TypeError: _pluginscaffolderbackend.createTemplateAction is not a function
+ *
+ * TODO: These tests need refactoring. Seems like the identityApi tests don't do anything different anymore.
+ * And there's very little value re-reunning all the tests again with just additional template filters and values.
+ * Let's break them out into better tests. Didn't want to do it in the same PR i'm working on right now.
  */
 import {
   parseEntityRef,
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { createRouter, DatabaseTaskStore } from '../index';
 import {
+  createTemplateAction,
   TaskBroker,
   TemplateFilter,
   TemplateGlobal,
@@ -54,7 +58,6 @@ import {
   createTemplateGlobalFunction,
   createTemplateGlobalValue,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { EventsService } from '@backstage/plugin-events-node';
 import { DatabaseService } from '@backstage/backend-plugin-api';
@@ -66,6 +69,8 @@ import {
   extractGlobalValueMetadata,
 } from '../util/templating';
 import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
+import { createRouter } from './router';
+import { DatabaseTaskStore } from '../scaffolder/tasks/DatabaseTaskStore';
 
 const mockAccess = jest.fn();
 
@@ -94,11 +99,6 @@ function createDatabase(): DatabaseService {
     }),
   ).forPlugin('scaffolder');
 }
-
-const mockUrlReader = UrlReaders.default({
-  logger: mockServices.logger.mock(),
-  config: new ConfigReader({}),
-});
 
 const config = new ConfigReader({});
 
@@ -187,23 +187,18 @@ describe.each([
     let app: express.Express;
     let loggerSpy: jest.SpyInstance;
     let taskBroker: TaskBroker;
-    const catalogClient = catalogServiceMock.mock();
+    const catalogMock = catalogServiceMock.mock();
     const permissionApi = {
       authorize: jest.fn(),
       authorizeConditional: jest.fn(),
     } as unknown as PermissionEvaluator;
     const auth = mockServices.auth();
     const httpAuth = mockServices.httpAuth();
-    const discovery = mockServices.discovery();
     const events = {
       publish: jest.fn(),
     } as unknown as EventsService;
 
     const credentials = mockCredentials.user();
-    const token = mockCredentials.service.token({
-      onBehalfOf: credentials,
-      targetPluginId: 'catalog',
-    });
 
     const getMockTemplate = (): TemplateEntityV1beta3 => ({
       apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -303,20 +298,31 @@ describe.each([
           logger: logger,
           config: new ConfigReader({}),
           database: createDatabase(),
-          catalogClient,
-          reader: mockUrlReader,
+          catalog: catalogMock,
           taskBroker,
           permissions: permissionApi,
           auth,
           httpAuth,
-          discovery,
           events,
           additionalTemplateFilters,
           additionalTemplateGlobals,
+          actions: [
+            createTemplateAction({
+              id: 'test',
+              description: 'test',
+              schema: {
+                input: z =>
+                  z.object({
+                    test: z.string(),
+                  }),
+              },
+              handler: async () => {},
+            }),
+          ],
         });
         app = express().use(router);
 
-        catalogClient.getEntityByRef.mockImplementation(async ref => {
+        catalogMock.getEntityByRef.mockImplementation(async ref => {
           const { kind } = parseEntityRef(ref);
 
           if (kind.toLocaleLowerCase() === 'template') {
@@ -356,7 +362,7 @@ describe.each([
           const response = await request(app).get('/v2/actions').send();
           expect(response.status).toEqual(200);
           expect(response.body[0].id).toBeDefined();
-          expect(response.body.length).toBeGreaterThan(8);
+          expect(response.body.length).toBe(1);
         });
       });
 
@@ -448,7 +454,6 @@ describe.each([
             expect.objectContaining({
               createdBy: 'user:default/mock',
               secrets: {
-                backstageToken: token,
                 __initiatorCredentials: JSON.stringify(credentials),
               },
 
@@ -600,7 +605,6 @@ describe.each([
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
@@ -852,9 +856,9 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               directoryContents: [],
             });
 
-          expect(catalogClient.getEntityByRef).toHaveBeenCalledTimes(1);
+          expect(catalogMock.getEntityByRef).toHaveBeenCalledTimes(1);
 
-          expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(
+          expect(catalogMock.getEntityByRef).toHaveBeenCalledWith(
             'user:default/mock',
             expect.anything(),
           );
@@ -880,17 +884,28 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           logger: logger,
           config: new ConfigReader({}),
           database: createDatabase(),
-          catalogClient,
-          reader: mockUrlReader,
+          catalog: catalogMock,
           taskBroker,
           permissions: permissionApi,
           auth,
           httpAuth,
-          discovery,
+          actions: [
+            createTemplateAction({
+              id: 'test',
+              description: 'test',
+              schema: {
+                input: z =>
+                  z.object({
+                    test: z.string(),
+                  }),
+              },
+              handler: async () => {},
+            }),
+          ],
         });
         app = express().use(router);
 
-        catalogClient.getEntityByRef.mockImplementation(async ref => {
+        catalogMock.getEntityByRef.mockImplementation(async ref => {
           const { kind } = parseEntityRef(ref);
 
           if (kind.toLocaleLowerCase() === 'template') {
@@ -929,7 +944,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           const response = await request(app).get('/v2/actions').send();
           expect(response.status).toEqual(200);
           expect(response.body[0].id).toBeDefined();
-          expect(response.body.length).toBeGreaterThan(8);
+          expect(response.body.length).toBe(1);
         });
       });
 
@@ -1101,7 +1116,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             expect.objectContaining({
               createdBy: 'user:default/mock',
               secrets: {
-                backstageToken: token,
                 __initiatorCredentials: JSON.stringify(credentials),
               },
 
@@ -1171,7 +1185,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             expect.objectContaining({
               createdBy: 'user:default/mock',
               secrets: {
-                backstageToken: token,
                 __initiatorCredentials: JSON.stringify(credentials),
               },
 
@@ -1260,7 +1273,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             expect.objectContaining({
               createdBy: 'user:default/mock',
               secrets: {
-                backstageToken: token,
                 __initiatorCredentials: JSON.stringify(credentials),
               },
 
@@ -1404,7 +1416,6 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             status: 'completed',
             createdAt: '',
             secrets: {
-              backstageToken: token,
               __initiatorCredentials: JSON.stringify(credentials),
             },
             createdBy: '',
@@ -1651,13 +1662,11 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             logger: loggerToWinstonLogger(mockServices.logger.mock()),
             config: new ConfigReader({}),
             database: createDatabase(),
-            catalogClient,
-            reader: mockUrlReader,
+            catalog: catalogMock,
             taskBroker,
             permissions: permissionApi,
             auth,
             httpAuth,
-            discovery,
             autocompleteHandlers: {
               'test-provider': handleAutocompleteRequest,
             },

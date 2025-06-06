@@ -1,5 +1,115 @@
 # @backstage/plugin-scaffolder-backend
 
+## 2.0.0-next.1
+
+### Major Changes
+
+- 33394db: **BREAKING CHANGES**
+
+  Removal of deprecated re-exports from module packages.
+
+  The following functions have been re-exported from the `scaffolder-backend` plugin for quite some time, and now it's time to clean them up. They've been moved as follows:
+
+  - `createPublishAzureAction` should be imported from `@backstage/plugin-scaffolder-backend-module-azure` instead.
+
+  - `createPublishBitbucketCloudAction` should be imported from `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud` instead.
+
+  - `createPublishBitbucketServerAction` and `createPublishBitbucketServerPullRequestAction` can be imported from `@backstage/plugin-scaffolder-backend-module-bitbucket-server` instead.
+
+  - `createPublishBitbucketAction` should be imported from `@backstage/plugin-scaffolder-backend-module-bitbucket` instead.
+
+  - `createPublishGerritAction` and `createPublishGerritReviewAction` can be imported from `@backstage/plugin-scaffolder-backend-module-gerrit` instead.
+
+  - `createGithubActionsDispatchAction`, `createGithubDeployKeyAction`, `createGithubEnvironmentAction`, `createGithubIssuesLabelAction`, `CreateGithubPullRequestActionOptions`, `createGithubRepoCreateAction`, `createGithubRepoPushAction`, `createGithubWebhookAction`, and `createPublishGithubAction` can be imported from `@backstage/plugin-scaffolder-backend-module-github` instead.
+
+  - `createPublishGitlabAction` should be imported from `@backstage/plugin-scaffolder-backend-module-gitlab` instead.
+
+  - `ActionContext`. `createTemplateAction`, `executeShellCommand`, `ExecuteShellCommandOptions`, `fetchContents`, `TaskSecrets`, and `TemplateAction` should be imported from `@backstage/plugin-scaffolder-node` instead.
+
+  - `ScaffolderEntitiesProcessor` should be imported from `@backstage/plugin-catalog-backend-module-scaffolder-entity-model` instead.
+
+- a8fcf04: **BREAKING ALPHA**: The `/alpha` export no longer exports the plugin. Please use `import('@backstage/plugin-scaffolder-backend')` instead as this has been removed.
+
+  **BREAKING CHANGES**: The old `createRouter` function which was used in the old backend system has been removed along with the `RouterOptions` type.
+
+- 73b94d7: **BREAKING CHANGES**
+
+  The following functions have been re-exported from the `scaffolder-backend` plugin for quite some time, and now it's time to clean them up. They've been moved as follows:
+
+  - `SerializedTask`, `SerializedTaskEvent`, `TaskBroker`, `TaskBrokerDispatchOptions`, `TaskBrokerDispatchResult`, `TaskCompletionState`, `TaskContext`, `TaskEventType`, `TaskStatus`, `TemplateFilter`, and `TemplateGlobal` should be imported from `@backstage/plugin-scaffolder-node` instead.
+
+  - The deprecated `copyWithoutRender` option has been removed from `fetch:template` action. You should rename the option to `copyWithoutTemplating` instead.
+
+### Minor Changes
+
+- 73b94d7: **DEPRECATIONS**
+
+  The following types and implementations have been deprecated, either because they're no longer relevant, or because upcoming changes to the `scaffolder-backend` after `2.0.0` will influence the changes to these API surfaces.
+
+  - `CreateWorkerOptions`
+  - `DatabaseTaskStore`
+  - `DatabaseTaskStoreOptions`
+  - `TaskManager`
+  - `TaskStoreCreateTaskOptions`
+  - `TaskStoreCreateTaskResult`
+  - `TaskStoreEmitOptions`
+  - `TaskStoreListEventsOptions`
+  - `TaskStoreRecoverTaskOptions`
+  - `TaskStoreShutDownTaskOptions`
+
+  There is no current path off deprecation, these types are going to be removed and rethought with a better way to define workers in the new backend system.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.10-next.1
+  - @backstage/plugin-scaffolder-node@0.8.3-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.11-next.1
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.2-next.1
+  - @backstage/backend-defaults@0.10.1-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.9-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1-next.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 1.33.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.10-next.0
+  - @backstage/plugin-scaffolder-node@0.8.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.2-next.0
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/backend-defaults@0.10.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.7.2-next.0
+  - @backstage/plugin-auth-node@0.6.4-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.9-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.0
+  - @backstage/plugin-events-node@0.4.12-next.0
+  - @backstage/plugin-permission-node@0.10.1-next.0
+
 ## 1.33.0
 
 ### Minor Changes
