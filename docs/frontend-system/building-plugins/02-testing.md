@@ -8,7 +8,7 @@ description: Testing plugins in the frontend system
 
 > **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
-# Testing Frontend Plugins
+## Testing Frontend Plugins
 
 :::note Note
 
