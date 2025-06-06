@@ -194,7 +194,7 @@ export class DependencyGraph<T> {
     let inFlight = 0; // Keep track of how many callbacks are in flight, so that we know if we got stuck
 
     // This keeps track of a counter of how many providers there are still left
-    // to be visited for each depdendency. This needs to be a counter instead of
+    // to be visited for each dependency. This needs to be a counter instead of
     // a flag for the special case where there are several providers of a given
     // value, even though there may be only one consumer of it.
     const producedRemaining = new Map<string, number>();
