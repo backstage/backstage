@@ -8174,6 +8174,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-react@workspace:plugins/search-react"
   dependencies:
+    "@backstage/canon": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
@@ -8216,6 +8217,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search@workspace:plugins/search"
   dependencies:
+    "@backstage/canon": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-compat-api": "workspace:^"

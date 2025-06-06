@@ -28,11 +28,11 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Typography from '@material-ui/core/Typography';
 import AllIcon from '@material-ui/icons/FontDownload';
 import useAsync from 'react-use/esm/useAsync';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { searchTranslationRef } from '../../translation';
+import { Text } from '@backstage/canon';
 
 const useStyles = makeStyles(theme => ({
   icon: {
@@ -147,9 +147,7 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
 
   return (
     <Box>
-      <Typography variant="body2" component="h2">
-        {name}
-      </Typography>
+      <Text variant="body">{name}</Text>
       <Accordion
         className={classes.accordion}
         expanded={expanded}
