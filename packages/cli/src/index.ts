@@ -26,7 +26,6 @@ import { CliInitializer } from './wiring/CliInitializer';
   initializer.add(import('./modules/maintenance'));
   initializer.add(import('./modules/migrate'));
   initializer.add(import('./modules/new'));
-  initializer.add(import('./modules/start'));
   initializer.add(import('./modules/test'));
   await initializer.run();
 })();
