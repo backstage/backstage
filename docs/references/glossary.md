@@ -51,7 +51,7 @@ The actual framework that Backstage [plugins](#plugin) sit on. This spans both t
 
 ## Catalog
 
-1. The core Backstage plugin that handles ingestion and display of your organizations software products.
+1. The core Backstage plugin that handles ingestion and display of your organization's software products.
 
 2. An organization's portfolio of software products managed in Backstage.
 
@@ -105,7 +105,7 @@ An executable or package file with all of the necessary information required to 
 
 1. A professional who designs, builds, tests, deploys, and maintains software applications and systems. Developers essentially turn ideas or requirements into functional digital products.
 
-2. A [user role](#user-role) defined as someone who uses a Backstage [app](#app). Might or might not actually be a software developer.
+2. A [user role](#user-role) defined as someone who creates, modifies, or uses a Backstage [app](#app). Might or might not actually be a software developer.
 
 ## Developer Portal
 
