@@ -42,7 +42,10 @@ The catalog module for GitHub comes with events support enabled. This will make 
 
 ### Prerequisites
 
-There are two Prerequisites to use the builtin events support: creating a webhook in GitHub and then installing and configuring `@backstage/plugin-events-backend-module-github` in your Backstage instance.
+There are two Prerequisites to use the builtin events support:
+
+1. Creating a webhook in GitHub
+2. Installing and configuring `@backstage/plugin-events-backend-module-github`
 
 #### Configure Webhooks in GitHub
 
@@ -51,6 +54,10 @@ You can check the official docs to [configure your webhook](https://docs.github.
 The webhook(s) will need to be configured to react to `push` and `repository` events.
 
 Certain actions like `transferred` by the `repository` event type will not be supported when you use repository webhooks. Please check the GitHub documentation for these event types and their actions.
+
+When creating the webhook in GitHub the "Payload URL" will looks something along these lines: `https://<your-intance-name>/api/events/http/github` and the "Content Type" should be `application/json`.
+
+The GitHub Webhooks UI will send a trial event to validate it can connect when you save your new Webhook. It is possible to retrigger this if it fails and you want to send it again. Additionally there is a Recent Deliveries tab you can use to validate that the events are being fired should you need to do any later troubleshooting.
 
 #### Install and Configure GitHub Events Module
 
