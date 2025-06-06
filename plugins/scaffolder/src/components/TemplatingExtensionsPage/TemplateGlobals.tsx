@@ -48,8 +48,11 @@ const FunctionDetailContent = ({
   const expanded = useState<Expanded>({});
   if (!Object.keys(fn).length) {
     return (
-      <Typography style={{ fontStyle: 'italic' }}>
-        {t('templatingExtensions.content.functions.notAvailable')}
+      <Typography
+        style={{ fontStyle: 'italic' }}
+        data-testid={`${name}.metadataAbsent`}
+      >
+        {t('templatingExtensions.content.functions.metadataAbsent')}
       </Typography>
     );
   }
