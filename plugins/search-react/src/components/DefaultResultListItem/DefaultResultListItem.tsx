@@ -75,7 +75,16 @@ export const DefaultResultListItemComponent = ({
           </Link>
         }
         secondary={
-          <Text variant="body" color="secondary">
+          <Text
+            variant="body"
+            style={{
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: lineClamp,
+              overflow: 'hidden',
+            }}
+            color="secondary"
+          >
             {highlight?.fields.text ? (
               <HighlightedSearchResultText
                 text={highlight.fields.text}
