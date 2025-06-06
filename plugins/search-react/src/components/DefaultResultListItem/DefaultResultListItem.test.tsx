@@ -19,23 +19,9 @@ import { renderInTestApp } from '@backstage/test-utils';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 import { DefaultResultListItem } from './DefaultResultListItem';
 
-describe('DefaultResultListItem', () => {
-  beforeAll(() => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation(query => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
-  });
+jest.mock('@backstage/canon/src/hooks/useMediaQuery');
 
+describe('DefaultResultListItem', () => {
   const result = {
     title: 'title',
     text: 'text',

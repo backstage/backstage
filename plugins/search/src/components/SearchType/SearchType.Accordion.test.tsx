@@ -44,6 +44,8 @@ jest.mock('@backstage/plugin-search-react', () => ({
   }),
 }));
 
+jest.mock('@backstage/canon/src/hooks/useMediaQuery');
+
 describe('SearchType.Accordion', () => {
   const configApiMock = mockApis.config({
     data: {
@@ -68,19 +70,6 @@ describe('SearchType.Accordion', () => {
     searchApiMock.query.mockResolvedValue({
       results: [],
       numberOfResults: 1234,
-    });
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation(query => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
     });
   });
 

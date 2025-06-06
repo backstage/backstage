@@ -41,6 +41,8 @@ const query = jest.fn().mockResolvedValue({ results: [] });
 const searchApiMock = { query };
 const analyticsApiMock = mockApis.analytics();
 
+jest.mock('@backstage/canon/src/hooks/useMediaQuery');
+
 describe('SearchResultGroup', () => {
   const results = [
     {
@@ -63,19 +65,6 @@ describe('SearchResultGroup', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation(queryValue => ({
-        matches: false,
-        media: queryValue,
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
   });
 
   it('Renders without exploding', async () => {
