@@ -186,6 +186,7 @@
 }
 
 .canon-Flex {
+  min-width: 0;
   display: flex;
 }
 
