@@ -54,6 +54,19 @@ describe('SearchResultList', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: jest.fn().mockImplementation(queryValue => ({
+        matches: false,
+        media: queryValue,
+        onchange: null,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      })),
+    });
   });
 
   it('Renders without exploding', async () => {
