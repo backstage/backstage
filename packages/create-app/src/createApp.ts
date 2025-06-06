@@ -77,13 +77,14 @@ export default async (opts: OptionValues): Promise<void> => {
     ? resolvePath(paths.targetDir, opts.path)
     : resolvePath(paths.targetDir, answers.name);
 
-  // Mic check
+  // Prerequisite check
+  let hasPrerequisiteError = false;
   const [major, minor, patch] = process.versions.node.split('.').map(Number);
   const yarn = await tryCommandForVersion('yarn -v');
   const python = await tryCommandForVersion('python3 --version');
 
   Task.log();
-  Task.log('Dependency check...');
+  Task.log('Prerequisites check...');
   Task.log();
   Task.log(`  Node version is: ${major}.${minor}.${patch}`);
   Task.log(`  Yarn version is: ${yarn.version}`);
@@ -91,16 +92,18 @@ export default async (opts: OptionValues): Promise<void> => {
 
   if (yarn.error) {
     Task.error(yarn.error);
+    hasPrerequisiteError = true;
   }
 
   if (python.error) {
     Task.log(chalk.yellow(`Warning: ${python.error}`));
+    hasPrerequisiteError = true;
   }
 
   if (major < Math.min(...NODE_LTS_VERSIONS)) {
     Task.log(
       chalk.yellow(
-        `Warning: Node version ${major} is currently older than the oldest supported LTS version which is Node ${Math.min(
+        `Warning: Node version ${major} is currently older than the oldest supported Active LTS version which is Node ${Math.min(
           ...NODE_LTS_VERSIONS,
         )}, please upgrade for proper support.`,
       ),
@@ -109,10 +112,20 @@ export default async (opts: OptionValues): Promise<void> => {
 
   if (major > Math.max(...NODE_LTS_VERSIONS)) {
     Task.error(
-      `Node version ${major} is currently newer than the latest supported LTS version which is Node ${Math.max(
+      `Node version ${major} is currently newer than the latest supported Active LTS version which is Node ${Math.max(
         ...NODE_LTS_VERSIONS,
       )}, please downgrade and try again.`,
     );
+    hasPrerequisiteError = true;
+  }
+
+  if (hasPrerequisiteError) {
+    Task.log(
+      'It seems that something went wrong when validating the prerequisites 🤔',
+    );
+
+    Task.error('🔥  Failed to validate needed prerequisites!');
+    Task.exit(1);
   }
 
   Task.log();
