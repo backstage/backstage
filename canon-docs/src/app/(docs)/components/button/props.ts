@@ -14,6 +14,12 @@ export const buttonPropDefs: Record<string, PropDef> = {
     default: 'medium',
     responsive: true,
   },
+  render: {
+    type: 'enum',
+    values: ['ReactNode'],
+    responsive: false,
+    default: '<button />',
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };

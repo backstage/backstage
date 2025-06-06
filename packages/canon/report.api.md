@@ -149,7 +149,7 @@ export const breakpoints: Breakpoint[];
 
 // @public (undocumented)
 export const Button: ForwardRefExoticComponent<
-  ButtonProps & RefAttributes<HTMLButtonElement>
+  Omit<ButtonProps, 'ref'> & RefAttributes<HTMLButtonElement>
 >;
 
 // @public (undocumented)
@@ -174,9 +174,7 @@ export const buttonPropDefs: {
 };
 
 // @public
-export interface ButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  children: React.ReactNode;
+export interface ButtonProps extends useRender.ComponentProps<'button'> {
   iconEnd?: ReactElement;
   iconStart?: ReactElement;
   size?: ButtonOwnProps['size'];
