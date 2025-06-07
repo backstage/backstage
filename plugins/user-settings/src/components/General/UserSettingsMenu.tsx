@@ -25,6 +25,7 @@ import {
   identityApiRef,
   errorApiRef,
   useApi,
+  useAnalytics,
 } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { userSettingsTranslationRef } from '../../translation';
@@ -36,6 +37,7 @@ export const UserSettingsMenu = () => {
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<undefined | HTMLElement>(undefined);
   const { t } = useTranslationRef(userSettingsTranslationRef);
+  const analytics = useAnalytics();
 
   const handleOpen = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -59,9 +61,16 @@ export const UserSettingsMenu = () => {
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
         <MenuItem
           data-testid="sign-out"
-          onClick={() =>
-            identityApi.signOut().catch(error => errorApi.post(error))
-          }
+          onClick={() => {
+            identityApi.signOut().catch(error => errorApi.post(error));
+            identityApi.getBackstageIdentity().then(identity => {
+              analytics.captureEvent('signOut', 'success', {
+                attributes: {
+                  userEntityRef: identity.userEntityRef,
+                },
+              });
+            });
+          }}
         >
           <ListItemIcon>
             <SignOutIcon />
