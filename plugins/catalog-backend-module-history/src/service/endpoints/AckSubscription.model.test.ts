@@ -27,6 +27,7 @@ import { Knex } from 'knex';
 import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
 import { applyDatabaseMigrations } from '../../database/migrations';
 import { AckSubscriptionModelImpl } from './AckSubscription.model';
+import { getSubscription } from '../../database/operations/getSubscription';
 
 jest.setTimeout(60_000);
 
@@ -52,26 +53,6 @@ describe('AckSubscriptionModel', () => {
     return { knex, backend };
   }
 
-  async function getSubscription(knex: Knex, subscriptionId: string) {
-    const [subscription] = await knex('module_history__subscriptions').where(
-      'subscription_id',
-      '=',
-      subscriptionId,
-    );
-    if (!subscription) {
-      throw new NotFoundError(`Subscription ${subscriptionId} not found`);
-    }
-    if (typeof subscription.last_sent_event_id === 'number') {
-      subscription.last_sent_event_id = String(subscription.last_sent_event_id);
-    }
-    if (typeof subscription.last_acknowledged_event_id === 'number') {
-      subscription.last_acknowledged_event_id = String(
-        subscription.last_acknowledged_event_id,
-      );
-    }
-    return subscription;
-  }
-
   it.each(databases.eachSupportedId())(
     'should ack a history subscription, %p',
     async databaseId => {
@@ -81,7 +62,7 @@ describe('AckSubscriptionModel', () => {
         knexPromise: Promise.resolve(knex),
       });
 
-      await knex('module_history__subscriptions').insert([
+      await knex('history_subscriptions').insert([
         {
           subscription_id: 'idle',
           state: 'idle',
@@ -123,28 +104,28 @@ describe('AckSubscriptionModel', () => {
       ).resolves.toBeFalsy();
 
       await expect(getSubscription(knex, 'idle')).resolves.toMatchObject({
-        subscription_id: 'idle',
+        subscriptionId: 'idle',
         state: 'idle',
-        last_sent_event_id: '1',
-        last_acknowledged_event_id: '0',
+        lastSentEventId: '1',
+        lastAcknowledgedEventId: '0',
       });
 
       await expect(getSubscription(knex, 'waiting1')).resolves.toMatchObject({
-        subscription_id: 'waiting1',
+        subscriptionId: 'waiting1',
         state: 'waiting',
-        ack_id: 'ack1',
-        ack_timeout_at: expect.anything(),
-        last_sent_event_id: '1',
-        last_acknowledged_event_id: '0',
+        ackId: 'ack1',
+        ackTimeoutAt: expect.any(Date),
+        lastSentEventId: '1',
+        lastAcknowledgedEventId: '0',
       });
 
       await expect(getSubscription(knex, 'waiting2')).resolves.toMatchObject({
-        subscription_id: 'waiting2',
+        subscriptionId: 'waiting2',
         state: 'waiting',
-        ack_id: 'ack2',
-        ack_timeout_at: expect.anything(),
-        last_sent_event_id: '1',
-        last_acknowledged_event_id: '0',
+        ackId: 'ack2',
+        ackTimeoutAt: expect.any(Date),
+        lastSentEventId: '1',
+        lastAcknowledgedEventId: '0',
       });
 
       await expect(
@@ -154,28 +135,26 @@ describe('AckSubscriptionModel', () => {
       ).resolves.toBeTruthy();
 
       await expect(getSubscription(knex, 'idle')).resolves.toMatchObject({
-        subscription_id: 'idle',
+        subscriptionId: 'idle',
         state: 'idle',
-        last_sent_event_id: '1',
-        last_acknowledged_event_id: '0',
+        lastSentEventId: '1',
+        lastAcknowledgedEventId: '0',
       });
 
       await expect(getSubscription(knex, 'waiting1')).resolves.toMatchObject({
-        subscription_id: 'waiting1',
+        subscriptionId: 'waiting1',
         state: 'idle',
-        ack_id: null,
-        ack_timeout_at: null,
-        last_sent_event_id: '1',
-        last_acknowledged_event_id: '1',
+        lastSentEventId: '1',
+        lastAcknowledgedEventId: '1',
       });
 
       await expect(getSubscription(knex, 'waiting2')).resolves.toMatchObject({
-        subscription_id: 'waiting2',
+        subscriptionId: 'waiting2',
         state: 'waiting',
-        ack_id: 'ack2',
-        ack_timeout_at: expect.anything(),
-        last_sent_event_id: '1',
-        last_acknowledged_event_id: '0',
+        ackId: 'ack2',
+        ackTimeoutAt: expect.any(Date),
+        lastSentEventId: '1',
+        lastAcknowledgedEventId: '0',
       });
 
       await backend.stop();

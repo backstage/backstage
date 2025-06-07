@@ -37,7 +37,7 @@ export async function upsertHistorySubscription(
   // We go through the trouble of checking if the subscription exists, because
   // computing the max event id is much more expensive than the indexed
   // subscription lookup, so we try to avoid doing that unless necessary
-  const exists = await knex('module_history__subscriptions')
+  const exists = await knex('history_subscriptions')
     .where('subscription_id', '=', subscription.subscriptionId)
     .first()
     .then(Boolean);
@@ -46,7 +46,7 @@ export async function upsertHistorySubscription(
     return await createSubscription(knex, subscription);
   }
 
-  const query = knex<SubscriptionsTableRow>('module_history__subscriptions')
+  const query = knex<SubscriptionsTableRow>('history_subscriptions')
     .where('subscription_id', '=', subscription.subscriptionId)
     .update({
       active_at: knex.fn.now(),
@@ -63,9 +63,7 @@ export async function upsertHistorySubscription(
     lastActiveAt = new Date(result[0].active_at).toISOString();
   } else {
     await query;
-    const result = await knex<SubscriptionsTableRow>(
-      'module_history__subscriptions',
-    )
+    const result = await knex<SubscriptionsTableRow>('history_subscriptions')
       .where('subscription_id', '=', subscription.subscriptionId)
       .first();
     createdAt = new Date(result?.created_at ?? Date.now()).toISOString();
@@ -88,9 +86,7 @@ async function createSubscription(
   const subscriptionId = subscription.subscriptionId!;
   const eventId = await getStartingEventId(knex, subscription);
 
-  const query = knex<SubscriptionsTableRow>(
-    'module_history__subscriptions',
-  ).insert({
+  const query = knex<SubscriptionsTableRow>('history_subscriptions').insert({
     subscription_id: subscriptionId,
     state: 'idle',
     last_sent_event_id: eventId,
@@ -108,9 +104,7 @@ async function createSubscription(
     lastActiveAt = new Date(result[0].active_at).toISOString();
   } else {
     await query;
-    const result = await knex<SubscriptionsTableRow>(
-      'module_history__subscriptions',
-    )
+    const result = await knex<SubscriptionsTableRow>('history_subscriptions')
       .where('subscription_id', '=', subscriptionId)
       .first();
     createdAt = new Date(result?.created_at ?? Date.now()).toISOString();

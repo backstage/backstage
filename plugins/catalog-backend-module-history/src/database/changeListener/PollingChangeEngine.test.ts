@@ -34,9 +34,8 @@ describe('PollingChangeEngine', () => {
   const databases = TestDatabases.create();
 
   async function touch(knex: Knex) {
-    await knex('module_history__events').insert({
+    await knex('history_events').insert({
       event_type: 'test',
-      event_at: new Date().toISOString(),
     });
   }
 

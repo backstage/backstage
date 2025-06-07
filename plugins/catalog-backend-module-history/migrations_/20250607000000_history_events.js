@@ -25,7 +25,7 @@ exports.up = async function up(knex) {
    * Events table
    */
 
-  await knex.schema.createTable('module_history__events', table => {
+  await knex.schema.createTable('history_events', table => {
     table
       .bigIncrements('event_id')
       .primary()
@@ -115,7 +115,7 @@ exports.up = async function up(knex) {
           RETURN null;
         END IF;
 
-        INSERT INTO module_history__events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
+        INSERT INTO history_events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
           event_type,
           entity_ref,
           entity_id,
@@ -140,21 +140,21 @@ exports.up = async function up(knex) {
       BEGIN
 
         IF (TG_OP = 'INSERT') THEN
-          INSERT INTO module_history__events (event_type, location_id, location_ref) VALUES (
+          INSERT INTO history_events (event_type, location_id, location_ref) VALUES (
             'location_created',
             NEW.id,
             CONCAT(NEW.type, ':', NEW.target)
           );
 
         ELSIF (TG_OP = 'UPDATE') THEN
-          INSERT INTO module_history__events (event_type, location_id, location_ref) VALUES (
+          INSERT INTO history_events (event_type, location_id, location_ref) VALUES (
             'location_updated',
             NEW.id,
             CONCAT(NEW.type, ':', NEW.target)
           );
 
         ELSIF (TG_OP = 'DELETE') THEN
-          INSERT INTO module_history__events (event_type, location_id, location_ref) VALUES (
+          INSERT INTO history_events (event_type, location_id, location_ref) VALUES (
             'location_deleted',
             OLD.id,
             CONCAT(OLD.type, ':', OLD.target)
@@ -183,7 +183,7 @@ exports.up = async function up(knex) {
       FOR EACH ROW
       WHEN (NEW.final_entity IS NOT NULL)
       BEGIN
-        INSERT INTO module_history__events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
+        INSERT INTO history_events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
           'entity_created',
           NEW.entity_ref,
           NEW.entity_id,
@@ -197,7 +197,7 @@ exports.up = async function up(knex) {
       AFTER UPDATE OF final_entity ON final_entities
       FOR EACH ROW
       BEGIN
-        INSERT INTO module_history__events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
+        INSERT INTO history_events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
           CASE
             WHEN (OLD.final_entity IS NULL) THEN 'entity_created'
             WHEN (NEW.final_entity IS NULL) THEN 'entity_deleted'
@@ -216,7 +216,7 @@ exports.up = async function up(knex) {
       FOR EACH ROW
       WHEN (OLD.final_entity IS NOT NULL)
       BEGIN
-        INSERT INTO module_history__events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
+        INSERT INTO history_events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
           'entity_deleted',
           OLD.entity_ref,
           OLD.entity_id,
@@ -230,7 +230,7 @@ exports.up = async function up(knex) {
       AFTER INSERT ON locations
       FOR EACH ROW
       BEGIN
-        INSERT INTO module_history__events (event_type, location_id, location_ref) VALUES (
+        INSERT INTO history_events (event_type, location_id, location_ref) VALUES (
           'location_created',
           NEW.id,
           CONCAT(NEW.type, ':', NEW.target)
@@ -242,7 +242,7 @@ exports.up = async function up(knex) {
       AFTER UPDATE ON locations
       FOR EACH ROW
       BEGIN
-        INSERT INTO module_history__events (event_type, location_id, location_ref) VALUES (
+        INSERT INTO history_events (event_type, location_id, location_ref) VALUES (
           'location_updated',
           NEW.id,
           CONCAT(NEW.type, ':', NEW.target)
@@ -254,7 +254,7 @@ exports.up = async function up(knex) {
       AFTER DELETE ON locations
       FOR EACH ROW
       BEGIN
-        INSERT INTO module_history__events (event_type, location_id, location_ref) VALUES (
+        INSERT INTO history_events (event_type, location_id, location_ref) VALUES (
           'location_deleted',
           OLD.id,
           CONCAT(OLD.type, ':', OLD.target)
@@ -273,7 +273,7 @@ exports.up = async function up(knex) {
       AFTER INSERT ON final_entities
       FOR EACH ROW
       IF NEW.final_entity IS NOT NULL THEN
-        INSERT INTO module_history__events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
+        INSERT INTO history_events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
           'entity_created',
           NEW.entity_ref,
           NEW.entity_id,
@@ -287,7 +287,7 @@ exports.up = async function up(knex) {
       AFTER UPDATE ON final_entities
       FOR EACH ROW
       IF IFNULL(NEW.final_entity,'') <> IFNULL(OLD.final_entity,'') THEN
-        INSERT INTO module_history__events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
+        INSERT INTO history_events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
           CASE
             WHEN (OLD.final_entity IS NULL) THEN 'entity_created'
             WHEN (NEW.final_entity IS NULL) THEN 'entity_deleted'
@@ -314,7 +314,7 @@ exports.up = async function up(knex) {
       AFTER DELETE ON final_entities
       FOR EACH ROW
       IF OLD.final_entity IS NOT NULL THEN
-        INSERT INTO module_history__events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
+        INSERT INTO history_events (event_type, entity_ref, entity_id, entity_json, location_ref) VALUES (
           'entity_deleted',
           OLD.entity_ref,
           OLD.entity_id,
@@ -327,7 +327,7 @@ exports.up = async function up(knex) {
       CREATE TRIGGER locations_history_location_created
       AFTER INSERT ON locations
       FOR EACH ROW
-      INSERT INTO module_history__events (event_type, location_id, location_ref) VALUES (
+      INSERT INTO history_events (event_type, location_id, location_ref) VALUES (
         'location_created',
         NEW.id,
         CONCAT(NEW.type, ':', NEW.target)
@@ -337,7 +337,7 @@ exports.up = async function up(knex) {
       CREATE TRIGGER locations_history_location_updated
       AFTER UPDATE ON locations
       FOR EACH ROW
-      INSERT INTO module_history__events (event_type, location_id, location_ref) VALUES (
+      INSERT INTO history_events (event_type, location_id, location_ref) VALUES (
         'location_updated',
         NEW.id,
         CONCAT(NEW.type, ':', NEW.target)
@@ -347,7 +347,7 @@ exports.up = async function up(knex) {
       CREATE TRIGGER locations_history_location_deleted
       AFTER DELETE ON locations
       FOR EACH ROW
-      INSERT INTO module_history__events (event_type, location_id, location_ref) VALUES (
+      INSERT INTO history_events (event_type, location_id, location_ref) VALUES (
         'location_deleted',
         OLD.id,
         CONCAT(OLD.type, ':', OLD.target)
@@ -416,5 +416,5 @@ exports.down = async function down(knex) {
       DROP TRIGGER locations_history_location_deleted;
     `);
   }
-  await knex.schema.dropTable('module_history__events');
+  await knex.schema.dropTable('history_events');
 };

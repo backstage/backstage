@@ -24,9 +24,7 @@ export async function ackHistorySubscription(
     ackId: string;
   },
 ): Promise<boolean> {
-  const count = await knex<SubscriptionsTableRow>(
-    'module_history__subscriptions',
-  )
+  const count = await knex<SubscriptionsTableRow>('history_subscriptions')
     .update({
       state: 'idle',
       ack_id: null,

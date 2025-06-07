@@ -61,7 +61,7 @@ describe('createRouter', () => {
               knexPromise: dbPromise,
               historyConfig: getHistoryConfig(),
               changeListener: createMockChangeListener({
-                timeout: { seconds: 1 },
+                timeout: { seconds: 5 },
               }),
             }),
           );

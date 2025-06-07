@@ -79,7 +79,7 @@ describe('HistoryEventEmitter', () => {
 
       await sleep({ seconds: 1 });
 
-      await knex<EventsTableRow>('module_history__events').insert({
+      await knex<EventsTableRow>('history_events').insert({
         event_type: 'entity_created',
         entity_ref: 'component:default/foo',
         entity_id: 'foo',

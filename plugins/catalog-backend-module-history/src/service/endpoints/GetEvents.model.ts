@@ -22,7 +22,7 @@ import {
   ReadHistoryEventsOptions,
 } from '../../database/operations/readHistoryEvents';
 import { Cursor } from './GetEvents.utils';
-import { CatalogEvent } from './types';
+import { EventsTableEntry } from '../../types';
 
 export interface GetEventsOptions {
   readOptions: ReadHistoryEventsOptions;
@@ -33,7 +33,7 @@ export interface GetEventsOptions {
 export type GetEventsResult =
   | {
       type: 'data';
-      events: CatalogEvent[];
+      events: EventsTableEntry[];
       cursor?: Cursor;
     }
   | {
@@ -87,14 +87,14 @@ export class GetEventsModelImpl implements GetEventsModel {
       signal: options.signal,
       checker: () =>
         readHistoryEvents(knex, { ...readOptions, limit: 1 }).then(
-          rows => rows.length > 0,
+          entries => entries.length > 0,
         ),
     });
 
     const events = skipRead ? [] : await readHistoryEvents(knex, readOptions);
 
-    // Let's generate a cursor for continuing to read, if we got some rows OR if
-    // we were reading in ascending order (because then there might be more
+    // Let's generate a cursor for continuing to read, if we got some entries OR
+    // if we were reading in ascending order (because then there might be more
     // events next time around)
     const shouldReturnCursor =
       readOptions.order === 'asc' || events.length >= readOptions.limit;

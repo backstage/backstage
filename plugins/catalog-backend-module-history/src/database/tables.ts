@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import { EventsTableEntry, SubscriptionsTableEntry } from '../types';
+
+/**
+ * The raw form of a single history event table row as seen through knex.
+ */
 export interface EventsTableRow {
   event_id: string;
   event_at: Date | string;
@@ -25,6 +30,25 @@ export interface EventsTableRow {
   location_ref: string | null;
 }
 
+/**
+ * Create the normalized form of a single history event table row.
+ */
+export function toEventsTableEntry(row: EventsTableRow): EventsTableEntry {
+  return {
+    eventId: String(row.event_id),
+    eventAt: toDate(row.event_at),
+    eventType: row.event_type,
+    entityRef: row.entity_ref ?? undefined,
+    entityId: row.entity_id ?? undefined,
+    entityJson: row.entity_json ?? undefined,
+    locationId: row.location_id ?? undefined,
+    locationRef: row.location_ref ?? undefined,
+  };
+}
+
+/**
+ * The raw form of a single history subscription table row as seen through knex.
+ */
 export interface SubscriptionsTableRow {
   subscription_id: string;
   created_at: Date | string;
@@ -36,4 +60,30 @@ export interface SubscriptionsTableRow {
   last_sent_event_id: number | string;
   filter_entity_ref: string | null;
   filter_entity_id: string | null;
+}
+
+/**
+ * Create the normalized form of a single history subscription table row.
+ */
+export function toSubscriptionsTableEntry(
+  row: SubscriptionsTableRow,
+): SubscriptionsTableEntry {
+  return {
+    subscriptionId: row.subscription_id,
+    createdAt: toDate(row.created_at),
+    activeAt: toDate(row.active_at),
+    state: row.state,
+    ackId: row.ack_id ?? undefined,
+    ackTimeoutAt: row.ack_timeout_at ? toDate(row.ack_timeout_at) : undefined,
+    lastAcknowledgedEventId: String(row.last_acknowledged_event_id),
+    lastSentEventId: String(row.last_sent_event_id),
+    filterEntityRef: row.filter_entity_ref ?? undefined,
+    filterEntityId: row.filter_entity_id ?? undefined,
+  };
+}
+
+function toDate(value: Date | string | number): Date {
+  return typeof value === 'string' || typeof value === 'number'
+    ? new Date(value)
+    : value;
 }

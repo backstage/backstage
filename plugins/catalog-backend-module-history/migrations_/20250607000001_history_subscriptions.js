@@ -25,7 +25,7 @@ exports.up = async function up(knex) {
    * Subscriptions table
    */
 
-  await knex.schema.createTable('module_history__subscriptions', table => {
+  await knex.schema.createTable('history_subscriptions', table => {
     table
       .string('subscription_id')
       .primary()
@@ -76,5 +76,5 @@ exports.up = async function up(knex) {
  * @returns { Promise<void> }
  */
 exports.down = async function down(knex) {
-  await knex.schema.dropTable('module_history__subscriptions');
+  await knex.schema.dropTable('history_subscriptions');
 };

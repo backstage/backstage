@@ -27,6 +27,7 @@ import { Knex } from 'knex';
 import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
 import { getHistoryConfig } from '../../config';
 import { applyDatabaseMigrations } from '../migrations';
+import { getSubscription } from './getSubscription';
 import { readHistorySubscription } from './readHistorySubscription';
 
 jest.setTimeout(60_000);
@@ -53,26 +54,6 @@ describe('readHistorySubscription', () => {
     return { knex, backend };
   }
 
-  async function getSubscription(knex: Knex, subscriptionId: string) {
-    const [subscription] = await knex('module_history__subscriptions').where(
-      'subscription_id',
-      '=',
-      subscriptionId,
-    );
-    if (!subscription) {
-      throw new NotFoundError(`Subscription ${subscriptionId} not found`);
-    }
-    if (typeof subscription.last_sent_event_id === 'number') {
-      subscription.last_sent_event_id = String(subscription.last_sent_event_id);
-    }
-    if (typeof subscription.last_acknowledged_event_id === 'number') {
-      subscription.last_acknowledged_event_id = String(
-        subscription.last_acknowledged_event_id,
-      );
-    }
-    return subscription;
-  }
-
   it.each(databases.eachSupportedId())(
     'throws NotFound when there is no such subscription, %p',
     async databaseId => {
@@ -96,14 +77,14 @@ describe('readHistorySubscription', () => {
     async databaseId => {
       const { knex, backend } = await init(databaseId);
 
-      await knex('module_history__subscriptions').insert({
+      await knex('history_subscriptions').insert({
         subscription_id: 'test',
         state: 'idle',
         last_sent_event_id: 0,
         last_acknowledged_event_id: 0,
       });
 
-      await knex('module_history__events').insert([
+      await knex('history_events').insert([
         { event_type: 'type1' },
         { event_type: 'type2' },
         { event_type: 'type3' },
@@ -130,16 +111,12 @@ describe('readHistorySubscription', () => {
 
       // And then the subscription stays intact
       await expect(getSubscription(knex, 'test')).resolves.toEqual({
-        subscription_id: 'test',
-        active_at: expect.anything(),
-        created_at: expect.anything(),
+        subscriptionId: 'test',
+        activeAt: expect.any(Date),
+        createdAt: expect.any(Date),
         state: 'idle',
-        ack_id: null,
-        ack_timeout_at: null,
-        last_sent_event_id: '0',
-        last_acknowledged_event_id: '0',
-        filter_entity_ref: null,
-        filter_entity_id: null,
+        lastSentEventId: '0',
+        lastAcknowledgedEventId: '0',
       });
 
       // First read succeeds
@@ -163,16 +140,14 @@ describe('readHistorySubscription', () => {
 
       // Which moves forward the subscription and marks it as waiting
       await expect(getSubscription(knex, 'test')).resolves.toEqual({
-        subscription_id: 'test',
-        active_at: expect.anything(),
-        created_at: expect.anything(),
+        subscriptionId: 'test',
+        activeAt: expect.any(Date),
+        createdAt: expect.any(Date),
         state: 'waiting',
-        ack_id: expect.any(String),
-        ack_timeout_at: expect.anything(),
-        last_sent_event_id: '1',
-        last_acknowledged_event_id: '0',
-        filter_entity_ref: null,
-        filter_entity_id: null,
+        ackId: expect.any(String),
+        ackTimeoutAt: expect.any(Date),
+        lastSentEventId: '1',
+        lastAcknowledgedEventId: '0',
       });
 
       // Immediate following read fails because the subscription is not idle
@@ -197,20 +172,18 @@ describe('readHistorySubscription', () => {
 
       // And then the subscription stays intact
       await expect(getSubscription(knex, 'test')).resolves.toEqual({
-        subscription_id: 'test',
-        active_at: expect.anything(),
-        created_at: expect.anything(),
+        subscriptionId: 'test',
+        activeAt: expect.any(Date),
+        createdAt: expect.any(Date),
         state: 'waiting',
-        ack_id: expect.any(String),
-        ack_timeout_at: expect.anything(),
-        last_sent_event_id: '1',
-        last_acknowledged_event_id: '0',
-        filter_entity_ref: null,
-        filter_entity_id: null,
+        ackId: expect.any(String),
+        ackTimeoutAt: expect.any(Date),
+        lastSentEventId: '1',
+        lastAcknowledgedEventId: '0',
       });
 
       // Manually acknowledge
-      await knex('module_history__subscriptions')
+      await knex('history_subscriptions')
         .update({
           state: 'idle',
           ack_id: null,
@@ -245,16 +218,14 @@ describe('readHistorySubscription', () => {
 
       // And then the subscription moved forward
       await expect(getSubscription(knex, 'test')).resolves.toEqual({
-        subscription_id: 'test',
-        active_at: expect.anything(),
-        created_at: expect.anything(),
+        subscriptionId: 'test',
+        activeAt: expect.any(Date),
+        createdAt: expect.any(Date),
         state: 'waiting',
-        ack_id: expect.any(String),
-        ack_timeout_at: expect.anything(),
-        last_sent_event_id: '3',
-        last_acknowledged_event_id: '1',
-        filter_entity_ref: null,
-        filter_entity_id: null,
+        ackId: expect.any(String),
+        ackTimeoutAt: expect.any(Date),
+        lastSentEventId: '3',
+        lastAcknowledgedEventId: '1',
       });
 
       await backend.stop();

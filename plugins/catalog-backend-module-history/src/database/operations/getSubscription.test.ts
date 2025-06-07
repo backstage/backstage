@@ -21,16 +21,16 @@ import {
   TestDatabaseId,
   TestDatabases,
 } from '@backstage/backend-test-utils';
+import { NotFoundError } from '@backstage/errors';
 import catalogBackend from '@backstage/plugin-catalog-backend';
 import { Knex } from 'knex';
 import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
 import { applyDatabaseMigrations } from '../migrations';
-import { EventsTableRow } from '../tables';
-import { getMaxEventId } from './getMaxEventId';
+import { getSubscription } from './getSubscription';
 
 jest.setTimeout(60_000);
 
-describe('getMaxEventId', () => {
+describe('getSubscription', () => {
   const databases = TestDatabases.create();
 
   // Helper to ensure the catalog is started and our migrations are applied
@@ -52,18 +52,29 @@ describe('getMaxEventId', () => {
     return { knex, backend };
   }
 
-  it.each(databases.eachSupportedId())('works, %p', async databaseId => {
-    const { knex, backend } = await init(databaseId);
+  it.each(databases.eachSupportedId())(
+    'should return a subscription or throw NotFoundError, %p',
+    async databaseId => {
+      const { knex, backend } = await init(databaseId);
 
-    await expect(getMaxEventId(knex)).resolves.toBe('0');
+      await knex('history_subscriptions').insert({
+        subscription_id: 'foo',
+        state: 'idle',
+        last_sent_event_id: '0',
+        last_acknowledged_event_id: '0',
+      });
 
-    await knex<EventsTableRow>('history_events').insert({
-      event_type: 't',
-    });
+      await expect(getSubscription(knex, 'foo')).resolves.toMatchObject({
+        subscriptionId: 'foo',
+        state: 'idle',
+        lastSentEventId: '0',
+        lastAcknowledgedEventId: '0',
+      });
 
-    await expect(getMaxEventId(knex)).resolves.toBe('1');
+      await expect(getSubscription(knex, 'bar')).rejects.toThrow(NotFoundError);
 
-    await backend.stop();
-    await knex.destroy();
-  });
+      await backend.stop();
+      await knex.destroy();
+    },
+  );
 });

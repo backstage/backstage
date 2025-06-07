@@ -106,7 +106,7 @@ describe('ReadSubscriptionModelImpl', () => {
           `"Subscription 1 not found"`,
         );
 
-        await knex('module_history__subscriptions').insert({
+        await knex('history_subscriptions').insert({
           subscription_id: '1',
           state: 'idle',
           last_sent_event_id: '0',

@@ -18,7 +18,7 @@ import { NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { randomUUID } from 'node:crypto';
 import { HistoryConfig } from '../../config';
-import { CatalogEvent } from '../../service/endpoints/types';
+import { EventsTableEntry } from '../../types';
 import { SubscriptionsTableRow } from '../tables';
 import { knexRawNowPlus } from '../util';
 import { readHistoryEvents } from './readHistoryEvents';
@@ -56,7 +56,7 @@ export interface ReadHistorySubscriptionOptions {
 export async function readHistorySubscription(
   knex: Knex,
   options: ReadHistorySubscriptionOptions,
-): Promise<{ events: CatalogEvent[]; ackId: string } | undefined> {
+): Promise<{ events: EventsTableEntry[]; ackId: string } | undefined> {
   const { subscriptionId, limit, operation, historyConfig } = options;
 
   // "Touch" the subscription and get its metadata
@@ -68,19 +68,17 @@ export async function readHistorySubscription(
     'filter_entity_id',
   ] as const;
   if (knex.client.config.client.includes('pg')) {
-    subscriptions = await knex<SubscriptionsTableRow>(
-      'module_history__subscriptions',
-    )
+    subscriptions = await knex<SubscriptionsTableRow>('history_subscriptions')
       .update({ active_at: knex.fn.now() })
       .where('subscription_id', '=', subscriptionId)
       .returning(columns);
   } else {
-    await knex<SubscriptionsTableRow>('module_history__subscriptions')
+    await knex<SubscriptionsTableRow>('history_subscriptions')
       .update({ active_at: knex.fn.now() })
       .where('subscription_id', '=', subscriptionId);
     subscriptions = await knex
       .select(...columns)
-      .from<SubscriptionsTableRow>('module_history__subscriptions')
+      .from<SubscriptionsTableRow>('history_subscriptions')
       .where('subscription_id', '=', subscriptionId);
   }
 
@@ -123,9 +121,7 @@ export async function readHistorySubscription(
       knex,
       historyConfig.subscriptionAckTimeout,
     );
-    const count = await knex<SubscriptionsTableRow>(
-      'module_history__subscriptions',
-    )
+    const count = await knex<SubscriptionsTableRow>('history_subscriptions')
       .update({
         state: 'waiting',
         ack_id: ackId,

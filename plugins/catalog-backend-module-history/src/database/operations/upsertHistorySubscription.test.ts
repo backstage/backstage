@@ -21,11 +21,11 @@ import {
   TestDatabaseId,
   TestDatabases,
 } from '@backstage/backend-test-utils';
-import { NotFoundError } from '@backstage/errors';
 import catalogBackend from '@backstage/plugin-catalog-backend';
 import { Knex } from 'knex';
 import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
 import { applyDatabaseMigrations } from '../migrations';
+import { getSubscription } from './getSubscription';
 import { upsertHistorySubscription } from './upsertHistorySubscription';
 
 jest.setTimeout(60_000);
@@ -52,26 +52,6 @@ describe('upsertHistorySubscription', () => {
     return { knex, backend };
   }
 
-  async function getSubscription(knex: Knex, subscriptionId: string) {
-    const [subscription] = await knex('module_history__subscriptions').where(
-      'subscription_id',
-      '=',
-      subscriptionId,
-    );
-    if (!subscription) {
-      throw new NotFoundError(`Subscription ${subscriptionId} not found`);
-    }
-    if (typeof subscription.last_sent_event_id === 'number') {
-      subscription.last_sent_event_id = String(subscription.last_sent_event_id);
-    }
-    if (typeof subscription.last_acknowledged_event_id === 'number') {
-      subscription.last_acknowledged_event_id = String(
-        subscription.last_acknowledged_event_id,
-      );
-    }
-    return subscription;
-  }
-
   it.each(databases.eachSupportedId())(
     'can create a new subscription both with a given and a generated id, %p',
     async databaseId => {
@@ -87,18 +67,14 @@ describe('upsertHistorySubscription', () => {
       await expect(
         getSubscription(knex, subscription.subscriptionId),
       ).resolves.toEqual({
-        subscription_id: expect.stringMatching(
+        subscriptionId: expect.stringMatching(
           /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
         ),
-        active_at: expect.anything(),
-        created_at: expect.anything(),
+        activeAt: expect.any(Date),
+        createdAt: expect.any(Date),
         state: 'idle',
-        ack_id: null,
-        ack_timeout_at: null,
-        last_sent_event_id: '0',
-        last_acknowledged_event_id: '0',
-        filter_entity_ref: null,
-        filter_entity_id: null,
+        lastSentEventId: '0',
+        lastAcknowledgedEventId: '0',
       });
 
       subscription = await upsertHistorySubscription(knex, {
@@ -117,16 +93,14 @@ describe('upsertHistorySubscription', () => {
       await expect(
         getSubscription(knex, subscription.subscriptionId),
       ).resolves.toEqual({
-        subscription_id: 'test',
-        active_at: expect.anything(),
-        created_at: expect.anything(),
+        subscriptionId: 'test',
+        activeAt: expect.any(Date),
+        createdAt: expect.any(Date),
         state: 'idle',
-        ack_id: null,
-        ack_timeout_at: null,
-        last_sent_event_id: '0',
-        last_acknowledged_event_id: '0',
-        filter_entity_ref: 'r',
-        filter_entity_id: 'i',
+        lastSentEventId: '0',
+        lastAcknowledgedEventId: '0',
+        filterEntityRef: 'r',
+        filterEntityId: 'i',
       });
 
       await backend.stop();
@@ -150,16 +124,12 @@ describe('upsertHistorySubscription', () => {
       await expect(
         getSubscription(knex, subscription.subscriptionId),
       ).resolves.toEqual({
-        subscription_id: 'test',
-        active_at: expect.anything(),
-        created_at: expect.anything(),
+        subscriptionId: 'test',
+        activeAt: expect.any(Date),
+        createdAt: expect.any(Date),
         state: 'idle',
-        ack_id: null,
-        ack_timeout_at: null,
-        last_sent_event_id: '0',
-        last_acknowledged_event_id: '0',
-        filter_entity_ref: null,
-        filter_entity_id: null,
+        lastSentEventId: '0',
+        lastAcknowledgedEventId: '0',
       });
 
       subscription = await upsertHistorySubscription(knex, {
@@ -178,16 +148,14 @@ describe('upsertHistorySubscription', () => {
       await expect(
         getSubscription(knex, subscription.subscriptionId),
       ).resolves.toEqual({
-        subscription_id: 'test',
-        active_at: expect.anything(),
-        created_at: expect.anything(),
+        subscriptionId: 'test',
+        activeAt: expect.any(Date),
+        createdAt: expect.any(Date),
         state: 'idle',
-        ack_id: null,
-        ack_timeout_at: null,
-        last_sent_event_id: '0',
-        last_acknowledged_event_id: '0',
-        filter_entity_ref: 'r',
-        filter_entity_id: 'i',
+        lastSentEventId: '0',
+        lastAcknowledgedEventId: '0',
+        filterEntityRef: 'r',
+        filterEntityId: 'i',
       });
 
       await backend.stop();
@@ -199,7 +167,7 @@ describe('upsertHistorySubscription', () => {
     async databaseId => {
       const { knex, backend } = await init(databaseId);
 
-      await knex('module_history__events').insert([
+      await knex('history_events').insert([
         { event_type: 'type1' },
         { event_type: 'type2' },
         { event_type: 'type3' },
@@ -218,16 +186,12 @@ describe('upsertHistorySubscription', () => {
       await expect(
         getSubscription(knex, subscription.subscriptionId),
       ).resolves.toEqual({
-        subscription_id: 'beginning',
-        active_at: expect.anything(),
-        created_at: expect.anything(),
+        subscriptionId: 'beginning',
+        activeAt: expect.any(Date),
+        createdAt: expect.any(Date),
         state: 'idle',
-        ack_id: null,
-        ack_timeout_at: null,
-        last_sent_event_id: '0',
-        last_acknowledged_event_id: '0',
-        filter_entity_ref: null,
-        filter_entity_id: null,
+        lastSentEventId: '0',
+        lastAcknowledgedEventId: '0',
       });
 
       subscription = await upsertHistorySubscription(knex, {
@@ -243,16 +207,12 @@ describe('upsertHistorySubscription', () => {
       await expect(
         getSubscription(knex, subscription.subscriptionId),
       ).resolves.toEqual({
-        subscription_id: 'now',
-        active_at: expect.anything(),
-        created_at: expect.anything(),
+        subscriptionId: 'now',
+        activeAt: expect.any(Date),
+        createdAt: expect.any(Date),
         state: 'idle',
-        ack_id: null,
-        ack_timeout_at: null,
-        last_sent_event_id: '3',
-        last_acknowledged_event_id: '3',
-        filter_entity_ref: null,
-        filter_entity_id: null,
+        lastSentEventId: '3',
+        lastAcknowledgedEventId: '3',
       });
 
       subscription = await upsertHistorySubscription(knex, {
@@ -268,16 +228,12 @@ describe('upsertHistorySubscription', () => {
       await expect(
         getSubscription(knex, subscription.subscriptionId),
       ).resolves.toEqual({
-        subscription_id: 'number',
-        active_at: expect.anything(),
-        created_at: expect.anything(),
+        subscriptionId: 'number',
+        activeAt: expect.any(Date),
+        createdAt: expect.any(Date),
         state: 'idle',
-        ack_id: null,
-        ack_timeout_at: null,
-        last_sent_event_id: '2',
-        last_acknowledged_event_id: '2',
-        filter_entity_ref: null,
-        filter_entity_id: null,
+        lastSentEventId: '2',
+        lastAcknowledgedEventId: '2',
       });
 
       await expect(

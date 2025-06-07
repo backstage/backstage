@@ -15,8 +15,8 @@
  */
 
 import { Knex } from 'knex';
-import { EventsTableRow } from '../tables';
-import { CatalogEvent } from '../../service/endpoints/types';
+import { EventsTableEntry } from '../../types';
+import { EventsTableRow, toEventsTableEntry } from '../tables';
 
 export interface ReadHistoryEventsOptions {
   afterEventId?: string;
@@ -32,8 +32,8 @@ export interface ReadHistoryEventsOptions {
 export async function readHistoryEvents(
   knex: Knex,
   options: ReadHistoryEventsOptions,
-): Promise<CatalogEvent[]> {
-  let query = knex<EventsTableRow>('module_history__events');
+): Promise<EventsTableEntry[]> {
+  let query = knex<EventsTableRow>('history_events');
 
   if (options.afterEventId) {
     query = query.where(
@@ -51,19 +51,5 @@ export async function readHistoryEvents(
 
   query = query.orderBy('event_id', options.order).limit(options.limit);
 
-  return await query.then(rows =>
-    rows.map(row => ({
-      eventId: String(row.event_id),
-      eventAt:
-        typeof row.event_at === 'string'
-          ? new Date(row.event_at)
-          : row.event_at,
-      eventType: row.event_type,
-      entityRef: row.entity_ref ?? undefined,
-      entityId: row.entity_id ?? undefined,
-      entityJson: row.entity_json ?? undefined,
-      locationId: row.location_id ?? undefined,
-      locationRef: row.location_ref ?? undefined,
-    })),
-  );
+  return await query.then(rows => rows.map(toEventsTableEntry));
 }

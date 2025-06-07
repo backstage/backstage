@@ -61,13 +61,13 @@ describe('migrations', () => {
   const databases = TestDatabases.create();
 
   it.each(databases.eachSupportedId())(
-    '20250519000000_events.js, %p',
+    '20250607000000_history_events.js, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
       const mockProvider = createMockEntityProvider();
 
       function rows(): Promise<EventsTableRow[]> {
-        return knex('module_history__events')
+        return knex('history_events')
           .orderBy('event_id')
           .then(r =>
             r.map(row => ({
@@ -108,7 +108,7 @@ describe('migrations', () => {
 
       // Upgrading works
       await mockProvider.ready;
-      await migrateUntilBefore(knex, '20250519000000_events.js');
+      await migrateUntilBefore(knex, '20250607000000_history_events.js');
       await migrateUpOnce(knex);
 
       // Expect that an insertion leads to an event
@@ -225,7 +225,7 @@ describe('migrations', () => {
       });
 
       // Make a clean slate for location testing
-      await knex('module_history__events').delete();
+      await knex('history_events').delete();
 
       await knex('locations').insert({
         id: 'b07a8526-0025-47e9-bf3b-f47ac94692c2',

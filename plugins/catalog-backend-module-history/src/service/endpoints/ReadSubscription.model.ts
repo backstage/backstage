@@ -18,7 +18,7 @@ import { Knex } from 'knex';
 import { HistoryConfig } from '../../config';
 import { ChangeListener } from '../../database/changeListener/types';
 import { readHistorySubscription } from '../../database/operations/readHistorySubscription';
-import { CatalogEvent } from './types';
+import { EventsTableEntry } from '../../types';
 
 export interface ReadSubscriptionOptions {
   subscriptionId: string;
@@ -27,7 +27,7 @@ export interface ReadSubscriptionOptions {
 }
 
 export type ReadSubscriptionResult =
-  | { type: 'data'; events: CatalogEvent[]; ackId: string }
+  | { type: 'data'; events: EventsTableEntry[]; ackId: string }
   | { type: 'empty' }
   | { type: 'block'; wait: () => Promise<'timeout' | 'aborted' | 'ready'> };
 

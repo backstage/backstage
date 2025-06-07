@@ -53,7 +53,7 @@ describe('ackHistorySubscription', () => {
   }
 
   async function getSubscription(knex: Knex, subscriptionId: string) {
-    const [subscription] = await knex('module_history__subscriptions').where(
+    const [subscription] = await knex('history_subscriptions').where(
       'subscription_id',
       '=',
       subscriptionId,
@@ -77,7 +77,7 @@ describe('ackHistorySubscription', () => {
     async databaseId => {
       const { knex, backend } = await init(databaseId);
 
-      await knex('module_history__subscriptions').insert([
+      await knex('history_subscriptions').insert([
         {
           subscription_id: 'idle',
           state: 'idle',
@@ -176,6 +176,7 @@ describe('ackHistorySubscription', () => {
       });
 
       await backend.stop();
+      await knex.destroy();
     },
   );
 });

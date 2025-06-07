@@ -78,12 +78,12 @@ describe('runJanitorCleanup', () => {
         });
 
         // Start with a clean slate for the test
-        await knex('module_history__events').delete();
+        await knex('history_events').delete();
 
         const recently = knex.fn.now();
         const longAgo = knexRawNowMinus(knex, { hours: 2 });
 
-        await knex<EventsTableRow>('module_history__events').insert([
+        await knex<EventsTableRow>('history_events').insert([
           {
             entity_id: '1',
             entity_ref: 'k:ns/exists',
@@ -115,9 +115,7 @@ describe('runJanitorCleanup', () => {
         ]);
 
         await expect(
-          knex('module_history__events')
-            .select('event_type')
-            .orderBy('event_id'),
+          knex('history_events').select('event_type').orderBy('event_id'),
         ).resolves.toEqual([
           { event_type: 'a' },
           { event_type: 'b' },
@@ -135,9 +133,7 @@ describe('runJanitorCleanup', () => {
         );
 
         await expect(
-          knex('module_history__events')
-            .select('event_type')
-            .orderBy('event_id'),
+          knex('history_events').select('event_type').orderBy('event_id'),
         ).resolves.toEqual([{ event_type: 'b' }, { event_type: 'd' }]);
 
         await backend.stop();
@@ -169,12 +165,12 @@ describe('runJanitorCleanup', () => {
         });
 
         // Start with a clean slate for the test
-        await knex('module_history__events').delete();
+        await knex('history_events').delete();
 
         const recently = knex.fn.now();
         const longAgo = knexRawNowMinus(knex, { hours: 2 });
 
-        await knex<EventsTableRow>('module_history__events').insert([
+        await knex<EventsTableRow>('history_events').insert([
           {
             entity_id: '1',
             entity_ref: 'k:ns/only-older-than-deadline-but-is-not-deleted',
@@ -234,9 +230,7 @@ describe('runJanitorCleanup', () => {
         ]);
 
         await expect(
-          knex('module_history__events')
-            .select('entity_ref')
-            .orderBy('event_id'),
+          knex('history_events').select('entity_ref').orderBy('event_id'),
         ).resolves.toEqual([
           { entity_ref: 'k:ns/only-older-than-deadline-but-is-not-deleted' },
           { entity_ref: 'k:ns/only-older-than-deadline-but-is-not-deleted' },
@@ -258,9 +252,7 @@ describe('runJanitorCleanup', () => {
         );
 
         await expect(
-          knex('module_history__events')
-            .select('entity_ref')
-            .orderBy('event_id'),
+          knex('history_events').select('entity_ref').orderBy('event_id'),
         ).resolves.toEqual([
           { entity_ref: 'k:ns/only-older-than-deadline-but-is-not-deleted' },
           { entity_ref: 'k:ns/only-older-than-deadline-but-is-not-deleted' },
@@ -284,7 +276,7 @@ describe('runJanitorCleanup', () => {
         const inThePast = knexRawNowMinus(knex, { seconds: 30 });
         const inTheFuture = knexRawNowPlus(knex, { seconds: 30 });
 
-        await knex('module_history__subscriptions').insert({
+        await knex('history_subscriptions').insert({
           subscription_id: 's1',
           state: 'waiting',
           ack_timeout_at: inThePast,
@@ -292,7 +284,7 @@ describe('runJanitorCleanup', () => {
           last_acknowledged_event_id: '1',
           last_sent_event_id: '2',
         });
-        await knex('module_history__subscriptions').insert({
+        await knex('history_subscriptions').insert({
           subscription_id: 's2',
           state: 'waiting',
           ack_timeout_at: inTheFuture,
@@ -300,7 +292,7 @@ describe('runJanitorCleanup', () => {
           last_acknowledged_event_id: '1',
           last_sent_event_id: '2',
         });
-        await knex('module_history__subscriptions').insert({
+        await knex('history_subscriptions').insert({
           subscription_id: 's3',
           state: 'not-waiting',
           ack_timeout_at: inThePast,
@@ -312,7 +304,7 @@ describe('runJanitorCleanup', () => {
         await runJanitorCleanup(knex, getHistoryConfig());
 
         await expect(
-          knex('module_history__subscriptions').orderBy('subscription_id'),
+          knex('history_subscriptions').orderBy('subscription_id'),
         ).resolves.toEqual([
           expect.objectContaining({
             state: 'idle',

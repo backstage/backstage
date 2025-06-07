@@ -24,9 +24,7 @@ export async function runJanitorCleanup(
 ) {
   if (historyConfig.eventMaxRetentionTime) {
     const deadline = knexRawNowMinus(knex, historyConfig.eventMaxRetentionTime);
-    await knex('module_history__events')
-      .where('event_at', '<', deadline)
-      .delete();
+    await knex('history_events').where('event_at', '<', deadline).delete();
   }
 
   if (historyConfig.eventRetentionTimeAfterDeletion) {
@@ -41,22 +39,20 @@ export async function runJanitorCleanup(
         deleted =>
           deleted
             .select(
-              'module_history__events.entity_ref',
-              knex.raw(
-                'max(module_history__events.event_at) as newest_event_at',
-              ),
+              'history_events.entity_ref',
+              knex.raw('max(history_events.event_at) as newest_event_at'),
             )
-            .from('module_history__events')
-            .groupBy('module_history__events.entity_ref')
+            .from('history_events')
+            .groupBy('history_events.entity_ref')
             .leftOuterJoin(
               'final_entities',
               'final_entities.entity_ref',
-              'module_history__events.entity_ref',
+              'history_events.entity_ref',
             )
-            .whereNotNull('module_history__events.entity_ref')
+            .whereNotNull('history_events.entity_ref')
             .whereNull('final_entities.final_entity'), // either missing row, or actual NULL column
       )
-      .from('module_history__events')
+      .from('history_events')
       .whereIn('entity_ref', inner =>
         inner
           .select('deleted.entity_ref')
@@ -69,7 +65,7 @@ export async function runJanitorCleanup(
   // If a receiver did not acknowledge completion of a set of events, we
   // consider it a failed delivery and consider re-sending them to a different
   // receiver.
-  await knex('module_history__subscriptions')
+  await knex('history_subscriptions')
     .update({
       state: 'idle',
       ack_id: null,
@@ -84,7 +80,7 @@ export async function runJanitorCleanup(
       knex,
       historyConfig.subscriptionRetentionTimeAfterInactive,
     );
-    await knex('module_history__subscriptions')
+    await knex('history_subscriptions')
       .where('state', '=', 'idle')
       .andWhere('active_at', '<', deadline)
       .delete();

@@ -19,6 +19,6 @@ import { Knex } from 'knex';
 export async function getMaxEventId(knex: Knex): Promise<string> {
   const result = await knex
     .select({ max: knex.raw(`COALESCE(MAX(event_id), '0')`) })
-    .from('module_history__events');
+    .from('history_events');
   return String(result[0].max);
 }

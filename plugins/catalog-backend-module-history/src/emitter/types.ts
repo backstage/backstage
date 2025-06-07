@@ -15,7 +15,7 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { CatalogEvent } from '../service/endpoints/types';
+import { EventsTableEntry } from '../types';
 
 /**
  * The events backend topic that the catalog history events are emitted on.
@@ -49,7 +49,7 @@ export interface CatalogHistoryEventPayload {
 }
 
 export function toBackstageEventPayload(
-  event: CatalogEvent,
+  event: EventsTableEntry,
 ): CatalogHistoryEventPayload {
   return {
     eventId: event.eventId,

@@ -167,7 +167,7 @@ export class PollingChangeEngine implements ChangeEngine {
   async #getCurrentHighestEventId(): Promise<string> {
     // faster, "looser" check than evaluating the exact MAX(),
     // and also we do not have to do bighum comparisons in js
-    const result = await this.#knex<EventsTableRow>('module_history__events')
+    const result = await this.#knex<EventsTableRow>('history_events')
       .where('event_id', '>', this.#highestKnownEventId)
       .orderBy('event_id', 'desc')
       .limit(1);

@@ -15,30 +15,12 @@
  */
 
 import { Event } from '../../schema/openapi/generated/models';
+import { EventsTableEntry } from '../../types';
 
 /**
- * A single history event, received through a consumer's subscription.
+ * Converts a database entry to the shape expected in service responses.
  */
-export interface CatalogEvent {
-  /** A unique identifier for this particular event; a string form of an ever increasing big integer */
-  eventId: string;
-  /** When the event happened */
-  eventAt: Date;
-  /** The distinct type of event */
-  eventType: string;
-  /** The entity ref related to the event, where applicable */
-  entityRef?: string;
-  /** The entity uid related to the event, where applicable */
-  entityId?: string;
-  /** The JSON serialized body of the entity related to the event, where applicable */
-  entityJson?: string;
-  /** The location id related to the event, where applicable */
-  locationId?: string;
-  /** The location ref related to the event, where applicable */
-  locationRef?: string;
-}
-
-export function toResponseEvent(event: CatalogEvent): Event {
+export function toResponseEvent(event: EventsTableEntry): Event {
   return {
     eventId: event.eventId,
     eventAt: event.eventAt.toISOString(),
@@ -49,20 +31,4 @@ export function toResponseEvent(event: CatalogEvent): Event {
     locationId: event.locationId,
     locationRef: event.locationRef,
   };
-}
-
-/**
- * A subscription to catalog events.
- */
-export interface CatalogEventSubscription {
-  /** The ID of the subscription */
-  subscriptionId: string;
-  /** An ISO timestamp string for when the subscription was created */
-  createdAt: Date;
-  /** An ISO timestamp string for when the subscription was last active */
-  activeAt: Date;
-  /** The entity ref filter for the subscription */
-  filterEntityRef?: string;
-  /** The entity uid filter for the subscription */
-  filterEntityId?: string;
 }
