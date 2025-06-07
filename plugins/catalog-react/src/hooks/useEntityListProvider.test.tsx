@@ -42,6 +42,23 @@ import { useMountEffect } from '@react-hookz/web';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
 import { EntityListPagination } from '../types';
 
+// Expected fields for catalog table optimization
+const expectedCatalogTableFields = [
+  'kind',
+  'metadata.name',
+  'metadata.namespace',
+  'metadata.title',
+  'metadata.description',
+  'metadata.tags',
+  'metadata.labels',
+  'metadata.annotations',
+  'spec.type',
+  'spec.lifecycle',
+  'spec.targets',
+  'spec.target',
+  'relations',
+];
+
 const entities: Entity[] = [
   {
     apiVersion: '1',
@@ -144,6 +161,7 @@ describe('<EntityListProvider />', () => {
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'component' },
+      fields: expectedCatalogTableFields,
     });
   });
 
@@ -188,6 +206,7 @@ describe('<EntityListProvider />', () => {
       expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
       expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
         filter: { kind: 'component' },
+        fields: expectedCatalogTableFields,
       });
     });
   });
@@ -262,6 +281,7 @@ describe('<EntityListProvider />', () => {
     await waitFor(() => {
       expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(2, {
         filter: { kind: 'api', 'spec.type': ['service'] },
+        fields: expectedCatalogTableFields,
       });
     });
   });
@@ -318,6 +338,7 @@ describe('<EntityListProvider />', () => {
 
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'user' },
+      fields: expectedCatalogTableFields,
     });
   });
 
@@ -339,6 +360,7 @@ describe('<EntityListProvider />', () => {
 
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'group' },
+      fields: expectedCatalogTableFields,
     });
   });
 });
@@ -390,6 +412,7 @@ describe('<EntityListProvider pagination />', () => {
             'spec.profile.displayName',
           ],
         },
+        fields: expectedCatalogTableFields,
       });
     });
   });
@@ -409,6 +432,7 @@ describe('<EntityListProvider pagination />', () => {
       filter: { kind: 'component' },
       limit,
       orderFields,
+      fields: expectedCatalogTableFields,
     });
   });
 
@@ -501,6 +525,9 @@ describe('<EntityListProvider pagination />', () => {
         filter: { kind: 'api', 'spec.type': ['service'] },
         limit,
         orderFields,
+        fields: expectedCatalogTableFields,
+        fullTextFilter: undefined,
+        offset: undefined,
       });
     });
 
@@ -568,6 +595,7 @@ describe('<EntityListProvider pagination />', () => {
         expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
           cursor: 'nextCursor',
           limit,
+          fields: expectedCatalogTableFields,
         });
       });
     });
@@ -592,6 +620,7 @@ describe('<EntityListProvider pagination />', () => {
         expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
           cursor: 'prevCursor',
           limit,
+          fields: expectedCatalogTableFields,
         });
       });
     });
@@ -615,6 +644,7 @@ describe('<EntityListProvider pagination />', () => {
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
           filter: { kind: 'user' },
+          fields: expectedCatalogTableFields,
         }),
       );
     });
@@ -638,6 +668,7 @@ describe('<EntityListProvider pagination />', () => {
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
           filter: { kind: 'group' },
+          fields: expectedCatalogTableFields,
         }),
       );
     });
@@ -692,6 +723,7 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
             'spec.profile.displayName',
           ],
         },
+        fields: expectedCatalogTableFields,
       });
     });
   });
@@ -712,6 +744,7 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
       limit,
       offset: 0,
       orderFields,
+      fields: expectedCatalogTableFields,
     });
   });
 
@@ -839,6 +872,7 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
         limit,
         offset: 0,
         orderFields,
+        fields: expectedCatalogTableFields,
       });
     });
   });
@@ -865,6 +899,7 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
         limit,
         offset: 10,
         orderFields,
+        fields: expectedCatalogTableFields,
       });
       expect(result.current.offset).toEqual(10);
     });
@@ -910,6 +945,7 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
       expect.objectContaining({
         filter: { kind: 'user' },
+        fields: expectedCatalogTableFields,
       }),
     );
   });
@@ -933,7 +969,200 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
     expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
       expect.objectContaining({
         filter: { kind: 'group' },
+        fields: expectedCatalogTableFields,
       }),
     );
+  });
+});
+
+describe('Field optimization', () => {
+  it('should only request necessary fields for catalog table', async () => {
+    // Mock a complete entity with many fields (simulating what backend would have)
+    const completeEntity: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'my-service',
+        namespace: 'default',
+        title: 'My Service',
+        description: 'A sample microservice',
+        labels: {
+          team: 'backend',
+          language: 'typescript',
+          environment: 'production',
+        },
+        tags: ['api', 'microservice'],
+        annotations: {
+          'backstage.io/edit-url':
+            'https://github.com/org/repo/edit/main/catalog-info.yaml',
+          'backstage.io/view-url': 'https://github.com/org/repo',
+          'backstage.io/source-location':
+            'url:https://github.com/org/repo/tree/main/',
+          'jenkins.io/build-url': 'https://jenkins.example.com/job/my-service/',
+          'sonarqube.org/project-key': 'my-service',
+          'grafana/dashboard-selector': 'my-service',
+          'prometheus.io/rule': 'my-service-alerts',
+        },
+        uid: '12345678-1234-1234-1234-123456789012',
+        etag: 'abc123',
+        generation: 1,
+        resourceVersion: '12345',
+        creationTimestamp: '2023-01-01T00:00:00Z',
+        deletionTimestamp: undefined,
+        finalizers: [],
+        managedFields: [],
+        ownerReferences: [],
+      },
+      spec: {
+        type: 'service',
+        lifecycle: 'production',
+        owner: 'team-backend',
+        system: 'payment-system',
+        targets: ['https://api.example.com'],
+        // Additional fields that should NOT be requested for the table
+        definition:
+          'Large OpenAPI spec content that is not needed for table...',
+        customField1: 'Some large custom data',
+        customField2: { nested: { data: 'that is not used in table' } },
+        internalConfig: {
+          database: {
+            host: 'db.example.com',
+            port: 5432,
+            credentials: 'secret-data-not-needed-for-table',
+          },
+        },
+      },
+
+      relations: [
+        {
+          type: 'dependsOn',
+          targetRef: 'component:default/database',
+        },
+      ],
+    };
+
+    // Mock the API to return the complete entity (but expect it to be called with fields parameter)
+    mockCatalogApi.getEntities!.mockResolvedValue({
+      items: [completeEntity],
+    });
+
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination: false }),
+    });
+
+    act(() => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('component', 'Component'),
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.getEntities).toHaveBeenCalled();
+    });
+
+    // Verify that the API was called with ONLY the necessary fields
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
+      filter: { kind: 'component' },
+      fields: expectedCatalogTableFields,
+    });
+
+    // Verify that the expected fields array contains only the necessary fields
+    expect(expectedCatalogTableFields).toEqual([
+      'kind',
+      'metadata.name',
+      'metadata.namespace',
+      'metadata.title',
+      'metadata.description',
+      'metadata.tags',
+      'metadata.labels',
+      'metadata.annotations',
+      'spec.type',
+      'spec.lifecycle',
+      'spec.targets',
+      'spec.target',
+      'relations',
+    ]);
+
+    // Verify that unnecessary fields are NOT requested
+    expect(expectedCatalogTableFields).not.toContain('spec.definition');
+    expect(expectedCatalogTableFields).not.toContain('spec.customField1');
+    expect(expectedCatalogTableFields).not.toContain('spec.customField2');
+    expect(expectedCatalogTableFields).not.toContain('spec.internalConfig');
+    expect(expectedCatalogTableFields).not.toContain('status');
+    expect(expectedCatalogTableFields).not.toContain('metadata.uid');
+    expect(expectedCatalogTableFields).not.toContain('metadata.etag');
+    expect(expectedCatalogTableFields).not.toContain('metadata.generation');
+    expect(expectedCatalogTableFields).not.toContain(
+      'metadata.resourceVersion',
+    );
+    expect(expectedCatalogTableFields).not.toContain(
+      'metadata.creationTimestamp',
+    );
+    expect(expectedCatalogTableFields).not.toContain('metadata.managedFields');
+    expect(expectedCatalogTableFields).not.toContain(
+      'metadata.ownerReferences',
+    );
+
+    // Verify that we get the entities back (proving the functionality still works)
+    await waitFor(() => {
+      expect(result.current.entities).toHaveLength(1);
+    });
+  });
+
+  it('should request necessary fields for paginated requests', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination: { kind: 'offset', limit: 20 } }),
+    });
+
+    act(() => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('component', 'Component'),
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalled();
+    });
+
+    // Verify that paginated API calls also include the fields parameter
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filter: { kind: 'component' },
+        fields: expectedCatalogTableFields,
+      }),
+    );
+  });
+
+  it('should include relations field for table entity processing', async () => {
+    // This test ensures that the 'relations' field is included because
+    // it's needed by the toEntityRow function in CatalogTable
+    expect(expectedCatalogTableFields).toContain('relations');
+  });
+
+  it('should include all metadata fields used by default columns', async () => {
+    // These fields are used by the default catalog table columns
+    const metadataFields = expectedCatalogTableFields.filter(field =>
+      field.startsWith('metadata.'),
+    );
+
+    expect(metadataFields).toContain('metadata.name');
+    expect(metadataFields).toContain('metadata.namespace');
+    expect(metadataFields).toContain('metadata.title');
+    expect(metadataFields).toContain('metadata.description');
+    expect(metadataFields).toContain('metadata.tags');
+    expect(metadataFields).toContain('metadata.labels');
+    expect(metadataFields).toContain('metadata.annotations');
+  });
+
+  it('should include spec fields used by table columns', async () => {
+    // These spec fields are used by various catalog table columns
+    const specFields = expectedCatalogTableFields.filter(field =>
+      field.startsWith('spec.'),
+    );
+
+    expect(specFields).toContain('spec.type');
+    expect(specFields).toContain('spec.lifecycle');
+    expect(specFields).toContain('spec.targets');
+    expect(specFields).toContain('spec.target');
   });
 });

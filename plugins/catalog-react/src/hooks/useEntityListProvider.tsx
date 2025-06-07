@@ -53,6 +53,33 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
 
+/**
+ * Fields required for the catalog table display. This optimizes API requests by only fetching
+ * the data that is actually used by the table columns and related functionality.
+ */
+const getCatalogTableFields = (): string[] => [
+  // Core entity identification fields
+  'kind',
+  'metadata.name',
+  'metadata.namespace',
+  'metadata.title',
+
+  // Fields used by table columns
+  'metadata.description',
+  'metadata.tags',
+  'metadata.labels',
+  'metadata.annotations',
+
+  // Spec fields used in columns
+  'spec.type',
+  'spec.lifecycle',
+  'spec.targets',
+  'spec.target',
+
+  // Relations data needed for owner and system columns
+  'relations',
+];
+
 /** @public */
 export type DefaultEntityFilters = {
   kind?: EntityKindFilter;
@@ -269,6 +296,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
             const response = await catalogApi.queryEntities({
               cursor,
               limit,
+              fields: getCatalogTableFields(),
             });
             setOutputState({
               appliedFilters: requestedFilters,
@@ -295,6 +323,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               ...backendFilter,
               limit,
               offset,
+              fields: getCatalogTableFields(),
             });
             setOutputState({
               appliedFilters: requestedFilters,
@@ -318,10 +347,10 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         // there's at least one filter, we should allow an initial request
         // to happen with no filters.
         if (!isEqual(previousBackendFilter, backendFilter)) {
-          // TODO(timbonicus): should limit fields here, but would need filter
-          // fields + table columns
+          // Optimized to limit fields to only those needed by the catalog table
           const response = await catalogApi.getEntities({
             filter: backendFilter,
+            fields: getCatalogTableFields(),
           });
           const entities = response.items.filter(entityFilter);
           setOutputState({
