@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  TestDatabases,
-  mockServices,
-  startTestBackend,
-} from '@backstage/backend-test-utils';
-import catalogBackend from '@backstage/plugin-catalog-backend';
+import { TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import waitFor from 'wait-for-expect';
-import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
+import { initEmptyDatabase } from '../../__fixtures__/initEmptyDatabase';
 import { getHistoryConfig } from '../../config';
 import { sleep } from '../../helpers';
-import { applyDatabaseMigrations } from '../migrations';
 import { PollingChangeEngine } from './PollingChangeEngine';
 
 jest.setTimeout(60_000);
@@ -42,18 +36,7 @@ describe('PollingChangeEngine', () => {
   it.each(databases.eachSupportedId())(
     'groups up changes and signals them, %p',
     async databaseId => {
-      const knex = await databases.init(databaseId);
-
-      const provider = createMockEntityProvider();
-      const backend = await startTestBackend({
-        features: [
-          mockServices.database.factory({ knex }),
-          catalogBackend,
-          provider,
-        ],
-      });
-      await provider.ready;
-      await applyDatabaseMigrations(knex);
+      const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
 
       const store = new PollingChangeEngine(
         knex,
@@ -125,8 +108,7 @@ describe('PollingChangeEngine', () => {
       expect(rejected).toBe(true);
 
       await store.shutdown();
-      await backend.stop();
-      await knex.destroy();
+      await shutdown();
     },
   );
 });

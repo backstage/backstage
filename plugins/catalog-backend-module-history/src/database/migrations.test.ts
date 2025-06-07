@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  TestDatabases,
-  mockServices,
-  startTestBackend,
-} from '@backstage/backend-test-utils';
+import { TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import catalogBackend from '@backstage/plugin-catalog-backend';
 import fs from 'fs';
 import { Knex } from 'knex';
 import waitFor from 'wait-for-expect';
-import { createMockEntityProvider } from '../__fixtures__/createMockEntityProvider';
+import { initEmptyDatabase } from '../__fixtures__/initEmptyDatabase';
 import { DB_MIGRATIONS_TABLE } from './migrations';
 import { EventsTableRow } from './tables';
 
@@ -63,8 +58,13 @@ describe('migrations', () => {
   it.each(databases.eachSupportedId())(
     '20250607000000_history_events.js, %p',
     async databaseId => {
-      const knex = await databases.init(databaseId);
-      const mockProvider = createMockEntityProvider();
+      const { knex, provider, shutdown } = await initEmptyDatabase(
+        databases,
+        databaseId,
+        {
+          runMigrations: false,
+        },
+      );
 
       function rows(): Promise<EventsTableRow[]> {
         return knex('history_events')
@@ -95,24 +95,12 @@ describe('migrations', () => {
       };
       const entityRef = stringifyEntityRef(entity);
 
-      await startTestBackend({
-        features: [
-          mockServices.database.factory({ knex }),
-          mockServices.rootConfig.factory({
-            data: { catalog: { processingInterval: '100ms' } },
-          }),
-          catalogBackend,
-          mockProvider,
-        ],
-      });
-
       // Upgrading works
-      await mockProvider.ready;
       await migrateUntilBefore(knex, '20250607000000_history_events.js');
       await migrateUpOnce(knex);
 
       // Expect that an insertion leads to an event
-      mockProvider.addEntity(entity);
+      provider.addEntity(entity);
 
       await waitFor(async () => {
         await expect(rows()).resolves.toEqual([
@@ -131,7 +119,7 @@ describe('migrations', () => {
 
       // Expect that an update of the entity leads to an event
       entity.spec!.owner = 'you';
-      mockProvider.addEntity(entity);
+      provider.addEntity(entity);
 
       await waitFor(async () => {
         await expect(rows()).resolves.toEqual([
@@ -187,7 +175,7 @@ describe('migrations', () => {
       ]);
 
       // Expect that a deletion of the final entity leads to an event
-      mockProvider.removeEntity(entityRef);
+      provider.removeEntity(entityRef);
 
       await waitFor(async () => {
         await expect(rows()).resolves.toEqual([
@@ -294,7 +282,7 @@ describe('migrations', () => {
 
       // Downgrading works
       await migrateDownOnce(knex);
-      await knex.destroy();
+      await shutdown();
     },
   );
 });

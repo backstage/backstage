@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  mockServices,
-  startTestBackend,
-  TestBackend,
-  TestDatabaseId,
-  TestDatabases,
-} from '@backstage/backend-test-utils';
+import { TestDatabases } from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
-import catalogBackend from '@backstage/plugin-catalog-backend';
-import { Knex } from 'knex';
-import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
-import { applyDatabaseMigrations } from '../migrations';
+import { initEmptyDatabase } from '../../__fixtures__/initEmptyDatabase';
 import { getSubscription } from './getSubscription';
 
 jest.setTimeout(60_000);
@@ -33,29 +24,10 @@ jest.setTimeout(60_000);
 describe('getSubscription', () => {
   const databases = TestDatabases.create();
 
-  // Helper to ensure the catalog is started and our migrations are applied
-  async function init(databaseId: TestDatabaseId): Promise<{
-    knex: Knex;
-    backend: TestBackend;
-  }> {
-    const knex = await databases.init(databaseId);
-    const provider = createMockEntityProvider();
-    const backend = await startTestBackend({
-      features: [
-        mockServices.database.factory({ knex }),
-        catalogBackend,
-        provider,
-      ],
-    });
-    await provider.ready;
-    await applyDatabaseMigrations(knex);
-    return { knex, backend };
-  }
-
   it.each(databases.eachSupportedId())(
     'should return a subscription or throw NotFoundError, %p',
     async databaseId => {
-      const { knex, backend } = await init(databaseId);
+      const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
 
       await knex('history_subscriptions').insert({
         subscription_id: 'foo',
@@ -73,8 +45,7 @@ describe('getSubscription', () => {
 
       await expect(getSubscription(knex, 'bar')).rejects.toThrow(NotFoundError);
 
-      await backend.stop();
-      await knex.destroy();
+      await shutdown();
     },
   );
 });

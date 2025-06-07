@@ -18,6 +18,10 @@ import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { ChangeListener } from '../database/changeListener/types';
 import { sleep } from '../helpers';
 
+/**
+ * Creates a fake change listner that can be used in tests. It just periodically
+ * calls the checker.
+ */
 export function createMockChangeListener(options?: {
   timeout?: HumanDuration;
 }): ChangeListener {

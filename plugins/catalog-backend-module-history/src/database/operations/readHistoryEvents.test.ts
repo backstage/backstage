@@ -14,42 +14,15 @@
  * limitations under the License.
  */
 
-import {
-  mockServices,
-  startTestBackend,
-  TestBackend,
-  TestDatabaseId,
-  TestDatabases,
-} from '@backstage/backend-test-utils';
-import catalogBackend from '@backstage/plugin-catalog-backend';
+import { TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
-import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
-import { applyDatabaseMigrations } from '../migrations';
+import { initEmptyDatabase } from '../../__fixtures__/initEmptyDatabase';
 import { readHistoryEvents } from './readHistoryEvents';
 
 jest.setTimeout(60_000);
 
 describe('readHistoryEvents', () => {
   const databases = TestDatabases.create();
-
-  // Helper to ensure the catalog is started and our migrations are applied
-  async function init(databaseId: TestDatabaseId): Promise<{
-    knex: Knex;
-    backend: TestBackend;
-  }> {
-    const knex = await databases.init(databaseId);
-    const provider = createMockEntityProvider();
-    const backend = await startTestBackend({
-      features: [
-        mockServices.database.factory({ knex }),
-        catalogBackend,
-        provider,
-      ],
-    });
-    await provider.ready;
-    await applyDatabaseMigrations(knex);
-    return { knex, backend };
-  }
 
   // Upserts an enitity into the catalog
   async function setEntity(knex: Knex, name: string, data: number) {
@@ -83,7 +56,7 @@ describe('readHistoryEvents', () => {
   it.each(databases.eachSupportedId())(
     'reads properly from empty table and then with content, %p',
     async databaseId => {
-      const { knex, backend } = await init(databaseId);
+      const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
 
       await expect(
         readHistoryEvents(knex, {
@@ -107,14 +80,14 @@ describe('readHistoryEvents', () => {
         },
       ]);
 
-      await backend.stop();
+      await shutdown();
     },
   );
 
   it.each(databases.eachSupportedId())(
     'reads reverse with limit and stops when no more data, %p',
     async databaseId => {
-      const { knex, backend } = await init(databaseId);
+      const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
 
       await setEntity(knex, 'foo', 1);
       await setEntity(knex, 'foo', 2);
@@ -163,12 +136,12 @@ describe('readHistoryEvents', () => {
         }),
       ).resolves.toEqual([]);
 
-      await backend.stop();
+      await shutdown();
     },
   );
 
   it.each(databases.eachSupportedId())('filters, %p', async databaseId => {
-    const { knex, backend } = await init(databaseId);
+    const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
 
     await setEntity(knex, 'foo', 1);
     await setEntity(knex, 'bar', 2);
@@ -257,6 +230,6 @@ describe('readHistoryEvents', () => {
       }),
     ).resolves.toEqual([]);
 
-    await backend.stop();
+    await shutdown();
   });
 });

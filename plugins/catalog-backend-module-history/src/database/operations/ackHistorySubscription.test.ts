@@ -14,68 +14,20 @@
  * limitations under the License.
  */
 
-import {
-  mockServices,
-  startTestBackend,
-  TestBackend,
-  TestDatabaseId,
-  TestDatabases,
-} from '@backstage/backend-test-utils';
-import { NotFoundError } from '@backstage/errors';
-import catalogBackend from '@backstage/plugin-catalog-backend';
-import { Knex } from 'knex';
-import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
-import { applyDatabaseMigrations } from '../migrations';
+import { TestDatabases } from '@backstage/backend-test-utils';
+import { initEmptyDatabase } from '../../__fixtures__/initEmptyDatabase';
 import { ackHistorySubscription } from './ackHistorySubscription';
+import { getSubscription } from './getSubscription';
 
 jest.setTimeout(60_000);
 
 describe('ackHistorySubscription', () => {
   const databases = TestDatabases.create();
 
-  // Helper to ensure the catalog is started and our migrations are applied
-  async function init(databaseId: TestDatabaseId): Promise<{
-    knex: Knex;
-    backend: TestBackend;
-  }> {
-    const knex = await databases.init(databaseId);
-    const provider = createMockEntityProvider();
-    const backend = await startTestBackend({
-      features: [
-        mockServices.database.factory({ knex }),
-        catalogBackend,
-        provider,
-      ],
-    });
-    await provider.ready;
-    await applyDatabaseMigrations(knex);
-    return { knex, backend };
-  }
-
-  async function getSubscription(knex: Knex, subscriptionId: string) {
-    const [subscription] = await knex('history_subscriptions').where(
-      'subscription_id',
-      '=',
-      subscriptionId,
-    );
-    if (!subscription) {
-      throw new NotFoundError(`Subscription ${subscriptionId} not found`);
-    }
-    if (typeof subscription.last_sent_event_id === 'number') {
-      subscription.last_sent_event_id = String(subscription.last_sent_event_id);
-    }
-    if (typeof subscription.last_acknowledged_event_id === 'number') {
-      subscription.last_acknowledged_event_id = String(
-        subscription.last_acknowledged_event_id,
-      );
-    }
-    return subscription;
-  }
-
   it.each(databases.eachSupportedId())(
     'should ack a history subscription, %p',
     async databaseId => {
-      const { knex, backend } = await init(databaseId);
+      const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
 
       await knex('history_subscriptions').insert([
         {
@@ -119,28 +71,28 @@ describe('ackHistorySubscription', () => {
       ).resolves.toBeFalsy();
 
       await expect(getSubscription(knex, 'idle')).resolves.toMatchObject({
-        subscription_id: 'idle',
+        subscriptionId: 'idle',
         state: 'idle',
-        last_sent_event_id: '1',
-        last_acknowledged_event_id: '0',
+        lastSentEventId: '1',
+        lastAcknowledgedEventId: '0',
       });
 
       await expect(getSubscription(knex, 'waiting1')).resolves.toMatchObject({
-        subscription_id: 'waiting1',
+        subscriptionId: 'waiting1',
         state: 'waiting',
-        ack_id: 'ack1',
-        ack_timeout_at: expect.anything(),
-        last_sent_event_id: '1',
-        last_acknowledged_event_id: '0',
+        ackId: 'ack1',
+        ackTimeoutAt: expect.anything(),
+        lastSentEventId: '1',
+        lastAcknowledgedEventId: '0',
       });
 
       await expect(getSubscription(knex, 'waiting2')).resolves.toMatchObject({
-        subscription_id: 'waiting2',
+        subscriptionId: 'waiting2',
         state: 'waiting',
-        ack_id: 'ack2',
-        ack_timeout_at: expect.anything(),
-        last_sent_event_id: '1',
-        last_acknowledged_event_id: '0',
+        ackId: 'ack2',
+        ackTimeoutAt: expect.anything(),
+        lastSentEventId: '1',
+        lastAcknowledgedEventId: '0',
       });
 
       await expect(
@@ -151,32 +103,29 @@ describe('ackHistorySubscription', () => {
       ).resolves.toBeTruthy();
 
       await expect(getSubscription(knex, 'idle')).resolves.toMatchObject({
-        subscription_id: 'idle',
+        subscriptionId: 'idle',
         state: 'idle',
-        last_sent_event_id: '1',
-        last_acknowledged_event_id: '0',
+        lastSentEventId: '1',
+        lastAcknowledgedEventId: '0',
       });
 
       await expect(getSubscription(knex, 'waiting1')).resolves.toMatchObject({
-        subscription_id: 'waiting1',
+        subscriptionId: 'waiting1',
         state: 'idle',
-        ack_id: null,
-        ack_timeout_at: null,
-        last_sent_event_id: '1',
-        last_acknowledged_event_id: '1',
+        lastSentEventId: '1',
+        lastAcknowledgedEventId: '1',
       });
 
       await expect(getSubscription(knex, 'waiting2')).resolves.toMatchObject({
-        subscription_id: 'waiting2',
+        subscriptionId: 'waiting2',
         state: 'waiting',
-        ack_id: 'ack2',
-        ack_timeout_at: expect.anything(),
-        last_sent_event_id: '1',
-        last_acknowledged_event_id: '0',
+        ackId: 'ack2',
+        ackTimeoutAt: expect.anything(),
+        lastSentEventId: '1',
+        lastAcknowledgedEventId: '0',
       });
 
-      await backend.stop();
-      await knex.destroy();
+      await shutdown();
     },
   );
 });

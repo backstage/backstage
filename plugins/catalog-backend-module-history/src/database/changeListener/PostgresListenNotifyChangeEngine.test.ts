@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  TestDatabases,
-  mockServices,
-  startTestBackend,
-} from '@backstage/backend-test-utils';
-import catalogBackend from '@backstage/plugin-catalog-backend';
-import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
+import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
+import { initEmptyDatabase } from '../../__fixtures__/initEmptyDatabase';
 import {
   PostgresListenNotifyChangeEngine,
   TOPIC_PUBLISH,
 } from './PostgresListenNotifyChangeEngine';
-import { applyDatabaseMigrations } from '../migrations';
 
 jest.setTimeout(60_000);
 
@@ -40,7 +34,8 @@ describe('PostgresListenNotifyChangeEngine', () => {
         return;
       }
 
-      const knex = await databases.init(databaseId);
+      const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
+
       const store = new PostgresListenNotifyChangeEngine(knex, logger);
 
       const controller = new AbortController();
@@ -59,7 +54,7 @@ describe('PostgresListenNotifyChangeEngine', () => {
       });
 
       await store.shutdown();
-      await knex.destroy();
+      await shutdown();
     },
   );
 
@@ -70,17 +65,10 @@ describe('PostgresListenNotifyChangeEngine', () => {
         return;
       }
 
-      const knex = await databases.init(databaseId);
-      const provider = createMockEntityProvider();
-      const backend = await startTestBackend({
-        features: [
-          mockServices.database.factory({ knex }),
-          catalogBackend,
-          provider,
-        ],
-      });
-      await provider.ready;
-      await applyDatabaseMigrations(knex);
+      const { knex, provider, shutdown } = await initEmptyDatabase(
+        databases,
+        databaseId,
+      );
 
       const store = new PostgresListenNotifyChangeEngine(knex, logger);
 
@@ -106,8 +94,7 @@ describe('PostgresListenNotifyChangeEngine', () => {
       });
 
       await store.shutdown();
-      await backend.stop();
-      await knex.destroy();
+      await shutdown();
     },
   );
 });

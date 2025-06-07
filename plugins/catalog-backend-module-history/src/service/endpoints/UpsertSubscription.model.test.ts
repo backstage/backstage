@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  mockServices,
-  startTestBackend,
-  TestBackend,
-  TestDatabaseId,
-  TestDatabases,
-} from '@backstage/backend-test-utils';
-import catalogBackend from '@backstage/plugin-catalog-backend';
-import { Knex } from 'knex';
-import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
-import { applyDatabaseMigrations } from '../../database/migrations';
+import { TestDatabases } from '@backstage/backend-test-utils';
+import { initEmptyDatabase } from '../../__fixtures__/initEmptyDatabase';
 import { getSubscription } from '../../database/operations/getSubscription';
 import { UpsertSubscriptionModelImpl } from './UpsertSubscription.model';
 
@@ -33,29 +24,10 @@ jest.setTimeout(60_000);
 describe('UpsertSubscriptionModelImpl', () => {
   const databases = TestDatabases.create();
 
-  // Helper to ensure the catalog is started and our migrations are applied
-  async function init(databaseId: TestDatabaseId): Promise<{
-    knex: Knex;
-    backend: TestBackend;
-  }> {
-    const knex = await databases.init(databaseId);
-    const provider = createMockEntityProvider();
-    const backend = await startTestBackend({
-      features: [
-        mockServices.database.factory({ knex }),
-        catalogBackend,
-        provider,
-      ],
-    });
-    await provider.ready;
-    await applyDatabaseMigrations(knex);
-    return { knex, backend };
-  }
-
   it.each(databases.eachSupportedId())(
     'can create a new subscription both with a given and a generated id, %p',
     async databaseId => {
-      const { knex, backend } = await init(databaseId);
+      const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
 
       const model = new UpsertSubscriptionModelImpl({
         knexPromise: Promise.resolve(knex),
@@ -111,14 +83,14 @@ describe('UpsertSubscriptionModelImpl', () => {
         filterEntityId: 'i',
       });
 
-      await backend.stop();
+      await shutdown();
     },
   );
 
   it.each(databases.eachSupportedId())(
     'can insert and then update a subscription, %p',
     async databaseId => {
-      const { knex, backend } = await init(databaseId);
+      const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
 
       const model = new UpsertSubscriptionModelImpl({
         knexPromise: Promise.resolve(knex),
@@ -174,14 +146,14 @@ describe('UpsertSubscriptionModelImpl', () => {
         filterEntityId: 'i',
       });
 
-      await backend.stop();
+      await shutdown();
     },
   );
 
   it.each(databases.eachSupportedId())(
     'supports all valid forms of "afterEventId" values and rejects invalid ones, %p',
     async databaseId => {
-      const { knex, backend } = await init(databaseId);
+      const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
 
       const model = new UpsertSubscriptionModelImpl({
         knexPromise: Promise.resolve(knex),
@@ -273,7 +245,7 @@ describe('UpsertSubscriptionModelImpl', () => {
         `"Invalid afterEventId value, expected a string of digits or "last", got "blah""`,
       );
 
-      await backend.stop();
+      await shutdown();
     },
   );
 });

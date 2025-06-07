@@ -14,47 +14,20 @@
  * limitations under the License.
  */
 
-import {
-  mockServices,
-  startTestBackend,
-  TestBackend,
-  TestDatabaseId,
-  TestDatabases,
-} from '@backstage/backend-test-utils';
-import catalogBackend from '@backstage/plugin-catalog-backend';
+import { TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import waitFor from 'wait-for-expect';
 import { createMockChangeListener } from '../../__fixtures__/createMockChangeListener';
-import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
-import { applyDatabaseMigrations } from '../../database/migrations';
-import { ReadSubscriptionModelImpl } from './ReadSubscription.model';
+import { initEmptyDatabase } from '../../__fixtures__/initEmptyDatabase';
 import { getHistoryConfig } from '../../config';
-import { upsertHistorySubscription } from '../../database/operations/upsertHistorySubscription';
 import { ackHistorySubscription } from '../../database/operations/ackHistorySubscription';
+import { upsertHistorySubscription } from '../../database/operations/upsertHistorySubscription';
+import { ReadSubscriptionModelImpl } from './ReadSubscription.model';
 
 jest.setTimeout(60_000);
 
 describe('ReadSubscriptionModelImpl', () => {
   const databases = TestDatabases.create();
-
-  // Helper to ensure the catalog is started and our migrations are applied
-  async function init(databaseId: TestDatabaseId): Promise<{
-    knex: Knex;
-    backend: TestBackend;
-  }> {
-    const knex = await databases.init(databaseId);
-    const provider = createMockEntityProvider();
-    const backend = await startTestBackend({
-      features: [
-        mockServices.database.factory({ knex }),
-        catalogBackend,
-        provider,
-      ],
-    });
-    await provider.ready;
-    await applyDatabaseMigrations(knex);
-    return { knex, backend };
-  }
 
   // Upserts an enitity into the catalog
   async function setEntity(knex: Knex, name: string, data: number) {
@@ -89,7 +62,10 @@ describe('ReadSubscriptionModelImpl', () => {
     it.each(databases.eachSupportedId())(
       'reads properly from empty table and then with content without blocking, %p',
       async databaseId => {
-        const { knex, backend } = await init(databaseId);
+        const { knex, shutdown } = await initEmptyDatabase(
+          databases,
+          databaseId,
+        );
 
         const model = new ReadSubscriptionModelImpl({
           knexPromise: Promise.resolve(knex),
@@ -144,14 +120,17 @@ describe('ReadSubscriptionModelImpl', () => {
           ackId: expect.any(String),
         });
 
-        await backend.stop();
+        await shutdown();
       },
     );
 
     it.each(databases.eachSupportedId())(
       'handles the limit properly, %p',
       async databaseId => {
-        const { knex, backend } = await init(databaseId);
+        const { knex, shutdown } = await initEmptyDatabase(
+          databases,
+          databaseId,
+        );
 
         const model = new ReadSubscriptionModelImpl({
           knexPromise: Promise.resolve(knex),
@@ -246,14 +225,17 @@ describe('ReadSubscriptionModelImpl', () => {
           ackId: expect.any(String),
         });
 
-        await backend.stop();
+        await shutdown();
       },
     );
 
     it.each(databases.eachSupportedId())(
       'applies filters and times out the rest, %p',
       async databaseId => {
-        const { knex, backend } = await init(databaseId);
+        const { knex, shutdown } = await initEmptyDatabase(
+          databases,
+          databaseId,
+        );
 
         const model = new ReadSubscriptionModelImpl({
           knexPromise: Promise.resolve(knex),
@@ -315,14 +297,17 @@ describe('ReadSubscriptionModelImpl', () => {
           expect(resolution2).toBe('timeout');
         });
 
-        await backend.stop();
+        await shutdown();
       },
     );
 
     it.each(databases.eachSupportedId())(
       'aborts early on request signal, %p',
       async databaseId => {
-        const { knex, backend } = await init(databaseId);
+        const { knex, shutdown } = await initEmptyDatabase(
+          databases,
+          databaseId,
+        );
 
         const model = new ReadSubscriptionModelImpl({
           knexPromise: Promise.resolve(knex),
@@ -358,7 +343,7 @@ describe('ReadSubscriptionModelImpl', () => {
           expect(resolution).toBe('aborted');
         });
 
-        await backend.stop();
+        await shutdown();
       },
     );
   });

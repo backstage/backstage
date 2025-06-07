@@ -51,14 +51,14 @@ describe('createRouter', () => {
           catalogProcessing: catalogProcessingExtensionPoint,
         },
         async init({ database, httpRouter, lifecycle, catalogProcessing }) {
-          const dbPromise = initializeDatabaseAfterCatalog({
+          const knexPromise = initializeDatabaseAfterCatalog({
             database,
             lifecycle,
             catalogProcessing,
           });
           httpRouter.use(
             await createRouter({
-              knexPromise: dbPromise,
+              knexPromise,
               historyConfig: getHistoryConfig(),
               changeListener: createMockChangeListener({
                 timeout: { seconds: 5 },

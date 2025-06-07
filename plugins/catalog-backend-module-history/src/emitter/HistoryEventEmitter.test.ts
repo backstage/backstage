@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  TestBackend,
-  TestDatabaseId,
-  TestDatabases,
-  mockServices,
-  startTestBackend,
-} from '@backstage/backend-test-utils';
-import catalogBackend from '@backstage/plugin-catalog-backend';
-import { Knex } from 'knex';
-import { createMockEntityProvider } from '../__fixtures__/createMockEntityProvider';
-import { getHistoryConfig } from '../config';
-import { applyDatabaseMigrations } from '../database/migrations';
-import { EventsTableRow } from '../database/tables';
-import { HistoryEventEmitter } from './HistoryEventEmitter';
+import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import waitFor from 'wait-for-expect';
+import { initEmptyDatabase } from '../__fixtures__/initEmptyDatabase';
+import { getHistoryConfig } from '../config';
 import { sleep } from '../helpers';
+import { HistoryEventEmitter } from './HistoryEventEmitter';
 
 jest.setTimeout(60_000);
 
@@ -37,30 +27,14 @@ describe('HistoryEventEmitter', () => {
   const databases = TestDatabases.create();
   const logger = mockServices.logger.mock();
 
-  // Helper to ensure the catalog is started and our migrations are applied
-  async function init(databaseId: TestDatabaseId): Promise<{
-    knex: Knex;
-    backend: TestBackend;
-  }> {
-    const knex = await databases.init(databaseId);
-    const provider = createMockEntityProvider();
-    const backend = await startTestBackend({
-      features: [
-        mockServices.database.factory({ knex }),
-        catalogBackend,
-        provider,
-      ],
-    });
-    await provider.ready;
-    await applyDatabaseMigrations(knex);
-    return { knex, backend };
-  }
-
   it.each(databases.eachSupportedId())(
     'should emit events, %p',
     async databaseId => {
-      const { knex, backend } = await init(databaseId);
-      const shutdown = new AbortController();
+      const { knex, provider, shutdown } = await initEmptyDatabase(
+        databases,
+        databaseId,
+      );
+
       const lifecycle = mockServices.lifecycle.mock();
       const events = mockServices.events.mock();
 
@@ -79,13 +53,22 @@ describe('HistoryEventEmitter', () => {
 
       await sleep({ seconds: 1 });
 
-      await knex<EventsTableRow>('history_events').insert({
-        event_type: 'entity_created',
-        entity_ref: 'component:default/foo',
-        entity_id: 'foo',
-        entity_json: JSON.stringify({ kind: 'Component' }),
-        location_id: 'bar',
-        location_ref: 'url:http://mockEntityProvider.com',
+      provider.addEntity({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:http://mockEntityProvider.com',
+          },
+          name: 'foo',
+          namespace: 'default',
+        },
+        spec: {
+          type: 'service',
+          lifecycle: 'production',
+          owner: 'test',
+        },
       });
 
       await waitFor(() => {
@@ -96,9 +79,8 @@ describe('HistoryEventEmitter', () => {
             eventAt: expect.any(String),
             eventType: 'entity_created',
             entityRef: 'component:default/foo',
-            entityId: 'foo',
-            entity: { kind: 'Component' },
-            locationId: 'bar',
+            entityId: expect.any(String),
+            entity: expect.objectContaining({ kind: 'Component' }),
             locationRef: 'url:http://mockEntityProvider.com',
           },
           metadata: {
@@ -107,8 +89,7 @@ describe('HistoryEventEmitter', () => {
         });
       });
 
-      shutdown.abort();
-      await backend.stop();
+      await shutdown();
     },
   );
 });

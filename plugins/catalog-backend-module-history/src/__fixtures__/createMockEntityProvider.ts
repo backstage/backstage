@@ -33,11 +33,26 @@ type DeleteCommand = { type: 'delete'; entityRef: string };
 type Command = UpsertCommand | DeleteCommand;
 
 export type MockEntityProvider = BackendFeature & {
+  /**
+   * This promise resolves when the provider is connected and ready to be used.
+   */
   ready: Promise<void>;
+
+  /**
+   * Adds (or upserts) an entity.
+   */
   addEntity(entity: Entity): void;
+
+  /**
+   * Removes an entity.
+   */
   removeEntity(entityRef: string): void;
 };
 
+/**
+ * Creates an entity provider that can be used in tests to add (or upsert) and
+ * remove entities on demand.
+ */
 export function createMockEntityProvider(): MockEntityProvider {
   const ready = createDeferred();
   const commandsQueue = new Set<Command>();

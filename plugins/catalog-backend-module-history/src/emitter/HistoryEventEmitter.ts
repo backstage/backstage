@@ -82,7 +82,7 @@ export class HistoryEventEmitter {
 
     const subscription = await upsertHistorySubscription(knex, {
       subscriptionId: SUBSCRIPTION_ID,
-      _from: 'now',
+      afterEventId: 'last',
     });
 
     while (!signal.aborted) {

@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  mockServices,
-  startTestBackend,
-  TestBackend,
-  TestDatabaseId,
-  TestDatabases,
-} from '@backstage/backend-test-utils';
-import catalogBackend from '@backstage/plugin-catalog-backend';
-import { Knex } from 'knex';
-import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
+import { TestDatabases } from '@backstage/backend-test-utils';
+import { initEmptyDatabase } from '../../__fixtures__/initEmptyDatabase';
 import { getHistoryConfig } from '../../config';
-import { applyDatabaseMigrations } from '../migrations';
 import { EventsTableRow } from '../tables';
 import { knexRawNowMinus, knexRawNowPlus } from '../util';
 import { runJanitorCleanup } from './runJanitorCleanup';
@@ -35,30 +26,14 @@ jest.setTimeout(60_000);
 describe('runJanitorCleanup', () => {
   const databases = TestDatabases.create();
 
-  // Helper to ensure the catalog is started and our migrations are applied
-  async function init(databaseId: TestDatabaseId): Promise<{
-    knex: Knex;
-    backend: TestBackend;
-  }> {
-    const knex = await databases.init(databaseId);
-    const provider = createMockEntityProvider();
-    const backend = await startTestBackend({
-      features: [
-        mockServices.database.factory({ knex }),
-        catalogBackend,
-        provider,
-      ],
-    });
-    await provider.ready;
-    await applyDatabaseMigrations(knex);
-    return { knex, backend };
-  }
-
   describe('eventMaxRetentionTime', () => {
     it.each(databases.eachSupportedId())(
       'deletes old entries whether the entity exists or not, %p',
       async databaseId => {
-        const { knex, backend } = await init(databaseId);
+        const { knex, shutdown } = await initEmptyDatabase(
+          databases,
+          databaseId,
+        );
 
         await knex('refresh_state').insert({
           entity_id: '1',
@@ -136,7 +111,7 @@ describe('runJanitorCleanup', () => {
           knex('history_events').select('event_type').orderBy('event_id'),
         ).resolves.toEqual([{ event_type: 'b' }, { event_type: 'd' }]);
 
-        await backend.stop();
+        await shutdown();
       },
     );
   });
@@ -145,7 +120,10 @@ describe('runJanitorCleanup', () => {
     it.each(databases.eachSupportedId())(
       'only deletes for entities whose oldest events are older than the retention time, %p',
       async databaseId => {
-        const { knex, backend } = await init(databaseId);
+        const { knex, shutdown } = await initEmptyDatabase(
+          databases,
+          databaseId,
+        );
 
         await knex('refresh_state').insert({
           entity_id: '1',
@@ -262,7 +240,7 @@ describe('runJanitorCleanup', () => {
           { entity_ref: 'k:ns/only-newer-than-deadline' },
         ]);
 
-        await backend.stop();
+        await shutdown();
       },
     );
   });
@@ -271,7 +249,10 @@ describe('runJanitorCleanup', () => {
     it.each(databases.eachSupportedId())(
       'only resets unacknowledged deliveries if the timeout is reached and it is in the right state, %p',
       async databaseId => {
-        const { knex, backend } = await init(databaseId);
+        const { knex, shutdown } = await initEmptyDatabase(
+          databases,
+          databaseId,
+        );
 
         const inThePast = knexRawNowMinus(knex, { seconds: 30 });
         const inTheFuture = knexRawNowPlus(knex, { seconds: 30 });
@@ -321,7 +302,7 @@ describe('runJanitorCleanup', () => {
           }),
         ]);
 
-        await backend.stop();
+        await shutdown();
       },
     );
   });

@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  mockServices,
-  startTestBackend,
-  TestBackend,
-  TestDatabaseId,
-  TestDatabases,
-} from '@backstage/backend-test-utils';
+import { TestDatabases } from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
-import catalogBackend from '@backstage/plugin-catalog-backend';
-import { Knex } from 'knex';
-import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
+import { initEmptyDatabase } from '../../__fixtures__/initEmptyDatabase';
 import { getHistoryConfig } from '../../config';
-import { applyDatabaseMigrations } from '../migrations';
 import { getSubscription } from './getSubscription';
 import { readHistorySubscription } from './readHistorySubscription';
 
@@ -35,29 +26,10 @@ jest.setTimeout(60_000);
 describe('readHistorySubscription', () => {
   const databases = TestDatabases.create();
 
-  // Helper to ensure the catalog is started and our migrations are applied
-  async function init(databaseId: TestDatabaseId): Promise<{
-    knex: Knex;
-    backend: TestBackend;
-  }> {
-    const knex = await databases.init(databaseId);
-    const provider = createMockEntityProvider();
-    const backend = await startTestBackend({
-      features: [
-        mockServices.database.factory({ knex }),
-        catalogBackend,
-        provider,
-      ],
-    });
-    await provider.ready;
-    await applyDatabaseMigrations(knex);
-    return { knex, backend };
-  }
-
   it.each(databases.eachSupportedId())(
     'throws NotFound when there is no such subscription, %p',
     async databaseId => {
-      const { knex, backend } = await init(databaseId);
+      const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
 
       await expect(
         readHistorySubscription(knex, {
@@ -68,14 +40,14 @@ describe('readHistorySubscription', () => {
         }),
       ).rejects.toThrow(NotFoundError);
 
-      await backend.stop();
+      await shutdown();
     },
   );
 
   it.each(databases.eachSupportedId())(
     'reads events as expected, %p',
     async databaseId => {
-      const { knex, backend } = await init(databaseId);
+      const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
 
       await knex('history_subscriptions').insert({
         subscription_id: 'test',
@@ -228,7 +200,7 @@ describe('readHistorySubscription', () => {
         lastAcknowledgedEventId: '1',
       });
 
-      await backend.stop();
+      await shutdown();
     },
   );
 });

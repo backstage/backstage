@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  mockServices,
-  startTestBackend,
-  TestBackend,
-  TestDatabaseId,
-  TestDatabases,
-} from '@backstage/backend-test-utils';
-import catalogBackend from '@backstage/plugin-catalog-backend';
+import { TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import waitFor from 'wait-for-expect';
 import { createMockChangeListener } from '../../__fixtures__/createMockChangeListener';
-import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
-import { applyDatabaseMigrations } from '../../database/migrations';
+import { initEmptyDatabase } from '../../__fixtures__/initEmptyDatabase';
 import { sleep } from '../../helpers';
 import { GetEventsModelImpl } from './GetEvents.model';
 
@@ -34,25 +26,6 @@ jest.setTimeout(60_000);
 
 describe('GetEventsModelImpl', () => {
   const databases = TestDatabases.create();
-
-  // Helper to ensure the catalog is started and our migrations are applied
-  async function init(databaseId: TestDatabaseId): Promise<{
-    knex: Knex;
-    backend: TestBackend;
-  }> {
-    const knex = await databases.init(databaseId);
-    const provider = createMockEntityProvider();
-    const backend = await startTestBackend({
-      features: [
-        mockServices.database.factory({ knex }),
-        catalogBackend,
-        provider,
-      ],
-    });
-    await provider.ready;
-    await applyDatabaseMigrations(knex);
-    return { knex, backend };
-  }
 
   // Upserts an enitity into the catalog
   async function setEntity(knex: Knex, name: string, data: number) {
@@ -87,7 +60,10 @@ describe('GetEventsModelImpl', () => {
     it.each(databases.eachSupportedId())(
       'reads properly from empty table and then with content, %p',
       async databaseId => {
-        const { knex, backend } = await init(databaseId);
+        const { knex, shutdown } = await initEmptyDatabase(
+          databases,
+          databaseId,
+        );
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
@@ -140,14 +116,17 @@ describe('GetEventsModelImpl', () => {
           },
         });
 
-        await backend.stop();
+        await shutdown();
       },
     );
 
     it.each(databases.eachSupportedId())(
       'reads reverse with limit and stops when no more data, %p',
       async databaseId => {
-        const { knex, backend } = await init(databaseId);
+        const { knex, shutdown } = await initEmptyDatabase(
+          databases,
+          databaseId,
+        );
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
@@ -231,14 +210,17 @@ describe('GetEventsModelImpl', () => {
           cursor: undefined,
         });
 
-        await backend.stop();
+        await shutdown();
       },
     );
 
     it.each(databases.eachSupportedId())(
       'handles the "last" limit properly, %p',
       async databaseId => {
-        const { knex, backend } = await init(databaseId);
+        const { knex, shutdown } = await initEmptyDatabase(
+          databases,
+          databaseId,
+        );
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
@@ -266,14 +248,17 @@ describe('GetEventsModelImpl', () => {
           },
         });
 
-        await backend.stop();
+        await shutdown();
       },
     );
 
     it.each(databases.eachSupportedId())(
       'resolves when entities are added, %p',
       async databaseId => {
-        const { knex, backend } = await init(databaseId);
+        const { knex, shutdown } = await initEmptyDatabase(
+          databases,
+          databaseId,
+        );
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
@@ -314,14 +299,17 @@ describe('GetEventsModelImpl', () => {
           expect(resolution).toBe('ready');
         });
 
-        await backend.stop();
+        await shutdown();
       },
     );
 
     it.each(databases.eachSupportedId())(
       'applies filters and times out the rest, %p',
       async databaseId => {
-        const { knex, backend } = await init(databaseId);
+        const { knex, shutdown } = await initEmptyDatabase(
+          databases,
+          databaseId,
+        );
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
@@ -387,14 +375,17 @@ describe('GetEventsModelImpl', () => {
           expect(resolution2).toBe('timeout');
         });
 
-        await backend.stop();
+        await shutdown();
       },
     );
 
     it.each(databases.eachSupportedId())(
       'aborts early on request signal, %p',
       async databaseId => {
-        const { knex, backend } = await init(databaseId);
+        const { knex, shutdown } = await initEmptyDatabase(
+          databases,
+          databaseId,
+        );
 
         const model = new GetEventsModelImpl({
           knexPromise: Promise.resolve(knex),
@@ -432,7 +423,7 @@ describe('GetEventsModelImpl', () => {
           expect(resolution).toBe('aborted');
         });
 
-        await backend.stop();
+        await shutdown();
       },
     );
   });

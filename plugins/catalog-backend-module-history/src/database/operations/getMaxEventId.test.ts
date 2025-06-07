@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  mockServices,
-  startTestBackend,
-  TestBackend,
-  TestDatabaseId,
-  TestDatabases,
-} from '@backstage/backend-test-utils';
-import catalogBackend from '@backstage/plugin-catalog-backend';
-import { Knex } from 'knex';
-import { createMockEntityProvider } from '../../__fixtures__/createMockEntityProvider';
-import { applyDatabaseMigrations } from '../migrations';
+import { TestDatabases } from '@backstage/backend-test-utils';
+import { initEmptyDatabase } from '../../__fixtures__/initEmptyDatabase';
 import { EventsTableRow } from '../tables';
 import { getMaxEventId } from './getMaxEventId';
 
@@ -33,27 +24,8 @@ jest.setTimeout(60_000);
 describe('getMaxEventId', () => {
   const databases = TestDatabases.create();
 
-  // Helper to ensure the catalog is started and our migrations are applied
-  async function init(databaseId: TestDatabaseId): Promise<{
-    knex: Knex;
-    backend: TestBackend;
-  }> {
-    const knex = await databases.init(databaseId);
-    const provider = createMockEntityProvider();
-    const backend = await startTestBackend({
-      features: [
-        mockServices.database.factory({ knex }),
-        catalogBackend,
-        provider,
-      ],
-    });
-    await provider.ready;
-    await applyDatabaseMigrations(knex);
-    return { knex, backend };
-  }
-
   it.each(databases.eachSupportedId())('works, %p', async databaseId => {
-    const { knex, backend } = await init(databaseId);
+    const { knex, shutdown } = await initEmptyDatabase(databases, databaseId);
 
     await expect(getMaxEventId(knex)).resolves.toBe('0');
 
@@ -63,7 +35,6 @@ describe('getMaxEventId', () => {
 
     await expect(getMaxEventId(knex)).resolves.toBe('1');
 
-    await backend.stop();
-    await knex.destroy();
+    await shutdown();
   });
 });
