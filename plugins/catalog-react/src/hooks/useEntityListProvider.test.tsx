@@ -936,4 +936,135 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
       }),
     );
   });
+
+  describe('Fields support', () => {
+    it('should include fields parameter when provided to EntityListProvider', async () => {
+      const testFields = ['kind', 'metadata.name', 'spec.type'];
+
+      const FieldsTestWrapper = ({ children }: PropsWithChildren) => {
+        const InitialFiltersWrapper = ({
+          children: innerChildren,
+        }: PropsWithChildren) => {
+          const { updateFilters } = useEntityList();
+
+          useMountEffect(() => {
+            updateFilters({
+              kind: new EntityKindFilter('component', 'Component'),
+            });
+          });
+
+          return <>{innerChildren}</>;
+        };
+
+        return (
+          <MemoryRouter>
+            <TestApiProvider
+              apis={[
+                [configApiRef, mockApis.config()],
+                [catalogApiRef, mockCatalogApi],
+                [identityApiRef, mockIdentityApi],
+                [storageApiRef, mockApis.storage()],
+                [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+                [alertApiRef, { post: jest.fn() }],
+                [translationApiRef, mockApis.translation()],
+                [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
+              ]}
+            >
+              <EntityListProvider
+                pagination={{ mode: 'offset' }}
+                fields={testFields}
+              >
+                <InitialFiltersWrapper>{children}</InitialFiltersWrapper>
+              </EntityListProvider>
+            </TestApiProvider>
+          </MemoryRouter>
+        );
+      };
+
+      const { result } = renderHook(() => useEntityList(), {
+        wrapper: FieldsTestWrapper,
+      });
+
+      await waitFor(() => {
+        expect(mockCatalogApi.queryEntities).toHaveBeenCalled();
+      });
+
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fields: testFields,
+        }),
+      );
+    });
+
+    it('should include fields parameter in non-paginated getEntities requests', async () => {
+      const testFields = ['kind', 'metadata.name', 'metadata.namespace'];
+
+      const FieldsTestWrapper = ({ children }: PropsWithChildren) => {
+        const InitialFiltersWrapper = ({
+          children: innerChildren,
+        }: PropsWithChildren) => {
+          const { updateFilters } = useEntityList();
+
+          useMountEffect(() => {
+            updateFilters({
+              kind: new EntityKindFilter('component', 'Component'),
+            });
+          });
+
+          return <>{innerChildren}</>;
+        };
+
+        return (
+          <MemoryRouter>
+            <TestApiProvider
+              apis={[
+                [configApiRef, mockApis.config()],
+                [catalogApiRef, mockCatalogApi],
+                [identityApiRef, mockIdentityApi],
+                [storageApiRef, mockApis.storage()],
+                [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+                [alertApiRef, { post: jest.fn() }],
+                [translationApiRef, mockApis.translation()],
+                [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
+              ]}
+            >
+              <EntityListProvider pagination={false} fields={testFields}>
+                <InitialFiltersWrapper>{children}</InitialFiltersWrapper>
+              </EntityListProvider>
+            </TestApiProvider>
+          </MemoryRouter>
+        );
+      };
+
+      const { result } = renderHook(() => useEntityList(), {
+        wrapper: FieldsTestWrapper,
+      });
+
+      await waitFor(() => {
+        expect(mockCatalogApi.getEntities).toHaveBeenCalled();
+      });
+
+      expect(mockCatalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fields: testFields,
+        }),
+      );
+    });
+
+    it('should not include fields parameter when not provided', async () => {
+      const { result } = renderHook(() => useEntityList(), {
+        wrapper: createWrapper({ pagination: { mode: 'offset' } }),
+      });
+
+      await waitFor(() => {
+        expect(mockCatalogApi.queryEntities).toHaveBeenCalled();
+      });
+
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          fields: expect.anything(),
+        }),
+      );
+    });
+  });
 });

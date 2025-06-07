@@ -145,6 +145,19 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
  */
 export type EntityListProviderProps = PropsWithChildren<{
   pagination?: EntityListPagination;
+  /**
+   * Optional fields parameter to limit which entity fields are returned from the API.
+   * When provided, only the specified fields will be fetched, which can improve performance
+   * by reducing response payload size.
+   *
+   * @example
+   * ```tsx
+   * <EntityListProvider fields={['kind', 'metadata.name', 'spec.type']}>
+   *   <CatalogTable />
+   * </EntityListProvider>
+   * ```
+   */
+  fields?: string[];
 }>;
 
 /**
@@ -269,6 +282,8 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
             const response = await catalogApi.queryEntities({
               cursor,
               limit,
+              ...(props.fields &&
+                props.fields.length > 0 && { fields: props.fields }),
             });
             setOutputState({
               appliedFilters: requestedFilters,
@@ -295,6 +310,8 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               ...backendFilter,
               limit,
               offset,
+              ...(props.fields &&
+                props.fields.length > 0 && { fields: props.fields }),
             });
             setOutputState({
               appliedFilters: requestedFilters,
@@ -322,6 +339,8 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           // fields + table columns
           const response = await catalogApi.getEntities({
             filter: backendFilter,
+            ...(props.fields &&
+              props.fields.length > 0 && { fields: props.fields }),
           });
           const entities = response.items.filter(entityFilter);
           setOutputState({
