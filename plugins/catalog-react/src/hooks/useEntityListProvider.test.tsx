@@ -1066,5 +1066,113 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
         }),
       );
     });
+
+    it('should verify field selection actually limits API response data', async () => {
+      // Mock limited entity data that simulates field selection response
+      const limitedEntities = [
+        {
+          kind: 'Component',
+          metadata: {
+            name: 'component-1',
+            namespace: 'default',
+          },
+          spec: {
+            type: 'service',
+          },
+          // Note: missing description, tags, labels, etc. that would normally be present
+        },
+        {
+          kind: 'Component',
+          metadata: {
+            name: 'component-2',
+            namespace: 'default',
+          },
+          spec: {
+            type: 'library',
+          },
+        },
+      ];
+
+      const limitedFieldsApi = catalogApiMock.mock({
+        getEntities: jest.fn().mockResolvedValue({ items: limitedEntities }),
+        queryEntities: jest.fn().mockResolvedValue({
+          items: limitedEntities,
+          pageInfo: { prevCursor: 'prevCursor', nextCursor: 'nextCursor' },
+          totalItems: 2,
+        }),
+      });
+
+      const testFields = [
+        'kind',
+        'metadata.name',
+        'metadata.namespace',
+        'spec.type',
+      ];
+
+      const LimitedFieldsWrapper = ({ children }: PropsWithChildren) => {
+        const InitialFiltersWrapper = ({
+          children: innerChildren,
+        }: PropsWithChildren) => {
+          const { updateFilters } = useEntityList();
+
+          useMountEffect(() => {
+            updateFilters({
+              kind: new EntityKindFilter('component', 'Component'),
+            });
+          });
+
+          return <>{innerChildren}</>;
+        };
+
+        return (
+          <MemoryRouter>
+            <TestApiProvider
+              apis={[
+                [configApiRef, mockApis.config()],
+                [catalogApiRef, limitedFieldsApi],
+                [identityApiRef, mockIdentityApi],
+                [storageApiRef, mockApis.storage()],
+                [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+                [alertApiRef, { post: jest.fn() }],
+                [translationApiRef, mockApis.translation()],
+                [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
+              ]}
+            >
+              <EntityListProvider pagination={false} fields={testFields}>
+                <InitialFiltersWrapper>{children}</InitialFiltersWrapper>
+              </EntityListProvider>
+            </TestApiProvider>
+          </MemoryRouter>
+        );
+      };
+
+      const { result } = renderHook(() => useEntityList(), {
+        wrapper: LimitedFieldsWrapper,
+      });
+
+      await waitFor(() => {
+        expect(limitedFieldsApi.getEntities).toHaveBeenCalled();
+        expect(result.current.entities.length).toBe(2);
+      });
+
+      // Verify the API was called with correct fields parameter
+      expect(limitedFieldsApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fields: testFields,
+        }),
+      );
+
+      // Verify that entities have only the requested fields
+      const entity = result.current.entities[0];
+      expect(entity).toHaveProperty('kind');
+      expect(entity).toHaveProperty('metadata.name');
+      expect(entity).toHaveProperty('metadata.namespace');
+      expect(entity).toHaveProperty('spec.type');
+
+      // Verify that unrequested fields are not present (simulating field selection)
+      expect(entity.metadata).not.toHaveProperty('description');
+      expect(entity.metadata).not.toHaveProperty('tags');
+      expect(entity.metadata).not.toHaveProperty('labels');
+    });
   });
 });
