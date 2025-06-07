@@ -1110,8 +1110,11 @@ describe('Field optimization', () => {
   });
 
   it('should request necessary fields for paginated requests', async () => {
+    // Clear mocks before this test to avoid interference from other tests
+    jest.clearAllMocks();
+
     const { result } = renderHook(() => useEntityList(), {
-      wrapper: createWrapper({ pagination: { kind: 'offset', limit: 20 } }),
+      wrapper: createWrapper({ pagination: { mode: 'offset', limit: 20 } }),
     });
 
     act(() => {
@@ -1125,7 +1128,12 @@ describe('Field optimization', () => {
     });
 
     // Verify that paginated API calls also include the fields parameter
-    expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+    // Use the most recent call since other tests might have made calls before
+    const lastCall =
+      mockCatalogApi.queryEntities.mock.calls[
+        mockCatalogApi.queryEntities.mock.calls.length - 1
+      ];
+    expect(lastCall[0]).toEqual(
       expect.objectContaining({
         filter: { kind: 'component' },
         fields: expectedCatalogTableFields,
