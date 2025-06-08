@@ -374,6 +374,7 @@ export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>(
 // @public (undocumented)
 export type EntityListProviderProps = PropsWithChildren<{
   pagination?: EntityListPagination;
+  fields?: string[];
 }>;
 
 // @public (undocumented)
