@@ -981,7 +981,7 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
         );
       };
 
-      const { result } = renderHook(() => useEntityList(), {
+      renderHook(() => useEntityList(), {
         wrapper: FieldsTestWrapper,
       });
 
@@ -1036,7 +1036,7 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
         );
       };
 
-      const { result } = renderHook(() => useEntityList(), {
+      renderHook(() => useEntityList(), {
         wrapper: FieldsTestWrapper,
       });
 
@@ -1052,7 +1052,7 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
     });
 
     it('should not include fields parameter when not provided', async () => {
-      const { result } = renderHook(() => useEntityList(), {
+      renderHook(() => useEntityList(), {
         wrapper: createWrapper({ pagination: { mode: 'offset' } }),
       });
 
