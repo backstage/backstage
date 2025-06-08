@@ -33,7 +33,7 @@ export type WelcomeTitleLanguageProps = {
 
 export const WelcomeTitle = ({
   language,
-  variant,
+  variant = 'inherit',
 }: WelcomeTitleLanguageProps) => {
   const identityApi = useApi(identityApiRef);
   const alertApi = useApi(alertApiRef);
