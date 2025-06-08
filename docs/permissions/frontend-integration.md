@@ -25,6 +25,7 @@ const routes = (
     <Route
       path="/catalog-import"
       element={
+        {/* highlight-next-line */}
         <RequirePermission permission={catalogEntityCreatePermission}>
           <CatalogImportPage />
         </RequirePermission>
