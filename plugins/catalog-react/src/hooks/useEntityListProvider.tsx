@@ -147,13 +147,36 @@ export type EntityListProviderProps = PropsWithChildren<{
   pagination?: EntityListPagination;
   /**
    * Optional fields parameter to limit which entity fields are returned from the API.
-   * When provided, only the specified fields will be fetched, which can improve performance
-   * by reducing response payload size.
+   * When provided, only the specified fields will be fetched, which can significantly improve
+   * performance by reducing response payload size (potentially 60-70% reduction).
+   *
+   * @remarks
+   * The fields should include all entity properties that your table columns, filters, or
+   * components need to render properly. Common fields include:
+   * - Core: 'kind', 'metadata.name', 'metadata.namespace', 'metadata.title'
+   * - Display: 'metadata.description', 'metadata.tags', 'metadata.labels', 'metadata.annotations'
+   * - Spec: 'spec.type', 'spec.lifecycle', 'spec.targets', 'spec.target'
+   * - Relations: 'relations' (for owner/system columns)
    *
    * @example
+   * Basic usage with essential fields:
    * ```tsx
-   * <EntityListProvider fields={['kind', 'metadata.name', 'spec.type']}>
+   * const catalogFields = [
+   *   'kind', 'metadata.name', 'metadata.namespace', 'metadata.title',
+   *   'metadata.description', 'metadata.tags', 'spec.type', 'spec.lifecycle',
+   *   'relations' // Required for owner/system columns
+   * ];
+   *
+   * <EntityListProvider fields={catalogFields}>
    *   <CatalogTable />
+   * </EntityListProvider>
+   * ```
+   *
+   * @example
+   * For custom table columns, include the specific fields you need:
+   * ```tsx
+   * <EntityListProvider fields={['kind', 'metadata.name', 'spec.customField']}>
+   *   <CustomTable />
    * </EntityListProvider>
    * ```
    */
