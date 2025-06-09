@@ -26,7 +26,7 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import classNames from 'classnames';
-import React, { ReactElement, useState } from 'react';
+import { cloneElement, Fragment, ReactElement, useState } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
 import { Expanded, RenderSchema, SchemaRenderContext } from '../RenderSchema';
 import { ScaffolderUsageExamplesTable } from '../ScaffolderUsageExamplesTable';
@@ -60,7 +60,7 @@ const FunctionDetailContent = ({
     headings: [<Typography variant="h6" component="h4" />],
   };
   return (
-    <React.Fragment key={`${name}.detail`}>
+    <Fragment key={`${name}.detail`}>
       {fn.description && <MarkdownContent content={fn.description} />}
       {schema?.arguments?.length && (
         <Box key={`${name}.args`} pb={2}>
@@ -71,7 +71,7 @@ const FunctionDetailContent = ({
             const [argSchema, required] = inspectFunctionArgSchema(arg);
 
             return (
-              <React.Fragment key={i}>
+              <Fragment key={i}>
                 <div
                   className={classNames({ [classes.argRequired]: required })}
                 >
@@ -89,7 +89,7 @@ const FunctionDetailContent = ({
                   }}
                   schema={argSchema}
                 />
-              </React.Fragment>
+              </Fragment>
             );
           })}
         </Box>
@@ -121,7 +121,7 @@ const FunctionDetailContent = ({
           </AccordionDetails>
         </Accordion>
       )}
-    </React.Fragment>
+    </Fragment>
   );
 };
 
@@ -166,7 +166,7 @@ export const TemplateGlobalFunctions = ({
             >
               {name}
             </Typography>
-            {React.cloneElement(baseLink, {
+            {cloneElement(baseLink, {
               to: `${baseLink.props.to}#${fragment}`,
             })}
             <FunctionDetailContent {...{ classes, name, fn, t }} />
@@ -218,7 +218,7 @@ export const TemplateGlobalValues = ({
             >
               {name}
             </Typography>
-            {React.cloneElement(baseLink, {
+            {cloneElement(baseLink, {
               to: `${baseLink.props.to}#${fragment}`,
             })}
             {gv.description && <MarkdownContent content={gv.description} />}
