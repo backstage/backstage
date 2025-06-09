@@ -15,7 +15,7 @@ The following example shows how you can override the root health service impleme
 import {
   RootHealthService,
   coreServices,
-  createServiceFactory
+  createServiceFactory,
 } from '@backstage/backend-plugin-api';
 
 const backend = createBackend();
