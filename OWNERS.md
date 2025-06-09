@@ -56,6 +56,18 @@ Scope: The Backstage design system, component library, as well as surrounding to
 | Charles de Dreuille | Spotify      |               | [cdedreuille](https://github.com/cdedreuille) | `cdedreuille` |
 | Patrik Oldsberg     | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)           | `Rugvip`      |
 
+### Documentation
+
+Team: @backstage/documentation-maintainers
+
+Scope: The Backstage Documentation and Microsite, excluding the plugins listing
+
+| Name            | Organization  | GitHub                                                | Discord       |
+| --------------- | ------------- | ----------------------------------------------------- | ------------- |
+| Andre Wanlin    | Spotify       | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
+| Aramis Sennyey  | DoorDash      | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
+| Peter Macdonald | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)           | `parsifal`    |
+
 ### Framework
 
 Team: @backstage/framework-maintainers
@@ -207,18 +219,6 @@ Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugi
 | Kashish Mittal       | Red Hat       | [04kash](https://github.com/04kash)         | `kashh._.`   |
 | Vincenzo Scamporlino | Spotify       | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
 | Peter Macdonald      | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M) | `parsifal`   |
-
-### Documentation
-
-Team: @backstage/documentation-maintainers
-
-Scope: The Backstage Documentation and Microsite, excluding the plugins listing
-
-| Name            | Organization  | GitHub                                                | Discord       |
-| --------------- | ------------- | ----------------------------------------------------- | ------------- |
-| Andre Wanlin    | Spotify       | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
-| Aramis Sennyey  | DoorDash      | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
-| Peter Macdonald | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)           | `parsifal`    |
 
 ### Events
 
