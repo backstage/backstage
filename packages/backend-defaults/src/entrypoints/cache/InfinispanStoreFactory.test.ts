@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createInfinispanStoreFactory_sync_facade } from './InfispanStoreFactory';
+import { createInfinispanStoreFactory_sync_facade } from './InfinispanStoreFactory';
 import { mockServices } from '@backstage/backend-test-utils';
 import infinispan from 'infinispan';
 import { InfinispanCacheStoreOptions } from './types';
@@ -84,7 +84,11 @@ describe('InfinispanStoreFactory', () => {
     );
 
     const keyv = factory('test-plugin', 1000);
-    await expect(keyv.set('key', 'value')).rejects.toThrow('Connection failed');
+    // Access the store directly since Keyv with emitErrors: false suppresses errors
+    const store = keyv.opts.store;
+    await expect(store.set('key', 'value')).rejects.toThrow(
+      'Connection failed',
+    );
   });
 
   it('shuts down the client properly', async () => {

@@ -49,7 +49,11 @@ type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
  * @public
  */
 export class CacheManager {
-  private storeFactories: {
+  /**
+   * Keys represent supported `backend.cache.store` values, mapped to factories
+   * that return Keyv instances appropriate to the store.
+   */
+  private readonly storeFactories: {
     redis: StoreFactory;
     valkey: StoreFactory;
     memcache: StoreFactory;
@@ -58,17 +62,25 @@ export class CacheManager {
   };
 
   private readonly logger?: LoggerService;
-  private readonly store: string; // Keep as string, validation done in constructor
+  private readonly store: keyof CacheManager['storeFactories'];
   private readonly connection: string;
   private readonly errorHandler: CacheManagerOptions['onError'];
   private readonly defaultTtl?: number;
   private readonly storeOptions?: CacheStoreOptions;
   private infinispanClientShutdownMethod?: () => Promise<void>;
 
+  /**
+   * Creates a new {@link CacheManager} instance by reading from the `backend`
+   * config section, specifically the `.cache` key.
+   *
+   * @param config - The loaded application configuration.
+   */
   static fromConfig(
     config: RootConfigService,
     options: CacheManagerOptions = {},
   ): CacheManager {
+    // If no `backend.cache` config is provided, instantiate the CacheManager
+    // with an in-memory cache client.
     const store = config.getOptionalString('backend.cache.store') || 'memory';
     const defaultTtlConfig = config.getOptional('backend.cache.defaultTtl');
     const connectionString =
@@ -94,6 +106,7 @@ export class CacheManager {
       }
     }
 
+    // Read store-specific options from config
     const storeOptions = CacheManager.parseStoreOptions(store, config, logger);
 
     return new CacheManager(
@@ -106,37 +119,43 @@ export class CacheManager {
     );
   }
 
+  /**
+   * Parse store-specific options from configuration.
+   *
+   * @param store - The cache store type ('redis', 'valkey', 'memcache', 'memory', or 'infinispan')
+   * @param config - The configuration service
+   * @param logger - Optional logger for warnings
+   * @returns The parsed store options
+   */
   private static parseStoreOptions(
     store: string,
     config: RootConfigService,
     logger?: LoggerService,
   ): CacheStoreOptions | undefined {
     const storeConfigPath = `backend.cache.${store}`;
-    if (!config.has(storeConfigPath)) {
-      if (
-        store !== 'memory' &&
-        store !== 'memcache' &&
-        store !== 'redis' &&
-        store !== 'valkey' &&
-        store !== 'infinispan'
-      ) {
+
+    if (store === 'redis' || store === 'valkey') {
+      if (!config.has(storeConfigPath)) {
+        return undefined;
+      }
+      return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
+    }
+
+    if (store === 'infinispan') {
+      if (!config.has(storeConfigPath)) {
         logger?.warn(
           `No configuration found for cache store '${store}' at '${storeConfigPath}'.`,
         );
+        return undefined;
       }
-      return undefined;
-    }
-
-    if (store === 'redis' || store === 'valkey') {
-      return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
-    }
-    if (store === 'infinispan') {
       return CacheManager.parseInfinispanOptions(
         storeConfigPath,
         config,
         logger,
       );
     }
+
+    // For memory and memcache, no store options are needed
     return undefined;
   }
 
@@ -191,105 +210,87 @@ export class CacheManager {
         versionStr === '2.5' ||
         versionStr === '2.2'
       ) {
-        behaviorOptions.version = versionStr; // Assign the string directly
+        behaviorOptions.version = versionStr as '2.9' | '2.5' | '2.2';
       } else if (versionStr === undefined || versionStr === null) {
-        behaviorOptions.version = versionStr; // Assign undefined or null
+        behaviorOptions.version = versionStr;
       } else if (versionStr) {
-        // Log a warning if the version string is present but not one of the allowed values
         logger?.warn(
           `Invalid Infinispan client version "${versionStr}" in config at ${storeConfigPath}.options.version. Must be "2.9", "2.5", or "2.2". It will be ignored, and the client may use a default or fail.`,
         );
-        // Do not assign behaviorOptions.version, let it be undefined if not valid
       }
 
-      if (clientOptsConfig.has('cacheName'))
-        behaviorOptions.cacheName =
-          clientOptsConfig.getOptionalString('cacheName');
-      if (clientOptsConfig.has('maxRetries'))
-        behaviorOptions.maxRetries =
-          clientOptsConfig.getOptionalNumber('maxRetries');
-      if (clientOptsConfig.has('connectionTimeout'))
-        behaviorOptions.connectionTimeout =
-          clientOptsConfig.getOptionalNumber('connectionTimeout');
-      if (clientOptsConfig.has('socketTimeout'))
-        behaviorOptions.socketTimeout =
-          clientOptsConfig.getOptionalNumber('socketTimeout');
-      if (clientOptsConfig.has('topologyUpdates'))
-        behaviorOptions.topologyUpdates =
-          clientOptsConfig.getOptionalBoolean('topologyUpdates');
+      behaviorOptions.cacheName =
+        clientOptsConfig.getOptionalString('cacheName');
+
+      if (clientOptsConfig.has('dataFormat')) {
+        const dataFormatConfig = clientOptsConfig.getConfig('dataFormat');
+        const dataFormat: Partial<InfinispanDataFormatOptions> = {};
+
+        if (dataFormatConfig.has('keyType')) {
+          dataFormat.keyType = dataFormatConfig.getString('keyType');
+        }
+        if (dataFormatConfig.has('valueType')) {
+          dataFormat.valueType = dataFormatConfig.getString('valueType');
+        }
+
+        behaviorOptions.dataFormat = dataFormat as InfinispanDataFormatOptions;
+      }
 
       if (clientOptsConfig.has('authentication')) {
         const authConfig = clientOptsConfig.getConfig('authentication');
-        const parsedAuthConfig: Partial<InfinispanAuthOptions> = {
-          enabled: authConfig.getBoolean('enabled'), // Assuming 'enabled' is mandatory for the block
-        };
-        if (authConfig.has('saslMechanism'))
-          parsedAuthConfig.saslMechanism =
-            authConfig.getOptionalString('saslMechanism');
-        if (authConfig.has('userName'))
-          parsedAuthConfig.userName = authConfig.getOptionalString('userName');
-        if (authConfig.has('password'))
-          parsedAuthConfig.password = authConfig.getOptionalString('password');
-        if (authConfig.has('token'))
-          parsedAuthConfig.token = authConfig.getOptionalString('token');
-        if (authConfig.has('realm'))
-          parsedAuthConfig.realm = authConfig.getOptionalString('realm');
-        behaviorOptions.authentication =
-          parsedAuthConfig as InfinispanAuthOptions;
+        const auth: Partial<InfinispanAuthOptions> = {};
+
+        if (authConfig.has('enabled')) {
+          auth.enabled = authConfig.getBoolean('enabled');
+        }
+        if (authConfig.has('saslMechanism')) {
+          auth.saslMechanism = authConfig.getString('saslMechanism');
+        }
+        if (authConfig.has('userName')) {
+          auth.userName = authConfig.getString('userName');
+        }
+        if (authConfig.has('password')) {
+          auth.password = authConfig.getString('password');
+        }
+
+        behaviorOptions.authentication = auth as InfinispanAuthOptions;
       }
 
       if (clientOptsConfig.has('ssl')) {
         const sslConfig = clientOptsConfig.getConfig('ssl');
-        const parsedSslOptions: Partial<InfinispanSslOptions> = {
-          enabled: sslConfig.getBoolean('enabled'), // Assuming 'enabled' is mandatory
-        };
-        if (sslConfig.has('secureProtocol'))
-          parsedSslOptions.secureProtocol =
-            sslConfig.getOptionalString('secureProtocol');
-        if (sslConfig.has('caFile'))
-          parsedSslOptions.caFile = sslConfig.getOptionalString('caFile');
-        if (sslConfig.has('clientCertificateFile'))
-          parsedSslOptions.clientCertificateFile = sslConfig.getOptionalString(
+        const ssl: Partial<InfinispanSslOptions> = {};
+
+        if (sslConfig.has('enabled')) {
+          ssl.enabled = sslConfig.getBoolean('enabled');
+        }
+        if (sslConfig.has('secureProtocol')) {
+          ssl.secureProtocol = sslConfig.getString('secureProtocol');
+        }
+        if (sslConfig.has('caFile')) {
+          ssl.caFile = sslConfig.getString('caFile');
+        }
+        if (sslConfig.has('clientCertificateFile')) {
+          ssl.clientCertificateFile = sslConfig.getString(
             'clientCertificateFile',
           );
-        if (sslConfig.has('clientKeyFile'))
-          parsedSslOptions.clientKeyFile =
-            sslConfig.getOptionalString('clientKeyFile');
-        if (sslConfig.has('clientKeyPassword'))
-          parsedSslOptions.clientKeyPassword =
-            sslConfig.getOptionalString('clientKeyPassword');
-        if (sslConfig.has('sniHostname'))
-          parsedSslOptions.sniHostname =
-            sslConfig.getOptionalString('sniHostname');
-        behaviorOptions.ssl = parsedSslOptions as InfinispanSslOptions;
+        }
+        if (sslConfig.has('clientKeyFile')) {
+          ssl.clientKeyFile = sslConfig.getString('clientKeyFile');
+        }
+        if (sslConfig.has('clientKeyPassword')) {
+          ssl.clientKeyPassword = sslConfig.getString('clientKeyPassword');
+        }
+        if (sslConfig.has('sniHostname')) {
+          ssl.sniHostname = sslConfig.getString('sniHostname');
+        }
+
+        behaviorOptions.ssl = ssl as InfinispanSslOptions;
       }
 
-      if (clientOptsConfig.has('dataFormat')) {
-        const dfConfig = clientOptsConfig.getConfig('dataFormat');
-        const parsedDfOptions: Partial<InfinispanDataFormatOptions> = {};
-        if (dfConfig.has('keyType'))
-          parsedDfOptions.keyType = dfConfig.getOptionalString('keyType');
-        if (dfConfig.has('valueType'))
-          parsedDfOptions.valueType = dfConfig.getOptionalString('valueType');
-        const mediaTypeString = dfConfig.getOptionalString('mediaType');
-        if (
-          mediaTypeString === 'text/plain' ||
-          mediaTypeString === 'application/json'
-        ) {
-          parsedDfOptions.mediaType = mediaTypeString;
-        } else if (mediaTypeString === null) {
-          parsedDfOptions.mediaType = null;
-        } else if (mediaTypeString !== undefined) {
-          logger?.warn(
-            `Invalid mediaType "${mediaTypeString}" in Infinispan dataFormat config at ${storeConfigPath}.options.dataFormat. Allowed: "text/plain", "application/json", or null. Ignored.`,
-          );
-        }
-        behaviorOptions.dataFormat =
-          parsedDfOptions as InfinispanDataFormatOptions;
-      }
       parsedOptions.options =
         behaviorOptions as InfinispanClientBehaviorOptions;
     }
+
     return parsedOptions as InfinispanCacheStoreOptions;
   }
 
@@ -343,12 +344,13 @@ export class CacheManager {
     storeOptions?: CacheStoreOptions,
   ) {
     this.logger = logger;
-    this.store = store;
+    this.store = store as keyof CacheManager['storeFactories'];
     this.connection = connectionString;
     this.errorHandler = errorHandler;
     this.defaultTtl = defaultTtl;
     this.storeOptions = storeOptions;
 
+    // Initialize standard store factories
     this.storeFactories = {
       redis: this.createRedisStoreFactory(),
       valkey: this.createValkeyStoreFactory(),
@@ -356,12 +358,12 @@ export class CacheManager {
       memory: this.createMemoryStoreFactory(),
     };
 
+    // Initialize Infinispan factory conditionally
     if (store === 'infinispan') {
       if (!this.storeOptions || !('servers' in this.storeOptions)) {
-        const errorMsg =
-          'Infinispan store selected but required storeOptions (InfinispanCacheStoreOptions) are missing or invalid.';
-        this.logger?.error(errorMsg);
-        throw new Error(errorMsg);
+        throw new Error(
+          'Infinispan store selected but required storeOptions (InfinispanCacheStoreOptions) are missing or invalid.',
+        );
       }
       if (!this.logger) {
         throw new Error(
@@ -374,34 +376,22 @@ export class CacheManager {
       );
       this.storeFactories.infinispan = factory;
       this.infinispanClientShutdownMethod = shutdown;
-
-      // Automatically register shutdown hook
-      if (this.infinispanClientShutdownMethod) {
-        process.on('beforeExit', () => this.infinispanClientShutdownMethod?.());
-        process.on('SIGINT', () => this.infinispanClientShutdownMethod?.());
-        process.on('SIGTERM', () => this.infinispanClientShutdownMethod?.());
-      }
     }
 
     // Validate that the selected store has a configured factory
-    if (!this.storeFactories[this.store as keyof typeof this.storeFactories]) {
-      throw new Error(`Unknown or uninitialized cache store: ${this.store}`);
+    if (!this.storeFactories[this.store]) {
+      throw new Error(`Unknown cache store: ${this.store}`);
     }
   }
 
   forPlugin(pluginId: string): CacheService {
     const clientFactory = (options: CacheServiceOptions) => {
       const ttl = options.defaultTtl ?? this.defaultTtl;
-      const selectedStoreFactory =
-        this.storeFactories[this.store as keyof typeof this.storeFactories];
-      if (!selectedStoreFactory) {
-        // This should ideally be caught in constructor, but as a safeguard:
-        this.logger?.error(
-          `Cache store factory for '${this.store}' not found when creating client for plugin '${pluginId}'.`,
-        );
+      const storeFactory = this.storeFactories[this.store];
+      if (!storeFactory) {
         throw new Error(`Cache store factory for '${this.store}' not found.`);
       }
-      return selectedStoreFactory(
+      return storeFactory(
         pluginId,
         ttl !== undefined ? ttlToMilliseconds(ttl) : undefined,
       );

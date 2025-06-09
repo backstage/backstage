@@ -132,7 +132,7 @@ export class InfinispanKeyvStore extends EventEmitter {
         'error',
         error instanceof Error ? error : new Error(String(error)),
       );
-      return undefined;
+      throw error;
     }
   }
 
@@ -162,6 +162,7 @@ export class InfinispanKeyvStore extends EventEmitter {
         'error',
         error instanceof Error ? error : new Error(String(error)),
       );
+      throw error;
     }
   }
 
@@ -180,7 +181,7 @@ export class InfinispanKeyvStore extends EventEmitter {
         'error',
         error instanceof Error ? error : new Error(String(error)),
       );
-      return false;
+      throw error;
     }
   }
 
@@ -198,6 +199,7 @@ export class InfinispanKeyvStore extends EventEmitter {
         'error',
         error instanceof Error ? error : new Error(String(error)),
       );
+      throw error;
     }
   }
 

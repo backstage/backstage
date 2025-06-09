@@ -16,4 +16,18 @@
 
 export { cacheServiceFactory } from './cacheServiceFactory';
 export { CacheManager } from './CacheManager';
-export type { CacheManagerOptions } from './types';
+export { InfinispanKeyvStore } from './InfinispanKeyvStore';
+export type {
+  CacheManagerOptions,
+  InfinispanCacheStoreOptions,
+  InfinispanServerConfig,
+  InfinispanAuthOptions,
+  InfinispanSslOptions,
+  InfinispanDataFormatOptions,
+  InfinispanClientBehaviorOptions,
+  RedisCacheStoreOptions,
+  CacheStoreOptions,
+  ClientInterface,
+  InfinispanKeyvStoreOptions,
+} from './types';
+export type { ClientInterface as InfinispanClientInterface } from './InfinispanKeyvStore';

@@ -101,6 +101,33 @@ export type InfinispanCacheStoreOptions = {
 };
 
 /**
+ * Interface defining the required methods for an Infinispan client.
+ * Re-exported from InfinispanKeyvStore for convenience.
+ * @public
+ */
+export interface ClientInterface {
+  get(key: string): Promise<string | null | undefined>;
+  put(key: string, value: string, options?: any): Promise<any>;
+  remove(key: string): Promise<boolean>;
+  clear(): Promise<void>;
+  disconnect(): Promise<void>;
+  on?(event: 'error' | string, listener: (...args: any[]) => void): this;
+  connect?(): Promise<any>;
+  query?(query: string): Promise<any[] | null>;
+  containsKey?(key: string): Promise<boolean>;
+}
+
+/**
+ * Options for creating an InfinispanKeyvStore instance.
+ * @public
+ */
+export interface InfinispanKeyvStoreOptions {
+  clientPromise: Promise<ClientInterface>;
+  logger: LoggerService;
+  defaultTtl?: number; // TTL in milliseconds
+}
+
+/**
  * Union type of all cache store options.
  *
  * @public
