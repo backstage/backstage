@@ -8,6 +8,7 @@
     "plugins/*/dev",
     "plugins/*/migrations"
   ],
+  "exclude": ["**/dist"],
   "compilerOptions": {
     "outDir": "dist-types",
     "rootDir": ".",

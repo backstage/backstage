@@ -16,6 +16,7 @@
 
 import { LogViewer } from '@backstage/core-components';
 import { StreamLanguage } from '@codemirror/language';
+// @ts-ignore no types are provided
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';

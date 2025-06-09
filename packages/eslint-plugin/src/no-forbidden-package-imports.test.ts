@@ -16,6 +16,7 @@
 
 import { RuleTester } from 'eslint';
 import path from 'path';
+// @ts-ignore no types are provided
 import rule from '../rules/no-forbidden-package-imports';
 
 const RULE = 'no-forbidden-package-imports';

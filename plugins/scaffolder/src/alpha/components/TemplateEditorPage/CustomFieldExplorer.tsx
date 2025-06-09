@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { StreamLanguage } from '@codemirror/language';
+// @ts-ignore no types are provided
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';

@@ -40,6 +40,7 @@ let errorApi: ErrorApi;
 const containerStyle = { width: '70%' };
 
 const createWebStorage = (): StorageApi => {
+  // @ts-ignore errorApi is used before initialization
   return WebStorage.create({ errorApi });
 };
 

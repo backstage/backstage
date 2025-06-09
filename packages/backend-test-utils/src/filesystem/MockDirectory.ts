@@ -17,6 +17,7 @@
 import os from 'os';
 import { isChildPath } from '@backstage/backend-plugin-api';
 import fs from 'fs-extra';
+// @ts-ignore no types are provided
 import textextensions from 'textextensions';
 import {
   dirname,
