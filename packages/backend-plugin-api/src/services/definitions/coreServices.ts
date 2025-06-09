@@ -294,7 +294,7 @@ export namespace coreServices {
    * Read information about your current Backstage deployment.
    * @alpha
    */
-  export const systemMetadataServiceRef = createServiceRef<
+  export const systemMetadata = createServiceRef<
     import('./SystemMetadataService').SystemMetadataService
   >({
     id: 'core.systemMetadata',

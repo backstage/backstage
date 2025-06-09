@@ -27,6 +27,7 @@ import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
 import { urlReaderServiceFactory } from '@backstage/backend-defaults/urlReader';
+import { systemMetadataServiceFactory } from '@backstage/backend-defaults/systemMetadata';
 import {
   AuthService,
   BackstageCredentials,
@@ -572,5 +573,20 @@ export namespace mockServices {
       coreServices.rootInstanceMetadata,
       rootInstanceMetadata,
     );
+  }
+  export namespace systemMetadata {
+    /**
+     * Creates a functional mock factory for the
+     * {@link @backstage/backend-plugin-api#coreServices.systemMetadata}.
+     */
+    export const factory = () => systemMetadataServiceFactory;
+    /**
+     * Creates a mock of the
+     * {@link @backstage/backend-events-node#systemMetadata}, optionally
+     * with some given method implementations.
+     */
+    export const mock = simpleMock(coreServices.systemMetadata, () => ({
+      introspect: jest.fn(),
+    }));
   }
 }
