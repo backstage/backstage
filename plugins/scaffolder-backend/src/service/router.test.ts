@@ -454,9 +454,12 @@ describe.each([
             expect.objectContaining({
               createdBy: 'user:default/mock',
               secrets: {
-                __initiatorCredentials: JSON.stringify(credentials),
+                __initiatorCredentials: JSON.stringify({
+                  ...credentials,
+                  token: mockToken,
+                }),
+                backstageToken: mockToken,
               },
-
               spec: {
                 apiVersion: mockTemplate.apiVersion,
                 steps: mockTemplate.spec.steps.map((step, index) => ({
@@ -1116,7 +1119,11 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             expect.objectContaining({
               createdBy: 'user:default/mock',
               secrets: {
-                __initiatorCredentials: JSON.stringify(credentials),
+                __initiatorCredentials: JSON.stringify({
+                  ...credentials,
+                  token: mockCredentials.user.token(),
+                }),
+                backstageToken: mockCredentials.user.token(),
               },
 
               spec: {
@@ -1185,7 +1192,11 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             expect.objectContaining({
               createdBy: 'user:default/mock',
               secrets: {
-                __initiatorCredentials: JSON.stringify(credentials),
+                __initiatorCredentials: JSON.stringify({
+                  ...credentials,
+                  token: mockCredentials.user.token(),
+                }),
+                backstageToken: mockCredentials.user.token(),
               },
 
               spec: {
@@ -1273,7 +1284,11 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             expect.objectContaining({
               createdBy: 'user:default/mock',
               secrets: {
-                __initiatorCredentials: JSON.stringify(credentials),
+                __initiatorCredentials: JSON.stringify({
+                  ...credentials,
+                  token: mockCredentials.user.token(),
+                }),
+                backstageToken: mockCredentials.user.token(),
               },
 
               spec: {
