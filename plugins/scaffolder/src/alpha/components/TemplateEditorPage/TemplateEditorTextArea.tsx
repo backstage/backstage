@@ -15,6 +15,7 @@
  */
 
 import { StreamLanguage } from '@codemirror/language';
+// @ts-ignore no types are provided
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
 import { showPanel } from '@codemirror/view';
 import IconButton from '@material-ui/core/IconButton';

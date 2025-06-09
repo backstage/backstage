@@ -15,6 +15,7 @@
  */
 
 import { RuleTester } from 'eslint';
+// @ts-ignore no types are provided
 import rule from '../rules/no-top-level-material-ui-4-imports';
 
 const ruleTester = new RuleTester({

@@ -16,6 +16,7 @@
 
 // Prevent from running more than once (due to worker threads)
 if (!require('node:worker_threads').isMainThread) {
+  // @ts-ignore
   return;
 }
 

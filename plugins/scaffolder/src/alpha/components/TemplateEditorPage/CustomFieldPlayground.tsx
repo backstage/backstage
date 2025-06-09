@@ -19,8 +19,8 @@ import yaml from 'yaml';
 import validator from '@rjsf/validator-ajv8';
 import CodeMirror from '@uiw/react-codemirror';
 import { StreamLanguage } from '@codemirror/language';
+// @ts-ignore no types are provided
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
-
 import { makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
