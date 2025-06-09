@@ -59,6 +59,7 @@ appearance of the heading.
     <Heading variant="title2">Title 2</Heading>
     <Heading variant="title3">Title 3</Heading>
     <Heading variant="title4">Title 4</Heading>
+    <Heading variant="title5">Title 5</Heading>
 </Flex>`}
 />
 
@@ -76,6 +77,17 @@ heading.
     have none, but that man&apos;s father is my father's son.” Who is
     in the painting?
   </Heading>`}
+/>
+
+### Custom render
+
+You can also use the `render` prop to render the heading as a different element.
+
+<Snippet
+  py={2}
+  open
+  preview={<HeadingSnippet story="CustomRender" />}
+  code={`<Heading render={<h4 />}>Custom render</Heading>`}
 />
 
 ### Responsive
