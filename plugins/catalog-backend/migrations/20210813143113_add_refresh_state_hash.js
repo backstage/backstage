@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.alterTable('refresh_state', table => {
     table
       .text('result_hash')
@@ -28,13 +28,18 @@ exports.up = async function up(knex) {
         'A hash of the processed contents, used to avoid duplicate work',
       );
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('refresh_state', table => {
     table.dropColumn('result_hash');
   });
+}
+
+exports = {
+  up,
+  down,
 };

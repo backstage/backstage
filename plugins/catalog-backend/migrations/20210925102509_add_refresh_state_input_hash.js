@@ -19,20 +19,25 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.alterTable('refresh_state', table => {
     table
       .text('unprocessed_hash')
       .nullable()
       .comment('A hash of the unprocessed contents');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('refresh_state', table => {
     table.dropColumn('unprocessed_hash');
   });
+}
+
+exports = {
+  up,
+  down,
 };

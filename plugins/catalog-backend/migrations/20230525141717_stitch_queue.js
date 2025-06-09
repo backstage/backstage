@@ -19,7 +19,7 @@
 /**
  * @param { import("knex").Knex } knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.alterTable('refresh_state', table => {
     table
       .dateTime('next_stitch_at')
@@ -71,15 +71,20 @@ exports.up = async function up(knex) {
         );
     }
   }
-};
+}
 
 /**
  * @param { import("knex").Knex } knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('refresh_state', table => {
     table.dropIndex([], 'refresh_state_next_stitch_at_idx');
     table.dropColumn('next_stitch_at');
     table.dropColumn('next_stitch_ticket');
   });
+}
+
+exports = {
+  up,
+  down,
 };

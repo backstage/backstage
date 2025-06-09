@@ -20,17 +20,17 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.alterTable('locations', table => {
     table.text('target').alter();
   });
-};
+}
 
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   const oversizedEntries = await knex('locations').where(
     knex.raw('LENGTH(target) > 255'),
   );
@@ -44,4 +44,9 @@ exports.down = async function down(knex) {
   await knex.schema.alterTable('locations', table => {
     table.string('target').alter();
   });
+}
+
+exports = {
+  up,
+  down,
 };

@@ -19,17 +19,22 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.alterTable('tasks', table => {
     table.binary('workspace').nullable().comment('A snapshot of the workspace');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('tasks', table => {
     table.dropColumn('workspace');
   });
+}
+
+exports = {
+  up,
+  down,
 };

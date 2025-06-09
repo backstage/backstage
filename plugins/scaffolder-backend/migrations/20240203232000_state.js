@@ -19,17 +19,22 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.alterTable('tasks', table => {
     table.text('state').nullable().comment('A state of the checkpoints');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('tasks', table => {
     table.dropColumn('state');
   });
+}
+
+exports = {
+  up,
+  down,
 };

@@ -18,7 +18,7 @@
  * @param {import('knex').Knex} knex
  * @returns {Promise<void>}
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   if (knex.client.config.client.includes('pg')) {
     await knex.schema.raw(
       `ALTER TABLE refresh_state_references ALTER COLUMN id TYPE bigint;`,
@@ -31,13 +31,13 @@ exports.up = async function up(knex) {
       `ALTER TABLE refresh_state_references MODIFY id bigint AUTO_INCREMENT;`,
     );
   }
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  * @returns {Promise<void>}
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   if (knex.client.config.client.includes('pg')) {
     await knex.schema.raw(
       `ALTER SEQUENCE refresh_state_references_id_seq AS integer MAXVALUE 2147483647;`,
@@ -50,4 +50,9 @@ exports.down = async function down(knex) {
       `ALTER TABLE refresh_state_references MODIFY id integer AUTO_INCREMENT;`,
     );
   }
+}
+
+exports = {
+  up,
+  down,
 };

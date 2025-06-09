@@ -19,7 +19,7 @@
 /**
  * @param { import("knex").Knex } knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   /**
    * Sets up the ingestions table
    */
@@ -167,13 +167,18 @@ exports.up = async function up(knex) {
     t.primary(['id']);
     t.index('ingestion_mark_id', 'ingestion_mark_entity_ingestion_mark_id_idx');
   });
-};
+}
 
 /**
  * @param { import("knex").Knex } knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.dropTable('ingestion_mark_entities');
   await knex.schema.dropTable('ingestion_marks');
   await knex.schema.dropTable('ingestions');
+}
+
+exports = {
+  up,
+  down,
 };

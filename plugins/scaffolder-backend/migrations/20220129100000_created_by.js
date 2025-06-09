@@ -19,20 +19,25 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.alterTable('tasks', table => {
     table
       .text('created_by')
       .nullable()
       .comment('An entityRef of the user who created the task');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('tasks', table => {
     table.dropColumn('created_by');
   });
+}
+
+exports = {
+  up,
+  down,
 };

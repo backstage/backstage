@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex('entities')
     .where({ namespace: null })
     .update({ namespace: 'default' });
@@ -27,6 +27,11 @@ exports.up = async function up(knex) {
     key: knex.raw('LOWER(??)', ['key']),
     value: knex.raw('LOWER(??)', ['value']),
   });
-};
+}
 
-exports.down = async function down() {};
+async function down() {}
+
+exports = {
+  up,
+  down,
+};

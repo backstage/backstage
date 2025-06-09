@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.createTable('tasks', table => {
     table.comment('The table of scaffolder tasks');
     table.uuid('id').primary().notNullable().comment('The ID of the task');
@@ -69,12 +69,12 @@ exports.up = async function up(knex) {
 
     table.index(['task_id'], 'task_events_task_id_idx');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema.alterTable('task_events', table => {
       table.dropIndex([], 'task_events_task_id_idx');
@@ -82,4 +82,9 @@ exports.down = async function down(knex) {
   }
   await knex.schema.dropTable('task_events');
   await knex.schema.dropTable('tasks');
+}
+
+exports = {
+  up,
+  down,
 };

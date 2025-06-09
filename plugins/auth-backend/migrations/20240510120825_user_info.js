@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.createTable('user_info', table => {
     table.comment('User information');
 
@@ -39,11 +39,16 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('Expiration timestamp of the user info');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.dropTable('user_info');
+}
+
+exports = {
+  up,
+  down,
 };

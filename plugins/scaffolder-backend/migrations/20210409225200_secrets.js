@@ -19,20 +19,25 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.alterTable('tasks', table => {
     table
       .text('secrets')
       .nullable()
       .comment('JSON encoded secrets to authenticate tasks with');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('tasks', table => {
     table.dropColumn('secrets');
   });
+}
+
+exports = {
+  up,
+  down,
 };

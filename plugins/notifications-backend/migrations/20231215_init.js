@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-exports.up = async function up(knex) {
+// @ts-check
+
+/**
+ * @param {import('knex').Knex} knex
+ */
+async function up(knex) {
   await knex.schema.createTable('notification', table => {
     table.uuid('id').primary();
     table.string('user', 255).notNullable();
@@ -34,11 +39,16 @@ exports.up = async function up(knex) {
     table.index(['user'], 'notification_user_idx');
     table.index(['scope', 'origin'], 'notification_scope_origin_idx');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.dropTable('notification');
+}
+
+exports = {
+  up,
+  down,
 };

@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = function up(knex) {
+function up(knex) {
   return knex.schema.raw(`DROP VIEW location_update_log_latest;`).raw(`
   CREATE VIEW location_update_log_latest AS
   SELECT t1.* FROM location_update_log t1
@@ -34,11 +34,16 @@ exports.up = function up(knex) {
   GROUP BY t1.location_id, t1.id
   ORDER BY created_at DESC;
 `);
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = function down(knex) {
+function down(knex) {
   knex.schema.raw(`DROP VIEW location_update_log_latest;`);
+}
+
+exports = {
+  up,
+  down,
 };

@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-exports.up = async function up(knex) {
+// @ts-check
+
+/**
+ * @param {import('knex').Knex} knex
+ */
+async function up(knex) {
   await knex.schema.createTable('broadcast', table => {
     table.uuid('id').primary();
     table.string('title').notNullable();
@@ -37,19 +42,24 @@ exports.up = async function up(knex) {
 
     table
       .foreign('broadcast_id')
-      .references(['id'])
+      .references('id')
       .inTable('broadcast')
       .onDelete('CASCADE');
     table.unique(['broadcast_id', 'user'], {
       indexName: 'broadcast_user_idx',
     });
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.dropTable('broadcast_user_status');
   await knex.schema.dropTable('broadcast');
+}
+
+exports = {
+  up,
+  down,
 };

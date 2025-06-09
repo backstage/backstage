@@ -19,7 +19,7 @@
 /**
  * @param { import("knex").Knex } knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   if (knex.client.config.client === 'pg') {
     await knex.raw(
       'CREATE INDEX CONCURRENTLY search_key_value_idx ON search(key, value)',
@@ -28,18 +28,22 @@ exports.up = async function up(knex) {
       'CREATE INDEX CONCURRENTLY search_key_original_value_idx ON search(key, original_value)',
     );
   }
-};
+}
 
 /**
  * @param { import("knex").Knex } knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   if (knex.client.config.client === 'pg') {
     await knex.raw('DROP INDEX CONCURRENTLY search_key_value_idx');
     await knex.raw('DROP INDEX CONCURRENTLY search_key_original_value_idx');
   }
-};
+}
 
-exports.config = {
-  transaction: false,
+exports = {
+  up,
+  down,
+  config: {
+    transaction: false,
+  },
 };

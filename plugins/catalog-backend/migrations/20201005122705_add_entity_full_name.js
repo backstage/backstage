@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.alterTable('entities', table => {
     table.string('full_name').nullable();
   });
@@ -43,12 +43,12 @@ exports.up = async function up(knex) {
     table.unique(['full_name'], { indexName: 'entities_unique_full_name' });
     table.dropUnique([], 'entities_unique_name');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('entities', table => {
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
     table.dropUnique([], 'entities_unique_full_name');
@@ -60,4 +60,9 @@ exports.down = async function down(knex) {
   await knex.schema.alterTable('entities_search', table => {
     table.dropColumn('full_name');
   });
+}
+
+exports = {
+  up,
+  down,
 };

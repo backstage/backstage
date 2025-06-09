@@ -19,7 +19,7 @@
 /**
  * @param { import("knex").Knex } knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.createTable('refresh_keys', table => {
     table.comment(
       'This table contains relations between entities and keys to trigger refreshes with',
@@ -40,16 +40,21 @@ exports.up = async function up(knex) {
     table.index('entity_id', 'refresh_keys_entity_id_idx');
     table.index('key', 'refresh_keys_key_idx');
   });
-};
+}
 
 /**
  * @param { import("knex").Knex } knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('refresh_keys', table => {
     table.dropIndex([], 'refresh_keys_entity_id_idx');
     table.dropIndex([], 'refresh_keys_key_idx');
   });
 
   await knex.schema.dropTable('refresh_keys');
+}
+
+exports = {
+  up,
+  down,
 };

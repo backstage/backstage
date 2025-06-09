@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   // SQLite does not support FK and PK
   if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema.alterTable('entities_search', table => {
@@ -126,12 +126,12 @@ exports.up = async function up(knex) {
   // Clean up
   await knex.schema.dropTable('tmp_entities');
   return knex.schema.dropTable('tmp_entities_search');
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   // SQLite does not support FK and PK
   if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema.alterTable('entities_search', table => {
@@ -238,4 +238,9 @@ exports.down = async function down(knex) {
   // Clean up
   await knex.schema.dropTable('tmp_entities');
   return knex.schema.dropTable('tmp_entities_search');
+}
+
+exports = {
+  up,
+  down,
 };

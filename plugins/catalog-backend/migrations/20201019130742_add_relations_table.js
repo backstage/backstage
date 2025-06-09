@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.createTable('entities_relations', table => {
     table.comment('All relations between entities in the catalog');
     table
@@ -44,11 +44,16 @@ exports.up = async function up(knex) {
 
     table.primary(['source_full_name', 'type', 'target_full_name']);
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.dropTable('entities_relations');
+}
+
+exports = {
+  up,
+  down,
 };

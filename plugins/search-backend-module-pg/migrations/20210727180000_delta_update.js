@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   // This database migration uses some postgres specific features (like bytea
   // columns and build in functions) and can not be used with other database
   // engines.
@@ -38,13 +38,18 @@ exports.up = async function up(knex) {
   await knex.schema.alterTable('documents', table => {
     table.specificType('hash', 'bytea').notNullable().primary().alter();
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('documents', table => {
     table.dropColumn('hash');
   });
+}
+
+exports = {
+  up,
+  down,
 };

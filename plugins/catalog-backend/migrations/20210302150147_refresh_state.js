@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   const isMySQL = knex.client.config.client.includes('mysql');
   await knex.schema.createTable('refresh_state', table => {
     table.comment('Location refresh states');
@@ -169,12 +169,12 @@ exports.up = async function up(knex) {
     table.index(['key'], 'search_key_idx');
     table.index(['value'], 'search_value_idx');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('refresh_state_references', table => {
     table.dropIndex([], 'refresh_state_references_source_key_idx');
     table.dropIndex([], 'refresh_state_references_source_entity_ref_idx');
@@ -204,4 +204,9 @@ exports.down = async function down(knex) {
   await knex.schema.dropTable('relations');
   await knex.schema.dropTable('references');
   await knex.schema.dropTable('refresh_state');
+}
+
+exports = {
+  up,
+  down,
 };

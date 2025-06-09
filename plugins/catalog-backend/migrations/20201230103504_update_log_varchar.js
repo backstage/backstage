@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   if (!knex.client.config.client.includes('sqlite3')) {
     // We actually just want to widen columns, but can't do that while a
     // view is dependent on them - so we just reconstruct it exactly as it was
@@ -43,12 +43,12 @@ exports.up = async function up(knex) {
         ORDER BY created_at DESC;
       `);
   }
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema
       .raw('DROP VIEW location_update_log_latest;')
@@ -70,4 +70,9 @@ exports.down = async function down(knex) {
         ORDER BY created_at DESC;
       `);
   }
+}
+
+exports = {
+  up,
+  down,
 };

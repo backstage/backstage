@@ -13,9 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 const crypto = require('crypto');
 
-exports.up = async function up(knex) {
+// @ts-check
+
+/**
+ * @param {import('knex').Knex} knex
+ */
+async function up(knex) {
   await knex.schema.alterTable('user_settings', table => {
     table.string('topic').nullable().after('origin');
     table.string('settings_key_hash', 64).nullable();
@@ -39,9 +45,12 @@ exports.up = async function up(knex) {
     table.string('settings_key_hash', 64).notNullable().alter();
     table.unique(['settings_key_hash'], 'user_settings_unique_idx');
   });
-};
+}
 
-exports.down = async function down(knex) {
+/**
+ * @param {import('knex').Knex} knex
+ */
+async function down(knex) {
   await knex.schema.table('user_settings', table => {
     table.dropUnique([], 'user_settings_unique_idx');
     table.dropColumn('settings_key_hash');
@@ -53,4 +62,10 @@ exports.down = async function down(knex) {
       indexName: 'user_settings_unique_idx',
     });
   });
+}
+
+// @ts-ignore namespace error
+exports = {
+  up,
+  down,
 };

@@ -14,16 +14,29 @@
  * limitations under the License.
  */
 
-exports.up = async function up(knex) {
+// @ts-check
+
+/**
+ * @param {import('knex').Knex} knex
+ */
+async function up(knex) {
   await knex.schema.alterTable('notification', table => {
     table.text('link').nullable().alter();
     table.dropColumn('done');
   });
-};
+}
 
-exports.down = async function down(knex) {
+/**
+ * @param {import('knex').Knex} knex
+ */
+async function down(knex) {
   await knex.schema.alterTable('notification', table => {
     table.text('link').notNullable().alter();
     table.datetime('done').nullable();
   });
+}
+
+exports = {
+  up,
+  down,
 };

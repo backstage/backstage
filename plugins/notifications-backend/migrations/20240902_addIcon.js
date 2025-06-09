@@ -14,20 +14,33 @@
  * limitations under the License.
  */
 
-exports.up = async function up(knex) {
-  await knex.schema.alterTable('notification', table => {
-    table.string('icon', 255).nullable();
-  });
-  await knex.schema.alterTable('broadcast', table => {
-    table.string('icon', 255).nullable();
-  });
-};
+// @ts-check
 
-exports.down = async function down(knex) {
+/**
+ * @param {import('knex').Knex} knex
+ */
+async function up(knex) {
+  await knex.schema.alterTable('notification', table => {
+    table.string('icon', 255).nullable();
+  });
+  await knex.schema.alterTable('broadcast', table => {
+    table.string('icon', 255).nullable();
+  });
+}
+
+/**
+ * @param {import('knex').Knex} knex
+ */
+async function down(knex) {
   await knex.schema.alterTable('notification', table => {
     table.dropColumn('icon');
   });
   await knex.schema.alterTable('broadcast', table => {
     table.dropColumn('icon');
   });
+}
+
+exports = {
+  up,
+  down,
 };

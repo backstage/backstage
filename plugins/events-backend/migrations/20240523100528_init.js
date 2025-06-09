@@ -20,7 +20,7 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   // The event bus only supports PostgresSQL
   if (knex.client.config.client === 'pg') {
     await knex.schema.createTable('event_bus_events', table => {
@@ -84,15 +84,20 @@ exports.up = async function up(knex) {
         .comment('The topics that this subscriber is interested in');
     });
   }
-};
+}
 
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   if (knex.client.config.client === 'pg') {
     await knex.schema.dropTable('event_bus_subscriptions');
     await knex.schema.dropTable('event_bus_events');
   }
+}
+
+exports = {
+  up,
+  down,
 };

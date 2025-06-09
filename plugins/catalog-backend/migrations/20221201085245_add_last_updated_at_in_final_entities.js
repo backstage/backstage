@@ -19,21 +19,26 @@
 /**
  * @param { import("knex").Knex } knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.table('final_entities', table => {
     table
       .dateTime('last_updated_at')
       .nullable()
       .comment('The time when final_entity changed');
   });
-};
+}
 
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.table('final_entities', table => {
     table.dropColumn('last_updated_at');
   });
+}
+
+exports = {
+  up,
+  down,
 };

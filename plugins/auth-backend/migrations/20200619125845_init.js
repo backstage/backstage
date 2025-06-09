@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   return knex.schema.createTable('signing_keys', table => {
     table.comment(
       'Signing keys that are currently in use or have recently been used to issue tokens',
@@ -36,11 +36,16 @@ exports.up = async function up(knex) {
       .comment('The creation time of the key');
     table.string('key').notNullable().comment('The serialized signing key');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   return knex.schema.dropTable('auth_keystore');
+}
+
+exports = {
+  up,
+  down,
 };

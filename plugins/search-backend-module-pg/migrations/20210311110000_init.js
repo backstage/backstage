@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   // This database schema uses some postgres specific features (like tsvector
   // and jsonb columns) and can not be used with other database engines.
   await knex.schema.createTable('documents', table => {
@@ -46,11 +46,16 @@ exports.up = async function up(knex) {
       .index(['document'], 'documents_document_index', 'GIN')
       .comment('Optimize filter queries on documents');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.dropTable('documents');
+}
+
+exports = {
+  up,
+  down,
 };

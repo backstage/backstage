@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   // Adds a single 'bootstrap' location that can be used to trigger work in processors.
   // This is primarily here to fulfill foreign key constraints.
   await knex('locations').insert({
@@ -27,16 +27,21 @@ exports.up = async function up(knex) {
     type: 'bootstrap',
     target: 'bootstrap',
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex('locations')
     .where({
       type: 'bootstrap',
       target: 'bootstrap',
     })
     .del();
+}
+
+exports = {
+  up,
+  down,
 };
