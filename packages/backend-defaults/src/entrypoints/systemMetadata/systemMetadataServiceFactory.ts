@@ -27,7 +27,7 @@ import { createSystemMetadataRouter } from './lib/createSystemMetadataRouter';
  * @alpha
  */
 export const systemMetadataServiceFactory = createServiceFactory({
-  service: coreServices.systemMetadataServiceRef,
+  service: coreServices.systemMetadata,
   deps: {
     logger: coreServices.rootLogger,
     config: coreServices.rootConfig,
