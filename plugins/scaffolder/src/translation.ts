@@ -226,6 +226,7 @@ export const scaffolderTranslationRef = createTranslationRef({
         functions: {
           title: 'Functions',
           notAvailable: 'There are no global template functions defined.',
+          metadataAbsent: 'Function metadata unavailable',
           schema: {
             arguments: 'Arguments',
             output: 'Output',

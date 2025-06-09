@@ -430,6 +430,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templatingExtensions.content.functions.schema.arguments': 'Arguments';
     readonly 'templatingExtensions.content.functions.examples': 'Examples';
     readonly 'templatingExtensions.content.functions.notAvailable': 'There are no global template functions defined.';
+    readonly 'templatingExtensions.content.functions.metadataAbsent': 'Function metadata unavailable';
     readonly 'templatingExtensions.title': 'Templating Extensions';
     readonly 'templatingExtensions.subtitle': 'This is the collection of available templating extensions';
     readonly 'templatingExtensions.pageTitle': 'Templating Extensions';
