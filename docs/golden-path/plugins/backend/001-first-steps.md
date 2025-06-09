@@ -4,11 +4,11 @@ sidebar_label: 001 - Scaffolding the plugin
 title: How to scaffold a new plugin?
 ---
 
-### Scaffolding a new plugin
+# Scaffolding a new plugin
 
-Talk through how to run the `backstage-cli create` command as well as what the output it creates is. This should touch on why we install this into `packages/backend`.
+<!-- Talk through how to run the `backstage-cli create` command as well as what the output it creates is. This should touch on why we install this into `packages/backend`. -->
 
-## Creating a Backend Plugin
+## `yarn new`
 
 A new, bare-bones backend plugin package can be created by issuing the following
 command in your Backstage repository's root directory and selecting `backend-plugin`:
