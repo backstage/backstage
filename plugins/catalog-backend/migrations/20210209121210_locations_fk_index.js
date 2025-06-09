@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema.alterTable('entities', table => {
       table.index('location_id', 'entity_location_id_idx');
@@ -28,12 +28,12 @@ exports.up = async function up(knex) {
       table.index('location_id', 'update_log_location_id_idx');
     });
   }
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema.alterTable('entities', table => {
       table.dropIndex([], 'entity_location_id_idx');
@@ -42,4 +42,9 @@ exports.down = async function down(knex) {
       table.dropIndex([], 'update_log_location_id_idx');
     });
   }
+}
+
+exports = {
+  up,
+  down,
 };

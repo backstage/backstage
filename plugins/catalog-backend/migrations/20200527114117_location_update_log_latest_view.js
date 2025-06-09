@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   // Get list sorted by created_at timestamp in descending order
   // Grouped by location_id
   return knex.schema.raw(`
@@ -35,11 +35,16 @@ exports.up = async function up(knex) {
     AND t1.created_at = t2.MAXDATE
     ORDER BY created_at DESC;
   `);
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   return knex.schema.raw(`DROP VIEW location_update_log_latest;`);
+}
+
+exports = {
+  up,
+  down,
 };

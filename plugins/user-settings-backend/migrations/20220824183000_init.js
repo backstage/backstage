@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.createTable('user_settings', table => {
     table.comment('The table of user related settings');
 
@@ -33,11 +33,16 @@ exports.up = async function up(knex) {
 
     table.primary(['user_entity_ref', 'bucket', 'key']);
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.dropTable('user_settings');
+}
+
+exports = {
+  up,
+  down,
 };

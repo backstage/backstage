@@ -19,19 +19,24 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.alterTable('entities_search', table => {
     table.index(['key'], 'entities_search_key');
     table.index(['value'], 'entities_search_value');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('entities_search', table => {
     table.dropIndex('', 'entities_search_key');
     table.dropIndex('', 'entities_search_value');
   });
+}
+
+exports = {
+  up,
+  down,
 };

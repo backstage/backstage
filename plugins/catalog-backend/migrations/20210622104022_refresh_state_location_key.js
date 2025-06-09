@@ -19,20 +19,25 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.alterTable('refresh_state', table => {
     table
       .text('location_key')
       .nullable()
       .comment('Opaque conflict resolution key');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('refresh_state', table => {
     table.dropColumn('location_key');
   });
+}
+
+exports = {
+  up,
+  down,
 };

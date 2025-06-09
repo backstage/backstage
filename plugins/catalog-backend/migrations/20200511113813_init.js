@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   return (
     knex.schema
       //
@@ -119,12 +119,12 @@ exports.up = async function up(knex) {
           .comment('The corresponding value to match on');
       })
   );
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   return knex.schema
     .dropTable('entities_search')
     .alterTable('entities', table => {
@@ -132,4 +132,9 @@ exports.down = async function down(knex) {
     })
     .dropTable('entities')
     .dropTable('locations');
+}
+
+exports = {
+  up,
+  down,
 };

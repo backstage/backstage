@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   if (knex.client.config.client.includes('sqlite3')) {
     // sqlite doesn't support dropPrimary so we recreate it properly instead
     await knex.schema.dropTable('entities_relations');
@@ -52,12 +52,12 @@ exports.up = async function up(knex) {
       table.index('source_full_name', 'source_full_name_idx');
     });
   }
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   if (knex.client.config.client.includes('sqlite3')) {
     await knex.schema.dropTable('entities_relations');
     await knex.schema.createTable('entities_relations', table => {
@@ -90,4 +90,9 @@ exports.down = async function down(knex) {
       table.primary(['source_full_name', 'type', 'target_full_name']);
     });
   }
+}
+
+exports = {
+  up,
+  down,
 };
