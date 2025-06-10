@@ -299,7 +299,12 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
 
       const resolvedEach =
-        step.each && this.render(step.each, context, renderTemplate);
+        step.each &&
+        this.render(
+          step.each,
+          { ...context, secrets: task.secrets ?? {} },
+          renderTemplate,
+        );
 
       if (step.each && !resolvedEach) {
         throw new InputError(

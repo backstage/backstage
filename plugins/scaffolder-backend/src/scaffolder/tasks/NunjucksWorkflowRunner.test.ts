@@ -832,6 +832,42 @@ describe('NunjucksWorkflowRunner', () => {
       });
     });
 
+    it('should run a step repeatedly - flat values with secrets', async () => {
+      const secrets = {
+        s1: 'secret-value1',
+        s2: 'secret-value2',
+        s3: 'secret-value3',
+      };
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              each: [
+                '${{ secrets.s1 }}',
+                '${{ secrets.s2 }}',
+                '${{ secrets.s3 }}',
+              ],
+              action: 'jest-mock-action',
+              input: { secret: '${{each.value}}' },
+            },
+          ],
+        },
+        secrets,
+      );
+      await runner.execute(task);
+
+      Object.values(secrets).forEach((secret, idx) => {
+        expectTaskLog(
+          `info: Running step each: {"key":"${idx}","value":"***"}`,
+        );
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({ input: { secret } }),
+        );
+      });
+    });
+
     it('should run a step repeatedly - object list', async () => {
       const task = createMockTaskWithSpec({
         steps: [
@@ -860,6 +896,46 @@ describe('NunjucksWorkflowRunner', () => {
           input: { key: '0', value: { color: 'blue' } },
         }),
       );
+    });
+
+    it('should run a step repeatedly - object list with secrets', async () => {
+      const secrets = {
+        s1: 'secret-value1',
+        s2: 'secret-value2',
+      };
+      const names = ['Service1', 'Service2'];
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              each: [
+                { name: names[0], token: '${{ secrets.s1 }}' },
+                { name: names[1], token: '${{ secrets.s2 }}' },
+              ],
+              action: 'jest-mock-action',
+              input: {
+                name: '${{each.value.name}}',
+                token: '${{each.value.token}}',
+              },
+            },
+          ],
+        },
+        secrets,
+      );
+      await runner.execute(task);
+
+      Object.values(secrets).forEach((secret, idx) => {
+        expectTaskLog(
+          `info: Running step each: {"key":"${idx}","value":"[object Object]"}`,
+        );
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({
+            input: { name: names[idx], token: secret },
+          }),
+        );
+      });
     });
 
     it('should run a step repeatedly - object', async () => {
