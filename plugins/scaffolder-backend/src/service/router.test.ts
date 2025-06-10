@@ -65,21 +65,6 @@ import { createDefaultFilters } from '../lib/templating/filters/createDefaultFil
 import { createRouter } from './router';
 import { DatabaseTaskStore } from '../scaffolder/tasks/DatabaseTaskStore';
 
-const mockAccess = jest.fn();
-
-jest.mock('fs-extra', () => ({
-  access: (...args: unknown[]) => mockAccess(...args),
-  promises: {
-    access: (...args: unknown[]) => mockAccess(...args),
-  },
-  constants: {
-    F_OK: 0,
-    W_OK: 1,
-  },
-  mkdir: jest.fn(),
-  remove: jest.fn(),
-}));
-
 function createDatabase(): DatabaseService {
   return DatabaseManager.fromConfig(
     new ConfigReader({
