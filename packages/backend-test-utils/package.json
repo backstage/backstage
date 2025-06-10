@@ -52,6 +52,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@keyv/memcache": "^2.0.1",
     "@keyv/redis": "^4.0.1",
