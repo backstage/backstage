@@ -330,7 +330,10 @@ export default {
       {
         type: 'category',
         label: 'Gitea',
-        items: ['integrations/gitea/locations'],
+        items: [
+          'integrations/gitea/locations',
+          'integrations/gitea/discovery',
+        ],
       },
       {
         type: 'category',
