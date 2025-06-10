@@ -169,11 +169,7 @@ export const SingleSignInPage = ({
           profile,
         }),
       );
-      analytics.captureEvent('signIn', 'success', {
-        attributes: {
-          userEntityRef: identityResponse.identity.userEntityRef,
-        },
-      });
+      analytics.captureEvent('signIn', 'success');
     } catch (err: any) {
       // User closed the sign-in modal
       setError(err);

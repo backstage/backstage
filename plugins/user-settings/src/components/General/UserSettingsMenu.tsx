@@ -63,13 +63,7 @@ export const UserSettingsMenu = () => {
           data-testid="sign-out"
           onClick={() => {
             identityApi.signOut().catch(error => errorApi.post(error));
-            identityApi.getBackstageIdentity().then(identity => {
-              analytics.captureEvent('signOut', 'success', {
-                attributes: {
-                  userEntityRef: identity.userEntityRef,
-                },
-              });
-            });
+            analytics.captureEvent('signOut', 'success');
           }}
         >
           <ListItemIcon>
