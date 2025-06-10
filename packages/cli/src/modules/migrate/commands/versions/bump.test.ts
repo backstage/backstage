@@ -16,10 +16,8 @@
 
 import fs from 'fs-extra';
 import { Command } from 'commander';
-import * as runObj from '../../../../lib/run';
 import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
 import { registerMswTestHooks, withLogCollector } from '@backstage/test-utils';
-import { YarnInfoInspectData } from '../../../../lib/versioning/packages';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { NotFoundError } from '@backstage/errors';
@@ -27,6 +25,7 @@ import {
   MockDirectory,
   createMockDirectory,
 } from '@backstage/backend-test-utils';
+import { LockfileEntry, PackageInfo } from '@backstage/cli-node';
 
 // Avoid mutating the global agents used in other tests
 jest.mock('global-agent', () => ({
@@ -55,6 +54,7 @@ jest.mock('ora', () => ({
     return {
       start: () => ({
         succeed: () => {},
+        fail: () => {},
       }),
     };
   },
@@ -73,20 +73,7 @@ jest.mock('@backstage/cli-common', () => ({
   }),
 }));
 
-jest.mock('../../../../lib/run', () => {
-  return {
-    run: jest.fn(),
-  };
-});
-
 const mockFetchPackageInfo = jest.fn();
-jest.mock('../../../../lib/versioning/packages', () => {
-  const actual = jest.requireActual('../../../../lib/versioning/packages');
-  return {
-    ...actual,
-    fetchPackageInfo: (name: string) => mockFetchPackageInfo(name),
-  };
-});
 
 const REGISTRY_VERSIONS: { [name: string]: string } = {
   '@backstage/core': '1.0.6',
@@ -129,6 +116,64 @@ const lockfileMock = `${HEADER}
   version "1.0.3"
 `;
 
+const mockRun = jest.fn();
+const mockLoadLockfile = jest.fn();
+const mockSupportsBackstageVersionProtocol = jest.fn();
+const LOCKFILE_PACKAGES: Map<string, LockfileEntry[]> = new Map([
+  [
+    '@backstage/core',
+    [
+      {
+        range: '^1.0.5',
+        version: '1.0.6',
+      },
+      {
+        range: '^1.0.3',
+        version: '1.0.3',
+      },
+    ],
+  ],
+  [
+    '@backstage/theme',
+    [
+      {
+        range: '^1.0.0',
+        version: '1.0.0',
+      },
+    ],
+  ],
+  [
+    '@backstage/core-api',
+    [
+      {
+        range: '^1.0.6',
+        version: '1.0.6',
+      },
+      {
+        range: '^1.0.3',
+        version: '1.0.3',
+      },
+    ],
+  ],
+]);
+
+jest.mock('@backstage/cli-node', () => {
+  const actual = jest.requireActual('@backstage/cli-node');
+
+  return {
+    ...actual,
+    detectPackageManager: () => {
+      return {
+        name: () => 'mock',
+        fetchPackageInfo: mockFetchPackageInfo,
+        run: mockRun,
+        loadLockfile: mockLoadLockfile,
+        supportsBackstageVersionProtocol: mockSupportsBackstageVersionProtocol,
+      };
+    },
+  };
+});
+
 // Avoid flakes by comparing sorted log lines. File system access is async, which leads to the log line order being indeterministic
 const expectLogsToMatch = (
   receivedLogs: String[],
@@ -147,6 +192,12 @@ describe('bump', () => {
         latest: REGISTRY_VERSIONS[name],
       },
     }));
+
+    mockLoadLockfile.mockImplementation(async () => {
+      return {
+        get: (name: string) => LOCKFILE_PACKAGES.get(name),
+      };
+    });
   });
 
   afterEach(() => {
@@ -185,7 +236,6 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
@@ -209,7 +259,7 @@ describe('bump', () => {
       'bumping @backstage/core in a to ^1.0.6',
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/theme in b to ^2.0.0',
-      'Running yarn install to install new versions',
+      'Running mock install to install new versions',
       'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 2.0.0',
@@ -221,12 +271,8 @@ describe('bump', () => {
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/theme');
 
-    expect(runObj.run).toHaveBeenCalledTimes(1);
-    expect(runObj.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
-      expect.any(Object),
-    );
+    expect(mockRun).toHaveBeenCalledTimes(1);
+    expect(mockRun).toHaveBeenCalledWith(['install'], expect.any(Object));
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -278,7 +324,6 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
@@ -306,7 +351,7 @@ describe('bump', () => {
       'bumping @backstage/core in a to ^1.0.6',
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/theme in b to ^2.0.0',
-      'Skipping yarn install',
+      'Skipping mock install',
       'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 2.0.0',
@@ -318,11 +363,7 @@ describe('bump', () => {
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/theme');
 
-    expect(runObj.run).not.toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
-      expect.any(Object),
-    );
+    expect(mockRun).not.toHaveBeenCalled();
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -374,7 +415,6 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
@@ -409,7 +449,7 @@ describe('bump', () => {
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/core in a to ^1.0.6',
       'Your project is now at version 0.0.1, which has been written to backstage.json',
-      'Running yarn install to install new versions',
+      'Running mock install to install new versions',
       'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 5.0.0',
@@ -420,12 +460,8 @@ describe('bump', () => {
     expect(mockFetchPackageInfo).toHaveBeenCalledTimes(1);
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
 
-    expect(runObj.run).toHaveBeenCalledTimes(1);
-    expect(runObj.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
-      expect.any(Object),
-    );
+    expect(mockRun).toHaveBeenCalledTimes(1);
+    expect(mockRun).toHaveBeenCalledWith(['install'], expect.any(Object));
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -449,6 +485,7 @@ describe('bump', () => {
   });
 
   it('should use backstage:^ versions for packages in the release manifest when the yarn plugin is installed', async () => {
+    mockSupportsBackstageVersionProtocol.mockReturnValue(true);
     mockDir.setContent({
       '.yarnrc.yml': yarnRcMock,
       'yarn.lock': lockfileMock,
@@ -478,7 +515,6 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
@@ -515,7 +551,7 @@ describe('bump', () => {
       'bumping @backstage/core in a to ^1.0.6',
       'Updating yarn plugin to v0.0.1...',
       'Your project is now at version 0.0.1, which has been written to backstage.json',
-      'Running yarn install to install new versions',
+      'Running mock install to install new versions',
       'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 5.0.0',
@@ -526,17 +562,13 @@ describe('bump', () => {
     expect(mockFetchPackageInfo).toHaveBeenCalledTimes(1);
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
 
-    expect(runObj.run).toHaveBeenCalledTimes(2);
-    expect(runObj.run).toHaveBeenCalledWith('yarn', [
+    expect(mockRun).toHaveBeenCalledTimes(2);
+    expect(mockRun).toHaveBeenCalledWith([
       'plugin',
       'import',
       'https://versions.backstage.io/v1/releases/0.0.1/yarn-plugin',
     ]);
-    expect(runObj.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
-      expect.any(Object),
-    );
+    expect(mockRun).toHaveBeenCalledWith(['install'], expect.any(Object));
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -588,7 +620,6 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/releases/999.0.1/manifest.json',
@@ -604,7 +635,7 @@ describe('bump', () => {
       'Using default pattern glob @backstage/*',
     ]);
 
-    expect(runObj.run).toHaveBeenCalledTimes(0);
+    expect(mockRun).not.toHaveBeenCalled();
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -657,7 +688,6 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
@@ -712,7 +742,7 @@ describe('bump', () => {
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/core in a to ^1.0.6',
       'Your project is now at version 1.0.0, which has been written to backstage.json',
-      'Running yarn install to install new versions',
+      'Running mock install to install new versions',
       'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 5.0.0',
@@ -732,6 +762,39 @@ describe('bump', () => {
 "@backstage-extra/custom-two@^1.0.0":
   version "1.0.0"
 `;
+
+    const CUSTOM_LOCKFILE_PACKAGES: Map<string, LockfileEntry[]> = new Map([
+      ...LOCKFILE_PACKAGES,
+      [
+        '@backstage-extra/custom',
+        [
+          {
+            range: '^1.1.0',
+            version: '1.1.0',
+          },
+          {
+            range: '^1.0.1',
+            version: '1.0.1',
+          },
+        ],
+      ],
+      [
+        '@backstage-extra/custom-two',
+        [
+          {
+            range: '^1.0.0',
+            version: '1.0.0',
+          },
+        ],
+      ],
+    ]);
+
+    mockLoadLockfile.mockImplementation(async () => {
+      return {
+        get: (name: string) => CUSTOM_LOCKFILE_PACKAGES.get(name),
+      };
+    });
+
     mockDir.setContent({
       'yarn.lock': customLockfileMock,
       'package.json': JSON.stringify({
@@ -764,7 +827,6 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
@@ -798,7 +860,7 @@ describe('bump', () => {
       'bumping @backstage-extra/custom-two in b to ^2.0.0',
       'bumping @backstage/theme in b to ^2.0.0',
       'Skipping backstage.json update as custom pattern is used',
-      'Running yarn install to install new versions',
+      'Running mock install to install new versions',
       'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage-extra/custom-two : 1.0.0 ~> 2.0.0',
@@ -811,12 +873,8 @@ describe('bump', () => {
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/theme');
 
-    expect(runObj.run).toHaveBeenCalledTimes(1);
-    expect(runObj.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
-      expect.any(Object),
-    );
+    expect(mockRun).toHaveBeenCalledTimes(1);
+    expect(mockRun).toHaveBeenCalledWith(['install'], expect.any(Object));
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -873,7 +931,7 @@ describe('bump', () => {
     });
 
     mockFetchPackageInfo.mockRejectedValue(new NotFoundError('Nope'));
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
@@ -898,7 +956,7 @@ describe('bump', () => {
       'All Backstage packages are up to date!',
     ]);
 
-    expect(runObj.run).toHaveBeenCalledTimes(0);
+    expect(mockRun).not.toHaveBeenCalled();
 
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
@@ -965,7 +1023,7 @@ describe('bumpBackstageJsonVersion', () => {
 });
 
 describe('createVersionFinder', () => {
-  async function findVersion(tag: string, data: Partial<YarnInfoInspectData>) {
+  async function findVersion(tag: string, data: Partial<PackageInfo>) {
     const fetcher = () =>
       Promise.resolve({
         name: '@backstage/core',

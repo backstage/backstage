@@ -24,8 +24,7 @@ import startCase from 'lodash/startCase';
 import upperCase from 'lodash/upperCase';
 import upperFirst from 'lodash/upperFirst';
 import lowerFirst from 'lodash/lowerFirst';
-import { Lockfile } from '../../../../lib/versioning';
-import { paths } from '../../../../lib/paths';
+import { detectPackageManager } from '@backstage/cli-node';
 import { createPackageVersionProvider } from '../../../../lib/version';
 
 const builtInHelpers = {
@@ -46,12 +45,8 @@ type CreatePortableTemplaterOptions = {
 
 export class PortableTemplater {
   static async create(options: CreatePortableTemplaterOptions = {}) {
-    let lockfile: Lockfile | undefined;
-    try {
-      lockfile = await Lockfile.load(paths.resolveTargetRoot('yarn.lock'));
-    } catch {
-      /* ignored */
-    }
+    const pacman = await detectPackageManager();
+    const lockfile = await pacman.loadLockfile();
 
     const versionProvider = createPackageVersionProvider(lockfile);
 

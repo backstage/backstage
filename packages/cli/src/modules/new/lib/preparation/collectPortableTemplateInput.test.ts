@@ -18,32 +18,36 @@ import inquirer from 'inquirer';
 import { PortableTemplateConfig } from '../types';
 import { collectPortableTemplateInput } from './collectPortableTemplateInput';
 import { withLogCollector } from '@backstage/test-utils';
+import { detectPackageManager } from '@backstage/cli-node';
+
+const getBaseOptions = async () => ({
+  config: {
+    isUsingDefaultTemplates: false,
+    templatePointers: [],
+    version: '0.1.0',
+    license: 'Apache-2.0',
+    private: true,
+    packageNamePrefix: '@internal/',
+    packageNamePluginInfix: 'plugin-',
+    pacman: await detectPackageManager(),
+  } satisfies PortableTemplateConfig,
+  template: {
+    name: 'test',
+    role: 'frontend-plugin' as const,
+    files: [],
+    values: {},
+  },
+  prefilledParams: {},
+});
 
 describe('collectTemplateParams', () => {
-  const baseOptions = {
-    config: {
-      isUsingDefaultTemplates: false,
-      templatePointers: [],
-      version: '0.1.0',
-      license: 'Apache-2.0',
-      private: true,
-      packageNamePrefix: '@internal/',
-      packageNamePluginInfix: 'plugin-',
-    } satisfies PortableTemplateConfig,
-    template: {
-      name: 'test',
-      role: 'frontend-plugin' as const,
-      files: [],
-      values: {},
-    },
-    prefilledParams: {},
-  };
-
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   it('should prompt for missing parameters', async () => {
+    const baseOptions = await getBaseOptions();
+
     jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({ pluginId: 'other' });
 
     await expect(
@@ -66,6 +70,8 @@ describe('collectTemplateParams', () => {
   });
 
   it('should pick up prefilled parameters', async () => {
+    const baseOptions = await getBaseOptions();
+
     await expect(
       collectPortableTemplateInput({
         ...baseOptions,
@@ -89,6 +95,8 @@ describe('collectTemplateParams', () => {
   });
 
   it('should pick up template values', async () => {
+    const baseOptions = await getBaseOptions();
+
     await expect(
       collectPortableTemplateInput({
         ...baseOptions,
@@ -115,6 +123,7 @@ describe('collectTemplateParams', () => {
   });
 
   it('should map deprecated id param to pluginId', async () => {
+    const baseOptions = await getBaseOptions();
     const logs = await withLogCollector(async () => {
       await expect(
         collectPortableTemplateInput({

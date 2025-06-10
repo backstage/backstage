@@ -19,7 +19,7 @@ import { getPackages, Package } from '@manypkg/get-packages';
 import { paths } from '../util';
 import { PackageRole } from '../roles';
 import { GitUtils } from '../git';
-import { Lockfile } from './Lockfile';
+import { detectPackageManager, Lockfile } from '../pacman';
 import { JsonValue } from '@backstage/types';
 
 /**
@@ -362,16 +362,19 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
       }
     }
 
-    if (changedFiles.includes('yarn.lock') && options.analyzeLockfile) {
+    const pacman = await detectPackageManager();
+
+    if (
+      options.analyzeLockfile &&
+      changedFiles.includes(pacman.lockfileName())
+    ) {
       // Load the lockfile in the working tree and the one at the ref and diff them
       let thisLockfile: Lockfile;
       let otherLockfile: Lockfile;
       try {
-        thisLockfile = await Lockfile.load(
-          paths.resolveTargetRoot('yarn.lock'),
-        );
-        otherLockfile = Lockfile.parse(
-          await GitUtils.readFileAtRef('yarn.lock', options.ref),
+        thisLockfile = await pacman.loadLockfile();
+        otherLockfile = await pacman.parseLockfile(
+          await GitUtils.readFileAtRef(pacman.lockfileName(), options.ref),
         );
       } catch (error) {
         console.warn(

@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { spawn, SpawnOptions, ChildProcess } from 'child_process';
+import { SpawnOptionsPartialEnv } from '@backstage/cli-node';
+import { spawn, ChildProcess } from 'child_process';
 
 export type LogFunc = (data: Buffer | string) => void;
-type SpawnOptionsPartialEnv = Omit<SpawnOptions, 'env'> & {
-  env?: Partial<NodeJS.ProcessEnv>;
-  // Pipe stdout to this log function
-  stdoutLogFunc?: LogFunc;
-  // Pipe stderr to this log function
-  stderrLogFunc?: LogFunc;
-};
 
 // TODO: Accept log functions to pipe logs with.
 // Runs a child command, returning the child process instance.

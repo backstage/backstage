@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { PackageManager } from '@backstage/cli-node';
 
 export type PortableTemplateConfig = {
   /**
@@ -26,6 +27,8 @@ export type PortableTemplateConfig = {
   isUsingDefaultTemplates: boolean;
 
   license: string;
+  /** The package manager currently in use */
+  pacman: PackageManager;
 
   version: string;
 

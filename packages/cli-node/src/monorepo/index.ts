@@ -23,8 +23,3 @@ export {
   type BackstagePackageJson,
   type BackstagePackageFeatureType,
 } from './PackageGraph';
-export {
-  Lockfile,
-  type LockfileDiff,
-  type LockfileDiffEntry,
-} from './Lockfile';

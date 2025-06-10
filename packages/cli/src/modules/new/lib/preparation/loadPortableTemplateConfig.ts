@@ -27,6 +27,7 @@ import { parse as parseYaml } from 'yaml';
 import { z } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 import { ForwardedError } from '@backstage/errors';
+import { detectPackageManager } from '@backstage/cli-node';
 
 const defaults = {
   license: 'Apache-2.0',
@@ -126,6 +127,7 @@ export async function loadPortableTemplateConfig(
       overrides.publishRegistry ??
       config?.globals?.publishRegistry ??
       defaults.publishRegistry,
+    pacman: await detectPackageManager(),
     packageNamePrefix:
       overrides.packageNamePrefix ??
       config?.globals?.namePrefix ??
