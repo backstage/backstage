@@ -240,12 +240,7 @@ export namespace coreServices {
   const rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
   const scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
-  const // @alpha
-    systemMetadataServiceRef: ServiceRef<
-      SystemMetadataService,
-      'root',
-      'singleton'
-    >;
+  const systemMetadata: ServiceRef<SystemMetadataService, 'root', 'singleton'>;
 }
 
 // @public
