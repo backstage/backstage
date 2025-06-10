@@ -117,15 +117,11 @@ export const useSignInProviders = (
           signOut: async () => {
             localStorage.removeItem(PROVIDER_STORAGE_KEY);
             await identityApi.signOut?.();
+            analytics.captureEvent('signOut', 'success');
           },
         }),
       );
-      const identityResponse = await identityApi.getBackstageIdentity();
-      analytics.captureEvent('signIn', 'success', {
-        attributes: {
-          userEntityRef: identityResponse.userEntityRef,
-        },
-      });
+      analytics.captureEvent('signIn', 'success');
     },
     [onSignInSuccess, analytics],
   );
