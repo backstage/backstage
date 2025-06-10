@@ -40,6 +40,7 @@
     "postinstall": "husky || true",
     "lint": "backstage-cli repo lint --since origin/master",
     "lint:all": "backstage-cli repo lint",
+    "lint:circular-deps": "madge --circular .",
     "lint:docs": "node ./scripts/check-docs-quality",
     "lint:peer-deps": "backstage-repo-tools peer-deps",
     "lint:type-deps": "backstage-repo-tools type-deps",
@@ -145,6 +146,7 @@
     "fs-extra": "^11.2.0",
     "husky": "^9.0.0",
     "lint-staged": "^15.0.0",
+    "madge": "^8.0.0",
     "minimist": "^1.2.5",
     "node-gyp": "^10.0.0",
     "prettier": "^2.2.1",
@@ -158,5 +160,22 @@
   "packageManager": "yarn@4.8.1",
   "engines": {
     "node": "20 || 22"
+  },
+  "madge": {
+    "fileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx"
+    ],
+    "detectiveOptions": {
+      "ts": {
+        "skipTypeImports": true
+      },
+      "tsx": {
+        "skipTypeImports": true
+      }
+    },
+    "tsConfig": "./tsconfig.json"
   }
 }
