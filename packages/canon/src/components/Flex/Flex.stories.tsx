@@ -16,6 +16,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { Flex } from './Flex';
+import { Text } from '../Text';
 
 const meta = {
   title: 'Layout/Flex',
@@ -140,6 +141,27 @@ export const LargeGap: Story = {
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />
+    </Flex>
+  ),
+};
+
+export const WithTextTruncate: Story = {
+  render: () => (
+    <Flex direction="row" gap="8">
+      <Flex>
+        <Text truncate>
+          A man looks at a painting in a museum and says, “Brothers and sisters
+          I have none, but that man&apos;s father is my father&apos;s son.” Who
+          is in the painting?
+        </Text>
+      </Flex>
+      <Flex>
+        <Text truncate>
+          A man looks at a painting in a museum and says, “Brothers and sisters
+          I have none, but that man&apos;s father is my father&apos;s son.” Who
+          is in the painting?
+        </Text>
+      </Flex>
     </Flex>
   ),
 };

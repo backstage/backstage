@@ -131,6 +131,18 @@ export const Disabled: Story = {
   ),
 };
 
+export const AsLink: Story = {
+  args: {
+    children: 'I am a link',
+  },
+  render: args => (
+    <Button
+      {...args}
+      render={<a href="https://canon.backstage.io" target="_blank" />}
+    />
+  ),
+};
+
 export const Responsive: Story = {
   args: {
     children: 'Button',

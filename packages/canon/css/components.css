@@ -186,6 +186,7 @@
 }
 
 .canon-Flex {
+  min-width: 0;
   display: flex;
 }
 
@@ -515,7 +516,7 @@
 }
 
 .canon-Heading[data-variant="title4"] {
-  font-size: var(--canon-font-size-title4);
+  font-size: var(--canon-font-size-6);
   font-weight: var(--canon-font-weight-bold);
 }
 

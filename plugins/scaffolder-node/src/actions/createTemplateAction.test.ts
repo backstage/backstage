@@ -14,85 +14,8 @@
  * limitations under the License.
  */
 import { createTemplateAction } from './createTemplateAction';
-import { z } from 'zod';
 
 describe('createTemplateAction', () => {
-  it('should allow creating with jsonschema and use the old deprecated types', () => {
-    const action = createTemplateAction<{ repoUrl: string }, { test: string }>({
-      id: 'test',
-      schema: {
-        input: {
-          type: 'object',
-          required: ['repoUrl'],
-          properties: {
-            repoUrl: { type: 'string' },
-          },
-        },
-        output: {
-          type: 'object',
-          required: ['test'],
-          properties: {
-            test: { type: 'string' },
-          },
-        },
-      },
-      handler: async ctx => {
-        // @ts-expect-error - repoUrl is string
-        const a: number = ctx.input.repoUrl;
-
-        const b: string = ctx.input.repoUrl;
-        expect(b).toBeDefined();
-
-        const stream = ctx.logStream;
-        expect(stream).toBeDefined();
-
-        ctx.output('test', 'value');
-
-        // @ts-expect-error - not valid output type
-        ctx.output('test', 4);
-
-        // @ts-expect-error - not valid output name
-        ctx.output('test2', 'value');
-      },
-    });
-
-    expect(action).toBeDefined();
-  });
-
-  it('should allow creating with zod and use the old deprecated types', () => {
-    const action = createTemplateAction({
-      id: 'test',
-      schema: {
-        input: z.object({
-          repoUrl: z.string(),
-        }),
-        output: z.object({
-          test: z.string(),
-        }),
-      },
-      handler: async ctx => {
-        // @ts-expect-error - repoUrl is string
-        const a: number = ctx.input.repoUrl;
-
-        const b: string = ctx.input.repoUrl;
-        expect(b).toBeDefined();
-
-        const stream = ctx.logStream;
-        expect(stream).toBeDefined();
-
-        ctx.output('test', 'value');
-
-        // @ts-expect-error - not valid output type
-        ctx.output('test', 4);
-
-        // @ts-expect-error - not valid output name
-        ctx.output('test2', 'value');
-      },
-    });
-
-    expect(action).toBeDefined();
-  });
-
   it('should allow creating with new first class zod support', () => {
     const action = createTemplateAction({
       id: 'test',
@@ -107,14 +30,10 @@ describe('createTemplateAction', () => {
       handler: async ctx => {
         // @ts-expect-error - repoUrl is string
         const a: number = ctx.input.repoUrl;
-
         const b: string = ctx.input.repoUrl;
-        expect(b).toBeDefined();
 
-        // @ts-expect-error - logStream is not available
-        const stream = ctx.logStream;
-
-        expect(stream).toBeDefined();
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        [a, b];
 
         ctx.output('test', 'value');
 
@@ -123,6 +42,58 @@ describe('createTemplateAction', () => {
 
         // @ts-expect-error - not valid output name
         ctx.output('test2', 'value');
+      },
+    });
+
+    expect(action).toBeDefined();
+  });
+
+  it('should allow creating with a function for input and output schema for more complex types', () => {
+    const action = createTemplateAction({
+      id: 'test',
+      schema: {
+        input: z =>
+          z.union([
+            z.object({
+              repoUrl: z.string(),
+            }),
+            z.object({
+              numberThing: z.number(),
+            }),
+          ]),
+        output: z =>
+          z.object({
+            test: z.string(),
+          }),
+      },
+      handler: async ctx => {
+        ctx.output('test', 'value');
+
+        // @ts-expect-error - not valid output type
+        ctx.output('test', 4);
+
+        // @ts-expect-error - not valid output name
+        ctx.output('test2', 'value');
+
+        if ('repoUrl' in ctx.input) {
+          // @ts-expect-error - not valid input type
+          const a: number = ctx.input.repoUrl;
+
+          const b: string = ctx.input.repoUrl;
+
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          [a, b];
+        }
+
+        if ('numberThing' in ctx.input) {
+          const a: number = ctx.input.numberThing;
+
+          // @ts-expect-error - not valid input type
+          const b: string = ctx.input.numberThing;
+
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          [a, b];
+        }
       },
     });
 
