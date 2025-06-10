@@ -1,5 +1,19 @@
 # @backstage/plugin-search-react
 
+## 1.9.1-next.1
+
+### Patch Changes
+
+- 869fa46: SearchBar clear button support i18n
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.18
+
 ## 1.9.1-next.0
 
 ### Patch Changes

@@ -1,5 +1,33 @@
 # @backstage/plugin-scaffolder
 
+## 1.32.0-next.2
+
+### Minor Changes
+
+- 3c59ece: **New Frontend System Only:**
+  The `Scaffolder` plugin is now responsible for providing an entity icon link extension to launch templates from the catalog entity page.
+
+### Patch Changes
+
+- b00c160: Remove React import form notification and scaffolder plugin
+- 95a1d72: Added appropriate message when global templating function metadata is absent.
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/integration-react@1.2.7
+  - @backstage/plugin-scaffolder-react@1.16.1-next.2
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/plugin-scaffolder-common@1.5.11
+
 ## 1.31.1-next.1
 
 ### Patch Changes
