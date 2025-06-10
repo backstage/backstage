@@ -24,6 +24,8 @@ const id = 'catalog:write';
 
 /**
  * Writes a catalog descriptor file containing the provided entity to a path in the workspace.
+ * TODO: Move this to the `scaffolder-backend-module-catalog` package and deprecate this.
+ *
  * @public
  */
 

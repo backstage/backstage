@@ -25,6 +25,7 @@ const id = 'catalog:fetch';
  * Returns entity or entities from the catalog by entity reference(s).
  *
  * @public
+ * @deprecated Use `catalog:entities:by-refs` and `catalog:entity:by-ref` from `scaffolder-backend-module-catalog` instead.
  */
 export function createFetchCatalogEntityAction(options: {
   catalog: CatalogService;

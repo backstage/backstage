@@ -54,6 +54,7 @@
     "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/plugin-proxy-backend": "workspace:^",
     "@backstage/plugin-scaffolder-backend": "workspace:^",
+    "@backstage/plugin-scaffolder-backend-module-catalog": "workspace:^",
     "@backstage/plugin-scaffolder-backend-module-github": "workspace:^",
     "@backstage/plugin-scaffolder-backend-module-notifications": "workspace:^",
     "@backstage/plugin-search-backend": "workspace:^",

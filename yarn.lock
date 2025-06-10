@@ -7501,6 +7501,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-scaffolder-backend-module-catalog@workspace:^, @backstage/plugin-scaffolder-backend-module-catalog@workspace:plugins/scaffolder-backend-module-catalog":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-catalog@workspace:plugins/scaffolder-backend-module-catalog"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown@workspace:plugins/scaffolder-backend-module-confluence-to-markdown":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown@workspace:plugins/scaffolder-backend-module-confluence-to-markdown"
@@ -29703,6 +29716,7 @@ __metadata:
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/plugin-proxy-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-catalog": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-github": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-notifications": "workspace:^"
     "@backstage/plugin-search-backend": "workspace:^"

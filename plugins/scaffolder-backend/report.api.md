@@ -104,7 +104,7 @@ export function createDebugLogAction(): TemplateAction<
   'v2'
 >;
 
-// @public
+// @public @deprecated
 export function createFetchCatalogEntityAction(options: {
   catalog: CatalogService;
 }): TemplateAction<
