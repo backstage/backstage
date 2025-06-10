@@ -1,5 +1,13 @@
 # @backstage/canon
 
+## 0.5.0-next.2
+
+### Patch Changes
+
+- 44df879: Add min-width: 0; by default on every Flex components in Canon to help support truncated texts inside flex elements.
+- ee6ffe6: Fix styling for the title4 prop on the Heading component in Canon.
+- f2f814a: Added a render prop to the Button component in Canon to use it as a link.
+
 ## 0.5.0-next.1
 
 ### Minor Changes

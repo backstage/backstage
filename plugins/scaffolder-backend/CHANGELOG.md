@@ -1,5 +1,88 @@
 # @backstage/plugin-scaffolder-backend
 
+## 2.0.0-next.2
+
+### Major Changes
+
+- 5863b04: **BREAKING CHANGES**
+
+  - The `createBuiltinActions` method has been removed, as this should no longer be needed with the new backend system route, and was only useful when passing the default list of actions again in the old backend system. You should be able to rely on the default behaviour of the new backend system which is to merge the actions.
+
+  - The `createCatalogRegisterAction` and `createFetchCatalogEntityAction` actions no longer require an `AuthService`, and now accepts a `CatalogService` instead of `CatalogClient`.
+
+  Unless you're providing your own override action to the default, this should be a non-breaking change.
+
+  You can migrate using the following if you're getting typescript errors:
+
+  ```ts
+  import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+
+  export const myModule = createBackendModule({
+    pluginId: 'scaffolder',
+    moduleId: 'test',
+    register({ registerInit }) {
+      registerInit({
+        deps: {
+          scaffolder: scaffolderActionsExtensionPoint,
+          catalog: catalogServiceRef,
+        },
+        async init({ scaffolder, catalog }) {
+          scaffolder.addActions(
+            createCatalogRegisterAction({
+              catalog,
+            }),
+            createFetchCatalogEntityAction({
+              catalog,
+              integrations,
+            }),
+          );
+        },
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- 89a941d: Migrating to latest action format
+- 023629e: Enable usage of secrets within 'each' step of software templates. For example, you can now structure your `each` step like this:
+
+  ```
+  each:
+    [
+      { name: "Service1", token: "${{ secrets.token1 }}" },
+      { name: "Service2", token: "${{ secrets.token2 }}" },
+    ]
+  ```
+
+- e92e481: Add tests for Scaffolder
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.9.2-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.0-next.2
+  - @backstage/backend-defaults@0.11.0-next.2
+  - @backstage/plugin-scaffolder-node@0.9.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.9-next.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.10-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.2.10-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.10-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.10-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.10-next.2
+  - @backstage/plugin-scaffolder-common@1.5.11
+
 ## 2.0.0-next.1
 
 ### Major Changes

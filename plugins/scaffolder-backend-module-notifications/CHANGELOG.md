@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend-module-notifications
 
+## 0.1.11-next.2
+
+### Patch Changes
+
+- 3f56115: Removed `octokit` dependency as it was not being used
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/plugin-notifications-common@0.0.9-next.0
+  - @backstage/plugin-notifications-node@0.2.16-next.1
+
 ## 0.1.11-next.1
 
 ### Patch Changes

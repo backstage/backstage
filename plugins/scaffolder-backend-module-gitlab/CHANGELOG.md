@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.9.2-next.2
+
+### Patch Changes
+
+- a296637: Migrate to new action format
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+
 ## 0.9.2-next.1
 
 ### Patch Changes
