@@ -41,6 +41,7 @@ import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
+import { SystemMetadataService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 
@@ -395,6 +396,17 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<SchedulerService> | undefined,
       ) => ServiceMock<SchedulerService>;
+  }
+  // (undocumented)
+  export namespace systemMetadata {
+    const factory: () => ServiceFactory<
+      SystemMetadataService,
+      'root',
+      'singleton'
+    >;
+    const mock: (
+      partialImpl?: Partial<SystemMetadataService> | undefined,
+    ) => ServiceMock<SystemMetadataService>;
   }
   // (undocumented)
   export namespace urlReader {

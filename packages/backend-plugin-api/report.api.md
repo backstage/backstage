@@ -251,6 +251,7 @@ export namespace coreServices {
       'root',
       'singleton'
     >;
+  const systemMetadata: ServiceRef<SystemMetadataService, 'root', 'singleton'>;
 }
 
 // @public
