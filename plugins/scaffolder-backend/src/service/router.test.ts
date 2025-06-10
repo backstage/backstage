@@ -48,6 +48,8 @@ import {
 } from '@backstage/backend-test-utils';
 import {
   AutocompleteHandler,
+  CreatedTemplateFilter,
+  CreatedTemplateGlobal,
   createTemplateFilter,
   createTemplateGlobalFunction,
   createTemplateGlobalValue,
@@ -164,8 +166,12 @@ const mockUser: UserEntity = {
 
 const createTestRouter = async (
   overrides: {
-    additionalTemplateFilters?: Record<string, TemplateFilter> | any[];
-    additionalTemplateGlobals?: Record<string, TemplateGlobal> | any[];
+    additionalTemplateFilters?:
+      | Record<string, TemplateFilter>
+      | CreatedTemplateFilter<any, any>[];
+    additionalTemplateGlobals?:
+      | Record<string, TemplateGlobal>
+      | CreatedTemplateGlobal[];
     autocompleteHandlers?: Record<string, AutocompleteHandler>;
   } = {},
 ) => {
