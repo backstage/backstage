@@ -4078,7 +4078,6 @@ __metadata:
       optional: true
   bin:
     backstage-cli: bin/backstage-cli
-    backstage-cli-alpha: bin/backstage-cli-alpha
   languageName: unknown
   linkType: soft
 
