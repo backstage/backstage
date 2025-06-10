@@ -171,139 +171,6 @@ components:
         - log
         - directoryContents
         - output
-    # EntityLink:
-    #   type: object
-    #   properties:
-    #     type:
-    #       type: string
-    #       description: An optional value to categorize links into specific groups
-    #     icon:
-    #       type: string
-    #       description: An optional semantic key that represents a visual icon.
-    #     title:
-    #       type: string
-    #       description: An optional descriptive title for the link.
-    #     url:
-    #       type: string
-    #       description: The url to the external site, document, etc.
-    #   required:
-    #     - url
-    #   description: A link to external information that is related to the entity.
-    #   additionalProperties: false
-    # EntityMeta:
-    #   type: object
-    #   properties:
-    #     links:
-    #       type: array
-    #       items:
-    #         $ref: '#/components/schemas/EntityLink'
-    #       description: A list of external hyperlinks related to the entity.
-    #     tags:
-    #       type: array
-    #       items:
-    #         type: string
-    #       description: |-
-    #         A list of single-valued strings, to for example classify catalog entities in
-    #         various ways.
-    #     annotations:
-    #       $ref: '#/components/schemas/MapStringString'
-    #     labels:
-    #       $ref: '#/components/schemas/MapStringString'
-    #     description:
-    #       type: string
-    #       description: |-
-    #         A short (typically relatively few words, on one line) description of the
-    #         entity.
-    #     title:
-    #       type: string
-    #       description: |-
-    #         A display name of the entity, to be presented in user interfaces instead
-    #         of the `name` property above, when available.
-    #         This field is sometimes useful when the `name` is cumbersome or ends up
-    #         being perceived as overly technical. The title generally does not have
-    #         as stringent format requirements on it, so it may contain special
-    #         characters and be more explanatory. Do keep it very short though, and
-    #         avoid situations where a title can be confused with the name of another
-    #         entity, or where two entities share a title.
-    #         Note that this is only for display purposes, and may be ignored by some
-    #         parts of the code. Entity references still always make use of the `name`
-    #         property, not the title.
-    #     namespace:
-    #       type: string
-    #       description: The namespace that the entity belongs to.
-    #     name:
-    #       type: string
-    #       description: |-
-    #         The name of the entity.
-    #         Must be unique within the catalog at any given point in time, for any
-    #         given namespace + kind pair. This value is part of the technical
-    #         identifier of the entity, and as such it will appear in URLs, database
-    #         tables, entity references, and similar. It is subject to restrictions
-    #         regarding what characters are allowed.
-    #         If you want to use a different, more human readable string with fewer
-    #         restrictions on it in user interfaces, see the `title` field below.
-    #     etag:
-    #       type: string
-    #       description: |-
-    #         An opaque string that changes for each update operation to any part of
-    #         the entity, including metadata.
-    #         This field can not be set by the user at creation time, and the server
-    #         will reject an attempt to do so. The field will be populated in read
-    #         operations. The field can (optionally) be specified when performing
-    #         update or delete operations, and the server will then reject the
-    #         operation if it does not match the current stored value.
-    #     uid:
-    #       type: string
-    #       description: |-
-    #         A globally unique ID for the entity.
-    #         This field can not be set by the user at creation time, and the server
-    #         will reject an attempt to do so. The field will be populated in read
-    #         operations. The field can (optionally) be specified when performing
-    #         update or delete operations, but the server is free to reject requests
-    #         that do so in such a way that it breaks semantics.
-    #   required:
-    #     - name
-    #   description: Metadata fields common to all versions/kinds of entity.
-    #   additionalProperties: {}
-    # EntityRelation:
-    #   type: object
-    #   properties:
-    #     targetRef:
-    #       type: string
-    #       description: The entity ref of the target of this relation.
-    #     type:
-    #       type: string
-    #       description: The type of the relation.
-    #   required:
-    #     - targetRef
-    #     - type
-    #   description: A relation of a specific type to another entity in the catalog.
-    #   additionalProperties: false
-    # Entity:
-    #   type: object
-    #   properties:
-    #     relations:
-    #       type: array
-    #       items:
-    #         $ref: '#/components/schemas/EntityRelation'
-    #       description: The relations that this entity has with other entities.
-    #     spec:
-    #       $ref: '#/components/schemas/JsonObject'
-    #     metadata:
-    #       $ref: '#/components/schemas/EntityMeta'
-    #     kind:
-    #       type: string
-    #       description: The high level entity type being described.
-    #     apiVersion:
-    #       type: string
-    #       description: |-
-    #         The version of specification format for this particular entity that
-    #         this is written against.
-    #   required:
-    #     - metadata
-    #     - kind
-    #     - apiVersion
-    #   description: The parts of the format that's common to all versions/kinds of entity.
     Error:
       type: object
       properties:
@@ -408,12 +275,6 @@ components:
         - filters
         - globals
       description: The response shape for the `listTemplatingExtensions` call to the `scaffolder-backend`
-    # MapStringString:
-    #   type: object
-    #   properties: {}
-    #   additionalProperties:
-    #     type: string
-    #   description: Construct a type with a set of properties K of type T
     ScaffolderScaffoldOptions:
       type: object
       properties:
@@ -442,125 +303,6 @@ components:
       required:
         - example
       description: A single scaffolder usage example
-    # Schema:
-    #   type: object
-    #   properties:
-    #     $id:
-    #       type: string
-    #     id:
-    #       type: string
-    #     $schema:
-    #       type: string
-    #     $ref:
-    #       type: string
-    #     title:
-    #       type: string
-    #     description:
-    #       type: string
-    #     multipleOf:
-    #       type: number
-    #     maximum:
-    #       type: number
-    #     exclusiveMaximum:
-    #       oneOf:
-    #         - type: number
-    #         - type: boolean
-    #     minimum:
-    #       type: number
-    #     exclusiveMinimum:
-    #       oneOf:
-    #         - type: number
-    #         - type: boolean
-    #     maxLength:
-    #       type: integer
-    #     minLength:
-    #       type: integer
-    #     pattern:
-    #       type: object
-    #     additionalItems:
-    #       oneOf:
-    #         - type: boolean
-    #         - $ref: '#/components/schemas/Schema'
-    #     items:
-    #       oneOf:
-    #         - $ref: '#/components/schemas/Schema'
-    #         - type: array
-    #           items:
-    #             $ref: '#/components/schemas/Schema'
-    #     maxItems:
-    #       type: integer
-    #     minItems:
-    #       type: integer
-    #     uniqueItems:
-    #       type: boolean
-    #     maxProperties:
-    #       type: integer
-    #     minProperties:
-    #       type: integer
-    #     required:
-    #       oneOf:
-    #         - type: array
-    #           items:
-    #             type: string
-    #         - type: boolean
-    #     additionalProperties:
-    #       oneOf:
-    #         - type: boolean
-    #         - $ref: '#/components/schemas/Schema'
-    #     definitions:
-    #       type: object
-    #       additionalProperties:
-    #         $ref: '#/components/schemas/Schema'
-    #     properties:
-    #       type: object
-    #       additionalProperties:
-    #         $ref: '#/components/schemas/Schema'
-    #     patternProperties:
-    #       type: object
-    #       additionalProperties:
-    #         $ref: '#/components/schemas/Schema'
-    #     dependencies:
-    #       type: object
-    #       additionalProperties:
-    #         oneOf:
-    #           - $ref: '#/components/schemas/Schema'
-    #           - type: array
-    #             items:
-    #               type: string
-    #     const:
-    #       type: object
-    #     enum:
-    #       type: array
-    #       items:
-    #         type: object
-    #     type:
-    #       oneOf:
-    #         - type: string
-    #         - type: array
-    #           items:
-    #             type: string
-    #     format:
-    #       type: string
-    #     allOf:
-    #       type: array
-    #       items:
-    #         $ref: '#/components/schemas/Schema'
-    #     anyOf:
-    #       type: array
-    #       items:
-    #         $ref: '#/components/schemas/Schema'
-    #     oneOf:
-    #       type: array
-    #       items:
-    #         $ref: '#/components/schemas/Schema'
-    #     not:
-    #       $ref: '#/components/schemas/Schema'
-    #     if:
-    #       $ref: '#/components/schemas/Schema'
-    #     then:
-    #       $ref: '#/components/schemas/Schema'
-    #     else:
-    #       $ref: '#/components/schemas/Schema'
     SerializedFile:
       type: object
       properties:
@@ -568,7 +310,6 @@ components:
           type: string
         content:
           type: string
-          # format: byte
         executable:
           type: boolean
         symlink:
@@ -616,7 +357,6 @@ components:
           type: string
         spec:
           type: object
-          # $ref: '#/components/schemas/TaskSpec'
         status:
           $ref: '#/components/schemas/TaskStatus'
         createdAt:
@@ -635,7 +375,6 @@ components:
         - status
         - createdAt
       description: SerializedTask
-      # additionalProperties: {}
     TaskEventType:
       type: string
       description: TaskEventType
@@ -644,24 +383,6 @@ components:
         - completion
         - log
         - recovered
-    # TaskRecovery:
-    #   type: object
-    #   # properties:
-    #   #   EXPERIMENTAL_strategy:
-    #   #     $ref: '#/components/schemas/TaskRecoverStrategy'
-    #   description: |-
-    #     When task didn't have a chance to complete due to system restart you can define the strategy what to do with such tasks,
-    #     by defining a strategy.
-
-    #     By default, it is none, what means to not recover but updating the status from 'processing' to 'failed'.
-    # TaskRecoverStrategy:
-    #   type: string
-    #   description: |
-    #     - none: not recover, let the task be marked as failed
-    #     - startOver: do recover, start the execution of the task from the first step.
-    #   enum:
-    #     - none
-    #     - startOver
     TaskSecrets:
       allOf:
         - type: object
@@ -672,59 +393,6 @@ components:
             backstageToken:
               type: string
       description: TaskSecrets
-    # TaskSpec:
-    #   $ref: '#/components/schemas/TaskSpecV1beta3'
-    # TaskSpecV1beta3:
-    #   type: object
-    #   properties:
-    #     apiVersion:
-    #       type: string
-    #       enum:
-    #         - scaffolder.backstage.io/v1beta3
-    #       description: The apiVersion string of the TaskSpec.
-    #     parameters:
-    #       $ref: '#/components/schemas/JsonObject'
-    #       description: |
-    #         This is a JSONSchema which is used to render a form in the frontend
-    #         to collect user input and validate it against that schema. This can then be used in the `steps` part below to template
-    #         variables passed from the user into each action in the template.
-    #     steps:
-    #       type: array
-    #       items:
-    #         $ref: '#/components/schemas/TaskStep'
-    #       description: |
-    #         A list of steps to be executed in sequence which are defined by the template. These steps are a list of the underlying
-    #         javascript action and some optional input parameters that may or may not have been collected from the end user.
-    #     output:
-    #       type: object
-    #       additionalProperties:
-    #         $ref: '#/components/schemas/JsonValue'
-    #       description: |
-    #         The output is an object where template authors can pull out information from template actions and return them in a known standard way.
-    #     templateInfo:
-    #       $ref: '#/components/schemas/TemplateInfo'
-    #       description: Some information about the template that is stored on the task spec.
-    #     user:
-    #       type: object
-    #       properties:
-    #         entity:
-    #           type: object
-    #           description: The decorated entity from the Catalog
-    #         ref:
-    #           type: string
-    #           description: An entity ref for the author of the task
-    #       description: Some decoration of the author of the task that should be available in the context
-    #     EXPERIMENTAL_recovery:
-    #       $ref: '#/components/schemas/TaskRecovery'
-    #       description: How to recover the task after system restart or system crash.
-    #   required:
-    #     - apiVersion
-    #     - parameters
-    #     - steps
-    #     - output
-    #   description: |-
-    #     A scaffolder task as stored in the database, generated from a v1beta3
-    #     apiVersion Template.
     TaskStatus:
       type: string
       enum:
@@ -735,134 +403,6 @@ components:
         - processing
         - skipped
       description: The status of each step of the Task
-    # TaskStep:
-    #   type: object
-    #   properties:
-    #     id:
-    #       type: string
-    #       description: A unique identifier for this step.
-    #     name:
-    #       type: string
-    #       description: A display name to show the user.
-    #     action:
-    #       type: string
-    #       description: The underlying action ID that will be called as part of running this step.
-    #     input:
-    #       $ref: '#/components/schemas/JsonObject'
-    #       description: Additional data that will be passed to the action.
-    #     # if:
-    #     #   oneOf:
-    #     #     - type: string
-    #     #     - type: boolean
-    #     #   description: When this is false, or if the templated value string evaluates to something that is falsy the step will be skipped.
-    #     each:
-    #       oneOf:
-    #         - type: string
-    #         - $ref: '#/components/schemas/JsonArray'
-    #       description: Run step repeatedly.
-    #   required:
-    #     - id
-    #     - name
-    #     - action
-    #   description: An individual step of a scaffolder task, as stored in the database.
-    #   additionalProperties: {}
-    # TemplateEntityStepV1beta3:
-    #   allOf:
-    #     - $ref: '#/components/schemas/JsonObject'
-    #     - type: object
-    #       properties:
-    #         id:
-    #           type: string
-    #         name:
-    #           type: string
-    #         action:
-    #           type: string
-    #         input:
-    #           $ref: '#/components/schemas/JsonObject'
-    #         if:
-    #           oneOf:
-    #             - type: string
-    #             - type: boolean
-    #         backstage:permissions:
-    #           $ref: '#/components/schemas/TemplatePermissionsV1beta3'
-    #       required:
-    #         - action
-    #   description: Step that is part of a Template Entity.
-    #   additionalProperties: {}
-    # TemplateEntityV1beta3:
-    #   allOf:
-    #     - $ref: '#/components/schemas/Entity'
-    #     - type: object
-    #       properties:
-    #         apiVersion:
-    #           type: string
-    #           enum:
-    #             - scaffolder.backstage.io/v1beta3
-    #           description: The apiVersion string of the TaskSpec.
-    #         kind:
-    #           type: string
-    #           enum:
-    #             - Template
-    #           description: The kind of the entity
-    #         spec:
-    #           type: object
-    #           properties:
-    #             type:
-    #               type: string
-    #               description: The type that the Template will create. For example service, website or library.
-    #             presentation:
-    #               $ref: '#/components/schemas/TemplatePresentationV1beta3'
-    #               description: Template specific configuration of the presentation layer.
-    #             EXPERIMENTAL_recovery:
-    #               $ref: '#/components/schemas/TemplateRecoveryV1beta3'
-    #               description: Recovery strategy for the template
-    #             EXPERIMENTAL_formDecorators:
-    #               type: array
-    #               items:
-    #                 type: object
-    #                 properties:
-    #                   id:
-    #                     type: string
-    #                   input:
-    #                     $ref: '#/components/schemas/JsonObject'
-    #                 required:
-    #                   - id
-    #             parameters:
-    #               oneOf:
-    #                 - $ref: '#/components/schemas/TemplateParametersV1beta3'
-    #                 - type: array
-    #                   items:
-    #                     $ref: '#/components/schemas/TemplateParametersV1beta3'
-    #               description: |-
-    #                 This is a JSONSchema or an array of JSONSchema's which is used to render a form in the frontend
-    #                 to collect user input and validate it against that schema. This can then be used in the `steps` part below to template
-    #                 variables passed from the user into each action in the template.
-    #             steps:
-    #               type: array
-    #               items:
-    #                 $ref: '#/components/schemas/TemplateEntityStepV1beta3'
-    #               description: |-
-    #                 A list of steps to be executed in sequence which are defined by the template. These steps are a list of the underlying
-    #                 javascript action and some optional input parameters that may or may not have been collected from the end user.
-    #             output:
-    #               type: object
-    #               additionalProperties:
-    #                 type: string
-    #               description: The output is an object where template authors can pull out information from template actions and return them in a known standard way.
-    #             owner:
-    #               type: string
-    #               description: The owner entityRef of the TemplateEntity
-    #           required:
-    #             - type
-    #             - steps
-    #           description: The specification of the Template Entity
-    #       required:
-    #         - apiVersion
-    #         - kind
-    #         - spec
-    #   description: |-
-    #     Backstage catalog Template kind Entity. Templates are used by the Scaffolder
-    #     plugin to create new entities, such as Components.
     TemplateGlobalFunction:
       type: object
       properties:
@@ -890,7 +430,6 @@ components:
         value:
           type: object
           nullable: true
-          # $ref: '#/components/schemas/JsonValue'
       required:
         - value
       description: The response shape for a single global value in the `listTemplatingExtensions` call to the `scaffolder-backend`
@@ -915,40 +454,13 @@ components:
           items:
             $ref: '#/components/schemas/ScaffolderUsageExample'
       description: The response shape for a single filter in the `listTemplatingExtensions` call to the `scaffolder-backend`
-    # TemplateInfo:
-    #   type: object
-    #   properties:
-    #     entityRef:
-    #       type: string
-    #       description: The entityRef of the template.
-    #     baseUrl:
-    #       type: string
-    #       description: Where the template is stored, so we can resolve relative paths for things like `fetch:template` paths.
-    #     entity:
-    #       type: object
-    #       properties:
-    #         metadata:
-    #           $ref: '#/components/schemas/EntityMeta'
-    #           description: The metadata of the Template.
-    #       required:
-    #         - metadata
-    #       description: The Template entity.
-    #   required:
-    #     - entityRef
-    #   description: |-
-    #     Information about a template that is stored on a task specification.
-    #     Includes a stringified entityRef, and the baseUrl which is usually the relative path of the template definition
     TemplateParameterSchema:
       type: object
       properties:
         title:
           type: string
-        # presentation:
-        #   $ref: '#/components/schemas/TemplatePresentationV1beta3'
         description:
           type: string
-        # 'ui:options':
-        #   $ref: '#/components/schemas/JsonValue'
         steps:
           type: array
           items:
@@ -956,27 +468,13 @@ components:
             properties:
               title:
                 type: string
-                # $ref: '#/components/schemas/JsonValue'
               description:
                 type: string
-                # $ref: '#/components/schemas/JsonValue'
               schema:
                 type: object
-                # additionalProperties: {}
             required:
               - title
               - schema
-        # EXPERIMENTAL_formDecorators:
-        #   type: array
-        #   items:
-        #     type: object
-        #     properties:
-        #       id:
-        #         type: string
-        #       input:
-        #         $ref: '#/components/schemas/JsonObject'
-        #     required:
-        #       - id
       required:
         - title
         - steps
@@ -984,59 +482,6 @@ components:
         The shape of each entry of parameters which gets rendered
         as a separate step in the wizard input
       additionalProperties: {}
-    # TemplateParametersV1beta3:
-    #   allOf:
-    #     - $ref: '#/components/schemas/JsonObject'
-    #     - type: object
-    #       properties:
-    #         backstage:permissions:
-    #           $ref: '#/components/schemas/TemplatePermissionsV1beta3'
-    #   additionalProperties: {}
-    #   description: Parameter that is part of a Template Entity.
-    # TemplatePermissionsV1beta3:
-    #   allOf:
-    #     - $ref: '#/components/schemas/JsonObject'
-    #     - type: object
-    #       properties:
-    #         tags:
-    #           type: array
-    #           items:
-    #             type: string
-    #   description: Access control properties for parts of a template.
-    # TemplatePresentationV1beta3:
-    #   allOf:
-    #     - $ref: '#/components/schemas/JsonObject'
-    #     - type: object
-    #       properties:
-    #         buttonLabels:
-    #           type: object
-    #           properties:
-    #             backButtonText:
-    #               type: string
-    #               description: The text for the button which leads to the previous template page
-    #             createButtonText:
-    #               type: string
-    #               description: The text for the button which starts the execution of the template
-    #             reviewButtonText:
-    #               type: string
-    #               description: The text for the button which opens template's review/summary
-    #           description: Overrides default buttons' text
-    #   description: The presentation of the template.
-    #   additionalProperties: {}
-    # TemplateRecoveryV1beta3:
-    #   allOf:
-    #     - $ref: '#/components/schemas/JsonObject'
-    #     - type: object
-    #       properties:
-    #         EXPERIMENTAL_strategy:
-    #           type: string
-    #           enum:
-    #             - none
-    #             - startOver
-    #           description: |-
-    #             none - not recover, let the task be marked as failed
-    #             startOver - do recover, start the execution of the task from the first step.
-    #   description: Depends on how you designed your task you might tailor the behaviour for each of them.
     ValidationError:
       type: object
       properties:
@@ -1050,10 +495,6 @@ components:
           type: string
         message:
           type: string
-        # schema:
-        #   oneOf:
-        #     - type: string
-        #     - $ref: '#/components/schemas/Schema'
         instance:
           type: object
         name:
@@ -1252,21 +693,6 @@ paths:
       parameters:
         - $ref: '#/components/parameters/taskId'
 
-  # /v2/tasks/{taskId}/eventstream:
-  #   get:
-  #     operationId: StreamLogsEventStream
-  #     description: Get event stream for a task by ID.
-  #     responses:
-  #       '200':
-  #         description: Ok
-  #         content:
-  #           text/event-stream:
-  #             schema:
-  #               type: string
-  #     parameters:
-  #       - $ref: '#/components/parameters/eventsAfter'
-  #       - $ref: '#/components/parameters/taskId'
-
   /v2/tasks/{taskId}/events:
     get:
       operationId: StreamLogsPolling
@@ -1297,8 +723,6 @@ paths:
               properties:
                 template:
                   type: object
-                  # check generation
-                  # additionalProperties: {}
                 values:
                   $ref: '#/components/schemas/JsonObject'
                 secrets:
