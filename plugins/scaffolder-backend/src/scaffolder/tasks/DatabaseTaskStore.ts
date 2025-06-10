@@ -35,6 +35,7 @@ import {
   SerializedTask,
   SerializedTaskEvent,
   TaskEventType,
+  TaskFilter,
   TaskSecrets,
   TaskStatus,
 } from '@backstage/plugin-scaffolder-node';
@@ -48,6 +49,14 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { flattenParams } from '../../service/helpers';
 import { EventsService } from '@backstage/plugin-events-node';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import {
+  isAndCriteria,
+  isNotCriteria,
+  isOrCriteria,
+} from '@backstage/plugin-permission-node';
+import { TaskFilters } from '@backstage/plugin-scaffolder-node';
+import { compact } from 'lodash';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -195,6 +204,48 @@ export class DatabaseTaskStore implements TaskStore {
     }
   }
 
+  private isTaskFilter(filter: any): filter is TaskFilter {
+    return filter.hasOwnProperty('key');
+  }
+
+  private parseFilter(
+    filter: PermissionCriteria<TaskFilters>,
+    query: Knex.QueryBuilder,
+    db: Knex,
+    negate: boolean = false,
+  ): Knex.QueryBuilder {
+    if (isNotCriteria(filter)) {
+      return this.parseFilter(filter.not, query, db, !negate);
+    }
+
+    if (this.isTaskFilter(filter)) {
+      const values: string[] = compact(filter.values) ?? [];
+      if (negate) {
+        query.whereNotIn(filter.key, values);
+      } else {
+        query.whereIn(filter.key, values);
+      }
+
+      return query;
+    }
+
+    return query[negate ? 'andWhereNot' : 'andWhere'](subQuery => {
+      if (isOrCriteria(filter)) {
+        for (const subFilter of filter.anyOf ?? []) {
+          subQuery.orWhere(subQueryInner =>
+            this.parseFilter(subFilter, subQueryInner, db, false),
+          );
+        }
+      } else if (isAndCriteria(filter)) {
+        for (const subFilter of filter.allOf ?? []) {
+          subQuery.andWhere(subQueryInner =>
+            this.parseFilter(subFilter, subQueryInner, db, false),
+          );
+        }
+      }
+    });
+  }
+
   async list(options: {
     createdBy?: string;
     status?: TaskStatus;
@@ -207,16 +258,31 @@ export class DatabaseTaskStore implements TaskStore {
       offset?: number;
     };
     order?: { order: 'asc' | 'desc'; field: string }[];
+    permissionFilters?: PermissionCriteria<TaskFilters>;
   }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }> {
-    const { createdBy, status, pagination, order, filters } = options ?? {};
+    const { createdBy, status, pagination, order, filters, permissionFilters } =
+      options ?? {};
     const queryBuilder = this.db<RawDbTaskRow & { count: number }>('tasks');
 
-    if (createdBy || filters?.createdBy) {
-      const arr: string[] = flattenParams<string>(
-        createdBy,
-        filters?.createdBy,
-      );
-      queryBuilder.whereIn('created_by', [...new Set(arr)]);
+    const createdByValues = flattenParams<string>(
+      createdBy,
+      filters?.createdBy,
+    );
+
+    const combinedPermissionFilters:
+      | PermissionCriteria<TaskFilters>
+      | undefined =
+      createdByValues.length > 0
+        ? {
+            allOf: [
+              { key: 'created_by', values: createdByValues },
+              ...(permissionFilters ? [permissionFilters] : []),
+            ],
+          }
+        : permissionFilters;
+
+    if (combinedPermissionFilters) {
+      this.parseFilter(combinedPermissionFilters, queryBuilder, this.db);
     }
 
     if (status || filters?.status) {
@@ -271,22 +337,27 @@ export class DatabaseTaskStore implements TaskStore {
       throw new NotFoundError(`No task with id '${taskId}' found`);
     }
     try {
-      const spec = JSON.parse(result.spec);
-      const secrets = result.secrets ? JSON.parse(result.secrets) : undefined;
-      const state = this.getState(result);
-      return {
-        id: result.id,
-        spec,
-        status: result.status,
-        lastHeartbeatAt: parseSqlDateToIsoString(result.last_heartbeat_at),
-        createdAt: parseSqlDateToIsoString(result.created_at),
-        createdBy: result.created_by ?? undefined,
-        secrets,
-        state,
-      };
+      return this.parseTaskRow(result);
     } catch (error) {
       throw new Error(`Failed to parse spec of task '${taskId}', ${error}`);
     }
+  }
+
+  private parseTaskRow(result: RawDbTaskRow): SerializedTask {
+    const spec = JSON.parse(result.spec);
+    const secrets = result.secrets ? JSON.parse(result.secrets) : undefined;
+    const state = this.getState(result);
+
+    return {
+      id: result.id,
+      spec,
+      status: result.status,
+      lastHeartbeatAt: parseSqlDateToIsoString(result.last_heartbeat_at),
+      createdAt: parseSqlDateToIsoString(result.created_at),
+      createdBy: result.created_by ?? undefined,
+      secrets,
+      state,
+    };
   }
 
   async createTask(
