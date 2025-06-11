@@ -3939,6 +3939,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@manypkg/find-root": "npm:^3.0.0"
     "@manypkg/get-packages": "npm:^1.1.3"
     "@module-federation/enhanced": "npm:^0.9.0"
     "@octokit/graphql": "npm:^5.0.0"
@@ -4066,15 +4067,21 @@ __metadata:
     zod: "npm:^3.22.4"
     zod-validation-error: "npm:^3.4.0"
   peerDependencies:
+    "@oxlint/migrate": ^1.0.0
     "@rspack/core": ^1.2.8
     "@rspack/dev-server": ^1.0.9
     "@rspack/plugin-react-refresh": ^1.0.0
+    oxlint: ^1.0.0
   peerDependenciesMeta:
+    "@oxlint/migrate":
+      optional: true
     "@rspack/core":
       optional: true
     "@rspack/dev-server":
       optional: true
     "@rspack/plugin-react-refresh":
+      optional: true
+    oxlint:
       optional: true
   bin:
     backstage-cli: bin/backstage-cli
@@ -11625,6 +11632,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@manypkg/find-root@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@manypkg/find-root@npm:3.0.0"
+  dependencies:
+    "@manypkg/tools": "npm:^2.0.0"
+  checksum: 10/fd74a419bee9fe18695ca5faae6ca9c3928c198f9a292acd9d5881e9e4b33365f0609fa5c229438955f71fc4a2b8359829811d3e9a2fe31dc0d7dbefc3a4dc06
+  languageName: node
+  linkType: hard
+
 "@manypkg/get-packages@npm:^1.1.3":
   version: 1.1.3
   resolution: "@manypkg/get-packages@npm:1.1.3"
@@ -11636,6 +11652,17 @@ __metadata:
     globby: "npm:^11.0.0"
     read-yaml-file: "npm:^1.1.0"
   checksum: 10/4912e002199ff3974ec48586376a04c5f1815a4faa5f4d36b0698838eec143c9d4e3d42c41e0de009f48a1e2251802ed63c1311ab44de225b50102f85919a248
+  languageName: node
+  linkType: hard
+
+"@manypkg/tools@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@manypkg/tools@npm:2.0.0"
+  dependencies:
+    jju: "npm:^1.4.0"
+    js-yaml: "npm:^4.1.0"
+    tinyglobby: "npm:^0.2.13"
+  checksum: 10/9763bc399b53a7170eae3eaf98646ebc65e7f62e59ca4e7d48f89d5d0c85c9b4202df448a6ae2ce703b3e988529b1768803984e6859dc1bf3a6fd57e070fae2a
   languageName: node
   linkType: hard
 
@@ -15017,6 +15044,75 @@ __metadata:
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   checksum: 10/549e9d754f5607ebe89a717b75f12333a49b7d87e9b469260675de2c77b7991b1600a11d200b0c6f1922f981df8398abb9389cbceb21ee46646c8604e8892319
+  languageName: node
+  linkType: hard
+
+"@oxlint/darwin-arm64@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@oxlint/darwin-arm64@npm:1.0.0"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxlint/darwin-x64@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@oxlint/darwin-x64@npm:1.0.0"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oxlint/linux-arm64-gnu@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@oxlint/linux-arm64-gnu@npm:1.0.0"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxlint/linux-arm64-musl@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@oxlint/linux-arm64-musl@npm:1.0.0"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@oxlint/linux-x64-gnu@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@oxlint/linux-x64-gnu@npm:1.0.0"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxlint/linux-x64-musl@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@oxlint/linux-x64-musl@npm:1.0.0"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@oxlint/migrate@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@oxlint/migrate@npm:1.0.0"
+  dependencies:
+    commander: "npm:^14.0.0"
+  peerDependencies:
+    globals: ^14.0.0 || ^15.0.0 || ^16.0.0
+  bin:
+    migrate: dist/bin/oxlint-migrate.mjs
+  checksum: 10/3bfc0d2828056fb1f8636c161968e51aba4a9fd98854ee0b2d1e044a558c2e38c52bdc0a0be074aa7ad095a827a3a48b747db47c71ba2477baff4e809d306f0a
+  languageName: node
+  linkType: hard
+
+"@oxlint/win32-arm64@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@oxlint/win32-arm64@npm:1.0.0"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxlint/win32-x64@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@oxlint/win32-x64@npm:1.0.0"
+  conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
@@ -26062,10 +26158,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:*, commander@npm:^13.1.0":
-  version: 13.1.0
-  resolution: "commander@npm:13.1.0"
-  checksum: 10/d3b4b79e6be8471ddadacbb8cd441fe82154d7da7393b50e76165a9e29ccdb74fa911a186437b9a211d0fc071db6051915c94fb8ef16d77511d898e9dbabc6af
+"commander@npm:*, commander@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "commander@npm:14.0.0"
+  checksum: 10/c05418bfc35a3e8b5c67bd9f75f5b773f386f9b85f83e70e7c926047f270929cb06cf13cd68f387dd6e7e23c6157de8171b28ba606abd3e6256028f1f789becf
   languageName: node
   linkType: hard
 
@@ -26108,6 +26204,13 @@ __metadata:
   version: 12.1.0
   resolution: "commander@npm:12.1.0"
   checksum: 10/cdaeb672d979816853a4eed7f1310a9319e8b976172485c2a6b437ed0db0a389a44cfb222bfbde772781efa9f215bdd1b936f80d6b249485b465c6cb906e1f93
+  languageName: node
+  linkType: hard
+
+"commander@npm:^13.1.0":
+  version: 13.1.0
+  resolution: "commander@npm:13.1.0"
+  checksum: 10/d3b4b79e6be8471ddadacbb8cd441fe82154d7da7393b50e76165a9e29ccdb74fa911a186437b9a211d0fc071db6051915c94fb8ef16d77511d898e9dbabc6af
   languageName: node
   linkType: hard
 
@@ -29161,6 +29264,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-oxlint@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "eslint-plugin-oxlint@npm:1.0.0"
+  dependencies:
+    jsonc-parser: "npm:^3.3.1"
+  checksum: 10/209a3ed9e43e5e74c32bd243b723fc46889400eedcfaba9094383561bcfdc8204ff1bf2c55e5143b8a10f1a8e7d5ae149c0c5bf0f5468c5cdd52d8b81e4808ba
+  languageName: node
+  linkType: hard
+
 "eslint-plugin-react-hooks@npm:^5.0.0":
   version: 5.2.0
   resolution: "eslint-plugin-react-hooks@npm:5.2.0"
@@ -30189,15 +30301,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fdir@npm:^6.4.2":
-  version: 6.4.2
-  resolution: "fdir@npm:6.4.2"
+"fdir@npm:^6.4.4":
+  version: 6.4.6
+  resolution: "fdir@npm:6.4.6"
   peerDependencies:
     picomatch: ^3 || ^4
   peerDependenciesMeta:
     picomatch:
       optional: true
-  checksum: 10/5ff80d1d2034e75cc68be175401c9f64c4938a6b2c1e9a0c27f2d211ffbe491fd86d29e4576825d9da8aff9bd465f0283427c2dddc11653457906c46d3bbc448
+  checksum: 10/c186ba387e7b75ccf874a098d9bc5fe0af0e9c52fc56f8eac8e80aa4edb65532684bf2bf769894ff90f53bf221d6136692052d31f07a9952807acae6cbe7ee50
   languageName: node
   linkType: hard
 
@@ -34482,7 +34594,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jju@npm:~1.4.0":
+"jju@npm:^1.4.0, jju@npm:~1.4.0":
   version: 1.4.0
   resolution: "jju@npm:1.4.0"
   checksum: 10/1067ff8ce02221faac5a842116ed0ec79a53312a111d0bf8342a80bd02c0a3fdf0b8449694a65947db0a3e8420e8b326dffb489c7dd5866efc380c0d1708a707
@@ -34956,10 +35068,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonc-parser@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "jsonc-parser@npm:3.2.0"
-  checksum: 10/bd68b902e5f9394f01da97921f49c5084b2dc03a0c5b4fdb2a429f8d6f292686c1bf87badaeb0a8148d024192a88f5ad2e57b2918ba43fe25cf15f3371db64d4
+"jsonc-parser@npm:^3.2.0, jsonc-parser@npm:^3.3.1":
+  version: 3.3.1
+  resolution: "jsonc-parser@npm:3.3.1"
+  checksum: 10/9b0dc391f20b47378f843ef1e877e73ec652a5bdc3c5fa1f36af0f119a55091d147a86c1ee86a232296f55c929bba174538c2bf0312610e0817a22de131cc3f4
   languageName: node
   linkType: hard
 
@@ -39507,6 +39619,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"oxlint@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "oxlint@npm:1.0.0"
+  dependencies:
+    "@oxlint/darwin-arm64": "npm:1.0.0"
+    "@oxlint/darwin-x64": "npm:1.0.0"
+    "@oxlint/linux-arm64-gnu": "npm:1.0.0"
+    "@oxlint/linux-arm64-musl": "npm:1.0.0"
+    "@oxlint/linux-x64-gnu": "npm:1.0.0"
+    "@oxlint/linux-x64-musl": "npm:1.0.0"
+    "@oxlint/win32-arm64": "npm:1.0.0"
+    "@oxlint/win32-x64": "npm:1.0.0"
+  dependenciesMeta:
+    "@oxlint/darwin-arm64":
+      optional: true
+    "@oxlint/darwin-x64":
+      optional: true
+    "@oxlint/linux-arm64-gnu":
+      optional: true
+    "@oxlint/linux-arm64-musl":
+      optional: true
+    "@oxlint/linux-x64-gnu":
+      optional: true
+    "@oxlint/linux-x64-musl":
+      optional: true
+    "@oxlint/win32-arm64":
+      optional: true
+    "@oxlint/win32-x64":
+      optional: true
+  bin:
+    oxc_language_server: bin/oxc_language_server
+    oxlint: bin/oxlint
+  checksum: 10/574edc036602fdec46f0753f73bcc5320928898f4981c3efea859881685b6a06105cbf24dbb28d0994e0a18909d322572bafafbe9b23fbbbb12cd7e2e70401b1
+  languageName: node
+  linkType: hard
+
 "p-cancelable@npm:^1.0.0":
   version: 1.1.0
   resolution: "p-cancelable@npm:1.1.0"
@@ -43730,6 +43878,7 @@ __metadata:
     "@changesets/cli": "npm:^2.14.0"
     "@manypkg/get-packages": "npm:^1.1.3"
     "@octokit/rest": "npm:^19.0.3"
+    "@oxlint/migrate": "npm:^1.0.0"
     "@playwright/test": "npm:^1.32.3"
     "@spotify/eslint-plugin": "npm:^15.0.0"
     "@techdocs/cli": "workspace:*"
@@ -43745,6 +43894,7 @@ __metadata:
     e2e-test: "workspace:*"
     eslint: "npm:^8.6.0"
     eslint-plugin-notice: "npm:^1.0.0"
+    eslint-plugin-oxlint: "npm:^1.0.0"
     eslint-plugin-react: "npm:^7.28.0"
     eslint-plugin-testing-library: "npm:^6.0.0"
     fs-extra: "npm:^11.2.0"
@@ -43752,6 +43902,7 @@ __metadata:
     lint-staged: "npm:^15.0.0"
     minimist: "npm:^1.2.5"
     node-gyp: "npm:^10.0.0"
+    oxlint: "npm:^1.0.0"
     prettier: "npm:^2.2.1"
     semver: "npm:^7.5.3"
     shx: "npm:^0.4.0"
@@ -46364,13 +46515,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinyglobby@npm:^0.2.9":
-  version: 0.2.10
-  resolution: "tinyglobby@npm:0.2.10"
+"tinyglobby@npm:^0.2.13, tinyglobby@npm:^0.2.9":
+  version: 0.2.14
+  resolution: "tinyglobby@npm:0.2.14"
   dependencies:
-    fdir: "npm:^6.4.2"
+    fdir: "npm:^6.4.4"
     picomatch: "npm:^4.0.2"
-  checksum: 10/10c976866d849702edc47fc3fef27d63f074c40f75ef17171ecc1452967900699fa1e62373681dd58e673ddff2e3f6094bcd0a2101e3e4b30f4c2b9da41397f2
+  checksum: 10/3d306d319718b7cc9d79fb3f29d8655237aa6a1f280860a217f93417039d0614891aee6fc47c5db315f4fcc6ac8d55eb8e23e2de73b2c51a431b42456d9e5764
   languageName: node
   linkType: hard
 

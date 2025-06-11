@@ -1,0 +1,700 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react"],
+  "categories": {
+    "correctness": "off"
+  },
+  "env": {
+    "builtin": true
+  },
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "no-restricted-globals": [
+      "error",
+      {
+        "name": "blur",
+        "message": "Avoid using implicitly global variables. Use e.g. window.blur instead if this was your intent."
+      },
+      {
+        "name": "captureEvents",
+        "message": "Avoid using implicitly global variables. Use e.g. window.captureEvents instead if this was your intent."
+      },
+      {
+        "name": "chrome",
+        "message": "Avoid using implicitly global variables. Use e.g. window.chrome instead if this was your intent."
+      },
+      {
+        "name": "clientInformation",
+        "message": "Avoid using implicitly global variables. Use e.g. window.clientInformation instead if this was your intent."
+      },
+      {
+        "name": "close",
+        "message": "Avoid using implicitly global variables. Use e.g. window.close instead if this was your intent."
+      },
+      {
+        "name": "closed",
+        "message": "Avoid using implicitly global variables. Use e.g. window.closed instead if this was your intent."
+      },
+      {
+        "name": "createImageBitmap",
+        "message": "Avoid using implicitly global variables. Use e.g. window.createImageBitmap instead if this was your intent."
+      },
+      {
+        "name": "crypto",
+        "message": "Avoid using implicitly global variables. Use e.g. window.crypto instead if this was your intent."
+      },
+      {
+        "name": "customElements",
+        "message": "Avoid using implicitly global variables. Use e.g. window.customElements instead if this was your intent."
+      },
+      {
+        "name": "defaultstatus",
+        "message": "Avoid using implicitly global variables. Use e.g. window.defaultstatus instead if this was your intent."
+      },
+      {
+        "name": "defaultStatus",
+        "message": "Avoid using implicitly global variables. Use e.g. window.defaultStatus instead if this was your intent."
+      },
+      {
+        "name": "devicePixelRatio",
+        "message": "Avoid using implicitly global variables. Use e.g. window.devicePixelRatio instead if this was your intent."
+      },
+      {
+        "name": "external",
+        "message": "Avoid using implicitly global variables. Use e.g. window.external instead if this was your intent."
+      },
+      {
+        "name": "find",
+        "message": "Avoid using implicitly global variables. Use e.g. window.find instead if this was your intent."
+      },
+      {
+        "name": "focus",
+        "message": "Avoid using implicitly global variables. Use e.g. window.focus instead if this was your intent."
+      },
+      {
+        "name": "frameElement",
+        "message": "Avoid using implicitly global variables. Use e.g. window.frameElement instead if this was your intent."
+      },
+      {
+        "name": "frames",
+        "message": "Avoid using implicitly global variables. Use e.g. window.frames instead if this was your intent."
+      },
+      {
+        "name": "getComputedStyle",
+        "message": "Avoid using implicitly global variables. Use e.g. window.getComputedStyle instead if this was your intent."
+      },
+      {
+        "name": "getSelection",
+        "message": "Avoid using implicitly global variables. Use e.g. window.getSelection instead if this was your intent."
+      },
+      {
+        "name": "indexedDB",
+        "message": "Avoid using implicitly global variables. Use e.g. window.indexedDB instead if this was your intent."
+      },
+      {
+        "name": "innerHeight",
+        "message": "Avoid using implicitly global variables. Use e.g. window.innerHeight instead if this was your intent."
+      },
+      {
+        "name": "innerWidth",
+        "message": "Avoid using implicitly global variables. Use e.g. window.innerWidth instead if this was your intent."
+      },
+      {
+        "name": "isSecureContext",
+        "message": "Avoid using implicitly global variables. Use e.g. window.isSecureContext instead if this was your intent."
+      },
+      {
+        "name": "length",
+        "message": "Avoid using implicitly global variables. Use e.g. window.length instead if this was your intent."
+      },
+      {
+        "name": "location",
+        "message": "Avoid using implicitly global variables. Use e.g. window.location instead if this was your intent."
+      },
+      {
+        "name": "locationbar",
+        "message": "Avoid using implicitly global variables. Use e.g. window.locationbar instead if this was your intent."
+      },
+      {
+        "name": "matchMedia",
+        "message": "Avoid using implicitly global variables. Use e.g. window.matchMedia instead if this was your intent."
+      },
+      {
+        "name": "menubar",
+        "message": "Avoid using implicitly global variables. Use e.g. window.menubar instead if this was your intent."
+      },
+      {
+        "name": "moveBy",
+        "message": "Avoid using implicitly global variables. Use e.g. window.moveBy instead if this was your intent."
+      },
+      {
+        "name": "moveTo",
+        "message": "Avoid using implicitly global variables. Use e.g. window.moveTo instead if this was your intent."
+      },
+      {
+        "name": "name",
+        "message": "Avoid using implicitly global variables. Use e.g. window.name instead if this was your intent."
+      },
+      {
+        "name": "navigator",
+        "message": "Avoid using implicitly global variables. Use e.g. window.navigator instead if this was your intent."
+      },
+      {
+        "name": "onabort",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onabort instead if this was your intent."
+      },
+      {
+        "name": "onafterprint",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onafterprint instead if this was your intent."
+      },
+      {
+        "name": "onanimationend",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onanimationend instead if this was your intent."
+      },
+      {
+        "name": "onanimationiteration",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onanimationiteration instead if this was your intent."
+      },
+      {
+        "name": "onanimationstart",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onanimationstart instead if this was your intent."
+      },
+      {
+        "name": "onappinstalled",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onappinstalled instead if this was your intent."
+      },
+      {
+        "name": "onauxclick",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onauxclick instead if this was your intent."
+      },
+      {
+        "name": "onbeforeinstallprompt",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onbeforeinstallprompt instead if this was your intent."
+      },
+      {
+        "name": "onbeforeprint",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onbeforeprint instead if this was your intent."
+      },
+      {
+        "name": "onbeforeunload",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onbeforeunload instead if this was your intent."
+      },
+      {
+        "name": "onblur",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onblur instead if this was your intent."
+      },
+      {
+        "name": "oncancel",
+        "message": "Avoid using implicitly global variables. Use e.g. window.oncancel instead if this was your intent."
+      },
+      {
+        "name": "oncanplay",
+        "message": "Avoid using implicitly global variables. Use e.g. window.oncanplay instead if this was your intent."
+      },
+      {
+        "name": "oncanplaythrough",
+        "message": "Avoid using implicitly global variables. Use e.g. window.oncanplaythrough instead if this was your intent."
+      },
+      {
+        "name": "onchange",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onchange instead if this was your intent."
+      },
+      {
+        "name": "onclick",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onclick instead if this was your intent."
+      },
+      {
+        "name": "onclose",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onclose instead if this was your intent."
+      },
+      {
+        "name": "oncontextmenu",
+        "message": "Avoid using implicitly global variables. Use e.g. window.oncontextmenu instead if this was your intent."
+      },
+      {
+        "name": "oncuechange",
+        "message": "Avoid using implicitly global variables. Use e.g. window.oncuechange instead if this was your intent."
+      },
+      {
+        "name": "ondblclick",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ondblclick instead if this was your intent."
+      },
+      {
+        "name": "ondevicemotion",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ondevicemotion instead if this was your intent."
+      },
+      {
+        "name": "ondeviceorientation",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ondeviceorientation instead if this was your intent."
+      },
+      {
+        "name": "ondeviceorientationabsolute",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ondeviceorientationabsolute instead if this was your intent."
+      },
+      {
+        "name": "ondrag",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ondrag instead if this was your intent."
+      },
+      {
+        "name": "ondragend",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ondragend instead if this was your intent."
+      },
+      {
+        "name": "ondragenter",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ondragenter instead if this was your intent."
+      },
+      {
+        "name": "ondragleave",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ondragleave instead if this was your intent."
+      },
+      {
+        "name": "ondragover",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ondragover instead if this was your intent."
+      },
+      {
+        "name": "ondragstart",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ondragstart instead if this was your intent."
+      },
+      {
+        "name": "ondrop",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ondrop instead if this was your intent."
+      },
+      {
+        "name": "ondurationchange",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ondurationchange instead if this was your intent."
+      },
+      {
+        "name": "onemptied",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onemptied instead if this was your intent."
+      },
+      {
+        "name": "onended",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onended instead if this was your intent."
+      },
+      {
+        "name": "onerror",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onerror instead if this was your intent."
+      },
+      {
+        "name": "onfocus",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onfocus instead if this was your intent."
+      },
+      {
+        "name": "ongotpointercapture",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ongotpointercapture instead if this was your intent."
+      },
+      {
+        "name": "onhashchange",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onhashchange instead if this was your intent."
+      },
+      {
+        "name": "oninput",
+        "message": "Avoid using implicitly global variables. Use e.g. window.oninput instead if this was your intent."
+      },
+      {
+        "name": "oninvalid",
+        "message": "Avoid using implicitly global variables. Use e.g. window.oninvalid instead if this was your intent."
+      },
+      {
+        "name": "onkeydown",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onkeydown instead if this was your intent."
+      },
+      {
+        "name": "onkeypress",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onkeypress instead if this was your intent."
+      },
+      {
+        "name": "onkeyup",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onkeyup instead if this was your intent."
+      },
+      {
+        "name": "onlanguagechange",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onlanguagechange instead if this was your intent."
+      },
+      {
+        "name": "onload",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onload instead if this was your intent."
+      },
+      {
+        "name": "onloadeddata",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onloadeddata instead if this was your intent."
+      },
+      {
+        "name": "onloadedmetadata",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onloadedmetadata instead if this was your intent."
+      },
+      {
+        "name": "onloadstart",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onloadstart instead if this was your intent."
+      },
+      {
+        "name": "onlostpointercapture",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onlostpointercapture instead if this was your intent."
+      },
+      {
+        "name": "onmessage",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onmessage instead if this was your intent."
+      },
+      {
+        "name": "onmessageerror",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onmessageerror instead if this was your intent."
+      },
+      {
+        "name": "onmousedown",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onmousedown instead if this was your intent."
+      },
+      {
+        "name": "onmouseenter",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onmouseenter instead if this was your intent."
+      },
+      {
+        "name": "onmouseleave",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onmouseleave instead if this was your intent."
+      },
+      {
+        "name": "onmousemove",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onmousemove instead if this was your intent."
+      },
+      {
+        "name": "onmouseout",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onmouseout instead if this was your intent."
+      },
+      {
+        "name": "onmouseover",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onmouseover instead if this was your intent."
+      },
+      {
+        "name": "onmouseup",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onmouseup instead if this was your intent."
+      },
+      {
+        "name": "onmousewheel",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onmousewheel instead if this was your intent."
+      },
+      {
+        "name": "onoffline",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onoffline instead if this was your intent."
+      },
+      {
+        "name": "ononline",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ononline instead if this was your intent."
+      },
+      {
+        "name": "onpagehide",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onpagehide instead if this was your intent."
+      },
+      {
+        "name": "onpageshow",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onpageshow instead if this was your intent."
+      },
+      {
+        "name": "onpause",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onpause instead if this was your intent."
+      },
+      {
+        "name": "onplay",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onplay instead if this was your intent."
+      },
+      {
+        "name": "onplaying",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onplaying instead if this was your intent."
+      },
+      {
+        "name": "onpointercancel",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onpointercancel instead if this was your intent."
+      },
+      {
+        "name": "onpointerdown",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onpointerdown instead if this was your intent."
+      },
+      {
+        "name": "onpointerenter",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onpointerenter instead if this was your intent."
+      },
+      {
+        "name": "onpointerleave",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onpointerleave instead if this was your intent."
+      },
+      {
+        "name": "onpointermove",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onpointermove instead if this was your intent."
+      },
+      {
+        "name": "onpointerout",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onpointerout instead if this was your intent."
+      },
+      {
+        "name": "onpointerover",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onpointerover instead if this was your intent."
+      },
+      {
+        "name": "onpointerup",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onpointerup instead if this was your intent."
+      },
+      {
+        "name": "onpopstate",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onpopstate instead if this was your intent."
+      },
+      {
+        "name": "onprogress",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onprogress instead if this was your intent."
+      },
+      {
+        "name": "onratechange",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onratechange instead if this was your intent."
+      },
+      {
+        "name": "onrejectionhandled",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onrejectionhandled instead if this was your intent."
+      },
+      {
+        "name": "onreset",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onreset instead if this was your intent."
+      },
+      {
+        "name": "onresize",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onresize instead if this was your intent."
+      },
+      {
+        "name": "onscroll",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onscroll instead if this was your intent."
+      },
+      {
+        "name": "onsearch",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onsearch instead if this was your intent."
+      },
+      {
+        "name": "onseeked",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onseeked instead if this was your intent."
+      },
+      {
+        "name": "onseeking",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onseeking instead if this was your intent."
+      },
+      {
+        "name": "onselect",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onselect instead if this was your intent."
+      },
+      {
+        "name": "onstalled",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onstalled instead if this was your intent."
+      },
+      {
+        "name": "onstorage",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onstorage instead if this was your intent."
+      },
+      {
+        "name": "onsubmit",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onsubmit instead if this was your intent."
+      },
+      {
+        "name": "onsuspend",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onsuspend instead if this was your intent."
+      },
+      {
+        "name": "ontimeupdate",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ontimeupdate instead if this was your intent."
+      },
+      {
+        "name": "ontoggle",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ontoggle instead if this was your intent."
+      },
+      {
+        "name": "ontransitionend",
+        "message": "Avoid using implicitly global variables. Use e.g. window.ontransitionend instead if this was your intent."
+      },
+      {
+        "name": "onunhandledrejection",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onunhandledrejection instead if this was your intent."
+      },
+      {
+        "name": "onunload",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onunload instead if this was your intent."
+      },
+      {
+        "name": "onvolumechange",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onvolumechange instead if this was your intent."
+      },
+      {
+        "name": "onwaiting",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onwaiting instead if this was your intent."
+      },
+      {
+        "name": "onwebkitanimationend",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onwebkitanimationend instead if this was your intent."
+      },
+      {
+        "name": "onwebkitanimationiteration",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onwebkitanimationiteration instead if this was your intent."
+      },
+      {
+        "name": "onwebkitanimationstart",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onwebkitanimationstart instead if this was your intent."
+      },
+      {
+        "name": "onwebkittransitionend",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onwebkittransitionend instead if this was your intent."
+      },
+      {
+        "name": "onwheel",
+        "message": "Avoid using implicitly global variables. Use e.g. window.onwheel instead if this was your intent."
+      },
+      {
+        "name": "open",
+        "message": "Avoid using implicitly global variables. Use e.g. window.open instead if this was your intent."
+      },
+      {
+        "name": "openDatabase",
+        "message": "Avoid using implicitly global variables. Use e.g. window.openDatabase instead if this was your intent."
+      },
+      {
+        "name": "opener",
+        "message": "Avoid using implicitly global variables. Use e.g. window.opener instead if this was your intent."
+      },
+      {
+        "name": "origin",
+        "message": "Avoid using implicitly global variables. Use e.g. window.origin instead if this was your intent."
+      },
+      {
+        "name": "outerHeight",
+        "message": "Avoid using implicitly global variables. Use e.g. window.outerHeight instead if this was your intent."
+      },
+      {
+        "name": "outerWidth",
+        "message": "Avoid using implicitly global variables. Use e.g. window.outerWidth instead if this was your intent."
+      },
+      {
+        "name": "pageXOffset",
+        "message": "Avoid using implicitly global variables. Use e.g. window.pageXOffset instead if this was your intent."
+      },
+      {
+        "name": "pageYOffset",
+        "message": "Avoid using implicitly global variables. Use e.g. window.pageYOffset instead if this was your intent."
+      },
+      {
+        "name": "parent",
+        "message": "Avoid using implicitly global variables. Use e.g. window.parent instead if this was your intent."
+      },
+      {
+        "name": "performance",
+        "message": "Avoid using implicitly global variables. Use e.g. window.performance instead if this was your intent."
+      },
+      {
+        "name": "personalbar",
+        "message": "Avoid using implicitly global variables. Use e.g. window.personalbar instead if this was your intent."
+      },
+      {
+        "name": "postMessage",
+        "message": "Avoid using implicitly global variables. Use e.g. window.postMessage instead if this was your intent."
+      },
+      {
+        "name": "print",
+        "message": "Avoid using implicitly global variables. Use e.g. window.print instead if this was your intent."
+      },
+      {
+        "name": "releaseEvents",
+        "message": "Avoid using implicitly global variables. Use e.g. window.releaseEvents instead if this was your intent."
+      },
+      {
+        "name": "resizeBy",
+        "message": "Avoid using implicitly global variables. Use e.g. window.resizeBy instead if this was your intent."
+      },
+      {
+        "name": "resizeTo",
+        "message": "Avoid using implicitly global variables. Use e.g. window.resizeTo instead if this was your intent."
+      },
+      {
+        "name": "screen",
+        "message": "Avoid using implicitly global variables. Use e.g. window.screen instead if this was your intent."
+      },
+      {
+        "name": "screenLeft",
+        "message": "Avoid using implicitly global variables. Use e.g. window.screenLeft instead if this was your intent."
+      },
+      {
+        "name": "screenTop",
+        "message": "Avoid using implicitly global variables. Use e.g. window.screenTop instead if this was your intent."
+      },
+      {
+        "name": "screenX",
+        "message": "Avoid using implicitly global variables. Use e.g. window.screenX instead if this was your intent."
+      },
+      {
+        "name": "screenY",
+        "message": "Avoid using implicitly global variables. Use e.g. window.screenY instead if this was your intent."
+      },
+      {
+        "name": "scroll",
+        "message": "Avoid using implicitly global variables. Use e.g. window.scroll instead if this was your intent."
+      },
+      {
+        "name": "scrollbars",
+        "message": "Avoid using implicitly global variables. Use e.g. window.scrollbars instead if this was your intent."
+      },
+      {
+        "name": "scrollBy",
+        "message": "Avoid using implicitly global variables. Use e.g. window.scrollBy instead if this was your intent."
+      },
+      {
+        "name": "scrollTo",
+        "message": "Avoid using implicitly global variables. Use e.g. window.scrollTo instead if this was your intent."
+      },
+      {
+        "name": "scrollX",
+        "message": "Avoid using implicitly global variables. Use e.g. window.scrollX instead if this was your intent."
+      },
+      {
+        "name": "scrollY",
+        "message": "Avoid using implicitly global variables. Use e.g. window.scrollY instead if this was your intent."
+      },
+      {
+        "name": "self",
+        "message": "Avoid using implicitly global variables. Use e.g. window.self instead if this was your intent."
+      },
+      {
+        "name": "speechSynthesis",
+        "message": "Avoid using implicitly global variables. Use e.g. window.speechSynthesis instead if this was your intent."
+      },
+      {
+        "name": "status",
+        "message": "Avoid using implicitly global variables. Use e.g. window.status instead if this was your intent."
+      },
+      {
+        "name": "statusbar",
+        "message": "Avoid using implicitly global variables. Use e.g. window.statusbar instead if this was your intent."
+      },
+      {
+        "name": "stop",
+        "message": "Avoid using implicitly global variables. Use e.g. window.stop instead if this was your intent."
+      },
+      {
+        "name": "styleMedia",
+        "message": "Avoid using implicitly global variables. Use e.g. window.styleMedia instead if this was your intent."
+      },
+      {
+        "name": "toolbar",
+        "message": "Avoid using implicitly global variables. Use e.g. window.toolbar instead if this was your intent."
+      },
+      {
+        "name": "top",
+        "message": "Avoid using implicitly global variables. Use e.g. window.top instead if this was your intent."
+      },
+      {
+        "name": "visualViewport",
+        "message": "Avoid using implicitly global variables. Use e.g. window.visualViewport instead if this was your intent."
+      },
+      {
+        "name": "webkitRequestFileSystem",
+        "message": "Avoid using implicitly global variables. Use e.g. window.webkitRequestFileSystem instead if this was your intent."
+      },
+      {
+        "name": "webkitResolveLocalFileSystemURL",
+        "message": "Avoid using implicitly global variables. Use e.g. window.webkitResolveLocalFileSystemURL instead if this was your intent."
+      },
+      {
+        "name": "webkitStorageInfo",
+        "message": "Avoid using implicitly global variables. Use e.g. window.webkitStorageInfo instead if this was your intent."
+      }
+    ]
+  }
+}
