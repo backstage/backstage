@@ -6700,6 +6700,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-events-backend-module-kafka@workspace:plugins/events-backend-module-kafka":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-events-backend-module-kafka@workspace:plugins/events-backend-module-kafka"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-events-backend-test-utils": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    kafkajs: "npm:^2.2.4"
+    luxon: "npm:^3.0.0"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-events-backend-test-utils@workspace:^, @backstage/plugin-events-backend-test-utils@workspace:plugins/events-backend-test-utils":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-events-backend-test-utils@workspace:plugins/events-backend-test-utils"
@@ -35316,6 +35332,13 @@ __metadata:
   version: 4.0.0
   resolution: "jwt-decode@npm:4.0.0"
   checksum: 10/87b569e4a9a0067fb0d592bcf3b2ac3e638e49beee28620eeb07bef1b4470f4077dea68c15d191dd68e076846c3af8394be3bcaecffedc6e97433b221fdbbcf3
+  languageName: node
+  linkType: hard
+
+"kafkajs@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "kafkajs@npm:2.2.4"
+  checksum: 10/75eb0d221397085f90e51f8a2d752495c9fa9c1b3a1a6db610cd7074fa8c52777f295832fd0a7c49cded5e574337a09fafa8c3f7cf1caa38f4dc9aa20fcfb7df
   languageName: node
   linkType: hard
 
