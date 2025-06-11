@@ -74,9 +74,7 @@ export default createCliPlugin({
           .usage('$0', info.description)
           .help()
           .parse(args);
-        const m =
-          (await require('./commands/print')) as typeof import('./commands/print');
-        await m.default(argv);
+        await lazy(() => import('./commands/print'), 'default')(argv);
       },
     });
     reg.addCommand({
@@ -99,9 +97,7 @@ export default createCliPlugin({
           })
           .help()
           .parse(args);
-        const m =
-          (await require('./commands/validate')) as typeof import('./commands/validate');
-        await m.default(argv);
+        await lazy(() => import('./commands/validate'), 'default')(argv);
       },
     });
 
@@ -118,8 +114,7 @@ export default createCliPlugin({
           })
           .help()
           .parse(args);
-        const m = await import('./commands/schema');
-        await m.default(argv);
+        await lazy(() => import('./commands/schema'), 'default')(argv);
       },
     });
 
@@ -136,8 +131,7 @@ export default createCliPlugin({
           })
           .help()
           .parse(args);
-        const m = await import('./commands/schema');
-        await m.default(argv);
+        await lazy(() => import('./commands/schema'), 'default')(argv);
       },
     });
   },
