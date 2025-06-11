@@ -1,4 +1,3 @@
-import { CSSProperties } from 'react';
 import { CodeBlock } from '../CodeBlock';
 import { SnippetClient } from './client';
 
@@ -9,7 +8,7 @@ interface SnippetProps {
   px?: number;
   py?: number;
   open?: boolean;
-  height?: CSSProperties['height'];
+  height?: string | number;
 }
 
 export const Snippet = ({

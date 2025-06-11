@@ -1,6 +1,6 @@
 'use client';
 
-import { CSSProperties, useState } from 'react';
+import { useState } from 'react';
 import { Collapsible } from '@base-ui-components/react/collapsible';
 import styles from './styles.module.css';
 
@@ -11,7 +11,7 @@ interface SnippetProps {
   px?: number;
   py?: number;
   open?: boolean;
-  height?: CSSProperties['height'];
+  height?: string | number;
 }
 
 export const SnippetClient = ({
