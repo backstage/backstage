@@ -1,5 +1,22 @@
 # @backstage/cli
 
+## 0.33.0-next.2
+
+### Patch Changes
+
+- 8a0164c: Fix an issue where some commands were not usable because of missing dist files
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.11-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.1
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.1
+
 ## 0.33.0-next.1
 
 ### Minor Changes
