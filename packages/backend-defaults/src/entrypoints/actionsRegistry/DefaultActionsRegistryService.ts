@@ -24,7 +24,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import PromiseRouter from 'express-promise-router';
 import { Router, json } from 'express';
-import { z, ZodType } from 'zod';
+import { z, AnyZodObject } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
 import {
   ForwardedError,
@@ -142,9 +142,10 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     return router;
   }
 
-  register<TInputSchema extends ZodType, TOutputSchema extends ZodType>(
-    options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>,
-  ): void {
+  register<
+    TInputSchema extends AnyZodObject,
+    TOutputSchema extends AnyZodObject,
+  >(options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>): void {
     const id = `${this.metadata.getId()}:${options.name}`;
 
     if (this.actions.has(id)) {

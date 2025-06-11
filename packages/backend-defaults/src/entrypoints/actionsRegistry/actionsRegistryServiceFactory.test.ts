@@ -181,7 +181,7 @@ describe('actionsRegistryServiceFactory', () => {
       });
     });
 
-    it('should allow registering of actions with no schema', async () => {
+    it('should forces registration of input and output schema as objects', async () => {
       const pluginSubject = createBackendPlugin({
         pluginId: 'my-plugin',
         register(reg) {
@@ -195,9 +195,12 @@ describe('actionsRegistryServiceFactory', () => {
                 title: 'Test',
                 description: 'Test',
                 schema: {
+                  // @ts-expect-error - z.undefined is not a valid schema
                   input: z => z.undefined(),
+                  // @ts-expect-error - z.string is not a valid schema
                   output: z => z.string(),
                 },
+                // @ts-expect-error - output is not a valid, needs to be an object
                 action: async () => ({ output: 'ok' }),
               });
             },
