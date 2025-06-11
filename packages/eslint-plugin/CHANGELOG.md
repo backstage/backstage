@@ -1,5 +1,11 @@
 # @backstage/eslint-plugin
 
+## 0.1.11-next.0
+
+### Patch Changes
+
+- 098ef95: Fix custom rules package scanning performance.
+
 ## 0.1.10
 
 ### Patch Changes

@@ -199,7 +199,8 @@
     "@backstage/plugin-techdocs-react": "1.2.17",
     "@backstage/plugin-user-settings": "0.8.22",
     "@backstage/plugin-user-settings-backend": "0.3.2",
-    "@backstage/plugin-user-settings-common": "0.0.1"
+    "@backstage/plugin-user-settings-common": "0.0.1",
+    "@backstage/plugin-events-backend-module-kafka": "0.0.0"
   },
   "changesets": [
     "bitter-pants-watch",
@@ -208,9 +209,11 @@
     "cold-meals-like",
     "create-app-1748956288",
     "create-app-1749565617",
+    "create-app-1749636320",
     "cuddly-camels-lose",
     "curvy-peaches-relate",
     "curvy-words-create",
+    "deep-aliens-camp",
     "deep-moments-love",
     "dull-buttons-press",
     "dull-cars-shout",
@@ -223,6 +226,7 @@
     "famous-streets-stay",
     "few-streets-accept",
     "fix-cli-config-docs-feedback",
+    "fluffy-bobcats-tell",
     "forty-seas-worry",
     "fresh-brooms-follow",
     "fresh-otters-say",
@@ -285,6 +289,7 @@
     "three-boats-sort",
     "tough-heads-knock",
     "true-tools-play",
+    "twelve-zoos-learn",
     "warm-hornets-unite",
     "warm-taxes-show",
     "wet-bars-report",
