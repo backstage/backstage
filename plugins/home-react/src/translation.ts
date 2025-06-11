@@ -16,7 +16,7 @@
 import { createTranslationRef } from '@backstage/frontend-plugin-api';
 
 /**
- * @public
+ * @alpha
  */
 export const homeReactTranslationRef = createTranslationRef({
   id: 'home-react',
