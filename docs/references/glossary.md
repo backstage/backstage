@@ -65,13 +65,6 @@ A foundation dedicated to the promotion and advancement of [Cloud Native Computi
 
 CNCF is part of the [Linux Foundation](https://www.linuxfoundation.org/).
 
-<<<<<<< HEAD
-=======
-## CNCF
-
-[Cloud Native Computing Foundation](#cloud-native-computing-foundation).
-
->>>>>>> Add terms to glossary
 ## Code Grant
 
 [OAuth](#oauth) flow where the client receives an [authorization code](#code) that is passed to the backend to be exchanged for an [access token](#access-token) and possibly a [refresh token](#refresh-token).
@@ -110,11 +103,7 @@ An executable or package file with all of the necessary information required to 
 
 ## Developer
 
-<<<<<<< HEAD
 1. A professional who designs, builds, tests, deploys, and maintains software applications and systems. Developers essentially turn ideas or requirements into functional digital products.
-=======
-1. A professional who designs, builds, tests, deploys, and maintains software applications and systems. They essentially turn ideas or requirements into functional digital products.
->>>>>>> Add terms to glossary
 
 2. A [user role](#user-role) defined as someone who creates, modifies, or uses a Backstage [app](#app). Might or might not actually be a software developer.
 
@@ -162,19 +151,9 @@ A write stream of [documents](#documents).
 
 Someone who develops one or more plugins that enable Backstage to interoperate with another software system. A [user role](#user-role).
 
-<<<<<<< HEAD
 ## JSON Web Token (AKA JWT)
 
 A popular, compact, and self-contained open standard for securely transmitting information between parties as a JSON object. It is commonly used to verify a user's identity [authentication](#authentication) and permissions [authorization](#authorization). Each JWT consists of a header, payload, and digital signature separated by dots. While often encrypted, JWTs are always signed for integrity. This standard is a key component of [OpenID Connect](#openid-connect). For more details, see [the Wikipedia article](https://en.wikipedia.org/wiki/JSON_Web_Token).
-=======
-## JSON Web Token
-
-A popular, compact, and self-contained open standard for securely transmitting information between parties as a JSON object. It is commonly used to verify a user's identity [authentication](#authentication) and permissions [authorization](#authorization). Each JWT consists of a header, payload, and digital signature separated by dots. While often encrypted, JWTs are always signed for integrity. This standard is a key component of [OpenID Connect](#openid-connect). For more details, see [the Wikipedia article](https://en.wikipedia.org/wiki/JSON_Web_Token).
-
-## JWT
-
-[JSON Web Token](#json-web-token).
->>>>>>> Add terms to glossary
 
 ## Kind
 
