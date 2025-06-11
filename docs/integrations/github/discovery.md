@@ -138,7 +138,7 @@ events:
               region: us-east-2
 ```
 
-The [AWS SQS module `README`](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-aws-sqs/README.md#configuration) has more details on the configuration options, the example above includes on the required options.
+The [AWS SQS module `README`](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-aws-sqs/README.md#configuration) has more details on the configuration options, the example above includes only the required options.
 
 ### Events Setup using Google Pub/Sub module
 
