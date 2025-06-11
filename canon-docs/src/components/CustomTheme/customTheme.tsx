@@ -6,7 +6,7 @@ import { sass } from '@codemirror/lang-sass';
 import styles from './styles.module.css';
 import { usePlayground } from '@/utils/playground-context';
 import { AnimatePresence, motion } from 'motion/react';
-import { Icon } from '@backstage/canon';
+import { Icon } from '../../../../packages/canon';
 import { createTheme } from '@uiw/codemirror-themes';
 import { tags as t } from '@lezer/highlight';
 
