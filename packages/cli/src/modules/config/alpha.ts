@@ -17,7 +17,8 @@ import { createCliPlugin } from '../../wiring/factory';
 import yargs from 'yargs';
 import { Command } from 'commander';
 import { lazy } from '../../lib/lazy';
-import { Command as ClipanionCommand, runExit } from 'clipanion';
+import { Command as ClipanionCommand, CommandClass, runExit } from 'clipanion';
+import { BackstageCommandContext } from '../../wiring/types';
 
 export default createCliPlugin({
   pluginId: 'config',
@@ -102,15 +103,26 @@ export default createCliPlugin({
       path: ['config', 'check'],
       description:
         'Validate that the given configuration loads and matches schema',
-      execute: async ctx => {
-        const { ValidateCommand } =
-          require('./commands/validate') as typeof import('./commands/validate');
-        ValidateCommand.usage = ClipanionCommand.Usage({
+      execute: clipanionLoader(
+        () => require('./commands/validate').ValidateCommand,
+      ),
+    });
+
+    // TODO(Rugvip): Maybe make this available via @backstage/cli-node/clipanion or such?
+    function clipanionLoader(loader: () => Promise<CommandClass>) {
+      return async (ctx: BackstageCommandContext) => {
+        const commandClass = await loader();
+        commandClass.usage = ClipanionCommand.Usage({
           description: ctx.info.description,
         });
-        runExit({ binaryName: ctx.info.usage }, ValidateCommand, ctx.args, ctx);
-      },
-    });
+        await runExit(
+          { binaryName: ctx.info.usage },
+          commandClass,
+          ctx.args,
+          ctx,
+        );
+      };
+    }
 
     reg.addCommand({
       path: ['config:schema'],
