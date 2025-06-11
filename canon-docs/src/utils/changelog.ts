@@ -19,10 +19,12 @@ export type Component =
   | 'scrollarea'
   | 'flex';
 
+export type Version = `${number}.${number}.${number}`;
+
 export interface ChangelogProps {
   components: Component[];
   description: string;
-  version: '0.1.0' | '0.2.0' | '0.3.0' | '0.4.0' | '0.5.0' | '0.6.0';
+  version: Version;
   platform: 'oss' | 'portal';
   prs: string[];
 }
