@@ -17,7 +17,7 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import { paths as cliPaths, resolvePackagePaths } from '../../lib/paths';
 import { createTemporaryTsConfig } from './utils';
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, rm, writeFile } from 'fs/promises';
 import pLimit from 'p-limit';
 import { mkdirp } from 'fs-extra';
 import { PackageDocsCache } from './Cache';
@@ -113,6 +113,14 @@ async function generateDocJson(pkg: string) {
 
 export default async function packageDocs(paths: string[] = [], opts: any) {
   console.warn('!!! This is an experimental command !!!');
+  await rm(cliPaths.resolveTargetRoot('type-docs'), {
+    recursive: true,
+    force: true,
+  });
+  await rm(cliPaths.resolveTargetRoot('dist-types'), {
+    recursive: true,
+    force: true,
+  });
   const selectedPackageDirs = await resolvePackagePaths({
     paths,
     include: opts.include,
@@ -128,7 +136,13 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
   await Promise.all(
     selectedPackageDirs.map(pkg =>
       limit(async () => {
-        if (EXCLUDE.includes(pkg)) {
+        const pkgJson = JSON.parse(
+          await readFile(
+            cliPaths.resolveTargetRoot(pkg, 'package.json'),
+            'utf-8',
+          ),
+        );
+        if (EXCLUDE.includes(pkg) || pkgJson.name.startsWith('@internal/')) {
           return;
         }
         if (await cache.has(pkg)) {
