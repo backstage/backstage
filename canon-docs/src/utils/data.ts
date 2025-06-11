@@ -14,8 +14,8 @@ export const overview: Page[] = [
     slug: 'about',
   },
   {
-    title: 'Releases',
-    slug: 'releases',
+    title: 'Changelog',
+    slug: 'changelog',
   },
 ];
 

@@ -2,7 +2,7 @@
 
 import * as Table from '../Table';
 import { Chip } from '../Chip';
-import { icons } from '../../../../packages/canon';
+import { icons } from '@backstage/canon';
 
 // Define a more specific type for the data object
 type PropData = {
@@ -53,6 +53,12 @@ export const PropsTable = <T extends Record<string, PropData>>({
                   {data[n].type === 'number' && <Chip>number</Chip>}
                   {data[n].type === 'boolean' && <Chip>boolean</Chip>}
                   {data[n].type === 'enum' && enumValues}
+                  {data[n].type === 'spacing' && (
+                    <>
+                      <Chip>0.5, 1, 1.5, 2, 3, ..., 14</Chip>
+                      <Chip>string</Chip>
+                    </>
+                  )}
                   {data[n].type === 'enum | string' && (
                     <>
                       {enumValues}
