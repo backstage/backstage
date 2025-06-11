@@ -2,7 +2,6 @@
 id: built-in-data-refs
 title: Built-in data refs
 sidebar_label: Built-in data refs
-# prettier-ignore
 description: Configuring or overriding built-in extension data references
 ---
 

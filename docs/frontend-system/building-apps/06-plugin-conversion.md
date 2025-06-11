@@ -2,7 +2,6 @@
 id: plugin-conversion
 title: Converting 3rd-party plugins from the old system
 sidebar_label: Converting 3rd-party Plugins
-# prettier-ignore
 description: Documentation for how to convert 3rd-party plugins to support the new frontend system.
 ---
 

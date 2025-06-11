@@ -1,7 +1,6 @@
 ---
 id: catalog-customization
 title: Catalog Customization
-# prettier-ignore
 description: How to add custom filters or interface elements to the Backstage software catalog
 ---
 

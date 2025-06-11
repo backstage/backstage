@@ -1,7 +1,6 @@
 ---
 id: autologout
 title: Auto Logout
-# prettier-ignore
 description: This section describes how to setup the Auto Logout mechanism in Backstage
 ---
 
