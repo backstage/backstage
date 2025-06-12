@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import yaml from 'yaml';
 import { createGitlabGroupEnsureExistsAction } from './gitlabGroupEnsureExists';
 import { examples } from './gitlabGroupEnsureExists.examples';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const mockGitlabClient = {
   Groups: {
@@ -50,15 +50,17 @@ describe('gitlab:group:ensureExists', () => {
       full_path: 'group1',
     });
 
-    const config = new ConfigReader({
-      integrations: {
-        gitlab: [
-          {
-            host: 'gitlab.com',
-            token: 'tokenlols',
-            apiBaseUrl: 'https://gitlab.com/api/v4',
-          },
-        ],
+    const config = mockServices.rootConfig({
+      data: {
+        integrations: {
+          gitlab: [
+            {
+              host: 'gitlab.com',
+              token: 'tokenlols',
+              apiBaseUrl: 'https://gitlab.com/api/v4',
+            },
+          ],
+        },
       },
     });
     const integrations = ScmIntegrations.fromConfig(config);
