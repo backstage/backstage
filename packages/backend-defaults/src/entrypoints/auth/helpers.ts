@@ -37,20 +37,22 @@ export function createCredentialsWithServicePrincipal(
       accessRestrictions,
     },
   } as const;
-  Object.defineProperty(result, 'token', {
-    enumerable: false,
-    configurable: true,
-    value: token,
-  });
-  Object.defineProperty(result, 'toString', {
-    enumerable: false,
-    configurable: true,
-    value: () =>
-      JSON.stringify({
-        $$type: '@backstage/BackstageCredentials',
-        type: 'service',
-        subject: sub,
-      }),
+  Object.defineProperties(result, {
+    token: {
+      enumerable: false,
+      configurable: true,
+      value: token,
+    },
+    toString: {
+      enumerable: false,
+      configurable: true,
+      value: () =>
+        JSON.stringify({
+          $$type: '@backstage/BackstageCredentials',
+          type: 'service',
+          subject: sub,
+        }),
+    },
   });
   return result;
 }
@@ -73,23 +75,25 @@ export function createCredentialsWithUserPrincipal(
       }),
     },
   } as const;
-  Object.defineProperty(result, 'token', {
-    enumerable: false,
-    configurable: true,
-    value: token,
-  });
-  Object.defineProperty(result, 'toString', {
-    enumerable: false,
-    configurable: true,
-    value: () =>
-      JSON.stringify({
-        $$type: '@backstage/BackstageCredentials',
-        type: 'user',
-        userEntityRef: sub,
-        ...(actor && {
-          actor: { type: 'service', subject: actor },
+  Object.defineProperties(result, {
+    token: {
+      enumerable: false,
+      configurable: true,
+      value: token,
+    },
+    toString: {
+      enumerable: false,
+      configurable: true,
+      value: () =>
+        JSON.stringify({
+          $$type: '@backstage/BackstageCredentials',
+          type: 'user',
+          userEntityRef: sub,
+          ...(actor && {
+            actor: { type: 'service', subject: actor },
+          }),
         }),
-      }),
+    },
   });
   return result;
 }
@@ -102,14 +106,16 @@ export function createCredentialsWithNonePrincipal(): InternalBackstageCredentia
       type: 'none',
     },
   } as const;
-  Object.defineProperty(result, 'toString', {
-    enumerable: false,
-    configurable: true,
-    value: () =>
-      JSON.stringify({
-        $$type: '@backstage/BackstageCredentials',
-        type: 'none',
-      }),
+  Object.defineProperties(result, {
+    toString: {
+      enumerable: false,
+      configurable: true,
+      value: () =>
+        JSON.stringify({
+          $$type: '@backstage/BackstageCredentials',
+          type: 'none',
+        }),
+    },
   });
   return result;
 }
