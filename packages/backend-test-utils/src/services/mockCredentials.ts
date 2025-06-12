@@ -80,14 +80,13 @@ export namespace mockCredentials {
       $$type: '@backstage/BackstageCredentials',
       principal: { type: 'none' },
     } as const;
-    Object.defineProperty(result, 'toString', {
-      enumerable: false,
-      configurable: true,
-      value: () =>
-        JSON.stringify({
-          $$type: '@backstage/MockBackstageCredentials',
-          type: 'none',
-        }),
+    Object.defineProperties(result, {
+      toString: {
+        enumerable: false,
+        configurable: true,
+        writable: true,
+        value: () => `mockCredentials{nonePrincipal}`,
+      },
     });
     return result;
   }
@@ -131,23 +130,20 @@ export namespace mockCredentials {
         }),
       },
     } as const;
-    Object.defineProperty(result, 'toString', {
-      enumerable: false,
-      configurable: true,
-      value: () =>
-        JSON.stringify({
-          $$type: '@backstage/MockBackstageCredentials',
-          type: 'user',
-          userEntityRef,
-          ...(options?.actor && {
-            actor: { type: 'service', subject: options.actor.subject },
-          }),
-        }),
-    });
-    Object.defineProperty(result, 'token', {
-      enumerable: false,
-      configurable: true,
-      value: user.token(),
+    Object.defineProperties(result, {
+      toString: {
+        enumerable: false,
+        configurable: true,
+        value: () =>
+          `mockCredentials{userPrincipal{${userEntityRef}${
+            options?.actor ? `,actor={${options.actor.subject}}` : ''
+          }}}`,
+      },
+      token: {
+        enumerable: false,
+        configurable: true,
+        value: user.token(),
+      },
     });
     return result;
   }
@@ -260,15 +256,17 @@ export namespace mockCredentials {
         ...(accessRestrictions ? { accessRestrictions } : {}),
       },
     } as const;
-    Object.defineProperty(result, 'toString', {
-      enumerable: false,
-      configurable: true,
-      value: () =>
-        JSON.stringify({
-          $$type: '@backstage/MockBackstageCredentials',
-          type: 'service',
-          subject,
-        }),
+    Object.defineProperties(result, {
+      toString: {
+        enumerable: false,
+        configurable: true,
+        value: () =>
+          `mockCredentials{servicePrincipal{${subject}${
+            accessRestrictions
+              ? `,accessRestrictions=${JSON.stringify(accessRestrictions)}`
+              : ''
+          }}}`,
+      },
     });
     return result;
   }

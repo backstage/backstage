@@ -173,12 +173,12 @@ describe('mockCredentials', () => {
 
   it('should have a serializable form', () => {
     expect(String(mockCredentials.service('my-service'))).toMatchInlineSnapshot(
-      `"{"$$type":"@backstage/MockBackstageCredentials","type":"service","subject":"my-service"}"`,
+      `"mockCredentials{servicePrincipal{my-service}}"`,
     );
     expect(
       String(mockCredentials.user('user:default/mock')),
     ).toMatchInlineSnapshot(
-      `"{"$$type":"@backstage/MockBackstageCredentials","type":"user","userEntityRef":"user:default/mock"}"`,
+      `"mockCredentials{userPrincipal{user:default/mock}}"`,
     );
     expect(
       String(
@@ -187,10 +187,10 @@ describe('mockCredentials', () => {
         }),
       ),
     ).toMatchInlineSnapshot(
-      `"{"$$type":"@backstage/MockBackstageCredentials","type":"user","userEntityRef":"user:default/mock","actor":{"type":"service","subject":"my-actor"}}"`,
+      `"mockCredentials{userPrincipal{user:default/mock,actor={my-actor}}}"`,
     );
     expect(String(mockCredentials.none())).toMatchInlineSnapshot(
-      `"{"$$type":"@backstage/MockBackstageCredentials","type":"none"}"`,
+      `"mockCredentials{nonePrincipal}"`,
     );
   });
 });
