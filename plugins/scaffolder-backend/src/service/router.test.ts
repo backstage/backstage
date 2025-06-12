@@ -195,22 +195,7 @@ const createTestRouter = async (
   jest.spyOn(taskBroker, 'event$');
 
   const catalog = catalogServiceMock.mock();
-  const permissions = mockServices.permissions.mock();
-
-  permissions.authorizeConditional.mockImplementation(async p =>
-    p.map(innerP => ({
-      ...innerP,
-      result: AuthorizeResult.ALLOW,
-    })),
-  );
-
-  permissions.authorize.mockImplementation(async p =>
-    p.map(innerP => ({
-      ...innerP,
-      result: AuthorizeResult.ALLOW,
-    })),
-  );
-
+  const permissions = mockServices.permissions();
   const auth = mockServices.auth();
   const httpAuth = mockServices.httpAuth();
   const events = mockServices.events();
@@ -517,14 +502,16 @@ describe('scaffolder router', () => {
 
     it('filters parameters that the user is not authorized to see', async () => {
       const { router, permissions } = await createTestRouter();
-      permissions.authorizeConditional.mockImplementationOnce(async () => [
-        {
-          result: AuthorizeResult.DENY,
-        },
-        {
-          result: AuthorizeResult.ALLOW,
-        },
-      ]);
+      jest
+        .spyOn(permissions, 'authorizeConditional')
+        .mockImplementationOnce(async () => [
+          {
+            result: AuthorizeResult.DENY,
+          },
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+        ]);
 
       const response = await request(router)
         .get(
@@ -541,21 +528,23 @@ describe('scaffolder router', () => {
 
     it('filters parameters that the user is not authorized to see in case of conditional decision', async () => {
       const { permissions, router } = await createTestRouter();
-      permissions.authorizeConditional.mockImplementation(async () => [
-        {
-          conditions: {
+      jest
+        .spyOn(permissions, 'authorizeConditional')
+        .mockImplementation(async () => [
+          {
+            conditions: {
+              resourceType: 'scaffolder-template',
+              rule: 'HAS_TAG',
+              params: { tag: 'parameters-tag' },
+            },
+            pluginId: 'scaffolder',
             resourceType: 'scaffolder-template',
-            rule: 'HAS_TAG',
-            params: { tag: 'parameters-tag' },
+            result: AuthorizeResult.CONDITIONAL,
           },
-          pluginId: 'scaffolder',
-          resourceType: 'scaffolder-template',
-          result: AuthorizeResult.CONDITIONAL,
-        },
-        {
-          result: AuthorizeResult.ALLOW,
-        },
-      ]);
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+        ]);
 
       const response = await request(router)
         .get(
@@ -721,14 +710,16 @@ describe('scaffolder router', () => {
 
     it('filters steps that the user is not authorized to see', async () => {
       const { router, permissions, taskBroker } = await createTestRouter();
-      permissions.authorizeConditional.mockImplementation(async () => [
-        {
-          result: AuthorizeResult.ALLOW,
-        },
-        {
-          result: AuthorizeResult.DENY,
-        },
-      ]);
+      jest
+        .spyOn(permissions, 'authorizeConditional')
+        .mockImplementation(async () => [
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+          {
+            result: AuthorizeResult.DENY,
+          },
+        ]);
 
       const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
       const mockTemplate = generateMockTemplate();
@@ -786,21 +777,23 @@ describe('scaffolder router', () => {
 
     it('filters steps that the user is not authorized to see in case of conditional decision', async () => {
       const { permissions, router, taskBroker } = await createTestRouter();
-      permissions.authorizeConditional.mockImplementation(async () => [
-        {
-          result: AuthorizeResult.ALLOW,
-        },
-        {
-          conditions: {
-            resourceType: 'scaffolder-template',
-            rule: 'HAS_TAG',
-            params: { tag: 'steps-tag' },
+      jest
+        .spyOn(permissions, 'authorizeConditional')
+        .mockImplementation(async () => [
+          {
+            result: AuthorizeResult.ALLOW,
           },
-          pluginId: 'scaffolder',
-          resourceType: 'scaffolder-template',
-          result: AuthorizeResult.CONDITIONAL,
-        },
-      ]);
+          {
+            conditions: {
+              resourceType: 'scaffolder-template',
+              rule: 'HAS_TAG',
+              params: { tag: 'steps-tag' },
+            },
+            pluginId: 'scaffolder',
+            resourceType: 'scaffolder-template',
+            result: AuthorizeResult.CONDITIONAL,
+          },
+        ]);
 
       const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
       const mockTemplate = generateMockTemplate();
