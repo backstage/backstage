@@ -18,8 +18,24 @@ var path = require('path');
 
 module.exports = {
   root: true,
-  plugins: ['@spotify', 'notice', 'react', 'testing-library'],
+  plugins: ['@spotify', 'notice', 'react', 'testing-library', '@backstage'],
   rules: {
+    '@backstage/no-mixed-plugin-imports': [
+      'error',
+      {
+        // TODO: Fix these either by right role or by moving things to new packages
+        excludedTargetPackages: [
+          '@backstage/test-utils',
+          '@backstage/config-loader',
+          '@backstage/plugin-catalog',
+          '@backstage/plugin-permission-backend',
+          '@backstage/plugin-app-backend',
+          '@backstage/plugin-techdocs',
+          '@backstage/plugin-app',
+          '@backstage/plugin-catalog-backend'
+        ],
+      }
+    ],
     'react/react-in-jsx-scope': 'off',
     'notice/notice': [
       'error',
