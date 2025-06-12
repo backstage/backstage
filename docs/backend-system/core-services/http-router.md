@@ -71,10 +71,9 @@ access the incoming credentials.
 ## Rate limiting
 
 Rate limiting allows you to limit the amount of requests users can send to you backend.
-This is useful for blocking various network attacks, such as DDOS, if your instance does not
-have additional firewall configured to handle this.
+This is useful for blocking various network attacks, such as DDOS.
 
-To configure the default rate limiting, add the following to your config:
+To enable rate limiting, add the following to your config:
 
 ```yaml
 backend:
