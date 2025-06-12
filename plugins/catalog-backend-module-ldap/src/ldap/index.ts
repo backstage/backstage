@@ -37,3 +37,11 @@ export {
   readLdapOrg,
 } from './read';
 export type { GroupTransformer, UserTransformer } from './types';
+export type {
+  ActiveDirectoryVendor,
+  DefaultLdapVendor,
+  FreeIpaVendor,
+  AEDirVendor,
+  GoogleLdapVendor,
+  LLDAPVendor,
+} from './vendors';
