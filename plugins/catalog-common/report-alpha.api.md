@@ -6,45 +6,45 @@
 import { BasicPermission } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 
-// @alpha
+// @public
 export const catalogEntityCreatePermission: BasicPermission;
 
-// @alpha
+// @public
 export const catalogEntityDeletePermission: ResourcePermission<'catalog-entity'>;
 
-// @alpha
+// @public
 export type CatalogEntityPermission = ResourcePermission<
   typeof RESOURCE_TYPE_CATALOG_ENTITY
 >;
 
-// @alpha
+// @public
 export const catalogEntityReadPermission: ResourcePermission<'catalog-entity'>;
 
-// @alpha
+// @public
 export const catalogEntityRefreshPermission: ResourcePermission<'catalog-entity'>;
 
-// @alpha
+// @public
 export const catalogEntityValidatePermission: BasicPermission;
 
-// @alpha
+// @public
 export const catalogLocationAnalyzePermission: BasicPermission;
 
-// @alpha
+// @public
 export const catalogLocationCreatePermission: BasicPermission;
 
-// @alpha
+// @public
 export const catalogLocationDeletePermission: BasicPermission;
 
-// @alpha
+// @public
 export const catalogLocationReadPermission: BasicPermission;
 
-// @alpha
+// @public
 export const catalogPermissions: (
   | BasicPermission
   | ResourcePermission<'catalog-entity'>
 )[];
 
-// @alpha
+// @public
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
 
 // (No @packageDocumentation comment for this package)
