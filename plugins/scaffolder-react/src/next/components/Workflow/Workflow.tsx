@@ -99,9 +99,12 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
 
       analytics.captureEvent('create', 'Task has been created', {
         value: minutesSaved,
+        attributes: {
+          templateSteps: sortedManifest?.steps?.length ?? 0,
+        },
       });
     },
-    [onCreate, analytics, minutesSaved],
+    [onCreate, analytics, minutesSaved, sortedManifest],
   );
 
   useEffect(() => {
