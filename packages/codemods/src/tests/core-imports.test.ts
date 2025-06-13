@@ -15,6 +15,7 @@
  */
 
 import jscodeshift, { API } from 'jscodeshift';
+// @ts-ignore no types are provided
 import coreImportTransform from '../../transforms/core-imports';
 
 function runTransform(source: string) {

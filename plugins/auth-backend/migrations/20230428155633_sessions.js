@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   // See https://github.com/gx0r/connect-session-knex
   // Modeled loosely after https://github.com/gx0r/connect-session-knex/blob/4e0e36a9afbb13c3000a89f5e341f2d2d4339a02/lib/index.js#L114
   // For simplicity we always make the session a string
@@ -38,15 +38,20 @@ exports.up = async function up(knex) {
     table.index('sid', 'sessions_sid_idx');
     table.index('expired', 'sessions_expired_idx');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('sessions', table => {
     table.dropIndex([], 'sessions_sid_idx');
     table.dropIndex([], 'sessions_expired_idx');
   });
   await knex.schema.dropTable('sessions');
+}
+
+exports = {
+  up,
+  down,
 };

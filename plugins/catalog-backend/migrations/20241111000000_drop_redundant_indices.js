@@ -20,7 +20,7 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.alterTable('final_entities', table => {
     table.dropIndex([], 'final_entities_entity_id_idx'); // overlaps with final_entities_pkey
   });
@@ -34,13 +34,13 @@ exports.up = async function up(knex) {
     table.dropIndex([], 'search_key_idx'); // was replaced by search_key_value_idx in 20240130092632_search_index
     table.dropIndex([], 'search_value_idx'); // was replaced by search_key_value_idx in 20240130092632_search_index
   });
-};
+}
 
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('final_entities', table => {
     table.index('entity_id', 'final_entities_entity_id_idx');
   });
@@ -54,4 +54,9 @@ exports.down = async function down(knex) {
     table.index(['key'], 'search_key_idx');
     table.index(['value'], 'search_value_idx');
   });
+}
+
+exports = {
+  up,
+  down,
 };

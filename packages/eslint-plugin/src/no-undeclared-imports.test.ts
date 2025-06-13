@@ -16,6 +16,7 @@
 
 import { RuleTester } from 'eslint';
 import { join as joinPath } from 'path';
+// @ts-ignore no types are provided
 import rule from '../rules/no-undeclared-imports';
 
 jest.mock('child_process', () => ({

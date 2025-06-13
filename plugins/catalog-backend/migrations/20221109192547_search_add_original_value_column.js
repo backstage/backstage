@@ -19,7 +19,7 @@
 /**
  * @param { import("knex").Knex } knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   // Start out with an original_value column that's equal to the value column
   await knex.schema.alterTable('search', table => {
     table
@@ -39,13 +39,18 @@ exports.up = async function up(knex) {
     result_hash: '',
     next_update_at: knex.fn.now(),
   });
-};
+}
 
 /**
  * @param { import("knex").Knex } knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('search', table => {
     table.dropColumn('original_value');
   });
+}
+
+exports = {
+  up,
+  down,
 };

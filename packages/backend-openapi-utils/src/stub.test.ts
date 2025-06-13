@@ -59,6 +59,7 @@ describe('createRouter', () => {
   it('does NOT override originalUrl and basePath after execution', async () => {
     expect.assertions(2);
     const router = createValidatedOpenApiRouter(singlePathSpec);
+    // @ts-ignore excessive stack depth comparing types
     router.get('/pet/:petId', (req, res) => {
       expect(req.baseUrl).toBe('/pet-store');
       expect(req.originalUrl).toBe(`/pet-store/pet/${req.params.petId}`);

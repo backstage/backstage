@@ -19,19 +19,19 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.alterTable('entities', table => {
     table.dropColumn('api_version');
     table.dropColumn('kind');
     table.dropColumn('name');
     table.dropColumn('namespace');
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('entities', table => {
     table
       .string('api_version')
@@ -47,4 +47,9 @@ exports.down = async function down(knex) {
       .nullable()
       .comment('The metadata.namespace field of the entity');
   });
+}
+
+exports = {
+  up,
+  down,
 };

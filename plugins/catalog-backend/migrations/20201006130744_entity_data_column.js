@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.alterTable('entities', table => {
     table
       .text('data')
@@ -47,12 +47,12 @@ exports.up = async function up(knex) {
       table.text('data').notNullable().alter({ alterNullable: true });
     });
   }
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('entities', table => {
     table
       .text('metadata')
@@ -64,4 +64,9 @@ exports.down = async function down(knex) {
       .comment('The entire spec JSON blob of the entity');
     table.dropColumn('data');
   });
+}
+
+exports = {
+  up,
+  down,
 };

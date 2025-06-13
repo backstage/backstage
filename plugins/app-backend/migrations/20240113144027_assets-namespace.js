@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   const isMySQL = knex.client.config.client.includes('mysql');
 
   await knex.schema.alterTable('static_assets_cache', table => {
@@ -43,12 +43,12 @@ exports.up = async function up(knex) {
       'create unique index static_assets_cache_path_idx on static_assets_cache(namespace, path(254));',
     );
   }
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   const isMySQL = knex.client.config.client.includes('mysql');
 
   await knex
@@ -79,4 +79,9 @@ exports.down = async function down(knex) {
       'create unique index static_assets_cache_path_idx on static_assets_cache(path(254));',
     );
   }
+}
+
+exports = {
+  up,
+  down,
 };

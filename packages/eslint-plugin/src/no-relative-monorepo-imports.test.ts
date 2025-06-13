@@ -16,6 +16,7 @@
 
 import { RuleTester } from 'eslint';
 import path from 'path';
+// @ts-ignore no types are provided
 import rule from '../rules/no-relative-monorepo-imports';
 
 const RULE = 'no-relative-monorepo-imports';

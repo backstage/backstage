@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-exports.up = async function up(knex) {
+
+// @ts-check
+
+/**
+ * @param {import('knex').Knex} knex
+ */
+async function up(knex) {
   await knex.schema.createTable('user_settings', table => {
     table.string('user').notNullable();
     table.string('channel').notNullable();
@@ -24,11 +30,16 @@ exports.up = async function up(knex) {
       indexName: 'user_settings_unique_idx',
     });
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.dropTable('user_settings');
+}
+
+exports = {
+  up,
+  down,
 };

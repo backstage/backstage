@@ -19,15 +19,20 @@
 /**
  * @param { import("knex").Knex } knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex('final_entities').update({ hash: '' });
   await knex('refresh_state').update({
     result_hash: '',
     next_update_at: knex.fn.now(),
   });
-};
+}
 
 /**
  * @param { import("knex").Knex } _knex
  */
-exports.down = async function down(_knex) {};
+async function down(_knex) {}
+
+exports = {
+  up,
+  down,
+};

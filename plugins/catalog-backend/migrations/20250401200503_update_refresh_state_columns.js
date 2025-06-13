@@ -17,7 +17,7 @@
  * @param {import('knex').Knex} knex
  * @returns {Promise<void>}
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   const isMySQL = knex.client.config.client.includes('mysql');
   // update the columns to longtext for MySQL
   if (isMySQL) {
@@ -26,13 +26,13 @@ exports.up = async function up(knex) {
       table.text('cache', 'longtext').alter();
     });
   }
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  * @returns {Promise<void>}
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   const isMySQL = knex.client.config.client.includes('mysql');
   if (isMySQL) {
     await knex.schema.alterTable('refresh_state', table => {
@@ -40,4 +40,9 @@ exports.down = async function down(knex) {
       table.text('cache').alter();
     });
   }
+}
+
+exports = {
+  up,
+  down,
 };

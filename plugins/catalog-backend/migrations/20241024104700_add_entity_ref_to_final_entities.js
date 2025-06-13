@@ -20,7 +20,7 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   await knex.schema.alterTable('final_entities', table => {
     table
       .string('entity_ref')
@@ -43,15 +43,20 @@ exports.up = async function up(knex) {
       indexName: 'final_entities_entity_ref_uniq',
     });
   });
-};
+}
 
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   await knex.schema.alterTable('final_entities', table => {
     table.dropUnique([], 'final_entities_entity_ref_uniq');
     table.dropColumn('entity_ref');
   });
+}
+
+exports = {
+  up,
+  down,
 };

@@ -19,13 +19,18 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   // Make sure to reprocess everything, to make sure that relations have a targetRef produced
   await knex('final_entities').update({ hash: '' });
   await knex('refresh_state').update({
     result_hash: '',
     next_update_at: knex.fn.now(),
   });
-};
+}
 
-exports.down = async function down() {};
+async function down() {}
+
+exports = {
+  up,
+  down,
+};

@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = async function up(knex) {
+async function up(knex) {
   return knex.schema.createTable('location_update_log', table => {
     table.uuid('id').primary();
     table.enum('status', ['success', 'fail']).notNullable();
@@ -33,11 +33,16 @@ exports.up = async function up(knex) {
       .onDelete('CASCADE');
     table.string('entity_name').nullable();
   });
-};
+}
 
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+async function down(knex) {
   return knex.schema.dropTableIfExists('location_update_log');
+}
+
+exports = {
+  up,
+  down,
 };
