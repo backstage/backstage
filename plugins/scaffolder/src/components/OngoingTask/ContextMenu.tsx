@@ -21,7 +21,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import Popover from '@material-ui/core/Popover';
 import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
-import { useAsync } from '@react-hookz/web';
 import Cancel from '@material-ui/icons/Cancel';
 import Repeat from '@material-ui/icons/Repeat';
 import Replay from '@material-ui/icons/Replay';
