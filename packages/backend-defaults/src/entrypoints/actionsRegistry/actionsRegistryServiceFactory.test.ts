@@ -181,6 +181,109 @@ describe('actionsRegistryServiceFactory', () => {
       });
     });
 
+    it('should set default attributes', async () => {
+      const pluginSubject = createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: coreServices.actionsRegistry,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'test',
+                title: 'Test',
+                description: 'Test',
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: { ok: true } }),
+              });
+            },
+          });
+        },
+      });
+
+      const { server } = await startTestBackend({
+        features: [pluginSubject, ...defaultServices],
+      });
+
+      const { body, status } = await request(server).get(
+        '/api/my-plugin/.backstage/actions/v1/actions',
+      );
+
+      expect(status).toBe(200);
+
+      expect(body).toMatchObject({
+        actions: [
+          {
+            name: 'test',
+            attributes: {
+              destructive: false,
+              idempotent: false,
+              readOnly: false,
+            },
+          },
+        ],
+      });
+    });
+
+    it('should allow setting attributes', async () => {
+      const pluginSubject = createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: coreServices.actionsRegistry,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'test',
+                title: 'Test',
+                description: 'Test',
+                attributes: {
+                  destructive: true,
+                  idempotent: true,
+                  readOnly: true,
+                },
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: { ok: true } }),
+              });
+            },
+          });
+        },
+      });
+
+      const { server } = await startTestBackend({
+        features: [pluginSubject, ...defaultServices],
+      });
+
+      const { body, status } = await request(server).get(
+        '/api/my-plugin/.backstage/actions/v1/actions',
+      );
+
+      expect(status).toBe(200);
+
+      expect(body).toMatchObject({
+        actions: [
+          {
+            name: 'test',
+            title: 'Test',
+            description: 'Test',
+            attributes: {
+              destructive: true,
+              idempotent: true,
+              readOnly: true,
+            },
+          },
+        ],
+      });
+    });
+
     it('should forces registration of input and output schema as objects', async () => {
       const pluginSubject = createBackendPlugin({
         pluginId: 'my-plugin',
