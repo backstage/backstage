@@ -48,6 +48,11 @@ export type ActionsRegistryActionOptions<
     input: (zod: typeof z) => TInputSchema;
     output: (zod: typeof z) => TOutputSchema;
   };
+  attributes?: {
+    destructive?: boolean;
+    idempotent?: boolean;
+    readOnly?: boolean;
+  };
   action: (context: ActionsRegistryActionContext<TInputSchema>) => Promise<
     z.infer<TOutputSchema> extends void
       ? void
@@ -93,6 +98,11 @@ export type ActionsServiceAction = {
   schema: {
     input: JSONSchema7;
     output: JSONSchema7;
+  };
+  attributes: {
+    readOnly: boolean;
+    destructive: boolean;
+    idempotent: boolean;
   };
 };
 
