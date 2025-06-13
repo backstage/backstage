@@ -20,6 +20,17 @@ const visitImports = require('../lib/visitImports');
 const getPackages = require('../lib/getPackages');
 const minimatch = require('minimatch');
 
+/** @typedef {import('../lib/getPackages.js').ExtendedPackage} ExtendedPackage */
+
+/**
+ * @param {string} pattern
+ * @param {string} filePath
+ * @returns {boolean}
+ */
+const matchesPattern = (pattern, filePath) => {
+  return new minimatch.Minimatch(pattern).match(filePath);
+};
+
 const roleRules = [
   {
     sourceRole: ['frontend-plugin', 'web-library'],
@@ -87,23 +98,22 @@ module.exports = {
       ? context.physicalFilename
       : context.filename;
 
+    /** @type {ExtendedPackage | undefined} */
     const pkg = packages.byPath(filePath);
     if (!pkg) {
       return {};
     }
 
     const options = context.options[0] || {};
+    /** @type {string[]} */
     const ignoreTargetPackages = options.excludedTargetPackages || [];
+    /** @type {string[]} */
     const ignorePatterns = options.excludedFiles || [
       '**/*.{test,spec}.[jt]s?(x)',
       '**/dev/index.[jt]s?(x)',
     ];
 
-    if (
-      ignorePatterns.some(pattern =>
-        new minimatch.Minimatch(pattern).match(context.filename),
-      )
-    ) {
+    if (ignorePatterns.some(pattern => matchesPattern(pattern, filePath))) {
       return {};
     }
 
@@ -112,8 +122,9 @@ module.exports = {
         return;
       }
 
+      /** @type {ExtendedPackage | undefined} */
       const targetPackage = imp.package;
-      const targetName = targetPackage.packageJson.name;
+      const targetName = targetPackage?.packageJson.name;
       const sourceName = pkg.packageJson.name;
       if (sourceName === targetName) {
         return;
