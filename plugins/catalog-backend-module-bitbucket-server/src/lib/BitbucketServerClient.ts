@@ -70,8 +70,11 @@ export class BitbucketServerClient {
     repo: string;
     path: string;
   }): Promise<Response> {
+    const normalizedPath = options.path.startsWith('/')
+      ? options.path.substring(1)
+      : options.path;
     return fetch(
-      `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}/raw/${options.path}`,
+      `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}/raw/${normalizedPath}`,
       getBitbucketServerRequestOptions(this.config),
     );
   }
