@@ -60,7 +60,7 @@ backend:
     # - A string in the format of '1d', '2 seconds' etc. as supported by the `ms` library.
     # - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
     # - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
-    serverShutdownTimeout: { seconds: 20 }
+    serverShutdownDelay: { seconds: 20 }
 ```
 
 ### Via Code
