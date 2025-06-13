@@ -18,7 +18,7 @@
     "@uiw/codemirror-themes": "^4.23.7",
     "@uiw/react-codemirror": "^4.23.7",
     "motion": "^12.4.1",
-    "next": "14.2.26",
+    "next": "14.2.30",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-frame-component": "^5.2.7",
