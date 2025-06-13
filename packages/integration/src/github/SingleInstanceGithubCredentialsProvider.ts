@@ -201,9 +201,11 @@ class GithubAppManager {
 export class GithubAppCredentialsMux {
   private readonly apps: GithubAppManager[];
 
-  constructor(config: GithubIntegrationConfig) {
+  constructor(config: GithubIntegrationConfig, appIds: number[] = []) {
     this.apps =
-      config.apps?.map(ac => new GithubAppManager(ac, config.apiBaseUrl)) ?? [];
+      config.apps
+        ?.filter(app => (appIds.length ? appIds.includes(app.appId) : true))
+        .map(ac => new GithubAppManager(ac, config.apiBaseUrl)) ?? [];
   }
 
   async getAllInstallations(): Promise<
