@@ -27,6 +27,39 @@ import { z, AnyZodObject } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { mockCredentials } from './mockCredentials';
 
+/**
+ * A mock implementation of the ActionsRegistryService and ActionsService that can be used in tests.
+ *
+ * This is useful for testing actions that are registered with the ActionsRegistryService and ActionsService.
+ *
+ * The plugin ID is hardcoded to `testing` in the mock implementation.
+ *
+ * @example
+ * ```ts
+ * const actionsRegistry = mockServices.actionsRegistry();
+ *
+ * actionsRegistry.register({
+ *   name: 'test',
+ *   title: 'Test',
+ *   description: 'Test',
+ *   schema: {
+ *     input: z.object({ name: z.string() }),
+ *     output: z.object({ name: z.string() }),
+ *   },
+ *   action: async ({ input }) => ({ output: { name: input.name } }),
+ * });
+ *
+ *
+ * const result = await actionsRegistry.invoke({
+ *   id: 'testing:test',
+ *   input: { name: 'test' },
+ * });
+ *
+ * expect(result).toEqual({ output: { name: 'test' } });
+ * ```
+ *
+ * @public
+ */
 export class MockActionsRegistry
   implements ActionsRegistryService, ActionsService
 {
