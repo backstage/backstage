@@ -22,6 +22,7 @@ import pLimit from 'p-limit';
 import { mkdirp } from 'fs-extra';
 import { PackageDocsCache } from './Cache';
 import { Lockfile } from '@backstage/cli-node';
+import { glob } from 'glob';
 
 const limit = pLimit(8);
 
@@ -113,6 +114,20 @@ async function generateDocJson(pkg: string) {
 
 export default async function packageDocs(paths: string[] = [], opts: any) {
   console.warn('!!! This is an experimental command !!!');
+
+  const existingDocsJsonPaths = glob.sync(
+    cliPaths.resolveTargetRoot('dist-types/**/docs.json'),
+  );
+  if (existingDocsJsonPaths.length > 0) {
+    console.warn(
+      `!!! Deleting all ${existingDocsJsonPaths.length} existing docs.json files !!!`,
+    );
+
+    for (const path of existingDocsJsonPaths) {
+      await rm(path, { force: true });
+    }
+  }
+  console.warn('!!! Deleting existing docs output !!!');
   await rm(cliPaths.resolveTargetRoot('type-docs'), {
     recursive: true,
     force: true,
