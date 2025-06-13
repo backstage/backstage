@@ -83,18 +83,16 @@ export function TemplateWizardPageContextMenu(
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <MenuList>
-          <Link to={editUrl} color="inherit">
-            <MenuItem>
-              <ListItemIcon>
-                <Edit fontSize="small" />
-              </ListItemIcon>
-              <ListItemText
-                primary={t(
-                  'templateWizardPage.pageContextMenu.editConfigurationTitle',
-                )}
-              />
-            </MenuItem>
-          </Link>
+          <MenuItem component={Link} to={editUrl}>
+            <ListItemIcon>
+              <Edit fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary={t(
+                'templateWizardPage.pageContextMenu.editConfigurationTitle',
+              )}
+            />
+          </MenuItem>
         </MenuList>
       </Popover>
     </>
