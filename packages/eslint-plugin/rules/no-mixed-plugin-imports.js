@@ -64,11 +64,18 @@ module.exports = {
     messages: {
       forbidden:
         '{{sourcePackage}} ({{sourceRole}}) uses forbidden import from {{targetPackage}} ({{targetRole}}).',
+      useReactPlugin:
+        'Use web library {{targetPackage}}-react or common library instead.',
+      useNodePlugin:
+        'Use node library {{targetPackage}}-node or common library instead.',
+      removeImport:
+        'Remove this import to avoid mixed plugin imports. Fix the code by refactoring it to use the correct plugin type.',
     },
     docs: {
       description: 'Disallow mixed plugin imports.',
       url: 'https://github.com/backstage/backstage/blob/master/packages/eslint-plugin/docs/rules/no-mixed-plugin-imports.md',
     },
+    hasSuggestions: true,
     schema: [
       {
         type: 'object',
@@ -144,6 +151,53 @@ module.exports = {
             !ignoreTargetPackages.includes(targetName),
         )
       ) {
+        const suggest = [];
+
+        if (
+          (sourceRole === 'frontend-plugin' || sourceRole === 'web-library') &&
+          targetRole === 'frontend-plugin'
+        ) {
+          suggest.push({
+            messageId: 'useReactPlugin',
+            data: {
+              targetPackage: targetName,
+            },
+            /** @param {import('eslint').Rule.RuleFixer} fixer */
+            fix(fixer) {
+              const source = context.sourceCode;
+              const nodeSource = source.getText(imp.node);
+              const newImport = nodeSource.replace(/'$/, "-react'");
+              return fixer.replaceText(imp.node, newImport);
+            },
+          });
+        } else if (
+          (sourceRole === 'backend-plugin' ||
+            sourceRole === 'backend-plugin-module') &&
+          targetRole === 'backend-plugin'
+        ) {
+          suggest.push({
+            messageId: 'useNodePlugin',
+            data: {
+              targetPackage: targetName,
+            },
+            /** @param {import('eslint').Rule.RuleFixer} fixer */
+            fix(fixer) {
+              const source = context.sourceCode;
+              const nodeSource = source.getText(imp.node);
+              const newImport = nodeSource.replace(/-backend'$/, "-node'");
+              return fixer.replaceText(imp.node, newImport);
+            },
+          });
+        } else {
+          suggest.push({
+            messageId: 'removeImport',
+            /** @param {import('eslint').Rule.RuleFixer} _fixer */
+            fix(_fixer) {
+              // Not a fixable case, just give a suggestion to remove the import
+            },
+          });
+        }
+
         context.report({
           node: node,
           messageId: 'forbidden',
@@ -153,6 +207,7 @@ module.exports = {
             targetPackage: targetPackage.packageJson.name || imp.package.dir,
             targetRole,
           },
+          suggest,
         });
       }
     });
