@@ -22,7 +22,7 @@ module.exports = {
         '@backstage/no-forbidden-package-imports': 'error',
         '@backstage/no-relative-monorepo-imports': 'error',
         '@backstage/no-undeclared-imports': 'error',
-        '@backstage/no-mixed-plugin-imports': 'error',
+        '@backstage/no-mixed-plugin-imports': 'warn',
       },
     },
   },
