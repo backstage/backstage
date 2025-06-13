@@ -1067,6 +1067,75 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
       );
     });
 
+    it('should allow dynamic field updates via setFields method', async () => {
+      const initialFields = ['kind', 'metadata.name'];
+      const updatedFields = [
+        'kind',
+        'metadata.name',
+        'metadata.namespace',
+        'spec.type',
+      ];
+
+      const DynamicFieldsWrapper = ({ children }: PropsWithChildren) => {
+        return (
+          <MemoryRouter>
+            <TestApiProvider
+              apis={[
+                [configApiRef, mockApis.config()],
+                [catalogApiRef, mockCatalogApi],
+                [identityApiRef, mockIdentityApi],
+                [storageApiRef, mockApis.storage()],
+                [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+                [alertApiRef, { post: jest.fn() }],
+                [translationApiRef, mockApis.translation()],
+                [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
+              ]}
+            >
+              <EntityListProvider
+                pagination={{ mode: 'offset' }}
+                fields={initialFields}
+              >
+                {children}
+              </EntityListProvider>
+            </TestApiProvider>
+          </MemoryRouter>
+        );
+      };
+
+      const { result } = renderHook(() => useEntityList(), {
+        wrapper: DynamicFieldsWrapper,
+      });
+
+      // Initial fields should be available
+      expect(result.current.fields).toEqual(initialFields);
+
+      // Update fields dynamically
+      act(() => {
+        result.current.setFields(updatedFields);
+      });
+
+      // Fields should be updated
+      expect(result.current.fields).toEqual(updatedFields);
+
+      // Trigger a filter update to cause API call with new fields
+      act(() => {
+        result.current.updateFilters({
+          kind: new EntityKindFilter('component', 'Component'),
+        });
+      });
+
+      await waitFor(() => {
+        expect(mockCatalogApi.queryEntities).toHaveBeenCalled();
+      });
+
+      // Verify the API was called with the updated fields
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fields: updatedFields,
+        }),
+      );
+    });
+
     it('should verify field selection actually limits API response data', async () => {
       // Mock limited entity data that simulates field selection response
       const limitedEntities = [
