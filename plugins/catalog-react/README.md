@@ -10,7 +10,7 @@ supplies components that can be reused by third-party plugins.
 ## Usage Example
 
 ```tsx
-import { EntityListProvider } from '@backstage/plugin-catalog-react';
+import { EntityListProvider, useEntityList } from '@backstage/plugin-catalog-react';
 
 // Basic usage
 <EntityListProvider>
@@ -21,6 +21,17 @@ import { EntityListProvider } from '@backstage/plugin-catalog-react';
 <EntityListProvider fields={['kind', 'metadata.name', 'metadata.namespace']}>
   <YourCatalogComponent />
 </EntityListProvider>
+
+// Dynamic field updates
+function MyComponent() {
+  const { setFields } = useEntityList();
+
+  const handleColumnChange = (columns: string[]) => {
+    setFields(columns); // Updates fields dynamically
+  };
+
+  return <CustomTable onColumnsChange={handleColumnChange} />;
+}
 ```
 
 ## Links
