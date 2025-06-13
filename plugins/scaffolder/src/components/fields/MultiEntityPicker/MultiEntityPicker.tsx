@@ -32,6 +32,7 @@ import {
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, {
   AutocompleteChangeReason,
+  createFilterOptions,
 } from '@material-ui/lab/Autocomplete';
 import { useCallback, useEffect, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
@@ -203,6 +204,11 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
             }}
           />
         )}
+        filterOptions={createFilterOptions<Entity>({
+          stringify: option =>
+            entities?.entityRefToPresentation.get(stringifyEntityRef(option))
+              ?.primaryTitle!,
+        })}
         ListboxComponent={VirtualizedListbox}
       />
     </ScaffolderField>

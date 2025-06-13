@@ -947,4 +947,81 @@ describe('<MultiEntityPicker />', () => {
       expect(getByText(description.fromUiSchema)).toBeInTheDocument();
     });
   });
+
+  describe('entity presentation', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          defaultKind: 'Group',
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps<any>;
+    });
+
+    it('renders and filters selection displayName', async () => {
+      catalogApi.getEntities.mockResolvedValue({
+        items: entities.map(item => ({
+          ...item,
+          spec: {
+            profile: { displayName: item.metadata.name.replace('-', ' ') },
+          },
+        })),
+      });
+
+      const { getByRole, getByText } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'team a' } });
+
+      expect(getByText('team a')).toBeInTheDocument();
+
+      fireEvent.change(input, { target: { value: 'squad b' } });
+
+      expect(getByText('squad b')).toBeInTheDocument();
+
+      fireEvent.blur(input);
+    });
+
+    it('renders and filters selection title', async () => {
+      catalogApi.getEntities.mockResolvedValue({
+        items: entities.map(item => ({
+          ...item,
+          metadata: {
+            ...item.metadata,
+            title: item.metadata.name.replace('-', ' ').toUpperCase(),
+          },
+        })),
+      });
+
+      const { getByRole, getByText } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'team a' } });
+
+      expect(getByText('TEAM A')).toBeInTheDocument();
+
+      fireEvent.change(input, { target: { value: 'squad b' } });
+
+      expect(getByText('SQUAD B')).toBeInTheDocument();
+
+      fireEvent.blur(input);
+    });
+  });
 });
