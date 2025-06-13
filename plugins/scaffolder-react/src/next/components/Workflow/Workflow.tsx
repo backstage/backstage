@@ -97,13 +97,11 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
     async (formState: Record<string, JsonValue>) => {
       await onCreate(formState);
 
-      const name =
-        typeof formState.name === 'string' ? formState.name : undefined;
-      analytics.captureEvent('create', name ?? templateName ?? 'unknown', {
+      analytics.captureEvent('create', 'Task has been created', {
         value: minutesSaved,
       });
     },
-    [onCreate, analytics, templateName, minutesSaved],
+    [onCreate, analytics, minutesSaved],
   );
 
   useEffect(() => {

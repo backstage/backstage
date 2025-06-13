@@ -29,11 +29,8 @@ import Toc from '@material-ui/icons/Toc';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import MoreVert from '@material-ui/icons/MoreVert';
 import { SyntheticEvent, useState } from 'react';
-import { useAnalytics, useApi } from '@backstage/core-plugin-api';
-import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { usePermission } from '@backstage/plugin-permission-react';
 import {
-  taskCancelPermission,
   taskReadPermission,
   taskCreatePermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
@@ -50,7 +47,8 @@ type ContextMenuProps = {
   onStartOver?: () => void;
   onToggleLogs?: (state: boolean) => void;
   onToggleButtonBar?: (state: boolean) => void;
-  taskId?: string;
+  isCancelButtonDisabled: boolean;
+  onCancel: () => void;
 };
 
 const useStyles = makeStyles<Theme, { fontColor: string }>(() => ({
@@ -70,26 +68,12 @@ export const ContextMenu = (props: ContextMenuProps) => {
     onStartOver,
     onToggleLogs,
     onToggleButtonBar,
-    taskId,
   } = props;
   const { getPageTheme } = useTheme();
   const pageTheme = getPageTheme({ themeId: 'website' });
   const classes = useStyles({ fontColor: pageTheme.fontColor });
-  const scaffolderApi = useApi(scaffolderApiRef);
-  const analytics = useAnalytics();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const { t } = useTranslationRef(scaffolderTranslationRef);
-
-  const [{ status: cancelStatus }, { execute: cancel }] = useAsync(async () => {
-    if (taskId) {
-      analytics.captureEvent('cancelled', 'Template has been cancelled');
-      await scaffolderApi.cancelTask(taskId);
-    }
-  });
-
-  const { allowed: canCancelTask } = usePermission({
-    permission: taskCancelPermission,
-  });
 
   const { allowed: canReadTask } = usePermission({
     permission: taskReadPermission,
@@ -171,12 +155,8 @@ export const ContextMenu = (props: ContextMenuProps) => {
             </MenuItem>
           )}
           <MenuItem
-            onClick={cancel}
-            disabled={
-              !cancelEnabled ||
-              cancelStatus !== 'not-executed' ||
-              !canCancelTask
-            }
+            onClick={props.onCancel}
+            disabled={props.isCancelButtonDisabled}
             data-testid="cancel-task"
           >
             <ListItemIcon>
