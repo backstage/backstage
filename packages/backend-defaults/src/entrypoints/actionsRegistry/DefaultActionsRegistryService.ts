@@ -67,13 +67,19 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
         actions: Array.from(this.actions.entries()).map(([id, action]) => ({
           id,
           ...action,
+          attributes: {
+            // todo(blam): what's safe defaults?
+            destructive: action.attributes?.destructive ?? false,
+            idempotent: action.attributes?.idempotent ?? false,
+            readOnly: action.attributes?.readOnly ?? false,
+          },
           schema: {
             input: action.schema?.input
               ? zodToJsonSchema(action.schema.input(z))
-              : zodToJsonSchema(z.any()),
+              : zodToJsonSchema(z.object({})),
             output: action.schema?.output
               ? zodToJsonSchema(action.schema.output(z))
-              : zodToJsonSchema(z.any()),
+              : zodToJsonSchema(z.object({})),
           },
         })),
       });

@@ -40,6 +40,11 @@ export type ActionsRegistryActionOptions<
     input: (zod: typeof z) => TInputSchema;
     output: (zod: typeof z) => TOutputSchema;
   };
+  attributes?: {
+    destructive?: boolean;
+    idempotent?: boolean;
+    readOnly?: boolean;
+  };
   action: (
     context: ActionsRegistryActionContext<TInputSchema>,
   ) => Promise<
