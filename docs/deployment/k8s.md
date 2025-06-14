@@ -210,11 +210,6 @@ spec:
           envFrom:
             - secretRef:
                 name: postgres-secrets
-          env:
-            - name: POSTGRES_HOST
-              value: postgres.backstage
-            - name: POSTGRES_PORT
-              value: '5432'
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgresdb
@@ -362,6 +357,11 @@ spec:
           ports:
             - name: http
               containerPort: 7007
+          env:
+            - name: POSTGRES_HOST
+              value: postgres
+            - name: POSTGRES_PORT
+              value: '5432'
           envFrom:
             - secretRef:
                 name: postgres-secrets
@@ -391,9 +391,11 @@ $ eval $(minikube docker-env)
 $ yarn build-image --tag backstage:1.0.0
 ```
 
-There is no special wiring needed to access the PostgreSQL service. Since it's
-running on the same cluster, Kubernetes will inject `POSTGRES_HOST` and
-`POSTGRES_PORT` environment variables into our Backstage container.
+To connect Backstage to the PostgreSQL service running in the same cluster, you need to explicitly configure the database connection settings. The Backstage container requires the following environment variables to be defined:
+
+- `POSTGRES_HOST`: Should point to the PostgreSQL service DNS name (typically `postgres.backstage.svc.cluster.local` or simply `postgres` if in the same namespace)
+- `POSTGRES_PORT`: Default is 5432
+
 These can be used in the Backstage `app-config.yaml` along with the secrets. Apply this to `app-config.production.yaml` as well if you have one:
 
 ```yaml
