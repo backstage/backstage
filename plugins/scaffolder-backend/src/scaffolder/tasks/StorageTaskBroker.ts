@@ -105,6 +105,10 @@ export class TaskManager implements TaskContext {
     private readonly auth?: AuthService,
   ) {}
 
+  get taskId() {
+    return this.task.taskId;
+  }
+
   get spec() {
     return this.task.spec;
   }
