@@ -62,4 +62,8 @@ backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(import('./instanceMetadata'));
 
 backend.add(import('@backstage/plugin-events-backend-module-google-pubsub'));
+
+// Server Side Rendering POC
+backend.add(import('@backstage/plugin-ssr-poc-backend'));
+
 backend.start();
