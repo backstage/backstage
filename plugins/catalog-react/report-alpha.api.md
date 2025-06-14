@@ -491,6 +491,47 @@ export type EntityPredicateValue =
       $contains: EntityPredicateExpression;
     };
 
+// @alpha (undocumented)
+export const EntityTableColumnTitle: ({
+  translationKey,
+}: EntityTableColumnTitleProps) =>
+  | 'Title'
+  | 'Domain'
+  | 'System'
+  | 'Lifecycle'
+  | 'Namespace'
+  | 'Owner'
+  | 'Tags'
+  | 'Type'
+  | 'Name'
+  | 'Description'
+  | 'Targets'
+  | 'Label';
+
+// @alpha (undocumented)
+export type EntityTableColumnTitleProps = {
+  translationKey: keyof typeof entityTableColumnTitleTranslationRef.T;
+};
+
+// @alpha (undocumented)
+export const entityTableColumnTitleTranslationRef: TranslationRef<
+  'catalog-react.entityTableColumnTitle',
+  {
+    readonly name: 'Name';
+    readonly type: 'Type';
+    readonly label: 'Label';
+    readonly title: 'Title';
+    readonly description: 'Description';
+    readonly domain: 'Domain';
+    readonly namespace: 'Namespace';
+    readonly lifecycle: 'Lifecycle';
+    readonly owner: 'Owner';
+    readonly system: 'System';
+    readonly targets: 'Targets';
+    readonly tags: 'Tags';
+  }
+>;
+
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;
 
