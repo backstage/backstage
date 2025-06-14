@@ -42,6 +42,23 @@ describe('credentials', () => {
       },
     });
 
+    expect(
+      createCredentialsWithUserPrincipal(
+        'user:default/mock',
+        'my-token',
+        undefined,
+        'my-actor',
+      ),
+    ).toEqual({
+      $$type: '@backstage/BackstageCredentials',
+      version: 'v1',
+      principal: {
+        type: 'user',
+        userEntityRef: 'user:default/mock',
+        actor: { type: 'service', subject: 'my-actor' },
+      },
+    });
+
     expect(createCredentialsWithNonePrincipal()).toEqual({
       $$type: '@backstage/BackstageCredentials',
       version: 'v1',
@@ -63,5 +80,35 @@ describe('credentials', () => {
         createCredentialsWithUserPrincipal('user:default/mock', 'my-token'),
       ),
     ).not.toMatch(/my-token/);
+  });
+
+  it('should have a serializable form', () => {
+    expect(
+      String(createCredentialsWithServicePrincipal('my-service')),
+    ).toMatchInlineSnapshot(
+      `"{"$$type":"@backstage/BackstageCredentials","type":"service","subject":"my-service"}"`,
+    );
+    expect(
+      String(
+        createCredentialsWithUserPrincipal('user:default/mock', 'my-token'),
+      ),
+    ).toMatchInlineSnapshot(
+      `"{"$$type":"@backstage/BackstageCredentials","type":"user","userEntityRef":"user:default/mock"}"`,
+    );
+    expect(
+      String(
+        createCredentialsWithUserPrincipal(
+          'user:default/mock',
+          'my-token',
+          undefined,
+          'my-actor',
+        ),
+      ),
+    ).toMatchInlineSnapshot(
+      `"{"$$type":"@backstage/BackstageCredentials","type":"user","userEntityRef":"user:default/mock","actor":{"type":"service","subject":"my-actor"}}"`,
+    );
+    expect(String(createCredentialsWithNonePrincipal())).toMatchInlineSnapshot(
+      `"{"$$type":"@backstage/BackstageCredentials","type":"none"}"`,
+    );
   });
 });
