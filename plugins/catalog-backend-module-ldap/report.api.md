@@ -25,6 +25,12 @@ import { UserEntity } from '@backstage/catalog-model';
 import { UserTransformer as UserTransformer_2 } from '@backstage/plugin-catalog-backend-module-ldap';
 
 // @public
+export const ActiveDirectoryVendor: LdapVendor;
+
+// @public
+export const AEDirVendor: LdapVendor;
+
+// @public
 export type BindConfig = {
   dn: string;
   secret: string;
@@ -42,11 +48,20 @@ export function defaultGroupTransformer(
 ): Promise<GroupEntity | undefined>;
 
 // @public
+export const DefaultLdapVendor: LdapVendor;
+
+// @public
 export function defaultUserTransformer(
   vendor: LdapVendor,
   config: UserConfig,
   entry: SearchEntry,
 ): Promise<UserEntity | undefined>;
+
+// @public
+export const FreeIpaVendor: LdapVendor;
+
+// @public
+export const GoogleLdapVendor: LdapVendor;
 
 // @public
 export type GroupConfig = {
@@ -207,6 +222,9 @@ export type LdapVendor = {
   uuidAttributeName: string;
   decodeStringAttribute: (entry: SearchEntry, name: string) => string[];
 };
+
+// @public
+export const LLDAPVendor: LdapVendor;
 
 // @public
 export function mapStringAttr(

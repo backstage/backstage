@@ -40,6 +40,15 @@ export type LdapVendor = {
   decodeStringAttribute: (entry: SearchEntry, name: string) => string[];
 };
 
+/**
+ * Default LDAP vendor configuration for standard LDAP servers.
+ *
+ * This vendor configuration works with most standard LDAP implementations
+ * including OpenLDAP, 389 Directory Server, and other RFC-compliant servers.
+ *
+ * @public
+ *
+ */
 export const DefaultLdapVendor: LdapVendor = {
   dnAttributeName: 'entryDN',
   uuidAttributeName: 'entryUUID',
@@ -50,6 +59,15 @@ export const DefaultLdapVendor: LdapVendor = {
   },
 };
 
+/**
+ * Microsoft Active Directory vendor configuration.
+ *
+ * Specialized configuration for Microsoft Active Directory with proper
+ * handling of AD-specific attributes and GUID formatting.
+ *
+ * @public
+ *
+ */
 export const ActiveDirectoryVendor: LdapVendor = {
   dnAttributeName: 'distinguishedName',
   uuidAttributeName: 'objectGUID',
@@ -64,6 +82,15 @@ export const ActiveDirectoryVendor: LdapVendor = {
   },
 };
 
+/**
+ * FreeIPA (Red Hat Identity Management) vendor configuration.
+ *
+ * Configuration optimized for FreeIPA/Red Hat Identity Management servers
+ * with FreeIPA-specific attribute mappings.
+ *
+ * @public
+ *
+ */
 export const FreeIpaVendor: LdapVendor = {
   dnAttributeName: 'dn',
   uuidAttributeName: 'ipaUniqueID',
@@ -74,6 +101,14 @@ export const FreeIpaVendor: LdapVendor = {
   },
 };
 
+/**
+ * AEDirectory vendor configuration.
+ *
+ * Configuration for AEDirectory LDAP server with standard attribute mappings.
+ *
+ * @public
+ *
+ */
 export const AEDirVendor: LdapVendor = {
   dnAttributeName: 'dn',
   uuidAttributeName: 'entryUUID',
@@ -84,6 +119,15 @@ export const AEDirVendor: LdapVendor = {
   },
 };
 
+/**
+ * Google Cloud Directory (Google LDAP) vendor configuration.
+ *
+ * Configuration for Google's Cloud Directory LDAP service used with
+ * Google Workspace (formerly G Suite) for LDAP authentication.
+ *
+ * @public
+ *
+ */
 export const GoogleLdapVendor: LdapVendor = {
   dnAttributeName: 'dn',
   uuidAttributeName: 'uid',
@@ -94,6 +138,15 @@ export const GoogleLdapVendor: LdapVendor = {
   },
 };
 
+/**
+ * LLDAP (Light LDAP) vendor configuration.
+ *
+ * Configuration for LLDAP, a lightweight authentication server with
+ * minimal LDAP implementation. Handles case-insensitive attribute names.
+ *
+ * @public
+ *
+ */
 export const LLDAPVendor: LdapVendor = {
   dnAttributeName: 'dn',
   uuidAttributeName: 'entryuuid',
