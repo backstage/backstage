@@ -166,8 +166,10 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
   const onTemplateSelected = useCallback(
     (template: TemplateEntityV1beta3) => {
       const { namespace, name } = parseEntityRef(stringifyEntityRef(template));
-
-      navigate(templateRoute({ namespace, templateName: name }));
+      const title = template.metadata.title ?? template.metadata.name;
+      navigate(templateRoute({ namespace, templateName: name }), {
+        state: { templateTitle: title },
+      });
     },
     [navigate, templateRoute],
   );
