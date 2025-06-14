@@ -37,6 +37,10 @@ export interface AppNodeSpec {
   readonly extension: Extension<unknown, unknown>;
   readonly disabled: boolean;
   readonly config?: unknown;
+  readonly plugin?: FrontendPlugin;
+  /**
+   * @deprecated Use {@link AppNodeSpec.plugin} instead.
+   */
   readonly source?: FrontendPlugin;
 }
 

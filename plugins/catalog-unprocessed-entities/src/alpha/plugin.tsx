@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   createApiFactory,
   createFrontendPlugin,
@@ -74,7 +73,8 @@ export const catalogUnprocessedEntitiesNavItem = NavItemBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'catalog-unprocessed-entities',
+  pluginId: 'catalog-unprocessed-entities',
+  info: { packageJson: () => import('../../package.json') },
   routes: {
     root: convertLegacyRouteRef(rootRouteRef),
   },

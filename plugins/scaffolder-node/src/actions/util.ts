@@ -22,6 +22,7 @@ import { TemplateActionOptions } from './createTemplateAction';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { z } from 'zod';
 import { Schema } from 'jsonschema';
+import { trim } from 'lodash';
 
 /**
  * @public
@@ -67,11 +68,6 @@ export const parseRepoUrl = (
     );
   }
   const host = parsed.host;
-  const owner = parsed.searchParams.get('owner') ?? undefined;
-  const organization = parsed.searchParams.get('organization') ?? undefined;
-  const workspace = parsed.searchParams.get('workspace') ?? undefined;
-  const project = parsed.searchParams.get('project') ?? undefined;
-
   const type = integrations.byHost(host)?.type;
 
   if (!type) {
@@ -79,8 +75,14 @@ export const parseRepoUrl = (
       `No matching integration configuration for host ${host}, please check your integrations config`,
     );
   }
-
-  const repo: string = parsed.searchParams.get('repo')!;
+  const { owner, organization, workspace, project, repo } = Object.fromEntries(
+    ['owner', 'organization', 'workspace', 'project', 'repo'].map(param => [
+      param,
+      parsed.searchParams.has(param)
+        ? trim(parsed.searchParams.get(param)!, '/')
+        : undefined,
+    ]),
+  );
   switch (type) {
     case 'bitbucket': {
       if (host === 'www.bitbucket.org') {
@@ -113,8 +115,7 @@ export const parseRepoUrl = (
       break;
     }
   }
-
-  return { host, owner, repo, organization, workspace, project };
+  return { host, owner, repo: repo!, organization, workspace, project };
 };
 
 function checkRequiredParams(repoUrl: URL, ...params: string[]) {
@@ -129,11 +130,7 @@ function checkRequiredParams(repoUrl: URL, ...params: string[]) {
   }
 }
 
-const isZodSchema = (schema: unknown): schema is z.ZodType => {
-  return typeof schema === 'object' && !!schema && 'safeParseAsync' in schema;
-};
-
-const isNativeZodSchema = (
+const isKeyValueZodCallback = (
   schema: unknown,
 ): schema is { [key in string]: (zImpl: typeof z) => z.ZodType } => {
   return (
@@ -143,23 +140,20 @@ const isNativeZodSchema = (
   );
 };
 
+const isZodFunctionDefinition = (
+  schema: unknown,
+): schema is (zImpl: typeof z) => z.ZodType => {
+  return typeof schema === 'function';
+};
+
 export const parseSchemas = (
-  action: TemplateActionOptions,
+  action: TemplateActionOptions<any, any, any>,
 ): { inputSchema?: Schema; outputSchema?: Schema } => {
   if (!action.schema) {
     return { inputSchema: undefined, outputSchema: undefined };
   }
 
-  if (isZodSchema(action.schema.input)) {
-    return {
-      inputSchema: zodToJsonSchema(action.schema.input) as Schema,
-      outputSchema: isZodSchema(action.schema.output)
-        ? (zodToJsonSchema(action.schema.output) as Schema)
-        : undefined,
-    };
-  }
-
-  if (isNativeZodSchema(action.schema.input)) {
+  if (isKeyValueZodCallback(action.schema.input)) {
     const input = z.object(
       Object.fromEntries(
         Object.entries(action.schema.input).map(([k, v]) => [k, v(z)]),
@@ -168,7 +162,7 @@ export const parseSchemas = (
 
     return {
       inputSchema: zodToJsonSchema(input) as Schema,
-      outputSchema: isNativeZodSchema(action.schema.output)
+      outputSchema: isKeyValueZodCallback(action.schema.output)
         ? (zodToJsonSchema(
             z.object(
               Object.fromEntries(
@@ -180,8 +174,26 @@ export const parseSchemas = (
     };
   }
 
+  if (isZodFunctionDefinition(action.schema.input)) {
+    return {
+      inputSchema: zodToJsonSchema(action.schema.input(z)) as Schema,
+      outputSchema: isZodFunctionDefinition(action.schema.output)
+        ? (zodToJsonSchema(action.schema.output(z)) as Schema)
+        : undefined,
+    };
+  }
+
   return {
-    inputSchema: action.schema.input,
-    outputSchema: action.schema.output,
+    inputSchema: undefined,
+    outputSchema: undefined,
   };
 };
+
+/**
+ * Filter function to exclude the .git directory and its contents
+ * while keeping other files like .gitignore
+ * @public
+ */
+export function isNotGitDirectoryOrContents(path: string): boolean {
+  return !(path.endsWith('.git') || path.includes('.git/'));
+}

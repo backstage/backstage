@@ -669,7 +669,7 @@ describe('createExtension', () => {
         },
       });
 
-      const overriden = testExtension.override({
+      const overridden = testExtension.override({
         config: {
           schema: {
             bar: z => z.string().default('hello'),
@@ -684,12 +684,12 @@ describe('createExtension', () => {
         },
       });
 
-      expect(createExtensionTester(overriden).get(stringDataRef)).toBe(
+      expect(createExtensionTester(overridden).get(stringDataRef)).toBe(
         'foo-boom-override-hello',
       );
 
       expect(
-        createExtensionTester(overriden, {
+        createExtensionTester(overridden, {
           config: { foo: 'hello', bar: 'world' },
         }).get(stringDataRef),
       ).toBe('foo-hello-override-world');

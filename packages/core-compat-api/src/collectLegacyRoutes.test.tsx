@@ -26,7 +26,7 @@ import {
 import { PuppetDbPage } from '@backstage-community/plugin-puppetdb';
 import { StackstormPage } from '@backstage-community/plugin-stackstorm';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 // TODO(rugvip): this should take into account that this is a test file, so these deps don't need to be in the dependencies
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import { OpaqueFrontendPlugin } from '@internal/frontend';

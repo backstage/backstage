@@ -7,8 +7,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
-import { JSX as JSX_2 } from 'react';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 
 // @public (undocumented)
 export const EntityGroupProfileCard: (props: {
@@ -43,13 +42,15 @@ export type EntityRelationAggregation = 'direct' | 'aggregated';
 export const EntityUserProfileCard: (props: {
   variant?: InfoCardVariants;
   showLinks?: boolean;
+  maxRelations?: number;
+  hideIcons?: boolean;
 }) => JSX_2.Element;
 
 // @public (undocumented)
 export const GroupProfileCard: (props: {
   variant?: InfoCardVariants;
   showLinks?: boolean;
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export type MemberComponentClassKey = 'card' | 'avatar';
@@ -62,7 +63,7 @@ export const MembersListCard: (props: {
   relationType?: string;
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export type MembersListCardClassKey = 'root' | 'cardContent' | 'memberList';
@@ -73,7 +74,7 @@ export const MyGroupsSidebarItem: (props: {
   pluralTitle: string;
   icon: IconComponent;
   filter?: Record<string, string | symbol | (string | symbol)[]>;
-}) => React_2.JSX.Element | null;
+}) => JSX_2.Element | null;
 
 // @public (undocumented)
 const orgPlugin: BackstagePlugin<
@@ -93,11 +94,13 @@ export const OwnershipCard: (props: {
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
 export const UserProfileCard: (props: {
   variant?: InfoCardVariants;
   showLinks?: boolean;
-}) => React_2.JSX.Element;
+  maxRelations?: number;
+  hideIcons?: boolean;
+}) => JSX_2.Element;
 ```

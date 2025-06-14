@@ -17,8 +17,6 @@
 import { Table, TableColumn } from '@backstage/core-components';
 import { PackageDependency } from '@backstage/plugin-devtools-common';
 
-import React from 'react';
-
 const columns: TableColumn[] = [
   {
     title: 'Name',

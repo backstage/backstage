@@ -27,7 +27,6 @@ import {
   TestApiProvider,
   mockApis,
 } from '@backstage/test-utils';
-import React from 'react';
 import { rootRouteRef } from '../../../routes';
 import { TemplateListPage } from './TemplateListPage';
 
@@ -205,6 +204,7 @@ describe('TemplateListPage', () => {
               editor: false,
               actions: false,
               tasks: false,
+              templatingExtensions: false,
             }}
           />
         </TestApiProvider>,

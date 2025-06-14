@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Heading } from './Heading';
 import { Flex } from '../Flex';
-import { Text } from '../Text';
 
 const meta = {
   title: 'Components/Heading',
@@ -42,14 +40,35 @@ export const Title1: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <Flex>
+    <Flex direction="column" gap="4">
       <Heading variant="display">Display</Heading>
       <Heading variant="title1">Title 1</Heading>
       <Heading variant="title2">Title 2</Heading>
       <Heading variant="title3">Title 3</Heading>
       <Heading variant="title4">Title 4</Heading>
+      <Heading variant="title5">Title 5</Heading>
     </Flex>
   ),
+};
+
+export const AllColors: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: args => (
+    <Flex gap="4" direction="column">
+      <Heading color="primary" {...args} />
+      <Heading color="secondary" {...args} />
+    </Flex>
+  ),
+};
+
+export const Truncate: Story = {
+  args: {
+    ...Title1.args,
+    truncate: true,
+    style: { maxWidth: '400px' },
+  },
 };
 
 export const Responsive: Story = {
@@ -61,17 +80,29 @@ export const Responsive: Story = {
   },
 };
 
-export const CustomTag: Story = {
+export const WrappedInLink: Story = {
   args: {
-    variant: 'title5',
-    as: 'h2',
+    ...Default.args,
+  },
+  decorators: [
+    Story => (
+      <a href="/">
+        <Story />
+      </a>
+    ),
+  ],
+};
+
+export const CustomRender: Story = {
+  args: {
+    ...Default.args,
+    render: <h4 />,
   },
 };
 
 export const Playground: Story = {
   render: () => (
-    <Flex>
-      <Text>All variants</Text>
+    <Flex direction="column" gap="4">
       <Heading variant="display">Display</Heading>
       <Heading variant="title1">Title 1</Heading>
       <Heading variant="title2">Title 2</Heading>

@@ -98,42 +98,6 @@ describe('fetch:template', () => {
       );
     });
 
-    it('throws if copyWithoutRender parameter is not an array', async () => {
-      await expect(() =>
-        action.handler(
-          mockContext({ copyWithoutRender: 'abc' as unknown as string[] }),
-        ),
-      ).rejects.toThrow(
-        /copyWithoutRender\/copyWithoutTemplating must be an array/i,
-      );
-    });
-
-    it('throws if both copyWithoutRender and copyWithoutTemplating are used', async () => {
-      await expect(() =>
-        action.handler(
-          mockContext({
-            copyWithoutRender: 'abc' as unknown as string[],
-            copyWithoutTemplating: 'def' as unknown as string[],
-          }),
-        ),
-      ).rejects.toThrow(
-        /copyWithoutRender and copyWithoutTemplating can not be used at the same time/i,
-      );
-    });
-
-    it('throws if copyWithoutRender is used with extension', async () => {
-      await expect(() =>
-        action.handler(
-          mockContext({
-            copyWithoutRender: ['abc'],
-            templateFileExtension: true,
-          }),
-        ),
-      ).rejects.toThrow(
-        /input extension incompatible with copyWithoutRender\/copyWithoutTemplating and cookiecutterCompat/,
-      );
-    });
-
     it('throws if cookiecutterCompat is used with extension', async () => {
       await expect(() =>
         action.handler(
@@ -143,7 +107,7 @@ describe('fetch:template', () => {
           }),
         ),
       ).rejects.toThrow(
-        /input extension incompatible with copyWithoutRender\/copyWithoutTemplating and cookiecutterCompat/,
+        /input extension incompatible with copyWithoutTemplating and cookiecutterCompat/,
       );
     });
 
@@ -375,55 +339,6 @@ describe('fetch:template', () => {
           expect.objectContaining({ token: 'mockToken' }),
         );
       });
-    });
-  });
-
-  describe('copyWithoutRender', () => {
-    let context: ActionContext<FetchTemplateInput>;
-
-    beforeEach(async () => {
-      context = mockContext({
-        values: {
-          name: 'test-project',
-          count: 1234,
-        },
-        copyWithoutRender: ['.unprocessed'],
-      });
-
-      mockFetchContents.mockImplementation(({ outputPath }) => {
-        mockDir.setContent({
-          [outputPath]: {
-            processed: {
-              'templated-content-${{ values.name }}.txt': '${{ values.count }}',
-            },
-            '.unprocessed': {
-              'templated-content-${{ values.name }}.txt': '${{ values.count }}',
-            },
-          },
-        });
-
-        return Promise.resolve();
-      });
-
-      await action.handler(context);
-    });
-
-    it('ignores template syntax in files matched in copyWithoutRender', async () => {
-      await expect(
-        fs.readFile(
-          `${workspacePath}/target/.unprocessed/templated-content-\${{ values.name }}.txt`,
-          'utf-8',
-        ),
-      ).resolves.toEqual('${{ values.count }}');
-    });
-
-    it('processes files not matched in copyWithoutRender', async () => {
-      await expect(
-        fs.readFile(
-          `${workspacePath}/target/processed/templated-content-test-project.txt`,
-          'utf-8',
-        ),
-      ).resolves.toEqual('1234');
     });
   });
 

@@ -94,10 +94,11 @@ export const RepoUrlPickerFieldSchema = makeFieldSchema({
  * @public
  * @deprecated this will be removed as it's no longer used
  */
-export type RepoUrlPickerUiOptions =
-  typeof RepoUrlPickerFieldSchema.uiOptionsType;
+export type RepoUrlPickerUiOptions = NonNullable<
+  (typeof RepoUrlPickerFieldSchema.TProps.uiSchema)['ui:options']
+>;
 
-export type RepoUrlPickerProps = typeof RepoUrlPickerFieldSchema.type;
+export type RepoUrlPickerProps = typeof RepoUrlPickerFieldSchema.TProps;
 
 // This has been duplicated to /plugins/scaffolder/src/components/fields/RepoBranchPicker/schema.ts
 // NOTE: There is a bug with this failing validation in the custom field explorer due

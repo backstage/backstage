@@ -2,14 +2,14 @@
 id: plugin-conversion
 title: Converting 3rd-party plugins from the old system
 sidebar_label: Converting 3rd-party Plugins
-# prettier-ignore
 description: Documentation for how to convert 3rd-party plugins to support the new frontend system.
 ---
 
 If you are using or want to use a 3rd-party plugin that does not yet support the new frontend system in your app, you can often use conversion utilities from `@backstage/core-compat-api` in order wrap the plugin to make it possible to install in your app.
 
-> [!CAUTION]
-> The purpose of these utilities is to wrap 3rd-party plugins. Do not use them for your own plugins where you can add support for the new frontend system directly.
+:::caution
+The purpose of these utilities is to wrap 3rd-party plugins. Do not use them for your own plugins where you can add support for the new frontend system directly.
+:::
 
 ## Converting a legacy plugin
 

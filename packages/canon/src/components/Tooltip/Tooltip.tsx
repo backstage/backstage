@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { forwardRef } from 'react';
 import { Tooltip as TooltipPrimitive } from '@base-ui-components/react/tooltip';
 import clsx from 'clsx';
 
-const TooltipTrigger = React.forwardRef<
+const TooltipTrigger = forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Trigger>
 >(({ className, ...props }, ref) => (
@@ -30,7 +30,7 @@ const TooltipTrigger = React.forwardRef<
 ));
 TooltipTrigger.displayName = TooltipPrimitive.Trigger.displayName;
 
-const TooltipPositioner = React.forwardRef<
+const TooltipPositioner = forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Positioner>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Positioner>
 >(({ className, ...props }, ref) => (
@@ -42,7 +42,7 @@ const TooltipPositioner = React.forwardRef<
 ));
 TooltipPositioner.displayName = TooltipPrimitive.Positioner.displayName;
 
-const TooltipPopup = React.forwardRef<
+const TooltipPopup = forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Popup>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Popup>
 >(({ className, ...props }, ref) => (
@@ -54,7 +54,7 @@ const TooltipPopup = React.forwardRef<
 ));
 TooltipPopup.displayName = TooltipPrimitive.Popup.displayName;
 
-const TooltipArrow = React.forwardRef<
+const TooltipArrow = forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Arrow>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Arrow>
 >(({ className, ...props }, ref) => (

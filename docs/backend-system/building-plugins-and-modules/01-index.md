@@ -2,7 +2,6 @@
 id: index
 title: Building Backend Plugins and Modules
 sidebar_label: Overview
-# prettier-ignore
 description: Building backend plugins and modules using the new backend system
 ---
 

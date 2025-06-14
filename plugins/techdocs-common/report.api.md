@@ -8,4 +8,8 @@ export const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
 // @public (undocumented)
 export const TECHDOCS_EXTERNAL_ANNOTATION = 'backstage.io/techdocs-entity';
+
+// @public (undocumented)
+export const TECHDOCS_EXTERNAL_PATH_ANNOTATION =
+  'backstage.io/techdocs-entity-path';
 ```

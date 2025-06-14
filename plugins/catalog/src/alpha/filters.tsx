@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { CatalogFilterBlueprint } from './blueprints';
+import { CatalogFilterBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 const catalogTagCatalogFilter = CatalogFilterBlueprint.make({
   name: 'tag',

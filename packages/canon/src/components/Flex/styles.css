@@ -16,4 +16,7 @@
 
 .canon-Flex {
   display: flex;
+
+  /* This helps when using `truncate` on text inside a flex container */
+  min-width: 0;
 }

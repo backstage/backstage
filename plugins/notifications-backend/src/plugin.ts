@@ -25,7 +25,7 @@ import {
   notificationsProcessingExtensionPoint,
   NotificationsProcessingExtensionPoint,
 } from '@backstage/plugin-notifications-node';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 
 class NotificationsProcessingExtensionPointImpl
   implements NotificationsProcessingExtensionPoint

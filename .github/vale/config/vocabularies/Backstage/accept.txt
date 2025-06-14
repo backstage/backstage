@@ -89,6 +89,7 @@ CVEs
 daemonsets
 Datadog
 dataflow
+dataloader
 dayjs
 debounce
 debounces
@@ -173,6 +174,7 @@ graphviz
 Hackathons
 haproxy
 hardcoded
+hardcoding
 Harness
 harness
 Helidon
@@ -251,6 +253,7 @@ makefile
 Matomo
 md
 memcache
+memoization
 memoize
 memoized
 microservice
@@ -301,6 +304,7 @@ oidc
 Okta
 Olausson
 Oldsberg
+onboarded
 onboarding
 Onboarding
 onelogin
@@ -507,6 +511,7 @@ utils
 Valentina
 validator
 validators
+Valkey
 varchar
 vite
 VMware
@@ -534,3 +539,4 @@ zsh
 scrollable
 severities
 intellij
+tsconfig

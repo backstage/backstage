@@ -77,12 +77,12 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
        # Shows a table of components that provides a particular api
        - entity-card:api-docs/providing-components:
            config:
-             # Presenting the card ony for entites of kind api
+             # Presenting the card only for entities of kind api
              filter: kind:api
        # Shows a table of components that consumes a particular api
        - entity-card:api-docs/consuming-components:
            config:
-             # Presenting the card ony for entites of kind api
+             # Presenting the card only for entities of kind api
              filter: kind:api
        # Enabling some contents
        # The contents will be displayed in the same order it appears in this setting list
@@ -285,7 +285,7 @@ export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
     createPageExtension({
-      // Ommitting name since we are overriding a plugin index page
+      // Omitting name since we are overriding a plugin index page
       // It's up to you whether to use the original default path or not, but links that are hardcoded to the default path won't work if you change it
       defaultPath: '/api-docs',
       // Associating the page with a different route ref may result in the sidebar item or external plugin route pointing to an unreachable page
@@ -370,7 +370,7 @@ export default createFrontendModule({
     createEntityCardExtension({
       // Name is necessary so the system knows that this extension will override the default 'has-apis' entity card extension provided by the 'api-docs' plugin
       name: 'has-apis',
-      // Returing a custom card component
+      // Returning a custom card component
       loader: () =>
         import('./components').then(m => <m.MyCustomHasApisEntityCard />),
     }),
@@ -443,7 +443,7 @@ export default createFrontendModule({
     createEntityCardExtension({
       // Name is necessary so the system knows that this extension will override the default 'definition' entity card extension provided by the 'api-docs' plugin
       name: 'definition',
-      // Returing a custom card component
+      // Returning a custom card component
       loader: () =>
         import('./components').then(m => <m.MyCustomApiDefinitionEntityCard />),
     }),
@@ -516,7 +516,7 @@ export default createFrontendModule({
     createEntityCardExtension({
       // Name is necessary so the system knows that this extension will override the default 'provided-apis' entity card extension provided by the 'api-docs' plugin
       name: 'provided-apis',
-      // Returing a custom card component
+      // Returning a custom card component
       loader: () =>
         import('./components').then(m => <m.MyCustomProvidedApisEntityCard />),
     }),
@@ -589,7 +589,7 @@ export default createFrontendModule({
     createEntityCardExtension({
       // Name is necessary so the system knows that this extension will override the default 'consumed-apis' entity card extension provided by the 'api-docs' plugin
       name: 'consumed-apis',
-      // Returing a custom card component
+      // Returning a custom card component
       loader: () =>
         import('./components').then(m => <m.MyCustomConsumedApisEntityCard />),
     }),
@@ -662,7 +662,7 @@ export default createFrontendModule({
     createEntityCardExtension({
       // Name is necessary so the system knows that this extension will override the default 'providing-components' entity card extension provided by the 'api-docs' plugin
       name: 'providing-components',
-      // Returing a custom card component
+      // Returning a custom card component
       loader: () =>
         import('./components').then(m => (
           <m.MyCustomProvidingComponentsEntityCard />
@@ -737,7 +737,7 @@ export default createFrontendModule({
     createEntityCardExtension({
       // Name is necessary so the system knows that this extension will override the default 'consuming-components' entity card extension provided by the 'api-docs' plugin
       name: 'consuming-components',
-      // Returing a custom card component
+      // Returning a custom card component
       loader: () =>
         import('./components').then(m => (
           <m.MyCustomConsumingComponentsEntityCard />
@@ -906,7 +906,7 @@ export default createFrontendModule({
     createEntityContentExtension({
       // Name is necessary so the system knows that this extension will override the default 'apis' entity content extension provided by the 'api-docs' plugin
       name: 'apis',
-      // Returing a custom content component
+      // Returning a custom content component
       loader: () =>
         import('./components').then(m => <m.MyCustomApisEntityContent />),
     }),
@@ -935,7 +935,7 @@ This is an example with a made-up renderer for SQL schemas:
 ```tsx
 import {
   createFrontendModule,
-  createApiExtenion,
+  createApiExtension,
   createApiFactory,
 } from '@backstage/frontend-plugin-api';
 import { ApiEntity } from '@backstage/catalog-model';
@@ -949,7 +949,7 @@ import { SqlRenderer } from '...';
 export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
-    createApiExtenion({
+    createApiExtension({
       factory: createApiFactory({
         api: apiDocsConfigRef,
         deps: {},
@@ -989,7 +989,7 @@ Override the config api to configure a [`requestInterceptor` for Swagger UI](htt
 ```tsx
 import {
   createFrontendModule,
-  createApiExtenion,
+  createApiExtension,
   createApiFactory,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -1002,7 +1002,7 @@ import { ApiEntity } from '@backstage/catalog-model';
 export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
-    createApiExtenion({
+    createApiExtension({
       factory: createApiFactory({
         api: apiDocsConfigRef,
         deps: {},
@@ -1051,7 +1051,7 @@ If you want to limit the HTTP methods available for the `Try It Out` feature of 
 ```tsx
 import {
   createFrontendModule,
-  createApiExtenion,
+  createApiExtension,
   createApiFactory,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -1064,7 +1064,7 @@ import { ApiEntity } from '@backstage/catalog-model';
 export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
-    createApiExtenion({
+    createApiExtension({
       factory: createApiFactory({
         api: apiDocsConfigRef,
         deps: {},

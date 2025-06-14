@@ -6,7 +6,10 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
+import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { Entity } from '@backstage/catalog-model';
+import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
@@ -17,10 +20,10 @@ import type { FormProps as FormProps_2 } from '@rjsf/core';
 import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { PathParams } from '@backstage/core-plugin-api';
-import { default as React_2 } from 'react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
@@ -41,6 +44,7 @@ const _default: FrontendPlugin<
     actions: SubRouteRef<undefined>;
     listTasks: SubRouteRef<undefined>;
     edit: SubRouteRef<undefined>;
+    templatingExtensions: SubRouteRef<undefined>;
   },
   {
     registerComponent: ExternalRouteRef<undefined>;
@@ -118,6 +122,45 @@ const _default: FrontendPlugin<
       name: 'form-fields';
       params: {
         factory: AnyApiFactory;
+      };
+    }>;
+    'entity-icon-link:scaffolder/launch-template': ExtensionDefinition<{
+      kind: 'entity-icon-link';
+      name: 'launch-template';
+      config: {
+        label: string | undefined;
+        title: string | undefined;
+        filter: EntityPredicate | undefined;
+      };
+      configInput: {
+        filter?: EntityPredicate | undefined;
+        label?: string | undefined;
+        title?: string | undefined;
+      };
+      output:
+        | ConfigurableExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ConfigurableExtensionDataRef<
+            () => IconLinkVerticalProps,
+            'entity-icon-link-props',
+            {}
+          >;
+      inputs: {};
+      params: {
+        useProps: () => Omit<IconLinkVerticalProps, 'color'>;
+        filter?: EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
     'nav-item:scaffolder': ExtensionDefinition<{
@@ -288,6 +331,8 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'fields.entityPicker.description': 'An entity from the catalog';
     readonly 'fields.entityTagsPicker.title': 'Tags';
     readonly 'fields.entityTagsPicker.description': "Add any relevant tags, hit 'Enter' to add new tags. Valid format: [a-z0-9+#] separated by [-], at most 63 characters";
+    readonly 'fields.multiEntityPicker.title': 'Entity';
+    readonly 'fields.multiEntityPicker.description': 'An entity from the catalog';
     readonly 'fields.myGroupsPicker.title': 'Entity';
     readonly 'fields.myGroupsPicker.description': 'An entity from the catalog';
     readonly 'fields.ownedEntityPicker.title': 'Entity';
@@ -322,14 +367,10 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'fields.repoUrlPicker.repository.title': 'Repositories Available';
     readonly 'fields.repoUrlPicker.repository.description': 'The name of the repository';
     readonly 'fields.repoUrlPicker.repository.inputTitle': 'Repository';
+    readonly 'aboutCard.launchTemplate': 'Launch Template';
     readonly 'actionsPage.content.emptyState.title': 'No information to display';
     readonly 'actionsPage.content.emptyState.description': 'There are no actions installed or there was an issue communicating with backend.';
-    readonly 'actionsPage.content.tableCell.name': 'Name';
-    readonly 'actionsPage.content.tableCell.type': 'Type';
-    readonly 'actionsPage.content.tableCell.title': 'Title';
-    readonly 'actionsPage.content.tableCell.description': 'Description';
     readonly 'actionsPage.content.searchFieldPlaceholder': 'Search for an action';
-    readonly 'actionsPage.content.noRowsDescription': 'No schema defined';
     readonly 'actionsPage.title': 'Installed actions';
     readonly 'actionsPage.action.input': 'Input';
     readonly 'actionsPage.action.output': 'Output';
@@ -367,6 +408,32 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'ongoingTask.hideLogsButtonTitle': 'Hide Logs';
     readonly 'ongoingTask.showLogsButtonTitle': 'Show Logs';
     readonly 'templateEditorForm.stepper.emptyText': 'There are no spec parameters in the template to preview.';
+    readonly 'renderSchema.undefined': 'No schema defined';
+    readonly 'renderSchema.tableCell.name': 'Name';
+    readonly 'renderSchema.tableCell.type': 'Type';
+    readonly 'renderSchema.tableCell.title': 'Title';
+    readonly 'renderSchema.tableCell.description': 'Description';
+    readonly 'templatingExtensions.content.values.title': 'Values';
+    readonly 'templatingExtensions.content.values.notAvailable': 'There are no global template values defined.';
+    readonly 'templatingExtensions.content.emptyState.title': 'No information to display';
+    readonly 'templatingExtensions.content.emptyState.description': 'There are no templating extensions available or there was an issue communicating with the backend.';
+    readonly 'templatingExtensions.content.filters.title': 'Filters';
+    readonly 'templatingExtensions.content.filters.schema.input': 'Input';
+    readonly 'templatingExtensions.content.filters.schema.output': 'Output';
+    readonly 'templatingExtensions.content.filters.schema.arguments': 'Arguments';
+    readonly 'templatingExtensions.content.filters.examples': 'Examples';
+    readonly 'templatingExtensions.content.filters.notAvailable': 'There are no template filters defined.';
+    readonly 'templatingExtensions.content.filters.metadataAbsent': 'Filter metadata unavailable';
+    readonly 'templatingExtensions.content.searchFieldPlaceholder': 'Search for an extension';
+    readonly 'templatingExtensions.content.functions.title': 'Functions';
+    readonly 'templatingExtensions.content.functions.schema.output': 'Output';
+    readonly 'templatingExtensions.content.functions.schema.arguments': 'Arguments';
+    readonly 'templatingExtensions.content.functions.examples': 'Examples';
+    readonly 'templatingExtensions.content.functions.notAvailable': 'There are no global template functions defined.';
+    readonly 'templatingExtensions.content.functions.metadataAbsent': 'Function metadata unavailable';
+    readonly 'templatingExtensions.title': 'Templating Extensions';
+    readonly 'templatingExtensions.subtitle': 'This is the collection of available templating extensions';
+    readonly 'templatingExtensions.pageTitle': 'Templating Extensions';
     readonly 'templateTypePicker.title': 'Categories';
     readonly 'templateIntroPage.title': 'Manage Templates';
     readonly 'templateIntroPage.subtitle': 'Edit, preview, and try out templates, forms, and custom fields';
@@ -396,10 +463,10 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorPage.templateEditorIntro.title': 'Get started by choosing one of the options below';
     readonly 'templateEditorPage.templateEditorIntro.loadLocal.title': 'Load Template Directory';
     readonly 'templateEditorPage.templateEditorIntro.loadLocal.description': 'Load a local template directory, allowing you to both edit and try executing your own template.';
-    readonly 'templateEditorPage.templateEditorIntro.loadLocal.unsupportedTooltip': 'Only supported in some Chromium-based browsers';
+    readonly 'templateEditorPage.templateEditorIntro.loadLocal.unsupportedTooltip': 'Only supported in some Chromium-based browsers with the page loaded over HTTPS';
     readonly 'templateEditorPage.templateEditorIntro.createLocal.title': 'Create New Template';
     readonly 'templateEditorPage.templateEditorIntro.createLocal.description': 'Create a local template directory, allowing you to both edit and try executing your own template.';
-    readonly 'templateEditorPage.templateEditorIntro.createLocal.unsupportedTooltip': 'Only supported in some Chromium-based browsers';
+    readonly 'templateEditorPage.templateEditorIntro.createLocal.unsupportedTooltip': 'Only supported in some Chromium-based browsers with the page loaded over HTTPS';
     readonly 'templateEditorPage.templateEditorIntro.formEditor.title': 'Template Form Playground';
     readonly 'templateEditorPage.templateEditorIntro.formEditor.description': 'Preview and edit a template form, either using a sample template or by loading a template from the catalog.';
     readonly 'templateEditorPage.templateEditorIntro.fieldExplorer.title': 'Custom Field Explorer';
@@ -413,8 +480,8 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateListPage.pageTitle': 'Create a new component';
     readonly 'templateListPage.templateGroups.defaultTitle': 'Templates';
     readonly 'templateListPage.templateGroups.otherTitle': 'Other Templates';
-    readonly 'templateListPage.contentHeader.registerExistingButtonTitle': 'Register Existing Component';
     readonly 'templateListPage.contentHeader.supportButtonTitle': 'Create new software components using standard templates. Different templates create different kinds of components (services, websites, documentation, ...).';
+    readonly 'templateListPage.contentHeader.registerExistingButtonTitle': 'Register Existing Component';
     readonly 'templateListPage.additionalLinksForEntity.viewTechDocsTitle': 'View TechDocs';
     readonly 'templateWizardPage.title': 'Create a new component';
     readonly 'templateWizardPage.subtitle': 'Create new software components using standard templates in your organization';
@@ -422,6 +489,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateWizardPage.pageContextMenu.editConfigurationTitle': 'Edit Configuration';
     readonly 'templateEditorToolbar.customFieldExplorerTooltip': 'Custom Fields Explorer';
     readonly 'templateEditorToolbar.installedActionsDocumentationTooltip': 'Installed Actions Documentation';
+    readonly 'templateEditorToolbar.templatingExtensionsDocumentationTooltip': 'Templating Extensions Documentation';
     readonly 'templateEditorToolbar.addToCatalogButton': 'Publish';
     readonly 'templateEditorToolbar.addToCatalogDialogTitle': 'Publish changes';
     readonly 'templateEditorToolbar.addToCatalogDialogContent.stepsIntroduction': 'Follow the instructions below to create or update a template:';
@@ -438,7 +506,7 @@ export const scaffolderTranslationRef: TranslationRef<
 
 // @alpha (undocumented)
 export type TemplateListPageProps = {
-  TemplateCardComponent?: React_2.ComponentType<{
+  TemplateCardComponent?: ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
   groups?: TemplateGroupFilter[];
@@ -447,6 +515,7 @@ export type TemplateListPageProps = {
     editor?: boolean;
     actions?: boolean;
     tasks?: boolean;
+    templatingExtensions?: boolean;
   };
   headerOptions?: {
     pageTitleOverride?: string;
@@ -459,7 +528,7 @@ export type TemplateListPageProps = {
 export type TemplateWizardPageProps = {
   customFieldExtensions: FieldExtensionOptions<any, any>[];
   components?: {
-    ReviewStepComponent?: React_2.ComponentType<ReviewStepProps>;
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
   };
   layouts?: LayoutOptions[];
   formProps?: FormProps_3;

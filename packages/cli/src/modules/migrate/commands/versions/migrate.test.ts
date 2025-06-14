@@ -51,8 +51,8 @@ jest.mock('../../../../lib/run', () => {
   };
 });
 
-function expectLogsToMatch(recievedLogs: String[], expected: String[]): void {
-  expect(recievedLogs.filter(Boolean).sort()).toEqual(expected.sort());
+function expectLogsToMatch(receivedLogs: String[], expected: String[]): void {
+  expect(receivedLogs.filter(Boolean).sort()).toEqual(expected.sort());
 }
 
 describe('versions:migrate', () => {
@@ -169,7 +169,7 @@ describe('versions:migrate', () => {
     });
   });
 
-  it('should replace the occurences of the moved package in files inside the correct package', async () => {
+  it('should replace the occurrences of the moved package in files inside the correct package', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
         workspaces: {
@@ -259,7 +259,7 @@ describe('versions:migrate', () => {
     );
   });
 
-  it('should replaces the occurences of changed packages, and is careful', async () => {
+  it('should replaces the occurrences of changed packages, and is careful', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
         workspaces: {

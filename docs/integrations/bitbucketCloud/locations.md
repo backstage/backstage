@@ -2,7 +2,6 @@
 id: locations
 title: Bitbucket Cloud Locations
 sidebar_label: Locations
-# prettier-ignore
 description: Integrating source code stored in Bitbucket Cloud into the Backstage catalog
 ---
 

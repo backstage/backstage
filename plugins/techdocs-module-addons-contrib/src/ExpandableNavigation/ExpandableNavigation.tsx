@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { useLocalStorageValue } from '@react-hookz/web';
 import { Button, withStyles } from '@material-ui/core';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -92,16 +92,52 @@ export const ExpandableNavigationAddon = () => {
     },
     [expanded],
   );
-
+  const handleKeyPass = (
+    event: React.KeyboardEvent<HTMLElement>,
+    toggleAction: () => void,
+  ) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      toggleAction();
+    }
+  };
   useEffect(() => {
     // There is no nested navs
     if (!checkboxToggles?.length) return;
 
     setHasNavSubLevels(true);
     checkboxToggles.forEach(item => {
-      if (shouldToggle(item)) item.click();
+      item.tabIndex = 0;
+      const toggleAction = () => {
+        if (shouldToggle(item)) {
+          item.click();
+        }
+      };
+      // Add keyboard event listener
+      const keydownHandler = (event: KeyboardEvent) => {
+        handleKeyPass(
+          event as unknown as React.KeyboardEvent<HTMLDivElement>,
+          toggleAction,
+        );
+      };
+      item.addEventListener('keydown', keydownHandler);
+      item.addEventListener('click', toggleAction);
+
+      // Clean up event listener or unmount
+      return () => {
+        item.removeEventListener('keydown', keydownHandler);
+        item.removeEventListener('click', toggleAction);
+      };
     });
-  }, [expanded, shouldToggle, checkboxToggles]);
+  }, [checkboxToggles, shouldToggle]);
+  useEffect(() => {
+    if (!checkboxToggles?.length) return;
+    checkboxToggles.forEach(item => {
+      if (shouldToggle(item)) {
+        item.click();
+      }
+    });
+  }, [expanded, checkboxToggles, shouldToggle]);
 
   const handleState = () => {
     setExpanded(prevState => ({
@@ -115,6 +151,9 @@ export const ExpandableNavigationAddon = () => {
         <StyledButton
           size="small"
           onClick={handleState}
+          onKeyDown={event => handleKeyPass(event, handleState)}
+          tabIndex={0} // Ensuring keyboard focus
+          aria-expanded={expanded?.expandAllNestedNavs} // Accessibility
           aria-label={
             expanded?.expandAllNestedNavs ? 'collapse-nav' : 'expand-nav'
           }

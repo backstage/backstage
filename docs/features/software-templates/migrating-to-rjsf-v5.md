@@ -1,7 +1,6 @@
 ---
 id: migrating-to-rjsf-v5
 title: 'Migrating to react-jsonschema-form@v5'
-# prettier-ignore
 description: Docs on migrating to `react-jsonschema-form`@v5 and the new designs
 ---
 

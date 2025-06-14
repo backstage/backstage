@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import { ComponentType } from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
+import { Table } from '../Table';
+
 const invoices = [
   {
     invoice: 'INV001',
@@ -59,28 +63,15 @@ const invoices = [
   },
 ];
 
-import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../Table';
-
 const meta = {
   title: 'Components/Table',
-  component: Table,
+  component: Table.Root,
   subcomponents: {
-    TableBody: TableBody as React.ComponentType<unknown>,
-    TableCell: TableCell as React.ComponentType<unknown>,
-    TableFooter: TableFooter as React.ComponentType<unknown>,
-    TableHead: TableHead as React.ComponentType<unknown>,
-    TableHeader: TableHeader as React.ComponentType<unknown>,
-    TableRow: TableRow as React.ComponentType<unknown>,
+    Body: Table.Body as ComponentType<unknown>,
+    Cell: Table.Cell as ComponentType<unknown>,
+    Head: Table.Head as ComponentType<unknown>,
+    Header: Table.Header as ComponentType<unknown>,
+    Row: Table.Row as ComponentType<unknown>,
   },
 } satisfies Meta<typeof Table>;
 
@@ -89,31 +80,27 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[100px]">Invoice</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Method</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
+    <Table.Root>
+      <Table.Header>
+        <Table.Row>
+          <Table.Head className="w-[100px]">Invoice</Table.Head>
+          <Table.Head>Status</Table.Head>
+          <Table.Head>Method</Table.Head>
+          <Table.Head className="text-right">Amount</Table.Head>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
         {invoices.map(invoice => (
-          <TableRow key={invoice.invoice}>
-            <TableCell className="font-medium">{invoice.invoice}</TableCell>
-            <TableCell>{invoice.paymentStatus}</TableCell>
-            <TableCell>{invoice.paymentMethod}</TableCell>
-            <TableCell className="text-right">{invoice.totalAmount}</TableCell>
-          </TableRow>
+          <Table.Row key={invoice.invoice}>
+            <Table.Cell className="font-medium">{invoice.invoice}</Table.Cell>
+            <Table.Cell>{invoice.paymentStatus}</Table.Cell>
+            <Table.Cell>{invoice.paymentMethod}</Table.Cell>
+            <Table.Cell className="text-right">
+              {invoice.totalAmount}
+            </Table.Cell>
+          </Table.Row>
         ))}
-      </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell colSpan={3}>Total</TableCell>
-          <TableCell className="text-right">$2,500.00</TableCell>
-        </TableRow>
-      </TableFooter>
-    </Table>
+      </Table.Body>
+    </Table.Root>
   ),
 };

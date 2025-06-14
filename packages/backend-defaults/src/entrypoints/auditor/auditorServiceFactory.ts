@@ -19,6 +19,7 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { DefaultAuditorService } from './DefaultAuditorService';
+import { getSeverityLogLevelMappings } from './utils';
 
 /**
  * Plugin-level auditing.
@@ -32,20 +33,33 @@ import { DefaultAuditorService } from './DefaultAuditorService';
 export const auditorServiceFactory = createServiceFactory({
   service: coreServices.auditor,
   deps: {
+    config: coreServices.rootConfig,
     logger: coreServices.logger,
     auth: coreServices.auth,
     httpAuth: coreServices.httpAuth,
     plugin: coreServices.pluginMetadata,
   },
-  factory({ logger, plugin, auth, httpAuth }) {
+  factory({ config, logger, plugin, auth, httpAuth }) {
     const auditLogger = logger.child({ isAuditEvent: true });
+
+    const severityLogLevelMappings = getSeverityLogLevelMappings(config);
+
     return DefaultAuditorService.create(
       event => {
-        const message = `${event.plugin}.${event.eventId}`;
-        if (event.severityLevel === 'low') {
-          auditLogger.debug(message, event);
+        if ('error' in event) {
+          const { error, ...rest } = event;
+          const childAuditLogger = auditLogger.child(rest);
+
+          childAuditLogger[severityLogLevelMappings[event.severityLevel]](
+            `${event.plugin}.${event.eventId}`,
+            error,
+          );
         } else {
-          auditLogger.info(message, event);
+          // the else statement is required for typechecking
+          auditLogger[severityLogLevelMappings[event.severityLevel]](
+            `${event.plugin}.${event.eventId}`,
+            event,
+          );
         }
       },
       { plugin, auth, httpAuth },

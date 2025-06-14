@@ -34,7 +34,6 @@ import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 import { AboutCard } from './AboutCard';
 import { ConfigReader } from '@backstage/core-app-api';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
-import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
@@ -587,6 +586,64 @@ describe('<AboutCard />', () => {
     expect(screen.getByText('View TechDocs').closest('a')).toHaveAttribute(
       'href',
       '/docs/default/system/example',
+    );
+  });
+
+  it('renders techdocs link to specific path', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        annotations: {
+          'backstage.io/techdocs-entity': 'system:default/example',
+          'backstage.io/techdocs-entity-path': '/path/to/component',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(
+              new ConfigReader({
+                integrations: {
+                  github: [
+                    {
+                      host: 'github.com',
+                      token: '...',
+                    },
+                  ],
+                },
+              }),
+            ),
+          ],
+          [catalogApiRef, catalogApi],
+          [permissionApiRef, {}],
+        ]}
+      >
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name': viewTechDocRouteRef,
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByText('View TechDocs').closest('a')).toHaveAttribute(
+      'href',
+      '/docs/default/system/example/path/to/component',
     );
   });
 

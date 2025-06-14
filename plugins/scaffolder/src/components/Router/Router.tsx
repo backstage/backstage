@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { Routes, Route, useOutlet } from 'react-router-dom';
 
 import {
@@ -41,6 +41,7 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
   templateFormRouteRef,
+  templatingExtensionsRouteRef,
 } from '../../routes';
 
 import { ActionsPage } from '../../components/ActionsPage';
@@ -66,6 +67,7 @@ import {
 import { useApp } from '@backstage/core-plugin-api';
 import { FormField, OpaqueFormField } from '@internal/scaffolder';
 import { useAsync, useMountEffect } from '@react-hookz/web';
+import { TemplatingExtensionsPage } from '../TemplatingExtensionsPage';
 
 /**
  * The Props for the Scaffolder Router
@@ -74,16 +76,16 @@ import { useAsync, useMountEffect } from '@react-hookz/web';
  */
 export type RouterProps = {
   components?: {
-    ReviewStepComponent?: React.ComponentType<ReviewStepProps>;
-    TemplateCardComponent?: React.ComponentType<{
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
+    TemplateCardComponent?: ComponentType<{
       template: TemplateEntityV1beta3;
     }>;
-    TaskPageComponent?: React.ComponentType<PropsWithChildren<{}>>;
-    EXPERIMENTAL_TemplateOutputsComponent?: React.ComponentType<{
+    TaskPageComponent?: ComponentType<PropsWithChildren<{}>>;
+    EXPERIMENTAL_TemplateOutputsComponent?: ComponentType<{
       output?: ScaffolderTaskOutput;
     }>;
-    EXPERIMENTAL_TemplateListPageComponent?: React.ComponentType<TemplateListPageProps>;
-    EXPERIMENTAL_TemplateWizardPageComponent?: React.ComponentType<TemplateWizardPageProps>;
+    EXPERIMENTAL_TemplateListPageComponent?: ComponentType<TemplateListPageProps>;
+    EXPERIMENTAL_TemplateWizardPageComponent?: ComponentType<TemplateWizardPageProps>;
   };
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
@@ -247,6 +249,10 @@ export const InternalRouter = (
             </SecretsContextProvider>
           </RequirePermission>
         }
+      />
+      <Route
+        path={templatingExtensionsRouteRef.path}
+        element={<TemplatingExtensionsPage />}
       />
       <Route path="*" element={<NotFoundErrorPage />} />
     </Routes>

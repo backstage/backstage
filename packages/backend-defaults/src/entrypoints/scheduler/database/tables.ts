@@ -20,8 +20,10 @@ export const DB_TASKS_TABLE = 'backstage_backend_tasks__tasks';
 export type DbTasksRow = {
   id: string;
   settings_json: string;
-  next_run_start_at: Date;
+  next_run_start_at?: Date | string; // This can be null when in manual trigger mode
   current_run_ticket?: string;
   current_run_started_at?: Date | string;
   current_run_expires_at?: Date | string;
+  last_run_error_json?: string;
+  last_run_ended_at?: Date | string;
 };

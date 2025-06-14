@@ -1,7 +1,6 @@
 ---
 id: adrs-adr014
 title: 'ADR014: Proper use of HTTP fetching libraries'
-# prettier-ignore
 description: Architecture Decision Record (ADR) for the proper use of fetchApiRef, native fetch, and cross-fetch for data fetching.
 ---
 

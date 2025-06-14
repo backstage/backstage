@@ -1,9 +1,9 @@
 import { CodeBlock } from '@/components/CodeBlock';
 import { PropsTable } from '@/components/PropsTable';
 import { Tabs } from '@/components/Tabs';
-import { grid } from '@/snippets/_snippets';
+import { grid } from '@/snippets/code-snippets';
 import { Snippet } from '@/components/Snippet';
-import { GridPreview } from '@/snippets/grid';
+import { GridSnippet } from '@/snippets/stories-snippets';
 import { spacingPropDefs } from '../../../../utils/propDefs';
 import { gridPropDefs, gridItemPropDefs } from './props';
 
@@ -14,7 +14,7 @@ more complex ones.
 
 <Snippet
   py={4}
-  preview={<GridPreview />}
+  preview={<GridSnippet story="Default" />}
   code={`<Grid>
     <DecorativeBox />
     <DecorativeBox />

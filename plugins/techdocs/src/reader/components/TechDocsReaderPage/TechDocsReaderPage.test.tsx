@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 import {
@@ -118,7 +118,7 @@ const configApi = mockApis.config({
   data: { app: { baseUrl: 'http://localhost:3000' } },
 });
 
-const Wrapper = ({ children }: { children: React.ReactNode }) => {
+const Wrapper = ({ children }: { children: ReactNode }) => {
   return (
     <TestApiProvider
       apis={[

@@ -19,6 +19,7 @@ import { mergeConfigSchemas } from '@backstage/config-loader';
 import { OptionValues } from 'commander';
 import { JSONSchema7 as JSONSchema } from 'json-schema';
 import openBrowser from 'react-dev-utils/openBrowser';
+import chalk from 'chalk';
 import { loadCliConfig } from '../lib/config';
 
 const DOCS_URL = 'https://config.backstage.io';
@@ -36,5 +37,23 @@ export default async (opts: OptionValues) => {
     ),
   );
 
-  openBrowser(`${DOCS_URL}#schema=${JSON.stringify(schema)}`);
+  const url = `${DOCS_URL}#schema=${JSON.stringify(schema)}`;
+
+  console.log();
+  console.log(
+    chalk.cyan(
+      'Opening configuration reference documentation in your browser...',
+    ),
+  );
+  console.log(`  ${chalk.cyan(url)}`);
+  console.log();
+
+  const opened = openBrowser(url);
+
+  if (!opened) {
+    console.log(
+      chalk.yellow('⚠️  WARNING: Unable to open browser automatically.'),
+    );
+    console.log(chalk.yellow('Please open the URL manually in your browser.'));
+  }
 };

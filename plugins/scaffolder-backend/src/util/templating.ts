@@ -197,10 +197,15 @@ export function extractGlobalFunctionMetadata(
 
     for (const global of globals) {
       if (isGlobalFunction(global)) {
-        const metadata: any = {
-          description: global.description,
-          examples: global.examples,
-        };
+        const metadata: any = {};
+
+        if (global.description) {
+          metadata.description = global.description;
+        }
+
+        if (global.examples) {
+          metadata.examples = global.examples;
+        }
 
         if (global.schema) {
           metadata.schema = convertZodFunctionToJsonSchema(global.schema(z));

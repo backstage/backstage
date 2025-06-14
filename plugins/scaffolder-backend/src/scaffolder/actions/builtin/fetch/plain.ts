@@ -39,39 +39,32 @@ export function createFetchPlainAction(options: {
 }) {
   const { reader, integrations } = options;
 
-  return createTemplateAction<{
-    url: string;
-    targetPath?: string;
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: ACTION_ID,
     examples,
     description:
       'Downloads content and places it in the workspace, or optionally in a subdirectory specified by the `targetPath` input option.',
     schema: {
       input: {
-        type: 'object',
-        required: ['url'],
-        properties: {
-          url: {
-            title: 'Fetch URL',
+        url: z =>
+          z.string({
             description:
               'Relative path or absolute URL pointing to the directory tree to fetch',
-            type: 'string',
-          },
-          targetPath: {
-            title: 'Target Path',
-            description:
-              'Target path within the working directory to download the contents to.',
-            type: 'string',
-          },
-          token: {
-            title: 'Token',
-            description:
-              'An optional token to use for authentication when reading the resources.',
-            type: 'string',
-          },
-        },
+          }),
+        targetPath: z =>
+          z
+            .string({
+              description:
+                'Target path within the working directory to download the contents to.',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description:
+                'An optional token to use for authentication when reading the resources.',
+            })
+            .optional(),
       },
     },
     supportsDryRun: true,

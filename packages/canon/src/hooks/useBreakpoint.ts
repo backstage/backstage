@@ -25,18 +25,40 @@ export const breakpoints: { name: string; id: Breakpoint; value: number }[] = [
   { name: 'Extra Large', id: 'xl', value: 1536 },
 ];
 
-export const useBreakpoint = (): Breakpoint => {
-  // TODO: Perhaps refactor for useMediaQuery to accept an array of queries
+/** @public */
+export const useBreakpoint = () => {
+  // Call all media queries at the top level
   const matches = breakpoints.map(breakpoint => {
-    const match = useMediaQuery(`(min-width: ${breakpoint.value}px)`);
-    return match;
+    return useMediaQuery(`(min-width: ${breakpoint.value}px)`);
   });
 
+  // Pre-calculate all the up/down values we need
+  const upMatches = new Map(
+    breakpoints.map(bp => [bp.id, useMediaQuery(`(min-width: ${bp.value}px)`)]),
+  );
+
+  const downMatches = new Map(
+    breakpoints.map(bp => [
+      bp.id,
+      useMediaQuery(`(max-width: ${bp.value - 1}px)`),
+    ]),
+  );
+
+  let breakpoint: Breakpoint = breakpoints[0].id;
   for (let i = matches.length - 1; i >= 0; i--) {
     if (matches[i]) {
-      return breakpoints[i].id;
+      breakpoint = breakpoints[i].id;
+      break;
     }
   }
 
-  return breakpoints[0].id;
+  return {
+    breakpoint,
+    up: (key: Breakpoint): boolean => {
+      return upMatches.get(key) ?? false;
+    },
+    down: (key: Breakpoint): boolean => {
+      return downMatches.get(key) ?? false;
+    },
+  };
 };

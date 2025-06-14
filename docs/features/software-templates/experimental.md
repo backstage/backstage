@@ -1,7 +1,6 @@
 ---
 id: experimental
 title: Experimental Features
-# prettier-ignore
 description: Information on Experimental Features that are currently available in the Scaffolder
 ---
 
@@ -118,7 +117,7 @@ export const mockDecorator = createScaffolderFormDecorator({
   // give the decorator a name
   id: 'mock-decorator',
 
-  // define the schema for the input that can be proided in `template.yaml`
+  // define the schema for the input that can be provided in `template.yaml`
   schema: {
     input: {
       test: z => z.string(),

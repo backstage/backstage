@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import {
   AppRootElementBlueprint,
   DialogApi,
@@ -110,7 +110,7 @@ export const dialogDisplayAppRootElement =
       const dialogApi = apis.get(dialogApiRef);
       if (!isInternalDialogApi(dialogApi)) {
         return originalFactory({
-          element: <React.Fragment />,
+          element: <Fragment />,
         });
       }
       return originalFactory({

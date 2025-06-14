@@ -18,8 +18,10 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { BitbucketServerEntityProvider } from '../providers';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { BitbucketServerEntityProvider } from '../providers/BitbucketServerEntityProvider';
 
 /**
  * @public
@@ -31,14 +33,28 @@ export const catalogModuleBitbucketServerEntityProvider = createBackendModule({
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
+        catalogApi: catalogServiceRef,
         config: coreServices.rootConfig,
+        events: eventsServiceRef,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
+        auth: coreServices.auth,
       },
-      async init({ catalog, config, logger, scheduler }) {
+      async init({
+        catalog,
+        catalogApi,
+        config,
+        events,
+        logger,
+        scheduler,
+        auth,
+      }) {
         const providers = BitbucketServerEntityProvider.fromConfig(config, {
+          catalogApi,
+          events,
           logger,
           scheduler,
+          auth,
         });
 
         catalog.addEntityProvider(providers);

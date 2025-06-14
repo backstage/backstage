@@ -17,7 +17,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { JsonValue } from '@backstage/types';
 import type { RJSFValidationError } from '@rjsf/utils';
 import { act, fireEvent, waitFor } from '@testing-library/react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { FieldExtensionComponentProps } from '../../../extensions';
 import { LayoutTemplate } from '../../../layouts';

@@ -25,5 +25,9 @@
   },
   "shared": [],
   "remotes": [],
-  "exposes": []
+  "exposes": [{
+    "name": "."
+  },{
+    "name": "alpha"
+  }]
 }

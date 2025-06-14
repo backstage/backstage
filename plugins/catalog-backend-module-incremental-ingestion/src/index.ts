@@ -22,11 +22,9 @@
 
 export { default } from './module';
 export * from './module';
-export * from './service';
 export {
   type EntityIteratorResult,
   type IncrementalEntityEventResult,
   type IncrementalEntityProvider,
   type IncrementalEntityProviderOptions,
-  type PluginEnvironment,
 } from './types';

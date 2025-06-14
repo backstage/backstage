@@ -38,7 +38,7 @@ describe('resolveAsyncFeatures', () => {
       config: mockApis.config(),
       features: [
         createFrontendPlugin({
-          id: 'test-feature',
+          pluginId: 'test-feature',
           extensions: [
             PageBlueprint.make({
               params: {
@@ -80,7 +80,7 @@ describe('resolveAsyncFeatures', () => {
         return {
           features: [
             createFrontendPlugin({
-              id: 'test',
+              pluginId: 'test',
               extensions: [
                 PageBlueprint.make({
                   params: {
@@ -145,7 +145,7 @@ describe('resolveAsyncFeatures', () => {
       async loader({ config: _ }) {
         return [
           createFrontendPlugin({
-            id: 'test',
+            pluginId: 'test',
             extensions: [
               PageBlueprint.make({
                 params: {

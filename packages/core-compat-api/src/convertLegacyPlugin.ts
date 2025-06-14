@@ -32,7 +32,7 @@ export function convertLegacyPlugin(
     ApiBlueprint.make({ name: factory.api.id, params: { factory } }),
   );
   return createFrontendPlugin({
-    id: legacyPlugin.getId(),
+    pluginId: legacyPlugin.getId(),
     featureFlags: [...legacyPlugin.getFeatureFlags()],
     routes: convertLegacyRouteRefs(legacyPlugin.routes ?? {}),
     externalRoutes: convertLegacyRouteRefs(legacyPlugin.externalRoutes ?? {}),

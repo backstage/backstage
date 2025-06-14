@@ -56,7 +56,7 @@ describe('createRouter readonly disabled', () => {
   let app: express.Express | Server;
   let refreshService: RefreshService;
   let locationAnalyzer: jest.Mocked<LocationAnalyzer>;
-  const permissionsService = mockServices.permissions.mock();
+  const permissionsService = mockServices.permissions();
 
   beforeEach(async () => {
     entitiesCatalog = {
@@ -799,12 +799,6 @@ describe('createRouter readonly disabled', () => {
           metadata: { name: 'n' },
         };
 
-        permissionsService.authorize.mockResolvedValueOnce([
-          {
-            result: AuthorizeResult.ALLOW,
-          },
-        ]);
-
         orchestrator.process.mockResolvedValueOnce({
           ok: true,
           state: {},
@@ -845,12 +839,6 @@ describe('createRouter readonly disabled', () => {
           metadata: { name: 'invalid*name' },
         };
 
-        permissionsService.authorize.mockResolvedValueOnce([
-          {
-            result: AuthorizeResult.ALLOW,
-          },
-        ]);
-
         orchestrator.process.mockResolvedValueOnce({
           ok: false,
           errors: [new Error('Invalid entity name')],
@@ -887,12 +875,6 @@ describe('createRouter readonly disabled', () => {
           kind: 'b',
           metadata: { name: 'n' },
         };
-
-        permissionsService.authorize.mockResolvedValueOnce([
-          {
-            result: AuthorizeResult.ALLOW,
-          },
-        ]);
 
         const response = await request(app)
           .post('/validate-entity')
@@ -940,7 +922,7 @@ describe('createRouter readonly and raw json enabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let app: express.Express;
   let locationService: jest.Mocked<LocationService>;
-  const permissionsService = mockServices.permissions.mock();
+  const permissionsService = mockServices.permissions();
 
   beforeAll(async () => {
     entitiesCatalog = {
@@ -1144,7 +1126,7 @@ describe('NextRouter permissioning', () => {
   let locationService: jest.Mocked<LocationService>;
   let app: express.Express;
   let refreshService: RefreshService;
-  const permissionsService = mockServices.permissions.mock();
+  const permissionsService = mockServices.permissions();
 
   const fakeRule = createPermissionRule({
     name: 'FAKE_RULE',

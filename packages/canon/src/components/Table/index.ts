@@ -13,12 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  Table,
-  TableHead,
-  TableRow,
-  TableHeader,
-  TableCell,
-  TableBody,
-  TableFooter,
-} from './Table';
+
+export * from './Table';
+export * from './TableCellText/types';
+export * from './TableCellLink/types';
+export * from './TableCellProfile/types';

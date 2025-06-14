@@ -16,7 +16,7 @@
 
 import { ExtensionAttachToSpec } from '@backstage/frontend-plugin-api';
 import { EntityLayout, EntitySwitch, isKind } from '@backstage/plugin-catalog';
-import React from 'react';
+import { JSX } from 'react';
 import { collectEntityPageContents } from './collectEntityPageContents';
 import {
   createComponentExtension,
@@ -70,7 +70,7 @@ const otherTestContent = (
   </EntityLayout>
 );
 
-function collect(element: React.JSX.Element) {
+function collect(element: JSX.Element) {
   const result = new Array<{
     id: string;
     attachTo: ExtensionAttachToSpec;

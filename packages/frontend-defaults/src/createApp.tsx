@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { JSX, ReactNode } from 'react';
+import { JSX, lazy, ReactNode, Suspense } from 'react';
 import {
   ConfigApi,
   coreExtensionData,
@@ -30,6 +30,7 @@ import { ConfigReader } from '@backstage/config';
 import {
   CreateAppRouteBinder,
   createSpecializedApp,
+  FrontendPluginInfoResolver,
 } from '@backstage/frontend-app-api';
 import appPlugin from '@backstage/plugin-app';
 import { discoverAvailableFeatures } from './discovery';
@@ -78,6 +79,7 @@ export interface CreateAppOptions {
   extensionFactoryMiddleware?:
     | ExtensionFactoryMiddleware
     | ExtensionFactoryMiddleware[];
+  pluginInfoResolver?: FrontendPluginInfoResolver;
 }
 
 /**
@@ -112,6 +114,7 @@ export function createApp(options?: CreateAppOptions): {
       features: [appPlugin, ...loadedFeatures],
       bindRoutes: options?.bindRoutes,
       extensionFactoryMiddleware: options?.extensionFactoryMiddleware,
+      pluginInfoResolver: options?.pluginInfoResolver,
     });
 
     const rootEl = app.tree.root.instance!.getData(
@@ -123,11 +126,11 @@ export function createApp(options?: CreateAppOptions): {
 
   return {
     createRoot() {
-      const LazyApp = React.lazy(appLoader);
+      const LazyApp = lazy(appLoader);
       return (
-        <React.Suspense fallback={suspenseFallback}>
+        <Suspense fallback={suspenseFallback}>
           <LazyApp />
-        </React.Suspense>
+        </Suspense>
       );
     },
   };

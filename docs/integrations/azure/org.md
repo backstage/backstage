@@ -2,12 +2,11 @@
 id: org
 title: Microsoft Entra Tenant Data
 sidebar_label: Org Data
-# prettier-ignore
 description: Importing users and groups from Microsoft Entra ID into Backstage
 ---
 
 :::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./org--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/integrations/azure/org--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
 :::
 
 The Backstage catalog can be set up to ingest organizational data - users and
@@ -125,6 +124,8 @@ microsoftGraphOrg:
 In addition to these groups, one additional group will be created for your organization.
 All imported groups will be a child of this group.
 
+By default the provider will get groups using the msgraph `/group` endpoint, but it is possible to use different endpoints by setting the `path` configuration. All the endpoint containing `/microsoft.graph.group` will return the right type of group object. [See usage](#Using-path-parameter) for more details.
+
 ### Users
 
 There are two modes for importing users - You can import all user objects matching a `filter`.
@@ -147,6 +148,36 @@ microsoftGraphOrg:
       filter: "displayName eq 'Backstage Users'"
       search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
 ```
+
+By default the provider will get user using the msgraph `/user` endpoint, but it is possible to use different endpoints by setting the `path` configuration. All the endpoint containing `/microsoft.graph.user` will return the right type of user object. [See usage](#Using-path-parameter) for more details.
+
+### Using `path` parameter
+
+By default the provider will get groups and users using the msgraph `/group` and `/user` endpoints, but it is possible to use different endpoints by setting the `path` configuration.
+All the endpoint containing `/microsoft.graph.user` will return the right type of user object and all the endpoint containing `/microsoft.graph.group` will return the right type of group object.
+
+#### Example
+
+Given the following org structure it is possible to use the `path` parameter to get all the users and groups that are members of the group `someRootGroup` on all levels.
+
+<div align="center">
+
+![email](../../assets/integrations/azure/org.svg)
+
+</div>
+
+The configuration would look like this:
+
+```yaml
+microsoftGraphOrg:
+  providerId:
+    group:
+      path: /groups/{someRootGroup id}/transitiveMembers/microsoft.graph.group
+    user:
+      path: /groups/{someRootGroup id}/transitiveMembers/microsoft.graph.user
+```
+
+Using the transitive members endpoint will return all the users and groups that are members of the group `someRootGroup` on all levels.
 
 ### User photos
 

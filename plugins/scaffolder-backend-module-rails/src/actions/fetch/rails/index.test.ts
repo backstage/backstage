@@ -56,7 +56,9 @@ describe('fetch:rails', () => {
       url: 'https://rubyonrails.org/generator',
       targetPath: 'something',
       values: {
-        help: 'me',
+        railsArguments: {
+          minimal: true,
+        },
       },
     },
     templateInfo: {

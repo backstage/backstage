@@ -157,12 +157,19 @@ const notificationSettings: NotificationSettings = {
       id: 'Web',
       origins: [
         {
-          id: 'plugin-test',
+          id: 'abcd-origin',
           enabled: true,
+          topics: [
+            {
+              id: 'efgh-topic',
+              enabled: false,
+            },
+          ],
         },
         {
-          id: 'plugin-test2',
-          enabled: false,
+          id: 'plugin-test',
+          enabled: true,
+          topics: [],
         },
       ],
     },

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   createApiFactory,
   createFrontendPlugin,
@@ -71,7 +70,8 @@ export const devToolsNavItem = NavItemBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'devtools',
+  pluginId: 'devtools',
+  info: { packageJson: () => import('../../package.json') },
   routes: {
     root: convertLegacyRouteRef(rootRouteRef),
   },

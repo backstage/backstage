@@ -16,11 +16,12 @@
 
 import type { CSSProperties, ReactNode } from 'react';
 import type { Breakpoint } from '../../types';
+import type { useRender } from '@base-ui-components/react/use-render';
 
 /** @public */
-export interface LinkProps
-  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+export interface LinkProps extends useRender.ComponentProps<'a'> {
   children: ReactNode;
+  to?: string;
   variant?:
     | 'subtitle'
     | 'body'

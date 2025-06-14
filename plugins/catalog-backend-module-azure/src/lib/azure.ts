@@ -46,7 +46,18 @@ interface CodeSearchRequest {
   };
 }
 
-const isCloud = (host: string) => host === 'dev.azure.com';
+const isCloud = (host: string) => {
+  if (host === 'dev.azure.com') {
+    return true;
+  }
+
+  if (host.endsWith('.visualstudio.com')) {
+    return true;
+  }
+
+  return false;
+};
+
 const PAGE_SIZE = 1000;
 
 // codeSearch returns all files that matches the given search path.

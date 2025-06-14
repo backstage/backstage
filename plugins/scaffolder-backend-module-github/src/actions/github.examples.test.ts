@@ -98,7 +98,7 @@ describe('publish:github', () => {
     jest.requireActual('./helpers');
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext({
     input: {
@@ -121,7 +121,7 @@ describe('publish:github', () => {
       githubCredentialsProvider,
     });
 
-    // restore real implmentation
+    // restore real implementation
     (entityRefToName as jest.Mock).mockImplementation(
       realFamiliarizeEntityName,
     );
@@ -155,7 +155,7 @@ describe('publish:github', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',

@@ -16,7 +16,9 @@
 
 import {
   DatabaseService,
+  HttpRouterService,
   LoggerService,
+  PluginMetadataService,
   RootLifecycleService,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
@@ -35,7 +37,9 @@ export class DefaultSchedulerService {
   static create(options: {
     database: DatabaseService;
     logger: LoggerService;
-    rootLifecycle?: RootLifecycleService;
+    rootLifecycle: RootLifecycleService;
+    httpRouter: HttpRouterService;
+    pluginMetadata: PluginMetadataService;
   }): SchedulerService {
     const databaseFactory = once(async () => {
       const knex = await options.database.getClient();
@@ -52,17 +56,22 @@ export class DefaultSchedulerService {
           logger: options.logger,
         });
 
-        options.rootLifecycle?.addShutdownHook(() => abortController.abort());
+        options.rootLifecycle.addShutdownHook(() => abortController.abort());
         janitor.start(abortController.signal);
       }
 
       return knex;
     });
 
-    return new PluginTaskSchedulerImpl(
+    const scheduler = new PluginTaskSchedulerImpl(
+      options.pluginMetadata.getId(),
       databaseFactory,
       options.logger,
       options.rootLifecycle,
     );
+
+    options.httpRouter.use(scheduler.getRouter());
+
+    return scheduler;
   }
 }

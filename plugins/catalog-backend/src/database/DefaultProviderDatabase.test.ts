@@ -610,16 +610,18 @@ describe('DefaultProviderDatabase', () => {
         );
         let references = await knex<DbRefreshStateReferencesRow>(
           'refresh_state_references',
-        ).select();
+        )
+          .select()
+          .orderBy('id');
         expect(references).toEqual([
           {
-            id: 1,
+            id: expect.anything(),
             source_key: 'lols',
             source_entity_ref: null,
             target_entity_ref: 'component:default/a',
           },
           {
-            id: 2,
+            id: expect.anything(),
             source_key: 'lols',
             source_entity_ref: null,
             target_entity_ref: 'component:default/b',
@@ -670,16 +672,18 @@ describe('DefaultProviderDatabase', () => {
         );
         references = await knex<DbRefreshStateReferencesRow>(
           'refresh_state_references',
-        ).select();
+        )
+          .select()
+          .orderBy('id');
         expect(references).toEqual([
           {
-            id: 2,
+            id: expect.anything(),
             source_key: 'lols',
             source_entity_ref: null,
             target_entity_ref: 'component:default/b',
           },
           {
-            id: 3,
+            id: expect.anything(),
             source_key: 'lols',
             source_entity_ref: null,
             target_entity_ref: 'component:default/a',

@@ -26,9 +26,11 @@ import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useEffect } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { apiDocsConfigRef } from '../../config';
 import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { apiDocsTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   fullHeightDialog: {
@@ -64,7 +66,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function TabPanel(props: {
-  children?: React.ReactNode;
+  children?: ReactNode;
   index: number;
   value: number;
 }) {
@@ -106,8 +108,9 @@ export function ApiDefinitionDialog(props: {
   onClose: () => void;
 }) {
   const { open, entity, onClose } = props;
-  const [activeTab, setActiveTab] = React.useState(0);
+  const [activeTab, setActiveTab] = useState(0);
   const classes = useStyles();
+  const { t } = useTranslationRef(apiDocsTranslationRef);
 
   useEffect(() => {
     setActiveTab(0);
@@ -142,7 +145,7 @@ export function ApiDefinitionDialog(props: {
           variant="scrollable"
           value={activeTab}
           onChange={(_, newValue) => setActiveTab(newValue)}
-          aria-label="API definition options"
+          aria-label={t('apiDefinitionDialog.tabsAriaLabel')}
           className={classes.tabs}
         >
           {definitionWidget ? (
@@ -165,7 +168,7 @@ export function ApiDefinitionDialog(props: {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
-          Close
+          {t('apiDefinitionDialog.closeButtonTitle')}
         </Button>
       </DialogActions>
     </Dialog>

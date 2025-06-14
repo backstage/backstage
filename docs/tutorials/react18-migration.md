@@ -1,75 +1,126 @@
 ---
 id: react18-migration
 title: Migrating to React 18
-description: Additional resources for the Material UI v5 migration guide specifically for Backstage
+description: A guide to migrating your project to React 18
 ---
 
-The Backstage core libraries and plugins are compatible with all versions of React from v16.8 to v18. This means that you can migrate projects at your own pace. We do however encourage you to do so sooner rather than later, both to keep up with the evolving ecosystem, but also because React 18 brings performance improvements, in particular in tests.
+:::info
+
+This guide has been updated to include steps for removing support for React 16, as it is now deprecated.
+
+:::
+
+The Backstage core libraries and plugins are compatible with all versions of React from v17 to v18. This means that you can migrate projects at your own pace. We do however encourage you to do so sooner rather than later, both to keep up with the evolving ecosystem, but also because React 18 brings performance improvements, in particular in tests.
 
 ## Migration
 
 _Before diving in, this is a heads-up that for large projects this can be a tricky migration due to the fact that it is hard to break down into a gradual migration. In practice the difficult part of this migration is switching to the new version of the `@testing-library/react` package for tests, since there is no overlapping support across major React versions, more on that later._
 
-### Switching to React 18
+### Upgrading to React 18
 
-To switch a project to React 18, there are generally three changes that need to be made.
+#### Backstage Instance
 
-1. Update the resolutions in your root `package.json` to the new versions of `@types/react` and `@types/react-dom`:
+To migrate a Backstage instance to React 18, follow these steps:
 
-```json title="package.json"
-  "resolutions": {
-    // highlight-remove-next-line
-    "@types/react": "^17",
-    // highlight-remove-next-line
-    "@types/react-dom": "^17",
-    // highlight-add-next-line
-    "@types/react": "^18",
-    // highlight-add-next-line
-    "@types/react-dom": "^18",
-  },
-```
+1. Modify the `resolutions` section in your root `package.json` to reference the latest versions of `@types/react` and `@types/react-dom`:
 
-2. Update the `react` and `react-dom` dependencies in your `packages/app/package.json` to the new versions:
+   ```json title="package.json"
+     "resolutions": {
+       // highlight-remove-start
+       "@types/react": "^17",
+       "@types/react-dom": "^17",
+       // highlight-remove-end
+       // highlight-add-start
+       "@types/react": "^18",
+       "@types/react-dom": "^18",
+       // highlight-add-end
+     },
+   ```
 
-```json title="packages/app/package.json"
-  "dependencies": {
-    ...
-    // highlight-remove-next-line
-    "react": "^17.0.2",
-    // highlight-remove-next-line
-    "react-dom": "^17.0.2",
-    // highlight-add-next-line
-    "react": "^18.0.2",
-    // highlight-add-next-line
-    "react-dom": "^18.0.2",
-    ...
-  },
-```
+2. Update the `react` and `react-dom` dependencies in `packages/app/package.json`:
 
-3. Update `packages/app/src/index.tsx` to use the new `react-dom/client` API to render the app:
+   ```json title="packages/app/package.json"
+     "dependencies": {
+       ...
+       // highlight-remove-start
+       "react": "^17.0.2",
+       "react-dom": "^17.0.2",
+       // highlight-remove-end
+       // highlight-add-start
+       "react": "^18.0.2",
+       "react-dom": "^18.0.2",
+       // highlight-add-end
+       ...
+     },
+   ```
 
-```tsx title="packages/app/src/index.tsx"
-import '@backstage/cli/asset-types';
-import React from 'react';
-// highlight-remove-next-line
-import ReactDOM from 'react-dom';
-// highlight-add-next-line
-import ReactDOM from 'react-dom/client';
-import App from './App';
+3. Adjust `packages/app/src/index.tsx` to use the `react-dom/client` API for rendering:
 
-// highlight-remove-next-line
-ReactDOM.render(<App />, document.getElementById('root'));
-// highlight-add-next-line
-ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
-```
+   ```tsx title="packages/app/src/index.tsx"
+   import '@backstage/cli/asset-types';
+   // highlight-remove-next-line
+   import ReactDOM from 'react-dom';
+   // highlight-add-next-line
+   import ReactDOM from 'react-dom/client';
+   import App from './App';
 
-Once these steps are done you should be able to run your app and see it working as before, except now using React 18.
+   // highlight-remove-next-line
+   ReactDOM.render(<App />, document.getElementById('root'));
+   // highlight-add-next-line
+   ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
+   ```
+
+#### Backstage Frontend Plugin
+
+1. Update the `devDependencies` and `peerDependencies` for `react`, `react-dom`, and `@types/react` in your plugin's `package.json`:
+
+   ```json title="plugins/<plugin-name>/package.json"
+     "devDependencies": {
+       ...
+       // highlight-remove-start
+       "@types/react": "^16.13.1 || ^17.0.0",
+       "react": "^16.13.1 || ^17.0.0",
+       "react-dom": "^16.13.1 || ^17.0.0",
+       // highlight-remove-end
+       // highlight-add-start
+       "@types/react": "^17.0.0 || ^18.0.0",
+       "react": "^17.0.0 || ^18.0.0",
+       "react-dom": "^17.0.0 || ^18.0.0",
+       // highlight-add-end
+       ...
+     },
+   ```
+
+   ```json title="plugins/<plugin-name>/package.json"
+     "peerDependencies": {
+       ...
+       // highlight-remove-start
+       "@types/react": "^16.13.1 || ^17.0.0",
+       "react": "^16.13.1 || ^17.0.0",
+       "react-dom": "^16.13.1 || ^17.0.0",
+       // highlight-remove-end
+       // highlight-add-start
+       "@types/react": "^17.0.0 || ^18.0.0",
+       "react": "^17.0.0 || ^18.0.0",
+       "react-dom": "^17.0.0 || ^18.0.0",
+       // highlight-add-end
+       ...
+     },
+   ```
+
+After completing these updates, your application and plugins should function as before, now utilizing React 18.
+
+:::note
+
+Be sure to update your lockfile after modifying your `package.json` files.
+
+:::
 
 ### TypeScript Errors
 
 When upgrading to React 18 you are likely to see a fair number of TypeScript type errors. A summary of the breaking changes can be found in the [Pull Request that introduced them](https://github.com/DefinitelyTyped/DefinitelyTyped/pull/56210). A codemod is also provided to help with the migration.
 
-Run `yarn tsc:full` to asses the damage.
+Run `yarn tsc:full` to assess the damage.
 
 The good news is that these errors can be fixed while still staying on React 17. If you have a large number of errors to fix you can address as few or many is you like at a time and merge them into your main branch **without** the version bumps from step 1. This lets you gradually migrate the types in your project while not yet fully moving over to React 18. Once all type breakages are fixed you can move on to the next step of migrating tests.
 

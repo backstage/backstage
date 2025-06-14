@@ -2,7 +2,6 @@
 id: naming-patterns
 title: Backend System Naming Patterns
 sidebar_label: Naming Patterns
-# prettier-ignore
 description: Naming patterns in the backend system
 ---
 

@@ -16,6 +16,7 @@ import { GetEntityAncestorsRequest } from '@backstage/catalog-client';
 import { GetEntityAncestorsResponse } from '@backstage/catalog-client';
 import { GetEntityFacetsRequest } from '@backstage/catalog-client';
 import { GetEntityFacetsResponse } from '@backstage/catalog-client';
+import { GetLocationsResponse } from '@backstage/catalog-client';
 import { Location as Location_2 } from '@backstage/catalog-client';
 import { QueryEntitiesRequest } from '@backstage/catalog-client';
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
@@ -52,6 +53,8 @@ export class InMemoryCatalogClient implements CatalogApi {
   getLocationById(_id: string): Promise<Location_2 | undefined>;
   // (undocumented)
   getLocationByRef(_locationRef: string): Promise<Location_2 | undefined>;
+  // (undocumented)
+  getLocations(_request?: {}): Promise<GetLocationsResponse>;
   // (undocumented)
   queryEntities(request?: QueryEntitiesRequest): Promise<QueryEntitiesResponse>;
   // (undocumented)

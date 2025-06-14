@@ -31,13 +31,14 @@ import { loggerToWinstonLogger } from './loggerToWinstonLogger';
  * @public
  * @param options - optional parameters to override default mock context
  */
-export const createMockActionContext = <
+export function createMockActionContext<
   TActionInput extends JsonObject = JsonObject,
-  TActionOutput extends JsonObject = JsonObject,
+  TActionOutput extends JsonObject = any,
 >(
   options?: Partial<ActionContext<TActionInput, TActionOutput>>,
-): ActionContext<TActionInput, TActionOutput> => {
+): ActionContext<TActionInput, TActionOutput> {
   const credentials = mockCredentials.user();
+
   const defaultContext = {
     logger: loggerToWinstonLogger(mockServices.logger.mock()),
     logStream: new PassThrough(),
@@ -66,15 +67,8 @@ export const createMockActionContext = <
     };
   }
 
-  const {
-    input,
-    logger,
-    logStream,
-    secrets,
-    templateInfo,
-    workspacePath,
-    task,
-  } = options;
+  const { input, logger, secrets, templateInfo, workspacePath, task, user } =
+    options;
 
   return {
     ...defaultContext,
@@ -83,10 +77,10 @@ export const createMockActionContext = <
       createTemporaryDirectory: jest.fn().mockResolvedValue(workspacePath),
     }),
     ...(logger && { logger }),
-    ...(logStream && { logStream }),
     ...(input && { input }),
     ...(secrets && { secrets }),
     ...(task && { task }),
+    ...(user && { user }),
     templateInfo,
   };
-};
+}

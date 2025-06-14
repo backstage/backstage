@@ -9,6 +9,7 @@ import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DomainEntity } from '@backstage/catalog-model';
+import { ElementType } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityListContextProps } from '@backstage/plugin-catalog-react';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
@@ -21,10 +22,9 @@ import { HumanDuration } from '@backstage/types';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { InfoCardVariants } from '@backstage/core-components';
-import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
-import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { ResourceEntity } from '@backstage/catalog-model';
 import { ResultHighlight } from '@backstage/plugin-search-common';
@@ -41,13 +41,12 @@ import { TabProps } from '@material-ui/core/Tab';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
 // @public
-export interface AboutCardProps {
-  // (undocumented)
+export type AboutCardProps = {
   variant?: InfoCardVariants;
-}
+};
 
 // @public (undocumented)
-export function AboutContent(props: AboutContentProps): React_2.JSX.Element;
+export function AboutContent(props: AboutContentProps): JSX_2.Element;
 
 // @public
 export interface AboutContentProps {
@@ -56,12 +55,12 @@ export interface AboutContentProps {
 }
 
 // @public (undocumented)
-export function AboutField(props: AboutFieldProps): React_2.JSX.Element;
+export function AboutField(props: AboutFieldProps): JSX_2.Element;
 
 // @public
 export interface AboutFieldProps {
   // (undocumented)
-  children?: React_2.ReactNode;
+  children?: ReactNode;
   // (undocumented)
   className?: string;
   // (undocumented)
@@ -89,9 +88,7 @@ export const CatalogEntityPage: () => JSX.Element;
 export const CatalogIndexPage: (props: DefaultCatalogPageProps) => JSX.Element;
 
 // @public @deprecated (undocumented)
-export function CatalogKindHeader(
-  props: CatalogKindHeaderProps,
-): React_2.JSX.Element;
+export function CatalogKindHeader(props: CatalogKindHeaderProps): JSX_2.Element;
 
 // @public
 export interface CatalogKindHeaderProps {
@@ -157,7 +154,7 @@ export interface CatalogSearchResultListItemProps {
 
 // @public
 export const CatalogTable: {
-  (props: CatalogTableProps): React_2.JSX.Element;
+  (props: CatalogTableProps): JSX_2.Element;
   columns: Readonly<{
     createNameColumn(options?: {
       defaultKind?: string;
@@ -396,16 +393,16 @@ export type EntityLabelsEmptyStateClassKey = 'code';
 
 // @public
 export const EntityLayout: {
-  (props: EntityLayoutProps): React_2.JSX.Element;
+  (props: EntityLayoutProps): JSX_2.Element;
   Route: (props: EntityLayoutRouteProps) => null;
 };
 
 // @public (undocumented)
 export interface EntityLayoutProps {
   // (undocumented)
-  children?: React_2.ReactNode;
+  children?: ReactNode;
   // (undocumented)
-  NotFoundComponent?: React_2.ReactNode;
+  NotFoundComponent?: ReactNode;
   parentEntityRelations?: string[];
   // Warning: (ae-forgotten-export) The symbol "EntityContextMenuOptions" needs to be exported by the entry point index.d.ts
   //
@@ -424,9 +421,9 @@ export type EntityLayoutRouteProps = {
   children: JSX.Element;
   if?: (entity: Entity) => boolean;
   tabProps?: TabProps<
-    React_2.ElementType,
+    ElementType,
     {
-      component?: React_2.ElementType;
+      component?: ElementType;
     }
   >;
 };
@@ -447,11 +444,11 @@ export type EntityLinksEmptyStateClassKey = 'code';
 
 // @public @deprecated (undocumented)
 export const EntityListContainer: (props: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) => JSX_2.Element;
 
 // @public
-export function EntityOrphanWarning(): React_2.JSX.Element;
+export function EntityOrphanWarning(): JSX_2.Element;
 
 // @public (undocumented)
 export interface EntityPredicates {
@@ -462,14 +459,14 @@ export interface EntityPredicates {
 }
 
 // @public
-export function EntityProcessingErrorsPanel(): React_2.JSX.Element | null;
+export function EntityProcessingErrorsPanel(): JSX_2.Element | null;
 
 // @public
-export function EntityRelationWarning(): React_2.JSX.Element | null;
+export function EntityRelationWarning(): JSX_2.Element | null;
 
 // @public (undocumented)
 export const EntitySwitch: {
-  (props: EntitySwitchProps): React_2.JSX.Element;
+  (props: EntitySwitchProps): JSX.Element;
   Case: (_props: EntitySwitchCaseProps) => null;
 };
 
@@ -496,7 +493,7 @@ export interface EntitySwitchProps {
 
 // @public @deprecated (undocumented)
 export const FilterContainer: (props: {
-  children: React.ReactNode;
+  children: ReactNode;
   options?: {
     drawerBreakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number;
     drawerAnchor?: 'left' | 'right' | 'top' | 'bottom';

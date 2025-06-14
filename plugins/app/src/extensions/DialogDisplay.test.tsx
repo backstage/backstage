@@ -15,7 +15,7 @@
  */
 
 import { renderInTestApp } from '@backstage/frontend-test-utils';
-import React, { act, useEffect } from 'react';
+import { act, useEffect } from 'react';
 import {
   AppRootElementBlueprint,
   DialogApi,

@@ -2,7 +2,6 @@
 id: index
 title: The Frontend System
 sidebar_label: Introduction
-# prettier-ignore
 description: The Frontend System
 ---
 

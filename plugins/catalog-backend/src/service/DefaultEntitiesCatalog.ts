@@ -285,6 +285,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
         if (sortField) {
           inner
+            .distinct()
             .leftOuterJoin('search', qb =>
               qb
                 .on('search.entity_id', 'final_entities.entity_id')

@@ -22,7 +22,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandLess';
 import { usePrevious } from '@react-hookz/web';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDryRun } from '../DryRunContext';
 import { DryRunResultsList } from './DryRunResultsList';
 import { DryRunResultsView } from './DryRunResultsView';

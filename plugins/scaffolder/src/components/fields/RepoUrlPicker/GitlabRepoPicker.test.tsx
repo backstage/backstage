@@ -20,7 +20,6 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
-import React from 'react';
 import { GitlabRepoPicker } from './GitlabRepoPicker';
 
 describe('GitlabRepoPicker', () => {

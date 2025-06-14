@@ -15,7 +15,7 @@
  */
 
 import { render, RenderResult } from '@testing-library/react';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { MemoryRouter, Route, useOutlet } from 'react-router-dom';
 import { LocalStorageFeatureFlags } from '../apis';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
@@ -30,7 +30,7 @@ jest.mock('react-router-dom', () =>
 );
 
 const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
-const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+const Wrapper = ({ children }: { children?: ReactNode }) => (
   <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagsApi]]}>
     {children}
   </TestApiProvider>

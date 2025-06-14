@@ -16,6 +16,7 @@
 import { CachedAzureDevOpsCredentialsProvider } from './CachedAzureDevOpsCredentialsProvider';
 import {
   AccessToken,
+  ClientAssertionCredential,
   ClientSecretCredential,
   ManagedIdentityCredential,
 } from '@azure/identity';
@@ -23,6 +24,11 @@ import {
 const MockedClientSecretCredential = ClientSecretCredential as jest.MockedClass<
   typeof ClientSecretCredential
 >;
+
+const MockedClientAssertionCredential =
+  ClientAssertionCredential as jest.MockedClass<
+    typeof ClientAssertionCredential
+  >;
 
 const MockedManagedIdentityCredential =
   ManagedIdentityCredential as jest.MockedClass<
@@ -43,6 +49,13 @@ describe('CachedAzureDevOpsCredentialsProvider', () => {
       Promise.resolve({
         expiresOnTimestamp: Date.now() + hours(8),
         token: 'fake-client-secret-token',
+      } as AccessToken),
+    );
+
+    MockedClientAssertionCredential.prototype.getToken.mockImplementation(() =>
+      Promise.resolve({
+        expiresOnTimestamp: Date.now() + hours(8),
+        token: 'fake-client-assertion-token',
       } as AccessToken),
     );
 
@@ -89,6 +102,25 @@ describe('CachedAzureDevOpsCredentialsProvider', () => {
     expect(token).toBe('fake-client-secret-token');
   });
 
+  it('Should return a bearer credential when a managed identity client assertion is configured', async () => {
+    const manager =
+      CachedAzureDevOpsCredentialsProvider.fromAzureDevOpsCredential({
+        kind: 'ManagedIdentityClientAssertion',
+        clientId: 'id',
+        managedIdentityClientId: 'managedIdentityClientId',
+        tenantId: 'tenantId',
+      });
+
+    const { headers, type, token } = await manager.getCredentials();
+
+    expect(headers).toStrictEqual({
+      Authorization: `Bearer fake-client-assertion-token`,
+    });
+
+    expect(type).toBe('bearer');
+    expect(token).toBe('fake-client-assertion-token');
+  });
+
   it('Should return a bearer credential when a managed identity is configured', async () => {
     const manager =
       CachedAzureDevOpsCredentialsProvider.fromAzureDevOpsCredential({
@@ -121,6 +153,24 @@ describe('CachedAzureDevOpsCredentialsProvider', () => {
 
     expect(
       MockedClientSecretCredential.prototype.getToken,
+    ).toHaveBeenCalledTimes(1);
+  });
+
+  it('Should not refresh the managed identity client assertion token when it does not expire within 10 minutes', async () => {
+    const manager =
+      CachedAzureDevOpsCredentialsProvider.fromAzureDevOpsCredential({
+        kind: 'ManagedIdentityClientAssertion',
+        clientId: 'id',
+        managedIdentityClientId: 'managedIdentityClientId',
+        tenantId: 'tenantId',
+      });
+
+    await manager.getCredentials();
+    await manager.getCredentials();
+    await manager.getCredentials();
+
+    expect(
+      MockedClientAssertionCredential.prototype.getToken,
     ).toHaveBeenCalledTimes(1);
   });
 
@@ -161,6 +211,30 @@ describe('CachedAzureDevOpsCredentialsProvider', () => {
 
     expect(
       MockedClientSecretCredential.prototype.getToken,
+    ).toHaveBeenCalledTimes(2);
+  });
+
+  it('Should refresh the managed identity client assertion token when it expires within 10 minutes', async () => {
+    const manager =
+      CachedAzureDevOpsCredentialsProvider.fromAzureDevOpsCredential({
+        kind: 'ManagedIdentityClientAssertion',
+        clientId: 'id',
+        managedIdentityClientId: 'managedIdentityClientId',
+        tenantId: 'tenantId',
+      });
+
+    MockedClientAssertionCredential.prototype.getToken.mockImplementation(() =>
+      Promise.resolve({
+        expiresOnTimestamp: Date.now() + minutes(9) + seconds(59),
+        token: 'fake-client-assertion-token',
+      } as AccessToken),
+    );
+
+    await manager.getCredentials();
+    await manager.getCredentials();
+
+    expect(
+      MockedClientAssertionCredential.prototype.getToken,
     ).toHaveBeenCalledTimes(2);
   });
 

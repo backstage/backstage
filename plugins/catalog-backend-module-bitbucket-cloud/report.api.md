@@ -5,7 +5,7 @@
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
@@ -23,7 +23,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     config: Config,
     options: {
       auth: AuthService;
-      catalogApi: CatalogApi;
+      catalog: CatalogService;
       events: EventsService;
       logger: LoggerService;
       schedule?: SchedulerServiceTaskRunner;

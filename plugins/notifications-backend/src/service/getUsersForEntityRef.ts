@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   Entity,
   isGroupEntity,
@@ -24,7 +25,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { AuthService } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 
 const isUserEntityRef = (ref: string) =>
   parseEntityRef(ref).kind.toLocaleLowerCase() === 'user';
@@ -45,19 +46,14 @@ export const getUsersForEntityRef = async (
   excludeEntityRefs: string | string[],
   options: {
     auth: AuthService;
-    catalogClient: CatalogApi;
+    catalog: CatalogService;
   },
 ): Promise<string[]> => {
-  const { auth, catalogClient } = options;
+  const { auth, catalog } = options;
 
   if (entityRef === null) {
     return [];
   }
-
-  const { token } = await auth.getPluginRequestToken({
-    onBehalfOf: await auth.getOwnServiceCredentials(),
-    targetPluginId: 'catalog',
-  });
 
   const excluded = Array.isArray(excludeEntityRefs)
     ? excludeEntityRefs
@@ -71,12 +67,12 @@ export const getUsersForEntityRef = async (
   const fields = ['kind', 'metadata.name', 'metadata.namespace', 'relations'];
   let entities: Array<Entity | undefined> = [];
   if (entityRefs.length > 0) {
-    const fetchedEntities = await catalogClient.getEntitiesByRefs(
+    const fetchedEntities = await catalog.getEntitiesByRefs(
       {
         entityRefs,
         fields,
       },
-      { token },
+      { credentials: await auth.getOwnServiceCredentials() },
     );
     entities = fetchedEntities.items;
   }
@@ -114,12 +110,12 @@ export const getUsersForEntityRef = async (
 
       let childGroupUsers: string[][] = [];
       if (childGroupRefs.length > 0) {
-        const childGroups = await catalogClient.getEntitiesByRefs(
+        const childGroups = await catalog.getEntitiesByRefs(
           {
             entityRefs: childGroupRefs,
             fields,
           },
-          { token },
+          { credentials: await auth.getOwnServiceCredentials() },
         );
         childGroupUsers = await Promise.all(childGroups.items.map(mapEntity));
       }
@@ -145,7 +141,9 @@ export const getUsersForEntityRef = async (
         return [ownerRef];
       }
 
-      const owner = await catalogClient.getEntityByRef(ownerRef, { token });
+      const owner = await catalog.getEntityByRef(ownerRef, {
+        credentials: await auth.getOwnServiceCredentials(),
+      });
       return mapEntity(owner);
     }
 

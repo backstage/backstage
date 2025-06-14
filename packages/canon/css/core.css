@@ -9083,6 +9083,11 @@
   }
 }
 
+:where(a) {
+  color: inherit;
+  text-decoration: none;
+}
+
 :root {
   --canon-font-regular: system-ui;
   --canon-font-monospace: ui-monospace, "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
@@ -9122,9 +9127,19 @@
   --canon-radius-5: calc(1rem);
   --canon-radius-6: calc(1.25rem);
   --canon-radius-full: 9999px;
-  --canon-bg: #f8f8f8;
-  --canon-bg-surface-1: #fff;
-  --canon-bg-surface-2: #ececec;
+  --canon-black: #000;
+  --canon-white: #fff;
+  --canon-gray-1: #f8f8f8;
+  --canon-gray-2: #ececec;
+  --canon-gray-3: #d9d9d9;
+  --canon-gray-4: #c1c1c1;
+  --canon-gray-5: #9e9e9e;
+  --canon-gray-6: #8c8c8c;
+  --canon-gray-7: #757575;
+  --canon-gray-8: #595959;
+  --canon-bg: var(--canon-gray-1);
+  --canon-bg-surface-1: var(--canon-white);
+  --canon-bg-surface-2: var(--canon-gray-2);
   --canon-bg-solid: #1f5493;
   --canon-bg-solid-hover: #163a66;
   --canon-bg-solid-pressed: #0f2b4e;
@@ -9136,15 +9151,15 @@
   --canon-bg-danger: #feebe7;
   --canon-bg-warning: #fff2b2;
   --canon-bg-success: #e6f6eb;
-  --canon-fg-primary: #000;
-  --canon-fg-secondary: #757575;
+  --canon-fg-primary: var(--canon-black);
+  --canon-fg-secondary: var(--canon-gray-7);
   --canon-fg-link: #1f5493;
   --canon-fg-link-hover: #1f2d5c;
   --canon-fg-disabled: #9e9e9e;
-  --canon-fg-solid: #fff;
+  --canon-fg-solid: var(--canon-white);
   --canon-fg-solid-disabled: #9c9c9c;
   --canon-fg-tint: #1f5493;
-  --canon-fg-tint-disabled: #9e9e9e;
+  --canon-fg-tint-disabled: var(--canon-gray-5);
   --canon-fg-danger: #e22b2b;
   --canon-fg-warning: #e36d05;
   --canon-fg-success: #1db954;
@@ -9161,9 +9176,17 @@
 }
 
 [data-theme="dark"] {
-  --canon-bg: #000;
-  --canon-bg-surface-1: #191919;
-  --canon-bg-surface-2: #242424;
+  --canon-gray-1: #191919;
+  --canon-gray-2: #242424;
+  --canon-gray-3: #373737;
+  --canon-gray-4: #464646;
+  --canon-gray-5: #575757;
+  --canon-gray-6: #7b7b7b;
+  --canon-gray-7: #9e9e9e;
+  --canon-gray-8: #b4b4b4;
+  --canon-bg: var(--canon-black);
+  --canon-bg-surface-1: var(--canon-gray-1);
+  --canon-bg-surface-2: var(--canon-gray-2);
   --canon-bg-solid: #9cc9ff;
   --canon-bg-solid-hover: #83b9fd;
   --canon-bg-solid-pressed: #83b9fd;
@@ -9175,15 +9198,15 @@
   --canon-bg-danger: #3b1219;
   --canon-bg-warning: #302008;
   --canon-bg-success: #132d21;
-  --canon-fg-primary: #fff;
-  --canon-fg-secondary: #9e9e9e;
+  --canon-fg-primary: var(--canon-white);
+  --canon-fg-secondary: var(--canon-gray-7);
   --canon-fg-link: #9cc9ff;
   --canon-fg-link-hover: #7eb5f7;
-  --canon-fg-disabled: #9e9e9e;
+  --canon-fg-disabled: var(--canon-gray-7);
   --canon-fg-solid: #101821;
-  --canon-fg-solid-disabled: #575757;
+  --canon-fg-solid-disabled: var(--canon-gray-5);
   --canon-fg-tint: #9cc9ff;
-  --canon-fg-tint-disabled: #575757;
+  --canon-fg-tint-disabled: var(--canon-gray-5);
   --canon-fg-danger: #e22b2b;
   --canon-fg-warning: #e36d05;
   --canon-fg-success: #1db954;

@@ -38,307 +38,201 @@ export function createPublishGitlabAction(options: {
 }) {
   const { integrations, config } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    defaultBranch?: string;
-    /** @deprecated in favour of settings.visibility field */
-    repoVisibility?: 'private' | 'internal' | 'public';
-    sourcePath?: string | boolean;
-    skipExisting?: boolean;
-    token?: string;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    signCommit?: boolean;
-    setUserAsOwner?: boolean;
-    /** @deprecated in favour of settings.topics field */
-    topics?: string[];
-    settings?: {
-      path?: string;
-      auto_devops_enabled?: boolean;
-      ci_config_path?: string;
-      description?: string;
-      merge_method?: 'merge' | 'rebase_merge' | 'ff';
-      squash_option?: 'default_off' | 'default_on' | 'never' | 'always';
-      topics?: string[];
-      visibility?: 'private' | 'internal' | 'public';
-      only_allow_merge_if_all_discussions_are_resolved?: boolean;
-      only_allow_merge_if_pipeline_succeeds?: boolean;
-      allow_merge_on_skipped_pipeline?: boolean;
-    };
-    branches?: Array<{
-      name: string;
-      protect?: boolean;
-      create?: boolean;
-      ref?: string;
-    }>;
-    projectVariables?: Array<{
-      key: string;
-      value: string;
-      description?: string;
-      variable_type?: string;
-      protected?: boolean;
-      masked?: boolean;
-      raw?: boolean;
-      environment_scope?: string;
-    }>;
-  }>({
+  return createTemplateAction({
     id: 'publish:gitlab',
     description:
       'Initializes a git repository of the content in the workspace, and publishes it to GitLab.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl'],
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            type: 'string',
+        repoUrl: z =>
+          z.string({
             description: `Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
-          },
-          repoVisibility: {
-            title: 'Repository Visibility',
-            description: `Sets the visibility of the repository. The default value is 'private'. (deprecated, use settings.visibility instead)`,
-            type: 'string',
-            enum: ['private', 'public', 'internal'],
-          },
-          defaultBranch: {
-            title: 'Default Branch',
-            type: 'string',
-            description: `Sets the default branch on the repository. The default value is 'master'`,
-          },
-          gitCommitMessage: {
-            title: 'Git Commit Message',
-            type: 'string',
-            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
-          },
-          gitAuthorName: {
-            title: 'Default Author Name',
-            type: 'string',
-            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
-          },
-          gitAuthorEmail: {
-            title: 'Default Author Email',
-            type: 'string',
-            description: `Sets the default author email for the commit.`,
-          },
-          signCommit: {
-            title: 'Sign commit',
-            type: 'boolean',
-            description: 'Sign commit with configured PGP private key',
-          },
-          sourcePath: {
-            title: 'Source Path',
-            description:
-              'Path within the workspace that will be used as the repository root. If omitted or set to true, the entire workspace will be published as the repository. If set to false, the created repository will be empty.',
-            type: ['string', 'boolean'],
-          },
-          skipExisting: {
-            title: 'Skip if repository exists',
-            description:
-              'Do not publish the repository if it already exists. The default value is false.',
-            type: ['boolean'],
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitLab',
-          },
-          setUserAsOwner: {
-            title: 'Set User As Owner',
-            type: 'boolean',
-            description:
-              'Set the token user as owner of the newly created repository. Requires a token authorized to do the edit in the integration configuration for the matching host',
-          },
-          topics: {
-            title: 'Topic labels',
-            description:
-              'Topic labels to apply on the repository. (deprecated, use settings.topics instead)',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          settings: {
-            title: 'Project settings',
-            description:
-              'Additional project settings, based on https://docs.gitlab.com/ee/api/projects.html#create-project attributes',
-            type: 'object',
-            properties: {
-              path: {
-                title: 'Project path',
-                description:
-                  'Repository name for new project. Generated based on name if not provided (generated as lowercase with dashes).',
-                type: 'string',
-              },
-              auto_devops_enabled: {
-                title: 'Auto DevOps enabled',
-                description: 'Enable Auto DevOps for this project',
-                type: 'boolean',
-              },
-              ci_config_path: {
-                title: 'CI config path',
-                description: 'Custom CI config path for this project',
-                type: 'string',
-              },
-              description: {
-                title: 'Project description',
-                description: 'Short project description',
-                type: 'string',
-              },
-              merge_method: {
-                title: 'Merge Method to use',
-                description: 'Merge Methods (merge, rebase_merge, ff)',
-                type: 'string',
-                enum: ['merge', 'rebase_merge', 'ff'],
-              },
-              squash_option: {
-                title: 'Squash option',
-                description:
-                  'Set squash option for the project (never, always, default_on, default_off)',
-                type: 'string',
-                enum: ['default_off', 'default_on', 'never', 'always'],
-              },
-              topics: {
-                title: 'Topic labels',
-                description: 'Topic labels to apply on the repository',
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-              },
-              visibility: {
-                title: 'Project visibility',
-                description:
-                  'The visibility of the project. Can be private, internal, or public. The default value is private.',
-                type: 'string',
-                enum: ['private', 'public', 'internal'],
-              },
-              only_allow_merge_if_all_discussions_are_resolved: {
-                title: 'All threads must be resolved',
-                description:
-                  'Set whether merge requests can only be merged when all the discussions are resolved.',
-                type: 'boolean',
-              },
-              only_allow_merge_if_pipeline_succeeds: {
-                title: 'Pipelines must succeed',
-                description:
-                  'Set whether merge requests can only be merged with successful pipelines. This setting is named Pipelines must succeed in the project settings.',
-                type: 'boolean',
-              },
-              allow_merge_on_skipped_pipeline: {
-                title: 'Skipped pipelines are considered successful',
-                description:
-                  'Set whether or not merge requests can be merged with skipped jobs.',
-                type: 'boolean',
-              },
-            },
-          },
-          branches: {
-            title: 'Project branches settings',
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['name'],
-              properties: {
-                name: {
-                  title: 'Branch name',
-                  type: 'string',
-                },
-                protect: {
-                  title: 'Should branch be protected',
-                  description: `Will mark branch as protected. The default value is 'false'`,
-                  type: 'boolean',
-                },
-                create: {
-                  title: 'Should branch be created',
-                  description: `If branch does not exist, it will be created from provided ref. The default value is 'false'`,
-                  type: 'boolean',
-                },
-                ref: {
-                  title: 'Branch reference',
-                  description: `Branch reference to create branch from. The default value is 'master'`,
-                  type: 'string',
-                },
-              },
-            },
-          },
-          projectVariables: {
-            title: 'Project variables',
-            description:
-              'Project variables settings based on Gitlab Project Environments API - https://docs.gitlab.com/ee/api/project_level_variables.html#create-a-variable',
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['key', 'value'],
-              properties: {
-                key: {
-                  title: 'Variable key',
+          }),
+        repoVisibility: z =>
+          z
+            .enum(['private', 'public', 'internal'], {
+              description: `Sets the visibility of the repository. The default value is 'private'. (deprecated, use settings.visibility instead)`,
+            })
+            .optional(),
+        defaultBranch: z =>
+          z
+            .string({
+              description: `Sets the default branch on the repository. The default value is 'master'`,
+            })
+            .optional(),
+        gitCommitMessage: z =>
+          z
+            .string({
+              description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+            })
+            .optional(),
+        gitAuthorName: z =>
+          z
+            .string({
+              description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+            })
+            .optional(),
+        gitAuthorEmail: z =>
+          z
+            .string({
+              description: `Sets the default author email for the commit.`,
+            })
+            .optional(),
+        signCommit: z =>
+          z
+            .boolean({
+              description: 'Sign commit with configured PGP private key',
+            })
+            .optional(),
+        sourcePath: z =>
+          z
+            .union([z.string(), z.boolean()], {
+              description:
+                'Path within the workspace that will be used as the repository root. If omitted or set to true, the entire workspace will be published as the repository. If set to false, the created repository will be empty.',
+            })
+            .optional(),
+        skipExisting: z =>
+          z
+            .boolean({
+              description:
+                'Do not publish the repository if it already exists. The default value is false.',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to GitLab',
+            })
+            .optional(),
+        setUserAsOwner: z =>
+          z
+            .boolean({
+              description:
+                'Set the token user as owner of the newly created repository. Requires a token authorized to do the edit in the integration configuration for the matching host',
+            })
+            .optional(),
+        topics: z =>
+          z
+            .array(z.string(), {
+              description:
+                'Topic labels to apply on the repository. (deprecated, use settings.topics instead)',
+            })
+            .optional(),
+        settings: z =>
+          z
+            .object({
+              path: z
+                .string({
                   description:
-                    'The key of a variable; must have no more than 255 characters; only A-Z, a-z, 0-9, and _ are allowed',
-                  type: 'string',
-                },
-                value: {
-                  title: 'Variable value',
-                  description: 'The value of a variable',
-                  type: 'string',
-                },
-                description: {
-                  title: 'Variable description',
-                  description: `The description of the variable. The default value is 'null'`,
-                  type: 'string',
-                },
-                variable_type: {
-                  title: 'Variable type',
-                  description: `The type of a variable. The default value is 'env_var'`,
-                  type: 'string',
-                  enum: ['env_var', 'file'],
-                },
-                protected: {
-                  title: 'Variable protection',
-                  description: `Whether the variable is protected. The default value is 'false'`,
-                  type: 'boolean',
-                },
-                raw: {
-                  title: 'Variable raw',
-                  description: `Whether the variable is in raw format. The default value is 'false'`,
-                  type: 'boolean',
-                },
-                environment_scope: {
-                  title: 'Variable environment scope',
-                  description: `The environment_scope of the variable. The default value is '*'`,
-                  type: 'string',
-                },
-              },
-            },
-          },
-        },
+                    'Repository name for new project. Generated based on name if not provided (generated as lowercase with dashes).',
+                })
+                .optional(),
+              auto_devops_enabled: z
+                .boolean({
+                  description: 'Enable Auto DevOps for this project',
+                })
+                .optional(),
+              ci_config_path: z
+                .string({
+                  description: 'Custom CI config path for this project',
+                })
+                .optional(),
+              description: z
+                .string({
+                  description: 'Short project description',
+                })
+                .optional(),
+              merge_method: z
+                .enum(['merge', 'rebase_merge', 'ff'], {
+                  description: 'Merge Methods (merge, rebase_merge, ff)',
+                })
+                .optional(),
+              squash_option: z
+                .enum(['default_off', 'default_on', 'never', 'always'], {
+                  description:
+                    'Set squash option for the project (never, always, default_on, default_off)',
+                })
+                .optional(),
+              topics: z
+                .array(z.string(), {
+                  description: 'Topic labels to apply on the repository',
+                })
+                .optional(),
+              visibility: z
+                .enum(['private', 'public', 'internal'], {
+                  description:
+                    'The visibility of the project. Can be private, internal, or public. The default value is private.',
+                })
+                .optional(),
+              only_allow_merge_if_all_discussions_are_resolved: z
+                .boolean({
+                  description:
+                    'Set whether merge requests can only be merged when all the discussions are resolved.',
+                })
+                .optional(),
+              only_allow_merge_if_pipeline_succeeds: z
+                .boolean({
+                  description:
+                    'Set whether merge requests can only be merged with successful pipelines. This setting is named Pipelines must succeed in the project settings.',
+                })
+                .optional(),
+              allow_merge_on_skipped_pipeline: z
+                .boolean({
+                  description:
+                    'Set whether or not merge requests can be merged with skipped jobs.',
+                })
+                .optional(),
+            })
+            .optional(),
+        branches: z =>
+          z
+            .array(
+              z.object({
+                name: z.string(),
+                protect: z.boolean().optional(),
+                create: z.boolean().optional(),
+                ref: z.string().optional(),
+              }),
+            )
+            .optional(),
+        projectVariables: z =>
+          z
+            .array(
+              z.object({
+                key: z.string(),
+                value: z.string(),
+                description: z.string().optional(),
+                variable_type: z.enum(['env_var', 'file']).optional(),
+                protected: z.boolean().optional(),
+                masked: z.boolean().optional(),
+                raw: z.boolean().optional(),
+                environment_scope: z.string().optional(),
+              }),
+            )
+            .optional(),
       },
       output: {
-        type: 'object',
-        properties: {
-          remoteUrl: {
-            title: 'A URL to the repository with the provider',
-            type: 'string',
-          },
-          repoContentsUrl: {
-            title: 'A URL to the root of the repository',
-            type: 'string',
-          },
-          projectId: {
-            title: 'The ID of the project',
-            type: 'number',
-          },
-          commitHash: {
-            title: 'The git commit hash of the initial commit',
-            type: 'string',
-          },
-          created: {
-            title: 'Whether the repository was created or not',
-            type: 'boolean',
-          },
-        },
+        remoteUrl: z =>
+          z.string({
+            description: 'A URL to the repository with the provider',
+          }),
+        repoContentsUrl: z =>
+          z.string({
+            description: 'A URL to the root of the repository',
+          }),
+        projectId: z =>
+          z.number({
+            description: 'The ID of the project',
+          }),
+        commitHash: z =>
+          z.string({
+            description: 'The git commit hash of the initial commit',
+          }),
+        created: z =>
+          z.boolean({
+            description: 'Whether the repository was created or not',
+          }),
       },
     },
     async handler(ctx) {

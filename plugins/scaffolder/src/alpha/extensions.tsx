@@ -28,7 +28,6 @@ import {
   identityApiRef,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
-import React from 'react';
 import { rootRouteRef } from '../routes';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import { FormFieldBlueprint } from '@backstage/plugin-scaffolder-react/alpha';

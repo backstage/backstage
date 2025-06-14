@@ -23,9 +23,9 @@ import { GitlabEventRouter } from '../router/GitlabEventRouter';
  *
  * Registers the `GitlabEventRouter`.
  *
- * @alpha
+ * @public
  */
-export const eventsModuleGitlabEventRouter = createBackendModule({
+export default createBackendModule({
   pluginId: 'events',
   moduleId: 'gitlab-event-router',
   register(env) {

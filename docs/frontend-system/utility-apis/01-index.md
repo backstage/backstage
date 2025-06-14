@@ -2,7 +2,6 @@
 id: index
 title: Utility APIs
 sidebar_label: Overview
-# prettier-ignore
 description: Working with Utility APIs in the New Frontend System
 ---
 

@@ -9,8 +9,8 @@ import { CreateAppRouteBinder } from '@backstage/frontend-app-api';
 import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { FrontendFeatureLoader } from '@backstage/frontend-plugin-api';
+import { FrontendPluginInfoResolver } from '@backstage/frontend-app-api';
 import { JSX as JSX_2 } from 'react';
-import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 
 // @public
@@ -45,11 +45,13 @@ export interface CreateAppOptions {
     | CreateAppFeatureLoader
   )[];
   loadingComponent?: ReactNode;
+  // (undocumented)
+  pluginInfoResolver?: FrontendPluginInfoResolver;
 }
 
 // @public
 export function createPublicSignInApp(options?: CreateAppOptions): {
-  createRoot(): React_2.JSX.Element;
+  createRoot(): JSX_2;
 };
 
 // @public (undocumented)

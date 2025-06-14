@@ -38,6 +38,7 @@ export const entityFilterExpressionDataRef =
  * Default entity content groups.
  */
 export const defaultEntityContentGroups = {
+  overview: 'Overview',
   documentation: 'Documentation',
   development: 'Development',
   deployment: 'Deployment',

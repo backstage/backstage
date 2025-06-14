@@ -2,7 +2,6 @@
 id: references
 title: Value References
 sidebar_label: Value References
-# prettier-ignore
 description: Value References
 ---
 

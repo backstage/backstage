@@ -28,8 +28,6 @@ import {
 import SettingsIcon from '@material-ui/icons/Settings';
 import { settingsRouteRef } from './plugin';
 
-import React from 'react';
-
 export * from './translation';
 
 const userSettingsPage = PageBlueprint.makeWithOverrides({
@@ -70,7 +68,8 @@ export const settingsNavItem = NavItemBlueprint.make({
  * @alpha
  */
 export default createFrontendPlugin({
-  id: 'user-settings',
+  pluginId: 'user-settings',
+  info: { packageJson: () => import('../package.json') },
   extensions: [userSettingsPage, settingsNavItem],
   routes: convertLegacyRouteRefs({
     root: settingsRouteRef,

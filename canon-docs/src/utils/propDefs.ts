@@ -203,3 +203,11 @@ export const childrenPropDefs: Record<string, PropDef> = {
     responsive: false,
   },
 };
+
+export const renderPropDefs: Record<string, PropDef> = {
+  render: {
+    type: 'enum',
+    values: ['React.ReactElement', '(props, state) => React.ReactElement'],
+    responsive: false,
+  },
+};

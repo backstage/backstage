@@ -95,6 +95,7 @@ export namespace catalogServiceMock {
     removeEntityByUid: jest.fn(),
     refreshEntity: jest.fn(),
     getEntityFacets: jest.fn(),
+    getLocations: jest.fn(),
     getLocationById: jest.fn(),
     getLocationByRef: jest.fn(),
     addLocation: jest.fn(),

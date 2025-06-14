@@ -17,6 +17,7 @@
 import {
   AuditorService,
   BackstageCredentials,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 import type { UserEntity } from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
@@ -36,7 +37,6 @@ import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { v4 as uuid } from 'uuid';
-import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
@@ -61,7 +61,7 @@ interface DryRunResult {
 
 /** @internal */
 export type TemplateTesterCreateOptions = {
-  logger: Logger;
+  logger: LoggerService;
   auditor?: AuditorService;
   integrations: ScmIntegrations;
   actionRegistry: TemplateActionRegistry;

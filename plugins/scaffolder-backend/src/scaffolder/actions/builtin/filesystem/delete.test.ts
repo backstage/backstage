@@ -40,8 +40,14 @@ describe('fs:delete', () => {
       [workspacePath]: {
         'unit-test-a.js': 'hello',
         'unit-test-b.js': 'world',
-        'a-folder': {
-          'unit-test-in-a-folder.js2': 'content',
+        '.dotfile': 'content',
+        '.dotdir': {
+          '.dotfile': 'content',
+          'reg-file.js': 'content',
+        },
+        regdir: {
+          '.dotfile': 'content',
+          'reg-file.js': 'content',
         },
       },
     });
@@ -157,6 +163,64 @@ describe('fs:delete', () => {
     await action.handler({
       ...mockContext,
       input: { files: files.map(file => `.\\${file}`) },
+    });
+
+    files.forEach(file => {
+      const filePath = resolvePath(workspacePath, file);
+      const fileExists = fs.existsSync(filePath);
+      expect(fileExists).toBe(false);
+    });
+  });
+
+  it('. pattern should match nested and hidden files', async () => {
+    const files = [
+      'unit-test-a.js',
+      'unit-test-b.js',
+      '.dotfile',
+      '.dotdir/.dotfile',
+      '.dotdir/reg-file.js',
+      'regdir/.dotfile',
+      'regdir/reg-file.js',
+    ];
+
+    files.forEach(file => {
+      const filePath = resolvePath(workspacePath, file);
+      const fileExists = fs.existsSync(filePath);
+      expect(fileExists).toBe(true);
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: { files: ['.'] },
+    });
+
+    files.forEach(file => {
+      const filePath = resolvePath(workspacePath, file);
+      const fileExists = fs.existsSync(filePath);
+      expect(fileExists).toBe(false);
+    });
+  });
+
+  it('** pattern should match nested and hidden files', async () => {
+    const files = [
+      'unit-test-a.js',
+      'unit-test-b.js',
+      '.dotfile',
+      '.dotdir/.dotfile',
+      '.dotdir/reg-file.js',
+      'regdir/.dotfile',
+      'regdir/reg-file.js',
+    ];
+
+    files.forEach(file => {
+      const filePath = resolvePath(workspacePath, file);
+      const fileExists = fs.existsSync(filePath);
+      expect(fileExists).toBe(true);
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: { files: ['**'] },
     });
 
     files.forEach(file => {

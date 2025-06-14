@@ -2,7 +2,6 @@
 id: extension-blueprints
 title: Frontend Extension Blueprints
 sidebar_label: Extensions Blueprints
-# prettier-ignore
 description: Frontend extensions
 ---
 

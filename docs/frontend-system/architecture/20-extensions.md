@@ -2,7 +2,6 @@
 id: extensions
 title: Frontend Extensions
 sidebar_label: Extensions
-# prettier-ignore
 description: Frontend extensions
 ---
 

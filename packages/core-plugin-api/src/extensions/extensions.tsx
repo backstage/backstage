@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { AnalyticsContext, useAnalytics } from '../analytics';
 import { useApp } from '../app';
 import { RouteRef, useRouteRef } from '../routing';

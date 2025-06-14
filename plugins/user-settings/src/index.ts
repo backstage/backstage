@@ -26,4 +26,4 @@ export {
   userSettingsPlugin as plugin,
   UserSettingsPage,
 } from './plugin';
-export * from './components/';
+export * from './components';

@@ -55,6 +55,7 @@ function validateUserEntityRef(ref: string) {
  */
 export type UserTokenPayload = {
   sub?: string;
+  actor?: { subject: string };
 };
 
 /**
@@ -107,12 +108,27 @@ export namespace mockCredentials {
    */
   export function user(
     userEntityRef: string = DEFAULT_MOCK_USER_ENTITY_REF,
+    options?: { actor?: { subject: string } },
   ): BackstageCredentials<BackstageUserPrincipal> {
     validateUserEntityRef(userEntityRef);
-    return {
-      $$type: '@backstage/BackstageCredentials',
-      principal: { type: 'user', userEntityRef },
-    };
+    return Object.defineProperty(
+      {
+        $$type: '@backstage/BackstageCredentials',
+        principal: {
+          type: 'user',
+          userEntityRef,
+          ...(options?.actor && {
+            actor: { type: 'service', subject: options.actor.subject },
+          }),
+        },
+      },
+      'token',
+      {
+        enumerable: false,
+        configurable: true,
+        value: user.token(),
+      },
+    );
   }
 
   /**
@@ -124,11 +140,17 @@ export namespace mockCredentials {
      * into the token and forwarded to the credentials object when authenticated
      * by the mock auth service.
      */
-    export function token(userEntityRef?: string): string {
+    export function token(
+      userEntityRef?: string,
+      options?: { actor?: { subject: string } },
+    ): string {
       if (userEntityRef) {
         validateUserEntityRef(userEntityRef);
         return `${MOCK_USER_TOKEN_PREFIX}${JSON.stringify({
           sub: userEntityRef,
+          ...(options?.actor && {
+            actor: { subject: options.actor.subject },
+          }),
         } satisfies UserTokenPayload)}`;
       }
       return MOCK_USER_TOKEN;

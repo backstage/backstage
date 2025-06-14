@@ -184,7 +184,7 @@ app:
   extensions:
     # this is the extension id and it follows the naming pattern bellow:
     # <extension-kind>/<plugin-namespace>:<extension-name>
-    # example disbaling the graph card extension
+    # example disabling the graph card extension
     - entity-card:catalog-graph/relations: false
 ```
 
@@ -212,7 +212,7 @@ export default createFrontendModule({
       configSchema: createSchemaFromZod(z =>
         z.object({
           filter: z.string().optional(),
-          // Ommitting the rest of default configs for simplicity in this example
+          // Omitting the rest of default configs for simplicity in this example
         }),
       ),
       loader: () =>
@@ -283,7 +283,7 @@ app:
   extensions:
     # this is the extension id and it follows the naming pattern bellow:
     # <extension-kind>/<plugin-namespace>:<extension-name>
-    # example disbaling the graph page extension
+    # example disabling the graph page extension
     - page:catalog-graph: false
 ```
 
@@ -305,12 +305,12 @@ export default createFrontendModule({
   pluginId: 'catalog-graph',
   extensions: [
     createPageExtension({
-      // Ommiting name since it is an index page
+      // Omitting name since it is an index page
       defaultPath: '/catalog-graph',
       routeRef: convertLegacyRouteRef(catalogGraphRouteRef),
       createSchemaFromZod(z => z.object({
         path: z.string().default('/catalog-graph')
-        // Ommitting the rest of default configs for simplicity in this example
+        // Omitting the rest of default configs for simplicity in this example
       })),
       loader: () => import('./components').then(m => <m.CustomEntityRelationsPage />)
     })

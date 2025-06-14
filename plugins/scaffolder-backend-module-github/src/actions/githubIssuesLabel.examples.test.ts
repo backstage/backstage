@@ -61,7 +61,7 @@ describe('github:issues:label examples', () => {
   const getOctokitOptionsMock = getOctokitOptions as jest.Mock;
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext();
 

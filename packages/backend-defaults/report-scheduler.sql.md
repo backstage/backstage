@@ -10,6 +10,8 @@
 | `current_run_started_at` | `timestamp with time zone` | true     | -          | -       |
 | `current_run_ticket`     | `text`                     | true     | -          | -       |
 | `id`                     | `character varying`        | false    | 255        | -       |
+| `last_run_ended_at`      | `timestamp with time zone` | true     | -          | -       |
+| `last_run_error_json`    | `text`                     | true     | -          | -       |
 | `next_run_start_at`      | `timestamp with time zone` | true     | -          | -       |
 | `settings_json`          | `text`                     | false    | -          | -       |
 

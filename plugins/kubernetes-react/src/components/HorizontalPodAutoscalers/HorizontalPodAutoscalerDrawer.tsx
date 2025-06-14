@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
+import { ReactNode } from 'react';
+import type { V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 
 /** @public */
 export const HorizontalPodAutoscalerDrawer = (props: {
   hpa: V2HorizontalPodAutoscaler;
   expanded?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }) => {
   const { hpa, expanded, children } = props;
 

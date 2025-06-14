@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import {
+  SVGProps,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+  useEffect,
+} from 'react';
 import * as d3Zoom from 'd3-zoom';
 import * as d3Selection from 'd3-selection';
 import useTheme from '@material-ui/core/styles/useTheme';
@@ -33,7 +40,7 @@ import { ARROW_MARKER_ID } from './constants';
  * `<NodeData>` and `<EdgeData>` are useful when rendering custom or edge labels
  */
 export interface DependencyGraphProps<NodeData, EdgeData>
-  extends React.SVGProps<SVGSVGElement> {
+  extends SVGProps<SVGSVGElement> {
   /**
    * Edges of graph
    */
@@ -212,20 +219,20 @@ export function DependencyGraph<NodeData, EdgeData>(
     ...svgProps
   } = props;
   const theme = useTheme();
-  const [containerWidth, setContainerWidth] = React.useState<number>(100);
-  const [containerHeight, setContainerHeight] = React.useState<number>(100);
+  const [containerWidth, setContainerWidth] = useState<number>(100);
+  const [containerHeight, setContainerHeight] = useState<number>(100);
 
-  const graph = React.useRef<
-    dagre.graphlib.Graph<Types.DependencyNode<NodeData>>
-  >(new dagre.graphlib.Graph());
-  const [graphWidth, setGraphWidth] = React.useState<number>(
+  const graph = useRef<dagre.graphlib.Graph<Types.DependencyNode<NodeData>>>(
+    new dagre.graphlib.Graph(),
+  );
+  const [graphWidth, setGraphWidth] = useState<number>(
     graph.current.graph()?.width || 0,
   );
-  const [graphHeight, setGraphHeight] = React.useState<number>(
+  const [graphHeight, setGraphHeight] = useState<number>(
     graph.current.graph()?.height || 0,
   );
-  const [graphNodes, setGraphNodes] = React.useState<string[]>([]);
-  const [graphEdges, setGraphEdges] = React.useState<dagre.Edge[]>([]);
+  const [graphNodes, setGraphNodes] = useState<string[]>([]);
+  const [graphEdges, setGraphEdges] = useState<dagre.Edge[]>([]);
 
   const maxWidth = Math.max(graphWidth, containerWidth);
   const maxHeight = Math.max(graphHeight, containerHeight);
@@ -233,7 +240,7 @@ export function DependencyGraph<NodeData, EdgeData>(
 
   const scalableHeight = fit === 'grow' ? maxHeight : minHeight;
 
-  const containerRef = React.useMemo(
+  const containerRef = useMemo(
     () =>
       debounce((node: SVGSVGElement) => {
         if (!node) {
@@ -286,7 +293,7 @@ export function DependencyGraph<NodeData, EdgeData>(
     [containerHeight, containerWidth, maxWidth, maxHeight, zoom],
   );
 
-  const setNodesAndEdges = React.useCallback(() => {
+  const setNodesAndEdges = useCallback(() => {
     // Cleaning up lingering nodes and edges
     const currentGraphNodes = graph.current.nodes();
     const currentGraphEdges = graph.current.edges();
@@ -335,7 +342,7 @@ export function DependencyGraph<NodeData, EdgeData>(
     });
   }, [edges, nodes, labelPosition, labelOffset, edgeWeight, edgeRanks]);
 
-  const updateGraph = React.useMemo(
+  const updateGraph = useMemo(
     () =>
       debounce(
         () => {
@@ -355,7 +362,7 @@ export function DependencyGraph<NodeData, EdgeData>(
     [],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     graph.current.setGraph({
       rankdir: direction,
       align,

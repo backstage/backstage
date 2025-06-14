@@ -30,6 +30,7 @@ export const createSesTransport = async (
       apiVersion: config.getOptionalString('apiVersion') ?? '2010-12-01',
       credentials: credentials.sdkCredentialProvider,
       region: config.getOptionalString('region'),
+      endpoint: config.getOptionalString('endpoint'),
     },
   ]);
   return createTransport({

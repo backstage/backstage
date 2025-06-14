@@ -10,11 +10,12 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SearchFilterExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
 const _default: FrontendPlugin<
@@ -71,11 +72,7 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
+        | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
         | ConfigurableExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
@@ -189,7 +186,7 @@ export const searchPage: ExtensionDefinition<{
     path?: string | undefined;
   };
   output:
-    | ConfigurableExtensionDataRef<React_2.JSX.Element, 'core.reactElement', {}>
+    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
     | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
     | ConfigurableExtensionDataRef<
         RouteRef<AnyRouteRefParams>,
@@ -250,6 +247,20 @@ export const searchPage: ExtensionDefinition<{
     routeRef?: RouteRef;
   };
 }>;
+
+// @alpha (undocumented)
+export const searchTranslationRef: TranslationRef<
+  'search',
+  {
+    readonly 'searchModal.viewFullResults': 'View Full Results';
+    readonly 'searchType.tabs.allTitle': 'All';
+    readonly 'searchType.allResults': 'All Results';
+    readonly 'searchType.accordion.collapse': 'Collapse';
+    readonly 'searchType.accordion.allTitle': 'All';
+    readonly 'searchType.accordion.numberOfResults': '{{number}} results';
+    readonly 'sidebarSearchModal.title': 'Search';
+  }
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

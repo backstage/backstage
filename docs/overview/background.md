@@ -1,7 +1,6 @@
 ---
 id: background
 title: The Spotify Story
-# prettier-ignore
 description: Backstage was born out of necessity at Spotify. We found that as we grew, our infrastructure was becoming more fragmented, our engineers less productive.
 ---
 

@@ -16,7 +16,6 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { MockFileSystemAccess } from '../../../lib/filesystem/MockFileSystemAccess';
 import { DirectoryEditorProvider } from './DirectoryEditorContext';
 import { TemplateEditorBrowser } from './TemplateEditorBrowser';

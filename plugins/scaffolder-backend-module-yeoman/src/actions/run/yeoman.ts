@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/types';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { yeomanRun } from './yeomanRun';
 import { examples } from './yeoman.examples';
@@ -29,38 +28,28 @@ import { examples } from './yeoman.examples';
  * @public
  */
 export function createRunYeomanAction() {
-  return createTemplateAction<{
-    namespace: string;
-    args?: string[];
-    options?: JsonObject;
-  }>({
+  return createTemplateAction({
     id: 'run:yeoman',
     description: 'Runs Yeoman on an installed Yeoman generator',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['namespace'],
-        properties: {
-          namespace: {
-            title: 'Generator Namespace',
+        namespace: z =>
+          z.string({
             description: 'Yeoman generator namespace, e.g: node:app',
-            type: 'string',
-          },
-          args: {
-            title: 'Generator Arguments',
-            description: 'Arguments to pass on to Yeoman for templating',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          options: {
-            title: 'Generator Options',
-            description: 'Options to pass on to Yeoman for templating',
-            type: 'object',
-          },
-        },
+          }),
+        args: z =>
+          z
+            .array(z.string(), {
+              description: 'Arguments to pass on to Yeoman for templating',
+            })
+            .optional(),
+        options: z =>
+          z
+            .record(z.any(), {
+              description: 'Options to pass on to Yeoman for templating',
+            })
+            .optional(),
       },
     },
     supportsDryRun: true,

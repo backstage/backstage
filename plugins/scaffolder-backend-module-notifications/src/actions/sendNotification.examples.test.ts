@@ -25,7 +25,7 @@ describe('notification:send', () => {
     send: jest.fn(),
   };
 
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, 'v2'>;
 
   beforeEach(() => {
     jest.resetAllMocks();

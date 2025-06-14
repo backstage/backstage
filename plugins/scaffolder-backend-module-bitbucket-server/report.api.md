@@ -5,7 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
@@ -20,19 +19,23 @@ export function createPublishBitbucketServerAction(options: {
 }): TemplateAction<
   {
     repoUrl: string;
-    description?: string;
-    defaultBranch?: string;
-    repoVisibility?: 'private' | 'public';
-    sourcePath?: string;
-    enableLFS?: boolean;
-    token?: string;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    signCommit?: boolean;
+    description?: string | undefined;
+    repoVisibility?: 'private' | 'public' | undefined;
+    defaultBranch?: string | undefined;
+    sourcePath?: string | undefined;
+    enableLFS?: boolean | undefined;
+    token?: string | undefined;
+    gitCommitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+    signCommit?: boolean | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    remoteUrl?: string | undefined;
+    repoContentsUrl?: string | undefined;
+    commitHash?: string | undefined;
+  },
+  'v2'
 >;
 
 // @public
@@ -43,15 +46,17 @@ export function createPublishBitbucketServerPullRequestAction(options: {
   {
     repoUrl: string;
     title: string;
-    description?: string;
-    targetBranch?: string;
     sourceBranch: string;
-    reviewers?: string[];
-    token?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
+    description?: string | undefined;
+    targetBranch?: string | undefined;
+    reviewers?: string[] | undefined;
+    token?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    pullRequestUrl?: string | undefined;
+  },
+  'v2'
 >;
 ```

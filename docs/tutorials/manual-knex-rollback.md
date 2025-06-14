@@ -1,7 +1,6 @@
 ---
 id: manual-knex-rollback
 title: Manual Rollback using Knex
-# prettier-ignore
 description: Guide on how to rollback Knex migrations.
 ---
 

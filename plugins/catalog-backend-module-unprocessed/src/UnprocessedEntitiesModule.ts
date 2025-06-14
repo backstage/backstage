@@ -22,7 +22,6 @@ import {
 } from './types';
 import { Knex } from 'knex';
 import {
-  DiscoveryService,
   HttpAuthService,
   HttpRouterService,
   PermissionsService,
@@ -36,12 +35,11 @@ import {
 } from '@backstage/plugin-permission-common';
 import { unprocessedEntitiesDeletePermission } from '@backstage/plugin-catalog-unprocessed-entities-common';
 import { NotAllowedError } from '@backstage/errors';
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
 
 /**
  * Module providing Unprocessed Entities API endpoints
  *
- * @public
+ * @internal
  */
 export class UnprocessedEntitiesModule {
   private readonly moduleRouter;
@@ -52,30 +50,24 @@ export class UnprocessedEntitiesModule {
     private readonly database: Knex,
     private readonly router: Pick<HttpRouterService, 'use'>,
     private readonly permissions: PermissionsService,
-    discovery: DiscoveryService,
-    httpAuth?: HttpAuthService,
+    httpAuth: HttpAuthService,
   ) {
     this.moduleRouter = Router();
     this.router.use(this.moduleRouter);
 
-    this.httpAuth = createLegacyAuthAdapters({
-      discovery,
-      httpAuth,
-    }).httpAuth;
+    this.httpAuth = httpAuth;
   }
 
   static create(options: {
     router: Pick<HttpRouterService, 'use'>;
     database: Knex;
-    discovery: DiscoveryService;
     permissions: PermissionsService;
-    httpAuth?: HttpAuthService;
+    httpAuth: HttpAuthService;
   }) {
     return new UnprocessedEntitiesModule(
       options.database,
       options.router,
       options.permissions,
-      options.discovery,
       options.httpAuth,
     );
   }

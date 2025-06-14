@@ -33,7 +33,7 @@ import {
   PodFetchResponse,
   PodStatusFetchResponse,
 } from '@backstage/plugin-kubernetes-common';
-import {
+import type {
   ContainerStatus,
   CurrentResourceUsage,
   PodStatus,

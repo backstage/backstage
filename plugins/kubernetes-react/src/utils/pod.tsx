@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {
+import type {
   V1Pod,
   V1PodCondition,
   V1DeploymentCondition,
 } from '@kubernetes/client-node';
-import React, { Fragment, ReactNode } from 'react';
+import { Fragment, ReactNode } from 'react';
 import Chip from '@material-ui/core/Chip';
 import {
   StatusAborted,
@@ -87,7 +87,7 @@ export const containerStatuses = (pod: Pod): ReactNode => {
     }
 
     return accum;
-  }, [] as React.ReactNode[]);
+  }, [] as ReactNode[]);
 
   if (errors.length === 0) {
     return <StatusOK>OK</StatusOK>;

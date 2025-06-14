@@ -44,6 +44,7 @@ const api = ApiBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'signals',
+  pluginId: 'signals',
+  info: { packageJson: () => import('../package.json') },
   extensions: [api],
 });

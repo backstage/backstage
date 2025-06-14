@@ -30,6 +30,7 @@ import {
   NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
 import { Knex } from 'knex';
+import crypto from 'crypto';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-notifications-backend',
@@ -105,6 +106,16 @@ export const normalizeSeverity = (input?: string): NotificationSeverity => {
   return lower;
 };
 
+export const generateSettingsHash = (
+  user: string,
+  channel: string,
+  origin: string,
+  topic: string | null,
+): string => {
+  const rawKey = `${user}|${channel}|${origin}|${topic ?? ''}`;
+  return crypto.createHash('sha256').update(rawKey).digest('hex');
+};
+
 /** @internal */
 export class DatabaseNotificationsStore implements NotificationsStore {
   private readonly isSQLite = false;
@@ -169,10 +180,31 @@ export class DatabaseNotificationsStore implements NotificationsStore {
           });
           chan = acc.channels[acc.channels.length - 1];
         }
-        chan.origins.push({
-          id: row.origin,
-          enabled: Boolean(row.enabled),
-        });
+        let origin = chan.origins.find(
+          (ori: { id: string }) => ori.id === row.origin,
+        );
+        if (!origin) {
+          origin = {
+            id: row.origin,
+            enabled: true,
+            topics: [],
+          };
+          chan.origins.push(origin);
+        }
+        if (row.topic === null) {
+          origin.enabled = Boolean(row.enabled);
+        } else {
+          let topic = origin.topics.find(
+            (top: { id: string }) => top.id === row.topic,
+          );
+          if (!topic) {
+            topic = {
+              id: row.topic,
+              enabled: Boolean(row.enabled),
+            };
+            origin.topics.push(topic);
+          }
+        }
         return acc;
       },
       { channels: [] },
@@ -518,10 +550,26 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     return { origins: rows.map(row => row.origin) };
   }
 
+  async getUserNotificationTopics(options: {
+    user: string;
+  }): Promise<{ topics: { origin: string; topic: string }[] }> {
+    const rows: { topic: string; origin: string }[] =
+      await this.db<NotificationRowType>('notification')
+        .where('user', options.user)
+        .select('topic', 'origin')
+        .whereNotNull('topic')
+        .distinct();
+
+    return {
+      topics: rows.map(row => ({ origin: row.origin, topic: row.topic })),
+    };
+  }
+
   async getNotificationSettings(options: {
     user: string;
     origin?: string;
     channel?: string;
+    topic?: string;
   }): Promise<NotificationSettings> {
     const settingsQuery = this.db<UserSettingsRowType>('user_settings').where(
       'user',
@@ -534,6 +582,10 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     if (options.channel) {
       settingsQuery.where('channel', options.channel);
     }
+
+    if (options.topic) {
+      settingsQuery.where('topic', options.topic);
+    }
     const settings = await settingsQuery.select();
     return this.mapToNotificationSettings(settings);
   }
@@ -543,18 +595,44 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     settings: NotificationSettings;
   }): Promise<void> {
     const rows: {
+      settings_key_hash: string;
       user: string;
       channel: string;
       origin: string;
+      topic: string | null;
       enabled: boolean;
     }[] = [];
-    options.settings.channels.map(channel => {
-      channel.origins.map(origin => {
+
+    options.settings.channels.forEach(channel => {
+      channel.origins.forEach(origin => {
         rows.push({
+          settings_key_hash: generateSettingsHash(
+            options.user,
+            channel.id,
+            origin.id,
+            null,
+          ),
           user: options.user,
           channel: channel.id,
           origin: origin.id,
+          topic: null,
           enabled: origin.enabled,
+        });
+
+        origin.topics?.forEach(topic => {
+          rows.push({
+            settings_key_hash: generateSettingsHash(
+              options.user,
+              channel.id,
+              origin.id,
+              topic.id,
+            ),
+            user: options.user,
+            channel: channel.id,
+            origin: origin.id,
+            topic: topic.id,
+            enabled: origin.enabled && topic.enabled,
+          });
         });
       });
     });

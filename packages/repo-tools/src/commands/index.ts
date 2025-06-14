@@ -56,6 +56,10 @@ function registerPackageCommand(program: Command) {
     .description(
       'Additional properties that can be passed to @openapitools/openapi-generator-cli',
     )
+    .option('--server-additional-properties [properties]')
+    .description(
+      'Additional properties that can be passed to @openapitools/openapi-generator-cli',
+    )
     .option('--watch')
     .description('Watch the OpenAPI spec for changes and regenerate on save.')
     .action(lazy(() => import('./package/schema/openapi/generate'), 'command'));
@@ -187,7 +191,7 @@ export function registerCommands(program: Command) {
     )
     .option(
       '-o, --omit-messages <messageCodes>',
-      'select some message code to be omited on the API Extractor (comma separated values i.e ae-cyclic-inherit-doc,ae-missing-getter )',
+      'select some message code to be omitted on the API Extractor (comma separated values i.e ae-cyclic-inherit-doc,ae-missing-getter )',
     )
     .option(
       '--validate-release-tags',

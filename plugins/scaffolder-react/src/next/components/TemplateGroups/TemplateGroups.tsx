@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import Typography from '@material-ui/core/Typography';
-import React, { useCallback } from 'react';
+import { ComponentType, useCallback } from 'react';
 
 import { TemplateGroup } from '../TemplateGroup/TemplateGroup';
 
@@ -32,7 +32,7 @@ import { TemplateGroup } from '../TemplateGroup/TemplateGroup';
 export interface TemplateGroupsProps {
   groups: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
-  TemplateCardComponent?: React.ComponentType<{
+  TemplateCardComponent?: ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
   onTemplateSelected?: (template: TemplateEntityV1beta3) => void;

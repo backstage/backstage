@@ -3,6 +3,7 @@
   --panel: #fff;
   --primary: #000;
   --secondary: #757575;
+  --link: #4f5ce0;
   --font-regular: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji';
@@ -18,6 +19,7 @@
   --panel: #222222;
   --primary: #fff;
   --secondary: #9e9e9e;
+  --link: #4856e8;
   --border: rgba(255, 255, 255, 0.1);
 }
 

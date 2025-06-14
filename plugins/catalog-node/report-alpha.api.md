@@ -82,13 +82,10 @@ export type CatalogPermissionRuleInput<
 
 // @alpha (undocumented)
 export interface CatalogProcessingExtensionPoint {
-  // (undocumented)
   addEntityProvider(
     ...providers: Array<EntityProvider | Array<EntityProvider>>
   ): void;
-  // (undocumented)
   addPlaceholderResolver(key: string, resolver: PlaceholderResolver): void;
-  // (undocumented)
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
   ): void;

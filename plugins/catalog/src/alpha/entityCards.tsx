@@ -14,23 +14,64 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import {
+  EntityIconLinkBlueprint,
+  EntityCardBlueprint,
+} from '@backstage/plugin-catalog-react/alpha';
 import { compatWrapper } from '@backstage/core-compat-api';
+import { createExtensionInput } from '@backstage/frontend-plugin-api';
+import {
+  HeaderIconLinkRow,
+  IconLinkVerticalProps,
+} from '@backstage/core-components';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { buildFilterFn } from './filter/FilterWrapper';
 
-export const catalogAboutEntityCard = EntityCardBlueprint.make({
+export const catalogAboutEntityCard = EntityCardBlueprint.makeWithOverrides({
   name: 'about',
-  params: {
-    loader: async () =>
-      import('../components/AboutCard').then(m =>
-        compatWrapper(<m.AboutCard variant="gridItem" />),
-      ),
+  inputs: {
+    iconLinks: createExtensionInput([
+      EntityIconLinkBlueprint.dataRefs.filterFunction.optional(),
+      EntityIconLinkBlueprint.dataRefs.filterExpression.optional(),
+      EntityIconLinkBlueprint.dataRefs.useProps,
+    ]),
+  },
+  factory(originalFactory, { inputs }) {
+    function Subheader() {
+      const { entity } = useEntity();
+      // The "useProps" functions may be calling other hooks, so we need to
+      // call them in a component function to avoid breaking the rules of hooks.
+      const links = inputs.iconLinks.reduce((rest, iconLink) => {
+        const props = iconLink.get(EntityIconLinkBlueprint.dataRefs.useProps)();
+        const filter = buildFilterFn(
+          iconLink.get(EntityIconLinkBlueprint.dataRefs.filterFunction),
+          iconLink.get(EntityIconLinkBlueprint.dataRefs.filterExpression),
+        );
+        if (filter(entity)) {
+          return [...rest, props];
+        }
+        return rest;
+      }, new Array<IconLinkVerticalProps>());
+      return links.length ? <HeaderIconLinkRow links={links} /> : null;
+    }
+    return originalFactory({
+      type: 'info',
+      async loader() {
+        const { InternalAboutCard } = await import(
+          '../components/AboutCard/AboutCard'
+        );
+        return compatWrapper(
+          <InternalAboutCard variant="gridItem" subheader={<Subheader />} />,
+        );
+      },
+    });
   },
 });
 
 export const catalogLinksEntityCard = EntityCardBlueprint.make({
   name: 'links',
   params: {
+    type: 'info',
     filter: 'has:links',
     loader: async () =>
       import('../components/EntityLinksCard').then(m =>
@@ -42,6 +83,7 @@ export const catalogLinksEntityCard = EntityCardBlueprint.make({
 export const catalogLabelsEntityCard = EntityCardBlueprint.make({
   name: 'labels',
   params: {
+    type: 'info',
     filter: 'has:labels',
     loader: async () =>
       import('../components/EntityLabelsCard').then(m =>

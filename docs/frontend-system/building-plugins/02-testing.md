@@ -2,7 +2,6 @@
 id: testing
 title: Frontend System Testing Plugins
 sidebar_label: Testing
-# prettier-ignore
 description: Testing plugins in the frontend system
 ---
 
@@ -25,7 +24,6 @@ A component can be used for more than one extension, and it should be tested ind
 Use the `renderInTestApp` helper to render a given component inside a Backstage test app:
 
 ```tsx
-import React from 'react';
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/frontend-test-utils';
 import { EntityDetails } from './plugin';
@@ -44,7 +42,6 @@ describe('Entity details component', () => {
 To mock [Utility APIs](../architecture/33-utility-apis.md) that are used by your component you can use the `TestApiProvider` to override individual API implementations. In the snippet below, we wrap the component within a `TestApiProvider` in order to mock the catalog client API:
 
 ```tsx
-import React from 'react';
 import { screen } from '@testing-library/react';
 import {
   renderInTestApp,

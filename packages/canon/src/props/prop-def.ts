@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type React from 'react';
+import type { ReactNode } from 'react';
 import type { Breakpoint, Responsive } from '../types';
 
 /** @public */
@@ -37,7 +37,7 @@ export type StringPropDef = {
 /** @public */
 export type ReactNodePropDef = {
   type: 'ReactNode';
-  default?: React.ReactNode;
+  default?: ReactNode;
   required?: boolean;
 };
 
@@ -107,8 +107,8 @@ export type GetPropDefType<Def> = Def extends BooleanPropDef
     : string
   : Def extends ReactNodePropDef
   ? Def extends ResponsivePropDef
-    ? Responsive<React.ReactNode>
-    : React.ReactNode
+    ? Responsive<ReactNode>
+    : ReactNode
   : Def extends EnumOrStringPropDef<infer Type>
   ? Def extends ResponsivePropDef<infer Type extends string>
     ? Responsive<string | Type>

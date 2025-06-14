@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, MouseEvent, MouseEventHandler } from 'react';
+import {
+  ReactNode,
+  forwardRef,
+  useState,
+  MouseEvent,
+  MouseEventHandler,
+} from 'react';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 
@@ -140,16 +146,13 @@ type EntityTabsGroupItem = {
 
 type EntityTabsGroupProps = TabProps & {
   classes?: Partial<ReturnType<typeof styles>>;
-  indicator?: React.ReactNode;
+  indicator?: ReactNode;
   highlightedButton?: number;
   items: EntityTabsGroupItem[];
   onSelectTab: MouseEventHandler<HTMLAnchorElement>;
 };
 
-const Tab = React.forwardRef(function Tab(
-  props: EntityTabsGroupProps,
-  ref: any,
-) {
+const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const open = Boolean(anchorEl);

@@ -178,7 +178,7 @@ export const examples: TemplateExample[] = [
   },
   {
     description:
-      'Initializes a Bitbucket repository with all proporties being set',
+      'Initializes a Bitbucket repository with all properties being set',
     example: yaml.stringify({
       steps: [
         {

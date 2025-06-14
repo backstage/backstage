@@ -16,6 +16,7 @@
 
 export const ADDON_FEEDBACK_CONTAINER_ID = 'techdocs-report-issue';
 export const ADDON_FEEDBACK_CONTAINER_SELECTOR = `#${ADDON_FEEDBACK_CONTAINER_ID}`;
+export const ADDON_ISSUE_REPO_TYPES_SUPPORTED = ['github', 'gitlab'];
 export const PAGE_EDIT_LINK_SELECTOR = '[title^="Edit this page"]';
 export const PAGE_FEEDBACK_LINK_SELECTOR = '[title^="Leave feedback for"]';
 export const PAGE_MAIN_CONTENT_SELECTOR =

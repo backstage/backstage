@@ -12,16 +12,18 @@ import { CardSettings as CardSettings_2 } from '@backstage/plugin-home-react';
 import { ComponentParts as ComponentParts_2 } from '@backstage/plugin-home-react';
 import { ComponentRenderer as ComponentRenderer_2 } from '@backstage/plugin-home-react';
 import { createCardExtension as createCardExtension_2 } from '@backstage/plugin-home-react';
+import { CSSProperties } from 'react';
 import { EntityFilterQuery } from '@backstage/catalog-client';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
-import { JSX as JSX_2 } from 'react';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { JSX as JSX_3 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RendererProps as RendererProps_2 } from '@backstage/plugin-home-react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
+import { Variant } from '@material-ui/core/styles/createTypography';
 
 // @public
 export type Breakpoint = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -50,8 +52,7 @@ export const ComponentAccordion: (props: {
   expanded?: boolean;
   Content: () => JSX.Element;
   Actions?: () => JSX.Element;
-  Settings?: () => JSX./** @public */
-  Element;
+  Settings?: () => JSX.Element;
   ContextProvider?: (props: any) => JSX.Element;
 }) => JSX_2.Element;
 
@@ -83,19 +84,20 @@ export const createCardExtension: typeof createCardExtension_2;
 // @public
 export const CustomHomepageGrid: (
   props: CustomHomepageGridProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public
 export type CustomHomepageGridProps = {
   children?: ReactNode;
   config?: LayoutConfiguration[];
+  title?: string;
   rowHeight?: number;
   breakpoints?: Record<Breakpoint, number>;
   cols?: Record<Breakpoint, number>;
   containerPadding?: [number, number] | Record<Breakpoint, [number, number]>;
   containerMargin?: [number, number] | Record<Breakpoint, [number, number]>;
   maxRows?: number;
-  style?: React_2.CSSProperties;
+  style?: CSSProperties;
   compactType?: 'vertical' | 'horizontal' | null;
   allowOverlap?: boolean;
   preventCollision?: boolean;
@@ -109,7 +111,7 @@ export const FeaturedDocsCard: (
 // @public
 export type FeaturedDocsCardProps = {
   filter: EntityFilterQuery;
-  emptyState?: React_2.JSX.Element;
+  emptyState?: JSX_3.Element;
   linkDestination?: string;
   responseLimit?: number;
   subLinkText?: string;
@@ -123,7 +125,7 @@ export const HeaderWorldClock: (props: {
 
 // @public
 export const HomePageCompanyLogo: (props: {
-  logo?: React.ReactNode;
+  logo?: ReactNode;
   className?: string;
 }) => JSX_2.Element;
 
@@ -193,13 +195,14 @@ export const QuickStartCard: (
 
 // @public
 export type QuickStartCardProps = {
-  modalTitle?: string | React_2.JSX.Element;
-  docsLinkTitle?: string;
+  modalTitle?: string | JSX_3.Element;
+  docsLinkTitle?: string | JSX_3.Element;
   docsLink?: string;
-  video?: React_2.JSX.Element;
-  image: React_2.JSX.Element;
+  video?: JSX_3.Element;
+  additionalContent?: JSX_3.Element;
+  image: JSX_3.Element;
   cardDescription?: string;
-  downloadImage?: React_2.JSX.Element;
+  downloadImage?: JSX_3.Element;
 };
 
 // @public @deprecated (undocumented)
@@ -215,7 +218,7 @@ export const SettingsModal: (props: {
 
 // @public
 export type StarredEntitiesProps = {
-  noStarredEntitiesMessage?: React_2.ReactNode | undefined;
+  noStarredEntitiesMessage?: ReactNode | undefined;
   groupByKind?: boolean;
 };
 
@@ -225,16 +228,16 @@ export const TemplateBackstageLogo: (props: {
     svg: string;
     path: string;
   };
-}) => React_2.JSX.Element;
+}) => JSX_2.Element;
 
 // @public (undocumented)
-export const TemplateBackstageLogoIcon: () => React_2.JSX.Element;
+export const TemplateBackstageLogoIcon: () => JSX_2.Element;
 
 // @public (undocumented)
 export type Tool = {
   label: string;
   url: string;
-  icon: React_2.ReactNode;
+  icon: ReactNode;
 };
 
 // @public
@@ -270,7 +273,7 @@ export const VisitListener: ({
   toEntityRef,
   visitName,
 }: {
-  children?: React_2.ReactNode;
+  children?: ReactNode;
   toEntityRef?: ({ pathname }: { pathname: string }) => string | undefined;
   visitName?: ({ pathname }: { pathname: string }) => string;
 }) => JSX.Element;
@@ -334,10 +337,12 @@ export type VisitsWebStorageApiOptions = {
 // @public
 export const WelcomeTitle: ({
   language,
+  variant,
 }: WelcomeTitleLanguageProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type WelcomeTitleLanguageProps = {
   language?: string[];
+  variant?: Variant | 'inherit';
 };
 ```

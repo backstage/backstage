@@ -18,14 +18,3 @@ export enum {{classname}} {
   */
 export type {{classname}} = {{#allowableValues}}{{#enumVars}}{{{value}}}{{^-last}} | {{/-last}}{{/enumVars}}{{/allowableValues}};
 
-/**
-  * @public
-  */
-export const {{classname}} = {
-{{#allowableValues}}
-{{#enumVars}}
-    {{name}}: {{{value}}} as {{classname}}{{^-last}},{{/-last}}
-{{/enumVars}}
-{{/allowableValues}}
-};
-{{/stringEnums}}

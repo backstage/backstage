@@ -1,5 +1,5 @@
 import { PropsTable } from '@/components/PropsTable';
-import { IconPreview } from '@/snippets/icon';
+import { IconSnippet } from '@/snippets/stories-snippets';
 import { Snippet } from '@/components/Snippet';
 import { Tabs } from '@/components/Tabs';
 import { CodeBlock } from '@/components/CodeBlock';
@@ -12,7 +12,7 @@ Icons are used to represent an action or a state.
 <Snippet
   py={4}
   align="center"
-  preview={<IconPreview />}
+  preview={<IconSnippet story="Default" />}
   code={`<Icon name="heart" />`}
 />
 

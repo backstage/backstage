@@ -20,3 +20,4 @@ export {
 } from './ExtensionBoundary';
 export { coreComponentRefs } from './coreComponentRefs';
 export { createComponentRef, type ComponentRef } from './createComponentRef';
+export { useAppNode } from './AppNodeProvider';

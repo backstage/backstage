@@ -479,6 +479,7 @@ describe('buildMiddleware', () => {
         pragma: 'value',
         'set-cookie': ['value'],
       },
+      on: jest.fn(),
     } as Partial<http.IncomingMessage>;
 
     expect(config).toBeDefined();
@@ -522,6 +523,7 @@ describe('buildMiddleware', () => {
         'set-cookie': [],
         'x-auth-request-user': 'asd',
       },
+      on: jest.fn(),
     } as Partial<http.IncomingMessage>;
 
     expect(config).toBeDefined();
@@ -602,5 +604,50 @@ describe('buildMiddleware', () => {
         httpRouterService,
       ),
     ).toThrow(/Proxy target is not a valid URL/);
+  });
+
+  it('closes SSE connections when backend closes the connection', async () => {
+    buildMiddleware(
+      '/proxy',
+      logger,
+      '/test',
+      {
+        target: 'http://mocked',
+      },
+      httpRouterService,
+    );
+
+    expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
+
+    const config = mockCreateProxyMiddleware.mock.calls[0][1] as Options;
+
+    const testServerResponse = {
+      headers: {},
+      on: jest.fn((event, callback) => {
+        if (event === 'close') {
+          callback();
+        }
+        return testServerResponse;
+      }),
+    } as Partial<http.IncomingMessage>;
+
+    const testClientResponse = {
+      writableEnded: false,
+      end: jest.fn(),
+    } as Partial<Response>;
+
+    expect(config).toBeDefined();
+    expect(config.onProxyRes).toBeDefined();
+
+    config.onProxyRes!(
+      testServerResponse as http.IncomingMessage,
+      {} as Request,
+      testClientResponse as Response,
+    );
+    expect(testServerResponse.on).toHaveBeenCalledWith(
+      'close',
+      expect.any(Function),
+    );
+    expect(testClientResponse.end).toHaveBeenCalled();
   });
 });

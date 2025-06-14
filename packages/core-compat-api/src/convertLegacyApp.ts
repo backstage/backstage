@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, {
+import {
+  JSX,
+  cloneElement,
   Children,
   Fragment,
   ReactElement,
@@ -78,12 +80,12 @@ export interface ConvertLegacyAppOptions {
    * page content provided both via the old structure and the new plugins. Any
    * duplicate content needs to be removed from the old structure.
    */
-  entityPage?: React.JSX.Element;
+  entityPage?: JSX.Element;
 }
 
 /** @public */
 export function convertLegacyApp(
-  rootElement: React.JSX.Element,
+  rootElement: JSX.Element,
   options: ConvertLegacyAppOptions = {},
 ): (FrontendPlugin | FrontendModule)[] {
   if (getComponentData(rootElement, 'core.type') === 'FlatRoutes') {
@@ -141,7 +143,7 @@ export function convertLegacyApp(
       return [
         coreExtensionData.reactElement(
           compatWrapper(
-            React.cloneElement(
+            cloneElement(
               rootEl,
               undefined,
               inputs.content.get(coreExtensionData.reactElement),

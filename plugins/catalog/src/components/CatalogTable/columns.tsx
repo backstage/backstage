@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import {
   humanizeEntityRef,
   EntityRefLink,
@@ -62,6 +61,18 @@ export const columnFactories = Object.freeze({
     return {
       title: 'System',
       field: 'resolved.partOfSystemRelationTitle',
+      customFilterAndSearch: (query, row) => {
+        if (!row.resolved.partOfSystemRelations) {
+          return false;
+        }
+
+        const systemNames = row.resolved.partOfSystemRelations.map(
+          ref => ref.name,
+        ); // Extract system names from entityRefs
+
+        const searchText = systemNames.join(', ').toLocaleUpperCase('en-US');
+        return searchText.includes(query.toLocaleUpperCase('en-US'));
+      },
       render: ({ resolved }) => (
         <EntityRefLinks
           entityRefs={resolved.partOfSystemRelations}

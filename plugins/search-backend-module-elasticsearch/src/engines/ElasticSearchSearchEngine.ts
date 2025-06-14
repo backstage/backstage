@@ -192,6 +192,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       config.getOptional<ElasticSearchHighlightOptions>(
         'search.elasticsearch.highlightOptions',
       ),
+      config.getOptional<ElasticSearchQueryConfig>(
+        'search.elasticsearch.queryOptions',
+      ),
     );
 
     for (const indexTemplate of this.readIndexTemplateConfig(
@@ -518,7 +521,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       const service =
         config.getOptionalString('service') ?? requestSigner.service;
       if (service !== 'es' && service !== 'aoss')
-        throw new Error(`Unrecognized serivce type: ${service}`);
+        throw new Error(`Unrecognized service type: ${service}`);
       return {
         provider: 'aws',
         node: config.getString('node'),

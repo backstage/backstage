@@ -15,7 +15,7 @@
  */
 
 export { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
-
+export { defaultTechDocsCollatorDocumentTransformer } from './defaultTechDocsCollatorDocumentTransformer';
 export type { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
 
 export type {

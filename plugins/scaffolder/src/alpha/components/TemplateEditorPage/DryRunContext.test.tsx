@@ -29,7 +29,7 @@ import {
   SecretsContextProvider,
 } from '@backstage/plugin-scaffolder-react';
 import { renderHook } from '@testing-library/react';
-import React from 'react';
+import { PropsWithChildren } from 'react';
 import { formDecoratorsApiRef } from '../../api';
 
 window.TextEncoder = TextEncoder;
@@ -71,7 +71,7 @@ describe('DryRunProvider', () => {
           hook: useDryRun(),
         }),
         {
-          wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+          wrapper: ({ children }: PropsWithChildren<{}>) => (
             <TestApiProvider
               apis={[
                 [scaffolderApiRef, scaffolderApiMock],

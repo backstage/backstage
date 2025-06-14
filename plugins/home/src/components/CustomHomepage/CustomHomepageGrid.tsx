@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useMemo } from 'react';
+import { isValidElement, useState, useCallback, useMemo } from 'react';
 import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import {
   ElementCollection,
@@ -50,6 +50,8 @@ import {
   WidgetSchema,
 } from './types';
 import { CardConfig } from '@backstage/plugin-home-react';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homeTranslationRef } from '../../translation';
 
 // eslint-disable-next-line new-cap
 const ResponsiveGrid = WidthProvider(Responsive);
@@ -129,7 +131,7 @@ const convertConfigToDefaultWidgets = (
 ): GridWidget[] => {
   const ret = config.map((conf, i) => {
     const c = LayoutConfigurationSchema.parse(conf);
-    const name = React.isValidElement(c.component)
+    const name = isValidElement(c.component)
       ? getComponentData(c.component, 'core.extensionName')
       : (c.component as unknown as string);
     if (!name) {
@@ -212,9 +214,9 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
       : [];
   }, [props.config, availableWidgets]);
   const [widgets, setWidgets] = useHomeStorage(defaultLayout);
-  const [addWidgetDialogOpen, setAddWidgetDialogOpen] = React.useState(false);
+  const [addWidgetDialogOpen, setAddWidgetDialogOpen] = useState(false);
   const editModeOn = widgets.find(w => w.layout.isResizable) !== undefined;
-  const [editMode, setEditMode] = React.useState(editModeOn);
+  const [editMode, setEditMode] = useState(editModeOn);
   const getWidgetByName = (name: string) => {
     return availableWidgets.find(widget => widget.name === name);
   };
@@ -222,6 +224,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   const getWidgetNameFromKey = (key: string) => {
     return key.split('__')[0];
   };
+  const { t } = useTranslationRef(homeTranslationRef);
 
   const handleAdd = (widget: Widget) => {
     const widgetId = `${widget.name}__${widgets.length + 1}${Math.random()
@@ -321,7 +324,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
 
   return (
     <>
-      <ContentHeader title="">
+      <ContentHeader title={props.title}>
         <CustomHomepageButtons
           editMode={editMode}
           numWidgets={widgets.length}
@@ -340,7 +343,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
       </Dialog>
       {!editMode && widgets.length === 0 && (
         <Typography variant="h5" align="center">
-          No widgets added. Start by clicking the 'Add widget' button.
+          {t('customHomepage.noWidgets')}
         </Typography>
       )}
       <ResponsiveGrid

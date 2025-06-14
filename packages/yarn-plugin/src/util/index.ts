@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+export { getCurrentBackstageVersion } from './getCurrentBackstageVersion';
 export { getPackageVersion } from './getPackageVersion';

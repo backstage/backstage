@@ -21,5 +21,19 @@
  * @packageDocumentation
  */
 
-export { createGithubSignatureValidator } from './http/createGithubSignatureValidator';
+import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+
+export default createBackendFeatureLoader({
+  loader() {
+    return [
+      import('./service/eventsModuleGithubEventRouter'),
+      import('./service/eventsModuleGithubWebhook'),
+    ];
+  },
+});
+
+// TODO(freben): This is not exported at the moment since it depends on the octokit provider.
+// Until we have made that a core thing in integrations, we can't export it
+// export { createGithubSignatureValidator } from './http/createGithubSignatureValidator';
+
 export { GithubEventRouter } from './router/GithubEventRouter';

@@ -104,4 +104,69 @@ Apart from STMP, the email processor also supports the following transmissions:
 - sendmail
 - stream (only for debugging purposes)
 
-See more information at https://github.com/backstage/backstage/blob/master/plugins/notifications-backend-module-email/README.md
+See more information at <https://github.com/backstage/backstage/blob/master/plugins/notifications-backend-module-email/README.md>
+
+### Slack Processor
+
+Slack processor is used to send notifications to users and channels in Slack.
+
+### Slack Configuration
+
+To use this you'll need to create a Slack App or use an existing one. It should have at least the following scopes:
+`chat:write`, `users:read`, `im:write` (for direct message support).
+
+Additionally you may include scopes `chat:write.public` in order to send messages to public channels your app is not
+a member of.
+
+These scopes are under OAuth & Permissions. You will also want to save the Bot User OAuth Token. This will be needed
+in the following step to configure `app-config.yaml`.
+
+### Configure Backstage
+
+To install the Slack processor, add the `@backstage/plugin-notifications-backend-module-slack` package to your backend.
+
+```bash
+yarn workspace backend add @backstage/plugin-notifications-backend-module-slack
+```
+
+Add the Slack processor to your backend:
+
+```ts
+// packages/backend/src/index.ts
+import { createBackend } from '@backstage/plugin-notifications-backend';
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-notifications-backend-module-slack'));
+```
+
+Using the token you obtained from your Slack App, configure the Slack module in your `app-config.yaml`.
+
+```yaml
+notifications:
+  processors:
+    slack:
+      - token: xoxb-XXXXXXXXX
+        broadcastChannels: # Optional, if you wish to support broadcast notifications.
+          - C12345678
+```
+
+Multiple instances can be added in the `slack` array, allowing you to have multiple configurations if you need to send
+messages to more than one Slack workspace. Org-Wide App installation is not currently supported.
+
+### Entity Requirements
+
+Entities must be annotated with the following annotation:
+
+- `slack.com/bot-notify`
+
+The value may be any Slack ID supported by [chat.postMessage](https://api.slack.com/methods/chat.postMessage), for example a user (U12345678), channel (C12345678), group, or direct message chat.
+
+It's also possible to use a user's email address or channel name, however IDs are recommended by Slack.
+Private channels/chats must use an ID.
+
+### Observability
+
+The processor includes the following counter metrics if you are exporting metrics using OpenTelemetry:
+
+- `notifications.processors.slack.sent.count` - The number of messages sent
+- `notifications.processors.slack.error.count` - The number of messages that failed to send

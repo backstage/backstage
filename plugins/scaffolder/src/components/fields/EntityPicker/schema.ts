@@ -13,57 +13,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z } from 'zod';
-import { makeFieldSchemaFromZod } from '../utils';
+import { z as zod } from 'zod';
+import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
 
-/**
- * @public
- */
-export const entityQueryFilterExpressionSchema = z.record(
-  z
-    .string()
-    .or(z.object({ exists: z.boolean().optional() }))
-    .or(z.array(z.string())),
-);
-
-/**
- * @public
- */
-export const EntityPickerFieldSchema = makeFieldSchemaFromZod(
-  z.string(),
-  z.object({
-    /**
-     * @deprecated Use `catalogFilter` instead.
-     */
-    allowedKinds: z
-      .array(z.string())
-      .optional()
-      .describe(
-        'DEPRECATED: Use `catalogFilter` instead. List of kinds of entities to derive options from',
-      ),
-    defaultKind: z
+export const createEntityQueryFilterExpressionSchema = (z: typeof zod) =>
+  z.record(
+    z
       .string()
-      .optional()
-      .describe(
-        'The default entity kind. Options of this kind will not be prefixed.',
-      ),
-    allowArbitraryValues: z
-      .boolean()
-      .optional()
-      .describe('Whether to allow arbitrary user input. Defaults to true'),
-    defaultNamespace: z
-      .union([z.string(), z.literal(false)])
-      .optional()
-      .describe(
-        'The default namespace. Options with this namespace will not be prefixed.',
-      ),
-    catalogFilter: z
-      .array(entityQueryFilterExpressionSchema)
-      .or(entityQueryFilterExpressionSchema)
-      .optional()
-      .describe('List of key-value filter expression for entities'),
-  }),
-);
+      .or(z.object({ exists: z.boolean().optional() }))
+      .or(z.array(z.string())),
+  );
+
+/**
+ * @public
+ */
+export const EntityPickerFieldSchema = makeFieldSchema({
+  output: z => z.string(),
+  uiOptions: z =>
+    z.object({
+      /**
+       * @deprecated Use `catalogFilter` instead.
+       */
+      allowedKinds: z
+        .array(z.string())
+        .optional()
+        .describe(
+          'DEPRECATED: Use `catalogFilter` instead. List of kinds of entities to derive options from',
+        ),
+      defaultKind: z
+        .string()
+        .optional()
+        .describe(
+          'The default entity kind. Options of this kind will not be prefixed.',
+        ),
+      allowArbitraryValues: z
+        .boolean()
+        .optional()
+        .describe('Whether to allow arbitrary user input. Defaults to true'),
+      defaultNamespace: z
+        .union([z.string(), z.literal(false)])
+        .optional()
+        .describe(
+          'The default namespace. Options with this namespace will not be prefixed.',
+        ),
+      catalogFilter: (t => t.or(t.array()))(
+        createEntityQueryFilterExpressionSchema(z),
+      )
+        .optional()
+        .describe('List of key-value filter expression for entities'),
+    }),
+});
 
 /**
  * The input props that can be specified under `ui:options` for the
@@ -71,15 +70,16 @@ export const EntityPickerFieldSchema = makeFieldSchemaFromZod(
  *
  * @public
  */
-export type EntityPickerUiOptions =
-  typeof EntityPickerFieldSchema.uiOptionsType;
+export type EntityPickerUiOptions = NonNullable<
+  (typeof EntityPickerFieldSchema.TProps.uiSchema)['ui:options']
+>;
 
-export type EntityPickerProps = typeof EntityPickerFieldSchema.type;
+export type EntityPickerProps = typeof EntityPickerFieldSchema.TProps;
 
 export const EntityPickerSchema = EntityPickerFieldSchema.schema;
 
-export type EntityPickerFilterQuery = z.TypeOf<
-  typeof entityQueryFilterExpressionSchema
+export type EntityPickerFilterQuery = zod.TypeOf<
+  ReturnType<typeof createEntityQueryFilterExpressionSchema>
 >;
 
 export type EntityPickerFilterQueryValue =

@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { compact, isEqual } from 'lodash';
 import qs from 'qs';
-import React, {
+import {
   createContext,
   PropsWithChildren,
   useCallback,
@@ -35,6 +35,7 @@ import {
   EntityKindFilter,
   EntityLifecycleFilter,
   EntityNamespaceFilter,
+  EntityOrderFilter,
   EntityOrphanFilter,
   EntityOwnerFilter,
   EntityTagFilter,
@@ -64,6 +65,7 @@ export type DefaultEntityFilters = {
   orphan?: EntityOrphanFilter;
   error?: EntityErrorFilter;
   namespace?: EntityNamespaceFilter;
+  order?: EntityOrderFilter;
 };
 
 /** @public */
@@ -239,7 +241,13 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   // based on the requested filters changing.
   const [{ loading, error }, refresh] = useAsyncFn(
     async () => {
-      const compacted = compact(Object.values(requestedFilters));
+      const kindValue =
+        requestedFilters.kind?.value?.toLocaleLowerCase('en-US');
+      const adjustedFilters =
+        kindValue === 'user' || kindValue === 'group'
+          ? { ...requestedFilters, owners: undefined }
+          : requestedFilters;
+      const compacted = compact(Object.values(adjustedFilters));
 
       const queryParams = Object.keys(requestedFilters).reduce(
         (params, key) => {
@@ -287,7 +295,6 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               ...backendFilter,
               limit,
               offset,
-              orderFields: [{ field: 'metadata.name', order: 'asc' }],
             });
             setOutputState({
               appliedFilters: requestedFilters,

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Text } from './Text';
 import { Flex } from '../Flex';
@@ -79,6 +78,13 @@ export const AllColors: Story = {
   ),
 };
 
+export const Truncate: Story = {
+  args: {
+    ...Default.args,
+    truncate: true,
+  },
+};
+
 export const Responsive: Story = {
   args: {
     ...Default.args,
@@ -86,6 +92,26 @@ export const Responsive: Story = {
       xs: 'label',
       md: 'body',
     },
+  },
+};
+
+export const WrappedInLink: Story = {
+  args: {
+    ...Default.args,
+  },
+  decorators: [
+    Story => (
+      <a href="/">
+        <Story />
+      </a>
+    ),
+  ],
+};
+
+export const CustomRender: Story = {
+  args: {
+    ...Default.args,
+    render: <span />,
   },
 };
 

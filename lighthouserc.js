@@ -29,6 +29,7 @@ module.exports = {
         'http://localhost:3000/create/tasks',
         'http://localhost:3000/create/actions',
         'http://localhost:3000/create/edit',
+        'http://localhost:3000/create/templating-extensions',
         'http://localhost:3000/create/templates/default/react-ssr-template',
         /** Search */
         'http://localhost:3000/search',
@@ -52,7 +53,7 @@ module.exports = {
         outputPath: './.lighthouseci/reports',
         preset: 'desktop',
       },
-      startServerCommand: 'yarn start:lighthouse',
+      startServerCommand: 'yarn start',
       startServerReadyPattern: 'webpack compiled successfully',
       startServerReadyTimeout: 600000,
       numberOfRuns: 1,

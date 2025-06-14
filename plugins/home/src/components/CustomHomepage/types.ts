@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, ReactNode } from 'react';
+import { CSSProperties, ReactElement, ReactNode } from 'react';
 import { Layout } from 'react-grid-layout';
 import { z } from 'zod';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
@@ -45,6 +45,10 @@ export type CustomHomepageGridProps = {
    * Default layout for the homepage before users have modified it.
    */
   config?: LayoutConfiguration[];
+  /**
+   * Title displayed in the header of the grid. If not provided, no title will be shown.
+   */
+  title?: string;
   /**
    * Height of grid row in pixels.
    * @defaultValue 60
@@ -82,7 +86,7 @@ export type CustomHomepageGridProps = {
   /**
    * Custom style for grid.
    */
-  style?: React.CSSProperties;
+  style?: CSSProperties;
   /**
    * Compaction type of widgets in the grid. This controls where widgets are moved in case
    * they are overlapping in the grid.
@@ -95,7 +99,7 @@ export type CustomHomepageGridProps = {
   allowOverlap?: boolean;
   /**
    * Controls if widgets can collide with each other. If true, grid items won't change position when being dragged over.
-   * @defaultValue false
+   * @defaultValue true
    */
   preventCollision?: boolean;
 };

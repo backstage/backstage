@@ -1,5 +1,14 @@
 # @backstage/catalog-model
 
+## 1.7.4
+
+### Patch Changes
+
+- ed4e625: Added support for icons containing colons
+- Updated dependencies
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 1.7.3
 
 ### Patch Changes

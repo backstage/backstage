@@ -1,7 +1,6 @@
 ---
 id: glossary
 title: Glossary
-# prettier-ignore
 description: List of terms, abbreviations, and phrases used in Backstage, together with their explanations.
 ---
 

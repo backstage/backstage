@@ -35,8 +35,12 @@ import { schedulerServiceFactory } from '@backstage/backend-defaults/scheduler';
 import { urlReaderServiceFactory } from '@backstage/backend-defaults/urlReader';
 import { userInfoServiceFactory } from '@backstage/backend-defaults/userInfo';
 import { eventsServiceFactory } from '@backstage/plugin-events-node';
+import { actionsRegistryServiceFactory } from './entrypoints/actionsRegistry';
+import { actionsServiceFactory } from './entrypoints/actions';
 
 export const defaultServiceFactories = [
+  actionsRegistryServiceFactory,
+  actionsServiceFactory,
   auditorServiceFactory,
   authServiceFactory,
   cacheServiceFactory,

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import validator from '@rjsf/validator-ajv8';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -30,9 +29,11 @@ import {
   scaffolderApiRef,
   useTemplateSecrets,
   ScaffolderRJSFField,
+  ScaffolderRJSFFormProps as FormProps,
 } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent, screen } from '@testing-library/react';
 import { RepoBranchPicker } from './RepoBranchPicker';
+import { ComponentType, PropsWithChildren, ReactNode } from 'react';
 
 describe('RepoBranchPicker', () => {
   const mockIntegrationsApi: Partial<ScmIntegrationsApi> = {
@@ -332,6 +333,106 @@ describe('RepoBranchPicker', () => {
       expect(mockScmAuthApi.getCredentials).toHaveBeenCalledTimes(0);
 
       expect(getByText('abc123')).toBeInTheDocument();
+    });
+  });
+
+  describe('RepoBranchPicker description', () => {
+    const description = {
+      fromSchema: 'RepoBranchPicker description from schema',
+      fromUiSchema: 'RepoBranchPicker description from uiSchema',
+    } as { fromSchema: string; fromUiSchema: string };
+
+    let Wrapper: ComponentType<PropsWithChildren<{}>>;
+
+    beforeEach(() => {
+      Wrapper = ({ children }: { children?: ReactNode }) => {
+        return (
+          <TestApiProvider
+            apis={[
+              [scmIntegrationsApiRef, mockIntegrationsApi],
+              [scmAuthApiRef, {}],
+              [scaffolderApiRef, {}],
+            ]}
+          >
+            <SecretsContextProvider>{children}</SecretsContextProvider>
+          </TestApiProvider>
+        );
+      };
+    });
+    it('omits description', async () => {
+      const props = {
+        validator,
+        schema: { type: 'string' },
+        uiSchema: { 'ui:field': 'RepoBranchPicker' },
+        fields: {
+          RepoBranchPicker: RepoBranchPicker as ScaffolderRJSFField<string>,
+        },
+        formContext: {
+          formData: {},
+        },
+      } as unknown as FormProps<any>;
+
+      const { container } = await renderInTestApp(
+        <Wrapper>
+          <Form {...props} />
+        </Wrapper>,
+      );
+      expect(
+        container.getElementsByClassName('MuiTypography-body1'),
+      ).toHaveLength(0);
+    });
+
+    it('presents schema description', async () => {
+      const props = {
+        validator,
+        schema: { type: 'string', description: description.fromSchema },
+        uiSchema: { 'ui:field': 'RepoBranchPicker' },
+        fields: {
+          RepoBranchPicker: RepoBranchPicker as ScaffolderRJSFField<string>,
+        },
+        formContext: {
+          formData: {},
+        },
+      } as unknown as FormProps<any>;
+
+      const { container, getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <Form {...props} />
+        </Wrapper>,
+      );
+      expect(
+        container.getElementsByClassName('MuiTypography-body1'),
+      ).toHaveLength(1);
+      expect(getByText(description.fromSchema)).toBeInTheDocument();
+      expect(queryByText(description.fromUiSchema)).toBe(null);
+    });
+
+    it('presents uiSchema description', async () => {
+      const props = {
+        validator,
+        schema: { type: 'string', description: description.fromSchema },
+        uiSchema: {
+          'ui:field': 'RepoBranchPicker',
+          'ui:description': description.fromUiSchema,
+        },
+        fields: {
+          RepoBranchPicker: RepoBranchPicker as ScaffolderRJSFField<string>,
+        },
+        formContext: {
+          formData: {},
+        },
+      } as unknown as FormProps<any>;
+
+      const { container, getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <Form {...props} />
+        </Wrapper>,
+      );
+      expect(
+        container.getElementsByClassName('MuiTypography-body1'),
+      ).toHaveLength(1);
+      expect(queryByText(description.fromSchema)).toBe(null);
+      expect(getByText(description.fromUiSchema)).toBeInTheDocument();
     });
   });
 });

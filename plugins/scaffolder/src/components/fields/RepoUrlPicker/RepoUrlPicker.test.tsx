@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { RepoUrlPicker } from './RepoUrlPicker';
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import validator from '@rjsf/validator-ajv8';
@@ -31,9 +30,11 @@ import {
   ScaffolderApi,
   useTemplateSecrets,
   ScaffolderRJSFField,
+  ScaffolderRJSFFormProps as FormProps,
 } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ComponentType, PropsWithChildren, ReactNode } from 'react';
 
 describe('RepoUrlPicker', () => {
   const mockScaffolderApi: Partial<ScaffolderApi> = {
@@ -416,6 +417,108 @@ describe('RepoUrlPicker', () => {
           repoWrite: true,
         },
       });
+    });
+  });
+
+  describe('RepoUrlPicker description', () => {
+    const description = {
+      fromSchema: 'RepoUrlPicker description from schema',
+      fromUiSchema: 'RepoUrlPicker description from uiSchema',
+    } as { fromSchema: string; fromUiSchema: string };
+
+    let Wrapper: ComponentType<PropsWithChildren<{}>>;
+
+    beforeEach(() => {
+      Wrapper = ({ children }: { children?: ReactNode }) => {
+        return (
+          <TestApiProvider
+            apis={[
+              [scmIntegrationsApiRef, mockIntegrationsApi],
+              [scmAuthApiRef, {}],
+              [scaffolderApiRef, mockScaffolderApi],
+            ]}
+          >
+            <SecretsContextProvider>{children}</SecretsContextProvider>
+          </TestApiProvider>
+        );
+      };
+    });
+    it('omits description', async () => {
+      const props = {
+        validator,
+        schema: { type: 'string' },
+        uiSchema: { 'ui:field': 'RepoUrlPicker' },
+        fields: {
+          RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+        },
+        formContext: {
+          formData: {},
+        },
+      } as unknown as FormProps<any>;
+
+      const { container } = await renderInTestApp(
+        <Wrapper>
+          <Form {...props} />
+        </Wrapper>,
+      );
+      expect(
+        container.getElementsByClassName('MuiTypography-body1'),
+      ).toHaveLength(0);
+    });
+
+    it('presents schema description', async () => {
+      const props = {
+        validator,
+        schema: { type: 'string', description: description.fromSchema },
+        uiSchema: {
+          'ui:field': 'RepoUrlPicker',
+        },
+        fields: {
+          RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+        },
+        formContext: {
+          formData: {},
+        },
+      } as unknown as FormProps<any>;
+
+      const { container, getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <Form {...props} />
+        </Wrapper>,
+      );
+      expect(
+        container.getElementsByClassName('MuiTypography-body1'),
+      ).toHaveLength(1);
+      expect(getByText(description.fromSchema)).toBeInTheDocument();
+      expect(queryByText(description.fromUiSchema)).toBe(null);
+    });
+
+    it('presents uiSchema description', async () => {
+      const props = {
+        validator,
+        schema: { type: 'string', description: description.fromSchema },
+        uiSchema: {
+          'ui:field': 'RepoUrlPicker',
+          'ui:description': description.fromUiSchema,
+        },
+        fields: {
+          RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+        },
+        formContext: {
+          formData: {},
+        },
+      } as unknown as FormProps<any>;
+
+      const { container, getByText, queryByText } = await renderInTestApp(
+        <Wrapper>
+          <Form {...props} />
+        </Wrapper>,
+      );
+      expect(
+        container.getElementsByClassName('MuiTypography-body1'),
+      ).toHaveLength(1);
+      expect(queryByText(description.fromSchema)).toBe(null);
+      expect(getByText(description.fromUiSchema)).toBeInTheDocument();
     });
   });
 });

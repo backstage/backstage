@@ -9,12 +9,27 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
-import { default as React_2 } from 'react';
+import { ReactNode } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+
+// @alpha
+export const CatalogFilterBlueprint: ExtensionBlueprint<{
+  kind: 'catalog-filter';
+  name: undefined;
+  params: {
+    loader: () => Promise<JSX.Element>;
+  };
+  output: ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
 
 // @alpha (undocumented)
 export const catalogReactTranslationRef: TranslationRef<
@@ -96,6 +111,7 @@ export function convertLegacyEntityContentExtension(
 
 // @alpha
 export const defaultEntityContentGroups: {
+  overview: string;
   documentation: string;
   development: string;
   deployment: string;
@@ -253,9 +269,7 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   name: undefined;
   params: {
     filter?: string | EntityPredicate | ((entity: Entity) => boolean);
-    loader: () => Promise<
-      (props: EntityContentLayoutProps) => React_2.JSX.Element
-    >;
+    loader: () => Promise<(props: EntityContentLayoutProps) => JSX_2.Element>;
   };
   output:
     | ConfigurableExtensionDataRef<
@@ -273,7 +287,7 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
         }
       >
     | ConfigurableExtensionDataRef<
-        (props: EntityContentLayoutProps) => React_2.JSX.Element,
+        (props: EntityContentLayoutProps) => React.JSX.Element,
         'catalog.entity-content-layout.component',
         {}
       >;
@@ -298,7 +312,7 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
       {}
     >;
     component: ConfigurableExtensionDataRef<
-      (props: EntityContentLayoutProps) => React_2.JSX.Element,
+      (props: EntityContentLayoutProps) => React.JSX.Element,
       'catalog.entity-content-layout.component',
       {}
     >;
@@ -310,9 +324,46 @@ export interface EntityContentLayoutProps {
   // (undocumented)
   cards: Array<{
     type?: EntityCardType;
-    element: React_2.JSX.Element;
+    element: JSX_2.Element;
   }>;
 }
+
+// @alpha (undocumented)
+export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
+  kind: 'entity-context-menu-item';
+  name: undefined;
+  params: EntityContextMenuItemParams;
+  output:
+    | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ConfigurableExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >;
+  inputs: {};
+  config: {
+    filter: EntityPredicate | undefined;
+  };
+  configInput: {
+    filter?: EntityPredicate | undefined;
+  };
+  dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export type EntityContextMenuItemParams = {
+  useProps: UseProps;
+  icon: JSX_2.Element;
+  filter?: EntityPredicate | ((entity: Entity) => boolean);
+};
 
 // @alpha (undocumented)
 export const EntityHeaderBlueprint: ExtensionBlueprint<{
@@ -335,6 +386,64 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
     element: ConfigurableExtensionDataRef<
       JSX_2.Element,
       'core.reactElement',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export const EntityIconLinkBlueprint: ExtensionBlueprint<{
+  kind: 'entity-icon-link';
+  name: undefined;
+  params: {
+    useProps: () => Omit<IconLinkVerticalProps, 'color'>;
+    filter?: EntityPredicate | ((entity: Entity) => boolean);
+  };
+  output:
+    | ConfigurableExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        () => IconLinkVerticalProps,
+        'entity-icon-link-props',
+        {}
+      >;
+  inputs: {};
+  config: {
+    label: string | undefined;
+    title: string | undefined;
+    filter: EntityPredicate | undefined;
+  };
+  configInput: {
+    filter?: EntityPredicate | undefined;
+    label?: string | undefined;
+    title?: string | undefined;
+  };
+  dataRefs: {
+    useProps: ConfigurableExtensionDataRef<
+      () => IconLinkVerticalProps,
+      'entity-icon-link-props',
+      {}
+    >;
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
       {}
     >;
   };
@@ -393,6 +502,19 @@ export function useEntityPermission(
   allowed: boolean;
   error?: Error;
 };
+
+// @alpha (undocumented)
+export type UseProps = () =>
+  | {
+      title: ReactNode;
+      href: string;
+      disabled?: boolean;
+    }
+  | {
+      title: ReactNode;
+      onClick: () => void | Promise<void>;
+      disabled?: boolean;
+    };
 
 // (No @packageDocumentation comment for this package)
 ```

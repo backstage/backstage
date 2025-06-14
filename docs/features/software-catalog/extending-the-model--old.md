@@ -1,7 +1,6 @@
 ---
 id: extending-the-model--old
 title: Extending the model
-# prettier-ignore
 description: Documentation on extending the catalog model
 ---
 

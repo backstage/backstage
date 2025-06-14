@@ -16,6 +16,7 @@
 
 import { mockServices, TestCaches } from '@backstage/backend-test-utils';
 import KeyvRedis, { createCluster } from '@keyv/redis';
+import KeyvValkey from '@keyv/valkey';
 import KeyvMemcache from '@keyv/memcache';
 import { CacheManager } from './CacheManager';
 
@@ -25,6 +26,16 @@ import { CacheManager } from './CacheManager';
 // Contrived code because it's hard to spy on a default export
 jest.mock('@keyv/redis', () => {
   const Actual = jest.requireActual('@keyv/redis');
+  const DefaultConstructor = Actual.default;
+  return {
+    ...Actual,
+    __esModule: true,
+    default: jest.fn((...args: any[]) => new DefaultConstructor(...args)),
+    createCluster: jest.fn(),
+  };
+});
+jest.mock('@keyv/valkey', () => {
+  const Actual = jest.requireActual('@keyv/valkey');
   const DefaultConstructor = Actual.default;
   return {
     ...Actual,
@@ -70,6 +81,9 @@ describe('CacheManager integration', () => {
       } else if (store === 'memcache') {
         // eslint-disable-next-line jest/no-conditional-expect
         expect(KeyvMemcache).toHaveBeenCalledTimes(3);
+      } else if (store === 'valkey') {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(KeyvValkey).toHaveBeenCalledTimes(3);
       }
     },
   );

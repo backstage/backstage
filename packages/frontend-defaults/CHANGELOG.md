@@ -1,5 +1,126 @@
 # @backstage/frontend-defaults
 
+## 0.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/plugin-app@0.1.10-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-app-api@0.11.3-next.1
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- fa5650c: Forwarded the new `pluginInfoResolver` option for `createApp`.
+- Updated dependencies
+  - @backstage/plugin-app@0.1.10-next.0
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/frontend-app-api@0.11.3-next.0
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/frontend-app-api@0.11.2
+  - @backstage/plugin-app@0.1.9
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.2.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.11.2-next.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/plugin-app@0.1.9-next.3
+
+## 0.2.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/frontend-app-api@0.11.2-next.2
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/plugin-app@0.1.9-next.2
+  - @backstage/errors@1.2.7
+
+## 0.2.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/plugin-app@0.1.9-next.1
+  - @backstage/frontend-app-api@0.11.2-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-app-api@0.11.2-next.0
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/plugin-app@0.1.9-next.0
+
+## 0.2.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 3bee3c3: The new package `frontend-dynamic-features-loader` provides a frontend feature loader that dynamically
+  loads frontend features based on the new frontend system and exposed as module federation remotes.
+  This new frontend feature loader works hand-in-hand with a new server of frontend plugin module federation
+  remotes, which is added as part of backend dynamic feature service in package `@backstage/backend-dynamic-feature-service`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/frontend-app-api@0.11.1
+  - @backstage/plugin-app@0.1.8
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/frontend-app-api@0.11.1-next.1
+  - @backstage/plugin-app@0.1.8-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/plugin-app@0.1.8-next.0
+  - @backstage/frontend-app-api@0.11.1-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 0.2.0
 
 ### Minor Changes

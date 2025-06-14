@@ -124,8 +124,8 @@ export function extractRouteInfoFromAppNode(node: AppNode): {
 
       routeParents.set(routeRef, newParentRef);
       currentObj?.routeRefs.add(routeRef);
-      if (current.spec.source) {
-        currentObj?.plugins.add(toLegacyPlugin(current.spec.source));
+      if (current.spec.plugin) {
+        currentObj?.plugins.add(toLegacyPlugin(current.spec.plugin));
       }
     }
 

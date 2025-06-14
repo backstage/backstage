@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IconNames } from '../Icon';
+
 import type { IconButtonOwnProps } from './IconButton.props';
+import { ReactElement } from 'react';
 
 /**
  * Properties for {@link IconButton}
@@ -36,7 +37,7 @@ export interface IconButtonProps
   variant?: IconButtonOwnProps['variant'];
 
   /**
-   * Icon to display at the start of the button
+   * Icon to display in the button
    */
-  icon: IconNames;
+  icon: ReactElement;
 }

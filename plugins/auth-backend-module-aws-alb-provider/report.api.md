@@ -6,7 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { JWTHeaderParameters } from 'jose';
 import { KeyObject } from 'crypto';
-import type { PassportProfile } from '@backstage/plugin-auth-node/';
+import type { PassportProfile } from '@backstage/plugin-auth-node';
 import { ProxyAuthenticator } from '@backstage/plugin-auth-node';
 import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 
@@ -41,7 +41,10 @@ export namespace awsAlbSignInResolvers {
   const // (undocumented)
     emailMatchingUserEntityProfileEmail: SignInResolverFactory<
       AwsAlbResult,
-      unknown
+      | {
+          dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+        }
+      | undefined
     >;
 }
 ```

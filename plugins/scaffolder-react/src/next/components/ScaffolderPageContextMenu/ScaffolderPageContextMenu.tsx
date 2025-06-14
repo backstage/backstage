@@ -26,8 +26,9 @@ import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import Description from '@material-ui/icons/Description';
 import Edit from '@material-ui/icons/Edit';
 import List from '@material-ui/icons/List';
+import Functions from '@material-ui/icons/Functions';
 import MoreVert from '@material-ui/icons/MoreVert';
-import React, { useState } from 'react';
+import { SyntheticEvent, useState } from 'react';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { taskReadPermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { templateManagementPermission } from '@backstage/plugin-scaffolder-common/alpha';
@@ -48,6 +49,7 @@ export type ScaffolderPageContextMenuProps = {
   onActionsClicked?: () => void;
   onTasksClicked?: () => void;
   onCreateClicked?: () => void;
+  onTemplatingExtensionsClicked?: () => void;
 };
 
 /**
@@ -57,8 +59,13 @@ export function ScaffolderPageContextMenu(
   props: ScaffolderPageContextMenuProps,
 ) {
   const { t } = useTranslationRef(scaffolderReactTranslationRef);
-  const { onEditorClicked, onActionsClicked, onTasksClicked, onCreateClicked } =
-    props;
+  const {
+    onEditorClicked,
+    onActionsClicked,
+    onTasksClicked,
+    onCreateClicked,
+    onTemplatingExtensionsClicked,
+  } = props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
@@ -71,15 +78,18 @@ export function ScaffolderPageContextMenu(
   });
 
   if (
-    !onEditorClicked &&
-    !onActionsClicked &&
-    !onTasksClicked &&
-    !onCreateClicked
+    !(
+      onEditorClicked ||
+      onActionsClicked ||
+      onTasksClicked ||
+      onCreateClicked ||
+      onTemplatingExtensionsClicked
+    )
   ) {
     return null;
   }
 
-  const onOpen = (event: React.SyntheticEvent<HTMLButtonElement>) => {
+  const onOpen = (event: SyntheticEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -129,6 +139,18 @@ export function ScaffolderPageContextMenu(
               </ListItemIcon>
               <ListItemText
                 primary={t('scaffolderPageContextMenu.editorLabel')}
+              />
+            </MenuItem>
+          )}
+          {onTemplatingExtensionsClicked && (
+            <MenuItem onClick={onTemplatingExtensionsClicked}>
+              <ListItemIcon>
+                <Functions fontSize="small" />
+              </ListItemIcon>
+              <ListItemText
+                primary={t(
+                  'scaffolderPageContextMenu.templatingExtensionsLabel',
+                )}
               />
             </MenuItem>
           )}

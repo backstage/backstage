@@ -18,7 +18,6 @@ import fs from 'fs-extra';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import * as yaml from 'yaml';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
-import { z } from 'zod';
 import { examples } from './write.examples';
 
 const id = 'catalog:write';
@@ -33,18 +32,17 @@ export function createCatalogWriteAction() {
     id,
     description: 'Writes the catalog-info.yaml for your template',
     schema: {
-      input: z.object({
-        filePath: z
-          .string()
-          .optional()
-          .describe('Defaults to catalog-info.yaml'),
+      input: {
+        filePath: z =>
+          z.string().optional().describe('Defaults to catalog-info.yaml'),
         // TODO: this should reference an zod entity validator if it existed.
-        entity: z
-          .record(z.any())
-          .describe(
-            'You can provide the same values used in the Entity schema.',
-          ),
-      }),
+        entity: z =>
+          z
+            .record(z.any())
+            .describe(
+              'You can provide the same values used in the Entity schema.',
+            ),
+      },
     },
     examples,
     supportsDryRun: true,

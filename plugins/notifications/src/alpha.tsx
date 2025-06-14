@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   ApiBlueprint,
   PageBlueprint,
@@ -54,7 +53,8 @@ const api = ApiBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'notifications',
+  pluginId: 'notifications',
+  info: { packageJson: () => import('../package.json') },
   routes: convertLegacyRouteRefs({
     root: rootRouteRef,
   }),

@@ -243,8 +243,27 @@ function createConfigForRole(dir, role, extraConfig = {}) {
           '@mui/*/*/*',
           ...(extraConfig.restrictedImportPatterns ?? []),
         ],
+        rules: {
+          'react/react-in-jsx-scope': 'off',
+          'no-restricted-syntax': [
+            'warn',
+            {
+              message:
+                'React default imports are deprecated. Follow the https://backstage.io/docs/tutorials/jsx-transform-migration migration guide for details.',
+              selector:
+                "ImportDeclaration[source.value='react'][specifiers.0.type='ImportDefaultSpecifier']",
+            },
+            {
+              message:
+                'React default imports are deprecated. Follow the https://backstage.io/docs/tutorials/jsx-transform-migration migration guide for details. If you need a global type that collides with a React named export (such as `MouseEvent`), try using `globalThis.MouseHandler`.',
+              selector:
+                "ImportDeclaration[source.value='react'] :matches(ImportDefaultSpecifier, ImportNamespaceSpecifier)",
+            },
+          ],
+          ...extraConfig.rules,
+        },
         tsRules: {
-          'react/prop-types': 0,
+          'react/prop-types': 'off',
           ...extraConfig.tsRules,
         },
       });

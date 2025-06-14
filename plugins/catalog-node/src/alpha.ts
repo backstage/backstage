@@ -40,7 +40,7 @@ export const catalogEntityPermissionResourceRef = createPermissionResourceRef<
  * @deprecated Use {@link @backstage/plugin-catalog-node#catalogServiceRef} instead
  */
 export const catalogServiceRef = createServiceRef<CatalogApi>({
-  id: 'catalog-client',
+  id: 'catalog-client-legacy',
   defaultFactory: async service =>
     createServiceFactory({
       service,

@@ -135,6 +135,7 @@ You can easily customize the TechDocs home page using TechDocs panel layout
 Modify your `App.tsx` as follows:
 
 ```tsx
+import { Fragment, PropsWithChildren } from 'react';
 import { TechDocsCustomHome } from '@backstage/plugin-techdocs';
 //...
 
@@ -175,7 +176,7 @@ const techDocsTabsConfig = [
         filterPredicate: filterEntity,
         panelType: 'TechDocsIndexPage',
         title: 'All',
-        panelProps: { PageWrapper: React.Fragment, CustomHeader: React.Fragment, options: options },
+        panelProps: { PageWrapper: Fragment, CustomHeader: Fragment, options: options },
       },
     ],
   },
@@ -184,7 +185,7 @@ const docsFilter = {
   kind: ['Location', 'Resource', 'Component'],
   'metadata.annotations.featured-docs': CATALOG_FILTER_EXISTS,
 }
-const customPageWrapper = ({ children }: React.PropsWithChildren<{}>) =>
+const customPageWrapper = ({ children }: PropsWithChildren<{}>) =>
   (<PageWithHeader title="Docs" themeId="documentation">{children}</PageWithHeader>)
 const AppRoutes = () => {
   <FlatRoutes>
@@ -212,7 +213,7 @@ maintain such a component in a new directory at
 For example, you can define the following Custom home page component:
 
 ```tsx
-import React from 'react';
+import { ReactNode } from 'react';
 
 import { Content } from '@backstage/core-components';
 import {
@@ -232,7 +233,7 @@ import { EntityListDocsGrid } from '@backstage/plugin-techdocs';
 
 export type CustomTechDocsHomeProps = {
   groups?: Array<{
-    title: React.ReactNode;
+    title: ReactNode;
     filterPredicate: ((entity: Entity) => boolean) | string;
   }>;
 };
@@ -933,12 +934,41 @@ metadata:
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
+  name: example-platform
+  title: Example Application Platform
+  namespace: default
+  description: This is the child entity
+  annotations:
+    backstage.io/techdocs-entity: system:default/example
+```
+
+### Deep linking into TechDocs
+
+The `backstage.io/techdocs-entity-path` annotation can be use to deep link into a specific page within the components TechDocs.
+This can be used in conjunction with `backstage.io/techdocs-entity` or standalone.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: example
+  namespace: default
+  title: Example
+  description: This is the parent entity
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
   name: example-platfrom
   title: Example Application Platform
   namespace: default
   description: This is the child entity
   annotations:
     backstage.io/techdocs-entity: system:default/example
+    backstage.io/techdocs-entity-path: /path/to/component/docs
 ```
 
 ## How to resolve broken links from moved or renamed pages in your documentation site

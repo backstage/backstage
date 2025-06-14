@@ -20,8 +20,8 @@ import {
   parseEntityRef,
 } from '@backstage/catalog-model';
 import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common';
+import { getEntityRootTechDocsPath } from '@backstage/plugin-techdocs-react';
 
-import React from 'react';
 import { TechDocsReaderPage } from './plugin';
 import { TechDocsReaderPageContent } from './reader/components/TechDocsReaderPageContent';
 import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
@@ -53,12 +53,15 @@ export const EntityPageDocs = ({
     }
   }
 
+  const defaultPath = getEntityRootTechDocsPath(entity);
+
   return (
     <TechDocsReaderPage entityRef={entityRef}>
       <TechDocsReaderPageSubheader />
       <TechDocsReaderPageContent
         withSearch={withSearch}
         searchResultUrlMapper={searchResultUrlMapper}
+        defaultPath={defaultPath}
       />
     </TechDocsReaderPage>
   );

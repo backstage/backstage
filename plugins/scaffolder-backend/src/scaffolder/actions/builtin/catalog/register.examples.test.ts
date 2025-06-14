@@ -21,7 +21,7 @@ import { createCatalogRegisterAction } from './register';
 import { Entity } from '@backstage/catalog-model';
 import { examples } from './register.examples';
 import yaml from 'yaml';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials } from '@backstage/backend-test-utils';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 describe('catalog:register', () => {
@@ -33,20 +33,14 @@ describe('catalog:register', () => {
     }),
   );
 
-  const catalogClient = catalogServiceMock.mock();
+  const catalogMock = catalogServiceMock.mock();
 
   const action = createCatalogRegisterAction({
     integrations,
-    catalogClient,
-    auth: mockServices.auth(),
+    catalog: catalogMock,
   });
 
   const credentials = mockCredentials.user();
-
-  const token = mockCredentials.service.token({
-    onBehalfOf: credentials,
-    targetPluginId: 'catalog',
-  });
 
   const mockContext = createMockActionContext();
   beforeEach(() => {
@@ -54,7 +48,7 @@ describe('catalog:register', () => {
   });
 
   it('should register location in catalog', async () => {
-    catalogClient.addLocation
+    catalogMock.addLocation
       .mockResolvedValueOnce({
         location: null as any,
         entities: [],
@@ -71,21 +65,22 @@ describe('catalog:register', () => {
           } as Entity,
         ],
       });
+
     await action.handler({
       ...mockContext,
       input: yaml.parse(examples[0].example).steps[0].input,
     });
 
-    expect(catalogClient.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       1,
       {
         type: 'url',
         target:
           'http://github.com/backstage/backstage/blob/master/catalog-info.yaml',
       },
-      { token },
+      { credentials },
     );
-    expect(catalogClient.addLocation).toHaveBeenNthCalledWith(
+    expect(catalogMock.addLocation).toHaveBeenNthCalledWith(
       2,
       {
         dryRun: true,
@@ -93,7 +88,7 @@ describe('catalog:register', () => {
         target:
           'http://github.com/backstage/backstage/blob/master/catalog-info.yaml',
       },
-      { token },
+      { credentials },
     );
 
     expect(mockContext.output).toHaveBeenCalledWith(

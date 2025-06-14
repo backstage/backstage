@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React, { forwardRef } from 'react';
-import { Icon } from '../Icon';
+import { forwardRef } from 'react';
 import clsx from 'clsx';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 
@@ -25,7 +24,7 @@ import type { IconButtonProps } from './types';
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   (props: IconButtonProps, ref) => {
     const {
-      size = 'medium',
+      size = 'small',
       variant = 'primary',
       icon,
       className,
@@ -39,16 +38,19 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
     return (
       <button
         ref={ref}
-        className={clsx(
-          'canon-IconButton',
-          `canon-IconButton--size-${responsiveSize}`,
-          `canon-IconButton--variant-${responsiveVariant}`,
-          className,
-        )}
+        className={clsx('canon-IconButton', className)}
+        data-size={responsiveSize}
+        data-variant={responsiveVariant}
         style={style}
         {...rest}
       >
-        <Icon name={icon} className="canon-IconButton--icon" />
+        <span
+          className="canon-IconButtonIcon"
+          aria-hidden="true"
+          data-size={responsiveSize}
+        >
+          {icon}
+        </span>
       </button>
     );
   },

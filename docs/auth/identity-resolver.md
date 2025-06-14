@@ -7,7 +7,7 @@ description: An introduction to Backstage user identities and sign-in resolvers
 :::info
 This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage
 [version 1.24](../releases/v1.24.0.md). If you are still on the old backend
-system, you may want to read [its own article](./identity-resolver--old.md)
+system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/auth/identity-resolver--old.md)
 instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
 :::
 
@@ -351,8 +351,12 @@ users to sign in, for example by checking email domains.
 While populating the catalog with organizational data unlocks more powerful ways
 to browse your software ecosystem, it might not always be a viable or prioritized
 option. However, even if you do not have user entities populated in your catalog, you
-can still sign in users. As there are currently no built-in sign-in resolvers for
-this scenario you will need to implement your own.
+can still sign in users.
+
+##### Custom Sign-in Resolver to bypass user in catalog requirement
+
+As there are currently no built-in sign-in resolvers for
+this scenario you may want to implement your own.
 
 Signing in a user that doesn't exist in the catalog is as simple as skipping the
 catalog lookup step from the above example. Rather than looking up the user, we
@@ -401,6 +405,80 @@ async signInResolver({ profile }, ctx) {
   });
 }
 ```
+
+## Reducing the size of issued tokens
+
+By default the auth backend will issue user identity tokens that include the
+ownership references of the user in the `ent` claim of the JWT payload. This is
+done to make it easier and more efficient for consumers of the token to resolve
+ownership of the user. However, depending on the shape of your organization and
+how you resolve ownership claims, these tokens can grow quite large.
+
+To address this, the auth backend now supports the configuration flag
+`auth.omitIdentityTokenOwnershipClaim` that causes the `ent` claim to be omitted
+from the token. This can be set to `true` in the `app-config.yaml` file.
+
+```yaml title="in app-config.yaml"
+auth:
+  omitIdentityTokenOwnershipClaim: true
+```
+
+When this flag is set, the `ent` claim will no longer be present in the token,
+and consumers of the token will need to call the `/v1/userinfo` endpoint on the
+auth backend to fetch the ownership references of the user. However, there's usually no
+action required for consumers. Clients will still receive the full set
+of claims during authentication, and any plugin backends will already need to
+use the
+[`UserInfoService`](../backend-system/core-services/user-info.md) to
+access the ownership references from user credentials, which already calls the
+user info endpoint if necessary.
+
+When enabling this flag, it is important that any custom sign-in resolvers directly return the result of the sign-in method. For example, the following would not work:
+
+```ts
+const { token } = await ctx.issueToken({
+  claims: { sub: entityRef, ent: [entityRef] },
+});
+return { token }; // WARNING: This will not work
+```
+
+Instead, the sign-in resolver should directly return the result:
+
+```ts
+return ctx.issueToken({
+  claims: { sub: entityRef, ent: [entityRef] },
+});
+```
+
+##### Using the `dangerouslyAllowSignInWithoutUserInCatalog` Option
+
+Another way to bypass this requirement is to enable the `dangerouslyAllowSignInWithoutUserInCatalog` option for resolvers.
+Users will still be authenticated as usual but this config will bypass the check that ensures the user is present in the catalog.
+If the user entity is not found in the catalog, a Backstage user token will still be issued based on the identifying information available at the resolver level.
+
+For example:
+
+```yaml title="Within the provider configuration"
+auth:
+  providers:
+    github:
+      development:
+        ...
+        signIn:
+          resolvers:
+            - resolver: emailLocalPartMatchingUserEntityName
+              dangerouslyAllowSignInWithoutUserInCatalog: true
+```
+
+:::warning
+Enabling this option in production poses security risks.
+:::
+
+This option may grant access to unexpected users who haven’t been onboarded into
+Backstage. Since there is no user entity to associate with the signed-in user, permissions
+may not apply as expected and they will have the same permissions as a guest user.
+Careful consideration should be given to the permissions assigned to such users,
+particularly when using the permission system.
 
 ## Profile Transforms
 

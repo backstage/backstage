@@ -13,6 +13,7 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'table.filter.placeholder': 'All results';
     readonly 'table.filter.clearAll': 'Clear all';
     readonly 'table.body.emptyDataSourceMessage': 'No records to display';
+    readonly 'table.header.actions': 'Actions';
     readonly 'table.toolbar.search': 'Filter';
     readonly 'table.pagination.firstTooltip': 'First Page';
     readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
@@ -55,8 +56,8 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'oauthRequestDialog.rejectAll': 'Reject All';
     readonly 'supportButton.title': 'Support';
     readonly 'supportButton.close': 'Close';
-    readonly 'alertDisplay.message_one': '({{ count }} older message)';
-    readonly 'alertDisplay.message_other': '({{ count }} older messages)';
+    readonly 'alertDisplay.message_one': '({{ count }} newer message)';
+    readonly 'alertDisplay.message_other': '({{ count }} newer messages)';
     readonly 'autoLogout.stillTherePrompt.title': 'Logging out due to inactivity';
     readonly 'autoLogout.stillTherePrompt.buttonText': "Yes! Don't log me out";
     readonly 'proxiedSignInPage.title': 'You do not appear to be signed in. Please try reloading the browser page.';

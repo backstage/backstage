@@ -15,7 +15,10 @@
  */
 
 import { isEqual } from 'lodash';
-import React, {
+import {
+  SetStateAction,
+  Dispatch,
+  DispatchWithoutAction,
   PropsWithChildren,
   useCallback,
   useContext,
@@ -46,13 +49,13 @@ import { searchApiRef } from '../api';
  */
 export type SearchContextValue = {
   result: AsyncState<SearchResultSet>;
-  setTerm: React.Dispatch<React.SetStateAction<string>>;
-  setTypes: React.Dispatch<React.SetStateAction<string[]>>;
-  setFilters: React.Dispatch<React.SetStateAction<JsonObject>>;
-  setPageLimit: React.Dispatch<React.SetStateAction<number | undefined>>;
-  setPageCursor: React.Dispatch<React.SetStateAction<string | undefined>>;
-  fetchNextPage?: React.DispatchWithoutAction;
-  fetchPreviousPage?: React.DispatchWithoutAction;
+  setTerm: Dispatch<SetStateAction<string>>;
+  setTypes: Dispatch<SetStateAction<string[]>>;
+  setFilters: Dispatch<SetStateAction<JsonObject>>;
+  setPageLimit: Dispatch<SetStateAction<number | undefined>>;
+  setPageCursor: Dispatch<SetStateAction<string | undefined>>;
+  fetchNextPage?: DispatchWithoutAction;
+  fetchPreviousPage?: DispatchWithoutAction;
 } & SearchContextState;
 
 /**

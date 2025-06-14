@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { ChangeEvent, useEffect } from 'react';
 import {
   errorApiRef,
   identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
 import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
 import { MyGroupsPickerProps, MyGroupsPickerSchema } from './schema';
 import Autocomplete, {
   createFilterOptions,
@@ -38,6 +37,7 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { VirtualizedListbox } from '../VirtualizedListbox';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
 
 export { MyGroupsPickerSchema };
 
@@ -52,12 +52,15 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
     rawErrors,
     onChange,
     formData,
+    uiSchema,
+    errors,
   } = props;
 
   const identityApi = useApi(identityApiRef);
   const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
+  const isDisabled = uiSchema?.['ui:disabled'] ?? false;
 
   const { value: groups, loading } = useAsync(async () => {
     const { userEntityRef } = await identityApi.getBackstageIdentity();
@@ -93,7 +96,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
     return { catalogEntities: items, entityRefToPresentation };
   });
 
-  const updateChange = (_: React.ChangeEvent<{}>, value: Entity | null) => {
+  const updateChange = (_: ChangeEvent<{}>, value: Entity | null) => {
     onChange(value ? stringifyEntityRef(value) : '');
   };
 
@@ -108,10 +111,12 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   }, [groups, onChange, selectedEntity, required]);
 
   return (
-    <FormControl
-      margin="normal"
+    <ScaffolderField
+      rawErrors={rawErrors}
+      rawDescription={uiSchema['ui:description'] ?? description}
       required={required}
-      error={rawErrors?.length > 0}
+      disabled={isDisabled}
+      errors={errors}
     >
       <Autocomplete
         disabled={required && groups?.catalogEntities.length === 1}
@@ -130,7 +135,6 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
             {...params}
             label={title}
             margin="dense"
-            helperText={description}
             FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
             variant="outlined"
             required={required}
@@ -145,6 +149,6 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
         })}
         ListboxComponent={VirtualizedListbox}
       />
-    </FormControl>
+    </ScaffolderField>
   );
 };

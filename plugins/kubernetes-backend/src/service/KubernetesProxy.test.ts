@@ -22,7 +22,6 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   KubernetesRequestAuth,
@@ -78,7 +77,7 @@ describe('KubernetesProxy', () => {
     >(),
   };
 
-  const permissionApi = mockServices.permissions.mock();
+  const permissionApi = mockServices.permissions();
   const mockDisocveryApi = mockServices.discovery.mock();
 
   registerMswTestHooks(worker);
@@ -156,9 +155,6 @@ describe('KubernetesProxy', () => {
       authStrategy,
       discovery: mockDisocveryApi,
     });
-    permissionApi.authorize.mockResolvedValue([
-      { result: AuthorizeResult.ALLOW },
-    ]);
   });
 
   it('should return a ERROR_NOT_FOUND if no clusters are found', async () => {

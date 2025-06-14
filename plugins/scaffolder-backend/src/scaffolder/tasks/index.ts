@@ -21,19 +21,10 @@ export type { CurrentClaimedTask } from './StorageTaskBroker';
 export { TaskWorker } from './TaskWorker';
 export type { CreateWorkerOptions } from './TaskWorker';
 export type {
-  TaskCompletionState,
   TaskStoreEmitOptions,
   TaskStoreListEventsOptions,
   TaskStoreShutDownTaskOptions,
-  SerializedTask,
-  SerializedTaskEvent,
-  TaskStatus,
-  TaskEventType,
-  TaskBroker,
-  TaskContext,
   TaskStore,
-  TaskBrokerDispatchResult,
-  TaskBrokerDispatchOptions,
   TaskStoreCreateTaskOptions,
   TaskStoreRecoverTaskOptions,
   TaskStoreCreateTaskResult,

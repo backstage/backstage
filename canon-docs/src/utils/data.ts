@@ -13,6 +13,10 @@ export const overview: Page[] = [
     title: 'About',
     slug: 'about',
   },
+  {
+    title: 'Releases',
+    slug: 'releases',
+  },
 ];
 
 export const theme: Page[] = [
@@ -63,6 +67,11 @@ export const layoutComponents: Page[] = [
 
 export const components: Page[] = [
   {
+    title: 'Avatar',
+    slug: 'avatar',
+    status: 'alpha',
+  },
+  {
     title: 'Button',
     slug: 'button',
     status: 'alpha',
@@ -73,8 +82,8 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
-    title: 'Field',
-    slug: 'field',
+    title: 'Collapsible',
+    slug: 'collapsible',
     status: 'alpha',
   },
   {
@@ -93,8 +102,18 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
-    title: 'Input',
-    slug: 'input',
+    title: 'Link',
+    slug: 'link',
+    status: 'alpha',
+  },
+  {
+    title: 'Menu',
+    slug: 'menu',
+    status: 'alpha',
+  },
+  {
+    title: 'Select',
+    slug: 'select',
     status: 'alpha',
   },
   {
@@ -103,8 +122,18 @@ export const components: Page[] = [
     status: 'inProgress',
   },
   {
+    title: 'Tabs',
+    slug: 'tabs',
+    status: 'alpha',
+  },
+  {
     title: 'Text',
     slug: 'text',
+    status: 'alpha',
+  },
+  {
+    title: 'TextField',
+    slug: 'text-field',
     status: 'alpha',
   },
 ];

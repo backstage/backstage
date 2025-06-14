@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { CatalogApi } from '@backstage/catalog-client';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { examples } from './fetch.examples';
-import { AuthService } from '@backstage/backend-plugin-api';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 
 const id = 'catalog:fetch';
 
@@ -28,10 +27,9 @@ const id = 'catalog:fetch';
  * @public
  */
 export function createFetchCatalogEntityAction(options: {
-  catalogClient: CatalogApi;
-  auth?: AuthService;
+  catalog: CatalogService;
 }) {
-  const { catalogClient, auth } = options;
+  const { catalog } = options;
 
   return createTemplateAction({
     id,
@@ -95,18 +93,13 @@ export function createFetchCatalogEntityAction(options: {
         throw new Error('Missing entity reference or references');
       }
 
-      const { token } = (await auth?.getPluginRequestToken({
-        onBehalfOf: await ctx.getInitiatorCredentials(),
-        targetPluginId: 'catalog',
-      })) ?? { token: ctx.secrets?.backstageToken };
-
       if (entityRef) {
-        const entity = await catalogClient.getEntityByRef(
+        const entity = await catalog.getEntityByRef(
           stringifyEntityRef(
             parseEntityRef(entityRef, { defaultKind, defaultNamespace }),
           ),
           {
-            token,
+            credentials: await ctx.getInitiatorCredentials(),
           },
         );
 
@@ -117,7 +110,7 @@ export function createFetchCatalogEntityAction(options: {
       }
 
       if (entityRefs) {
-        const entities = await catalogClient.getEntitiesByRefs(
+        const entities = await catalog.getEntitiesByRefs(
           {
             entityRefs: entityRefs.map(ref =>
               stringifyEntityRef(
@@ -125,9 +118,7 @@ export function createFetchCatalogEntityAction(options: {
               ),
             ),
           },
-          {
-            token,
-          },
+          { credentials: await ctx.getInitiatorCredentials() },
         );
 
         const finalEntities = entities.items.map((e, i) => {

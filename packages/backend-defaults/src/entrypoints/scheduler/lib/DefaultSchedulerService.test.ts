@@ -19,12 +19,18 @@ import { Duration } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { DefaultSchedulerService } from './DefaultSchedulerService';
 import { createTestScopedSignal } from './__testUtils__/createTestScopedSignal';
+import { PluginMetadataService } from '@backstage/backend-plugin-api';
 
 jest.setTimeout(60_000);
 
 describe('TaskScheduler', () => {
   const logger = mockServices.logger.mock();
   const databases = TestDatabases.create();
+  const rootLifecycle = mockServices.rootLifecycle.mock();
+  const httpRouter = mockServices.httpRouter.mock();
+  const pluginMetadata = {
+    getId: () => 'test',
+  } satisfies PluginMetadataService;
   const testScopedSignal = createTestScopedSignal();
 
   it.each(databases.eachSupportedId())(
@@ -33,7 +39,13 @@ describe('TaskScheduler', () => {
       const knex = await databases.init(databaseId);
       const database = mockServices.database({ knex });
 
-      const manager = DefaultSchedulerService.create({ database, logger });
+      const manager = DefaultSchedulerService.create({
+        database,
+        logger,
+        rootLifecycle,
+        httpRouter,
+        pluginMetadata,
+      });
       const fn = jest.fn();
 
       await manager.scheduleTask({
@@ -56,7 +68,13 @@ describe('TaskScheduler', () => {
       const knex = await databases.init(databaseId);
       const database = mockServices.database({ knex });
 
-      const manager = DefaultSchedulerService.create({ database, logger });
+      const manager = DefaultSchedulerService.create({
+        database,
+        logger,
+        rootLifecycle,
+        httpRouter,
+        pluginMetadata,
+      });
       const fn = jest.fn();
 
       await manager.scheduleTask({

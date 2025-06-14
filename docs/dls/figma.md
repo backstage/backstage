@@ -1,7 +1,6 @@
 ---
 id: figma
 title: Figma
-# prettier-ignore
 description: Documentation on using Figma to build your own plugins for Backstage
 ---
 

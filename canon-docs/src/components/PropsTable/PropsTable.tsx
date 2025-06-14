@@ -25,8 +25,8 @@ export const PropsTable = <T extends Record<string, PropData>>({
       <Table.Header>
         <Table.HeaderRow>
           <Table.HeaderCell style={{ width: '16%' }}>Prop</Table.HeaderCell>
-          <Table.HeaderCell style={{ width: '56%' }}>Type</Table.HeaderCell>
-          <Table.HeaderCell style={{ width: '14%' }}>Default</Table.HeaderCell>
+          <Table.HeaderCell style={{ width: '50%' }}>Type</Table.HeaderCell>
+          <Table.HeaderCell style={{ width: '20%' }}>Default</Table.HeaderCell>
           <Table.HeaderCell style={{ width: '14%' }}>
             Responsive
           </Table.HeaderCell>
@@ -45,7 +45,7 @@ export const PropsTable = <T extends Record<string, PropData>>({
               <Table.Cell style={{ width: '16%' }}>
                 <Chip head>{n}</Chip>
               </Table.Cell>
-              <Table.Cell style={{ width: '56%' }}>
+              <Table.Cell style={{ width: '50%' }}>
                 <div
                   style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}
                 >
@@ -61,7 +61,7 @@ export const PropsTable = <T extends Record<string, PropData>>({
                   )}
                 </div>
               </Table.Cell>
-              <Table.Cell style={{ width: '14%' }}>
+              <Table.Cell style={{ width: '20%' }}>
                 <Chip>{data[n].default ? data[n].default : '-'}</Chip>
               </Table.Cell>
               <Table.Cell style={{ width: '14%' }}>

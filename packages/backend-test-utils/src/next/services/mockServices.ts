@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { auditorServiceFactory } from '@backstage/backend-defaults/auditor';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
 import { HostDiscovery } from '@backstage/backend-defaults/discovery';
@@ -35,6 +36,7 @@ import {
   DiscoveryService,
   HttpAuthService,
   LoggerService,
+  PermissionsService,
   RootConfigService,
   ServiceFactory,
   ServiceRef,
@@ -43,10 +45,8 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import {
-  eventsServiceFactory,
-  eventsServiceRef,
-} from '@backstage/plugin-events-node';
+import { EventsService, eventsServiceRef } from '@backstage/plugin-events-node';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
 import { MockAuthService } from './MockAuthService';
@@ -54,7 +54,10 @@ import { MockHttpAuthService } from './MockHttpAuthService';
 import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockUserInfoService } from './MockUserInfoService';
 import { mockCredentials } from './mockCredentials';
-import { auditorServiceFactory } from '@backstage/backend-defaults/auditor';
+import { MockEventsService } from './MockEventsService';
+import { actionsServiceFactory } from '@backstage/backend-defaults/actions';
+import { actionsRegistryServiceFactory } from '@backstage/backend-defaults/actionsRegistry';
+import { MockPermissionsService } from './MockPermissionsService';
 
 /** @internal */
 function createLoggerMock() {
@@ -475,8 +478,37 @@ export namespace mockServices {
     );
   }
 
+  /**
+   * Creates a functional mock implementation of the
+   * {@link @backstage/backend-plugin-api#PermissionsService}.
+   */
+  export function permissions(options?: {
+    result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+  }): PermissionsService {
+    return new MockPermissionsService(options);
+  }
   export namespace permissions {
-    export const factory = () => permissionsServiceFactory;
+    /**
+     * Creates a mock factory for the
+     * {@link @backstage/backend-plugin-api#coreServices.permissions}. Just
+     * returns the given `result` if you supply one. Otherwise, it returns the
+     * regular default permissions factory.
+     */
+    export const factory = (options?: {
+      result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+    }) =>
+      options?.result
+        ? createServiceFactory({
+            service: coreServices.permissions,
+            deps: {},
+            factory: () => new MockPermissionsService(options),
+          })
+        : permissionsServiceFactory;
+    /**
+     * Creates a mock of the
+     * {@link @backstage/backend-plugin-api#coreServices.permissions},
+     * optionally with some given method implementations.
+     */
     export const mock = simpleMock(coreServices.permissions, () => ({
       authorize: jest.fn(),
       authorizeConditional: jest.fn(),
@@ -520,9 +552,39 @@ export namespace mockServices {
       search: jest.fn(),
     }));
   }
+  export namespace actions {
+    export const factory = () => actionsServiceFactory;
+    export const mock = simpleMock(coreServices.actions, () => ({
+      list: jest.fn(),
+      invoke: jest.fn(),
+    }));
+  }
 
+  export namespace actionsRegistry {
+    export const factory = () => actionsRegistryServiceFactory;
+    export const mock = simpleMock(coreServices.actionsRegistry, () => ({
+      register: jest.fn(),
+    }));
+  }
+
+  /**
+   * Creates a functional mock implementation of the
+   * {@link @backstage/backend-events-node#eventsServiceRef}.
+   */
+  export function events(): EventsService {
+    return new MockEventsService();
+  }
   export namespace events {
-    export const factory = () => eventsServiceFactory;
+    /**
+     * Creates a functional mock factory for the
+     * {@link @backstage/backend-events-node#eventsServiceRef}.
+     */
+    export const factory = simpleFactoryWithOptions(eventsServiceRef, events);
+    /**
+     * Creates a mock of the
+     * {@link @backstage/backend-events-node#eventsServiceRef}, optionally
+     * with some given method implementations.
+     */
     export const mock = simpleMock(eventsServiceRef, () => ({
       publish: jest.fn(),
       subscribe: jest.fn(),

@@ -2,7 +2,6 @@
 id: locations
 sidebar_label: Locations
 title: Amazon Web Services CodeCommit Locations
-# prettier-ignore
 description: Setting up an integration with Amazon Web Services CodeCommit
 ---
 

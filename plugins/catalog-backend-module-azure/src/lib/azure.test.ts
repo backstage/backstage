@@ -392,4 +392,97 @@ describe('azure', () => {
       ),
     ).resolves.toHaveLength(totalCount);
   });
+
+  it('can search using visualstudio.com domain', async () => {
+    const response: CodeSearchResponse = {
+      count: 1,
+      results: [
+        {
+          fileName: 'catalog-info.yaml',
+          path: '/catalog-info.yaml',
+          repository: {
+            name: 'backstage',
+          },
+          project: {
+            name: '*',
+          },
+        },
+      ],
+    };
+
+    server.use(
+      rest.post(
+        `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
+          expect(req.body).toEqual({
+            searchText: 'path:/catalog-info.yaml repo:* proj:engineering',
+            $orderBy: [
+              {
+                field: 'path',
+                sortOrder: 'ASC',
+              },
+            ],
+            $skip: 0,
+            $top: 1000,
+          });
+          return res(ctx.json(response));
+        },
+      ),
+    );
+
+    const { credentialsProvider, azureConfig } = createFixture(
+      'backstage.visualstudio.com',
+      'ABC',
+    );
+
+    await expect(
+      codeSearch(
+        credentialsProvider,
+        azureConfig,
+        'shopify',
+        'engineering',
+        '',
+        '/catalog-info.yaml',
+        '',
+      ),
+    ).resolves.toEqual(response.results);
+  });
+
+  it('identifies both dev.azure.com and visualstudio.com domains as cloud', async () => {
+    const domains = [
+      { host: 'dev.azure.com', expectedCloud: true },
+      { host: 'example.visualstudio.com', expectedCloud: true },
+      { host: 'on-premise.company.com', expectedCloud: false },
+    ];
+
+    for (const { host, expectedCloud } of domains) {
+      const mockResponse = { count: 0, results: [] };
+
+      const expectedBaseUrl = expectedCloud
+        ? 'https://almsearch.dev.azure.com'
+        : `https://${host}`;
+
+      server.use(
+        rest.post(
+          `${expectedBaseUrl}/test-org/_apis/search/codesearchresults`,
+          (_req, res, ctx) => {
+            return res(ctx.json(mockResponse));
+          },
+        ),
+      );
+
+      const { credentialsProvider, azureConfig } = createFixture(host, 'TOKEN');
+
+      await codeSearch(
+        credentialsProvider,
+        azureConfig,
+        'test-org',
+        'test-project',
+        '',
+        '/test-path',
+        '',
+      );
+    }
+  });
 });

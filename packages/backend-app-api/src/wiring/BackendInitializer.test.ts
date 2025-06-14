@@ -541,7 +541,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should forward errors when plugins fail to start', async () => {
-    const init = new BackendInitializer([]);
+    const init = new BackendInitializer(baseFactories);
     init.add(
       createBackendPlugin({
         pluginId: 'test',
@@ -562,8 +562,7 @@ describe('BackendInitializer', () => {
 
   it('should permit startup errors for plugins with onPluginBootFailure: continue', async () => {
     const init = new BackendInitializer([
-      mockServices.rootLifecycle.factory(),
-      mockServices.rootLogger.factory(),
+      ...baseFactories,
       mockServices.rootConfig.factory({
         data: {
           backend: {
@@ -590,8 +589,7 @@ describe('BackendInitializer', () => {
 
   it('should permit startup errors if the default onPluginBootFailure is continue', async () => {
     const init = new BackendInitializer([
-      mockServices.rootLifecycle.factory(),
-      mockServices.rootLogger.factory(),
+      ...baseFactories,
       mockServices.rootConfig.factory({
         data: {
           backend: {
@@ -618,8 +616,7 @@ describe('BackendInitializer', () => {
 
   it('should forward errors for plugins explicitly marked to abort when the default is continue', async () => {
     const init = new BackendInitializer([
-      mockServices.rootLifecycle.factory(),
-      mockServices.rootLogger.factory(),
+      ...baseFactories,
       mockServices.rootConfig.factory({
         data: {
           backend: {
@@ -646,6 +643,130 @@ describe('BackendInitializer', () => {
     );
     await expect(init.start()).rejects.toThrow(
       "Plugin 'test' startup failed; caused by Error: NOPE",
+    );
+  });
+
+  it('should forward errors when plugin modules fail to start', async () => {
+    const init = new BackendInitializer(baseFactories);
+    init.add(testPlugin);
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Module 'mod' for plugin 'test' startup failed; caused by Error: NOPE",
+    );
+  });
+
+  it('should permit startup errors for plugin modules with onPluginModuleBootFailure: continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: {
+              plugins: {
+                test: {
+                  modules: { mod: { onPluginModuleBootFailure: 'continue' } },
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+    init.add(testPlugin);
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).resolves.not.toThrow();
+  });
+
+  it('should permit startup errors if the default onPluginModuleBootFailure is continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: { default: { onPluginModuleBootFailure: 'continue' } },
+          },
+        },
+      }),
+    ]);
+    init.add(testPlugin);
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).resolves.not.toThrow();
+  });
+
+  it('should forward errors for plugin modules explicitly marked to abort when the default is continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: {
+              default: { onPluginModuleBootFailure: 'continue' },
+              plugins: {
+                test: {
+                  modules: { mod: { onPluginModuleBootFailure: 'abort' } },
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+    init.add(testPlugin);
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Module 'mod' for plugin 'test' startup failed; caused by Error: NOPE",
     );
   });
 
@@ -1011,6 +1132,70 @@ describe('BackendInitializer', () => {
     backend.add(plugin);
     backend.add(module);
     backend.add(instanceMetadataPlugin);
+    await backend.start();
+  });
+
+  it('should properly wait for all modules that consume an extension point to really finish, before starting the module that provides that extension point', async () => {
+    expect.assertions(3);
+    const backend = new BackendInitializer(baseFactories);
+    const ext = createExtensionPoint<{ hello: (message: string) => void }>({
+      id: 'a',
+    });
+    const plugin = createBackendPlugin({
+      pluginId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {},
+        });
+      },
+    });
+    const producerModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'producer',
+      register(reg) {
+        const hello = jest.fn();
+        reg.registerExtensionPoint(ext, { hello });
+        reg.registerInit({
+          deps: {},
+          async init() {
+            // we must not have been initialized before both of the consuming modules have been initialized
+            expect(hello).toHaveBeenCalledTimes(2);
+            expect(hello).toHaveBeenNthCalledWith(1, 'fast');
+            expect(hello).toHaveBeenNthCalledWith(2, 'slow');
+          },
+        });
+      },
+    });
+    const fastConsumerModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'fast-consumer',
+      register(reg) {
+        reg.registerInit({
+          deps: { x: ext },
+          async init({ x }) {
+            x.hello('fast');
+          },
+        });
+      },
+    });
+    const slowConsumerModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'slow-consumer',
+      register(reg) {
+        reg.registerInit({
+          deps: { x: ext },
+          async init({ x }) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            x.hello('slow');
+          },
+        });
+      },
+    });
+    await backend.add(plugin);
+    await backend.add(producerModule);
+    await backend.add(fastConsumerModule);
+    await backend.add(slowConsumerModule);
     await backend.start();
   });
 });

@@ -29,7 +29,7 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import capitalize from 'lodash/capitalize';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 import { scaffolderReactTranslationRef } from '../../../translation';
 

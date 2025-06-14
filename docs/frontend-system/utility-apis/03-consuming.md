@@ -2,7 +2,6 @@
 id: consuming
 title: Consuming Utility APIs
 sidebar_label: Consuming APIs
-# prettier-ignore
 description: Consuming utility APIs
 ---
 

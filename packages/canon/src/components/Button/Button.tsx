@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { forwardRef } from 'react';
-import { Icon } from '../Icon';
+import { forwardRef, useRef } from 'react';
 import clsx from 'clsx';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
+import { useRender } from '@base-ui-components/react/use-render';
 
 import type { ButtonProps } from './types';
 
@@ -25,12 +25,12 @@ import type { ButtonProps } from './types';
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (props: ButtonProps, ref) => {
     const {
-      size = 'medium',
+      size = 'small',
       variant = 'primary',
-      disabled,
       iconStart,
       iconEnd,
       children,
+      render = <button />,
       className,
       style,
       ...rest
@@ -39,25 +39,43 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     // Get the responsive value for the variant
     const responsiveSize = useResponsiveValue(size);
     const responsiveVariant = useResponsiveValue(variant);
+    const internalRef = useRef<HTMLElement | null>(null);
 
-    return (
-      <button
-        ref={ref}
-        disabled={disabled}
-        className={clsx(
-          'canon-Button',
-          `canon-Button--size-${responsiveSize}`,
-          `canon-Button--variant-${responsiveVariant}`,
-          className,
-        )}
-        style={style}
-        {...rest}
-      >
-        {iconStart && <Icon name={iconStart} className="canon-Button--icon" />}
-        {children}
-        {iconEnd && <Icon name={iconEnd} className="canon-Button--icon" />}
-      </button>
-    );
+    const { renderElement } = useRender({
+      render,
+      props: {
+        className: clsx('canon-Button', className),
+        ['data-variant']: responsiveVariant,
+        ['data-size']: responsiveSize,
+        ...rest,
+        children: (
+          <>
+            {iconStart && (
+              <span
+                className="canon-ButtonIcon"
+                aria-hidden="true"
+                data-size={responsiveSize}
+              >
+                {iconStart}
+              </span>
+            )}
+            {children}
+            {iconEnd && (
+              <span
+                className="canon-ButtonIcon"
+                aria-hidden="true"
+                data-size={responsiveSize}
+              >
+                {iconEnd}
+              </span>
+            )}
+          </>
+        ),
+      },
+      refs: [ref, internalRef],
+    });
+
+    return renderElement();
   },
 );
 

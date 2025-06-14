@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Children, ReactElement, ReactNode } from 'react';
+import { Children, ReactElement, ReactNode } from 'react';
 import { useOutlet } from 'react-router-dom';
 
 import { Page } from '@backstage/core-components';
@@ -193,7 +193,7 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
       child => (child as ReactElement)?.props?.children ?? [],
     );
 
-    const page: React.ReactNode = grandChildren.find(
+    const page: ReactNode = grandChildren.find(
       grandChild =>
         !getComponentData(grandChild, TECHDOCS_ADDONS_WRAPPER_KEY) &&
         !getComponentData(grandChild, TECHDOCS_ADDONS_KEY),

@@ -94,6 +94,7 @@ The Catalog backend emits audit events for various operations. Events are groupe
 **Entity Events:**
 
 - **`entity-fetch`**: Retrieves entities.
+- **Note:** By default, "low" severity audit events like `entity-fetch` aren't logged because they map to the "debug" level, while Backstage defaults to "info" level logging. To see `entity-fetch` events, update your `app-config.yaml` by setting `backend.auditor.severityLogLevelMappings.low: info`. See the [Auditor Service documentation](https://backstage.io/docs/backend-system/core-services/auditor/#severity-levels-and-default-mappings) for details on severity mappings.
 
   Filter on `queryType`.
 
