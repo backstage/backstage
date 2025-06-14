@@ -16,6 +16,7 @@
 
 import { DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import express from 'express';
 import request from 'supertest';
 import ObservableImpl from 'zen-observable';
 
@@ -41,6 +42,7 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonValue } from '@backstage/types';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
 import {
   mockCredentials,
   mockErrorHandler,
@@ -56,7 +58,7 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { DatabaseService } from '@backstage/backend-plugin-api';
-
+import { createDebugLogAction } from '../scaffolder/actions/builtin';
 import { ScmIntegrations } from '@backstage/integration';
 import {
   extractFilterMetadata,
@@ -239,11 +241,20 @@ const createTestRouter = async (
         },
         handler: async () => {},
       }),
+      createDebugLogAction(),
     ],
   });
 
   router.use(mockErrorHandler());
-  return { router, logger, taskBroker, permissions, catalog };
+  const wrappedRouter = await wrapServer(express().use(router));
+  return {
+    router: wrappedRouter,
+    unwrappedRouter: router,
+    logger,
+    taskBroker,
+    permissions,
+    catalog,
+  };
 };
 
 describe('scaffolder router', () => {
@@ -259,7 +270,7 @@ describe('scaffolder router', () => {
       const response = await request(router).get('/v2/actions').send();
       expect(response.status).toEqual(200);
       expect(response.body[0].id).toBeDefined();
-      expect(response.body.length).toBe(1);
+      expect(response.body.length).toBe(2);
     });
   });
 
@@ -701,7 +712,10 @@ describe('scaffolder router', () => {
           },
         });
 
-      console.log(status, body);
+      expect(status).toBe(201);
+      expect(body).toMatchObject({
+        id: expect.any(String),
+      });
       expect(logger.info).toHaveBeenCalledTimes(1);
       expect(logger.info).toHaveBeenCalledWith(
         'Scaffolding task for template:default/create-react-app-template created by user:default/mock',
@@ -970,7 +984,7 @@ describe('scaffolder router', () => {
 
   describe('GET /v2/tasks/:taskId/eventstream', () => {
     it('should return log messages', async () => {
-      const { router, taskBroker } = await createTestRouter();
+      const { unwrappedRouter: router, taskBroker } = await createTestRouter();
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
@@ -1055,7 +1069,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
     });
 
     it('should return log messages with after query', async () => {
-      const { router, taskBroker } = await createTestRouter();
+      const { unwrappedRouter: router, taskBroker } = await createTestRouter();
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
@@ -1266,7 +1280,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
     it('should call the autocomplete handler', async () => {
       const handleAutocompleteRequest = jest.fn().mockResolvedValue({
-        results: [{ title: 'blob' }],
+        results: [{ id: 'a-random-id', title: 'blob' }],
       });
 
       const { router } = await createTestRouter({
@@ -1287,7 +1301,9 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
       expect(response.status).toEqual(200);
 
-      expect(response.body).toEqual({ results: [{ title: 'blob' }] });
+      expect(response.body).toEqual({
+        results: [{ id: 'a-random-id', title: 'blob' }],
+      });
       expect(handleAutocompleteRequest).toHaveBeenCalledWith({
         token: mockToken,
         context,
