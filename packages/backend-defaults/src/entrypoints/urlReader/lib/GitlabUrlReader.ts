@@ -340,10 +340,7 @@ export class GitlabUrlReader implements UrlReaderService {
       );
     }
     // Default to the old behavior of assuming the url is for a file
-    return getGitLabFileFetchUrl(target, {
-      ...this.integration.config,
-      ...(token && { token }),
-    });
+    return getGitLabFileFetchUrl(target, this.integration.config, token);
   }
 
   // convert urls of the form:
