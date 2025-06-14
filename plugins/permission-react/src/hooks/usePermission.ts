@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { permissionApiRef } from '../apis';
 import {
   AuthorizeResult,
@@ -23,6 +23,7 @@ import {
   ResourcePermission,
 } from '@backstage/plugin-permission-common';
 import useSWR from 'swr';
+import useAsync from 'react-use/lib/useAsync';
 
 /** @public */
 export type AsyncPermissionResult = {
@@ -61,6 +62,39 @@ export function usePermission(
       },
 ): AsyncPermissionResult {
   const permissionApi = useApi(permissionApiRef);
+  const configApi = useApi(configApiRef);
+
+  const enableDataloaderRequests =
+    configApi.getOptionalBoolean(
+      'permission.EXPERIMENTAL_enableDataloaderRequests',
+    ) ?? false;
+
+  if (enableDataloaderRequests) {
+    // Disable this for now until dataloader is either de-factor or removed.
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { value, error } = useAsync(async () => {
+      // We could make the resourceRef parameter required to avoid this check, but
+      // it would make using this hook difficult in situations where the entity
+      // must be asynchronously loaded, so instead we short-circuit to a deny when
+      // no resourceRef is supplied, on the assumption that the resourceRef is
+      // still loading outside the hook.
+      if (isResourcePermission(input.permission) && !input.resourceRef) {
+        return AuthorizeResult.DENY;
+      }
+
+      const { result } = await permissionApi.authorize(input);
+      return result;
+    }, [permissionApi, input]);
+
+    return {
+      loading: value === undefined,
+      error,
+      allowed: value === AuthorizeResult.ALLOW,
+    };
+  }
+
+  // Default to SWR usage in case dataloader is not enabled for authorize requests
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { data, error } = useSWR(input, async (args: typeof input) => {
     // We could make the resourceRef parameter required to avoid this check, but
     // it would make using this hook difficult in situations where the entity

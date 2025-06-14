@@ -30,6 +30,8 @@ import {
   DefinitivePolicyDecision,
   Permission,
   PermissionClient,
+  PermissionClientRequestOptions,
+  PermissionIdentity,
   PolicyDecision,
   QueryPermissionRequest,
 } from '@backstage/plugin-permission-common';
@@ -110,19 +112,39 @@ export class ServerPermissionClient implements PermissionsService {
 
   async #getRequestOptions(
     options?: PermissionsServiceRequestOptions,
-  ): Promise<{ token?: string } | undefined> {
+  ): Promise<PermissionClientRequestOptions | undefined> {
     if (options && 'credentials' in options) {
       if (this.#auth.isPrincipal(options.credentials, 'none')) {
-        return {};
+        return {
+          permissionIdentity: { type: 'none' },
+        };
       }
 
-      return this.#auth.getPluginRequestToken({
+      const { token } = await this.#auth.getPluginRequestToken({
         onBehalfOf: options.credentials,
         targetPluginId: 'permission',
       });
+
+      let permissionIdentity: PermissionIdentity | undefined = undefined;
+      if (this.#auth.isPrincipal(options.credentials, 'user')) {
+        permissionIdentity = {
+          type: 'user',
+          userEntityRef: options.credentials.principal.userEntityRef,
+        };
+      } else if (this.#auth.isPrincipal(options.credentials, 'service')) {
+        permissionIdentity = {
+          type: 'service',
+          subject: options.credentials.principal.subject,
+        };
+      }
+
+      return {
+        token,
+        permissionIdentity,
+      };
     }
 
-    return options;
+    return undefined;
   }
 
   async #getIncomingCredentials(
