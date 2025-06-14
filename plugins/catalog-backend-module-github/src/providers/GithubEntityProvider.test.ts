@@ -38,6 +38,7 @@ import {
 
 jest.mock('../lib/github', () => {
   return {
+    createGraphqlClient: jest.fn(),
     getOrganizationRepositories: jest.fn(),
   };
 });
