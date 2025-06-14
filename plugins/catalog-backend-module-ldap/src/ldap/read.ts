@@ -143,9 +143,12 @@ export async function readLdapUsers(
         return;
       }
 
-      mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
-        ensureItems(userMemberOf, myDn, vs);
-      });
+      if (!cfg.parsing?.skipMemberOf) {
+        mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
+          ensureItems(userMemberOf, myDn, vs);
+        });
+      }
+
       entities.push(entity);
     });
   }
@@ -277,9 +280,12 @@ export async function readLdapGroups(
       mapReferencesAttr(entry, vendor, map.memberOf, (myDn, vs) => {
         ensureItems(groupMemberOf, myDn, vs);
       });
-      mapReferencesAttr(entry, vendor, map.members, (myDn, vs) => {
-        ensureItems(groupMember, myDn, vs);
-      });
+
+      if (!cfg.parsing?.skipMembers) {
+        mapReferencesAttr(entry, vendor, map.members, (myDn, vs) => {
+          ensureItems(groupMember, myDn, vs);
+        });
+      }
 
       groups.push(entity);
     });

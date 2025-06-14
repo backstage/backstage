@@ -90,6 +90,12 @@ export type UserConfig = {
   // Only the scope, filter, attributes, and paged fields are supported. The
   // default is scope "one" and attributes "*" and "+".
   options: SearchOptions;
+
+  // Additional parsing config
+  parsing?: {
+    // Whether to skip the memberOf attribute on the users to power the relations of users and groups
+    skipMemberOf?: boolean;
+  };
   // JSON paths (on a.b.c form) and hard coded values to set on those paths
   set?: { [path: string]: JsonValue };
   // Mappings from well known entity fields, to LDAP attribute names
@@ -114,7 +120,7 @@ export type UserConfig = {
     picture?: string;
     // The name of the attribute that shall be used for the values of the
     // spec.memberOf field of the entity. Defaults to "memberOf".
-    memberOf: string;
+    memberOf: string | null;
   };
 };
 
@@ -129,6 +135,12 @@ export type GroupConfig = {
   // The search options to use.
   // Only the scope, filter, attributes, and paged fields are supported.
   options: SearchOptions;
+
+  // Additional parsing config
+  parsing?: {
+    // Whether to skip the members attribute on the groups to power the relations of users and groups
+    skipMembers?: boolean;
+  };
   // JSON paths (on a.b.c form) and hard coded values to set on those paths
   set?: { [path: string]: JsonValue };
   // Mappings from well known entity fields, to LDAP attribute names
@@ -156,10 +168,10 @@ export type GroupConfig = {
     picture?: string;
     // The name of the attribute that shall be used for the values of the
     // spec.parent field of the entity. Defaults to "memberOf".
-    memberOf: string;
+    memberOf: string | null;
     // The name of the attribute that shall be used for the values of the
     // spec.children field of the entity. Defaults to "member".
-    members: string;
+    members: string | null;
   };
 };
 
