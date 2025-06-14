@@ -105,6 +105,8 @@ const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
         alignItems: 'center',
         height: 48,
         cursor: 'pointer',
+        position: 'relative',
+        overflow: 'hidden',
       },
       buttonItem: {
         background: 'none',
@@ -154,6 +156,7 @@ const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
         alignItems: 'center',
         justifyContent: 'center',
         lineHeight: '0',
+        flexShrink: 0,
       },
       searchRoot: {
         marginBottom: 12,
@@ -276,6 +279,7 @@ type SidebarItemBaseProps = {
   disableHighlight?: boolean;
   className?: string;
   noTrack?: boolean;
+  adornment?: React.ReactNode;
   onClick?: (ev: MouseEvent) => void;
 };
 
@@ -383,6 +387,7 @@ const SidebarItemBase = forwardRef<
     disableHighlight = false,
     onClick,
     noTrack,
+    adornment,
     children,
     className,
     ...navLinkProps
@@ -432,6 +437,7 @@ const SidebarItemBase = forwardRef<
           {text}
         </Typography>
       )}
+      {adornment}
       <div className={classes.secondaryAction}>{children}</div>
     </>
   );
