@@ -228,6 +228,13 @@ describe.each(databases.eachSupportedId())(
         ]);
       });
 
+      it('should return null value for user for broadcast notifications', async () => {
+        await storage.saveBroadcast({ ...testNotification1, read: new Date() });
+        const notifications = await storage.getNotifications({ user });
+        expect(notifications).toHaveLength(1);
+        expect(notifications[0].user).toBeNull();
+      });
+
       it('should return read notifications for user', async () => {
         await storage.saveNotification(testNotification1);
         await storage.saveBroadcast(testNotification2);
@@ -298,7 +305,7 @@ describe.each(databases.eachSupportedId())(
           user: otherUser,
         });
         expect(otherUserNotifications.map(idOnly)).toEqual([id0, id2]);
-        expect(otherUserNotifications[1].user).toBe(otherUser);
+        expect(otherUserNotifications[1].user).toBeNull();
       });
 
       it('should allow searching for notifications', async () => {
@@ -635,7 +642,7 @@ describe.each(databases.eachSupportedId())(
         expect(notification?.user).toBeNull();
         await storage.markRead({ ids: [id1], user });
         notification = await storage.getNotification({ id: id1, user });
-        expect(notification?.user).toBe(user);
+        expect(notification?.user).toBeNull();
 
         const otherNotification = await storage.getNotification({
           id: id1,
