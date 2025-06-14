@@ -20,7 +20,7 @@ import {
   readAccessRestrictionsFromConfig,
   readStringOrStringArrayFromConfig,
 } from './helpers';
-import { AccessRestriptionsMap, TokenHandler } from './types';
+import { AccessRestrictionsMap, TokenHandler } from './types';
 
 /**
  * Handles `type: jwks` access.
@@ -35,10 +35,15 @@ export class JWKSHandler implements TokenHandler {
     subjectPrefix?: string;
     url: URL;
     jwks: JWTVerifyGetKey;
-    allAccessRestrictions?: AccessRestriptionsMap;
+    allAccessRestrictions?: AccessRestrictionsMap;
   }> = [];
 
-  add(config: Config) {
+  constructor(configs: Config[]) {
+    for (const config of configs) {
+      this.add(config);
+    }
+  }
+  private add(config: Config) {
     if (!config.getString('options.url').match(/^\S+$/)) {
       throw new Error(
         'Illegal JWKS URL, must be a set of non-space characters',
@@ -68,6 +73,7 @@ export class JWKSHandler implements TokenHandler {
       url,
       allAccessRestrictions,
     });
+    return this;
   }
 
   async verifyToken(token: string) {

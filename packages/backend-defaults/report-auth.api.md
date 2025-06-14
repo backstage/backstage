@@ -4,14 +4,29 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
+
+// @public (undocumented)
+export type AccessRestrictionsMap = Map<
+  string, // plugin ID
+  BackstagePrincipalAccessRestrictions
+>;
 
 // @public
 export const authServiceFactory: ServiceFactory<
   AuthService,
   'plugin',
   'singleton'
+>;
+
+// @public
+export const externalTokenTypeHandlersRef: ServiceRef<
+  TokenTypeHandler,
+  'plugin',
+  'multiton'
 >;
 
 // @public
@@ -43,6 +58,25 @@ export const pluginTokenHandlerDecoratorServiceRef: ServiceRef<
   'plugin',
   'singleton'
 >;
+
+// @public
+export interface TokenHandler {
+  // (undocumented)
+  verifyToken(token: string): Promise<
+    | {
+        subject: string;
+        allAccessRestrictions?: AccessRestrictionsMap;
+      }
+    | undefined
+  >;
+}
+
+// @public
+export interface TokenTypeHandler {
+  factory: (configs: Config[]) => TokenHandler | TokenHandler[];
+  // (undocumented)
+  type: string;
+}
 
 // (No @packageDocumentation comment for this package)
 ```
