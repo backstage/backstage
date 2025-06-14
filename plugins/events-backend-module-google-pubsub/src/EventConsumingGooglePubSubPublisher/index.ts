@@ -14,19 +14,4 @@
  * limitations under the License.
  */
 
-import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
-import { eventsModuleEventConsumingGooglePubSubPublisher } from './EventConsumingGooglePubSubPublisher';
-import { eventsModuleGooglePubsubConsumingEventPublisher } from './GooglePubSubConsumingEventPublisher';
-
-/**
- * The google-pubsub backend module for the events plugin.
- *
- * @packageDocumentation
- */
-
-export default createBackendFeatureLoader({
-  *loader() {
-    yield eventsModuleGooglePubsubConsumingEventPublisher;
-    yield eventsModuleEventConsumingGooglePubSubPublisher;
-  },
-});
+export { eventsModuleEventConsumingGooglePubSubPublisher } from './module';

@@ -28,20 +28,21 @@ backend.add(import('../src'));
 
 backend.add(
   createBackendPlugin({
-    pluginId: 'example-event-consumer',
+    pluginId: 'example-event-drivers',
     register(reg) {
       reg.registerInit({
         deps: {
           events: eventsServiceRef,
           logger: coreServices.logger,
+          scheduler: coreServices.scheduler,
         },
-        async init({ events, logger }) {
-          events.subscribe({
-            id: 'example-subscription',
-            topics: ['example-topic'],
+        async init({ events, logger, scheduler }) {
+          await events.subscribe({
+            id: 'inbox-subscription',
+            topics: ['inbox-topic'],
             async onEvent(event) {
               logger.info(
-                `Received event: ${JSON.stringify(
+                `Received inbox event: ${JSON.stringify(
                   {
                     topic: event.topic,
                     payload: event.eventPayload,
@@ -51,6 +52,24 @@ backend.add(
                   2,
                 )}`,
               );
+            },
+          });
+
+          await scheduler.scheduleTask({
+            id: 'outbox-task',
+            scope: 'local',
+            frequency: { seconds: 5 },
+            timeout: { seconds: 5 },
+            fn: async () => {
+              await events.publish({
+                topic: 'outbox-topic',
+                eventPayload: {
+                  message: 'Hello, world!',
+                },
+                metadata: {
+                  source: 'outbox-task',
+                },
+              });
             },
           });
         },

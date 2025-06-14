@@ -17,7 +17,7 @@
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
-import { Message } from '@google-cloud/pubsub';
+import { EventParams } from '@backstage/plugin-events-node';
 import { createPatternResolver } from '../util/createPatternResolver';
 import { SubscriptionTask } from './types';
 
@@ -25,7 +25,7 @@ export function readSubscriptionTasksFromConfig(
   rootConfig: RootConfigService,
 ): SubscriptionTask[] {
   const subscriptionsConfig = rootConfig.getOptionalConfig(
-    'events.modules.googlePubSub.googlePubSubConsumingEventPublisher.subscriptions',
+    'events.modules.googlePubSub.eventConsumingGooglePubSubPublisher.subscriptions',
   );
   if (!subscriptionsConfig) {
     return [];
@@ -39,50 +39,55 @@ export function readSubscriptionTasksFromConfig(
     }
 
     const config = subscriptionsConfig.getConfig(subscriptionId);
-    const { project, subscription } = readSubscriptionName(config);
+    const sourceTopics = readSourceTopics(config);
     const mapToTopic = readTopicMapper(config);
-    const mapToMetadata = readMetadataMapper(config);
+    const mapToAttributes = readAttributeMapper(config);
 
     return {
       id: subscriptionId,
-      project,
-      subscription,
+      sourceTopics: sourceTopics,
+      targetTopicPattern: config.getString('targetTopicName'),
       mapToTopic,
-      mapToMetadata,
+      mapToAttributes,
     };
   });
 }
 
-function readSubscriptionName(config: Config): {
-  project: string;
-  subscription: string;
-} {
-  const subscriptionName = config.getString('subscriptionName');
-  const parts = subscriptionName.match(
-    /^projects\/([^/]+)\/subscriptions\/(.+)$/,
-  );
-  if (!parts) {
-    throw new InputError(
-      `Expected Google Pub/Sub 'subscriptionName' to be on the form 'projects/PROJECT_ID/subscriptions/SUBSCRIPTION_ID' but got '${subscriptionName}'`,
-    );
+function readSourceTopics(config: Config): string[] {
+  if (Array.isArray(config.getOptional('sourceTopic'))) {
+    return config.getStringArray('sourceTopic');
   }
-  return {
-    project: parts[1],
-    subscription: parts[2],
-  };
+  return [config.getString('sourceTopic')];
 }
 
 /**
- * Handles the `targetTopic` configuration field.
+ * Handles the `targetTopicName` configuration field.
  */
 function readTopicMapper(
   config: Config,
-): (message: Message) => string | undefined {
-  const targetTopicPattern = config.getString('targetTopic');
+): (event: EventParams) => { project: string; topic: string } | undefined {
+  const regex = /^projects\/([^/]+)\/topics\/(.+)$/;
+
+  const targetTopicPattern = config.getString('targetTopicName');
+  let parts = targetTopicPattern.match(regex);
+  if (!parts) {
+    throw new InputError(
+      `Expected Google Pub/Sub 'targetTopicName' to be on the form 'projects/PROJECT_ID/topics/TOPIC_ID' but got '${targetTopicPattern}'`,
+    );
+  }
+
   const patternResolver = createPatternResolver(targetTopicPattern);
-  return message => {
+
+  return event => {
     try {
-      return patternResolver({ message });
+      parts = patternResolver({ event }).match(regex);
+      if (!parts) {
+        return undefined;
+      }
+      return {
+        project: parts[1],
+        topic: parts[2],
+      };
     } catch {
       // could not map to a topic
       return undefined;
@@ -91,25 +96,28 @@ function readTopicMapper(
 }
 
 /**
- * Handles the `eventMetadata` configuration field.
+ * Handles the `messageAttributes` configuration field.
  */
-function readMetadataMapper(
+function readAttributeMapper(
   config: Config,
-): (message: Message) => Record<string, string> {
+): (event: EventParams) => Record<string, string> {
   const setters = new Array<
-    (options: { message: Message; metadata: Record<string, string> }) => void
+    (options: {
+      event: EventParams;
+      attributes: Record<string, string>;
+    }) => void
   >();
 
-  const eventMetadata = config.getOptionalConfig('eventMetadata');
+  const eventMetadata = config.getOptionalConfig('messageAttributes');
   if (eventMetadata) {
     for (const key of eventMetadata?.keys() ?? []) {
       const valuePattern = eventMetadata.getString(key);
       const patternResolver = createPatternResolver(valuePattern);
-      setters.push(({ message, metadata }) => {
+      setters.push(({ event, attributes }) => {
         try {
-          const value = patternResolver({ message });
+          const value = patternResolver({ event });
           if (value) {
-            metadata[key] = value;
+            attributes[key] = value;
           }
         } catch {
           // ignore silently, keep original
@@ -118,12 +126,20 @@ function readMetadataMapper(
     }
   }
 
-  return message => {
-    const result: Record<string, string> = {
-      ...message.attributes,
-    };
+  return event => {
+    const result: Record<string, string> = {};
+    for (const [key, value] of Object.entries(event.metadata ?? {})) {
+      if (value) {
+        if (typeof value === 'string') {
+          result[key] = value;
+        } else if (Array.isArray(value) && value.length > 0) {
+          // Google Pub/Sub does not support array values
+          result[key] = value.join(',');
+        }
+      }
+    }
     for (const setter of setters) {
-      setter({ message, metadata: result });
+      setter({ event, attributes: result });
     }
     return result;
   };
