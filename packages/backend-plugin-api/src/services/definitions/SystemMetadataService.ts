@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '@backstage/backend-plugin-api';
+/**
+ * @public
+ */
+export interface BackstageInstance {
+  internalUrl: string;
+  externalUrl: string;
+}
 
 /**
- * EXPERIMENTAL: Instance metadata service.
- *
- * @alpha
+ * @public
  */
-export const instanceMetadataServiceRef = createServiceRef<
-  import('./services/definitions/InstanceMetadataService').InstanceMetadataService
->({
-  id: 'core.instanceMetadata',
-  scope: 'root',
-});
-
-export type {
-  BackendFeatureMeta,
-  InstanceMetadataService,
-} from './services/definitions/InstanceMetadataService';
+export interface SystemMetadataService {
+  introspect(): Promise<{ instances: BackstageInstance[] }>;
+}
