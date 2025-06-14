@@ -56,32 +56,37 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
         style={style}
         ref={ref}
       >
-        <div
-          className="canon-TextFieldLabelWrapper"
-          data-hidden={hideLabelAndDescription}
-        >
-          {label && (
-            <Field.Label className="canon-TextFieldLabel" data-size={labelSize}>
-              {label}
-              {secondaryLabelText && (
-                <span
-                  aria-hidden="true"
-                  className="canon-TextFieldSecondaryLabel"
-                >
-                  ({secondaryLabelText})
-                </span>
-              )}
-            </Field.Label>
-          )}
-          {description && (
-            <Field.Description
-              className="canon-TextFieldDescription"
-              data-size={labelSize}
-            >
-              {description}
-            </Field.Description>
-          )}
-        </div>
+        {label && (
+          <div
+            className="canon-TextFieldLabelWrapper"
+            data-hidden={hideLabelAndDescription}
+          >
+            {label && (
+              <Field.Label
+                className="canon-TextFieldLabel"
+                data-size={labelSize}
+              >
+                {label}
+                {secondaryLabelText && (
+                  <span
+                    aria-hidden="true"
+                    className="canon-TextFieldSecondaryLabel"
+                  >
+                    ({secondaryLabelText})
+                  </span>
+                )}
+              </Field.Label>
+            )}
+            {description && (
+              <Field.Description
+                className="canon-TextFieldDescription"
+                data-size={labelSize}
+              >
+                {description}
+              </Field.Description>
+            )}
+          </div>
+        )}
         <div className="canon-TextFieldInputWrapper" data-size={responsiveSize}>
           {icon && (
             <div
