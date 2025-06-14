@@ -16,7 +16,7 @@
 
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { stringifyEntityRef, Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { examples } from './register.examples';
 import { CatalogService } from '@backstage/plugin-catalog-node';
@@ -25,6 +25,8 @@ const id = 'catalog:register';
 
 /**
  * Registers entities from a catalog descriptor file in the workspace into the software catalog.
+ * TODO: Move this to the `scaffolder-backend-module-catalog` package and deprecate this.
+ *
  * @public
  */
 export function createCatalogRegisterAction(options: {
