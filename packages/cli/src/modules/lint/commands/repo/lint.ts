@@ -20,9 +20,9 @@ import { Command, OptionValues } from 'commander';
 import { createHash } from 'crypto';
 import { relative as relativePath } from 'path';
 import {
-  PackageGraph,
   BackstagePackageJson,
   Lockfile,
+  PackageGraph,
 } from '@backstage/cli-node';
 import { paths } from '../../../../lib/paths';
 import { runWorkerQueueThreads } from '../../../../lib/parallel';
@@ -54,6 +54,12 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       ref: opts.since,
       analyzeLockfile: true,
     });
+  }
+
+  if (process.env.EXPERIMENTAL_OXLINT) {
+    console.log(
+      `⚠️  WARNING: Using experimental OXLint. This may change or break at any time.`,
+    );
   }
 
   // Packages are ordered from most to least number of dependencies, as a
@@ -143,13 +149,18 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         // Bit of a hack to make file resolutions happen from the correct directory
         // since some lint rules don't respect the cwd of ESLint
         process.cwd = () => fullDir;
-
-        const start = Date.now();
         const eslint = new ESLint({
           cwd: fullDir,
           fix,
           extensions: ['js', 'jsx', 'ts', 'tsx', 'mjs', 'cjs'],
+          overrideConfig: process.env.EXPERIMENTAL_OXLINT
+            ? {
+                extends: ['plugin:oxlint/recommended'],
+              }
+            : undefined,
         });
+
+        const start = Date.now();
 
         let sha: string | undefined = undefined;
         if (shouldCache) {
@@ -186,6 +197,36 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
             console.log(`Skipped ${relativeDir} due to cache hit`);
             return { relativeDir, sha, failed: false };
           }
+        }
+
+        if (process.env.EXPERIMENTAL_OXLINT) {
+          const executable = `${rootDir}/node_modules/.bin/oxlint`;
+
+          return new Promise((resolve, reject) => {
+            const { spawn } =
+              require('child_process') as typeof import('child_process');
+            const params = [];
+            if (fix) {
+              params.push('--fix');
+            }
+
+            const child = spawn(executable, params, {
+              cwd: fullDir,
+              stdio: 'inherit',
+            });
+
+            child.on('close', code => {
+              if (code !== 0) {
+                reject(new Error(`OXLint failed with code ${code}`));
+              } else {
+                resolve({
+                  relativeDir,
+                  sha: parentHash,
+                  failed: false,
+                });
+              }
+            });
+          });
         }
 
         const formatter = await eslint.loadFormatter(format);

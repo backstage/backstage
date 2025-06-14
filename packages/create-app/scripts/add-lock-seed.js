@@ -22,9 +22,9 @@ const YARN_REGISTRY = 'https://registry.yarnpkg.com';
 const NPM_REGISTRY = 'https://registry.npmjs.org';
 const SEED_FILE = 'seed-yarn.lock';
 
-function formatLockEntry(package, query, version, distData) {
-  let header = `${package}@${query}`;
-  if (package.includes('@')) {
+function formatLockEntry(packageName, query, version, distData) {
+  let header = `${packageName}@${query}`;
+  if (packageName.includes('@')) {
     header = `"${header}"`;
   }
   header += ':';
@@ -41,8 +41,8 @@ function formatLockEntry(package, query, version, distData) {
   ].join('\n');
 }
 
-async function main(package, query, version) {
-  if (!package || !query || !version) {
+async function main(packageName, query, version) {
+  if (!packageName || !query || !version) {
     console.error(
       `Usage: yarn add-lock-seed <package-name> <query> <version>
 
@@ -51,17 +51,17 @@ Example: yarn lock-seed @backstage/cli ^1.0.0 1.2.3`,
     return false;
   }
 
-  const res = await fetch(`${YARN_REGISTRY}/${package}/${version}`);
+  const res = await fetch(`${YARN_REGISTRY}/${packageName}/${version}`);
   if (!res.ok) {
     console.error(
-      `Failed to fetch package info for ${package} v${version}: ${await res.text()}`,
+      `Failed to fetch package info for ${packageName} v${version}: ${await res.text()}`,
     );
     return false;
   }
 
   const data = await res.json();
 
-  const entry = formatLockEntry(package, query, version, data.dist);
+  const entry = formatLockEntry(packageName, query, version, data.dist);
 
   const lockSeedPath = path.resolve(__dirname, `../${SEED_FILE}`);
 
