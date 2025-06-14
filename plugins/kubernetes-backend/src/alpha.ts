@@ -16,6 +16,8 @@
 
 import { kubernetesPlugin as feature } from './plugin';
 
+export * from './permissions';
+
 /** @alpha */
 const _feature = feature;
 export default _feature;

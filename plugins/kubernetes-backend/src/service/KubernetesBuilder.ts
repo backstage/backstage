@@ -20,9 +20,13 @@ import {
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
   kubernetesClustersReadPermission,
   kubernetesPermissions,
+  kubernetesResourcesPermissions,
   kubernetesResourcesReadPermission,
 } from '@backstage/plugin-kubernetes-common';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import {
+  Permission,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -48,6 +52,8 @@ import {
   DiscoveryService,
   HttpAuthService,
   LoggerService,
+  PermissionsRegistryService,
+  PermissionsService,
 } from '@backstage/backend-plugin-api';
 import {
   AuthenticationStrategy,
@@ -75,7 +81,17 @@ import {
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesProxy } from './KubernetesProxy';
-import { requirePermission } from '../auth/requirePermission';
+import {
+  requirePermission,
+  requireResourcePermission,
+} from '../permissions/authorizer';
+import { KUBERNETES_RESOURCES_RESOURCE_TYPE } from '@backstage/plugin-kubernetes-common';
+
+import { permissionRules as kubernetesPermissionRules } from '../permissions';
+import {
+  kubernetesPermissionResourceRef,
+  KubernetesPermissionRuleInput,
+} from '@backstage/plugin-kubernetes-node/alpha';
 
 /**
  * @deprecated Please migrate to the new backend system as this will be removed in the future.
@@ -86,7 +102,8 @@ export interface KubernetesEnvironment {
   config: Config;
   catalogApi: CatalogApi;
   discovery: DiscoveryService;
-  permissions: PermissionEvaluator;
+  permissions: PermissionsService | PermissionEvaluator;
+  permissionsRegistry?: PermissionsRegistryService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
 }
@@ -121,17 +138,23 @@ export class KubernetesBuilder {
   private serviceLocator?: KubernetesServiceLocator;
   private proxy?: KubernetesProxy;
   private authStrategyMap?: { [key: string]: AuthenticationStrategy };
+  private readonly permissions: Permission[];
+  private readonly permissionRules: KubernetesPermissionRuleInput[];
 
   static createBuilder(env: KubernetesEnvironment) {
     return new KubernetesBuilder(env);
   }
 
-  constructor(protected readonly env: KubernetesEnvironment) {}
+  constructor(protected readonly env: KubernetesEnvironment) {
+    this.permissions = [...kubernetesPermissions];
+    this.permissionRules = Object.values(kubernetesPermissionRules);
+  }
 
   public async build(): KubernetesBuilderReturn {
     const logger = this.env.logger;
     const config = this.env.config;
     const permissions = this.env.permissions;
+    const permissionsRegistry = this.env.permissionsRegistry;
 
     logger.info('Initializing Kubernetes backend');
 
@@ -184,9 +207,10 @@ export class KubernetesBuilder {
       clusterSupplier,
       this.env.catalogApi,
       proxy,
-      permissions,
       auth,
       httpAuth,
+      permissions,
+      permissionsRegistry,
     );
 
     return {
@@ -223,6 +247,20 @@ export class KubernetesBuilder {
 
   public setServiceLocator(serviceLocator?: KubernetesServiceLocator) {
     this.serviceLocator = serviceLocator;
+    return this;
+  }
+
+  public addPermissions(...permissions: Array<Permission | Array<Permission>>) {
+    this.permissions.push(...permissions.flat());
+    return this;
+  }
+
+  public addPermissionRules(
+    ...permissionRules: Array<
+      KubernetesPermissionRuleInput | Array<KubernetesPermissionRuleInput>
+    >
+  ) {
+    this.permissionRules.push(...permissionRules.flat());
     return this;
   }
 
@@ -381,27 +419,53 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
     catalogApi: CatalogApi,
     proxy: KubernetesProxy,
-    permissionApi: PermissionEvaluator,
     authService: AuthService,
     httpAuth: HttpAuthService,
+    permissionApi: PermissionsService | PermissionEvaluator,
+    permissionsRegistry?: PermissionsRegistryService,
   ): express.Router {
     const logger = this.env.logger;
+
     const router = Router();
     router.use('/proxy', proxy.createRequestHandler({ permissionApi }));
     router.use(express.json());
-    router.use(
-      createPermissionIntegrationRouter({
+
+    let permissionIntegrationRouter:
+      | ReturnType<typeof createPermissionIntegrationRouter>
+      | undefined;
+    if (permissionsRegistry) {
+      permissionsRegistry.addResourceType({
+        resourceRef: kubernetesPermissionResourceRef,
+        permissions: kubernetesResourcesPermissions,
+        rules: Object.values(kubernetesPermissionRules),
+      });
+      permissionsRegistry.addPermissions(kubernetesPermissions);
+    } else {
+      permissionIntegrationRouter = createPermissionIntegrationRouter({
+        resources: [
+          {
+            resourceType: KUBERNETES_RESOURCES_RESOURCE_TYPE,
+            permissions: kubernetesResourcesPermissions,
+            rules: Object.values(kubernetesPermissionRules),
+          },
+        ],
         permissions: kubernetesPermissions,
-      }),
-    );
+      });
+    }
+
+    if (permissionIntegrationRouter) {
+      router.use(permissionIntegrationRouter);
+    }
+
     // @deprecated
     router.post('/services/:serviceId', async (req, res) => {
-      await requirePermission(
+      await requireResourcePermission(
         permissionApi,
         kubernetesResourcesReadPermission,
         httpAuth,
         req,
       );
+
       const serviceId = req.params.serviceId;
       const requestBody: ObjectsByEntityRequest = req.body;
       try {
@@ -422,12 +486,14 @@ export class KubernetesBuilder {
     });
 
     router.get('/clusters', async (req, res) => {
+      // Extract entityRef from query parameters if available
       await requirePermission(
         permissionApi,
         kubernetesClustersReadPermission,
         httpAuth,
         req,
       );
+
       const credentials = await httpAuth.credentials(req);
       const clusterDetails = await this.fetchClusterDetails(clusterSupplier, {
         credentials,
@@ -488,7 +554,7 @@ export class KubernetesBuilder {
   ) {
     const clusterDetails = await clusterSupplier.getClusters(options);
 
-    this.env.logger.debug(
+    this.env.logger.info(
       `action=loadClusterDetails numOfClustersLoaded=${clusterDetails.length}`,
     );
 

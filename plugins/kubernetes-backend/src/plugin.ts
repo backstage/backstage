@@ -40,6 +40,13 @@ import {
   type KubernetesServiceLocatorExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
 
+import {
+  KubernetesPermissionExtensionPoint,
+  kubernetesPermissionExtensionPoint,
+  KubernetesPermissionRuleInput,
+} from '@backstage/plugin-kubernetes-node/alpha';
+import { Permission } from '@backstage/plugin-permission-common';
+
 class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
   private objectsProvider: KubernetesObjectsProvider | undefined;
 
@@ -137,6 +144,33 @@ class AuthStrategy implements KubernetesAuthStrategyExtensionPoint {
   }
 }
 
+class KubernetesPermissionExtensionPointImpl
+  implements KubernetesPermissionExtensionPoint
+{
+  #permissions = new Array<Permission>();
+  #permissionRules = new Array<KubernetesPermissionRuleInput>();
+
+  addPermissions(...permission: Array<Permission | Array<Permission>>): void {
+    this.#permissions.push(...permission.flat());
+  }
+
+  addPermissionRules(
+    ...rules: Array<
+      KubernetesPermissionRuleInput | Array<KubernetesPermissionRuleInput>
+    >
+  ): void {
+    this.#permissionRules.push(...rules.flat());
+  }
+
+  get permissions() {
+    return this.#permissions;
+  }
+
+  get permissionRules() {
+    return this.#permissionRules;
+  }
+}
+
 /**
  * This is the backend plugin that provides the Kubernetes integration.
  * @public
@@ -149,6 +183,7 @@ export const kubernetesPlugin = createBackendPlugin({
     const extPointAuthStrategy = new AuthStrategy();
     const extPointFetcher = new Fetcher();
     const extPointServiceLocator = new ServiceLocator();
+    const permissionExtensions = new KubernetesPermissionExtensionPointImpl();
 
     env.registerExtensionPoint(
       kubernetesObjectsProviderExtensionPoint,
@@ -171,49 +206,61 @@ export const kubernetesPlugin = createBackendPlugin({
       extPointServiceLocator,
     );
 
+    env.registerExtensionPoint(
+      kubernetesPermissionExtensionPoint,
+      permissionExtensions,
+    );
+
     env.registerInit({
       deps: {
-        http: coreServices.httpRouter,
+        httpRouter: coreServices.httpRouter,
         logger: coreServices.logger,
         config: coreServices.rootConfig,
         discovery: coreServices.discovery,
         catalogApi: catalogServiceRef,
         permissions: coreServices.permissions,
+        permissionsRegistry: coreServices.permissionsRegistry,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
       },
       async init({
-        http,
+        httpRouter,
         logger,
         config,
         discovery,
         catalogApi,
-        permissions,
         auth,
         httpAuth,
+        permissions,
+        permissionsRegistry,
       }) {
         if (config.has('kubernetes')) {
           // TODO: expose all of the customization & extension points of the builder here
+
           const builder: KubernetesBuilder = KubernetesBuilder.createBuilder({
             logger,
             config,
             catalogApi,
-            permissions,
             discovery,
+            permissions,
+            permissionsRegistry,
             auth,
             httpAuth,
           })
             .setObjectsProvider(extPointObjectsProvider.getObjectsProvider())
             .setClusterSupplier(extPointClusterSuplier.getClusterSupplier())
             .setFetcher(extPointFetcher.getFetcher())
-            .setServiceLocator(extPointServiceLocator.getServiceLocator());
+            .setServiceLocator(extPointServiceLocator.getServiceLocator())
+            .addPermissions(...permissionExtensions.permissions)
+            .addPermissionRules(...permissionExtensions.permissionRules);
 
           AuthStrategy.addAuthStrategiesFromArray(
             extPointAuthStrategy.getAuthenticationStrategies(),
             builder,
           );
+
           const { router } = await builder.build();
-          http.use(router);
+          httpRouter.use(router);
         } else {
           logger.warn(
             'Failed to initialize kubernetes backend: valid kubernetes config is missing',

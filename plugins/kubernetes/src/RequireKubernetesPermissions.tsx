@@ -22,19 +22,25 @@ import { usePermission } from '@backstage/plugin-permission-react';
 import { WarningPanel } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { kubernetesTranslationRef } from './alpha/translation';
+import { Entity } from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export type RequireKubernetesPermissionProps = {
   children: ReactNode;
+  entity: Entity;
 };
 
 export function RequireKubernetesPermissions(
   props: RequireKubernetesPermissionProps,
 ): JSX.Element | null {
+  const resourceRef = stringifyEntityRef(props.entity);
+
   const kubernetesClustersPermissionResult = usePermission({
     permission: kubernetesClustersReadPermission,
   });
   const kubernetesResourcesPermissionResult = usePermission({
     permission: kubernetesResourcesReadPermission,
+    resourceRef: resourceRef,
   });
   const { t } = useTranslationRef(kubernetesTranslationRef);
 

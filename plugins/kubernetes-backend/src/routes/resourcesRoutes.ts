@@ -24,7 +24,7 @@ import express, { Request } from 'express';
 import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
 import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { requirePermission } from '../auth/requirePermission';
+import { requireResourcePermission } from '../permissions/authorizer';
 import { kubernetesResourcesReadPermission } from '@backstage/plugin-kubernetes-common';
 
 export const addResourceRoutesToRouter = (
@@ -66,13 +66,13 @@ export const addResourceRoutesToRouter = (
   };
 
   router.post('/resources/workloads/query', async (req, res) => {
-    await requirePermission(
+    const entity = await getEntityByReq(req);
+    await requireResourcePermission(
       permissionApi,
       kubernetesResourcesReadPermission,
       httpAuth,
       req,
     );
-    const entity = await getEntityByReq(req);
     const response = await objectsProvider.getKubernetesObjectsByEntity(
       {
         entity,
@@ -84,7 +84,7 @@ export const addResourceRoutesToRouter = (
   });
 
   router.post('/resources/custom/query', async (req, res) => {
-    await requirePermission(
+    await requireResourcePermission(
       permissionApi,
       kubernetesResourcesReadPermission,
       httpAuth,

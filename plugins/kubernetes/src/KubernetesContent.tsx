@@ -65,7 +65,7 @@ export const KubernetesContent = ({
   return (
     <Page themeId="tool">
       <Content>
-        <RequireKubernetesPermissions>
+        <RequireKubernetesPermissions entity={entity}>
           <DetectedErrorsContext.Provider
             value={[...detectedErrors.values()].flat()}
           >
