@@ -1,5 +1,19 @@
 # @backstage/plugin-user-settings
 
+## 0.8.23-next.3
+
+### Patch Changes
+
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8-next.0
+  - @backstage/core-app-api@1.17.1-next.0
+  - @backstage/core-compat-api@0.4.3-next.3
+  - @backstage/core-components@0.17.3-next.1
+  - @backstage/frontend-plugin-api@0.10.3-next.2
+  - @backstage/plugin-catalog-react@1.19.0-next.3
+  - @backstage/plugin-signals-react@0.0.14-next.0
+
 ## 0.8.23-next.2
 
 ### Patch Changes

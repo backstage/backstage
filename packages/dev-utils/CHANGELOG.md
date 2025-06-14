@@ -1,5 +1,17 @@
 # @backstage/dev-utils
 
+## 1.1.11-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8-next.0
+  - @backstage/app-defaults@1.6.3-next.1
+  - @backstage/core-app-api@1.17.1-next.0
+  - @backstage/core-components@0.17.3-next.1
+  - @backstage/integration-react@1.2.8-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.3
+
 ## 1.1.11-next.2
 
 ### Patch Changes

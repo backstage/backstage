@@ -1,5 +1,13 @@
 # @backstage/core-plugin-api
 
+## 1.10.8-next.0
+
+### Patch Changes
+
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- Updated dependencies
+  - @backstage/config@1.3.2
+
 ## 1.10.7
 
 ### Patch Changes

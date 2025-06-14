@@ -1,5 +1,16 @@
 # @backstage/plugin-events-backend
 
+## 0.5.3-next.2
+
+### Patch Changes
+
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+  - @backstage/backend-openapi-utils@0.5.4-next.1
+  - @backstage/config@1.3.2
+
 ## 0.5.3-next.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/canon
 
+## 0.5.0-next.3
+
+### Minor Changes
+
+- c49e335: TextField in Canon now has multiple label sizes as well as the capacity to hide label and description but still make them available for screen readers.
+
 ## 0.5.0-next.2
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend
 
+## 2.0.1-next.3
+
+### Patch Changes
+
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+  - @backstage/plugin-permission-node@0.10.1-next.1
+  - @backstage/backend-openapi-utils@0.5.4-next.1
+  - @backstage/config@1.3.2
+
 ## 2.0.1-next.2
 
 ### Patch Changes
