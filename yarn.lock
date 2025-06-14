@@ -7023,6 +7023,9 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
+    "@xterm/addon-attach": "npm:^0.11.0"
+    "@xterm/addon-fit": "npm:^0.10.0"
+    "@xterm/xterm": "npm:^5.5.0"
     cronstrue: "npm:^2.32.0"
     jest-websocket-mock: "npm:^2.5.0"
     js-yaml: "npm:^4.1.0"
@@ -7034,9 +7037,6 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
     react-use: "npm:^17.4.0"
-    xterm: "npm:^5.3.0"
-    xterm-addon-attach: "npm:^0.9.0"
-    xterm-addon-fit: "npm:^0.8.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -7072,6 +7072,9 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
+    "@xterm/addon-attach": "npm:^0.11.0"
+    "@xterm/addon-fit": "npm:^0.10.0"
+    "@xterm/xterm": "npm:^5.5.0"
     cronstrue: "npm:^2.2.0"
     js-yaml: "npm:^4.0.0"
     kubernetes-models: "npm:^4.1.0"
@@ -7080,9 +7083,6 @@ __metadata:
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
-    xterm: "npm:^5.2.1"
-    xterm-addon-attach: "npm:^0.9.0"
-    xterm-addon-fit: "npm:^0.8.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -22365,6 +22365,31 @@ __metadata:
   version: 1.9.5
   resolution: "@xobotyi/scrollbar-width@npm:1.9.5"
   checksum: 10/026ccd174ec3ce032f42794c7e2ee9dab3cfee4f8f9d6ce4f2b4a2fe50cbf8be7406583fb2e203707c699690c5d40a13ee1611f1f67f6ceb01ac2a543acadc30
+  languageName: node
+  linkType: hard
+
+"@xterm/addon-attach@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "@xterm/addon-attach@npm:0.11.0"
+  peerDependencies:
+    "@xterm/xterm": ^5.0.0
+  checksum: 10/f11e7ba68b8b1064ce545ecbf2beeaf3ebc94622fa3ca77e0ca0b8e8834964f634ee3897c031376abc7242ddfd305a40b10aa7b3e8056bfa59055967251523b5
+  languageName: node
+  linkType: hard
+
+"@xterm/addon-fit@npm:^0.10.0":
+  version: 0.10.0
+  resolution: "@xterm/addon-fit@npm:0.10.0"
+  peerDependencies:
+    "@xterm/xterm": ^5.0.0
+  checksum: 10/8edfad561c0d0316c5883cbe2ce56109f105a2b2bf53b71d5f8c788e656a3205c1093a659dddcf4025a459e4b7ff8e07b6c6a19815c8711deeded560de5f1893
+  languageName: node
+  linkType: hard
+
+"@xterm/xterm@npm:^5.5.0":
+  version: 5.5.0
+  resolution: "@xterm/xterm@npm:5.5.0"
+  checksum: 10/d4cdc402de81a83a3e0ef93f38072cb8f54abe4d65865f2e29b92cbc2593f86d052f6b993895c9e5dec97f47548f504e90bcea0aad6845917c09b03f2f3a4629
   languageName: node
   linkType: hard
 
@@ -48852,31 +48877,6 @@ __metadata:
   version: 4.0.2
   resolution: "xtend@npm:4.0.2"
   checksum: 10/ac5dfa738b21f6e7f0dd6e65e1b3155036d68104e67e5d5d1bde74892e327d7e5636a076f625599dc394330a731861e87343ff184b0047fef1360a7ec0a5a36a
-  languageName: node
-  linkType: hard
-
-"xterm-addon-attach@npm:^0.9.0":
-  version: 0.9.0
-  resolution: "xterm-addon-attach@npm:0.9.0"
-  peerDependencies:
-    xterm: ^5.0.0
-  checksum: 10/70e5d3ecf139c04fae13c644b79c33858ef1a6e28dfe78f91dad3e34f5a155579029b87e91d1d016575acaf17f74e6c59402bde4bcff03461595bea0870f1ec1
-  languageName: node
-  linkType: hard
-
-"xterm-addon-fit@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "xterm-addon-fit@npm:0.8.0"
-  peerDependencies:
-    xterm: ^5.0.0
-  checksum: 10/5af2041b442f7c804eda2e6f62e3b68b5159b0ae6bd96e2aa8d85b26441df57291cbfed653d1196d4af5d9b94bfc39993df8b409a25c35e0d36bdaf6f5cdfe5f
-  languageName: node
-  linkType: hard
-
-"xterm@npm:^5.2.1, xterm@npm:^5.3.0":
-  version: 5.3.0
-  resolution: "xterm@npm:5.3.0"
-  checksum: 10/3690b6a6d744f1d2932279975bb8e6c786e70c675531045016ecfe0f9b7957e2fc6811b815335f3e0e84b40ffae654f6ee4afe55a5768534744497e62252dd50
   languageName: node
   linkType: hard
 
