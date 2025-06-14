@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export { rootLoggerServiceFactory } from './rootLoggerServiceFactory';
+export {
+  createRootLogger,
+  rootLoggerServiceFactory,
+} from './rootLoggerServiceFactory';
 export { WinstonLogger, type WinstonLoggerOptions } from './WinstonLogger';
