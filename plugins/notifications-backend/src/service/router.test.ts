@@ -29,8 +29,10 @@ import { NotificationSendOptions } from '@backstage/plugin-notifications-node';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { v4 as uuid } from 'uuid';
+import { DatabaseNotificationsStore } from '../database';
 
 const databases = TestDatabases.create();
+let store: DatabaseNotificationsStore;
 
 async function createDatabase(
   databaseId: TestDatabaseId,
@@ -83,6 +85,9 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
   beforeAll(async () => {
     database = await createDatabase(databaseId);
+    store = await DatabaseNotificationsStore.create({
+      database,
+    });
   });
 
   describe('POST /notifications', () => {
@@ -93,7 +98,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     beforeAll(async () => {
       const router = await createRouter({
         logger: mockServices.logger.mock(),
-        database,
+        store,
         signals: signalService,
         userInfo,
         config,
@@ -460,7 +465,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     beforeAll(async () => {
       const router = await createRouter({
         logger: mockServices.logger.mock(),
-        database,
+        store,
         signals: signalService,
         userInfo,
         config,
@@ -550,7 +555,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     beforeAll(async () => {
       const router = await createRouter({
         logger: mockServices.logger.mock(),
-        database,
+        store,
         signals: signalService,
         userInfo,
         config,
@@ -600,7 +605,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     beforeAll(async () => {
       const router = await createRouter({
         logger: mockServices.logger.mock(),
-        database,
+        store,
         signals: signalService,
         userInfo,
         config,
