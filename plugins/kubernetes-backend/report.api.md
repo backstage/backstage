@@ -363,6 +363,28 @@ export type KubernetesProxyOptions = {
 // @public @deprecated (undocumented)
 export type KubernetesServiceLocator = k8sAuthTypes.KubernetesServiceLocator;
 
+// @public (undocumented)
+export class MicrosoftEntraIdStrategy implements AuthenticationStrategy_2 {
+  constructor(
+    logger: LoggerService,
+    options: MicrosoftEntraIdStrategyOptions,
+    tokenCredential: TokenCredential,
+  );
+  // (undocumented)
+  getCredential(
+    clusterDetails: ClusterDetails_2,
+  ): Promise<KubernetesCredential_2>;
+  // (undocumented)
+  presentAuthMetadata(_authMetadata: AuthMetadata_2): AuthMetadata_2;
+  // (undocumented)
+  validateCluster(): Error[];
+}
+
+// @public (undocumented)
+export type MicrosoftEntraIdStrategyOptions = {
+  config: Config;
+};
+
 // @public @deprecated (undocumented)
 export type ObjectFetchParams = k8sAuthTypes.ObjectFetchParams;
 

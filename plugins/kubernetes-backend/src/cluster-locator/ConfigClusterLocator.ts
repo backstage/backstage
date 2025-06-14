@@ -20,6 +20,7 @@ import {
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
+  ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE,
 } from '@backstage/plugin-kubernetes-common';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { AuthenticationStrategy } from '../auth';
@@ -118,10 +119,17 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
     );
     const assumeRole = clusterConfig.getOptionalString('assumeRole');
     const externalId = clusterConfig.getOptionalString('externalId');
+    const microsoftEntraIdScope = clusterConfig.getOptionalString(
+      'microsoftEntraIdScope',
+    );
     const oidcTokenProvider =
       clusterConfig.getOptionalString('oidcTokenProvider');
 
-    return serviceAccountToken || assumeRole || externalId || oidcTokenProvider
+    return serviceAccountToken ||
+      assumeRole ||
+      externalId ||
+      oidcTokenProvider ||
+      microsoftEntraIdScope
       ? {
           ...(serviceAccountToken && { serviceAccountToken }),
           ...(assumeRole && {
@@ -132,6 +140,10 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
           }),
           ...(oidcTokenProvider && {
             [ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER]: oidcTokenProvider,
+          }),
+          ...(microsoftEntraIdScope && {
+            [ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE]:
+              microsoftEntraIdScope,
           }),
         }
       : undefined;

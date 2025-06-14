@@ -47,3 +47,25 @@ exports[`CatalogClusterLocator returns the cluster details provided by annotatio
   "url": "https://apiserver.com",
 }
 `;
+
+exports[`CatalogClusterLocator returns the microsoft authenticated cluster details provided by annotations 1`] = `
+{
+  "authMetadata": {
+    "kubernetes.io/api-server": "https://apiserver.com",
+    "kubernetes.io/api-server-certificate-authority": "caData",
+    "kubernetes.io/auth-provider": "microsoft",
+    "kubernetes.io/dashboard-app": "my-app",
+    "kubernetes.io/dashboard-url": "my-url",
+    "kubernetes.io/microsoft-entra-id-scope": "microsoft-entra-id/scope.verb",
+  },
+  "caData": "caData",
+  "dashboardApp": "my-app",
+  "dashboardParameters": undefined,
+  "dashboardUrl": "my-url",
+  "name": "owned",
+  "skipMetricsLookup": false,
+  "skipTLSVerify": false,
+  "title": undefined,
+  "url": "https://apiserver.com",
+}
+`;

@@ -63,6 +63,10 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
       'aks',
       new AksKubernetesAuthProvider(options.microsoftAuthApi),
     );
+    this.kubernetesAuthProviderMap.set(
+      'microsoft',
+      new ServerSideKubernetesAuthProvider(),
+    );
 
     if (options.oidcProviders) {
       Object.keys(options.oidcProviders).forEach(provider => {

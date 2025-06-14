@@ -131,3 +131,11 @@ export const ANNOTATION_KUBERNETES_AWS_CLUSTER_ID =
  */
 export const ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID =
   'kubernetes.io/aws-external-id';
+
+/**
+ * Annotation for specifying the microsoft entra id scope authorized by the Kubernetes cluster
+ *
+ * @public
+ */
+export const ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE =
+  'kubernetes.io/microsoft-entra-id-scope';
