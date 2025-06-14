@@ -138,7 +138,7 @@ export class ElasticSearchClientWrapper {
   // (undocumented)
   bulk(bulkOptions: {
     datasource: Readable;
-    onDocument: () => ElasticSearchIndexAction;
+    onDocument: (doc: any) => ElasticSearchIndexAction;
     refreshOnCompletion?: string | boolean;
   }): BulkHelper<BulkStats>;
   // (undocumented)
@@ -349,6 +349,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     indexPrefix: string,
     logger: LoggerService,
     batchSize: number,
+    batchKeyField?: string | undefined,
     highlightOptions?: ElasticSearchHighlightOptions,
     queryOptions?: ElasticSearchQueryConfig,
   );
@@ -394,6 +395,7 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   logger: LoggerService;
   elasticSearchClientWrapper: ElasticSearchClientWrapper;
   batchSize: number;
+  batchKeyField?: string;
   skipRefresh?: boolean;
 };
 

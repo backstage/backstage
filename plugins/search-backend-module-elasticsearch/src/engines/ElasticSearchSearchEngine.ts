@@ -142,6 +142,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     private readonly indexPrefix: string,
     private readonly logger: LoggerService,
     private readonly batchSize: number,
+    private readonly batchKeyField?: string,
     highlightOptions?: ElasticSearchHighlightOptions,
     queryOptions?: ElasticSearchQueryConfig,
   ) {
@@ -189,6 +190,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       logger,
       config.getOptionalNumber('search.elasticsearch.batchSize') ??
         DEFAULT_INDEXER_BATCH_SIZE,
+      config.getOptionalString('search.elasticsearch.batchKeyField'),
       config.getOptional<ElasticSearchHighlightOptions>(
         'search.elasticsearch.highlightOptions',
       ),
@@ -345,6 +347,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       elasticSearchClientWrapper: this.elasticSearchClientWrapper,
       logger: indexerLogger,
       batchSize: this.batchSize,
+      batchKeyField: this.batchKeyField,
       skipRefresh:
         (
           this
