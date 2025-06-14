@@ -540,3 +540,4 @@ scrollable
 severities
 intellij
 tsconfig
+submenu
