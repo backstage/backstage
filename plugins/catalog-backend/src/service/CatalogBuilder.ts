@@ -356,7 +356,7 @@ export class CatalogBuilder {
 
     return [
       new FileReaderProcessor(),
-      new UrlReaderProcessor({ reader, logger, config }),
+      new UrlReaderProcessor({ reader, logger }),
       new AnnotateLocationEntityProcessor({ integrations }),
     ];
   }
