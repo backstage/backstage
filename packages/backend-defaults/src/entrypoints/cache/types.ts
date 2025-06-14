@@ -29,11 +29,112 @@ export type RedisCacheStoreOptions = {
 };
 
 /**
+ * Configuration for a single Infinispan server.
+ * @public
+ */
+export interface InfinispanServerConfig {
+  host: string;
+  port: number;
+}
+
+/**
+ * SSL/TLS options for the Infinispan client.
+ * @public
+ */
+export interface InfinispanSslOptions {
+  enabled: boolean;
+  secureProtocol?: string | null;
+  caFile?: string | null;
+  clientCertificateFile?: string | null;
+  clientKeyFile?: string | null;
+  clientKeyPassword?: string | null;
+  sniHostname?: string | null;
+}
+
+/**
+ * Authentication options for the Infinispan client.
+ * @public
+ */
+export interface InfinispanAuthOptions {
+  enabled: boolean;
+  saslMechanism?: string | null;
+  userName?: string | null;
+  password?: string | null;
+  token?: string | null;
+  realm?: string | null;
+}
+
+/**
+ * Data format options for the Infinispan client.
+ * @public
+ */
+export interface InfinispanDataFormatOptions {
+  keyType?: string | null;
+  valueType?: string | null;
+  mediaType?: 'text/plain' | 'application/json' | null;
+}
+
+/**
+ * Detailed client behavior options for the Infinispan client.
+ * @public
+ */
+export interface InfinispanClientBehaviorOptions {
+  version?: '2.9' | '2.5' | '2.2' | null;
+  cacheName?: string | null;
+  maxRetries?: number | null;
+  connectionTimeout?: number | null;
+  socketTimeout?: number | null;
+  authentication?: InfinispanAuthOptions | null;
+  ssl?: InfinispanSslOptions | null;
+  dataFormat?: InfinispanDataFormatOptions | null;
+  topologyUpdates?: boolean | null;
+}
+
+/**
+ * Options for the Infinispan cache store, designed to be configured
+ * in app-config.yaml under `backend.cache.infinispan`.
+ * @public
+ */
+export type InfinispanCacheStoreOptions = {
+  servers: InfinispanServerConfig | InfinispanServerConfig[];
+  options?: InfinispanClientBehaviorOptions;
+};
+
+/**
+ * Interface defining the required methods for an Infinispan client.
+ * Re-exported from InfinispanKeyvStore for convenience.
+ * @public
+ */
+export interface ClientInterface {
+  get(key: string): Promise<string | null | undefined>;
+  put(key: string, value: string, options?: any): Promise<any>;
+  remove(key: string): Promise<boolean>;
+  clear(): Promise<void>;
+  disconnect(): Promise<void>;
+  on?(event: 'error' | string, listener: (...args: any[]) => void): this;
+  connect?(): Promise<any>;
+  query?(query: string): Promise<any[] | null>;
+  containsKey?(key: string): Promise<boolean>;
+}
+
+/**
+ * Options for creating an InfinispanKeyvStore instance.
+ * @public
+ */
+export interface InfinispanKeyvStoreOptions {
+  clientPromise: Promise<ClientInterface>;
+  logger: LoggerService;
+  defaultTtl?: number; // TTL in milliseconds
+}
+
+/**
  * Union type of all cache store options.
  *
  * @public
  */
-export type CacheStoreOptions = RedisCacheStoreOptions;
+export type CacheStoreOptions =
+  | RedisCacheStoreOptions
+  | InfinispanCacheStoreOptions;
 
 /**
  * Options given when constructing a {@link CacheManager}.
@@ -45,7 +146,6 @@ export type CacheManagerOptions = {
    * An optional logger for use by the PluginCacheManager.
    */
   logger?: LoggerService;
-
   /**
    * An optional handler for connection errors emitted from the underlying data
    * store.
@@ -53,6 +153,14 @@ export type CacheManagerOptions = {
   onError?: (err: Error) => void;
 };
 
+/**
+ * Converts a TTL (Time To Live) value to milliseconds.
+ * Accepts either a number (milliseconds) or a HumanDuration object.
+ *
+ * @param ttl - The TTL value to convert, either as milliseconds or a HumanDuration object
+ * @returns The TTL value in milliseconds
+ * @public
+ */
 export function ttlToMilliseconds(ttl: number | HumanDuration): number {
   return typeof ttl === 'number' ? ttl : durationToMilliseconds(ttl);
 }

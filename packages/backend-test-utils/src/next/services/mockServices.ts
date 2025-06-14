@@ -174,10 +174,21 @@ function simpleMock<TService>(
  * ```
  */
 export namespace mockServices {
+  /**
+   * Creates a mock implementation of the root configuration service.
+   *
+   * @public
+   */
   export function rootConfig(options?: rootConfig.Options): RootConfigService {
-    return new ConfigReader(options?.data, 'mock-config');
+    return new ConfigReader(options?.data ?? {});
   }
+
   export namespace rootConfig {
+    /**
+     * Options for creating a mock root configuration service.
+     *
+     * @public
+     */
     export type Options = { data?: JsonObject };
 
     export const factory = simpleFactoryWithOptions(
@@ -204,10 +215,21 @@ export namespace mockServices {
     }));
   }
 
+  /**
+   * Creates a mock implementation of the root logger service.
+   *
+   * @public
+   */
   export function rootLogger(options?: rootLogger.Options): LoggerService {
     return MockRootLoggerService.create(options);
   }
+
   export namespace rootLogger {
+    /**
+     * Options for creating a mock root logger service.
+     *
+     * @public
+     */
     export type Options = {
       level?: 'none' | 'error' | 'warn' | 'info' | 'debug';
     };
@@ -579,7 +601,12 @@ export namespace mockServices {
      * Creates a functional mock factory for the
      * {@link @backstage/backend-events-node#eventsServiceRef}.
      */
-    export const factory = simpleFactoryWithOptions(eventsServiceRef, events);
+    export const factory = () =>
+      createServiceFactory({
+        service: eventsServiceRef,
+        deps: {},
+        factory: () => events(),
+      });
     /**
      * Creates a mock of the
      * {@link @backstage/backend-events-node#eventsServiceRef}, optionally

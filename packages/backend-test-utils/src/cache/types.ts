@@ -22,7 +22,13 @@ import { getDockerImageForName } from '../util/getDockerImageForName';
  *
  * @public
  */
-export type TestCacheId = 'MEMORY' | 'REDIS_7' | 'VALKEY_8' | 'MEMCACHED_1';
+export type TestCacheId =
+  | 'MEMORY'
+  | 'REDIS_7'
+  | 'REDIS_6'
+  | 'VALKEY_8'
+  | 'MEMCACHED_1'
+  | 'INFINISPAN_15';
 
 export type TestCacheProperties = {
   name: string;
@@ -47,6 +53,13 @@ export const allCaches: Record<TestCacheId, TestCacheProperties> =
       connectionStringEnvironmentVariableName:
         'BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING',
     },
+    REDIS_6: {
+      name: 'Redis 6.x',
+      store: 'redis',
+      dockerImageName: getDockerImageForName('redis:6'),
+      connectionStringEnvironmentVariableName:
+        'BACKSTAGE_TEST_CACHE_REDIS6_CONNECTION_STRING',
+    },
     MEMCACHED_1: {
       name: 'Memcached 1.x',
       store: 'memcache',
@@ -64,5 +77,12 @@ export const allCaches: Record<TestCacheId, TestCacheProperties> =
       dockerImageName: getDockerImageForName('valkey/valkey:8'),
       connectionStringEnvironmentVariableName:
         'BACKSTAGE_TEST_CACHE_VALKEY8_CONNECTION_STRING',
+    },
+    INFINISPAN_15: {
+      name: 'Infinispan 15.x',
+      store: 'infinispan',
+      dockerImageName: getDockerImageForName('infinispan/server:15'),
+      connectionStringEnvironmentVariableName:
+        'BACKSTAGE_TEST_CACHE_INFINISPAN15_CONNECTION_STRING',
     },
   });
