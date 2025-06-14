@@ -25,6 +25,15 @@ describe('NoForeignRootFieldsEntityPolicy', () => {
     data = yaml.parse(`
       apiVersion: backstage.io/v1alpha1
       kind: Component
+      status:
+        items:
+          - type: backstage.io/catalog-processing
+            level: error
+            message: 'NotFoundError: File not found'
+            error:
+              name: NotFoundError
+              message: File not found
+              stack: Error stack
       metadata:
         uid: e01199ab-08cc-44c2-8e19-5c29ded82521
         etag: lsndfkjsndfkjnsdfkjnsd==

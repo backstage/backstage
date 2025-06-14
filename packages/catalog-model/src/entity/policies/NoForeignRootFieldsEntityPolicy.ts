@@ -17,7 +17,7 @@
 import { EntityPolicy } from './types';
 import { Entity } from '../Entity';
 
-const defaultKnownFields = ['apiVersion', 'kind', 'metadata', 'spec'];
+const defaultKnownFields = ['apiVersion', 'kind', 'status', 'metadata', 'spec'];
 
 /**
  * Ensures that there are no foreign root fields in the entity.
