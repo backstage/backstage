@@ -6,47 +6,47 @@
 import { BasicPermission } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 
-// @alpha
+// @public
 export const actionExecutePermission: ResourcePermission<'scaffolder-action'>;
 
-// @alpha
+// @public
 export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';
 
-// @alpha
+// @public
 export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
 
-// @alpha
+// @public
 export const scaffolderActionPermissions: ResourcePermission<'scaffolder-action'>[];
 
-// @alpha
+// @public
 export const scaffolderPermissions: (
   | BasicPermission
   | ResourcePermission<'scaffolder-action'>
   | ResourcePermission<'scaffolder-template'>
 )[];
 
-// @alpha
+// @public
 export const scaffolderTaskPermissions: BasicPermission[];
 
-// @alpha
+// @public
 export const scaffolderTemplatePermissions: ResourcePermission<'scaffolder-template'>[];
 
-// @alpha
+// @public
 export const taskCancelPermission: BasicPermission;
 
-// @alpha
+// @public
 export const taskCreatePermission: BasicPermission;
 
-// @alpha
+// @public
 export const taskReadPermission: BasicPermission;
 
-// @alpha
+// @public
 export const templateManagementPermission: BasicPermission;
 
-// @alpha
+// @public
 export const templateParameterReadPermission: ResourcePermission<'scaffolder-template'>;
 
-// @alpha
+// @public
 export const templateStepReadPermission: ResourcePermission<'scaffolder-template'>;
 
 // (No @packageDocumentation comment for this package)

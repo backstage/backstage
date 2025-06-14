@@ -23,4 +23,5 @@
 
 export * from './search';
 export * from './ingestion';
+export * from './permissions';
 export type { LocationSpec } from './common';
