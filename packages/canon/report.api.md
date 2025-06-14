@@ -22,6 +22,7 @@ import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
+import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { Table as Table_2 } from '@tanstack/react-table';
 import { Tabs as Tabs_2 } from '@base-ui-components/react/tabs';
 import { TdHTMLAttributes } from 'react';
@@ -1158,6 +1159,16 @@ export type StylingPropDef = {
   className: string;
   parseValue?: (value: string) => string | undefined;
 };
+
+// @public (undocumented)
+export const Switch: ForwardRefExoticComponent<
+  SwitchProps & RefAttributes<HTMLLabelElement>
+>;
+
+// @public (undocumented)
+export interface SwitchProps extends SwitchProps_2 {
+  label?: string;
+}
 
 // @public
 export const Table: {
