@@ -1274,10 +1274,13 @@ export interface TextFieldProps
   className?: string;
   description?: string;
   error?: string | null;
+  hideLabelAndDescription?: boolean;
   icon?: ReactNode;
   label?: string;
+  labelSize?: 'small' | 'medium';
   name: string;
   onClear?: MouseEventHandler<HTMLButtonElement>;
+  secondaryLabel?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 

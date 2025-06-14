@@ -36,6 +36,21 @@ export interface TextFieldProps
   label?: string;
 
   /**
+   * The secondary label of the text field
+   */
+  secondaryLabel?: string;
+
+  /**
+   * The size of the label and description
+   */
+  labelSize?: 'small' | 'medium';
+
+  /**
+   * Hide the label and description but still visible to screen readers
+   */
+  hideLabelAndDescription?: boolean;
+
+  /**
    * The description of the text field
    */
   description?: string;

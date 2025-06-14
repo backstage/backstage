@@ -29,7 +29,10 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       className,
       size = 'small',
       label,
+      labelSize = 'small',
+      secondaryLabel,
       description,
+      hideLabelAndDescription,
       error,
       required,
       style,
@@ -42,6 +45,9 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
     // Get the responsive value for the variant
     const responsiveSize = useResponsiveValue(size);
 
+    // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
+    const secondaryLabelText = secondaryLabel || (required ? 'Required' : null);
+
     return (
       <Field.Root
         className={clsx('canon-TextField', className)}
@@ -51,14 +57,35 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
         ref={ref}
       >
         {label && (
-          <Field.Label className="canon-TextFieldLabel">
-            {label}
-            {required && (
-              <span aria-hidden="true" className="canon-TextFieldRequired">
-                (Required)
-              </span>
+          <div
+            className="canon-TextFieldLabelWrapper"
+            data-hidden={hideLabelAndDescription}
+          >
+            {label && (
+              <Field.Label
+                className="canon-TextFieldLabel"
+                data-size={labelSize}
+              >
+                {label}
+                {secondaryLabelText && (
+                  <span
+                    aria-hidden="true"
+                    className="canon-TextFieldSecondaryLabel"
+                  >
+                    ({secondaryLabelText})
+                  </span>
+                )}
+              </Field.Label>
             )}
-          </Field.Label>
+            {description && (
+              <Field.Description
+                className="canon-TextFieldDescription"
+                data-size={labelSize}
+              >
+                {description}
+              </Field.Description>
+            )}
+          </div>
         )}
         <div className="canon-TextFieldInputWrapper" data-size={responsiveSize}>
           {icon && (
@@ -85,11 +112,6 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
             </button>
           )}
         </div>
-        {description && (
-          <Field.Description className="canon-TextFieldDescription">
-            {description}
-          </Field.Description>
-        )}
         {error && (
           <Field.Error className="canon-TextFieldError" role="alert" forceShow>
             {error}
