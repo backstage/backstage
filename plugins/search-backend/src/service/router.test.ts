@@ -106,7 +106,7 @@ describe('createRouter', () => {
         expect.objectContaining({
           error: {
             name: 'Error',
-            message: `There was a problem performing the search query: ${error.message}`,
+            message: `There was a problem performing the search query`,
           },
         }),
       );
