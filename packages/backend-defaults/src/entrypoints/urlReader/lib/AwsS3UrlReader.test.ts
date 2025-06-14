@@ -126,6 +126,19 @@ describe('parseUrl', () => {
       bucket: 'my.bucket-3',
       region: 'us-west-2',
     });
+    expect(
+      parseUrl(
+        'https://bucket.vpce-id.s3.us-west-2.vpce.amazonaws.com/my.bucket-3/a/puppy.jpg',
+        {
+          host: 'bucket.vpce-id.s3.us-west-2.vpce.amazonaws.com',
+          s3ForcePathStyle: true,
+        },
+      ),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: 'us-west-2',
+    });
   });
 
   it('supports all non-aws formats', () => {
