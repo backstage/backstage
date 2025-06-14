@@ -32,7 +32,7 @@
 
   &[data-selected] {
     .canon-SwitchIndicator {
-      background: var(--canon-gray-3);
+      background: var(--canon-bg-solid);
 
       &:before {
         background: var(--canon-fg-solid);

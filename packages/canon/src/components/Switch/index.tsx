@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { Switch } from './Switch';
+export * from './Switch';
+export * from './types';

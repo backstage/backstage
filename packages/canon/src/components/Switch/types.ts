@@ -16,6 +16,10 @@
 
 import type { SwitchProps as AriaSwitchProps } from 'react-aria-components';
 
+/** @public */
 export interface SwitchProps extends AriaSwitchProps {
+  /**
+   * The label of the switch
+   */
   label?: string;
 }

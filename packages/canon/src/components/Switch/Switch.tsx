@@ -18,6 +18,7 @@ import { forwardRef } from 'react';
 import { Switch as AriaSwitch } from 'react-aria-components';
 import type { SwitchProps } from './types';
 
+/** @public */
 export const Switch = forwardRef<HTMLLabelElement, SwitchProps>(
   ({ label, ...props }, ref) => {
     return (
