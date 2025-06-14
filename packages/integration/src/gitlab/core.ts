@@ -56,20 +56,17 @@ export function getGitLabRequestOptions(
   config: GitLabIntegrationConfig,
   token?: string,
 ): { headers: Record<string, string> } {
-  if (token) {
-    // If token comes from the user and starts with "gl", it's a private token (see https://docs.gitlab.com/ee/security/token_overview.html#token-prefixes)
-    return {
-      headers: token.startsWith('gl')
-        ? { 'PRIVATE-TOKEN': token }
-        : { Authorization: `Bearer ${token}` }, // Otherwise, it's a bearer token
-    };
+  const headers: Record<string, string> = {};
+
+  const accessToken = token || config.token;
+  if (accessToken) {
+    // OAuth, Personal, Project, and Group access tokens can all be passed via
+    // a bearer authorization header
+    // https://docs.gitlab.com/api/rest/authentication/#personalprojectgroup-access-tokens
+    headers.Authorization = `Bearer ${accessToken}`;
   }
 
-  // If token not provided, fetch the integration token
-  const { token: configToken = '' } = config;
-  return {
-    headers: { 'PRIVATE-TOKEN': configToken },
-  };
+  return { headers };
 }
 
 // Converts
@@ -149,6 +146,12 @@ export async function getProjectId(
     const data = await response.json();
 
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error(
+          'GitLab Error: 401 - Unauthorized. The access token used is either expired, or does not have permission to read the project',
+        );
+      }
+
       throw new Error(
         `GitLab Error '${data.error}', ${data.error_description}`,
       );
