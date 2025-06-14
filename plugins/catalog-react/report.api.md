@@ -351,6 +351,8 @@ export type EntityListContextProps<
   setLimit: (limit: number) => void;
   setOffset?: (offset: number) => void;
   paginationMode: PaginationMode;
+  fields?: string[];
+  setFields: (fields?: string[]) => void;
 };
 
 // @public (undocumented)
@@ -374,6 +376,7 @@ export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>(
 // @public (undocumented)
 export type EntityListProviderProps = PropsWithChildren<{
   pagination?: EntityListPagination;
+  fields?: string[];
 }>;
 
 // @public (undocumented)

@@ -119,6 +119,16 @@ export type EntityListContextProps<
   setLimit: (limit: number) => void;
   setOffset?: (offset: number) => void;
   paginationMode: PaginationMode;
+
+  /**
+   * Current fields being used for API requests.
+   */
+  fields?: string[];
+
+  /**
+   * Update the fields used for API requests.
+   */
+  setFields: (fields?: string[]) => void;
 };
 
 /**
@@ -145,6 +155,50 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
  */
 export type EntityListProviderProps = PropsWithChildren<{
   pagination?: EntityListPagination;
+  /**
+   * Optional initial fields parameter to limit which entity fields are returned from the API.
+   * When provided, only the specified fields will be fetched, which can significantly improve
+   * performance by reducing response payload size (potentially 60-70% reduction).
+   *
+   * Fields can also be updated dynamically using the `setFields` method from the hook context.
+   *
+   * @remarks
+   * The fields should include all entity properties that your table columns, filters, or
+   * components need to render properly. Common fields include:
+   * - Core: 'kind', 'metadata.name', 'metadata.namespace', 'metadata.title'
+   * - Display: 'metadata.description', 'metadata.tags', 'metadata.labels', 'metadata.annotations'
+   * - Spec: 'spec.type', 'spec.lifecycle', 'spec.targets', 'spec.target'
+   * - Relations: 'relations' (for owner/system columns)
+   *
+   * @example
+   * Basic usage with initial fields:
+   * ```tsx
+   * const catalogFields = [
+   *   'kind', 'metadata.name', 'metadata.namespace', 'metadata.title',
+   *   'metadata.description', 'metadata.tags', 'spec.type', 'spec.lifecycle',
+   *   'relations' // Required for owner/system columns
+   * ];
+   *
+   * <EntityListProvider fields={catalogFields}>
+   *   <CatalogTable />
+   * </EntityListProvider>
+   * ```
+   *
+   * @example
+   * Dynamic field updates using the hook:
+   * ```tsx
+   * function MyComponent() {
+   *   const { setFields } = useEntityList();
+   *
+   *   const handleColumnChange = (columns: string[]) => {
+   *     setFields(columns);
+   *   };
+   *
+   *   return <CustomTable onColumnsChange={handleColumnChange} />;
+   * }
+   * ```
+   */
+  fields?: string[];
 }>;
 
 /**
@@ -158,6 +212,9 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   const catalogApi = useApi(catalogApiRef);
   const [requestedFilters, setRequestedFilters] = useState<EntityFilters>(
     {} as EntityFilters,
+  );
+  const [dynamicFields, setDynamicFields] = useState<string[] | undefined>(
+    props.fields,
   );
 
   // We use react-router's useLocation hook so updates from external sources trigger an update to
@@ -269,6 +326,8 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
             const response = await catalogApi.queryEntities({
               cursor,
               limit,
+              ...(dynamicFields &&
+                dynamicFields.length > 0 && { fields: dynamicFields }),
             });
             setOutputState({
               appliedFilters: requestedFilters,
@@ -295,6 +354,8 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               ...backendFilter,
               limit,
               offset,
+              ...(dynamicFields &&
+                dynamicFields.length > 0 && { fields: dynamicFields }),
             });
             setOutputState({
               appliedFilters: requestedFilters,
@@ -322,6 +383,8 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           // fields + table columns
           const response = await catalogApi.getEntities({
             filter: backendFilter,
+            ...(dynamicFields &&
+              dynamicFields.length > 0 && { fields: dynamicFields }),
           });
           const entities = response.items.filter(entityFilter);
           setOutputState({
@@ -367,13 +430,20 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       paginationMode,
       limit,
       offset,
+      dynamicFields,
     ],
     { loading: true },
   );
 
   // Slight debounce on the refresh, since (especially on page load) several
   // filters will be calling this in rapid succession.
-  useDebounce(refresh, 10, [requestedFilters, cursor, limit, offset]);
+  useDebounce(refresh, 10, [
+    requestedFilters,
+    cursor,
+    limit,
+    offset,
+    dynamicFields,
+  ]);
 
   const updateFilters = useCallback(
     (
@@ -430,6 +500,10 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       setLimit,
       setOffset,
       paginationMode,
+      fields: dynamicFields,
+      setFields: (fields?: string[]) => {
+        setDynamicFields(fields);
+      },
     }),
     [
       outputState,
@@ -443,6 +517,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       paginationMode,
       setLimit,
       setOffset,
+      dynamicFields,
     ],
   );
 
