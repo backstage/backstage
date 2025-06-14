@@ -1,5 +1,21 @@
 # @backstage/backend-test-utils
 
+## 1.6.0-next.3
+
+### Minor Changes
+
+- 6dfb7be: Added `mockServices.permissions()` that can return actual results.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@1.2.4-next.2
+  - @backstage/backend-defaults@0.11.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+  - @backstage/config@1.3.2
+
 ## 1.6.0-next.2
 
 ### Patch Changes

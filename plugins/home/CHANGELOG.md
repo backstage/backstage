@@ -1,5 +1,20 @@
 # @backstage/plugin-home
 
+## 0.8.9-next.3
+
+### Patch Changes
+
+- cef60db: Home plugin support i18n
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8-next.0
+  - @backstage/plugin-home-react@0.1.27-next.1
+  - @backstage/core-app-api@1.17.1-next.0
+  - @backstage/core-compat-api@0.4.3-next.3
+  - @backstage/core-components@0.17.3-next.1
+  - @backstage/frontend-plugin-api@0.10.3-next.2
+  - @backstage/plugin-catalog-react@1.19.0-next.3
+  - @backstage/config@1.3.2
+
 ## 0.8.9-next.2
 
 ### Patch Changes

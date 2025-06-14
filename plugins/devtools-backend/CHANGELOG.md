@@ -1,5 +1,17 @@
 # @backstage/plugin-devtools-backend
 
+## 0.5.6-next.3
+
+### Patch Changes
+
+- 9a99735: Removed the usage of `permissionIntegrationRouter` in favor of using the new `coreServices.permissionsRegistry`
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config-loader@1.10.1
+  - @backstage/plugin-permission-node@0.10.1-next.1
+  - @backstage/config@1.3.2
+
 ## 0.5.6-next.2
 
 ### Patch Changes

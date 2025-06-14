@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.10.0-next.3
+
+### Minor Changes
+
+- 7c0dfb0: GitHub organization now matches in a case-insensitive manner when processing events.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@2.0.1-next.3
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+  - @backstage/config@1.3.2
+
 ## 0.9.1-next.2
 
 ### Patch Changes

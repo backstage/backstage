@@ -1,5 +1,16 @@
 # @backstage/repo-tools
 
+## 0.14.0-next.3
+
+### Patch Changes
+
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- a372bf1: Updated dependency `@electric-sql/pglite` to `^0.3.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+
 ## 0.14.0-next.2
 
 ### Patch Changes

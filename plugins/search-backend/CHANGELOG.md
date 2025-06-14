@@ -1,5 +1,18 @@
 # @backstage/plugin-search-backend
 
+## 2.0.3-next.3
+
+### Patch Changes
+
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/plugin-permission-node@0.10.1-next.1
+  - @backstage/plugin-search-backend-node@1.3.12-next.1
+  - @backstage/backend-openapi-utils@0.5.4-next.1
+  - @backstage/config@1.3.2
+
 ## 2.0.3-next.2
 
 ### Patch Changes

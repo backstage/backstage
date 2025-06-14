@@ -1,5 +1,19 @@
 # @backstage/plugin-kubernetes
 
+## 0.12.8-next.3
+
+### Patch Changes
+
+- 3ea5d1b: chore(deps): Update deprecated xterm to new package under @xterm
+- Updated dependencies
+  - @backstage/plugin-kubernetes-react@0.5.8-next.1
+  - @backstage/core-plugin-api@1.10.8-next.0
+  - @backstage/core-compat-api@0.4.3-next.3
+  - @backstage/core-components@0.17.3-next.1
+  - @backstage/frontend-plugin-api@0.10.3-next.2
+  - @backstage/plugin-catalog-react@1.19.0-next.3
+  - @backstage/plugin-permission-react@0.4.35-next.0
+
 ## 0.12.8-next.2
 
 ### Patch Changes
