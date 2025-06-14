@@ -24,34 +24,61 @@ import { z } from 'zod';
 export type ActionContext<
   TActionInput extends JsonObject,
   TActionOutput extends JsonObject = JsonObject,
-  _TSchemaType extends 'v2' = 'v2',
-> = {
-  logger: LoggerService;
-  secrets?: TaskSecrets;
-  workspacePath: string;
-  input: TActionInput;
-  checkpoint<T extends JsonValue | void>(opts: {
-    key: string;
-    fn: () => Promise<T> | T;
-  }): Promise<T>;
-  output(
-    name: keyof TActionOutput,
-    value: TActionOutput[keyof TActionOutput],
-  ): void;
-  createTemporaryDirectory(): Promise<string>;
-  getInitiatorCredentials(): Promise<BackstageCredentials>;
-  task: {
-    id: string;
-  };
-  templateInfo?: TemplateInfo;
-  isDryRun?: boolean;
-  user?: {
-    entity?: UserEntity;
-    ref?: string;
-  };
-  signal?: AbortSignal;
-  each?: JsonObject;
-};
+  TSchemaType extends 'v1' | 'v2' = 'v1',
+> = TSchemaType extends 'v2'
+  ? {
+      logger: LoggerService;
+      secrets?: TaskSecrets;
+      workspacePath: string;
+      input: TActionInput;
+      checkpoint<T extends JsonValue | void>(
+        opts: CheckpointContext<T>,
+      ): Promise<T>;
+      output(
+        name: keyof TActionOutput,
+        value: TActionOutput[keyof TActionOutput],
+      ): void;
+      createTemporaryDirectory(): Promise<string>;
+      getInitiatorCredentials(): Promise<BackstageCredentials>;
+      task: {
+        id: string;
+      };
+      templateInfo?: TemplateInfo;
+      isDryRun?: boolean;
+      user?: {
+        entity?: UserEntity;
+        ref?: string;
+      };
+      signal?: AbortSignal;
+      each?: JsonObject;
+    }
+  : {
+      logger: Logger;
+      logStream: Writable;
+      secrets?: TaskSecrets;
+      workspacePath: string;
+      input: TActionInput;
+      checkpoint<T extends JsonValue | void>(
+        opts: CheckpointContext<T>,
+      ): Promise<T>;
+      output(
+        name: keyof TActionOutput,
+        value: TActionOutput[keyof TActionOutput],
+      ): void;
+      createTemporaryDirectory(): Promise<string>;
+      getInitiatorCredentials(): Promise<BackstageCredentials>;
+      task: {
+        id: string;
+      };
+      templateInfo?: TemplateInfo;
+      isDryRun?: boolean;
+      user?: {
+        entity?: UserEntity;
+        ref?: string;
+      };
+      signal?: AbortSignal;
+      each?: JsonObject;
+    };
 
 // @public (undocumented)
 export function addFiles(options: {
@@ -445,20 +472,10 @@ export interface TaskContext {
   spec: TaskSpec;
   // (undocumented)
   taskId?: string;
+  // Warning: (ae-forgotten-export) The symbol "UpdateTaskCheckpointOptions" needs to be exported by the entry point index.d.ts
+  //
   // (undocumented)
-  updateCheckpoint?(
-    options:
-      | {
-          key: string;
-          status: 'success';
-          value: JsonValue;
-        }
-      | {
-          key: string;
-          status: 'failed';
-          reason: string;
-        },
-  ): Promise<void>;
+  updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 }
 
 // @public
@@ -548,4 +565,8 @@ export type TemplateFilter = (
 export type TemplateGlobal =
   | ((...args: JsonValue[]) => JsonValue | undefined)
   | JsonValue;
+
+// Warnings were encountered during analysis:
+//
+// src/actions/types.d.ts:19:5 - (ae-forgotten-export) The symbol "CheckpointContext" needs to be exported by the entry point index.d.ts
 ```

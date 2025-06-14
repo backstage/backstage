@@ -32,12 +32,15 @@ import {
   TaskSecrets,
   TaskStatus,
 } from '@backstage/plugin-scaffolder-node';
-import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 import {
-  JsonObject,
-  JsonValue,
-  Observable,
+  CheckpointState,
+  WorkspaceProvider,
+  UpdateTaskCheckpointOptions,
+} from '@backstage/plugin-scaffolder-node/alpha';
+import {
   createDeferred,
+  JsonObject,
+  Observable,
 } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
@@ -45,17 +48,7 @@ import { readDuration } from './helper';
 import { InternalTaskSecrets, TaskStore } from './types';
 
 type TaskState = {
-  checkpoints: {
-    [key: string]:
-      | {
-          status: 'failed';
-          reason: string;
-        }
-      | {
-          status: 'success';
-          value: JsonValue;
-        };
-  };
+  checkpoints: CheckpointState;
 };
 /**
  * TaskManager
@@ -96,14 +89,14 @@ export class TaskManager implements TaskContext {
   }
 
   // Runs heartbeat internally
-  private constructor(
+  private constructor (
     private readonly task: CurrentClaimedTask,
     private readonly storage: TaskStore,
     private readonly signal: AbortSignal,
     private readonly logger: LoggerService,
     private readonly workspaceService: WorkspaceService,
     private readonly auth?: AuthService,
-  ) {}
+  ) { }
 
   get spec() {
     return this.task.spec;
@@ -145,27 +138,16 @@ export class TaskManager implements TaskContext {
 
   async getTaskState?(): Promise<
     | {
-        state?: JsonObject;
-      }
+      state?: JsonObject;
+    }
     | undefined
   > {
     return this.storage.getTaskState?.({ taskId: this.task.taskId });
   }
 
-  async updateCheckpoint?(
-    options:
-      | {
-          key: string;
-          status: 'success';
-          value: JsonValue;
-        }
-      | {
-          key: string;
-          status: 'failed';
-          reason: string;
-        },
-  ): Promise<void> {
+  async updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void> {
     const { key, ...value } = options;
+
     if (this.task.state) {
       (this.task.state as TaskState).checkpoints[key] = value;
     } else {
@@ -267,7 +249,7 @@ export interface CurrentClaimedTask {
 }
 
 export class StorageTaskBroker implements TaskBroker {
-  constructor(
+  constructor (
     private readonly storage: TaskStore,
     private readonly logger: LoggerService,
     private readonly config?: Config,
@@ -277,7 +259,7 @@ export class StorageTaskBroker implements TaskBroker {
       WorkspaceProvider
     >,
     private readonly auditor?: AuditorService,
-  ) {}
+  ) { }
 
   async list(options?: {
     createdBy?: string;
@@ -354,7 +336,7 @@ export class StorageTaskBroker implements TaskBroker {
    * {@inheritdoc TaskBroker.claim}
    */
   async claim(): Promise<TaskContext> {
-    for (;;) {
+    for (; ;) {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
         const abortController = new AbortController();
@@ -488,9 +470,9 @@ export class StorageTaskBroker implements TaskBroker {
     const currentStepId =
       events.length > 0
         ? events
-            .filter(({ body }) => body?.stepId)
-            .reduce((prev, curr) => (prev.id > curr.id ? prev : curr)).body
-            .stepId
+          .filter(({ body }) => body?.stepId)
+          .reduce((prev, curr) => (prev.id > curr.id ? prev : curr)).body
+          .stepId
         : 0;
 
     await this.storage.cancelTask?.({
