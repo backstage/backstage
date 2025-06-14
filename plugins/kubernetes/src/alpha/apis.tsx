@@ -35,6 +35,7 @@ import {
 import {
   gitlabAuthApiRef,
   googleAuthApiRef,
+  identityApiRef,
   microsoftAuthApiRef,
   oktaAuthApiRef,
   oneloginAuthApiRef,
@@ -45,12 +46,19 @@ export const kubernetesApiExtension = ApiBlueprint.make({
     factory: createApiFactory({
       api: kubernetesApiRef,
       deps: {
+        identityApi: identityApiRef,
         discoveryApi: discoveryApiRef,
         fetchApi: fetchApiRef,
         kubernetesAuthProvidersApi: kubernetesAuthProvidersApiRef,
       },
-      factory: ({ discoveryApi, fetchApi, kubernetesAuthProvidersApi }) =>
+      factory: ({
+        identityApi,
+        discoveryApi,
+        fetchApi,
+        kubernetesAuthProvidersApi,
+      }) =>
         new KubernetesBackendClient({
+          identityApi,
           discoveryApi,
           fetchApi,
           kubernetesAuthProvidersApi,

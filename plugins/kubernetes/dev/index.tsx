@@ -38,6 +38,7 @@ import fixture7 from '../src/__fixtures__/2-statefulsets.json';
 import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { StructuredMetadataTable } from '@backstage/core-components';
+import { Socket } from '@backstage/plugin-kubernetes-react';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -63,6 +64,19 @@ class MockKubernetesClient implements KubernetesApi {
     this.resources = Object.entries(fixtureData).flatMap(
       ([type, resources]) =>
         ({ type: type.toLocaleLowerCase('en-US'), resources } as FetchResponse),
+    );
+  }
+  async proxyWs(options: {
+    clusterName: string;
+    path: string;
+  }): Promise<Socket> {
+    return new Socket(
+      `ws://localhost/api/kuberntes/proxy/${options.path}?cluster=${options.clusterName}`,
+      [
+        'token',
+        'binary.k8s.io',
+        'Backstage-Cluster-Authorization-serviceAccount',
+      ],
     );
   }
   async getPodLogs(_request: {

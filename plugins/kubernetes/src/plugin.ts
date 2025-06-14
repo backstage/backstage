@@ -37,6 +37,7 @@ import {
   oneloginAuthApiRef,
   createRoutableExtension,
   fetchApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 export const rootCatalogKubernetesRouteRef = createRouteRef({
@@ -49,12 +50,19 @@ export const kubernetesPlugin = createPlugin({
     createApiFactory({
       api: kubernetesApiRef,
       deps: {
+        identityApi: identityApiRef,
         discoveryApi: discoveryApiRef,
         fetchApi: fetchApiRef,
         kubernetesAuthProvidersApi: kubernetesAuthProvidersApiRef,
       },
-      factory: ({ discoveryApi, fetchApi, kubernetesAuthProvidersApi }) =>
+      factory: ({
+        identityApi,
+        discoveryApi,
+        fetchApi,
+        kubernetesAuthProvidersApi,
+      }) =>
         new KubernetesBackendClient({
+          identityApi,
           discoveryApi,
           fetchApi,
           kubernetesAuthProvidersApi,

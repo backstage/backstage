@@ -133,7 +133,9 @@ export class KubernetesProxy {
 
       // If req is an upgrade handshake, use middleware upgrade instead of http request handler https://github.com/chimurai/http-proxy-middleware#external-websocket-upgrade
       if (
-        req.header('connection')?.toLowerCase() === 'upgrade' &&
+        // At times the `connection` header is `keep-alive, upgrade` instead
+        // of `upgrade`. A test ran on Firefox flagged this issue
+        req.header('connection')?.toLowerCase()?.includes('upgrade') &&
         req.header('upgrade')?.toLowerCase() === 'websocket'
       ) {
         // Missing the `head`, since it's optional we pass undefined to avoid type issues
