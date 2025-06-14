@@ -25,16 +25,19 @@ import {
 
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
 import { Theme, makeStyles } from '@material-ui/core/styles';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+
+import { alertApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { usePermission } from '@backstage/plugin-permission-react';
+import { unprocessedEntitiesDeletePermission } from '@backstage/plugin-catalog-unprocessed-entities-common';
 
 import { UnprocessedEntity } from '../types';
 import { EntityDialog } from './EntityDialog';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
 import useAsync from 'react-use/esm/useAsync';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { DeleteEntityConfirmationDialog } from './DeleteEntityConfirmationDialog';
+import { FailedEntityActions } from './FailedEntityActions';
 
 const useStyles = makeStyles((theme: Theme) => ({
   errorBox: {
@@ -106,22 +109,33 @@ export const convertTimeToLocalTimezone = (dateTime: string | Date) => {
 
 export const FailedEntities = () => {
   const classes = useStyles();
-  const unprocessedApi = useApi(catalogUnprocessedEntitiesApiRef);
-  const {
-    loading,
-    error,
-    value: data,
-  } = useAsync(async () => await unprocessedApi.failed());
   const [, setSelectedSearchTerm] = useState<string>('');
-  const unprocessedEntityApi = useApi(catalogUnprocessedEntitiesApiRef);
+
+  const catalogUnprocessedEntitiesApi = useApi(
+    catalogUnprocessedEntitiesApiRef,
+  );
+  const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
+  const errorApi = useApi(errorApiRef);
+
+  const canDelete = usePermission({
+    permission: unprocessedEntitiesDeletePermission,
+  });
+
   const [selectedEntityId, setSelectedEntityId] = useState<string | undefined>(
     undefined,
   );
   const [selectedEntityRef, setSelectedEntityRef] = useState<
     string | undefined
   >(undefined);
-  const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
+  const [deleteConfirmationDialogOpen, setDeleteConfirmationDialogOpen] =
+    useState(false);
+
+  const {
+    loading,
+    error,
+    value: data,
+  } = useAsync(async () => await catalogUnprocessedEntitiesApi.failed());
 
   if (loading) {
     return <Progress />;
@@ -130,22 +144,10 @@ export const FailedEntities = () => {
     return <ErrorPanel error={error} />;
   }
 
-  const handleDelete = ({
-    entityId,
-    entityRef,
-  }: {
-    entityId: string;
-    entityRef: string;
-  }) => {
-    setSelectedEntityId(entityId);
-    setSelectedEntityRef(entityRef);
-    setConfirmationDialogOpen(true);
-  };
-
-  const cleanUpAfterRemoval = async () => {
+  const deleteEntity = async () => {
     try {
       if (selectedEntityId) {
-        await unprocessedEntityApi.delete(selectedEntityId);
+        await catalogUnprocessedEntitiesApi.delete(selectedEntityId);
         alertApi.post({
           message: `Entity ${selectedEntityRef} has been deleted`,
           severity: 'success',
@@ -157,7 +159,32 @@ export const FailedEntities = () => {
         severity: 'error',
       });
     }
-    setConfirmationDialogOpen(false);
+    setDeleteConfirmationDialogOpen(false);
+  };
+
+  const handleRefresh = async ({ entityRef }: { entityRef: string }) => {
+    try {
+      await catalogApi.refreshEntity(entityRef!);
+      alertApi.post({
+        message: 'Refresh scheduled',
+        severity: 'info',
+        display: 'transient',
+      });
+    } catch (e) {
+      errorApi.post(e);
+    }
+  };
+
+  const handleDelete = ({
+    entityId,
+    entityRef,
+  }: {
+    entityId: string;
+    entityRef: string;
+  }) => {
+    setSelectedEntityId(entityId);
+    setSelectedEntityRef(entityRef);
+    setDeleteConfirmationDialogOpen(true);
   };
 
   const columns: TableColumn[] = [
@@ -221,23 +248,14 @@ export const FailedEntities = () => {
     },
     {
       title: <Typography>Actions</Typography>,
-      render: (rowData: UnprocessedEntity | {}) => {
-        const { entity_id, entity_ref } = rowData as UnprocessedEntity;
-
-        return (
-          <IconButton
-            aria-label="delete"
-            onClick={() =>
-              handleDelete({
-                entityId: entity_id,
-                entityRef: entity_ref,
-              })
-            }
-          >
-            <DeleteIcon fontSize="small" data-testid="delete-icon" />
-          </IconButton>
-        );
-      },
+      render: (rowData: UnprocessedEntity | {}) => (
+        <FailedEntityActions
+          entity={rowData as UnprocessedEntity}
+          canDelete={canDelete.allowed}
+          handleRefresh={handleRefresh}
+          handleDelete={handleDelete}
+        />
+      ),
     },
   ];
 
@@ -278,9 +296,9 @@ export const FailedEntities = () => {
         }}
       />
       <DeleteEntityConfirmationDialog
-        open={confirmationDialogOpen}
-        onClose={() => setConfirmationDialogOpen(false)}
-        onConfirm={cleanUpAfterRemoval}
+        open={deleteConfirmationDialogOpen}
+        onClose={() => setDeleteConfirmationDialogOpen(false)}
+        onConfirm={deleteEntity}
       />
     </>
   );
