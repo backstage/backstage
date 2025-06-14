@@ -263,6 +263,8 @@ export class EntityErrorFilter implements EntityFilter {
   // (undocumented)
   filterEntity(entity: Entity): boolean;
   // (undocumented)
+  toQueryValue(): string;
+  // (undocumented)
   readonly value: boolean;
 }
 
@@ -426,6 +428,8 @@ export class EntityOrphanFilter implements EntityFilter {
   filterEntity(entity: Entity): boolean;
   // (undocumented)
   getCatalogFilters(): Record<string, string | string[]>;
+  // (undocumented)
+  toQueryValue(): string;
   // (undocumented)
   readonly value: boolean;
 }

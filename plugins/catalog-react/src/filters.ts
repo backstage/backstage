@@ -140,6 +140,7 @@ export class EntityTextFilter implements EntityFilter {
  */
 export class EntityOwnerFilter implements EntityFilter {
   readonly values: string[];
+
   constructor(values: string[]) {
     this.values = values.reduce((fullRefs, ref) => {
       // Attempt to remove bad entity references here.
@@ -205,6 +206,7 @@ export class EntityNamespaceFilter implements EntityFilter {
   getCatalogFilters(): Record<string, string | string[]> {
     return { 'metadata.namespace': this.values };
   }
+
   filterEntity(entity: Entity): boolean {
     return this.values.some(v => entity.metadata.namespace === v);
   }
@@ -317,6 +319,10 @@ export class EntityOrphanFilter implements EntityFilter {
     const orphan = entity.metadata.annotations?.['backstage.io/orphan'];
     return orphan !== undefined && this.value.toString() === orphan;
   }
+
+  toQueryValue(): string {
+    return this.value.toString();
+  }
 }
 
 /**
@@ -330,6 +336,10 @@ export class EntityErrorFilter implements EntityFilter {
     const error =
       ((entity as AlphaEntity)?.status?.items?.length as number) > 0;
     return error !== undefined && this.value === error;
+  }
+
+  toQueryValue(): string {
+    return this.value.toString();
   }
 }
 
