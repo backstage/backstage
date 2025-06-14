@@ -197,6 +197,7 @@ export type AuthProviderInfo = {
   id: string;
   title: string;
   icon: IconComponent;
+  message?: string;
 };
 
 // @public

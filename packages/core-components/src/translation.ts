@@ -79,6 +79,8 @@ export const coreComponentsTranslationRef = createTranslationRef({
       authRedirectTitle: 'This will trigger a http redirect to OAuth Login.',
       login: 'Log in',
       rejectAll: 'Reject All',
+      message:
+        'Sign-in to allow {{appTitle}} access to {{provider}} APIs and identities.',
     },
     supportButton: {
       title: 'Support',
