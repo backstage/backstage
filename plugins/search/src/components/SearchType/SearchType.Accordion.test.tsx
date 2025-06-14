@@ -44,6 +44,8 @@ jest.mock('@backstage/plugin-search-react', () => ({
   }),
 }));
 
+jest.mock('@backstage/canon/src/hooks/useMediaQuery');
+
 describe('SearchType.Accordion', () => {
   const configApiMock = mockApis.config({
     data: {

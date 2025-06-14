@@ -31,6 +31,8 @@ jest.mock('../../context', () => ({
   }),
 }));
 
+jest.mock('@backstage/canon/src/hooks/useMediaQuery');
+
 describe('SearchResult', () => {
   beforeEach(() => {
     jest.clearAllMocks();

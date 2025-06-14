@@ -41,6 +41,8 @@ const query = jest.fn().mockResolvedValue({ results: [] });
 const searchApiMock = { query };
 const analyticsApiMock = mockApis.analytics();
 
+jest.mock('@backstage/canon/src/hooks/useMediaQuery');
+
 describe('SearchResultGroup', () => {
   const results = [
     {

@@ -58,6 +58,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/canon": "workspace:^",
     "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",

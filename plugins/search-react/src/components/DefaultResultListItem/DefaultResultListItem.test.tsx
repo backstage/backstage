@@ -19,6 +19,8 @@ import { renderInTestApp } from '@backstage/test-utils';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 import { DefaultResultListItem } from './DefaultResultListItem';
 
+jest.mock('@backstage/canon/src/hooks/useMediaQuery');
+
 describe('DefaultResultListItem', () => {
   const result = {
     title: 'title',

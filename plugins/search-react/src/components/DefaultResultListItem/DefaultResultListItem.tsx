@@ -24,7 +24,7 @@ import { HighlightedSearchResultText } from '../HighlightedSearchResultText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import { Text } from '@backstage/canon';
 import { Link } from '@backstage/core-components';
 
 /**
@@ -75,16 +75,15 @@ export const DefaultResultListItemComponent = ({
           </Link>
         }
         secondary={
-          <Typography
-            component="span"
+          <Text
+            variant="body"
             style={{
               display: '-webkit-box',
               WebkitBoxOrient: 'vertical',
               WebkitLineClamp: lineClamp,
               overflow: 'hidden',
             }}
-            color="textSecondary"
-            variant="body2"
+            color="secondary"
           >
             {highlight?.fields.text ? (
               <HighlightedSearchResultText
@@ -95,7 +94,7 @@ export const DefaultResultListItemComponent = ({
             ) : (
               result.text
             )}
-          </Typography>
+          </Text>
         }
       />
       {secondaryAction && <Box alignItems="flex-end">{secondaryAction}</Box>}
