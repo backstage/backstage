@@ -32,7 +32,12 @@ import {
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
 import { selectedTemplateRouteRef } from '../../routes';
-import { useAnalytics, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  AnalyticsContext,
+  useAnalytics,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import qs from 'qs';
 import { ContextMenu } from './ContextMenu';
 import {
@@ -51,6 +56,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 import { default as reactUseAsync } from 'react-use/esm/useAsync';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -82,6 +88,36 @@ export const OngoingTask = (props: {
   }>;
 }) => {
   // todo(blam): check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
+  const { taskId } = useParams();
+  const taskStream = useTaskEventStream(taskId!);
+  const { namespace, name } =
+    taskStream.task?.spec.templateInfo?.entity?.metadata ?? {};
+
+  return (
+    <AnalyticsContext
+      attributes={{
+        entityRef:
+          name &&
+          stringifyEntityRef({
+            kind: 'template',
+            namespace,
+            name,
+          }),
+        taskId,
+      }}
+    >
+      <Page themeId="website">
+        <OngoingTaskContent {...props} />
+      </Page>
+    </AnalyticsContext>
+  );
+};
+
+function OngoingTaskContent(props: {
+  TemplateOutputsComponent?: ComponentType<{
+    output?: ScaffolderTaskOutput;
+  }>;
+}) {
   const { taskId } = useParams();
   const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
   const navigate = useNavigate();
@@ -183,7 +219,7 @@ export const OngoingTask = (props: {
     templateRouteRef,
   ]);
 
-  const [{ status: _ }, { execute: triggerRetry }] = useAsync(async () => {
+  const [, { execute: triggerRetry }] = useAsync(async () => {
     if (taskId) {
       analytics.captureEvent('retried', 'Template has been retried');
       await scaffolderApi.retry?.(taskId);
@@ -202,9 +238,11 @@ export const OngoingTask = (props: {
   const Outputs = props.TemplateOutputsComponent ?? DefaultTemplateOutputs;
 
   const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
+  const isCancelButtonDisabled =
+    !cancelEnabled || cancelStatus !== 'not-executed' || !canCancelTask;
 
   return (
-    <Page themeId="website">
+    <>
       <Header
         pageTitleOverride={
           presentation
@@ -231,7 +269,8 @@ export const OngoingTask = (props: {
           onRetry={triggerRetry}
           onToggleLogs={setLogVisibleState}
           onToggleButtonBar={setButtonBarVisibleState}
-          taskId={taskId}
+          onCancel={triggerCancel}
+          isCancelButtonDisabled={isCancelButtonDisabled}
         />
       </Header>
       <Content className={classes.contentWrapper}>
@@ -316,6 +355,6 @@ export const OngoingTask = (props: {
           </Paper>
         ) : null}
       </Content>
-    </Page>
+    </>
   );
-};
+}

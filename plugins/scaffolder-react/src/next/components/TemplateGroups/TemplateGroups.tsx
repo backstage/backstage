@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import Typography from '@material-ui/core/Typography';
-import { ComponentType, useCallback } from 'react';
+import { ComponentType, useCallback, useEffect } from 'react';
 
 import { TemplateGroup } from '../TemplateGroup/TemplateGroup';
 
@@ -58,12 +58,17 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
     [onTemplateSelected],
   );
 
+  useEffect(() => {
+    if (error) {
+      errorApi.post(error);
+    }
+  }, [error, errorApi]);
+
   if (loading) {
     return <Progress />;
   }
 
   if (error) {
-    errorApi.post(error);
     return null;
   }
 
