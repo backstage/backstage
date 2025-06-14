@@ -50,6 +50,7 @@ export interface CustomResourceMatcher {
 export interface WorkloadsByEntityRequest {
   auth: KubernetesRequestAuth;
   entity: Entity;
+  customLabelSelectorAnnotation?: string;
 }
 
 /** @public */
@@ -57,12 +58,14 @@ export interface CustomObjectsByEntityRequest {
   auth: KubernetesRequestAuth;
   customResources: CustomResourceMatcher[];
   entity: Entity;
+  customLabelSelectorAnnotation?: string;
 }
 
 /** @public */
 export interface KubernetesRequestBody {
   auth?: KubernetesRequestAuth;
   entity: Entity;
+  customLabelSelectorAnnotation?: string;
 }
 
 /** @public */

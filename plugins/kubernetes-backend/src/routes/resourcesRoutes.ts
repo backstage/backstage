@@ -77,6 +77,7 @@ export const addResourceRoutesToRouter = (
       {
         entity,
         auth: req.body.auth,
+        customLabelSelectorAnnotation: req.body.customLabelSelectorAnnotation,
       },
       { credentials: await httpAuth.credentials(req) },
     );
@@ -104,6 +105,7 @@ export const addResourceRoutesToRouter = (
       {
         entity,
         customResources: req.body.customResources,
+        customLabelSelectorAnnotation: req.body.customLabelSelectorAnnotation,
         auth: req.body.auth,
       },
       { credentials: await httpAuth.credentials(req) },

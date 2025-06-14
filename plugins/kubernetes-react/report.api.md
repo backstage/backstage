@@ -852,6 +852,7 @@ export const useCustomResources: (
   entity: Entity,
   customResourceMatchers: CustomResourceMatcher[],
   intervalMs?: number,
+  customLabelSelectorAnnotation?: string,
 ) => KubernetesObjects;
 
 // @public
@@ -865,6 +866,7 @@ export const useEvents: ({
 export const useKubernetesObjects: (
   entity: Entity,
   intervalMs?: number,
+  customLabelSelectorAnnotation?: string,
 ) => KubernetesObjects;
 
 // @public
