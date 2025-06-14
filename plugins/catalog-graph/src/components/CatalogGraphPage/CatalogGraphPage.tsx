@@ -50,6 +50,8 @@ import { SelectedKindsFilter } from './SelectedKindsFilter';
 import { SelectedRelationsFilter } from './SelectedRelationsFilter';
 import { SwitchFilter } from './SwitchFilter';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { catalogGraphTranslationRef } from '../../translation';
 
 /** @public */
 export type CatalogGraphPageClassKey =
@@ -136,7 +138,7 @@ export const CatalogGraphPage = (
     initialState,
     entityFilter,
   } = props;
-
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
   const navigate = useNavigate();
   const classes = useStyles();
   const catalogEntityRoute = useRouteRef(entityRouteRef);
@@ -192,7 +194,7 @@ export const CatalogGraphPage = (
   return (
     <Page themeId="home">
       <Header
-        title="Catalog Graph"
+        title={t('catalogGraphPage.title')}
         subtitle={rootEntityNames.map(e => humanizeEntityRef(e)).join(', ')}
       />
       <Content stretch className={classes.content}>
@@ -203,13 +205,12 @@ export const CatalogGraphPage = (
               selected={showFilters}
               onChange={() => toggleShowFilters()}
             >
-              <FilterListIcon /> Filters
+              <FilterListIcon /> {t('catalogGraphPage.filterToggleButtonTitle')}
             </ToggleButton>
           }
         >
           <SupportButton>
-            Start tracking your component in by adding it to the software
-            catalog.
+            {t('catalogGraphPage.supportButtonDescription')}
           </SupportButton>
         </ContentHeader>
         <Grid container alignItems="stretch" className={classes.container}>
@@ -230,12 +231,12 @@ export const CatalogGraphPage = (
               <SwitchFilter
                 value={unidirectional}
                 onChange={setUnidirectional}
-                label="Simplified"
+                label={t('catalogGraphPage.simplifiedSwitchLabel')}
               />
               <SwitchFilter
                 value={mergeRelations}
                 onChange={setMergeRelations}
-                label="Merge Relations"
+                label={t('catalogGraphPage.mergeRelationsSwitchLabel')}
               />
             </Grid>
           )}
@@ -247,9 +248,8 @@ export const CatalogGraphPage = (
                 display="block"
                 className={classes.legend}
               >
-                <ZoomOutMap className="icon" /> Use pinch &amp; zoom to move
-                around the diagram. Click to change active node, shift click to
-                navigate to entity.
+                <ZoomOutMap className="icon" />{' '}
+                {t('catalogGraphPage.zoomOutDescription')}
               </Typography>
               <EntityRelationsGraph
                 {...props}
