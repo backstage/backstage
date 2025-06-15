@@ -30,3 +30,10 @@ export const Default: Story = {
     label: 'Switch',
   },
 };
+
+export const Disabled: Story = {
+  args: {
+    ...Default.args,
+    isDisabled: true,
+  },
+};

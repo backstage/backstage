@@ -117,6 +117,11 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
+    title: 'Switch',
+    slug: 'switch',
+    status: 'alpha',
+  },
+  {
     title: 'Table',
     slug: 'table',
     status: 'inProgress',

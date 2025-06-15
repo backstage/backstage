@@ -17,7 +17,8 @@ export type Component =
   | 'link'
   | 'tooltip'
   | 'scrollarea'
-  | 'flex';
+  | 'flex'
+  | 'switch';
 
 export type Version = `${number}.${number}.${number}`;
 
@@ -30,6 +31,13 @@ export interface ChangelogProps {
 }
 
 export const changelog: ChangelogProps[] = [
+  {
+    components: ['switch'],
+    version: '0.5.0',
+    description: '✨ Add new `Switch` component',
+    platform: 'portal',
+    prs: ['30251'],
+  },
   {
     components: ['tabs'],
     version: '0.4.0',
