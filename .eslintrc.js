@@ -24,13 +24,17 @@ module.exports = {
       'error',
       {
         // TODO: Fix these either by right role or by moving things to new packages
-        // TODO: Additionally remove the '**/*.{test,spec}.[jt]s?(x)' from `excludedFiles` in `no-mixed-plugin-imports`
-        //       and fix the errors
         excludedTargetPackages: [
           '@backstage/plugin-catalog',
           '@backstage/plugin-techdocs',
           '@backstage/plugin-app',
-          '@backstage/plugin-catalog-backend'
+          '@backstage/plugin-catalog-backend',
+          '@backstage/test-utils',
+          '@backstage/plugin-auth-backend',
+          '@backstage/plugin-permission-backend',
+          '@backstage/plugin-kubernetes-backend',
+          '@backstage/config-loader',
+          '@backstage/plugin-app-backend'
         ],
       }
     ],

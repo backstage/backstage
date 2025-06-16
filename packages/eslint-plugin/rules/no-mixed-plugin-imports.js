@@ -68,6 +68,7 @@ module.exports = {
         'Use web library {{targetPackage}}-react or common library instead.',
       useNodePlugin:
         'Use node library {{targetPackage}}-node or common library instead.',
+      useCommonPlugin: 'Use common library {{targetPackage}}-common instead.',
       removeImport:
         'Remove this import to avoid mixed plugin imports. Fix the code by refactoring it to use the correct plugin type.',
     },
@@ -86,6 +87,11 @@ module.exports = {
             uniqueItems: true,
           },
           excludedFiles: {
+            type: 'array',
+            items: { type: 'string' },
+            uniqueItems: true,
+          },
+          includedFiles: {
             type: 'array',
             items: { type: 'string' },
             uniqueItems: true,
@@ -115,12 +121,14 @@ module.exports = {
     /** @type {string[]} */
     const ignoreTargetPackages = options.excludedTargetPackages || [];
     /** @type {string[]} */
-    const ignorePatterns = options.excludedFiles || [
-      '**/*.{test,spec}.[jt]s?(x)',
-      '**/dev/index.[jt]s?(x)',
-    ];
+    const excludePatterns = options.excludedFiles || [];
+    /** @type {string[]} */
+    const includePatterns = options.includedFiles || ['**/src/**'];
 
-    if (ignorePatterns.some(pattern => matchesPattern(pattern, filePath))) {
+    if (
+      !includePatterns.some(pattern => matchesPattern(pattern, filePath)) ||
+      excludePatterns.some(pattern => matchesPattern(pattern, filePath))
+    ) {
       return {};
     }
 
@@ -170,6 +178,19 @@ module.exports = {
               return fixer.replaceText(imp.node, newImport);
             },
           });
+          suggest.push({
+            messageId: 'useCommonPlugin',
+            data: {
+              targetPackage: targetName,
+            },
+            /** @param {import('eslint').Rule.RuleFixer} fixer */
+            fix(fixer) {
+              const source = context.sourceCode;
+              const nodeSource = source.getText(imp.node);
+              const newImport = nodeSource.replace(/'$/, "-common'");
+              return fixer.replaceText(imp.node, newImport);
+            },
+          });
         } else if (
           (sourceRole === 'backend-plugin' ||
             sourceRole === 'backend-plugin-module') &&
@@ -185,6 +206,19 @@ module.exports = {
               const source = context.sourceCode;
               const nodeSource = source.getText(imp.node);
               const newImport = nodeSource.replace(/-backend'$/, "-node'");
+              return fixer.replaceText(imp.node, newImport);
+            },
+          });
+          suggest.push({
+            messageId: 'useCommonPlugin',
+            data: {
+              targetPackage: targetName,
+            },
+            /** @param {import('eslint').Rule.RuleFixer} fixer */
+            fix(fixer) {
+              const source = context.sourceCode;
+              const nodeSource = source.getText(imp.node);
+              const newImport = nodeSource.replace(/-backend'$/, '-common');
               return fixer.replaceText(imp.node, newImport);
             },
           });
