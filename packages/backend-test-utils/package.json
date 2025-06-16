@@ -30,6 +30,9 @@
     "*": {
       "package.json": [
         "package.json"
+      ],
+      "alpha": [
+        "src/alpha/index.ts"
       ]
     }
   },

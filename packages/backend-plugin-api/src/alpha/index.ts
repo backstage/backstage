@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '@backstage/backend-plugin-api';
-
-/**
- * EXPERIMENTAL: Instance metadata service.
- *
- * @alpha
- */
-export const instanceMetadataServiceRef = createServiceRef<
-  import('./services/definitions/InstanceMetadataService').InstanceMetadataService
->({
-  id: 'core.instanceMetadata',
-});
-
 export type {
   BackendFeatureMeta,
   InstanceMetadataService,
-} from './services/definitions/InstanceMetadataService';
+} from './InstanceMetadataService';
+
+export type {
+  ActionsRegistryService,
+  ActionsRegistryActionOptions,
+  ActionsRegistryActionContext,
+} from './ActionsRegistryService';
+
+export type { ActionsService, ActionsServiceAction } from './ActionsService';
+
+export {
+  actionsRegistryServiceRef,
+  actionsServiceRef,
+  instanceMetadataServiceRef,
+} from './refs';
