@@ -21458,11 +21458,11 @@ __metadata:
   linkType: hard
 
 "@types/cookie-parser@npm:^1.4.2":
-  version: 1.4.8
-  resolution: "@types/cookie-parser@npm:1.4.8"
+  version: 1.4.9
+  resolution: "@types/cookie-parser@npm:1.4.9"
   peerDependencies:
     "@types/express": "*"
-  checksum: 10/b26ace5560adce1a746c059a75f18227ee3e3614a49c70dd29b8af204696079ced22eaa9d6cb084e3433ec433bff845cb47ffb890ae9af96a4aab2ff85e40da7
+  checksum: 10/6192a4899b5412a4c3be0f47158321aef73a4cd7e7a4f7b2a37e2e1045f11a21209681cb1bc5335f250ee2a6ce64d8a3fefb851181a98e6415d3716ef9ed1f62
   languageName: node
   linkType: hard
 
