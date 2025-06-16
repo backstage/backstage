@@ -65,6 +65,10 @@ export interface Config {
                */
               accountId?: string;
               /**
+               * AWS endpoint to use, defaults to standard AWS endpoint based on region
+               */
+              endpoint?: string;
+              /**
                * AWS region to use
                */
               region?: string;

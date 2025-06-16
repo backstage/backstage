@@ -30,7 +30,7 @@ jobs:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: Run Prettier on ADOPTERS.md
-        uses: creyD/prettier_action@31355f8eef017f8aeba2e0bc09d8502b13dbbad1 # v4.3
+        uses: creyD/prettier_action@8c18391fdc98ed0d884c6345f03975edac71b8f0 # v4.6
         with:
           # Modifies commit only if prettier autofixed the ADOPTERS.md
           prettier_options: --config docs/prettier.config.js --write ADOPTERS.md

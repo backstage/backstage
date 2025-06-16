@@ -154,7 +154,7 @@ function mockPrEndpoint() {
 describe('RepoApiClient', () => {
   const server = setupServer();
   registerMswTestHooks(server);
-  const testToken = new Date().toString();
+  const testToken = new Date().toLocaleString('en-US');
   const sut = new RepoApiClient({
     project: 'project',
     tenantUrl: 'https://dev.azure.com/acme',
@@ -316,7 +316,7 @@ describe('createAzurePullRequest', () => {
   });
 
   it('should create a new Pull request', async () => {
-    const testToken = new Date().getTime().toString();
+    const testToken = new Date().toLocaleString('en-US');
     const options: AzurePrOptions = {
       tenantUrl: 'https://dev.azure.com/acme',
       repository: 'test',

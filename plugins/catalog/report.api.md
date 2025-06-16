@@ -41,10 +41,9 @@ import { TabProps } from '@material-ui/core/Tab';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
 // @public
-export interface AboutCardProps {
-  // (undocumented)
+export type AboutCardProps = {
   variant?: InfoCardVariants;
-}
+};
 
 // @public (undocumented)
 export function AboutContent(props: AboutContentProps): JSX_2.Element;

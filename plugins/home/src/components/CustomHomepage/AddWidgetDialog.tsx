@@ -23,6 +23,8 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import AddIcon from '@material-ui/icons/Add';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homeTranslationRef } from '../../translation';
 
 interface AddWidgetDialogProps {
   widgets: Widget[];
@@ -35,9 +37,10 @@ const getTitle = (widget: Widget) => {
 
 export const AddWidgetDialog = (props: AddWidgetDialogProps) => {
   const { widgets, handleAdd } = props;
+  const { t } = useTranslationRef(homeTranslationRef);
   return (
     <>
-      <DialogTitle>Add new widget to dashboard</DialogTitle>
+      <DialogTitle>{t('addWidgetDialog.title')}</DialogTitle>
       <DialogContent>
         <List dense>
           {widgets.map(widget => {

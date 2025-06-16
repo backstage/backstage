@@ -38,6 +38,8 @@ import {
 } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { SearchContextProvider, useSearch } from '../../context';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchReactTranslationRef } from '../../translation';
 
 /**
  * Props for {@link SearchBarBase}.
@@ -81,6 +83,7 @@ export const SearchBarBase = forwardRef((props: SearchBarBaseProps, ref) => {
   const configApi = useApi(configApiRef);
   const [value, setValue] = useState<string>('');
   const forwardedValueRef = useRef<string>('');
+  const { t } = useTranslationRef(searchReactTranslationRef);
 
   useEffect(() => {
     setValue(prevValue => {
@@ -129,12 +132,15 @@ export const SearchBarBase = forwardRef((props: SearchBarBaseProps, ref) => {
     }
   }, [onChange, onClear]);
 
-  const ariaLabel: string | undefined = label ? undefined : 'Search';
+  const ariaLabel: string | undefined = label
+    ? undefined
+    : t('searchBar.title');
 
   const inputPlaceholder =
     placeholder ??
-    `Search in ${configApi.getOptionalString('app.title') || 'Backstage'}`;
-
+    t('searchBar.placeholder', {
+      org: configApi.getOptionalString('app.title') || 'Backstage',
+    });
   const SearchIcon = useApp().getSystemIcon('search') || DefaultSearchIcon;
 
   const startAdornment = (
@@ -148,7 +154,7 @@ export const SearchBarBase = forwardRef((props: SearchBarBaseProps, ref) => {
   const clearButtonEndAdornment = (
     <InputAdornment position="end">
       <Button
-        aria-label="Clear"
+        aria-label={t('searchBar.clearButtonTitle')}
         size="small"
         onClick={handleClear}
         onKeyDown={event => {
@@ -158,7 +164,7 @@ export const SearchBarBase = forwardRef((props: SearchBarBaseProps, ref) => {
           }
         }}
       >
-        Clear
+        {t('searchBar.clearButtonTitle')}
       </Button>
     </InputAdornment>
   );

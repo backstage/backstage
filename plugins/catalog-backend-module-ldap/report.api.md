@@ -63,8 +63,8 @@ export type GroupConfig = {
     displayName: string;
     email?: string;
     picture?: string;
-    memberOf: string;
-    members: string;
+    memberOf: string | null;
+    members: string | null;
   };
 };
 
@@ -259,7 +259,7 @@ export type UserConfig = {
     displayName: string;
     email: string;
     picture?: string;
-    memberOf: string;
+    memberOf: string | null;
   };
 };
 

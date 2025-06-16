@@ -76,7 +76,7 @@ export type RawDbTaskEventRow = {
 
 /**
  * DatabaseTaskStore
- *
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  * @public
  */
 export type DatabaseTaskStoreOptions = {
@@ -86,9 +86,7 @@ export type DatabaseTaskStoreOptions = {
 
 /**
  * Type guard to help DatabaseTaskStore understand when database is DatabaseService vs. when database is a Knex instance.
- *
- * * @public
- */
+ * */
 function isDatabaseService(
   opt: DatabaseService | Knex,
 ): opt is DatabaseService {
@@ -111,7 +109,7 @@ const parseSqlDateToIsoString = <T>(input: T): T | string => {
 
 /**
  * DatabaseTaskStore
- *
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  * @public
  */
 export class DatabaseTaskStore implements TaskStore {
@@ -654,12 +652,18 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async retryTask?(options: { taskId: string }): Promise<void> {
+  async retryTask?(options: {
+    secrets?: TaskSecrets;
+    taskId: string;
+  }): Promise<void> {
+    const { secrets, taskId } = options;
+
     await this.db.transaction(async tx => {
       const result = await tx<RawDbTaskRow>('tasks')
-        .where('id', options.taskId)
+        .where('id', taskId)
         .update(
           {
+            ...(secrets && { secrets: JSON.stringify(secrets) }),
             status: 'open',
             last_heartbeat_at: this.db.fn.now(),
           },

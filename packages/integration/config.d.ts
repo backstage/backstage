@@ -62,6 +62,7 @@ export interface Config {
         clientSecret?: string;
         tenantId?: string;
         personalAccessToken?: string;
+        managedIdentityClientId?: string;
       }[];
       /**
        * PGP signing key for signing commits.

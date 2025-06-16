@@ -31,6 +31,7 @@ import {
   routeResolutionApiRef,
   AppNode,
   ExtensionFactoryMiddleware,
+  FrontendFeature,
 } from '@backstage/frontend-plugin-api';
 import {
   AnyApiFactory,
@@ -74,8 +75,12 @@ import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
-import { FrontendFeature, RouteInfo } from './types';
+import { RouteInfo } from './types';
 import { matchRoutes } from 'react-router-dom';
+import {
+  createPluginInfoAttacher,
+  FrontendPluginInfoResolver,
+} from './createPluginInfoAttacher';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -208,9 +213,13 @@ export function createSpecializedApp(options?: {
   extensionFactoryMiddleware?:
     | ExtensionFactoryMiddleware
     | ExtensionFactoryMiddleware[];
+  flags?: { allowUnknownExtensionConfig?: boolean };
+  pluginInfoResolver?: FrontendPluginInfoResolver;
 }): { apis: ApiHolder; tree: AppTree } {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
-  const features = deduplicateFeatures(options?.features ?? []);
+  const features = deduplicateFeatures(options?.features ?? []).map(
+    createPluginInfoAttacher(config, options?.pluginInfoResolver),
+  );
 
   const tree = resolveAppTree(
     'root',
@@ -221,6 +230,7 @@ export function createSpecializedApp(options?: {
       ],
       parameters: readAppExtensionsConfig(config),
       forbidden: new Set(['root']),
+      allowUnknownExtensionConfig: options?.flags?.allowUnknownExtensionConfig,
     }),
   );
 

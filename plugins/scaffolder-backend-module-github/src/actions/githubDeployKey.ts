@@ -36,65 +36,50 @@ export function createGithubDeployKeyAction(options: {
   const { integrations } = options;
   // For more information on how to define custom actions, see
   //   https://backstage.io/docs/features/software-templates/writing-custom-actions
-  return createTemplateAction<{
-    repoUrl: string;
-    publicKey: string;
-    privateKey: string;
-    deployKeyName: string;
-    privateKeySecretName?: string;
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'github:deployKey:create',
     description: 'Creates and stores Deploy Keys',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl', 'publicKey', 'privateKey', 'deployKeyName'],
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
+        repoUrl: z =>
+          z.string({
             description:
               'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
-            type: 'string',
-          },
-          publicKey: {
-            title: 'SSH Public Key',
+          }),
+        publicKey: z =>
+          z.string({
             description:
               'Generated from `ssh-keygen`.  Begins with `ssh-rsa`, `ecdsa-sha2-nistp256`, `ecdsa-sha2-nistp384`, `ecdsa-sha2-nistp521`, `ssh-ed25519`, `sk-ecdsa-sha2-nistp256@openssh.com`, or `sk-ssh-ed25519@openssh.com`.',
-            type: 'string',
-          },
-          privateKey: {
-            title: 'SSH Private Key',
+          }),
+        privateKey: z =>
+          z.string({
             description: 'SSH Private Key generated from `ssh-keygen`',
-            type: 'string',
-          },
-          deployKeyName: {
-            title: 'Deploy Key Name',
+          }),
+        deployKeyName: z =>
+          z.string({
             description: `Name of the Deploy Key`,
-            type: 'string',
-          },
-          privateKeySecretName: {
-            title: 'Private Key GitHub Secret Name',
-            description:
-              'Name of the GitHub Secret to store the private key related to the Deploy Key.  Defaults to: `KEY_NAME_PRIVATE_KEY` where `KEY_NAME` is the name of the Deploy Key',
-            type: 'string',
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitHub',
-          },
-        },
+          }),
+        privateKeySecretName: z =>
+          z
+            .string({
+              description:
+                'Name of the GitHub Secret to store the private key related to the Deploy Key.  Defaults to: `KEY_NAME_PRIVATE_KEY` where `KEY_NAME` is the name of the Deploy Key',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to GitHub',
+            })
+            .optional(),
       },
       output: {
-        type: 'object',
-        properties: {
-          privateKeySecretName: {
-            title: 'The GitHub Action Repo Secret Name for the Private Key',
-            type: 'string',
-          },
-        },
+        privateKeySecretName: z =>
+          z.string({
+            description:
+              'The GitHub Action Repo Secret Name for the Private Key',
+          }),
       },
     },
     async handler(ctx) {

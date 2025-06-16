@@ -1,7 +1,6 @@
 import { BoxSvg } from './svgs/box';
 import { FlexSvg } from './svgs/flex';
 import { GridSvg } from './svgs/grid';
-import { InlineSvg } from './svgs/inline';
 import { ContainerSvg } from './svgs/container';
 import styles from './LayoutComponents.module.css';
 import Link from 'next/link';
@@ -34,15 +33,6 @@ export const LayoutComponents = () => {
         <div className={styles.title}>Grid</div>
         <div className={styles.description}>
           Arrange your components in a grid
-        </div>
-      </div>
-      <div className={styles.box}>
-        <Link className={styles.content} href="/components/inline">
-          <InlineSvg />
-        </Link>
-        <div className={styles.title}>Inline</div>
-        <div className={styles.description}>
-          Arrange your components in a row
         </div>
       </div>
       <div className={styles.box}>

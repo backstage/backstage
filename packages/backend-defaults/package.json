@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-defaults",
-  "version": "0.10.0-next.1",
+  "version": "0.11.0-next.2",
   "description": "Backend defaults used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -20,6 +20,8 @@
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
+    "./actions": "./src/entrypoints/actions/index.ts",
+    "./actionsRegistry": "./src/entrypoints/actionsRegistry/index.ts",
     "./auditor": "./src/entrypoints/auditor/index.ts",
     "./auth": "./src/entrypoints/auth/index.ts",
     "./cache": "./src/entrypoints/cache/index.ts",
@@ -45,6 +47,12 @@
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
+      "actions": [
+        "src/entrypoints/actions/index.ts"
+      ],
+      "actionsRegistry": [
+        "src/entrypoints/actionsRegistry/index.ts"
+      ],
       "auditor": [
         "src/entrypoints/auditor/index.ts"
       ],
@@ -163,6 +171,7 @@
     "fs-extra": "^11.2.0",
     "git-url-parse": "^15.0.0",
     "helmet": "^6.0.0",
+    "is-glob": "^4.0.3",
     "jose": "^5.0.0",
     "keyv": "^5.2.1",
     "knex": "^3.0.0",
@@ -187,7 +196,8 @@
     "winston-transport": "^4.5.0",
     "yauzl": "^3.0.0",
     "yn": "^4.0.0",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.20.4"
   },
   "devDependencies": {
     "@aws-sdk/util-stream-node": "^3.350.0",
@@ -200,6 +210,7 @@
     "@types/compression": "^1.7.5",
     "@types/concat-stream": "^2.0.0",
     "@types/http-errors": "^2.0.0",
+    "@types/is-glob": "^4.0.2",
     "@types/node-forge": "^1.3.0",
     "@types/pg-format": "^1.0.5",
     "@types/yauzl": "^2.10.0",

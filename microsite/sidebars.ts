@@ -228,7 +228,7 @@ export default {
           'features/software-templates/migrating-from-v1beta2-to-v1beta3',
           'features/software-templates/dry-run-testing',
           'features/software-templates/experimental',
-          'features/software-templates/template-extensions',
+          'features/software-templates/templating-extensions',
         ],
       },
       {
@@ -330,7 +330,7 @@ export default {
       {
         type: 'category',
         label: 'Gitea',
-        items: ['integrations/gitea/locations'],
+        items: ['integrations/gitea/locations', 'integrations/gitea/discovery'],
       },
       {
         type: 'category',

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useState, useMemo } from 'react';
 import Chip from '@material-ui/core/Chip';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, {
@@ -69,7 +69,10 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
   const filterValueWithLabel = ensureFilterValueWithLabel(
     filters[name] as string | string[] | undefined,
   );
-  const filterValue = filterValueWithLabel || (multiple ? [] : null);
+  const filterValue = useMemo(
+    () => filterValueWithLabel || (multiple ? [] : null),
+    [filterValueWithLabel, multiple],
+  );
 
   // Set new filter values on input change.
   const handleChange = (

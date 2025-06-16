@@ -14,6 +14,7 @@
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.025);
     color: var(--primary);
     background-color: var(--panel);
+    border: 1px solid var(--border);
     transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
     overflow: hidden;
   }
@@ -54,6 +55,10 @@
   gap: 2px;
 }
 
+.playgroundSection {
+  position: absolute;
+}
+
 .sectionTitle {
   font-size: var(--canon-font-size-3);
   font-weight: var(--canon-font-weight-bold);
@@ -76,12 +81,12 @@
   transition: background-color 0.2s ease-in-out;
 
   &:hover {
-    background-color: var(--bg);
+    background-color: var(--surface-1);
   }
 }
 
 .line.active {
-  background-color: var(--bg);
+  background-color: var(--surface-1);
 }
 
 .line.active .lineTitle {
@@ -89,13 +94,13 @@
 }
 
 .lineTitle {
-  font-size: var(--canon-font-size-3);
-  font-weight: var(--canon-font-weight-regular);
+  font-size: 14px;
+  font-weight: 400;
   color: var(--secondary);
 }
 
 .lineStatus {
-  font-size: var(--canon-font-size-3);
+  font-size: 14px;
   color: var(--secondary);
 }
 

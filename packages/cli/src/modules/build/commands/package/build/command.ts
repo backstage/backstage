@@ -21,7 +21,7 @@ import { PackageGraph, PackageRoles } from '@backstage/cli-node';
 import { paths } from '../../../../../lib/paths';
 import { buildFrontend } from '../../../lib/buildFrontend';
 import { buildBackend } from '../../../lib/buildBackend';
-import { isValidUrl } from '../../../../../lib/urls';
+import { isValidUrl } from '../../../lib/urls';
 import chalk from 'chalk';
 
 export async function command(opts: OptionValues): Promise<void> {

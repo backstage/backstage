@@ -117,6 +117,11 @@ export interface Config {
                * (Optional) GitHub repository visibility filter.
                */
               visibility?: Array<'private' | 'internal' | 'public'>;
+              /**
+               * (Optional) Whether to include archived repositories.
+               * Default: `false`.
+               */
+              allowArchived?: boolean;
             };
             /**
              * (Optional) TaskScheduleDefinition for the refresh.
@@ -186,6 +191,11 @@ export interface Config {
                  * (Optional) GitHub repository visibility filter.
                  */
                 visibility?: Array<'private' | 'internal' | 'public'>;
+                /**
+                 * (Optional) Whether to include archived repositories.
+                 * Default: `false`.
+                 */
+                allowArchived?: boolean;
               };
               /**
                * (Optional) TaskScheduleDefinition for the refresh.

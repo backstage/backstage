@@ -37,6 +37,7 @@ import {
 import { rootRouteRef, unregisterRedirectRouteRef } from '../routes';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
 import { useEffect } from 'react';
+import { compatWrapper } from '@backstage/core-compat-api';
 
 export const copyEntityUrlContextMenuItem = EntityContextMenuItemBlueprint.make(
   {
@@ -99,6 +100,7 @@ export const unregisterEntityContextMenuItem =
         const dialogApi = useApi(dialogApiRef);
         const navigate = useNavigate();
         const catalogRoute = useRouteRef(rootRouteRef);
+
         const { t } = useTranslationRef(catalogTranslationRef);
         const unregisterRedirectRoute = useRouteRef(unregisterRedirectRouteRef);
         const unregisterPermission = useEntityPermission(
@@ -109,21 +111,23 @@ export const unregisterEntityContextMenuItem =
           title: t('entityContextMenu.unregisterMenuTitle'),
           disabled: !unregisterPermission.allowed,
           onClick: async () => {
-            dialogApi.showModal(({ dialog }: { dialog: DialogApiDialog }) => (
-              <UnregisterEntityDialog
-                open
-                entity={entity}
-                onClose={() => dialog.close()}
-                onConfirm={() => {
-                  dialog.close();
-                  navigate(
-                    unregisterRedirectRoute
-                      ? unregisterRedirectRoute()
-                      : catalogRoute(),
-                  );
-                }}
-              />
-            ));
+            dialogApi.showModal(({ dialog }: { dialog: DialogApiDialog }) =>
+              compatWrapper(
+                <UnregisterEntityDialog
+                  open
+                  entity={entity}
+                  onClose={() => dialog.close()}
+                  onConfirm={() => {
+                    dialog.close();
+                    navigate(
+                      unregisterRedirectRoute
+                        ? unregisterRedirectRoute()
+                        : catalogRoute(),
+                    );
+                  }}
+                />,
+              ),
+            );
           },
         };
       },

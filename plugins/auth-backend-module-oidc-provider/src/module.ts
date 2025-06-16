@@ -16,7 +16,6 @@
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import {
   authProvidersExtensionPoint,
-  commonSignInResolvers,
   createOAuthProviderFactory,
 } from '@backstage/plugin-auth-node';
 import { oidcAuthenticator } from './authenticator';
@@ -38,7 +37,6 @@ export const authModuleOidcProvider = createBackendModule({
             authenticator: oidcAuthenticator,
             signInResolverFactories: {
               ...oidcSignInResolvers,
-              ...commonSignInResolvers,
             },
           }),
         });

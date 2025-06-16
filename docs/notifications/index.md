@@ -158,6 +158,21 @@ You can customize the origin names shown in the UI by passing an object where th
 
 Each notification processor will receive its own row in the settings page, where the user can enable or disable notifications from that processor.
 
+### Automatic notification cleanup
+
+Notifications are deleted automatically after a certain period of time to prevent the database from growing indefinitely
+and to keep the user interface clean. The default retention period is set to 1 year, meaning that notifications older
+than that will be deleted automatically.
+
+The retention period can be configured by setting the `notifications.retention` in the `app-config.yaml` file.
+
+```yaml
+notifications:
+  retention: 1y
+```
+
+If the retention is set to false, notifications will not be automatically deleted.
+
 ## Additional info
 
 An example of a backend plugin sending notifications can be found in the [`@backstage/plugin-scaffolder-backend-module-notifications` package](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-notifications).

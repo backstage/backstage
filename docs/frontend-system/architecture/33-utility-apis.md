@@ -2,7 +2,6 @@
 id: utility-apis
 title: Utility APIs
 sidebar_label: Utility APIs
-# prettier-ignore
 description: Utility APIs
 ---
 

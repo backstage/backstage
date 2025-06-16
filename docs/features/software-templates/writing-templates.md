@@ -4,8 +4,7 @@ title: Writing Templates
 description: Details around creating your own custom Software Templates
 ---
 
-Templates are stored in the **Software Catalog** under a kind `Template`. You
-can create your own templates with a small `yaml` definition which describes the
+You can create your own templates with a small `yaml` definition which describes the
 template and its metadata, along with some input variables that your template
 will need, and then a list of actions which are then executed by the scaffolding
 service.
@@ -273,6 +272,58 @@ spec:
         # make sure to use ${{ secrets.parameterName }} to reference these values
         username: ${{ secrets.username }}
         password: ${{ secrets.password }}
+```
+
+You can also consume secrets within `each` step of the template.
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: v1beta3-demo
+  title: Test Action template
+  description: scaffolder v1beta3 template demo
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    - title: Authentication
+      description: Provide authentication for the resource
+      required:
+        - service1
+        - token1
+        - service2
+        - token2
+      properties:
+        service1:
+          type: string
+        token1:
+          type: string
+          ui:field: Secret
+        service2:
+          type: string
+        token2:
+          type: string
+          ui:field: Secret
+
+  steps:
+    - id: setupAuthentication
+      action: auth:create
+      each:
+        [
+          {
+            name: '${{ parameters.service1 }}',
+            token: '${{ secrets.token1 }}',
+          },
+          {
+            name: '${{ parameters.service2 }}',
+            token: '${{ secrets.token2 }}',
+          },
+        ]
+      input:
+        name: ${{ each.value.name }}
+        token: ${{ each.value.token }}
 ```
 
 ### Custom step layouts
@@ -712,9 +763,9 @@ powerful [Nunjucks templating engine](https://mozilla.github.io/nunjucks/).
 To learn more about basic Nunjucks templating please see
 [templating documentation](https://mozilla.github.io/nunjucks/templating.html).
 
-Information about Backstage's built-in Nunjucks extensions, as well as how to
+Information about Backstage's built-in templating extensions, as well as how to
 create your own customizations, may be found at
-[Template Extensions](./template-extensions.md).
+[Templating Extensions](./templating-extensions.md).
 
 ## Template Editor
 

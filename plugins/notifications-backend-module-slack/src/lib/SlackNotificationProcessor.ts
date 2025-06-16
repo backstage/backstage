@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  AuthService,
-  DiscoveryService,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import {
   Entity,
   isUserEntity,
@@ -39,25 +34,26 @@ import { ChatPostMessageArguments, WebClient } from '@slack/web-api';
 import DataLoader from 'dataloader';
 import pThrottle from 'p-throttle';
 import { ANNOTATION_SLACK_BOT_NOTIFY } from './constants';
-import { toChatPostMessageArgs } from './util';
+import { ExpiryMap, toChatPostMessageArgs } from './util';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 
 export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly logger: LoggerService;
-  private readonly catalog: CatalogApi;
+  private readonly catalog: CatalogService;
   private readonly auth: AuthService;
   private readonly slack: WebClient;
   private readonly sendNotifications;
   private readonly messagesSent: Counter;
   private readonly messagesFailed: Counter;
   private readonly broadcastChannels?: string[];
+  private readonly entityLoader: DataLoader<string, Entity | undefined>;
 
   static fromConfig(
     config: Config,
     options: {
       auth: AuthService;
-      discovery: DiscoveryService;
       logger: LoggerService;
-      catalog: CatalogApi;
+      catalog: CatalogService;
       slack?: WebClient;
       broadcastChannels?: string[];
     },
@@ -79,9 +75,8 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   private constructor(options: {
     slack: WebClient;
     auth: AuthService;
-    discovery: DiscoveryService;
     logger: LoggerService;
-    catalog: CatalogApi;
+    catalog: CatalogService;
     broadcastChannels?: string[];
   }) {
     const { auth, catalog, logger, slack, broadcastChannels } = options;
@@ -90,6 +85,31 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     this.auth = auth;
     this.slack = slack;
     this.broadcastChannels = broadcastChannels;
+
+    this.entityLoader = new DataLoader<string, Entity | undefined>(
+      async entityRefs => {
+        return await this.catalog
+          .getEntitiesByRefs(
+            {
+              entityRefs: entityRefs.slice(),
+              fields: [
+                `kind`,
+                `spec.profile.email`,
+                `metadata.annotations.${ANNOTATION_SLACK_BOT_NOTIFY}`,
+              ],
+            },
+            { credentials: await this.auth.getOwnServiceCredentials() },
+          )
+          .then(r => r.items);
+      },
+      {
+        name: 'SlackNotificationProcessor.entityLoader',
+        cacheMap: new ExpiryMap(durationToMilliseconds({ minutes: 10 })),
+        maxBatchSize: 100,
+        batchScheduleFn: cb =>
+          setTimeout(cb, durationToMilliseconds({ milliseconds: 10 })),
+      },
+    );
 
     const meter = metrics.getMeter('default');
     this.messagesSent = meter.createCounter(
@@ -193,7 +213,6 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       }),
     );
 
-    console.log('dispatching message');
     await this.sendNotifications(outbound);
 
     return options;
@@ -236,8 +255,11 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     }
 
     // Prepare outbound messages
+    const formattedPayload = await this.formatPayloadDescriptionForSlack(
+      options.payload,
+    );
     const outbound = destinations.map(channel =>
-      toChatPostMessageArgs({ channel, payload: options.payload }),
+      toChatPostMessageArgs({ channel, payload: formattedPayload }),
     );
 
     // Log debug info
@@ -249,41 +271,58 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     await this.sendNotifications(outbound);
   }
 
-  async getEntities(
-    entityRefs: readonly string[],
-  ): Promise<(Entity | undefined)[]> {
-    const { token } = await this.auth.getPluginRequestToken({
-      onBehalfOf: await this.auth.getOwnServiceCredentials(),
-      targetPluginId: 'catalog',
-    });
+  private async formatPayloadDescriptionForSlack(
+    payload: Notification['payload'],
+  ) {
+    return {
+      ...payload,
+      description: await this.replaceUserRefsWithSlackIds(payload.description),
+    };
+  }
 
-    const response = await this.catalog.getEntitiesByRefs(
-      {
-        entityRefs: entityRefs.slice(),
-        fields: [
-          `kind`,
-          `spec.profile.email`,
-          `metadata.annotations.${ANNOTATION_SLACK_BOT_NOTIFY}`,
-        ],
-      },
-      {
-        token,
-      },
+  async replaceUserRefsWithSlackIds(
+    text?: string,
+  ): Promise<string | undefined> {
+    if (!text) return undefined;
+
+    // Match user entity refs like "<@user:default/billy>"
+    const userRefRegex = /<@(user:[^>]+)>/gi;
+    const matches = [...text.matchAll(userRefRegex)];
+
+    if (matches.length === 0) return text;
+
+    const uniqueUserRefs = new Set(
+      matches.map(match => match[1].toLowerCase()),
     );
 
-    return response.items;
+    const slackIdMap = new Map<string, string>();
+
+    await Promise.all(
+      [...uniqueUserRefs].map(async userRef => {
+        try {
+          const slackId = await this.getSlackNotificationTarget(userRef);
+          if (slackId) {
+            slackIdMap.set(userRef, `<@${slackId}>`);
+          }
+        } catch (error) {
+          this.logger.warn(
+            `Failed to resolve Slack ID for user ref "${userRef}": ${error}`,
+          );
+        }
+      }),
+    );
+
+    return text.replace(userRefRegex, (match, userRef) => {
+      const slackId = slackIdMap.get(userRef.toLowerCase());
+      return slackId ?? match;
+    });
   }
 
   async getSlackNotificationTarget(
     entityRef: string,
   ): Promise<string | undefined> {
-    const entityLoader = new DataLoader<string, Entity | undefined>(
-      entityRefs => this.getEntities(entityRefs),
-    );
-    const entity = await entityLoader.load(entityRef);
-
+    const entity = await this.entityLoader.load(entityRef);
     if (!entity) {
-      console.log(`Entity not found: ${entityRef}`);
       throw new NotFoundError(`Entity not found: ${entityRef}`);
     }
 

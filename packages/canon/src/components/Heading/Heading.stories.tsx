@@ -46,8 +46,29 @@ export const AllVariants: Story = {
       <Heading variant="title2">Title 2</Heading>
       <Heading variant="title3">Title 3</Heading>
       <Heading variant="title4">Title 4</Heading>
+      <Heading variant="title5">Title 5</Heading>
     </Flex>
   ),
+};
+
+export const AllColors: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: args => (
+    <Flex gap="4" direction="column">
+      <Heading color="primary" {...args} />
+      <Heading color="secondary" {...args} />
+    </Flex>
+  ),
+};
+
+export const Truncate: Story = {
+  args: {
+    ...Title1.args,
+    truncate: true,
+    style: { maxWidth: '400px' },
+  },
 };
 
 export const Responsive: Story = {
@@ -56,13 +77,6 @@ export const Responsive: Story = {
       xs: 'title4',
       md: 'display',
     },
-  },
-};
-
-export const CustomTag: Story = {
-  args: {
-    variant: 'title5',
-    as: 'h2',
   },
 };
 
@@ -77,6 +91,13 @@ export const WrappedInLink: Story = {
       </a>
     ),
   ],
+};
+
+export const CustomRender: Story = {
+  args: {
+    ...Default.args,
+    render: <h4 />,
+  },
 };
 
 export const Playground: Story = {

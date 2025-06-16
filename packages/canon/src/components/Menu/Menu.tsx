@@ -18,6 +18,8 @@ import { forwardRef } from 'react';
 import { Menu as MenuPrimitive } from '@base-ui-components/react/menu';
 import clsx from 'clsx';
 import { MenuComponent } from './types';
+import { Combobox } from './Combobox';
+import { Icon } from '../Icon';
 
 const MenuTrigger = forwardRef<
   React.ElementRef<typeof MenuPrimitive.Trigger>,
@@ -180,12 +182,15 @@ MenuCheckboxItemIndicator.displayName =
 const MenuSubmenuTrigger = forwardRef<
   React.ElementRef<typeof MenuPrimitive.SubmenuTrigger>,
   React.ComponentPropsWithoutRef<typeof MenuPrimitive.SubmenuTrigger>
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <MenuPrimitive.SubmenuTrigger
     ref={ref}
     className={clsx('canon-MenuSubmenuTrigger', className)}
     {...props}
-  />
+  >
+    <div>{children}</div>
+    <Icon aria-label="Submenu indicator icon" name="chevron-right" size={20} />
+  </MenuPrimitive.SubmenuTrigger>
 ));
 MenuSubmenuTrigger.displayName = MenuPrimitive.SubmenuTrigger.displayName;
 
@@ -220,4 +225,5 @@ export const Menu: MenuComponent = {
   CheckboxItemIndicator: MenuCheckboxItemIndicator,
   SubmenuTrigger: MenuSubmenuTrigger,
   Separator: MenuSeparator,
+  Combobox,
 };
