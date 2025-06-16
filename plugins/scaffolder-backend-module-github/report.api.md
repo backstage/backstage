@@ -247,8 +247,8 @@ export function createGithubRepoCreateAction(options: {
               access: string;
             }
           | {
-              access: string;
               team: string;
+              access: string;
             }
         )[]
       | undefined;
@@ -406,8 +406,8 @@ export function createPublishGithubAction(options: {
               access: string;
             }
           | {
-              access: string;
               team: string;
+              access: string;
             }
         )[]
       | undefined;
