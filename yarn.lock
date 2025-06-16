@@ -24036,7 +24036,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@yarnpkg/core@npm:^4.2.1, @yarnpkg/core@npm:^4.4.0":
+"@yarnpkg/core@npm:^4.2.1, @yarnpkg/core@npm:^4.4.0, @yarnpkg/core@npm:^4.4.1":
   version: 4.4.1
   resolution: "@yarnpkg/core@npm:4.4.1"
   dependencies:
@@ -50645,8 +50645,9 @@ __metadata:
     "@backstage/cli-common": "workspace:^"
     "@backstage/release-manifests": "workspace:^"
     "@yarnpkg/builder": "npm:^4.2.1"
-    "@yarnpkg/core": "npm:^4.4.0"
+    "@yarnpkg/core": "npm:^4.4.1"
     "@yarnpkg/fslib": "npm:^3.1.2"
+    "@yarnpkg/plugin-essentials": "npm:^4.4.0"
     "@yarnpkg/plugin-npm": "patch:@yarnpkg/plugin-npm@npm%3A3.1.0#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.1.0-6533d0f5a1.patch"
     "@yarnpkg/plugin-pack": "npm:^4.0.1"
     fs-extra: "npm:^11.2.0"
