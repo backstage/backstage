@@ -143,11 +143,9 @@ export async function readLdapUsers(
         return;
       }
 
-      if (!cfg.parsing?.skipMemberOf) {
-        mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
-          ensureItems(userMemberOf, myDn, vs);
-        });
-      }
+      mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
+        ensureItems(userMemberOf, myDn, vs);
+      });
 
       entities.push(entity);
     });
@@ -281,11 +279,9 @@ export async function readLdapGroups(
         ensureItems(groupMemberOf, myDn, vs);
       });
 
-      if (!cfg.parsing?.skipMembers) {
-        mapReferencesAttr(entry, vendor, map.members, (myDn, vs) => {
-          ensureItems(groupMember, myDn, vs);
-        });
-      }
+      mapReferencesAttr(entry, vendor, map.members, (myDn, vs) => {
+        ensureItems(groupMember, myDn, vs);
+      });
 
       groups.push(entity);
     });
@@ -355,7 +351,7 @@ export async function readLdapOrg(
 function mapReferencesAttr(
   entry: SearchEntry,
   vendor: LdapVendor,
-  attributeName: string | undefined,
+  attributeName: string | undefined | null,
   setter: (sourceDn: string, targets: string[]) => void,
 ) {
   if (attributeName) {
