@@ -17,15 +17,19 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { startTestBackend } from '../wiring';
-import { mockServices } from './mockServices';
-import { mockCredentials } from './mockCredentials';
+import { startTestBackend } from '../../wiring';
+import { actionsRegistryServiceMock } from './ActionsRegistryServiceMock';
+import { mockCredentials } from '../../services';
 import { Router } from 'express';
 import supertest from 'supertest';
+import {
+  actionsRegistryServiceRef,
+  actionsServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
 
 describe('MockActionsRegistry', () => {
   it('should be able to register and invoke actions', async () => {
-    const registry = mockServices.actionsRegistry();
+    const registry = actionsRegistryServiceMock();
 
     registry.register({
       name: 'my-demo-action',
@@ -53,7 +57,7 @@ describe('MockActionsRegistry', () => {
   });
 
   it('should throw an error when the input is invalid to the action', async () => {
-    const registry = mockServices.actionsRegistry();
+    const registry = actionsRegistryServiceMock();
 
     registry.register({
       name: 'my-demo-action',
@@ -72,7 +76,7 @@ describe('MockActionsRegistry', () => {
   });
 
   it('should throw an error when the action is not found', async () => {
-    const registry = mockServices.actionsRegistry();
+    const registry = actionsRegistryServiceMock();
 
     await expect(registry.invoke({ id: 'test' })).rejects.toThrow(
       'Action "test" not found, available actions: none',
@@ -80,7 +84,7 @@ describe('MockActionsRegistry', () => {
   });
 
   it('should throw an error when the action is not found with recommended actions', async () => {
-    const registry = mockServices.actionsRegistry();
+    const registry = actionsRegistryServiceMock();
 
     registry.register({
       name: 'my-demo-action',
@@ -99,7 +103,7 @@ describe('MockActionsRegistry', () => {
   });
 
   it('should throw an error when the output is invalid', async () => {
-    const registry = mockServices.actionsRegistry();
+    const registry = actionsRegistryServiceMock();
 
     registry.register({
       name: 'my-demo-action',
@@ -119,7 +123,7 @@ describe('MockActionsRegistry', () => {
   });
 
   it('should list the actions correctly', async () => {
-    const registry = mockServices.actionsRegistry();
+    const registry = actionsRegistryServiceMock();
 
     registry.register({
       name: 'my-demo-action',
@@ -165,13 +169,13 @@ describe('MockActionsRegistry', () => {
     });
   });
 
-  describe('mockServices.actions + mockService.actionsRegistry', () => {
+  describe('actionsRegistryServiceMock + mockService.actionsRegistry', () => {
     it('should be able to register and invoke actions', async () => {
       const pluginWithAction = createBackendPlugin({
         pluginId: 'my-plugin',
         register(reg) {
           reg.registerInit({
-            deps: { actionsRegistry: coreServices.actionsRegistry },
+            deps: { actionsRegistry: actionsRegistryServiceRef },
             async init({ actionsRegistry }) {
               actionsRegistry.register({
                 name: 'test',
@@ -196,7 +200,7 @@ describe('MockActionsRegistry', () => {
         register(reg) {
           reg.registerInit({
             deps: {
-              actions: coreServices.actions,
+              actions: actionsServiceRef,
               router: coreServices.httpRouter,
             },
             async init({ actions, router }) {

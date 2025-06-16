@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { mockServices, type ServiceMock } from './mockServices';
-export { mockCredentials } from './mockCredentials';
-export { type MockActionsRegistry } from './MockActionsRegistry';
+
+import { simpleMock } from './simpleMock';
+import {
+  ActionsService,
+  actionsServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
+import { actionsServiceFactory } from '@backstage/backend-defaults/alpha';
+
+/**
+ * @alpha
+ */
+export namespace actionsServiceMock {
+  export const factory = () => actionsServiceFactory;
+
+  export const mock = simpleMock<ActionsService>(actionsServiceRef, () => ({
+    invoke: jest.fn(),
+    list: jest.fn(),
+  }));
+}
