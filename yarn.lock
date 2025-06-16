@@ -11560,11 +11560,11 @@ __metadata:
   linkType: hard
 
 "@keyv/valkey@npm:^1.0.1":
-  version: 1.0.3
-  resolution: "@keyv/valkey@npm:1.0.3"
+  version: 1.0.4
+  resolution: "@keyv/valkey@npm:1.0.4"
   dependencies:
     iovalkey: "npm:^0.3.1"
-  checksum: 10/ff6ba62e4d19c426e45a1437fe215ed2baddc58e811d97507dd75ead0058c3105d679c8c7c4241ddf732abe56320357c2e568c014620e50d7c0eaef1f2528b88
+  checksum: 10/93362c51c14bb8e515a9af8df4a22e028fcec5a09931eb68f854698676cb16cecad691330c75c1dca8b6a986a4763cac9f1b2fd4e5b8216f06648d9379f55cc6
   languageName: node
   linkType: hard
 
