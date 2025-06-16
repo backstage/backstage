@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import type { HTMLAttributes } from 'react';
+
 /** @public */
-export interface FieldLabelProps {
+export interface FieldLabelProps extends HTMLAttributes<HTMLDivElement> {
   /**
    * The label of the text field
    */
@@ -30,4 +32,9 @@ export interface FieldLabelProps {
    * The description of the text field
    */
   description?: string | null;
+
+  /**
+   * The HTML for attribute of the text field
+   */
+  htmlFor?: string;
 }

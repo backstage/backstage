@@ -45,7 +45,7 @@ export const TextField = forwardRef<HTMLDivElement, FormInputProps>(
     useEffect(() => {
       if (!label && !ariaLabel && !ariaLabelledBy) {
         console.warn(
-          'If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility',
+          'TextField requires either a visible label, aria-label, or aria-labelledby for accessibility',
         );
       }
     }, [label, ariaLabel, ariaLabelledBy]);
@@ -61,6 +61,8 @@ export const TextField = forwardRef<HTMLDivElement, FormInputProps>(
       <AriaTextField
         className={clsx('canon-TextField', className)}
         data-size={responsiveSize}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
         {...rest}
         ref={ref}
       >

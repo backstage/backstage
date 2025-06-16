@@ -20,14 +20,14 @@ import type { FieldLabelProps } from './types';
 /** @public */
 export const FieldLabel = forwardRef<HTMLDivElement, FieldLabelProps>(
   (props: FieldLabelProps, ref) => {
-    const { label, secondaryLabel, description } = props;
+    const { label, secondaryLabel, description, htmlFor, id, ...rest } = props;
 
     if (!label) return null;
 
     return (
-      <div className="canon-FieldLabel" ref={ref}>
+      <div className="canon-FieldLabel" {...rest} ref={ref}>
         {label && (
-          <Label className="canon-FieldLabelLabel">
+          <Label className="canon-FieldLabelLabel" htmlFor={htmlFor} id={id}>
             {label}
             {secondaryLabel && (
               <span

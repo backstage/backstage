@@ -19,6 +19,7 @@ import { TextField } from './TextField';
 import { Form } from 'react-aria-components';
 import { Icon } from '../Icon';
 import { Flex } from '../Flex';
+import { FieldLabel } from '../FieldLabel';
 
 const meta = {
   title: 'Forms/TextField',
@@ -124,4 +125,22 @@ export const Validation: Story = {
     ...WithLabel.args,
     validate: value => (value === 'admin' ? 'Nice try!' : null),
   },
+};
+
+export const CustomField: Story = {
+  render: () => (
+    <>
+      <FieldLabel
+        htmlFor="custom-field"
+        id="custom-field-label"
+        label="Custom Field"
+      />
+      <TextField
+        id="custom-field"
+        aria-labelledby="custom-field-label"
+        name="custom-field"
+        defaultValue="Custom Field"
+      />
+    </>
+  ),
 };
