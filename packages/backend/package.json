@@ -38,6 +38,8 @@
     "@backstage/plugin-auth-backend-module-github-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/plugin-builds-backend": "workspace:^",
+    "@backstage/plugin-builds-backend-module-github-actions": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^",
     "@backstage/plugin-catalog-backend-module-openapi": "workspace:^",

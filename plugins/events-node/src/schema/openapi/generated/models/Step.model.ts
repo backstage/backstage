@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,35 @@
 // ******************************************************************
 
 /**
+ * Represents a single step in a build stage, such as running tests or building artifacts.
  * @public
  */
-export interface ErrorRequest {
-  method: string;
-  url: string;
+export interface Step {
+  /**
+   * The name of the build step.
+   */
+  name: string;
+  /**
+   * The current status of the step.
+   */
+  status: StepStatusEnum;
+  /**
+   * The ISO 8601 timestamp when the step started.
+   */
+  startTime?: Date;
+  /**
+   * The ISO 8601 timestamp when the step ended.
+   */
+  endTime?: Date;
 }
+
+/**
+ * @public
+ */
+export type StepStatusEnum =
+  | 'queued'
+  | 'running'
+  | 'success'
+  | 'failed'
+  | 'cancelled'
+  | 'skipped';

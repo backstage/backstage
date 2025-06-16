@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@ import { FetchApi } from '../types/fetch';
 import crossFetch from 'cross-fetch';
 import { pluginId } from '../pluginId';
 import * as parser from 'uri-template';
-import { GetSubscriptionEvents200Response } from '../models/GetSubscriptionEvents200Response.model';
-import { PostEventRequest } from '../models/PostEventRequest.model';
-import { PutSubscriptionRequest } from '../models/PutSubscriptionRequest.model';
+import { Build } from '../models/Build.model';
 
 /**
  * Wraps the Response type to convey a type on the json call.
@@ -46,25 +44,43 @@ export interface RequestOptions {
 /**
  * @public
  */
-export type GetSubscriptionEvents = {
+export type BuildIdGet = {
   path: {
-    subscriptionId: string;
+    buildId: string;
+  };
+  query: {
+    entityRef: string;
   };
 };
 /**
  * @public
  */
-export type PostEvent = {
-  body: PostEventRequest;
+export type BuildIdLogsGet = {
+  path: {
+    buildId: string;
+  };
+  query: {
+    entityRef: string;
+  };
 };
 /**
  * @public
  */
-export type PutSubscription = {
+export type BuildIdRetriggerPost = {
   path: {
-    subscriptionId: string;
+    buildId: string;
   };
-  body: PutSubscriptionRequest;
+  query: {
+    entityRef: string;
+  };
+};
+/**
+ * @public
+ */
+export type RootGet = {
+  query: {
+    entityRef: string;
+  };
 };
 
 /**
@@ -83,20 +99,22 @@ export class DefaultApiClient {
   }
 
   /**
-   * Get new events for the provided subscription
-   * @param subscriptionId -
+   * Get build details
+   * @param buildId - Build ID
+   * @param entityRef - Entity reference (kind:namespace/name)
    */
-  public async getSubscriptionEvents(
+  public async buildIdGet(
     // @ts-ignore
-    request: GetSubscriptionEvents,
+    request: BuildIdGet,
     options?: RequestOptions,
-  ): Promise<TypedResponse<void | GetSubscriptionEvents200Response>> {
+  ): Promise<TypedResponse<Build>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/bus/v1/subscriptions/{subscriptionId}/events`;
+    const uriTemplate = `/{buildId}{?entityRef}`;
 
     const uri = parser.parse(uriTemplate).expand({
-      subscriptionId: request.path.subscriptionId,
+      buildId: request.path.buildId,
+      ...request.query,
     });
 
     return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
@@ -109,19 +127,51 @@ export class DefaultApiClient {
   }
 
   /**
-   * Publish a new event
-   * @param postEventRequest -
+   * Stream build logs
+   * @param buildId - Build ID
+   * @param entityRef - Entity reference (kind:namespace/name)
    */
-  public async postEvent(
+  public async buildIdLogsGet(
     // @ts-ignore
-    request: PostEvent,
+    request: BuildIdLogsGet,
     options?: RequestOptions,
-  ): Promise<TypedResponse<void>> {
+  ): Promise<TypedResponse<string>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/bus/v1/events`;
+    const uriTemplate = `/{buildId}/logs{?entityRef}`;
 
-    const uri = parser.parse(uriTemplate).expand({});
+    const uri = parser.parse(uriTemplate).expand({
+      buildId: request.path.buildId,
+      ...request.query,
+    });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'GET',
+    });
+  }
+
+  /**
+   * Retrigger a build
+   * @param buildId - Build ID
+   * @param entityRef - Entity reference (kind:namespace/name)
+   */
+  public async buildIdRetriggerPost(
+    // @ts-ignore
+    request: BuildIdRetriggerPost,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<Build>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/{buildId}/retrigger{?entityRef}`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      buildId: request.path.buildId,
+      ...request.query,
+    });
 
     return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
@@ -129,26 +179,24 @@ export class DefaultApiClient {
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'POST',
-      body: JSON.stringify(request.body),
     });
   }
 
   /**
-   * Ensures that the subscription exists with the provided configuration
-   * @param subscriptionId -
-   * @param putSubscriptionRequest -
+   * List builds for an entity
+   * @param entityRef - Entity reference (kind:namespace/name)
    */
-  public async putSubscription(
+  public async rootGet(
     // @ts-ignore
-    request: PutSubscription,
+    request: RootGet,
     options?: RequestOptions,
-  ): Promise<TypedResponse<void>> {
+  ): Promise<TypedResponse<Array<Build>>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/bus/v1/subscriptions/{subscriptionId}`;
+    const uriTemplate = `/{?entityRef}`;
 
     const uri = parser.parse(uriTemplate).expand({
-      subscriptionId: request.path.subscriptionId,
+      ...request.query,
     });
 
     return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
@@ -156,8 +204,7 @@ export class DefaultApiClient {
         'Content-Type': 'application/json',
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
-      method: 'PUT',
-      body: JSON.stringify(request.body),
+      method: 'GET',
     });
   }
 }

@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-builds-backend-module-github-actions
+  title: '@backstage/plugin-builds-backend-module-github-actions'
+  description: The github-actions backend module for the builds plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

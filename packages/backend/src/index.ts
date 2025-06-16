@@ -62,4 +62,6 @@ backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(import('./instanceMetadata'));
 
 backend.add(import('@backstage/plugin-events-backend-module-google-pubsub'));
+backend.add(import('@backstage/plugin-builds-backend'));
+backend.add(import('@backstage/plugin-builds-backend-module-github-actions'));
 backend.start();

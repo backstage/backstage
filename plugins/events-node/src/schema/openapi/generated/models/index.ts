@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-export * from '../models/ErrorError.model';
-export * from '../models/ErrorRequest.model';
-export * from '../models/ErrorResponse.model';
-export * from '../models/Event.model';
-export * from '../models/GetSubscriptionEvents200Response.model';
-export * from '../models/ModelError.model';
-export * from '../models/PostEventRequest.model';
-export * from '../models/PutSubscriptionRequest.model';
+export * from '../models/Build.model';
+export * from '../models/Stage.model';
+export * from '../models/Step.model';
