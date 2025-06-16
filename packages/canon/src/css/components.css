@@ -21,6 +21,7 @@
 @import '../components/DataTable/Root/DataTableRoot.styles.css';
 @import '../components/DataTable/Pagination/DataTablePagination.styles.css';
 @import '../components/Flex/styles.css';
+@import '../components/FormInput/FormInput.styles.css';
 @import '../components/Grid/styles.css';
 @import '../components/Container/styles.css';
 @import '../components/Icon/styles.css';
