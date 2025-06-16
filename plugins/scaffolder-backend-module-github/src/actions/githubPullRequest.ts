@@ -27,7 +27,10 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
 import { CustomErrorBase, InputError } from '@backstage/errors';
-import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import {
+  createPullRequest,
+  DELETE_FILE,
+} from 'octokit-plugin-create-pull-request';
 import { getOctokitOptions } from '../util';
 import { examples } from './githubPullRequest.examples';
 import {
@@ -143,6 +146,15 @@ export const createPublishGithubPullRequestAction = (
           z.string({
             description: 'The name for the branch',
           }),
+        deletionMarker: z =>
+          z
+            .string({
+              description: 'Contents of files that will be deleted',
+            })
+            .min(33, {
+              message: 'deletion marker must be at least 33 characters long',
+            })
+            .optional(),
         targetBranchName: z =>
           z
             .string({
@@ -269,6 +281,7 @@ export const createPublishGithubPullRequestAction = (
       const {
         repoUrl,
         branchName,
+        deletionMarker,
         targetBranchName,
         title,
         description,
@@ -323,24 +336,32 @@ export const createPublishGithubPullRequestAction = (
         file: SerializedFile,
       ): 'utf-8' | 'base64' => (file.symlink ? 'utf-8' : 'base64');
 
+      const encodedDeletionMarker =
+        deletionMarker && Buffer.from(deletionMarker).toString('base64');
       const files = Object.fromEntries(
-        directoryContents.map(file => [
-          targetPath ? path.posix.join(targetPath, file.path) : file.path,
-          {
-            // See the properties of tree items
-            // in https://docs.github.com/en/rest/reference/git#trees
-            mode: determineFileMode(file),
-            // Always use base64 encoding where possible to avoid doubling a binary file in size
-            // due to interpreting a binary file as utf-8 and sending github
-            // the utf-8 encoded content. Symlinks are kept as utf-8 to avoid them
-            // being formatted as a series of scrambled characters
-            //
-            // For example, the original gradle-wrapper.jar is 57.8k in https://github.com/kennethzfeng/pull-request-test/pull/5/files.
-            // Its size could be doubled to 98.3K (See https://github.com/kennethzfeng/pull-request-test/pull/4/files)
-            encoding: determineFileEncoding(file),
-            content: file.content.toString(determineFileEncoding(file)),
-          },
-        ]),
+        directoryContents.map(file => {
+          const content = file.content.toString(determineFileEncoding(file));
+
+          return [
+            targetPath ? path.posix.join(targetPath, file.path) : file.path,
+            content === encodedDeletionMarker
+              ? DELETE_FILE
+              : {
+                  // See the properties of tree items
+                  // in https://docs.github.com/en/rest/reference/git#trees
+                  mode: determineFileMode(file),
+                  // Always use base64 encoding where possible to avoid doubling a binary file in size
+                  // due to interpreting a binary file as utf-8 and sending github
+                  // the utf-8 encoded content. Symlinks are kept as utf-8 to avoid them
+                  // being formatted as a series of scrambled characters
+                  //
+                  // For example, the original gradle-wrapper.jar is 57.8k in https://github.com/kennethzfeng/pull-request-test/pull/5/files.
+                  // Its size could be doubled to 98.3K (See https://github.com/kennethzfeng/pull-request-test/pull/4/files)
+                  encoding: determineFileEncoding(file),
+                  content,
+                },
+          ];
+        }),
       );
 
       // If this is a dry run, log and return

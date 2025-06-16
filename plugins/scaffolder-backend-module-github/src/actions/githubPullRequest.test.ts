@@ -27,6 +27,7 @@ import fs from 'fs-extra';
 import { createPublishGithubPullRequestAction } from './githubPullRequest';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { DELETE_FILE } from 'octokit-plugin-create-pull-request';
 
 type GithubPullRequestActionInput = ReturnType<
   typeof createPublishGithubPullRequestAction
@@ -46,12 +47,12 @@ describe('createPublishGithubPullRequestAction', () => {
   let config: Config;
   let integrations: ScmIntegrations;
 
+  const deletionMarker =
+    'if-you-find-a-file-whose-contents-matches-this-delete-it';
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
 
   beforeEach(() => {
-    mockDir.clear();
-
     config = new ConfigReader({});
     integrations = ScmIntegrations.fromConfig(config);
     fakeClient = {
@@ -92,6 +93,7 @@ describe('createPublishGithubPullRequestAction', () => {
   });
 
   afterEach(() => {
+    mockDir.clear();
     jest.resetAllMocks();
   });
 
@@ -301,6 +303,103 @@ describe('createPublishGithubPullRequestAction', () => {
       await expect(instance.handler(ctx)).rejects.toThrow(
         'Relative path is not allowed to refer to a directory outside its parent',
       );
+    });
+  });
+
+  describe('with deletionMarker', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
+
+    beforeEach(() => {
+      input = {
+        deletionMarker,
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+      };
+
+      mockDir.setContent({
+        [workspacePath]: {
+          'catpants.md': 'cat + pants',
+          'foobar.txt': 'Hello there!',
+        },
+      });
+
+      ctx = createMockActionContext({ input, workspacePath });
+    });
+
+    it('should create a pull request when no files match the marker', async () => {
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: input.title,
+        head: input.branchName,
+        body: input.description,
+        changes: [
+          {
+            commit: input.title,
+            files: {
+              'catpants.md': {
+                content: Buffer.from('cat + pants').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+              'foobar.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+            },
+          },
+        ],
+      });
+    });
+
+    describe('when files are marked for deletion', () => {
+      beforeEach(() => {
+        mockDir.setContent({
+          [workspacePath]: {
+            'foo.txt': 'Hello there!',
+            'im-here-to-be-deleted': deletionMarker,
+            'baz.txt': 'baz text',
+            'delete-me-too': deletionMarker,
+          },
+        });
+      });
+
+      it('should delete marked files', async () => {
+        await instance.handler(ctx);
+
+        expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+          owner: 'myorg',
+          repo: 'myrepo',
+          title: input.title,
+          head: input.branchName,
+          body: input.description,
+          changes: [
+            {
+              commit: input.title,
+              files: {
+                'foo.txt': {
+                  content: Buffer.from('Hello there!').toString('base64'),
+                  encoding: 'base64',
+                  mode: '100644',
+                },
+                'im-here-to-be-deleted': DELETE_FILE,
+                'baz.txt': {
+                  content: Buffer.from('baz text').toString('base64'),
+                  encoding: 'base64',
+                  mode: '100644',
+                },
+                'delete-me-too': DELETE_FILE,
+              },
+            },
+          ],
+        });
+      });
     });
   });
 
