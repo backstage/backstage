@@ -80,8 +80,7 @@ export class MockActionsRegistry
         title: action.title,
         description: action.description,
         attributes: {
-          // todo(blam): what's safe defaults?
-          destructive: action.attributes?.destructive ?? false,
+          destructive: action.attributes?.destructive ?? true,
           idempotent: action.attributes?.idempotent ?? false,
           readOnly: action.attributes?.readOnly ?? false,
         },

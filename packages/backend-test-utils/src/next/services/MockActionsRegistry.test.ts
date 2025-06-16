@@ -142,7 +142,7 @@ describe('MockActionsRegistry', () => {
           title: 'Test',
           description: 'Test',
           attributes: {
-            destructive: false,
+            destructive: true,
             idempotent: false,
             readOnly: false,
           },
