@@ -33,9 +33,8 @@ export const afterWorkspaceDependencyAddition = async (
   ) {
     try {
       await getPackageVersion(descriptor, workspace.project.configuration);
-      // is there a better way to log than console.log?
-      console.log(
-        `afterWorkspaceDependencyAddition hook: Setting descriptor range from ${descriptor.range} to 'backstage:^' for ${descriptor.scope}/${descriptor.name}`,
+      console.info(
+        `Setting ${descriptor.scope}/${descriptor.name} to ${PROTOCOL}^`,
       );
       descriptor.range = `${PROTOCOL}^`;
     } catch (_error: any) {

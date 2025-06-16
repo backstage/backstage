@@ -22,7 +22,7 @@ import { PROTOCOL } from '../constants';
 export const afterWorkspaceDependencyReplacement = async (
   workspace: Workspace,
   _target: suggestUtils.Target,
-  fromDescriptor: Descriptor,
+  _fromDescriptor: Descriptor,
   toDescriptor: Descriptor,
 ) => {
   const toDescriptorRange = structUtils.parseRange(toDescriptor.range);
@@ -33,9 +33,8 @@ export const afterWorkspaceDependencyReplacement = async (
   ) {
     try {
       await getPackageVersion(toDescriptor, workspace.project.configuration);
-      // is there a better way to log than console.log?
-      console.log(
-        `afterWorkspaceDependencyReplacement hook: Setting descriptor range from '${fromDescriptor.range}' to '${toDescriptor.range}' for ${fromDescriptor.scope}/${fromDescriptor.name}.  Are you sure you want to be doing that?`,
+      console.warn(
+        `${toDescriptor.name} should be set to "${PROTOCOL}^" instead of "${toDescriptor.range}". Make sure this change is intentional and not a mistake.`,
       );
     } catch (_error: any) {
       // if there's no found version then this is likely a deprecated package
