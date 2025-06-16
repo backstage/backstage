@@ -1,5 +1,94 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.8.0-next.2
+
+### Minor Changes
+
+- 5863b04: **BREAKING CHANGES**
+
+  The `createGithubEnvironmentAction` action no longer requires an `AuthService`, and now accepts a `CatalogService` instead of `CatalogClient`.
+
+  Unless you're providing your own override action to the default, this should be a non-breaking change.
+
+  You can migrate using the following if you're getting typescript errors:
+
+  ```ts
+  import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+
+  export const myModule = createBackendModule({
+    pluginId: 'scaffolder',
+    moduleId: 'test',
+    register({ registerInit }) {
+      registerInit({
+        deps: {
+          scaffolder: scaffolderActionsExtensionPoint,
+          catalog: catalogServiceRef,
+        },
+        async init({ scaffolder, catalog }) {
+          scaffolder.addActions(
+            createGithubEnvironmentAction({
+              catalog,
+            }),
+          );
+        },
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- 575c76b: Migrate to using new actions
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+
+## 0.7.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-scaffolder-node@0.8.3-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+
+## 0.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.3-next.0
+  - @backstage/backend-plugin-api@1.4.0-next.0
+
+## 0.7.1
+
+### Patch Changes
+
+- 6579c2c: Use action context logger in Octokit client
+- 72d019d: Removed various typos
+- b2b654c: Added optional assignees parameter to `publish:github:pull-request` action
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-scaffolder-node@0.8.2
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.7.1-next.3
 
 ### Patch Changes

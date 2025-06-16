@@ -17,7 +17,7 @@
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { createFetchCatalogEntityAction } from './fetch';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials } from '@backstage/backend-test-utils';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 describe('catalog:fetch', () => {
@@ -31,14 +31,7 @@ describe('catalog:fetch', () => {
 
   const credentials = mockCredentials.user();
 
-  const token = mockCredentials.service.token({
-    onBehalfOf: credentials,
-    targetPluginId: 'catalog',
-  });
-
-  const mockContext = createMockActionContext({
-    secrets: { backstageToken: token },
-  });
+  const mockContext = createMockActionContext();
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -46,11 +39,11 @@ describe('catalog:fetch', () => {
 
   describe('fetch single entity', () => {
     it('should return entity from catalog', async () => {
-      const catalogClient = catalogServiceMock({ entities: [component] });
-      jest.spyOn(catalogClient, 'getEntityByRef');
+      const catalogMock = catalogServiceMock({ entities: [component] });
+      jest.spyOn(catalogMock, 'getEntityByRef');
+
       const action = createFetchCatalogEntityAction({
-        catalogClient,
-        auth: mockServices.auth(),
+        catalog: catalogMock,
       });
 
       await action.handler({
@@ -60,21 +53,20 @@ describe('catalog:fetch', () => {
         },
       });
 
-      expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(
+      expect(catalogMock.getEntityByRef).toHaveBeenCalledWith(
         'component:default/test',
-        { token },
+        { credentials },
       );
       expect(mockContext.output).toHaveBeenCalledWith('entity', component);
     });
 
     it('should throw error if entity fetch fails from catalog and optional is false', async () => {
-      const catalogClient = catalogServiceMock.mock({
+      const catalogMock = catalogServiceMock.mock({
         getEntityByRef: () => Promise.reject(new Error('Not found')),
       });
-      jest.spyOn(catalogClient, 'getEntityByRef');
+
       const action = createFetchCatalogEntityAction({
-        catalogClient,
-        auth: mockServices.auth(),
+        catalog: catalogMock,
       });
 
       await expect(
@@ -86,19 +78,19 @@ describe('catalog:fetch', () => {
         }),
       ).rejects.toThrow('Not found');
 
-      expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(
+      expect(catalogMock.getEntityByRef).toHaveBeenCalledWith(
         'component:default/test',
-        { token },
+        { credentials },
       );
       expect(mockContext.output).not.toHaveBeenCalled();
     });
 
     it('should throw error if entity not in catalog and optional is false', async () => {
-      const catalogClient = catalogServiceMock({ entities: [] });
-      jest.spyOn(catalogClient, 'getEntityByRef');
+      const catalogMock = catalogServiceMock({ entities: [] });
+      jest.spyOn(catalogMock, 'getEntityByRef');
+
       const action = createFetchCatalogEntityAction({
-        catalogClient,
-        auth: mockServices.auth(),
+        catalog: catalogMock,
       });
 
       await expect(
@@ -110,9 +102,9 @@ describe('catalog:fetch', () => {
         }),
       ).rejects.toThrow('Entity component:default/test not found');
 
-      expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(
+      expect(catalogMock.getEntityByRef).toHaveBeenCalledWith(
         'component:default/test',
-        { token },
+        { credentials },
       );
       expect(mockContext.output).not.toHaveBeenCalled();
     });
@@ -125,11 +117,12 @@ describe('catalog:fetch', () => {
           namespace: 'ns',
         },
       } as Entity;
-      const catalogClient = catalogServiceMock({ entities: [entity] });
-      jest.spyOn(catalogClient, 'getEntityByRef');
+
+      const catalogMock = catalogServiceMock({ entities: [entity] });
+      jest.spyOn(catalogMock, 'getEntityByRef');
+
       const action = createFetchCatalogEntityAction({
-        catalogClient,
-        auth: mockServices.auth(),
+        catalog: catalogMock,
       });
 
       await action.handler({
@@ -141,21 +134,21 @@ describe('catalog:fetch', () => {
         },
       });
 
-      expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(
-        'group:ns/test',
-        { token },
-      );
+      expect(catalogMock.getEntityByRef).toHaveBeenCalledWith('group:ns/test', {
+        credentials,
+      });
+
       expect(mockContext.output).toHaveBeenCalledWith('entity', entity);
     });
   });
 
   describe('fetch multiple entities', () => {
     it('should return entities from catalog', async () => {
-      const catalogClient = catalogServiceMock({ entities: [component] });
-      jest.spyOn(catalogClient, 'getEntitiesByRefs');
+      const catalogMock = catalogServiceMock({ entities: [component] });
+      jest.spyOn(catalogMock, 'getEntitiesByRefs');
+
       const action = createFetchCatalogEntityAction({
-        catalogClient,
-        auth: mockServices.auth(),
+        catalog: catalogMock,
       });
 
       await action.handler({
@@ -165,19 +158,18 @@ describe('catalog:fetch', () => {
         },
       });
 
-      expect(catalogClient.getEntitiesByRefs).toHaveBeenCalledWith(
+      expect(catalogMock.getEntitiesByRefs).toHaveBeenCalledWith(
         { entityRefs: ['component:default/test'] },
-        { token },
+        { credentials },
       );
       expect(mockContext.output).toHaveBeenCalledWith('entities', [component]);
     });
 
     it('should throw error if undefined is returned for some entity', async () => {
-      const catalogClient = catalogServiceMock({ entities: [component] });
-      jest.spyOn(catalogClient, 'getEntitiesByRefs');
+      const catalogMock = catalogServiceMock({ entities: [component] });
+      jest.spyOn(catalogMock, 'getEntitiesByRefs');
       const action = createFetchCatalogEntityAction({
-        catalogClient,
-        auth: mockServices.auth(),
+        catalog: catalogMock,
       });
 
       await expect(
@@ -190,21 +182,21 @@ describe('catalog:fetch', () => {
         }),
       ).rejects.toThrow('Entity component:default/test2 not found');
 
-      expect(catalogClient.getEntitiesByRefs).toHaveBeenCalledWith(
+      expect(catalogMock.getEntitiesByRefs).toHaveBeenCalledWith(
         {
           entityRefs: ['component:default/test', 'component:default/test2'],
         },
-        { token },
+        { credentials },
       );
       expect(mockContext.output).not.toHaveBeenCalled();
     });
 
     it('should return null in case some of the entities not found and optional is true', async () => {
-      const catalogClient = catalogServiceMock({ entities: [component] });
-      jest.spyOn(catalogClient, 'getEntitiesByRefs');
+      const catalogMock = catalogServiceMock({ entities: [component] });
+      jest.spyOn(catalogMock, 'getEntitiesByRefs');
+
       const action = createFetchCatalogEntityAction({
-        catalogClient,
-        auth: mockServices.auth(),
+        catalog: catalogMock,
       });
 
       await action.handler({
@@ -215,9 +207,9 @@ describe('catalog:fetch', () => {
         },
       });
 
-      expect(catalogClient.getEntitiesByRefs).toHaveBeenCalledWith(
+      expect(catalogMock.getEntitiesByRefs).toHaveBeenCalledWith(
         { entityRefs: ['component:default/test', 'component:default/test2'] },
-        { token },
+        { credentials },
       );
       expect(mockContext.output).toHaveBeenCalledWith('entities', [
         component,
@@ -240,13 +232,14 @@ describe('catalog:fetch', () => {
         },
         kind: 'User',
       } as Entity;
-      const catalogClient = catalogServiceMock({
+
+      const catalogMock = catalogServiceMock({
         entities: [entity1, entity2],
       });
-      jest.spyOn(catalogClient, 'getEntitiesByRefs');
+      jest.spyOn(catalogMock, 'getEntitiesByRefs');
+
       const action = createFetchCatalogEntityAction({
-        catalogClient,
-        auth: mockServices.auth(),
+        catalog: catalogMock,
       });
 
       await action.handler({
@@ -258,9 +251,9 @@ describe('catalog:fetch', () => {
         },
       });
 
-      expect(catalogClient.getEntitiesByRefs).toHaveBeenCalledWith(
+      expect(catalogMock.getEntitiesByRefs).toHaveBeenCalledWith(
         { entityRefs: ['group:ns/test', 'user:default/test'] },
-        { token },
+        { credentials },
       );
 
       expect(mockContext.output).toHaveBeenCalledWith('entities', [

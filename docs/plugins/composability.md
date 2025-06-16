@@ -1,7 +1,6 @@
 ---
 id: composability
 title: Composability System
-# prettier-ignore
 description: Documentation for the Backstage plugin composability APIs.
 ---
 

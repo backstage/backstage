@@ -51,3 +51,9 @@
 .canon-Text[data-color="success"] {
   color: var(--canon-fg-success);
 }
+
+.canon-Text[data-truncate] {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}

@@ -27,11 +27,25 @@
 }
 
 .canon-Heading[data-variant="title4"] {
-  font-size: var(--canon-font-size-title4);
+  font-size: var(--canon-font-size-6);
   font-weight: var(--canon-font-weight-bold);
 }
 
 .canon-Heading[data-variant="title5"] {
   font-size: var(--canon-font-size-5);
   font-weight: var(--canon-font-weight-bold);
+}
+
+.canon-Heading[data-color="primary"] {
+  color: var(--canon-fg-primary);
+}
+
+.canon-Heading[data-color="secondary"] {
+  color: var(--canon-fg-secondary);
+}
+
+.canon-Heading[data-truncate] {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }

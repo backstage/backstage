@@ -30,6 +30,7 @@
 @import '../components/Table/TableCellText/TableCellText.styles.css';
 @import '../components/Table/TableCellLink/TableCellLink.styles.css';
 @import '../components/Table/TableCellProfile/TableCellProfile.styles.css';
+@import '../components/Tabs/Tabs.styles.css';
 @import '../components/Text/styles.css';
 @import '../components/Heading/styles.css';
 @import '../components/IconButton/styles.css';
@@ -39,3 +40,4 @@
 @import '../components/Tooltip/Tooltip.styles.css';
 @import '../components/ScrollArea/ScrollArea.styles.css';
 @import '../components/Select/Select.styles.css';
+@import '../components/Switch/Switch.styles.css';

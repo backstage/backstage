@@ -1,5 +1,30 @@
 # @internal/frontend
 
+## 0.0.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.0.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.0.9-next.1
 
 ### Patch Changes

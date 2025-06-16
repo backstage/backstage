@@ -16,56 +16,42 @@
 
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
-import { InputError } from '@backstage/errors';
 import fs from 'fs-extra';
 import { examples } from './rename.examples';
+import { InputError } from '@backstage/errors';
 
 /**
  * Creates a new action that allows renames of files and directories in the workspace.
  * @public
  */
 export const createFilesystemRenameAction = () => {
-  return createTemplateAction<{
-    files: Array<{
-      from: string;
-      to: string;
-      overwrite?: boolean;
-    }>;
-  }>({
+  return createTemplateAction({
     id: 'fs:rename',
     description: 'Renames files and directories within the workspace',
     examples,
     schema: {
       input: {
-        required: ['files'],
-        type: 'object',
-        properties: {
-          files: {
-            title: 'Files',
-            description:
-              'A list of file and directory names that will be renamed',
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['from', 'to'],
-              properties: {
-                from: {
-                  type: 'string',
-                  title: 'The source location of the file to be renamed',
-                },
-                to: {
-                  type: 'string',
-                  title: 'The destination of the new file',
-                },
-                overwrite: {
-                  type: 'boolean',
-                  title:
+        files: z =>
+          z.array(
+            z.object({
+              from: z.string({
+                description: 'The source location of the file to be renamed',
+              }),
+              to: z.string({
+                description: 'The destination of the new file',
+              }),
+              overwrite: z
+                .boolean({
+                  description:
                     'Overwrite existing file or directory, default is false',
-                },
-              },
+                })
+                .optional(),
+            }),
+            {
+              description:
+                'A list of file and directory names that will be renamed',
             },
-          },
-        },
+          ),
       },
     },
     supportsDryRun: true,
@@ -78,7 +64,6 @@ export const createFilesystemRenameAction = () => {
         if (!file.from || !file.to) {
           throw new InputError('each file must have a from and to property');
         }
-
         const sourceFilepath = resolveSafeChildPath(
           ctx.workspacePath,
           file.from,

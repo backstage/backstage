@@ -92,16 +92,17 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
             <code>{exampleRepositoryUrl}</code>
           </Typography>
           <Typography variant="body2" paragraph>
-            The wizard discovers all <code>{catalogFilename}</code> files in the
-            repository, previews the entities, and adds them to the {appTitle}{' '}
-            catalog.
+            {t('importInfoCard.exampleDescription', {
+              catalogFilename: <code>{catalogFilename}</code>,
+              appTitle,
+            })}
           </Typography>
           {catalogImportApi.preparePullRequest && (
             <Typography variant="body2" paragraph>
-              If no entities are found, the wizard will prepare a Pull Request
-              that adds an example <code>{catalogFilename}</code> and prepares
-              the {appTitle} catalog to load all entities as soon as the Pull
-              Request is merged.
+              {t('importInfoCard.preparePullRequestDescription', {
+                catalogFilename: <code>{catalogFilename}</code>,
+                appTitle,
+              })}
             </Typography>
           )}
         </>

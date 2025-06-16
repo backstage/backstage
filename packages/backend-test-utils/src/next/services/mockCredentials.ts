@@ -111,16 +111,24 @@ export namespace mockCredentials {
     options?: { actor?: { subject: string } },
   ): BackstageCredentials<BackstageUserPrincipal> {
     validateUserEntityRef(userEntityRef);
-    return {
-      $$type: '@backstage/BackstageCredentials',
-      principal: {
-        type: 'user',
-        userEntityRef,
-        ...(options?.actor && {
-          actor: { type: 'service', subject: options.actor.subject },
-        }),
+    return Object.defineProperty(
+      {
+        $$type: '@backstage/BackstageCredentials',
+        principal: {
+          type: 'user',
+          userEntityRef,
+          ...(options?.actor && {
+            actor: { type: 'service', subject: options.actor.subject },
+          }),
+        },
       },
-    };
+      'token',
+      {
+        enumerable: false,
+        configurable: true,
+        value: user.token(),
+      },
+    );
   }
 
   /**

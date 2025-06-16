@@ -24,7 +24,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { useEntityContextMenu } from '../../hooks/useEntityContextMenu';
-
+import {
+  EntityPredicate,
+  entityPredicateToFilterFunction,
+} from '../predicates';
+import type { Entity } from '@backstage/catalog-model';
+import { entityFilterFunctionDataRef } from './extensionData';
+import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
 /** @alpha */
 export type UseProps = () =>
   | {
@@ -42,14 +48,26 @@ export type UseProps = () =>
 export type EntityContextMenuItemParams = {
   useProps: UseProps;
   icon: JSX.Element;
+  filter?: EntityPredicate | ((entity: Entity) => boolean);
 };
 
 /** @alpha */
 export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
   kind: 'entity-context-menu-item',
   attachTo: { id: 'page:catalog/entity', input: 'contextMenuItems' },
-  output: [coreExtensionData.reactElement],
-  *factory(params: EntityContextMenuItemParams, { node }) {
+  output: [
+    coreExtensionData.reactElement,
+    entityFilterFunctionDataRef.optional(),
+  ],
+  dataRefs: {
+    filterFunction: entityFilterFunctionDataRef,
+  },
+  config: {
+    schema: {
+      filter: z => createEntityPredicateSchema(z).optional(),
+    },
+  },
+  *factory(params: EntityContextMenuItemParams, { node, config }) {
     const loader = async () => {
       const Component = () => {
         const { onMenuClose } = useEntityContextMenu();
@@ -79,5 +97,17 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
     };
 
     yield coreExtensionData.reactElement(ExtensionBoundary.lazy(node, loader));
+
+    if (config.filter) {
+      yield entityFilterFunctionDataRef(
+        entityPredicateToFilterFunction(config.filter),
+      );
+    } else if (typeof params.filter === 'function') {
+      yield entityFilterFunctionDataRef(params.filter);
+    } else if (params.filter) {
+      yield entityFilterFunctionDataRef(
+        entityPredicateToFilterFunction(params.filter),
+      );
+    }
   },
 });

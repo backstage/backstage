@@ -29,7 +29,7 @@ import { toInternalExternalRouteRef } from '../../../frontend-plugin-api/src/rou
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalSubRouteRef } from '../../../frontend-plugin-api/src/routing/SubRouteRef';
 import { OpaqueFrontendPlugin } from '@internal/frontend';
-import { FrontendFeature } from '../wiring';
+import { FrontendFeature } from '../wiring/types';
 
 /** @internal */
 export interface RouteRefsById {

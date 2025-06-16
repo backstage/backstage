@@ -40,12 +40,14 @@ export * from './components/Icon';
 export * from './components/IconButton';
 export * from './components/Checkbox';
 export * from './components/Table';
+export * from './components/Tabs';
 export * from './components/TextField';
 export * from './components/Tooltip';
 export * from './components/Menu';
 export * from './components/ScrollArea';
 export * from './components/Link';
 export * from './components/Select';
+export * from './components/Switch';
 
 // Types
 export * from './types';

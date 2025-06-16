@@ -50,7 +50,7 @@ jest.mock('@gitbeaker/rest', () => ({
 }));
 
 describe('createGitLabCommit', () => {
-  let instance: TemplateAction<any>;
+  let instance: TemplateAction<any, any, any>;
 
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');

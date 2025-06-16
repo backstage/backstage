@@ -1,7 +1,7 @@
 'use client';
 
 import { components } from '@/utils/data';
-import { Checkbox } from '../../../../packages/canon';
+import { Checkbox } from '@backstage/canon';
 import { motion } from 'motion/react';
 import styles from './Sidebar.module.css';
 import { usePathname } from 'next/navigation';
@@ -38,7 +38,9 @@ export const Playground = () => {
 
   return (
     <motion.div
-      className={styles.section}
+      className={`${styles.section} ${
+        isPlayground ? styles.playgroundSection : ''
+      }`}
       animate={{
         opacity: isPlayground ? 1 : 0,
         x: isPlayground ? 0 : 20,
@@ -50,7 +52,6 @@ export const Playground = () => {
         visibility: isPlayground ? 'visible' : 'hidden',
       }}
       transition={{ duration: 0.2 }}
-      style={{ position: 'absolute' }}
     >
       <div className={styles.sectionTitle}>Components</div>
       {components.map(({ slug, title }) => (

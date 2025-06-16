@@ -1,5 +1,62 @@
 # @backstage/plugin-notifications
 
+## 0.5.6-next.2
+
+### Patch Changes
+
+- b00c160: Remove React import form notification and scaffolder plugin
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.9-next.0
+  - @backstage/plugin-signals-react@0.0.13
+
+## 0.5.6-next.1
+
+### Patch Changes
+
+- 1fb5f06: Adds ability for user to turn on/off notifications for specific topics within an origin.
+- Updated dependencies
+  - @backstage/plugin-notifications-common@0.0.9-next.0
+  - @backstage/core-compat-api@0.4.3-next.1
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.13
+
+## 0.5.6-next.0
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/core-compat-api@0.4.3-next.0
+
+## 0.5.5
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/theme@0.6.6
+  - @backstage/core-components@0.17.2
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/plugin-signals-react@0.0.13
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+
 ## 0.5.5-next.3
 
 ### Patch Changes

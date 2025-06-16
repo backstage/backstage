@@ -30,6 +30,7 @@ import { ConfigReader } from '@backstage/config';
 import {
   CreateAppRouteBinder,
   createSpecializedApp,
+  FrontendPluginInfoResolver,
 } from '@backstage/frontend-app-api';
 import appPlugin from '@backstage/plugin-app';
 import { discoverAvailableFeatures } from './discovery';
@@ -78,6 +79,7 @@ export interface CreateAppOptions {
   extensionFactoryMiddleware?:
     | ExtensionFactoryMiddleware
     | ExtensionFactoryMiddleware[];
+  pluginInfoResolver?: FrontendPluginInfoResolver;
 }
 
 /**
@@ -112,6 +114,7 @@ export function createApp(options?: CreateAppOptions): {
       features: [appPlugin, ...loadedFeatures],
       bindRoutes: options?.bindRoutes,
       extensionFactoryMiddleware: options?.extensionFactoryMiddleware,
+      pluginInfoResolver: options?.pluginInfoResolver,
     });
 
     const rootEl = app.tree.root.instance!.getData(

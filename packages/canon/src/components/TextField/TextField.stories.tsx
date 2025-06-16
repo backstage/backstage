@@ -17,10 +17,19 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { TextField } from './TextField';
 import { Flex } from '../Flex';
+import { Icon } from '../Icon';
 
 const meta = {
   title: 'Components/TextField',
   component: TextField,
+  argTypes: {
+    secondaryLabel: {
+      control: 'text',
+    },
+    required: {
+      control: 'boolean',
+    },
+  },
 } satisfies Meta<typeof TextField>;
 
 export default meta;
@@ -64,6 +73,28 @@ export const Required: Story = {
   },
 };
 
+export const LabelSizes: Story = {
+  args: {
+    ...Default.args,
+    label: 'Label',
+    description: 'Description',
+    required: true,
+  },
+  render: args => (
+    <Flex direction="row" gap="4" style={{ width: '100%', maxWidth: '600px' }}>
+      <TextField {...args} labelSize="small" />
+      <TextField {...args} labelSize="medium" />
+    </Flex>
+  ),
+};
+
+export const HideLabelAndDescription: Story = {
+  args: {
+    ...WithLabel.args,
+    hideLabelAndDescription: true,
+  },
+};
+
 export const Disabled: Story = {
   args: {
     ...WithLabel.args,
@@ -79,8 +110,8 @@ export const Sizes: Story = {
   },
   render: args => (
     <Flex direction="row" gap="4" style={{ width: '100%', maxWidth: '600px' }}>
-      <TextField {...args} size="small" />
-      <TextField {...args} size="medium" />
+      <TextField {...args} size="small" icon={<Icon name="sparkling" />} />
+      <TextField {...args} size="medium" icon={<Icon name="sparkling" />} />
     </Flex>
   ),
 };
@@ -114,7 +145,7 @@ export const WithIcon: Story = {
   args: {
     ...WithLabel.args,
     placeholder: 'Search...',
-    icon: 'search',
+    icon: <Icon name="search" />,
   },
 };
 

@@ -19,15 +19,7 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { DefaultAuditorService } from './DefaultAuditorService';
-import { z } from 'zod';
-import { InputError } from '@backstage/errors';
-
-const CONFIG_ROOT_KEY = 'backend.auditor';
-
-const severityLogLevelMappingsSchema = z.record(
-  z.enum(['low', 'medium', 'high', 'critical']),
-  z.enum(['debug', 'info', 'warn', 'error']),
-);
+import { getSeverityLogLevelMappings } from './utils';
 
 /**
  * Plugin-level auditing.
@@ -49,47 +41,26 @@ export const auditorServiceFactory = createServiceFactory({
   },
   factory({ config, logger, plugin, auth, httpAuth }) {
     const auditLogger = logger.child({ isAuditEvent: true });
-    const auditorConfig = config.getOptionalConfig(CONFIG_ROOT_KEY);
 
-    const severityLogLevelMappings = {
-      low:
-        auditorConfig?.getOptionalString('severityLogLevelMappings.low') ??
-        'debug',
-      medium:
-        auditorConfig?.getOptionalString('severityLogLevelMappings.medium') ??
-        'info',
-      high:
-        auditorConfig?.getOptionalString('severityLogLevelMappings.high') ??
-        'info',
-      critical:
-        auditorConfig?.getOptionalString('severityLogLevelMappings.critical') ??
-        'info',
-    } as Required<z.infer<typeof severityLogLevelMappingsSchema>>;
-
-    const res = severityLogLevelMappingsSchema.safeParse(
-      severityLogLevelMappings,
-    );
-    if (!res.success) {
-      const key = res.error.issues.at(0)?.path.at(0) as string;
-      const value = (
-        res.error.issues.at(0) as unknown as Record<PropertyKey, unknown>
-      ).received as string;
-      const validKeys = (
-        res.error.issues.at(0) as unknown as Record<PropertyKey, unknown>
-      ).options as string[];
-      throw new InputError(
-        `The configuration value for 'backend.auditor.severityLogLevelMappings.${key}' was given an invalid value: '${value}'. Expected one of the following valid values: '${validKeys.join(
-          ', ',
-        )}'.`,
-      );
-    }
+    const severityLogLevelMappings = getSeverityLogLevelMappings(config);
 
     return DefaultAuditorService.create(
       event => {
-        auditLogger[severityLogLevelMappings[event.severityLevel]](
-          `${event.plugin}.${event.eventId}`,
-          event,
-        );
+        if ('error' in event) {
+          const { error, ...rest } = event;
+          const childAuditLogger = auditLogger.child(rest);
+
+          childAuditLogger[severityLogLevelMappings[event.severityLevel]](
+            `${event.plugin}.${event.eventId}`,
+            error,
+          );
+        } else {
+          // the else statement is required for typechecking
+          auditLogger[severityLogLevelMappings[event.severityLevel]](
+            `${event.plugin}.${event.eventId}`,
+            event,
+          );
+        }
       },
       { plugin, auth, httpAuth },
     );

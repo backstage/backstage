@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import fs from 'fs-extra';
@@ -51,124 +50,104 @@ export function createFetchRailsAction(options: {
 }) {
   const { reader, integrations, containerRunner } = options;
 
-  return createTemplateAction<{
-    url: string;
-    targetPath?: string;
-    values: JsonObject;
-    imageName?: string;
-  }>({
+  return createTemplateAction({
     id: 'fetch:rails',
     description:
       'Downloads a template from the given `url` into the workspace, and runs a rails new generator on it.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['url'],
-        properties: {
-          url: {
-            title: 'Fetch URL',
+        url: z =>
+          z.string({
             description:
               'Relative path or absolute URL pointing to the directory tree to fetch',
-            type: 'string',
-          },
-          targetPath: {
-            title: 'Target Path',
-            description:
-              'Target path within the working directory to download the contents to.',
-            type: 'string',
-          },
-          values: {
-            title: 'Template Values',
-            description: 'Values to pass on to rails for templating',
-            type: 'object',
-            properties: {
-              railsArguments: {
-                title: 'Arguments to pass to new command',
-                description:
-                  'You can provide some arguments to create a custom app',
-                type: 'object',
-                properties: {
-                  minimal: {
-                    title: 'minimal',
+          }),
+        targetPath: z =>
+          z
+            .string({
+              description:
+                'Target path within the working directory to download the contents to.',
+            })
+            .optional(),
+        values: z =>
+          z.object({
+            railsArguments: z
+              .object({
+                minimal: z
+                  .boolean({
                     description: 'Preconfigure a minimal rails app',
-                    type: 'boolean',
-                  },
-                  skipBundle: {
-                    title: 'skipBundle',
+                  })
+                  .optional(),
+                skipBundle: z
+                  .boolean({
                     description: "Don't run bundle install",
-                    type: 'boolean',
-                  },
-                  skipWebpackInstall: {
-                    title: 'skipWebpackInstall',
+                  })
+                  .optional(),
+                skipWebpackInstall: z
+                  .boolean({
                     description: "Don't run Webpack install",
-                    type: 'boolean',
-                  },
-                  skipTest: {
-                    title: 'skipTest',
+                  })
+                  .optional(),
+                skipTest: z
+                  .boolean({
                     description: 'Skip test files',
-                    type: 'boolean',
-                  },
-                  skipActionCable: {
-                    title: 'skipActionCable',
+                  })
+                  .optional(),
+                skipActionCable: z
+                  .boolean({
                     description: 'Skip Action Cable files',
-                    type: 'boolean',
-                  },
-                  skipActionMailer: {
-                    title: 'skipActionMailer',
+                  })
+                  .optional(),
+                skipActionMailer: z
+                  .boolean({
                     description: 'Skip Action Mailer files',
-                    type: 'boolean',
-                  },
-                  skipActionMailbox: {
-                    title: 'skipActionMailbox',
+                  })
+                  .optional(),
+                skipActionMailbox: z
+                  .boolean({
                     description: 'Skip Action Mailbox gem',
-                    type: 'boolean',
-                  },
-                  skipActiveStorage: {
-                    title: 'skipActiveStorage',
+                  })
+                  .optional(),
+                skipActiveStorage: z
+                  .boolean({
                     description: 'Skip Active Storage files',
-                    type: 'boolean',
-                  },
-                  skipActionText: {
-                    title: 'skipActionText',
+                  })
+                  .optional(),
+                skipActionText: z
+                  .boolean({
                     description: 'Skip Action Text gem',
-                    type: 'boolean',
-                  },
-                  skipActiveRecord: {
-                    title: 'skipActiveRecord',
+                  })
+                  .optional(),
+                skipActiveRecord: z
+                  .boolean({
                     description: 'Skip Active Record files',
-                    type: 'boolean',
-                  },
-
-                  force: {
-                    title: 'force',
+                  })
+                  .optional(),
+                force: z
+                  .boolean({
                     description: 'Overwrite files that already exist',
-                    type: 'boolean',
-                  },
-                  api: {
-                    title: 'api',
+                  })
+                  .optional(),
+                api: z
+                  .boolean({
                     description: 'Preconfigure smaller stack for API only apps',
-                    type: 'boolean',
-                  },
-                  template: {
-                    title: 'template',
+                  })
+                  .optional(),
+                template: z
+                  .string({
                     description:
                       'Path to some application template (can be a filesystem path or URL)',
-                    type: 'string',
-                  },
-                  webpacker: {
-                    title: 'webpacker',
+                  })
+                  .optional(),
+                webpacker: z
+                  .enum(['react', 'vue', 'angular', 'elm', 'stimulus'], {
                     description:
                       'Preconfigure Webpack with a particular framework (options: react, vue, angular, elm, stimulus)',
-                    type: 'string',
-                    enum: ['react', 'vue', 'angular', 'elm', 'stimulus'],
-                  },
-                  database: {
-                    title: 'database',
-                    description:
-                      'Preconfigure for selected database (options: mysql/postgresql/sqlite3/oracle/sqlserver/jdbcmysql/jdbcsqlite3/jdbcpostgresql/jdbc)',
-                    type: 'string',
-                    enum: [
+                  })
+                  .optional(),
+                database: z
+                  .enum(
+                    [
                       'mysql',
                       'postgresql',
                       'sqlite3',
@@ -179,25 +158,28 @@ export function createFetchRailsAction(options: {
                       'jdbcpostgresql',
                       'jdbc',
                     ],
-                  },
-                  railsVersion: {
-                    title: 'Rails version in Gemfile',
+                    {
+                      description:
+                        'Preconfigure for selected database (options: mysql/postgresql/sqlite3/oracle/sqlserver/jdbcmysql/jdbcsqlite3/jdbcpostgresql/jdbc)',
+                    },
+                  )
+                  .optional(),
+                railsVersion: z
+                  .enum(['dev', 'edge', 'master', 'fromImage'], {
                     description:
                       'Set up the application with Gemfile pointing to a specific version (options: fromImage, dev, edge, master)',
-                    type: 'string',
-                    enum: ['dev', 'edge', 'master', 'fromImage'],
-                  },
-                },
-              },
-            },
-          },
-          imageName: {
-            title: 'Rails Docker image',
-            description:
-              'Specify a Docker image to run rails new. Used only when a local rails is not found.',
-            type: 'string',
-          },
-        },
+                  })
+                  .optional(),
+              })
+              .optional(),
+          }),
+        imageName: z =>
+          z
+            .string({
+              description:
+                'Specify a Docker image to run rails new. Used only when a local rails is not found.',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {

@@ -2,7 +2,6 @@
 id: locations
 sidebar_label: Locations
 title: Azure Blob Storage account Locations
-# prettier-ignore
 description: Setting up an integration with Azure Blob Storage account
 ---
 

@@ -1,5 +1,41 @@
 # @backstage/frontend-test-utils
 
+## 0.3.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/plugin-app@0.1.10-next.1
+  - @backstage/config@1.3.2
+  - @backstage/frontend-app-api@0.11.3-next.1
+  - @backstage/test-utils@1.7.8
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.1.10-next.0
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/frontend-app-api@0.11.3-next.0
+
+## 0.3.2
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/test-utils@1.7.8
+  - @backstage/frontend-app-api@0.11.2
+  - @backstage/plugin-app@0.1.9
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.3.2-next.3
 
 ### Patch Changes

@@ -1,5 +1,46 @@
 # @backstage/backend-plugin-api
 
+## 1.4.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1-next.1
+
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 664c07a: Added `coreServices.actionsRegistry` and `coreServices.actions` to allow registration of distributed actions from plugins, and the ability to invoke these actions
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.4-next.0
+  - @backstage/plugin-permission-node@0.10.1-next.0
+
+## 1.3.1
+
+### Patch Changes
+
+- acea1d4: update documentation
+- 72d019d: Removed various typos
+- d385854: Minor doc comment update
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.3
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.0
+  - @backstage/config@1.3.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 1.3.1-next.2
 
 ### Patch Changes

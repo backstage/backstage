@@ -1,8 +1,9 @@
 'use client';
 
 import { CodeBlockProps } from '.';
-import { Text } from '../../../../packages/canon';
+import { Text } from '@backstage/canon';
 import styles from './styles.module.css';
+import parse from 'html-react-parser';
 
 export const CodeBlockClient = ({
   out,
@@ -18,7 +19,7 @@ export const CodeBlockClient = ({
           <Text variant="body">{title}</Text>
         </div>
       )}
-      <div dangerouslySetInnerHTML={{ __html: out }} className={styles.code} />
+      <div className={styles.code}>{parse(out)}</div>
     </div>
   );
 };
