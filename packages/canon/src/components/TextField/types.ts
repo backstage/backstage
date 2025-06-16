@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { TextFieldProps } from 'react-aria-components';
+import type { TextFieldProps as AriaTextFieldProps } from 'react-aria-components';
 import { ReactNode } from 'react';
 import type { Breakpoint } from '../../types';
 import type { FieldLabelProps } from '../FieldLabel/types';
 
 /** @public */
-export interface FormInputProps
-  extends Omit<TextFieldProps, 'size'>,
-    FieldLabelProps {
+export interface TextFieldProps
+  extends AriaTextFieldProps,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
   /**
    * An icon to render before the input
    */

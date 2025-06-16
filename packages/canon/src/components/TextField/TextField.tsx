@@ -24,11 +24,11 @@ import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 
-import type { FormInputProps } from './types';
+import type { TextFieldProps } from './types';
 
 /** @public */
-export const TextField = forwardRef<HTMLDivElement, FormInputProps>(
-  (props: FormInputProps, ref) => {
+export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
+  (props, ref) => {
     const {
       className,
       icon,

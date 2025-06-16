@@ -25,7 +25,7 @@ import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { Table as Table_2 } from '@tanstack/react-table';
 import { Tabs as Tabs_2 } from '@base-ui-components/react/tabs';
 import { TdHTMLAttributes } from 'react';
-import type { TextFieldProps } from 'react-aria-components';
+import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import { ThHTMLAttributes } from 'react';
 import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
 import type { useRender } from '@base-ui-components/react/use-render';
@@ -362,6 +362,8 @@ export const FieldLabel: ForwardRefExoticComponent<
 // @public (undocumented)
 export interface FieldLabelProps {
   description?: string | null;
+  htmlFor?: string;
+  id?: string;
   label?: string | null;
   secondaryLabel?: string | null;
 }
@@ -419,14 +421,6 @@ export interface FlexProps extends SpaceProps {
 
 // @public (undocumented)
 export type FlexWrap = 'wrap' | 'nowrap' | 'wrap-reverse';
-
-// @public (undocumented)
-export interface FormInputProps
-  extends Omit<TextFieldProps, 'size'>,
-    FieldLabelProps {
-  icon?: ReactNode;
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-}
 
 // @public (undocumented)
 export const gapPropDefs: {
@@ -1296,8 +1290,16 @@ export { Text_2 as Text };
 
 // @public (undocumented)
 export const TextField: ForwardRefExoticComponent<
-  FormInputProps & RefAttributes<HTMLDivElement>
+  TextFieldProps & RefAttributes<HTMLDivElement>
 >;
+
+// @public (undocumented)
+export interface TextFieldProps
+  extends TextFieldProps_2,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+  icon?: ReactNode;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+}
 
 // @public (undocumented)
 export interface TextProps
