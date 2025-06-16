@@ -9,7 +9,7 @@
     "start": "npm run build:css && next dev"
   },
   "resolutions": {
-    "@types/react": "19.1.7",
+    "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6"
   },
   "dependencies": {
@@ -34,7 +34,7 @@
   "devDependencies": {
     "@types/mdx": "^2.0.13",
     "@types/node": "^20",
-    "@types/react": "19.1.7",
+    "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
     "eslint": "^8",
     "eslint-config-next": "15.3.3",
