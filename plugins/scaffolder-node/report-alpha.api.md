@@ -27,6 +27,37 @@ export type AutocompleteHandler = ({
   }[];
 }>;
 
+// @alpha
+export type CheckpointContext<T extends JsonValue | void = JsonValue> = {
+  key: string;
+  fn: () => Promise<T> | T;
+};
+
+// @alpha
+export type CheckpointFailedState = {
+  status: 'failed';
+  reason: string;
+};
+
+// @alpha
+export type CheckpointState = {
+  [key: string]: CheckpointStateValue;
+};
+
+// @alpha
+export type CheckpointStateValue =
+  | CheckpointSuccessState
+  | CheckpointFailedState;
+
+// @alpha
+export type CheckpointStatus = 'failed' | 'success';
+
+// @alpha
+export type CheckpointSuccessState<T extends JsonValue = JsonValue> = {
+  status: 'success';
+  value: T;
+};
+
 // @alpha (undocumented)
 export type CreatedTemplateFilter<
   TFunctionArgs extends [z.ZodTypeAny, ...z.ZodTypeAny[]],
@@ -186,6 +217,11 @@ export type TemplateGlobalFunctionExample = {
   example: string;
   notes?: string;
 };
+
+// @alpha
+export type UpdateTaskCheckpointOptions = {
+  key: string;
+} & CheckpointStateValue;
 
 // @alpha
 export interface WorkspaceProvider {

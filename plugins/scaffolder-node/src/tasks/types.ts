@@ -17,7 +17,7 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, Observable } from '@backstage/types';
-import { UpdateTaskCheckpointOptions } from '../alpha';
+import { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node/alpha';
 
 /**
  * TaskSecrets
