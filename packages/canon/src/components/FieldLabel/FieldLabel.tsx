@@ -25,14 +25,14 @@ export const FieldLabel = forwardRef<HTMLDivElement, FieldLabelProps>(
     if (!label) return null;
 
     return (
-      <div className="canon-TextFieldLabelWrapper" ref={ref}>
+      <div className="canon-FieldLabel" ref={ref}>
         {label && (
-          <Label className="canon-TextFieldLabel">
+          <Label className="canon-FieldLabelLabel">
             {label}
             {secondaryLabel && (
               <span
                 aria-hidden="true"
-                className="canon-TextFieldSecondaryLabel"
+                className="canon-FieldLabelSecondaryLabel"
               >
                 ({secondaryLabel})
               </span>
@@ -40,7 +40,7 @@ export const FieldLabel = forwardRef<HTMLDivElement, FieldLabelProps>(
           </Label>
         )}
         {description && (
-          <div className="canon-TextFieldDescription">{description}</div>
+          <div className="canon-FieldLabelDescription">{description}</div>
         )}
       </div>
     );

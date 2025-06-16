@@ -257,14 +257,14 @@
   min-width: 10.5rem;
 }
 
-.canon-TextFieldLabelWrapper {
+.canon-FieldLabel {
   margin-bottom: var(--canon-space-3);
   gap: var(--canon-space-1);
   flex-direction: column;
   display: flex;
 }
 
-.canon-TextFieldLabel {
+.canon-FieldLabelLabel {
   color: var(--canon-fg-primary);
   cursor: pointer;
   font-weight: var(--canon-font-weight-regular);
@@ -272,13 +272,13 @@
   margin-right: auto;
 }
 
-.canon-TextFieldSecondaryLabel {
+.canon-FieldLabelSecondaryLabel {
   color: var(--canon-fg-secondary);
   font-weight: var(--canon-font-weight-regular);
   margin-left: var(--canon-space-1);
 }
 
-.canon-TextFieldDescription {
+.canon-FieldLabelDescription {
   font-weight: var(--canon-font-weight-regular);
   font-size: var(--canon-font-size-2);
   color: var(--canon-fg-secondary);
