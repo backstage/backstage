@@ -16,7 +16,6 @@ import { ForwardRefExoticComponent } from 'react';
 import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
-import type { MouseEventHandler } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
@@ -26,6 +25,7 @@ import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { Table as Table_2 } from '@tanstack/react-table';
 import { Tabs as Tabs_2 } from '@base-ui-components/react/tabs';
 import { TdHTMLAttributes } from 'react';
+import type { TextFieldProps } from 'react-aria-components';
 import { ThHTMLAttributes } from 'react';
 import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
 import type { useRender } from '@base-ui-components/react/use-render';
@@ -355,6 +355,18 @@ export type EnumPropDef<T> = {
 };
 
 // @public (undocumented)
+export const FieldLabel: ForwardRefExoticComponent<
+  FieldLabelProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface FieldLabelProps {
+  description?: string | null;
+  label?: string | null;
+  secondaryLabel?: string | null;
+}
+
+// @public (undocumented)
 export const Flex: ForwardRefExoticComponent<
   FlexProps & RefAttributes<HTMLDivElement>
 >;
@@ -407,6 +419,14 @@ export interface FlexProps extends SpaceProps {
 
 // @public (undocumented)
 export type FlexWrap = 'wrap' | 'nowrap' | 'wrap-reverse';
+
+// @public (undocumented)
+export interface FormInputProps
+  extends Omit<TextFieldProps, 'size'>,
+    FieldLabelProps {
+  icon?: ReactNode;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+}
 
 // @public (undocumented)
 export const gapPropDefs: {
@@ -1276,24 +1296,8 @@ export { Text_2 as Text };
 
 // @public (undocumented)
 export const TextField: ForwardRefExoticComponent<
-  TextFieldProps & RefAttributes<HTMLDivElement>
+  FormInputProps & RefAttributes<HTMLDivElement>
 >;
-
-// @public (undocumented)
-export interface TextFieldProps
-  extends Omit<React.ComponentPropsWithoutRef<'input'>, 'size'> {
-  className?: string;
-  description?: string;
-  error?: string | null;
-  hideLabelAndDescription?: boolean;
-  icon?: ReactNode;
-  label?: string;
-  labelSize?: 'small' | 'medium';
-  name: string;
-  onClear?: MouseEventHandler<HTMLButtonElement>;
-  secondaryLabel?: string;
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-}
 
 // @public (undocumented)
 export interface TextProps

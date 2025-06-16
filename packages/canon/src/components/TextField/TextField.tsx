@@ -18,11 +18,11 @@ import { forwardRef, useEffect } from 'react';
 import {
   Input,
   TextField as AriaTextField,
-  Label,
   FieldError,
 } from 'react-aria-components';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
+import { FieldLabel } from '../FieldLabel';
 
 import type { FormInputProps } from './types';
 
@@ -64,26 +64,11 @@ export const TextField = forwardRef<HTMLDivElement, FormInputProps>(
         {...rest}
         ref={ref}
       >
-        {label && (
-          <div className="canon-TextFieldLabelWrapper">
-            {label && (
-              <Label className="canon-TextFieldLabel">
-                {label}
-                {secondaryLabelText && (
-                  <span
-                    aria-hidden="true"
-                    className="canon-TextFieldSecondaryLabel"
-                  >
-                    ({secondaryLabelText})
-                  </span>
-                )}
-              </Label>
-            )}
-            {description && (
-              <div className="canon-TextFieldDescription">{description}</div>
-            )}
-          </div>
-        )}
+        <FieldLabel
+          label={label}
+          secondaryLabel={secondaryLabelText}
+          description={description}
+        />
         <div className="canon-TextFieldInputWrapper" data-size={responsiveSize}>
           {icon && (
             <div

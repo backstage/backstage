@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import { InputProps } from 'react-aria-components';
-import { ReactNode } from 'react';
-import type { Breakpoint } from '../../types';
-
 /** @public */
-export interface FormInputProps extends Omit<InputProps, 'size'> {
+export interface FieldLabelProps {
   /**
-   * An icon to render before the input
+   * The label of the text field
    */
-  icon?: ReactNode;
+  label?: string | null;
 
   /**
-   * The size of the text field
-   * @defaultValue 'medium'
+   * The secondary label of the text field
    */
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  secondaryLabel?: string | null;
+
+  /**
+   * The description of the text field
+   */
+  description?: string | null;
 }

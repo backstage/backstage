@@ -17,9 +17,12 @@
 import type { TextFieldProps } from 'react-aria-components';
 import { ReactNode } from 'react';
 import type { Breakpoint } from '../../types';
+import type { FieldLabelProps } from '../FieldLabel/types';
 
 /** @public */
-export interface FormInputProps extends Omit<TextFieldProps, 'size'> {
+export interface FormInputProps
+  extends Omit<TextFieldProps, 'size'>,
+    FieldLabelProps {
   /**
    * An icon to render before the input
    */
@@ -30,24 +33,4 @@ export interface FormInputProps extends Omit<TextFieldProps, 'size'> {
    * @defaultValue 'medium'
    */
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-
-  /**
-   * The label of the text field
-   */
-  label?: string;
-
-  /**
-   * The secondary label of the text field
-   */
-  secondaryLabel?: string;
-
-  /**
-   * The description of the text field
-   */
-  description?: string;
-
-  /**
-   * Whether the field is required
-   */
-  isRequired?: boolean;
 }
