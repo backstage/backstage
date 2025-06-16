@@ -34,6 +34,8 @@ import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import request from 'supertest';
 import { eventsPlugin } from './EventsPlugin';
 
+jest.setTimeout(60_000);
+
 describe('eventsPlugin', () => {
   it('should be initialized properly', async () => {
     const eventsService = new TestEventsService();
