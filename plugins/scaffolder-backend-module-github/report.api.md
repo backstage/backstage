@@ -247,8 +247,8 @@ export function createGithubRepoCreateAction(options: {
               access: string;
             }
           | {
-              team: string;
               access: string;
+              team: string;
             }
         )[]
       | undefined;
@@ -406,8 +406,8 @@ export function createPublishGithubAction(options: {
               access: string;
             }
           | {
-              team: string;
               access: string;
+              team: string;
             }
         )[]
       | undefined;
@@ -446,6 +446,7 @@ export const createPublishGithubPullRequestAction: (
     branchName: string;
     title: string;
     description: string;
+    deletionMarker?: string | undefined;
     targetBranchName?: string | undefined;
     draft?: boolean | undefined;
     sourcePath?: string | undefined;
