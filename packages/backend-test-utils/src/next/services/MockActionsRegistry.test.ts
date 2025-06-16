@@ -28,7 +28,7 @@ describe('MockActionsRegistry', () => {
     const registry = mockServices.actionsRegistry();
 
     registry.register({
-      name: 'test',
+      name: 'my-demo-action',
       title: 'Test',
       description: 'Test',
       schema: {
@@ -45,7 +45,7 @@ describe('MockActionsRegistry', () => {
     });
 
     const result = await registry.invoke({
-      id: 'testing:test',
+      id: 'test:my-demo-action',
       input: { name: 'test' },
     });
 
@@ -56,7 +56,7 @@ describe('MockActionsRegistry', () => {
     const registry = mockServices.actionsRegistry();
 
     registry.register({
-      name: 'test',
+      name: 'my-demo-action',
       title: 'Test',
       description: 'Test',
       schema: {
@@ -67,8 +67,8 @@ describe('MockActionsRegistry', () => {
     });
 
     await expect(
-      registry.invoke({ id: 'testing:test', input: { name: 1 } }),
-    ).rejects.toThrow('Invalid input to action "testing:test"');
+      registry.invoke({ id: 'test:my-demo-action', input: { name: 1 } }),
+    ).rejects.toThrow('Invalid input to action "test:my-demo-action"');
   });
 
   it('should throw an error when the action is not found', async () => {
@@ -83,7 +83,7 @@ describe('MockActionsRegistry', () => {
     const registry = mockServices.actionsRegistry();
 
     registry.register({
-      name: 'test',
+      name: 'my-demo-action',
       title: 'Test',
       description: 'Test',
       schema: {
@@ -94,7 +94,7 @@ describe('MockActionsRegistry', () => {
     });
 
     await expect(registry.invoke({ id: 'test' })).rejects.toThrow(
-      'Action "test" not found, available actions: "testing:test"',
+      'Action "test" not found, available actions: "test:my-demo-action"',
     );
   });
 
@@ -102,7 +102,7 @@ describe('MockActionsRegistry', () => {
     const registry = mockServices.actionsRegistry();
 
     registry.register({
-      name: 'test',
+      name: 'my-demo-action',
       title: 'Test',
       description: 'Test',
       schema: {
@@ -114,15 +114,15 @@ describe('MockActionsRegistry', () => {
     });
 
     await expect(
-      registry.invoke({ id: 'testing:test', input: { name: 1 } }),
-    ).rejects.toThrow('Invalid output from action "testing:test"');
+      registry.invoke({ id: 'test:my-demo-action', input: { name: 1 } }),
+    ).rejects.toThrow('Invalid output from action "test:my-demo-action"');
   });
 
   it('should list the actions correctly', async () => {
     const registry = mockServices.actionsRegistry();
 
     registry.register({
-      name: 'test',
+      name: 'my-demo-action',
       title: 'Test',
       description: 'Test',
       schema: {
@@ -137,8 +137,8 @@ describe('MockActionsRegistry', () => {
     expect(result).toMatchObject({
       actions: [
         {
-          id: 'testing:test',
-          name: 'test',
+          id: 'test:my-demo-action',
+          name: 'my-demo-action',
           title: 'Test',
           description: 'Test',
           attributes: {

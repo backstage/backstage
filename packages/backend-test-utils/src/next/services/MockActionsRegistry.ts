@@ -151,8 +151,11 @@ export class MockActionsRegistry
     TInputSchema extends AnyZodObject,
     TOutputSchema extends AnyZodObject,
   >(options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>): void {
-    // hardcode testing: prefix similar to how the default actions registry does it
-    const id = `testing:${options.name}`;
+    // hardcode test: prefix similar to how the default actions registry does it
+    // and other places around the testing ecosystem:
+    // https://github.com/backstage/backstage/blob/a9219496d5c073aaa0b8caf32ece10455cf65e61/packages/backend-test-utils/src/next/services/mockServices.ts#L321
+    // https://github.com/backstage/backstage/blob/861f162b4a39117b824669d67a951ed1db142e3d/packages/backend-test-utils/src/next/wiring/ServiceFactoryTester.ts#L99
+    const id = `test:${options.name}`;
 
     if (this.actions.has(id)) {
       throw new Error(`Action with id "${id}" is already registered`);
