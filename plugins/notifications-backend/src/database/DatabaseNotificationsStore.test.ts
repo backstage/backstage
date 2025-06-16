@@ -805,5 +805,24 @@ describe.each(databases.eachSupportedId())(
         });
       });
     });
+
+    describe('clearNotifications', () => {
+      it('should clear notifications older than specified days', async () => {
+        const oldDate = new Date();
+        oldDate.setDate(oldDate.getDate() - 10); // 10 days ago
+        await storage.saveNotification({
+          ...testNotification1,
+          created: oldDate,
+        });
+        await storage.saveNotification(testNotification2);
+
+        const result = await storage.clearNotifications({
+          maxAge: { days: 5 },
+        }); // Clear notifications older than 5 days
+        expect(result.deletedCount).toBe(1); // Only the first notification should be cleared
+        const remainingNotifications = await storage.getNotifications({ user });
+        expect(remainingNotifications.map(idOnly)).toEqual([id2]);
+      });
+    });
   },
 );

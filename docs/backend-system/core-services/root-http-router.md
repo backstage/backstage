@@ -40,6 +40,10 @@ createBackendPlugin({
 });
 ```
 
+## Rate limiting
+
+Please refer to the [HTTP Router documentation](./http-router.md#rate-limiting).
+
 ## Configuring the service
 
 ### Via `app-config.yaml`
@@ -120,6 +124,11 @@ backend.add(
       app.use(middleware.helmet());
       app.use(middleware.cors());
       app.use(middleware.compression());
+
+      // Optional rate limiting middleware
+      app.use(middleware.rateLimit());
+      // If you are using rate limiting behind a proxy, you should set the `trust proxy` setting to true
+      app.set('trust proxy', true);
 
       app.use(healthRouter);
 

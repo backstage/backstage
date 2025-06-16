@@ -70,6 +70,11 @@ describe('actionsServiceFactory', () => {
         input: {},
         output: {},
       },
+      attributes: {
+        destructive: false,
+        idempotent: false,
+        readOnly: false,
+      },
     };
 
     beforeEach(() => {
@@ -305,6 +310,11 @@ describe('actionsServiceFactory', () => {
                   required: ['ok', 'string'],
                   type: 'object',
                 },
+              },
+              attributes: {
+                destructive: true,
+                idempotent: false,
+                readOnly: false,
               },
               title: 'Test',
             },

@@ -67,13 +67,20 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
         actions: Array.from(this.actions.entries()).map(([id, action]) => ({
           id,
           ...action,
+          attributes: {
+            // Inspired by the @modelcontextprotocol/sdk defaults for the hints.
+            // https://github.com/modelcontextprotocol/typescript-sdk/blob/dd69efa1de8646bb6b195ff8d5f52e13739f4550/src/types.ts#L777-L812
+            destructive: action.attributes?.destructive ?? true,
+            idempotent: action.attributes?.idempotent ?? false,
+            readOnly: action.attributes?.readOnly ?? false,
+          },
           schema: {
             input: action.schema?.input
               ? zodToJsonSchema(action.schema.input(z))
-              : zodToJsonSchema(z.any()),
+              : zodToJsonSchema(z.object({})),
             output: action.schema?.output
               ? zodToJsonSchema(action.schema.output(z))
-              : zodToJsonSchema(z.any()),
+              : zodToJsonSchema(z.object({})),
           },
         })),
       });

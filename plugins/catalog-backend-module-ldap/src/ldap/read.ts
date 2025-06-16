@@ -146,6 +146,7 @@ export async function readLdapUsers(
       mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
         ensureItems(userMemberOf, myDn, vs);
       });
+
       entities.push(entity);
     });
   }
@@ -277,6 +278,7 @@ export async function readLdapGroups(
       mapReferencesAttr(entry, vendor, map.memberOf, (myDn, vs) => {
         ensureItems(groupMemberOf, myDn, vs);
       });
+
       mapReferencesAttr(entry, vendor, map.members, (myDn, vs) => {
         ensureItems(groupMember, myDn, vs);
       });
@@ -349,7 +351,7 @@ export async function readLdapOrg(
 function mapReferencesAttr(
   entry: SearchEntry,
   vendor: LdapVendor,
-  attributeName: string | undefined,
+  attributeName: string | undefined | null,
   setter: (sourceDn: string, targets: string[]) => void,
 ) {
   if (attributeName) {
