@@ -34,29 +34,23 @@ export type CheckpointContext<T extends JsonValue | void = JsonValue> = {
 };
 
 // @alpha
-export type CheckpointFailedState = {
-  status: 'failed';
-  reason: string;
-};
-
-// @alpha
 export type CheckpointState = {
   [key: string]: CheckpointStateValue;
 };
 
 // @alpha
-export type CheckpointStateValue =
-  | CheckpointSuccessState
-  | CheckpointFailedState;
+export type CheckpointStateValue<T extends JsonValue = JsonValue> =
+  | {
+      status: 'failed';
+      reason: string;
+    }
+  | {
+      status: 'success';
+      value: T;
+    };
 
 // @alpha
 export type CheckpointStatus = 'failed' | 'success';
-
-// @alpha
-export type CheckpointSuccessState<T extends JsonValue = JsonValue> = {
-  status: 'success';
-  value: T;
-};
 
 // @alpha (undocumented)
 export type CreatedTemplateFilter<

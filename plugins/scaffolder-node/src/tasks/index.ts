@@ -25,5 +25,4 @@ export type {
   TaskContext,
   TaskEventType,
   TaskStatus,
-  // UpdateTaskCheckpointOptions,
 } from './types';

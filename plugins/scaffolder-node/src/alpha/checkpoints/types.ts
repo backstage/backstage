@@ -23,33 +23,13 @@ import { JsonValue } from '@backstage/types';
 export type CheckpointStatus = 'failed' | 'success';
 
 /**
- * Represents a successful checkpoint state with a value.
- *
- * @alpha
- */
-export type CheckpointSuccessState<T extends JsonValue = JsonValue> = {
-  status: 'success';
-  value: T;
-};
-
-/**
- * Represents a failed checkpoint state with a reason for failure.
- *
- * @alpha
- */
-export type CheckpointFailedState = {
-  status: 'failed';
-  reason: string;
-};
-
-/**
  * Represents the union of all possible checkpoint state values.
  *
  * @alpha
  */
-export type CheckpointStateValue =
-  | CheckpointSuccessState
-  | CheckpointFailedState;
+export type CheckpointStateValue<T extends JsonValue = JsonValue> =
+  | { status: 'failed'; reason: string }
+  | { status: 'success'; value: T };
 
 /**
  * A map of checkpoint keys to their states.
