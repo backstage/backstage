@@ -312,7 +312,7 @@ describe('actionsServiceFactory', () => {
                 },
               },
               attributes: {
-                destructive: false,
+                destructive: true,
                 idempotent: false,
                 readOnly: false,
               },

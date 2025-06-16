@@ -220,7 +220,7 @@ describe('actionsRegistryServiceFactory', () => {
           {
             name: 'test',
             attributes: {
-              destructive: false,
+              destructive: true,
               idempotent: false,
               readOnly: false,
             },
@@ -243,7 +243,7 @@ describe('actionsRegistryServiceFactory', () => {
                 title: 'Test',
                 description: 'Test',
                 attributes: {
-                  destructive: true,
+                  destructive: false,
                   idempotent: true,
                   readOnly: true,
                 },
@@ -275,7 +275,7 @@ describe('actionsRegistryServiceFactory', () => {
             title: 'Test',
             description: 'Test',
             attributes: {
-              destructive: true,
+              destructive: false,
               idempotent: true,
               readOnly: true,
             },

@@ -68,8 +68,9 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
           id,
           ...action,
           attributes: {
-            // todo(blam): what's safe defaults?
-            destructive: action.attributes?.destructive ?? false,
+            // Inspired by the @modelcontextprotocol/sdk defaults for the hints.
+            // https://github.com/modelcontextprotocol/typescript-sdk/blob/dd69efa1de8646bb6b195ff8d5f52e13739f4550/src/types.ts#L777-L812
+            destructive: action.attributes?.destructive ?? true,
             idempotent: action.attributes?.idempotent ?? false,
             readOnly: action.attributes?.readOnly ?? false,
           },
