@@ -31,6 +31,7 @@ import {
 } from '@backstage/plugin-notifications-common';
 import { Knex } from 'knex';
 import crypto from 'crypto';
+import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-notifications-backend',
@@ -655,5 +656,25 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       .whereNotNull('topic')
       .distinct(['topic']);
     return { topics: topics.map(row => row.topic) };
+  }
+
+  async clearNotifications(options: {
+    maxAge: HumanDuration;
+  }): Promise<{ deletedCount: number }> {
+    const ms = durationToMilliseconds(options.maxAge);
+    const now = new Date(new Date().getTime() - ms);
+    const notificationsCount = await this.db('notification')
+      .where(builder => {
+        builder.where('created', '<=', now).whereNull('updated');
+      })
+      .orWhere('updated', '<=', now)
+      .delete();
+    const broadcastsCount = await this.db('broadcast')
+      .where(builder => {
+        builder.where('created', '<=', now).whereNull('updated');
+      })
+      .orWhere('updated', '<=', now)
+      .delete();
+    return { deletedCount: notificationsCount + broadcastsCount };
   }
 }
