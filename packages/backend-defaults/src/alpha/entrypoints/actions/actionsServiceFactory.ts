@@ -16,12 +16,13 @@
 import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { coreServices } from '@backstage/backend-plugin-api';
 import { DefaultActionsService } from './DefaultActionsService';
+import { actionsServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 /**
  * @public
  */
 export const actionsServiceFactory = createServiceFactory({
-  service: coreServices.actions,
+  service: actionsServiceRef,
   deps: {
     discovery: coreServices.discovery,
     config: coreServices.rootConfig,

@@ -19,12 +19,13 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { DefaultActionsRegistryService } from './DefaultActionsRegistryService';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 /**
  * @public
  */
 export const actionsRegistryServiceFactory = createServiceFactory({
-  service: coreServices.actionsRegistry,
+  service: actionsRegistryServiceRef,
   deps: {
     metadata: coreServices.pluginMetadata,
     httpRouter: coreServices.httpRouter,

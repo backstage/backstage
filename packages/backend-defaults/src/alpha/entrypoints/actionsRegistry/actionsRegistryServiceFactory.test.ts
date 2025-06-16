@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  coreServices,
-  createBackendPlugin,
-} from '@backstage/backend-plugin-api';
+import { createBackendPlugin } from '@backstage/backend-plugin-api';
 import {
   mockCredentials,
   mockServices,
   startTestBackend,
 } from '@backstage/backend-test-utils';
-import { httpRouterServiceFactory } from '../httpRouter';
+import { httpRouterServiceFactory } from '../../../entrypoints/httpRouter';
 import request from 'supertest';
 import { actionsRegistryServiceFactory } from './actionsRegistryServiceFactory';
 import { InputError } from '@backstage/errors';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 describe('actionsRegistryServiceFactory', () => {
   const defaultServices = [
@@ -43,7 +41,7 @@ describe('actionsRegistryServiceFactory', () => {
         register(reg) {
           reg.registerInit({
             deps: {
-              actionsRegistry: coreServices.actionsRegistry,
+              actionsRegistry: actionsRegistryServiceRef,
             },
             async init({ actionsRegistry }) {
               actionsRegistry.register({
@@ -80,7 +78,7 @@ describe('actionsRegistryServiceFactory', () => {
         register(reg) {
           reg.registerInit({
             deps: {
-              actionsRegistry: coreServices.actionsRegistry,
+              actionsRegistry: actionsRegistryServiceRef,
             },
             async init({ actionsRegistry }) {
               actionsRegistry.register({
@@ -118,7 +116,7 @@ describe('actionsRegistryServiceFactory', () => {
         register(reg) {
           reg.registerInit({
             deps: {
-              actionsRegistry: coreServices.actionsRegistry,
+              actionsRegistry: actionsRegistryServiceRef,
             },
             async init({ actionsRegistry }) {
               actionsRegistry.register({
@@ -187,7 +185,7 @@ describe('actionsRegistryServiceFactory', () => {
         register(reg) {
           reg.registerInit({
             deps: {
-              actionsRegistry: coreServices.actionsRegistry,
+              actionsRegistry: actionsRegistryServiceRef,
             },
             async init({ actionsRegistry }) {
               actionsRegistry.register({
@@ -235,7 +233,7 @@ describe('actionsRegistryServiceFactory', () => {
         register(reg) {
           reg.registerInit({
             deps: {
-              actionsRegistry: coreServices.actionsRegistry,
+              actionsRegistry: actionsRegistryServiceRef,
             },
             async init({ actionsRegistry }) {
               actionsRegistry.register({
@@ -290,7 +288,7 @@ describe('actionsRegistryServiceFactory', () => {
         register(reg) {
           reg.registerInit({
             deps: {
-              actionsRegistry: coreServices.actionsRegistry,
+              actionsRegistry: actionsRegistryServiceRef,
             },
             async init({ actionsRegistry }) {
               actionsRegistry.register({
@@ -349,7 +347,7 @@ describe('actionsRegistryServiceFactory', () => {
       register(reg) {
         reg.registerInit({
           deps: {
-            actionsRegistry: coreServices.actionsRegistry,
+            actionsRegistry: actionsRegistryServiceRef,
           },
           async init({ actionsRegistry }) {
             actionsRegistry.register({
