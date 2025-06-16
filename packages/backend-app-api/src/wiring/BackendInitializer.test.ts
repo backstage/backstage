@@ -777,7 +777,7 @@ describe('BackendInitializer', () => {
     const init = new BackendInitializer(baseFactories);
     init.add(
       createBackendPlugin({
-        pluginId: 'test-1',
+        pluginId: 'test1',
         register(reg) {
           reg.registerInit({
             deps: {},
@@ -790,7 +790,7 @@ describe('BackendInitializer', () => {
     );
     init.add(
       createBackendPlugin({
-        pluginId: 'test-2',
+        pluginId: 'test2',
         register(reg) {
           reg.registerInit({
             deps: {},
@@ -807,10 +807,10 @@ describe('BackendInitializer', () => {
     await expect(result).rejects.toMatchObject({
       errors: [
         expect.objectContaining({
-          message: "Plugin 'test-1' startup failed; caused by Error: NOPE A",
+          message: "Plugin 'test1' startup failed; caused by Error: NOPE A",
         }),
         expect.objectContaining({
-          message: "Plugin 'test-2' startup failed; caused by Error: NOPE B",
+          message: "Plugin 'test2' startup failed; caused by Error: NOPE B",
         }),
       ],
     });
