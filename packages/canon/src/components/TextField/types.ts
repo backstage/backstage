@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
+import type { TextFieldProps } from 'react-aria-components';
+import { ReactNode } from 'react';
 import type { Breakpoint } from '../../types';
-import type { ReactNode, MouseEventHandler } from 'react';
+
 /** @public */
-export interface TextFieldProps
-  extends Omit<React.ComponentPropsWithoutRef<'input'>, 'size'> {
+export interface FormInputProps extends Omit<TextFieldProps, 'size'> {
   /**
-   * The class name of the text field
+   * An icon to render before the input
    */
-  className?: string;
+  icon?: ReactNode;
 
   /**
    * The size of the text field
@@ -41,37 +42,12 @@ export interface TextFieldProps
   secondaryLabel?: string;
 
   /**
-   * The size of the label and description
-   */
-  labelSize?: 'small' | 'medium';
-
-  /**
-   * Hide the label and description but still visible to screen readers
-   */
-  hideLabelAndDescription?: boolean;
-
-  /**
    * The description of the text field
    */
   description?: string;
 
   /**
-   * The name of the text field
+   * Whether the field is required
    */
-  name: string;
-
-  /**
-   * The error message of the text field
-   */
-  error?: string | null;
-
-  /**
-   * An icon to render before the input
-   */
-  icon?: ReactNode;
-
-  /**
-   * Handler to call when the clear button is pressed
-   */
-  onClear?: MouseEventHandler<HTMLButtonElement>;
+  isRequired?: boolean;
 }

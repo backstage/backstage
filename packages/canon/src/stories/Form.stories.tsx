@@ -22,7 +22,7 @@ import { Button } from '../components/Button';
 import { Select } from '../components/Select';
 
 const meta = {
-  title: 'Examples/Form',
+  title: 'Forms/Form',
 } satisfies Meta;
 
 export default meta;
