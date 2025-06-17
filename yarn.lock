@@ -5632,6 +5632,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-builds-backend-module-github-actions@workspace:^, @backstage/plugin-builds-backend-module-github-actions@workspace:plugins/builds-backend-module-github-actions":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-builds-backend-module-github-actions@workspace:plugins/builds-backend-module-github-actions"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-builds-backend": "workspace:^"
+    "@octokit/rest": "npm:^19.0.3"
+    git-url-parse: "npm:^14.0.0"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-builds-backend@workspace:^, @backstage/plugin-builds-backend@workspace:plugins/builds-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-builds-backend@workspace:plugins/builds-backend"
@@ -29711,6 +29726,7 @@ __metadata:
     "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-builds-backend": "workspace:^"
+    "@backstage/plugin-builds-backend-module-github-actions": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^"
     "@backstage/plugin-catalog-backend-module-openapi": "workspace:^"
