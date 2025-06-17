@@ -19,16 +19,18 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
-import { GooglePubSubConsumingEventPublisher } from './GooglePubSubConsumingEventPublisher';
+import { EventConsumingGooglePubSubPublisher } from './EventConsumingGooglePubSubPublisher';
 
 /**
- * Reads messages off of Google Pub/Sub subscriptions and forwards them into the
- * Backstage events system.
+ * Reads messages off of the events system and forwards them into Google Pub/Sub
+ * topics.
+ *
+ * @public
  */
-export const eventsModuleGooglePubsubConsumingEventPublisher =
+export const eventsModuleEventConsumingGooglePubSubPublisher =
   createBackendModule({
     pluginId: 'events',
-    moduleId: 'google-pubsub-consuming-event-publisher',
+    moduleId: 'event-consuming-google-pubsub-publisher',
     register(reg) {
       reg.registerInit({
         deps: {
@@ -38,7 +40,7 @@ export const eventsModuleGooglePubsubConsumingEventPublisher =
           events: eventsServiceRef,
         },
         async init({ config, logger, rootLifecycle, events }) {
-          GooglePubSubConsumingEventPublisher.create({
+          EventConsumingGooglePubSubPublisher.create({
             config,
             logger,
             rootLifecycle,

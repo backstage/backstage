@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
-import { eventsModuleEventConsumingGooglePubSubPublisher } from './EventConsumingGooglePubSubPublisher';
-import { eventsModuleGooglePubsubConsumingEventPublisher } from './GooglePubSubConsumingEventPublisher';
+import { EventParams } from '@backstage/plugin-events-node';
 
 /**
- * The google-pubsub backend module for the events plugin.
- *
- * @packageDocumentation
+ * A configured subscription task.
  */
-
-export default createBackendFeatureLoader({
-  *loader() {
-    yield eventsModuleGooglePubsubConsumingEventPublisher;
-    yield eventsModuleEventConsumingGooglePubSubPublisher;
-  },
-});
+export interface SubscriptionTask {
+  id: string;
+  sourceTopics: string[];
+  targetTopicPattern: string;
+  mapToTopic: (
+    event: EventParams,
+  ) => { project: string; topic: string } | undefined;
+  mapToAttributes: (event: EventParams) => Record<string, string>;
+}
