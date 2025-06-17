@@ -116,17 +116,6 @@ describe('Mcp Backend', () => {
           type: 'object',
         },
         name: 'make-greeting',
-        outputSchema: {
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          additionalProperties: false,
-          properties: {
-            greeting: {
-              type: 'string',
-            },
-          },
-          required: ['greeting'],
-          type: 'object',
-        },
       },
     ]);
   });
@@ -170,17 +159,6 @@ describe('Mcp Backend', () => {
           type: 'object',
         },
         name: 'make-greeting',
-        outputSchema: {
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          additionalProperties: false,
-          properties: {
-            greeting: {
-              type: 'string',
-            },
-          },
-          required: ['greeting'],
-          type: 'object',
-        },
       },
     ]);
   });

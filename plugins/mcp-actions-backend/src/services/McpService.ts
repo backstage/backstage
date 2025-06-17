@@ -48,7 +48,9 @@ export class McpService {
       return {
         tools: actions.map(action => ({
           inputSchema: action.schema.input,
-          outputSchema: action.schema.output,
+          // todo(blam): this is unfortunately not supported by most clients yet.
+          // When this is provided you need to provide structuredContent instead.
+          // outputSchema: action.schema.output,
           name: action.name,
           description: action.description,
           annotations: {
@@ -77,10 +79,17 @@ export class McpService {
       });
 
       return {
-        // all actions need to be defined with an structured output,
-        // so we can return the output using this format rather than
-        // just text.
-        structuredContent: output,
+        // todo(blam): unfortunately structuredContent is not supported by most clients yet.
+        // so the validation for the output happens in the default actions registry
+        // and we return it as json text instead for now.
+        content: [
+          {
+            type: 'text',
+            text: ['```json', JSON.stringify(output, null, 2), '```'].join(
+              '\n',
+            ),
+          },
+        ],
       };
     });
 
