@@ -75,9 +75,10 @@ export const myPlugin = createBackendPlugin({
 
 By default, the Backstage backend requires authentication for all requests.
 
-We're looking at [device authentication](https://github.com/backstage/backstage/pull/27680) to make this much easier with authentication for MCP clients, but in the meantime you can take advantage of the [static tokens](https://backstage.io/docs/auth/service-to-service-auth/#static-tokens) feature.
-
 #### External Access with Static Tokens
+
+> This is meant to be a temporary workaround until work on [device authentication](https://github.com/backstage/backstage/pull/27680) is completed.
+> This will make authentication for MCP clients and CLI's in Backstage easier than having to configure static tokens.
 
 Configure external access with static tokens in your app configuration:
 
