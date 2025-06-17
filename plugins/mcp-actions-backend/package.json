@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "backstage": {
     "role": "backend-plugin",
-    "pluginId": "mcp",
+    "pluginId": "mcp-actions",
     "pluginPackages": [
       "@backstage/plugin-mcp-actions-backend"
     ]

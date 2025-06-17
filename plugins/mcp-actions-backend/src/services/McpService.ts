@@ -42,6 +42,7 @@ export class McpService {
     );
 
     server.setRequestHandler(ListToolsRequestSchema, async () => {
+      // TODO: switch this to be configuration based later
       const { actions } = await this.actions.list({ credentials });
 
       return {
