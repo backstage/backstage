@@ -14,23 +14,30 @@
  * limitations under the License.
  */
 
-import type { TextFieldProps as AriaTextFieldProps } from 'react-aria-components';
-import { ReactNode } from 'react';
-import type { Breakpoint } from '../../types';
-import type { FieldLabelProps } from '../FieldLabel/types';
-
 /** @public */
-export interface TextFieldProps
-  extends AriaTextFieldProps,
-    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+export interface FieldLabelProps {
   /**
-   * An icon to render before the input
+   * The label of the text field
    */
-  icon?: ReactNode;
+  label?: string | null;
 
   /**
-   * The size of the text field
-   * @defaultValue 'medium'
+   * The secondary label of the text field
    */
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  secondaryLabel?: string | null;
+
+  /**
+   * The description of the text field
+   */
+  description?: string | null;
+
+  /**
+   * The HTML for attribute of the text field
+   */
+  htmlFor?: string;
+
+  /**
+   * The id of the text field
+   */
+  id?: string;
 }

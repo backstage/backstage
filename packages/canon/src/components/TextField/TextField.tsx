@@ -14,110 +14,80 @@
  * limitations under the License.
  */
 
-import { Field } from '@base-ui-components/react/field';
-import { forwardRef } from 'react';
+import { forwardRef, useEffect } from 'react';
+import {
+  Input,
+  TextField as AriaTextField,
+  FieldError,
+} from 'react-aria-components';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
+import { FieldLabel } from '../FieldLabel';
 
 import type { TextFieldProps } from './types';
-import { Icon } from '../Icon';
 
 /** @public */
 export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
-  (props: TextFieldProps, ref) => {
+  (props, ref) => {
     const {
       className,
+      icon,
       size = 'small',
       label,
-      labelSize = 'small',
       secondaryLabel,
       description,
-      hideLabelAndDescription,
-      error,
-      required,
-      style,
-      disabled,
-      icon,
-      onClear,
+      isRequired,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
       ...rest
     } = props;
+
+    useEffect(() => {
+      if (!label && !ariaLabel && !ariaLabelledBy) {
+        console.warn(
+          'TextField requires either a visible label, aria-label, or aria-labelledby for accessibility',
+        );
+      }
+    }, [label, ariaLabel, ariaLabelledBy]);
 
     // Get the responsive value for the variant
     const responsiveSize = useResponsiveValue(size);
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
-    const secondaryLabelText = secondaryLabel || (required ? 'Required' : null);
+    const secondaryLabelText =
+      secondaryLabel || (isRequired ? 'Required' : null);
 
     return (
-      <Field.Root
+      <AriaTextField
         className={clsx('canon-TextField', className)}
-        disabled={disabled}
-        invalid={!!error}
-        style={style}
+        data-size={responsiveSize}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
+        {...rest}
         ref={ref}
       >
-        {label && (
-          <div
-            className="canon-TextFieldLabelWrapper"
-            data-hidden={hideLabelAndDescription}
-          >
-            {label && (
-              <Field.Label
-                className="canon-TextFieldLabel"
-                data-size={labelSize}
-              >
-                {label}
-                {secondaryLabelText && (
-                  <span
-                    aria-hidden="true"
-                    className="canon-TextFieldSecondaryLabel"
-                  >
-                    ({secondaryLabelText})
-                  </span>
-                )}
-              </Field.Label>
-            )}
-            {description && (
-              <Field.Description
-                className="canon-TextFieldDescription"
-                data-size={labelSize}
-              >
-                {description}
-              </Field.Description>
-            )}
-          </div>
-        )}
+        <FieldLabel
+          label={label}
+          secondaryLabel={secondaryLabelText}
+          description={description}
+        />
         <div className="canon-TextFieldInputWrapper" data-size={responsiveSize}>
           {icon && (
             <div
               className="canon-TextFieldIcon"
-              aria-hidden="true"
               data-size={responsiveSize}
+              aria-hidden="true"
             >
               {icon}
             </div>
           )}
-          <Field.Control
+          <Input
             className="canon-TextFieldInput"
-            required={required}
-            {...rest}
+            {...(icon && { 'data-icon': true })}
           />
-          {onClear && (
-            <button
-              className="canon-TextFieldClearButton"
-              disabled={disabled}
-              onClick={onClear}
-            >
-              <Icon className="canon-TextFieldClearButtonIcon" name="close" />
-            </button>
-          )}
         </div>
-        {error && (
-          <Field.Error className="canon-TextFieldError" role="alert" forceShow>
-            {error}
-          </Field.Error>
-        )}
-      </Field.Root>
+        <FieldError className="canon-TextFieldError" />
+      </AriaTextField>
     );
   },
 );

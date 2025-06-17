@@ -18,7 +18,6 @@ import { ForwardRefExoticComponent } from 'react';
 import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
-import type { MouseEventHandler } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
@@ -28,6 +27,7 @@ import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { Table as Table_2 } from '@tanstack/react-table';
 import { Tabs as Tabs_2 } from '@base-ui-components/react/tabs';
 import { TdHTMLAttributes } from 'react';
+import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import { ThHTMLAttributes } from 'react';
 import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
 import type { useRender } from '@base-ui-components/react/use-render';
@@ -355,6 +355,20 @@ export type EnumPropDef<T> = {
   default?: T;
   required?: boolean;
 };
+
+// @public (undocumented)
+export const FieldLabel: ForwardRefExoticComponent<
+  FieldLabelProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface FieldLabelProps {
+  description?: string | null;
+  htmlFor?: string;
+  id?: string;
+  label?: string | null;
+  secondaryLabel?: string | null;
+}
 
 // @public (undocumented)
 export const Flex: ForwardRefExoticComponent<
@@ -1286,17 +1300,9 @@ export const TextField: ForwardRefExoticComponent<
 
 // @public (undocumented)
 export interface TextFieldProps
-  extends Omit<React.ComponentPropsWithoutRef<'input'>, 'size'> {
-  className?: string;
-  description?: string;
-  error?: string | null;
-  hideLabelAndDescription?: boolean;
+  extends TextFieldProps_2,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
   icon?: ReactNode;
-  label?: string;
-  labelSize?: 'small' | 'medium';
-  name: string;
-  onClear?: MouseEventHandler<HTMLButtonElement>;
-  secondaryLabel?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 

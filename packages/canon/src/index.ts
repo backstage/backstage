@@ -36,6 +36,7 @@ export * from './components/Avatar';
 export * from './components/Button';
 export * from './components/Collapsible';
 export * from './components/DataTable';
+export * from './components/FieldLabel';
 export * from './components/Icon';
 export * from './components/IconButton';
 export * from './components/Checkbox';
