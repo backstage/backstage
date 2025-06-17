@@ -1,5 +1,26 @@
 # @backstage/repo-tools
 
+## 0.14.0
+
+### Minor Changes
+
+- bf9a173: Add support for caching the per-package output from the `package-docs` command.
+
+### Patch Changes
+
+- 4bff5d0: Fixed a bug where linting would fail with the generated clients when defining top-level `enum` schema values.
+- 2d20024: Fix an issue where errors were not printed to console when running `backstage-repo-tools schema openapi generate` without the `--watch` flag.
+- e643ee4: Add missing highlight language for the `package-docs` command.
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- a372bf1: Updated dependency `@electric-sql/pglite` to `^0.3.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+  - @backstage/errors@1.2.7
+
 ## 0.14.0-next.2
 
 ### Patch Changes

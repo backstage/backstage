@@ -1,5 +1,31 @@
 # @backstage/plugin-catalog-backend
 
+## 2.1.0
+
+### Minor Changes
+
+- 2e7adf0: Implement the action `get-catalog-entity` with the `ActionsRegistry`
+
+### Patch Changes
+
+- 2cac8b0: You can now specify an optional value when applying the `HAS_LABEL` permission rule, similar to the `HAS_ANNOTATION` permission rule.
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- 4654a78: Update `refresh_state_references.id` to be a big int
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/backend-openapi-utils@0.5.4
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1
+
 ## 2.0.1-next.2
 
 ### Patch Changes
