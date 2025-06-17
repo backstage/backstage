@@ -83,6 +83,15 @@ export const Disabled: Story = {
   ),
 };
 
+export const AsLink: Story = {
+  args: {
+    icon: <Icon name="cloud" />,
+    href: 'https://canon.backstage.io',
+    target: '_blank',
+    'aria-label': 'Cloud icon button',
+  },
+};
+
 export const Responsive: Story = {
   args: {
     icon: <Icon name="cloud" />,

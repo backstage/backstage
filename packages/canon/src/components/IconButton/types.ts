@@ -14,30 +14,43 @@
  * limitations under the License.
  */
 
-import type { IconButtonOwnProps } from './IconButton.props';
-import { ReactElement } from 'react';
+import {
+  AnchorHTMLAttributes,
+  ButtonHTMLAttributes,
+  ReactElement,
+} from 'react';
+import { Breakpoint } from '@backstage/canon';
+
+/** @public */
+export type IconButtonCommonProps = {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+  icon?: ReactElement;
+  className?: string;
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
+};
+
+/** @public */
+export type IconButtonAnchorProps = IconButtonCommonProps &
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'type' | 'onClick'> & {
+    href: string;
+    onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+  };
+
+/** @public */
+export type IconButtonNativeProps = IconButtonCommonProps &
+  Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'href'> & {
+    href?: undefined;
+    onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  };
 
 /**
  * Properties for {@link IconButton}
  *
  * @public
  */
-export interface IconButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  /**
-   * The size of the button
-   * @defaultValue 'medium'
-   */
-  size?: IconButtonOwnProps['size'];
-
-  /**
-   * The visual variant of the button
-   * @defaultValue 'primary'
-   */
-  variant?: IconButtonOwnProps['variant'];
-
-  /**
-   * Icon to display in the button
-   */
-  icon: ReactElement;
-}
+export type IconButtonProps = IconButtonAnchorProps | IconButtonNativeProps;

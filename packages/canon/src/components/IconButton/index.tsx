@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 
-export { IconButton } from './IconButton';
-export type { IconButtonProps } from './types';
-export { iconButtonPropDefs } from './IconButton.props';
-export type { IconButtonOwnProps } from './IconButton.props';
+export * from './IconButton';
+export * from './types';

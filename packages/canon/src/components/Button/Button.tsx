@@ -33,9 +33,7 @@ export const Button = forwardRef<HTMLElement, ButtonProps>((props, ref) => {
     ...rest
   } = props;
 
-  function isAnchor(props: { href?: unknown }): props is { href: string } {
-    return typeof props.href === 'string';
-  }
+  const isAnchor = typeof props.href === 'string';
 
   const responsiveSize = useResponsiveValue(size);
   const responsiveVariant = useResponsiveValue(variant);
@@ -64,7 +62,7 @@ export const Button = forwardRef<HTMLElement, ButtonProps>((props, ref) => {
     </>
   );
 
-  if (isAnchor(props)) {
+  if (isAnchor) {
     const { onClick, ...anchorRest } =
       rest as AnchorHTMLAttributes<HTMLAnchorElement>;
     return (

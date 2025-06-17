@@ -14,46 +14,74 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
+import { AnchorHTMLAttributes, ButtonHTMLAttributes, forwardRef } from 'react';
 import clsx from 'clsx';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
-
 import type { IconButtonProps } from './types';
 
 /** @public */
-export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
-  (props: IconButtonProps, ref) => {
+export const IconButton = forwardRef<HTMLElement, IconButtonProps>(
+  (props, ref) => {
     const {
       size = 'small',
       variant = 'primary',
       icon,
       className,
+      href,
       style,
       ...rest
     } = props;
 
+    const isAnchor = typeof props.href === 'string';
     const responsiveSize = useResponsiveValue(size);
     const responsiveVariant = useResponsiveValue(variant);
 
-    return (
-      <button
-        ref={ref}
-        className={clsx('canon-IconButton', className)}
+    const content = (
+      <span
+        className="canon-IconButtonIcon"
+        aria-hidden="true"
         data-size={responsiveSize}
-        data-variant={responsiveVariant}
-        style={style}
-        {...rest}
       >
-        <span
-          className="canon-IconButtonIcon"
-          aria-hidden="true"
-          data-size={responsiveSize}
-        >
-          {icon}
-        </span>
-      </button>
+        {icon}
+      </span>
     );
+
+    if (isAnchor) {
+      const { onClick, ...anchorRest } =
+        rest as AnchorHTMLAttributes<HTMLAnchorElement>;
+      return (
+        <a
+          href={href}
+          className={clsx('canon-IconButton', className)}
+          data-variant={responsiveVariant}
+          data-size={responsiveSize}
+          style={style}
+          ref={ref as React.Ref<HTMLAnchorElement>}
+          onClick={onClick}
+          {...anchorRest}
+        >
+          {content}
+        </a>
+      );
+    } else {
+      const { onClick, ...buttonRest } =
+        rest as ButtonHTMLAttributes<HTMLButtonElement>;
+      return (
+        <button
+          type="button"
+          className={clsx('canon-Button', className)}
+          data-variant={responsiveVariant}
+          data-size={responsiveSize}
+          style={style}
+          ref={ref as React.Ref<HTMLButtonElement>}
+          onClick={onClick}
+          {...buttonRest}
+        >
+          {content}
+        </button>
+      );
+    }
   },
 );
 
-export default IconButton;
+IconButton.displayName = 'IconButton';

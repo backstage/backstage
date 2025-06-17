@@ -697,37 +697,38 @@ export const Icon: (props: IconProps) => JSX_2.Element | null;
 
 // @public (undocumented)
 export const IconButton: ForwardRefExoticComponent<
-  IconButtonProps & RefAttributes<HTMLButtonElement>
+  IconButtonProps & RefAttributes<HTMLElement>
 >;
 
 // @public (undocumented)
-export type IconButtonOwnProps = GetPropDefTypes<typeof iconButtonPropDefs>;
+export type IconButtonAnchorProps = IconButtonCommonProps &
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'type' | 'onClick'> & {
+    href: string;
+    onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+  };
 
 // @public (undocumented)
-export const iconButtonPropDefs: {
-  variant: {
-    type: 'enum';
-    values: ('primary' | 'secondary')[];
-    className: string;
-    default: 'primary';
-    responsive: true;
-  };
-  size: {
-    type: 'enum';
-    values: ('small' | 'medium')[];
-    className: string;
-    default: 'medium';
-    responsive: true;
-  };
+export type IconButtonCommonProps = {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
+  icon?: ReactElement;
+  className?: string;
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
 };
 
+// @public (undocumented)
+export type IconButtonNativeProps = IconButtonCommonProps &
+  Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'href'> & {
+    href?: undefined;
+    onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  };
+
 // @public
-export interface IconButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  icon: ReactElement;
-  size?: IconButtonOwnProps['size'];
-  variant?: IconButtonOwnProps['variant'];
-}
+export type IconButtonProps = IconButtonAnchorProps | IconButtonNativeProps;
 
 // @public (undocumented)
 export const IconContext: Context<IconContextProps>;
