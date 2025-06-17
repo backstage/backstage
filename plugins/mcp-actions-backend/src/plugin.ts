@@ -32,7 +32,7 @@ import {
  * @public
  */
 export const mcpPlugin = createBackendPlugin({
-  pluginId: 'mcp',
+  pluginId: 'mcp-actions',
   register(env) {
     env.registerInit({
       deps: {
@@ -62,8 +62,8 @@ export const mcpPlugin = createBackendPlugin({
         const router = Router();
         router.use(json());
 
-        router.use('/sse', sseRouter);
-        router.use('/', streamableRouter);
+        router.use('/v1/sse', sseRouter);
+        router.use('/v1', streamableRouter);
 
         httpRouter.use(router);
       },

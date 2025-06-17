@@ -7099,9 +7099,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-mcp-backend@workspace:^, @backstage/plugin-mcp-backend@workspace:plugins/mcp-backend":
+"@backstage/plugin-mcp-actions-backend@workspace:^, @backstage/plugin-mcp-actions-backend@workspace:plugins/mcp-actions-backend":
   version: 0.0.0-use.local
-  resolution: "@backstage/plugin-mcp-backend@workspace:plugins/mcp-backend"
+  resolution: "@backstage/plugin-mcp-actions-backend@workspace:plugins/mcp-actions-backend"
   dependencies:
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
@@ -31365,7 +31365,7 @@ __metadata:
     "@backstage/plugin-events-backend": "workspace:^"
     "@backstage/plugin-events-backend-module-google-pubsub": "workspace:^"
     "@backstage/plugin-kubernetes-backend": "workspace:^"
-    "@backstage/plugin-mcp-backend": "workspace:^"
+    "@backstage/plugin-mcp-actions-backend": "workspace:^"
     "@backstage/plugin-notifications-backend": "workspace:^"
     "@backstage/plugin-permission-backend": "workspace:^"
     "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^"

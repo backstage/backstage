@@ -21,7 +21,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { JsonObject } from '@backstage/types';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
-import { version } from '@backstage/plugin-mcp-backend/package.json';
+import { version } from '@backstage/plugin-mcp-actions-backend/package.json';
 
 export class McpService {
   constructor(private readonly actions: ActionsService) {}

@@ -82,7 +82,7 @@ describe('Mcp Backend', () => {
   it('should support streamable spec', async () => {
     const { client, serverAddress } = await getContext();
     const transport = new StreamableHTTPClientTransport(
-      new URL(`${serverAddress}/api/mcp`),
+      new URL(`${serverAddress}/api/mcp-actions/v1`),
     );
 
     await client.connect(transport);
@@ -134,7 +134,7 @@ describe('Mcp Backend', () => {
   it('should support sse spec', async () => {
     const { client, serverAddress } = await getContext();
     const transport = new SSEClientTransport(
-      new URL(`${serverAddress}/api/mcp/sse`),
+      new URL(`${serverAddress}/api/mcp-actions/v1/sse`),
     );
 
     await client.connect(transport);
