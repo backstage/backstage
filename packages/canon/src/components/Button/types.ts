@@ -14,35 +14,40 @@
  * limitations under the License.
  */
 
-import type { ButtonOwnProps } from './Button.props';
-import { ReactElement } from 'react';
-import type { useRender } from '@base-ui-components/react/use-render';
+import {
+  ReactElement,
+  AnchorHTMLAttributes,
+  ButtonHTMLAttributes,
+} from 'react';
+
+/** @public */
+export type ButtonCommonProps = {
+  size?: 'small' | 'medium';
+  variant?: 'primary' | 'secondary';
+  iconStart?: ReactElement;
+  iconEnd?: ReactElement;
+  className?: string;
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
+};
+
+/** @public */
+export type ButtonAnchorProps = ButtonCommonProps &
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'type' | 'onClick'> & {
+    href: string;
+    onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+  };
+
+/** @public */
+export type ButtonNativeProps = ButtonCommonProps &
+  Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'href'> & {
+    href?: undefined;
+    onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  };
 
 /**
  * Properties for {@link Button}
  *
  * @public
  */
-export interface ButtonProps extends useRender.ComponentProps<'button'> {
-  /**
-   * The size of the button
-   * @defaultValue 'medium'
-   */
-  size?: ButtonOwnProps['size'];
-
-  /**
-   * The visual variant of the button
-   * @defaultValue 'primary'
-   */
-  variant?: ButtonOwnProps['variant'];
-
-  /**
-   * Optional icon to display at the start of the button
-   */
-  iconStart?: ReactElement;
-
-  /**
-   * Optional icon to display at the end of the button
-   */
-  iconEnd?: ReactElement;
-}
+export type ButtonProps = ButtonAnchorProps | ButtonNativeProps;

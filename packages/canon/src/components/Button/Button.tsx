@@ -14,69 +14,91 @@
  * limitations under the License.
  */
 
-import { forwardRef, useRef } from 'react';
+import { AnchorHTMLAttributes, ButtonHTMLAttributes, forwardRef } from 'react';
 import clsx from 'clsx';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
-import { useRender } from '@base-ui-components/react/use-render';
-
 import type { ButtonProps } from './types';
 
 /** @public */
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (props: ButtonProps, ref) => {
-    const {
-      size = 'small',
-      variant = 'primary',
-      iconStart,
-      iconEnd,
-      children,
-      render = <button />,
-      className,
-      style,
-      ...rest
-    } = props;
+export const Button = forwardRef<HTMLElement, ButtonProps>((props, ref) => {
+  const {
+    size = 'small',
+    variant = 'primary',
+    iconStart,
+    iconEnd,
+    children,
+    href,
+    className,
+    style,
+    ...rest
+  } = props;
 
-    // Get the responsive value for the variant
-    const responsiveSize = useResponsiveValue(size);
-    const responsiveVariant = useResponsiveValue(variant);
-    const internalRef = useRef<HTMLElement | null>(null);
+  function isAnchor(props: { href?: unknown }): props is { href: string } {
+    return typeof props.href === 'string';
+  }
 
-    const { renderElement } = useRender({
-      render,
-      props: {
-        className: clsx('canon-Button', className),
-        ['data-variant']: responsiveVariant,
-        ['data-size']: responsiveSize,
-        ...rest,
-        children: (
-          <>
-            {iconStart && (
-              <span
-                className="canon-ButtonIcon"
-                aria-hidden="true"
-                data-size={responsiveSize}
-              >
-                {iconStart}
-              </span>
-            )}
-            {children}
-            {iconEnd && (
-              <span
-                className="canon-ButtonIcon"
-                aria-hidden="true"
-                data-size={responsiveSize}
-              >
-                {iconEnd}
-              </span>
-            )}
-          </>
-        ),
-      },
-      refs: [ref, internalRef],
-    });
+  const responsiveSize = useResponsiveValue(size);
+  const responsiveVariant = useResponsiveValue(variant);
 
-    return renderElement();
-  },
-);
+  const content = (
+    <>
+      {iconStart && (
+        <span
+          className="canon-ButtonIcon"
+          aria-hidden="true"
+          data-size={responsiveSize}
+        >
+          {iconStart}
+        </span>
+      )}
+      {children}
+      {iconEnd && (
+        <span
+          className="canon-ButtonIcon"
+          aria-hidden="true"
+          data-size={responsiveSize}
+        >
+          {iconEnd}
+        </span>
+      )}
+    </>
+  );
+
+  if (isAnchor(props)) {
+    const { onClick, ...anchorRest } =
+      rest as AnchorHTMLAttributes<HTMLAnchorElement>;
+    return (
+      <a
+        href={href}
+        className={clsx('canon-Button', className)}
+        data-variant={responsiveVariant}
+        data-size={responsiveSize}
+        style={style}
+        ref={ref as React.Ref<HTMLAnchorElement>}
+        onClick={onClick}
+        {...anchorRest}
+      >
+        {content}
+      </a>
+    );
+  } else {
+    const { onClick, ...buttonRest } =
+      rest as ButtonHTMLAttributes<HTMLButtonElement>;
+    return (
+      <button
+        type="button"
+        className={clsx('canon-Button', className)}
+        data-variant={responsiveVariant}
+        data-size={responsiveSize}
+        style={style}
+        ref={ref as React.Ref<HTMLButtonElement>}
+        onClick={onClick}
+        {...buttonRest}
+      >
+        {content}
+      </button>
+    );
+  }
+});
 
 export default Button;

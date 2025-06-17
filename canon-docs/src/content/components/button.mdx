@@ -11,6 +11,7 @@ import {
   buttonFullWidthSnippet,
   buttonDisabledSnippet,
   buttonResponsiveSnippet,
+  buttonAsLinkSnippet,
 } from './button.props';
 import { ComponentInfos } from '@/components/ComponentInfos';
 
@@ -102,3 +103,15 @@ Here's a view when buttons are disabled.
 Here's a view when buttons are responsive.
 
 <CodeBlock code={buttonResponsiveSnippet} />
+
+### As Link
+
+Use the `href` prop to make a button act as a link.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ButtonSnippet story="AsLink" />}
+  code={buttonAsLinkSnippet}
+/>

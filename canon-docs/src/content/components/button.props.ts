@@ -61,3 +61,7 @@ export const buttonDisabledSnippet = `<Flex gap="4">
 export const buttonResponsiveSnippet = `<Button variant={{ initial: 'primary', lg: 'secondary' }}>
   Responsive Button
 </Button>`;
+
+export const buttonAsLinkSnippet = `<Button href="https://canon.backstage.io" target="_blank">
+  I am a link
+</Button>`;
