@@ -188,6 +188,6 @@ describe('McpService', () => {
         },
         CallToolResultSchema,
       ),
-    ).rejects.toThrow('Action mock-action not found');
+    ).rejects.toThrow('Action "mock-action" not found');
   });
 });

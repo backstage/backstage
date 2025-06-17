@@ -22,6 +22,7 @@ import {
 import { JsonObject } from '@backstage/types';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 import { version } from '@backstage/plugin-mcp-actions-backend/package.json';
+import { NotFoundError } from '@backstage/errors';
 
 export class McpService {
   constructor(private readonly actions: ActionsService) {}
@@ -65,7 +66,7 @@ export class McpService {
       const action = actions.find(a => a.name === params.name);
 
       if (!action) {
-        throw new Error(`Action ${params.name} not found`);
+        throw new NotFoundError(`Action "${params.name}" not found`);
       }
 
       const { output } = await this.actions.invoke({

@@ -53,11 +53,17 @@ export const createSseRouter = ({
 
   router.post('/messages', async (req, res) => {
     const sessionId = req.query.sessionId as string;
+
+    if (!sessionId) {
+      res.status(400).send('sessionId is required');
+      return;
+    }
+
     const transport = transportsToSessionId.get(sessionId);
     if (transport) {
       await transport.handlePostMessage(req, res, req.body);
     } else {
-      res.status(400).send('No transport found for sessionId');
+      res.status(400).send(`No transport found for sessionId "${sessionId}"`);
     }
   });
   return router;
