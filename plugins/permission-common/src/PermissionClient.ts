@@ -28,7 +28,6 @@ import {
   PermissionCriteria,
   PermissionEvaluator,
   PermissionMessageBatch,
-  PolicyDecision,
   QueryPermissionRequest,
   QueryPermissionResponse,
 } from './types/api';
@@ -375,7 +374,9 @@ export class PermissionClient implements PermissionEvaluator {
     options?: PermissionClientRequestOptions,
   ) {
     if (options?.identityKey) {
-      const loader = this.authorizeLoaderMap.get(options.identityKey);
+      const loader = this.authorizeConditionalLoaderMap.get(
+        options.identityKey,
+      );
       if (loader) {
         return loader;
       }
@@ -383,7 +384,7 @@ export class PermissionClient implements PermissionEvaluator {
 
     const newLoader = new DataLoader<
       QueryPermissionRequest,
-      PolicyDecision,
+      QueryPermissionResponse,
       string
     >(
       async queries => {
