@@ -275,4 +275,14 @@ export type VendorConfig = {
   dnAttributeName?: string;
   uuidAttributeName?: string;
 };
+
+// @public
+export const vendors: {
+  readonly activeDirectory: LdapVendor;
+  readonly aeDir: LdapVendor;
+  readonly freeIpa: LdapVendor;
+  readonly googleLdap: LdapVendor;
+  readonly lldap: LdapVendor;
+  readonly default: LdapVendor;
+};
 ```
