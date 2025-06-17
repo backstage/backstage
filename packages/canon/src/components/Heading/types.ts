@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { Breakpoint } from '../../types';
-import type { useRender } from '@base-ui-components/react/use-render';
+import type { ElementType, ComponentPropsWithRef } from 'react';
+import type { Breakpoint } from '../../types';
 
 /** @public */
-export interface HeadingProps
-  extends Omit<useRender.ComponentProps<'h1'>, 'color'> {
+export type HeadingOwnProps = {
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   variant?:
     | 'display'
     | 'title1'
@@ -40,4 +40,8 @@ export interface HeadingProps
   truncate?: boolean;
   className?: string;
   style?: React.CSSProperties;
-}
+};
+
+/** @public */
+export type HeadingProps<T extends ElementType = 'h1'> = HeadingOwnProps &
+  Omit<ComponentPropsWithRef<T>, keyof HeadingOwnProps>;
