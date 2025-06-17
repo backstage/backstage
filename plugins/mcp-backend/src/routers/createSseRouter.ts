@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Router from 'express-promise-router';
+import PromiseRouter from 'express-promise-router';
+import { Router } from 'express';
 import { McpService } from '../services/McpService';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
@@ -27,8 +28,8 @@ export const createSseRouter = ({
 }: {
   mcpService: McpService;
   httpAuth: HttpAuthService;
-}) => {
-  const router = Router();
+}): Router => {
+  const router = PromiseRouter();
   const transportsToSessionId = new Map<string, SSEServerTransport>();
 
   router.get('/', async (req, res) => {
