@@ -166,8 +166,11 @@ export type ButtonAnchorProps = ButtonCommonProps &
 
 // @public (undocumented)
 export type ButtonCommonProps = {
-  size?: 'small' | 'medium';
-  variant?: 'primary' | 'secondary';
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
   iconStart?: ReactElement;
   iconEnd?: ReactElement;
   className?: string;

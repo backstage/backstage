@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Breakpoint } from '@backstage/canon';
 import {
   ReactElement,
   AnchorHTMLAttributes,
@@ -22,8 +23,11 @@ import {
 
 /** @public */
 export type ButtonCommonProps = {
-  size?: 'small' | 'medium';
-  variant?: 'primary' | 'secondary';
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
   iconStart?: ReactElement;
   iconEnd?: ReactElement;
   className?: string;
