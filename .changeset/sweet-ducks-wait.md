@@ -7,7 +7,7 @@ Added an `actionsRegistryServiceMock` and `actionsServiceMock` to `/alpha` expor
 This allows you to write tests for your actions by doing something similar to the following:
 
 ```ts
-import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha`;
+import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 
 const mockActionsRegistry = actionsRegistryServiceMock();
 const mockCatalog = catalogServiceMock({
