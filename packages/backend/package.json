@@ -47,6 +47,7 @@
     "@backstage/plugin-events-backend": "workspace:^",
     "@backstage/plugin-events-backend-module-google-pubsub": "workspace:^",
     "@backstage/plugin-kubernetes-backend": "workspace:^",
+    "@backstage/plugin-mcp-actions-backend": "workspace:^",
     "@backstage/plugin-notifications-backend": "workspace:^",
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^",
