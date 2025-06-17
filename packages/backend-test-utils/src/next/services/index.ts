@@ -15,3 +15,4 @@
  */
 export { mockServices, type ServiceMock } from './mockServices';
 export { mockCredentials } from './mockCredentials';
+export { type MockActionsRegistry } from './MockActionsRegistry';

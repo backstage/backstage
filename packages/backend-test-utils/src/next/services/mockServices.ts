@@ -58,6 +58,7 @@ import { MockEventsService } from './MockEventsService';
 import { actionsServiceFactory } from '@backstage/backend-defaults/actions';
 import { actionsRegistryServiceFactory } from '@backstage/backend-defaults/actionsRegistry';
 import { MockPermissionsService } from './MockPermissionsService';
+import { MockActionsRegistry } from './MockActionsRegistry';
 
 /** @internal */
 function createLoggerMock() {
@@ -558,6 +559,14 @@ export namespace mockServices {
       list: jest.fn(),
       invoke: jest.fn(),
     }));
+  }
+
+  export function actionsRegistry(options?: {
+    logger: LoggerService;
+  }): MockActionsRegistry {
+    return MockActionsRegistry.create({
+      logger: options?.logger ?? mockServices.logger.mock(),
+    });
   }
 
   export namespace actionsRegistry {
