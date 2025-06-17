@@ -122,6 +122,7 @@
     "@backstage/codemods": "workspace:*",
     "@backstage/create-app": "workspace:*",
     "@backstage/e2e-test-utils": "workspace:*",
+    "@backstage/eslint-plugin": "workspace:*",
     "@backstage/repo-tools": "workspace:*",
     "@changesets/cli": "^2.14.0",
     "@octokit/rest": "^19.0.3",
