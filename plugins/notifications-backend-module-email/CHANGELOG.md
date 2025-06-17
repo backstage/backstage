@@ -1,5 +1,21 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.10
+
+### Patch Changes
+
+- 8a150bf: Internal changes to switch to the non-alpha `catalogServiceRef`
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1
+  - @backstage/plugin-notifications-common@0.0.9
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-notifications-node@0.2.16
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.16
+  - @backstage/types@1.2.1
+
 ## 0.3.10-next.2
 
 ### Patch Changes
