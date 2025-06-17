@@ -3,12 +3,20 @@
   "version": "0.0.0",
   "backstage": {
     "role": "backend-plugin",
-    "pluginId": "mcp"
+    "pluginId": "mcp",
+    "pluginPackages": [
+      "@backstage/plugin-mcp-backend"
+    ]
   },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/mcp-backend"
   },
   "license": "Apache-2.0",
   "main": "src/index.ts",
