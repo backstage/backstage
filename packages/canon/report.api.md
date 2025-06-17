@@ -620,8 +620,31 @@ export const Heading: <T extends ElementType = 'h1'>(
   },
 ) => React.ReactElement | null;
 
-// Warning: (ae-forgotten-export) The symbol "HeadingOwnProps" needs to be exported by the entry point index.d.ts
-//
+// @public (undocumented)
+export type HeadingOwnProps = {
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  variant?:
+    | 'display'
+    | 'title1'
+    | 'title2'
+    | 'title3'
+    | 'title4'
+    | 'title5'
+    | Partial<
+        Record<
+          Breakpoint,
+          'display' | 'title1' | 'title2' | 'title3' | 'title4' | 'title5'
+        >
+      >;
+  color?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+  truncate?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
 // @public (undocumented)
 export type HeadingProps<T extends ElementType = 'h1'> = HeadingOwnProps &
   Omit<ComponentPropsWithRef<T>, keyof HeadingOwnProps>;
@@ -1277,8 +1300,33 @@ export interface TextFieldProps
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 
-// Warning: (ae-forgotten-export) The symbol "TextOwnProps" needs to be exported by the entry point index.d.ts
-//
+// @public (undocumented)
+export type TextOwnProps = {
+  as?: 'p' | 'span' | 'label';
+  variant?:
+    | 'subtitle'
+    | 'body'
+    | 'caption'
+    | 'label'
+    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
+  weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
+  color?:
+    | 'primary'
+    | 'secondary'
+    | 'danger'
+    | 'warning'
+    | 'success'
+    | Partial<
+        Record<
+          Breakpoint,
+          'primary' | 'secondary' | 'danger' | 'warning' | 'success'
+        >
+      >;
+  truncate?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
 // @public (undocumented)
 export type TextProps<T extends ElementType = 'p'> = TextOwnProps &
   Omit<ComponentPropsWithRef<T>, keyof TextOwnProps>;
