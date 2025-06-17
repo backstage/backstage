@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import { createServiceRef } from '@backstage/backend-plugin-api';
+import { simpleMock } from './simpleMock';
+import {
+  ActionsService,
+  actionsServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
+import { actionsServiceFactory } from '@backstage/backend-defaults/alpha';
 
 /**
- * EXPERIMENTAL: Instance metadata service.
- *
  * @alpha
  */
-export const instanceMetadataServiceRef = createServiceRef<
-  import('./services/definitions/InstanceMetadataService').InstanceMetadataService
->({
-  id: 'core.instanceMetadata',
-});
+export namespace actionsServiceMock {
+  export const factory = () => actionsServiceFactory;
 
-export type {
-  BackendFeatureMeta,
-  InstanceMetadataService,
-} from './services/definitions/InstanceMetadataService';
+  export const mock = simpleMock<ActionsService>(actionsServiceRef, () => ({
+    invoke: jest.fn(),
+    list: jest.fn(),
+  }));
+}

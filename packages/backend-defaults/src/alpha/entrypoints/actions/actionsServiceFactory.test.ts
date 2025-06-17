@@ -21,18 +21,20 @@ import {
   startTestBackend,
 } from '@backstage/backend-test-utils';
 import { actionsRegistryServiceFactory } from '../actionsRegistry';
-import { httpRouterServiceFactory } from '../httpRouter';
+import { httpRouterServiceFactory } from '../../../entrypoints/httpRouter';
 import { actionsServiceFactory } from './actionsServiceFactory';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import {
-  ActionsServiceAction,
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { json } from 'express';
 import Router from 'express-promise-router';
 import request from 'supertest';
+import { ActionsServiceAction } from '@backstage/backend-plugin-api/alpha';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { actionsServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 const server = setupServer();
 
@@ -201,7 +203,7 @@ describe('actionsServiceFactory', () => {
           pluginId: 'plugin-with-action',
           register({ registerInit }) {
             registerInit({
-              deps: { actionsRegistry: coreServices.actionsRegistry },
+              deps: { actionsRegistry: actionsRegistryServiceRef },
               async init({ actionsRegistry }) {
                 actionsRegistry.register({
                   name: 'with-validation',
@@ -236,7 +238,7 @@ describe('actionsServiceFactory', () => {
           register({ registerInit }) {
             registerInit({
               deps: {
-                actionsService: coreServices.actions,
+                actionsService: actionsServiceRef,
                 router: coreServices.httpRouter,
                 httpAuth: coreServices.httpAuth,
               },

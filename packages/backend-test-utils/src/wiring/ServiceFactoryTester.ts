@@ -20,7 +20,7 @@ import { defaultServiceFactories } from './TestBackend';
 // This is a relative import in order to make sure that the implementation is duplicated
 // rather than leading to an import from @backstage/backend-app-api.
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { ServiceRegistry } from '../../../../backend-app-api/src/wiring/ServiceRegistry';
+import { ServiceRegistry } from '../../../backend-app-api/src/wiring/ServiceRegistry';
 
 /**
  * Options for {@link ServiceFactoryTester}.

@@ -15,8 +15,6 @@
  */
 
 import {
-  ActionsRegistryActionOptions,
-  ActionsRegistryService,
   AuthService,
   HttpAuthService,
   LoggerService,
@@ -26,6 +24,10 @@ import PromiseRouter from 'express-promise-router';
 import { Router, json } from 'express';
 import { z, AnyZodObject } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
+import {
+  ActionsRegistryActionOptions,
+  ActionsRegistryService,
+} from '@backstage/backend-plugin-api/alpha';
 import {
   ForwardedError,
   InputError,

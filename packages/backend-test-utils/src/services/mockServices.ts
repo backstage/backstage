@@ -55,10 +55,8 @@ import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockUserInfoService } from './MockUserInfoService';
 import { mockCredentials } from './mockCredentials';
 import { MockEventsService } from './MockEventsService';
-import { actionsServiceFactory } from '@backstage/backend-defaults/actions';
-import { actionsRegistryServiceFactory } from '@backstage/backend-defaults/actionsRegistry';
 import { MockPermissionsService } from './MockPermissionsService';
-import { MockActionsRegistry } from './MockActionsRegistry';
+import { simpleMock } from './simpleMock';
 
 /** @internal */
 function createLoggerMock() {
@@ -93,43 +91,6 @@ function simpleFactoryWithOptions<
     factoryWithOptions(...([undefined] as unknown as TOptions)),
   ) as ServiceFactory<TService, TScope> &
     ((...options: TOptions) => ServiceFactory<TService, TScope>);
-}
-
-/** @public */
-export type ServiceMock<TService> = {
-  factory: ServiceFactory<TService>;
-} & {
-  [Key in keyof TService]: TService[Key] extends (
-    ...args: infer Args
-  ) => infer Return
-    ? TService[Key] & jest.MockInstance<Return, Args>
-    : TService[Key];
-};
-
-/** @internal */
-function simpleMock<TService>(
-  ref: ServiceRef<TService, any>,
-  mockFactory: () => jest.Mocked<TService>,
-): (partialImpl?: Partial<TService>) => ServiceMock<TService> {
-  return partialImpl => {
-    const mock = mockFactory();
-    if (partialImpl) {
-      for (const [key, impl] of Object.entries(partialImpl)) {
-        if (typeof impl === 'function') {
-          (mock as any)[key].mockImplementation(impl);
-        } else {
-          (mock as any)[key] = impl;
-        }
-      }
-    }
-    return Object.assign(mock, {
-      factory: createServiceFactory({
-        service: ref,
-        deps: {},
-        factory: () => mock,
-      }),
-    }) as ServiceMock<TService>;
-  };
 }
 
 /**
@@ -551,28 +512,6 @@ export namespace mockServices {
       readTree: jest.fn(),
       readUrl: jest.fn(),
       search: jest.fn(),
-    }));
-  }
-  export namespace actions {
-    export const factory = () => actionsServiceFactory;
-    export const mock = simpleMock(coreServices.actions, () => ({
-      list: jest.fn(),
-      invoke: jest.fn(),
-    }));
-  }
-
-  export function actionsRegistry(options?: {
-    logger: LoggerService;
-  }): MockActionsRegistry {
-    return MockActionsRegistry.create({
-      logger: options?.logger ?? mockServices.logger.mock(),
-    });
-  }
-
-  export namespace actionsRegistry {
-    export const factory = () => actionsRegistryServiceFactory;
-    export const mock = simpleMock(coreServices.actionsRegistry, () => ({
-      register: jest.fn(),
     }));
   }
 

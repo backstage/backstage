@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 import {
-  ActionsService,
-  ActionsServiceAction,
   AuthService,
   BackstageCredentials,
   DiscoveryService,
@@ -24,6 +22,10 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
+import {
+  ActionsService,
+  ActionsServiceAction,
+} from '@backstage/backend-plugin-api/alpha';
 
 export class DefaultActionsService implements ActionsService {
   private constructor(

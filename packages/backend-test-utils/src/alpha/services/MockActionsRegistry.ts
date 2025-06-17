@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 import {
-  ActionsRegistryActionOptions,
-  ActionsRegistryService,
-  ActionsService,
-  ActionsServiceAction,
   BackstageCredentials,
   LoggerService,
 } from '@backstage/backend-plugin-api';
@@ -25,7 +21,13 @@ import { ForwardedError, InputError, NotFoundError } from '@backstage/errors';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { z, AnyZodObject } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
-import { mockCredentials } from './mockCredentials';
+import { mockCredentials } from '../../services';
+import {
+  ActionsRegistryActionOptions,
+  ActionsRegistryService,
+  ActionsService,
+  ActionsServiceAction,
+} from '@backstage/backend-plugin-api/alpha';
 
 /**
  * A mock implementation of the ActionsRegistryService and ActionsService that can be used in tests.
@@ -58,7 +60,7 @@ import { mockCredentials } from './mockCredentials';
  * expect(result).toEqual({ output: { name: 'test' } });
  * ```
  *
- * @public
+ * @alpha
  */
 export class MockActionsRegistry
   implements ActionsRegistryService, ActionsService

@@ -31,7 +31,7 @@ import express from 'express';
 import {
   InternalBackendFeature,
   InternalBackendRegistrations,
-} from '../../../../backend-plugin-api/src/wiring/types';
+} from '../../../backend-plugin-api/src/wiring/types';
 import {
   DefaultRootHttpRouter,
   ExtendedHttpServer,
@@ -40,6 +40,10 @@ import {
   createHttpServer,
 } from '@backstage/backend-defaults/rootHttpRouter';
 import { HostDiscovery } from '@backstage/backend-defaults/discovery';
+import {
+  actionsRegistryServiceMock,
+  actionsServiceMock,
+} from '../alpha/services';
 
 /** @public */
 export interface TestBackendOptions<TExtensionPoints extends any[]> {
@@ -84,8 +88,10 @@ export const defaultServiceFactories = [
   mockServices.userInfo.factory(),
   mockServices.urlReader.factory(),
   mockServices.events.factory(),
-  mockServices.actionsRegistry.factory(),
-  mockServices.actions.factory(),
+
+  // Alpha services
+  actionsRegistryServiceMock.factory(),
+  actionsServiceMock.factory(),
 ];
 
 /**
