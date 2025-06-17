@@ -8,8 +8,10 @@ import { Breakpoint as Breakpoint_2 } from '@backstage/canon';
 import { ChangeEvent } from 'react';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
 import { ComponentProps } from 'react';
+import type { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
 import type { CSSProperties } from 'react';
+import type { ElementType } from 'react';
 import { FC } from 'react';
 import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
@@ -612,39 +614,17 @@ export interface GridProps extends SpaceProps {
 }
 
 // @public (undocumented)
-export const Heading: ForwardRefExoticComponent<
-  Omit<HeadingProps, 'ref'> & RefAttributes<HTMLHeadingElement>
->;
+export const Heading: <T extends ElementType = 'h1'>(
+  props: HeadingProps<T> & {
+    ref?: React.Ref<any>;
+  },
+) => React.ReactElement | null;
 
+// Warning: (ae-forgotten-export) The symbol "HeadingOwnProps" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export interface HeadingProps
-  extends Omit<useRender.ComponentProps<'h1'>, 'color'> {
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  color?:
-    | 'primary'
-    | 'secondary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
-  // (undocumented)
-  style?: React.CSSProperties;
-  // (undocumented)
-  truncate?: boolean;
-  // (undocumented)
-  variant?:
-    | 'display'
-    | 'title1'
-    | 'title2'
-    | 'title3'
-    | 'title4'
-    | 'title5'
-    | Partial<
-        Record<
-          Breakpoint,
-          'display' | 'title1' | 'title2' | 'title3' | 'title4' | 'title5'
-        >
-      >;
-}
+export type HeadingProps<T extends ElementType = 'h1'> = HeadingOwnProps &
+  Omit<ComponentPropsWithRef<T>, keyof HeadingOwnProps>;
 
 // @public (undocumented)
 export const heightPropDefs: {
@@ -1269,9 +1249,11 @@ export interface TabsRootWithoutOrientation
   > {}
 
 // @public (undocumented)
-const Text_2: ForwardRefExoticComponent<
-  Omit<TextProps, 'ref'> & RefAttributes<HTMLParagraphElement>
->;
+const Text_2: <T extends ElementType = 'p'>(
+  props: TextProps<T> & {
+    ref?: React.Ref<any>;
+  },
+) => React.ReactElement | null;
 export { Text_2 as Text };
 
 // @public (undocumented)
@@ -1295,38 +1277,11 @@ export interface TextFieldProps
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 
+// Warning: (ae-forgotten-export) The symbol "TextOwnProps" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export interface TextProps
-  extends Omit<useRender.ComponentProps<'p'>, 'color'> {
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  color?:
-    | 'primary'
-    | 'secondary'
-    | 'danger'
-    | 'warning'
-    | 'success'
-    | Partial<
-        Record<
-          Breakpoint,
-          'primary' | 'secondary' | 'danger' | 'warning' | 'success'
-        >
-      >;
-  // (undocumented)
-  style?: CSSProperties;
-  // (undocumented)
-  truncate?: boolean;
-  // (undocumented)
-  variant?:
-    | 'subtitle'
-    | 'body'
-    | 'caption'
-    | 'label'
-    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
-  // (undocumented)
-  weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
-}
+export type TextProps<T extends ElementType = 'p'> = TextOwnProps &
+  Omit<ComponentPropsWithRef<T>, keyof TextOwnProps>;
 
 // @public (undocumented)
 export const Tooltip: {
