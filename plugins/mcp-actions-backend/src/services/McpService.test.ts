@@ -88,17 +88,6 @@ describe('McpService', () => {
           type: 'object',
         },
         name: 'mock-action',
-        outputSchema: {
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          additionalProperties: false,
-          properties: {
-            output: {
-              type: 'string',
-            },
-          },
-          required: ['output'],
-          type: 'object',
-        },
       },
     ]);
   });
@@ -155,7 +144,16 @@ describe('McpService', () => {
       }),
     );
 
-    expect(result.structuredContent).toEqual({ output: 'test' });
+    expect(result.content).toEqual([
+      {
+        type: 'text',
+        text: [
+          '```json',
+          JSON.stringify({ output: 'test' }, null, 2),
+          '```',
+        ].join('\n'),
+      },
+    ]);
   });
 
   it('should return an error when the action is not found', async () => {
