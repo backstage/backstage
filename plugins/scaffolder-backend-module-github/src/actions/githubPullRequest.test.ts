@@ -47,8 +47,6 @@ describe('createPublishGithubPullRequestAction', () => {
   let config: Config;
   let integrations: ScmIntegrations;
 
-  const deletionMarker =
-    'if-you-find-a-file-whose-contents-matches-this-delete-it';
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
 
@@ -307,6 +305,9 @@ describe('createPublishGithubPullRequestAction', () => {
   });
 
   describe('with deletionMarker', () => {
+    const deletionMarker =
+      'if-you-find-a-file-whose-contents-matches-this-delete-it';
+
     let input: GithubPullRequestActionInput;
     let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
