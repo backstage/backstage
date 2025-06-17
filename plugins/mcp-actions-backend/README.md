@@ -73,9 +73,9 @@ export const myPlugin = createBackendPlugin({
 
 ### Authentication Configuration
 
-By default, the Backstage backend requires authentication for all requests. For MCP clients to access the actions, you have several authentication options:
+By default, the Backstage backend requires authentication for all requests.
 
-We're looking at [device authentication](https://github.com/backstage/backstage/pull/27680) to make this much easier with authentication for MCP clients, but currently you have the following choices:
+We're looking at [device authentication](https://github.com/backstage/backstage/pull/27680) to make this much easier with authentication for MCP clients, but in the meantime you can take advantage of the [External Access with Static Tokens](#external-access-with-static-tokens) method.
 
 #### External Access with Static Tokens
 
@@ -88,6 +88,9 @@ backend:
       - type: static
         options:
           token: ${MCP_TOKEN}
+        accessRestrictions:
+          - plugin: mcp-actions
+          - plugin: catalog
 ```
 
 Generate a secure token:
@@ -97,18 +100,6 @@ node -p 'require("crypto").randomBytes(24).toString("base64")'
 ```
 
 Set the `MCP_TOKEN` environment variable with this token, and configure your MCP client to use it in the [Authorization header](#configuring-mcp-clients)
-
-#### Disable Default Auth Policy (Development Only)
-
-For development environments, you can disable the default authentication policy:
-
-```yaml
-backend:
-  auth:
-    dangerouslyDisableDefaultAuthPolicy: true
-```
-
-⚠️ **Warning**: This setting disables authentication requirements and should **never** be used in production environments.
 
 ## Configuring MCP Clients
 
