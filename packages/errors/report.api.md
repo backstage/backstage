@@ -63,7 +63,9 @@ export type ErrorLike = {
 
 // @public
 export type ErrorResponseBody = {
-  error: SerializedError;
+  error: SerializedError & {
+    cause?: SerializedError;
+  };
   request?: {
     method: string;
     url: string;
