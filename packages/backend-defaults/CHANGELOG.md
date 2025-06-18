@@ -1,5 +1,76 @@
 # @backstage/backend-defaults
 
+## 0.11.0
+
+### Minor Changes
+
+- 3ccb7fc: Enhanced error handling in the auditor service factory to pass errors as objects. Aligned WinstonRootAuditorService with the default service factory's error handling.
+
+### Patch Changes
+
+- 1220cf8: Added new rate limit middleware to allow rate limiting requests to the backend
+
+  If you are using the `configure` callback of the root HTTP router service and do NOT call `applyDefaults()` inside it, please see [the relevant changes](https://github.com/backstage/backstage/pull/28708/files#diff-86ad1b6a694dd250823aee39d410428dd837c9d9a04ca8c33bd1081fbe3f22af) that were made, to see if you want to apply them as well to your custom configuration.
+  Rate limiting can be turned on by adding the following configuration to `app-config.yaml`:
+
+  ```yaml
+  backend:
+    rateLimit:
+      window: 6s
+      incomingRequestLimit: 100
+  ```
+
+  Plugin specific rate limiting can be configured by adding the following configuration to `app-config.yaml`:
+
+  ```yaml
+  backend:
+    rateLimit:
+      global: false # This will disable the global rate limiting
+      plugin:
+        catalog:
+          window: 6s
+          incomingRequestLimit: 100
+  ```
+
+- c999c25: Added some default implementations for the experimental `ActionsService` and `ActionsRegistryService` under `/alpha` that allow registration of actions for a particular plugin.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/backend-app-api@1.2.4
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.1
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/integration-aws-node@0.1.16
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/plugin-permission-node@0.10.1
+
+## 0.11.0-next.2
+
+### Minor Changes
+
+- 3ccb7fc: Enhanced error handling in the auditor service factory to pass errors as objects. Aligned WinstonRootAuditorService with the default service factory's error handling.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@1.2.4-next.2
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/cli-node@0.2.13
+  - @backstage/config@1.3.2
+  - @backstage/config-loader@1.10.1
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/integration-aws-node@0.1.16
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+  - @backstage/plugin-permission-node@0.10.1-next.1
+
 ## 0.10.1-next.1
 
 ### Patch Changes

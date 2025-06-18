@@ -14,42 +14,49 @@
  * limitations under the License.
  */
 
-import { forwardRef, useRef } from 'react';
+import { forwardRef } from 'react';
 import clsx from 'clsx';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
-import { useRender } from '@base-ui-components/react/use-render';
+import type { ElementType } from 'react';
 import type { HeadingProps } from './types';
 
+function HeadingComponent<T extends ElementType = 'h1'>(
+  {
+    as,
+    variant = 'title1',
+    color = 'primary',
+    truncate,
+    className,
+    style,
+    ...restProps
+  }: HeadingProps<T>,
+  ref: React.Ref<any>,
+) {
+  const Component = as || 'h1';
+
+  const responsiveVariant = useResponsiveValue(variant);
+  const responsiveColor = useResponsiveValue(color);
+
+  return (
+    <Component
+      ref={ref}
+      className={clsx('canon-Heading', className)}
+      data-variant={responsiveVariant}
+      data-color={responsiveColor}
+      data-truncate={truncate}
+      style={style}
+      {...restProps}
+    />
+  );
+}
+
+HeadingComponent.displayName = 'Heading';
+
 /** @public */
-export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
-  (props, ref) => {
-    const {
-      variant = 'title1',
-      color = 'primary',
-      truncate,
-      className,
-      render = <h1 />,
-      ...restProps
-    } = props;
+export const Heading = forwardRef(HeadingComponent) as <
+  T extends ElementType = 'h1',
+>(
+  props: HeadingProps<T> & { ref?: React.Ref<any> },
+) => React.ReactElement | null;
 
-    const responsiveVariant = useResponsiveValue(variant);
-    const responsiveColor = useResponsiveValue(color);
-    const internalRef = useRef<HTMLElement | null>(null);
-
-    const { renderElement } = useRender({
-      render,
-      props: {
-        className: clsx('canon-Heading', className),
-        ['data-variant']: responsiveVariant,
-        ['data-color']: responsiveColor,
-        ['data-truncate']: truncate,
-        ...restProps,
-      },
-      refs: [ref, internalRef],
-    });
-
-    return renderElement();
-  },
-);
-
-Heading.displayName = 'Heading';
+(Heading as any).displayName = 'Heading';

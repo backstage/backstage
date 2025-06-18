@@ -1,5 +1,38 @@
 # @backstage/plugin-search
 
+## 1.4.27
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/plugin-search-react@1.9.1
+  - @backstage/core-compat-api@0.4.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.18
+
+## 1.4.27-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/plugin-search-react@1.9.1-next.1
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-search-common@1.2.18
+
 ## 1.4.27-next.1
 
 ### Patch Changes

@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.4.11
+
+### Patch Changes
+
+- b392a34: Migrate to new actions format
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.0
+  - @backstage/plugin-scaffolder-node@0.9.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/types@1.2.1
+
+## 0.4.11-next.2
+
+### Patch Changes
+
+- b392a34: Migrate to new actions format
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node-test-utils@0.3.0-next.2
+  - @backstage/plugin-scaffolder-node@0.9.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/types@1.2.1
+
 ## 0.4.11-next.1
 
 ### Patch Changes

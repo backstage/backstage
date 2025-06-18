@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-pinniped-provider
 
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+
 ## 0.3.4-next.1
 
 ### Patch Changes

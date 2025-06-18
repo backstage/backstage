@@ -2,7 +2,6 @@
 id: creating
 title: Creating Utility APIs
 sidebar_label: Creating APIs
-# prettier-ignore
 description: Creating new utility APIs in your plugins and app
 ---
 

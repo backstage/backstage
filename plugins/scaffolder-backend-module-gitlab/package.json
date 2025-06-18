@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-gitlab",
-  "version": "0.9.2-next.1",
+  "version": "0.9.2",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "scaffolder",
@@ -59,7 +59,6 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@backstage/core-app-api": "workspace:^",
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
   }
 }

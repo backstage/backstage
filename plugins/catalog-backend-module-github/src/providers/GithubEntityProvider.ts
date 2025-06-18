@@ -323,7 +323,13 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   private async onPush(event: PushEvent) {
-    if (this.config.organization !== event.organization?.login) {
+    const configOrganization = this.config.organization;
+    const eventOrganization = event.organization?.login;
+
+    if (
+      configOrganization.toLocaleLowerCase('en-US') !==
+      eventOrganization?.toLocaleLowerCase('en-US')
+    ) {
       this.logger.debug(
         `skipping push event from organization ${event.organization?.login}`,
       );
@@ -406,7 +412,13 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   private async onRepoChange(event: RepositoryEvent) {
-    if (this.config.organization !== event.organization?.login) {
+    const configOrganization = this.config.organization;
+    const eventOrganization = event.organization?.login;
+
+    if (
+      configOrganization.toLocaleLowerCase('en-US') !==
+      eventOrganization?.toLocaleLowerCase('en-US')
+    ) {
       this.logger.debug(
         `skipping repository event from organization ${event.organization?.login}`,
       );

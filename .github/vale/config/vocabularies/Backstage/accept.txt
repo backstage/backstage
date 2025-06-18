@@ -433,6 +433,7 @@ statefulsets
 stdout
 storable
 storages
+Streamable
 stringified
 stringify
 subcommand

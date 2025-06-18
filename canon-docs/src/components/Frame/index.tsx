@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-css-tags */
 'use client';
 
 import { useEffect, useState } from 'react';

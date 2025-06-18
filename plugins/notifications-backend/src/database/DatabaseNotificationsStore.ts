@@ -31,6 +31,7 @@ import {
 } from '@backstage/plugin-notifications-common';
 import { Knex } from 'knex';
 import crypto from 'crypto';
+import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-notifications-backend',
@@ -149,7 +150,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   private mapToNotifications = (rows: any[]): Notification[] => {
     return rows.map(row => ({
       id: row.id,
-      user: row.user,
+      user: row.type === 'broadcast' ? null : row.user,
       created: new Date(row.created),
       saved: row.saved,
       read: row.read,
@@ -252,7 +253,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
           join.andOnVal('user', '=', user);
         }
       })
-      .select(NOTIFICATION_COLUMNS);
+      .select([...NOTIFICATION_COLUMNS, this.db.raw("'broadcast' as type")]);
   };
 
   private getNotificationsBaseQuery = (
@@ -261,7 +262,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     const { user, orderField } = options;
 
     const subQuery = this.db<NotificationRowType>('notification')
-      .select(NOTIFICATION_COLUMNS)
+      .select([...NOTIFICATION_COLUMNS, this.db.raw("'entity' as type")])
       .unionAll([this.getBroadcastUnion(user)])
       .as('notifications');
 
@@ -331,7 +332,10 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
   async getNotifications(options: NotificationGetOptions) {
     const notificationQuery = this.getNotificationsBaseQuery(options);
-    const notifications = await notificationQuery.select(NOTIFICATION_COLUMNS);
+    const notifications = await notificationQuery.select([
+      ...NOTIFICATION_COLUMNS,
+      'type',
+    ]);
     return this.mapToNotifications(notifications);
   }
 
@@ -462,7 +466,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       .select('*')
       .from(
         this.db<NotificationRowType>('notification')
-          .select(NOTIFICATION_COLUMNS)
+          .select([...NOTIFICATION_COLUMNS, this.db.raw("'entity' as type")])
           .unionAll([this.getBroadcastUnion(options.user)])
           .as('notifications'),
       )
@@ -652,5 +656,25 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       .whereNotNull('topic')
       .distinct(['topic']);
     return { topics: topics.map(row => row.topic) };
+  }
+
+  async clearNotifications(options: {
+    maxAge: HumanDuration;
+  }): Promise<{ deletedCount: number }> {
+    const ms = durationToMilliseconds(options.maxAge);
+    const now = new Date(new Date().getTime() - ms);
+    const notificationsCount = await this.db('notification')
+      .where(builder => {
+        builder.where('created', '<=', now).whereNull('updated');
+      })
+      .orWhere('updated', '<=', now)
+      .delete();
+    const broadcastsCount = await this.db('broadcast')
+      .where(builder => {
+        builder.where('created', '<=', now).whereNull('updated');
+      })
+      .orWhere('updated', '<=', now)
+      .delete();
+    return { deletedCount: notificationsCount + broadcastsCount };
   }
 }

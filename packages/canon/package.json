@@ -1,6 +1,6 @@
 {
   "name": "@backstage/canon",
-  "version": "0.5.0-next.1",
+  "version": "0.5.0",
   "backstage": {
     "role": "web-library"
   },
@@ -44,7 +44,8 @@
     "@base-ui-components/react": "1.0.0-alpha.7",
     "@remixicon/react": "^4.6.0",
     "@tanstack/react-table": "^8.21.3",
-    "clsx": "^2.1.1"
+    "clsx": "^2.1.1",
+    "react-aria-components": "^1.10.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

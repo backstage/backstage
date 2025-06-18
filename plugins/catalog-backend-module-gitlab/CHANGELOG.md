@@ -1,5 +1,42 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.7.0
+
+### Minor Changes
+
+- 42bb3b8: **BREAKING CHANGE**: User and Group discovery will default to ingesting all users in sub groups that belong to the specified root group in config. Disable by setting `restrictUsersToGroup: true` in app-config under your module settings.
+
+### Patch Changes
+
+- 57a0bad: Implement retry for GitLab API calls to handle rate limiting
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.0
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-events-node@0.4.12
+
+## 0.7.0-next.2
+
+### Minor Changes
+
+- 42bb3b8: **BREAKING CHANGE**: User and Group discovery will default to ingesting all users in sub groups that belong to the specified root group in config. Disable by setting `restrictUsersToGroup: true` in app-config under your module settings.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+
 ## 0.6.7-next.1
 
 ### Patch Changes

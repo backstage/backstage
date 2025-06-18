@@ -1,5 +1,35 @@
 # @backstage/create-app
 
+## 0.7.0
+
+### Minor Changes
+
+- 30474c4: Add .cache directory to shipped gitignore.
+
+### Patch Changes
+
+- d57a6f7: Bumped create-app version.
+- f628f44: Bumped create-app version.
+- 9c9faf2: Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.0-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.0-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.7.0-next.1
 
 ### Patch Changes

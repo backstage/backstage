@@ -21,6 +21,8 @@ import { InfoCard } from '@backstage/core-components';
 import { SettingsModal } from './components';
 import { createReactExtension, useApp } from '@backstage/core-plugin-api';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homeReactTranslationRef } from './translation';
 
 /**
  * @public
@@ -133,6 +135,7 @@ function CardExtension<T>(props: CardExtensionComponentProps<T>) {
   const app = useApp();
   const { Progress } = app.getComponents();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const { t } = useTranslationRef(homeReactTranslationRef);
 
   if (Renderer) {
     return (
@@ -158,7 +161,9 @@ function CardExtension<T>(props: CardExtensionComponentProps<T>) {
       ? {
           action: (
             <IconButton onClick={() => setSettingsOpen(true)}>
-              <SettingsIcon>Settings</SettingsIcon>
+              <SettingsIcon>
+                {t('cardExtension.settingsButtonTitle')}
+              </SettingsIcon>
             </IconButton>
           ),
         }

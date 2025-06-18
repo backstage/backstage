@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z, ZodType } from 'zod';
+import { z, AnyZodObject } from 'zod';
 import { LoggerService } from './LoggerService';
 import { BackstageCredentials } from './AuthService';
 
 /**
  * @public
  */
-export type ActionsRegistryActionContext<TInputSchema extends ZodType> = {
+export type ActionsRegistryActionContext<TInputSchema extends AnyZodObject> = {
   input: z.infer<TInputSchema>;
   logger: LoggerService;
   credentials: BackstageCredentials;
@@ -30,8 +30,8 @@ export type ActionsRegistryActionContext<TInputSchema extends ZodType> = {
  * @public
  */
 export type ActionsRegistryActionOptions<
-  TInputSchema extends ZodType,
-  TOutputSchema extends ZodType,
+  TInputSchema extends AnyZodObject,
+  TOutputSchema extends AnyZodObject,
 > = {
   name: string;
   title: string;
@@ -39,6 +39,11 @@ export type ActionsRegistryActionOptions<
   schema: {
     input: (zod: typeof z) => TInputSchema;
     output: (zod: typeof z) => TOutputSchema;
+  };
+  attributes?: {
+    destructive?: boolean;
+    idempotent?: boolean;
+    readOnly?: boolean;
   };
   action: (
     context: ActionsRegistryActionContext<TInputSchema>,
@@ -53,7 +58,10 @@ export type ActionsRegistryActionOptions<
  * @public
  */
 export interface ActionsRegistryService {
-  register<TInputSchema extends ZodType, TOutputSchema extends ZodType>(
+  register<
+    TInputSchema extends AnyZodObject,
+    TOutputSchema extends AnyZodObject,
+  >(
     options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>,
   ): void;
 }

@@ -18,6 +18,7 @@ import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import fs from 'fs/promises';
 import path from 'path';
 import { z as zod } from 'zod';
+import { examples } from './rename.examples';
 
 const contentSchema = (z: typeof zod) =>
   z.object({
@@ -39,6 +40,7 @@ export const createFilesystemReadDirAction = () => {
     id: 'fs:readdir',
     description: 'Reads files and directories from the workspace',
     supportsDryRun: true,
+    examples,
     schema: {
       input: {
         paths: z => z.array(z.string().min(1)),

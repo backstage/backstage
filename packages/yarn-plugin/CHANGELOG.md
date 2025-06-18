@@ -1,5 +1,14 @@
 # yarn-plugin-backstage
 
+## 0.0.6
+
+### Patch Changes
+
+- a0f9e4e: added functionality so that adding or updating a backstage dependency to a package would maintain the "backstage:^" placeholder for the version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/release-manifests@0.0.13
+
 ## 0.0.5
 
 ### Patch Changes

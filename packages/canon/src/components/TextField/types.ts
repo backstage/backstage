@@ -14,49 +14,23 @@
  * limitations under the License.
  */
 
+import type { TextFieldProps as AriaTextFieldProps } from 'react-aria-components';
+import { ReactNode } from 'react';
 import type { Breakpoint } from '../../types';
-import type { ReactNode, MouseEventHandler } from 'react';
+import type { FieldLabelProps } from '../FieldLabel/types';
+
 /** @public */
 export interface TextFieldProps
-  extends Omit<React.ComponentPropsWithoutRef<'input'>, 'size'> {
-  /**
-   * The class name of the text field
-   */
-  className?: string;
-
-  /**
-   * The size of the text field
-   * @defaultValue 'medium'
-   */
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-
-  /**
-   * The label of the text field
-   */
-  label?: string;
-
-  /**
-   * The description of the text field
-   */
-  description?: string;
-
-  /**
-   * The name of the text field
-   */
-  name: string;
-
-  /**
-   * The error message of the text field
-   */
-  error?: string | null;
-
+  extends AriaTextFieldProps,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
   /**
    * An icon to render before the input
    */
   icon?: ReactNode;
 
   /**
-   * Handler to call when the clear button is pressed
+   * The size of the text field
+   * @defaultValue 'medium'
    */
-  onClear?: MouseEventHandler<HTMLButtonElement>;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }

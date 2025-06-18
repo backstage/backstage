@@ -1,7 +1,6 @@
 ---
 id: migrating-from-v1beta2-to-v1beta3
 title: Migrating to v1beta3 templates
-# prettier-ignore
 description: How to migrate your existing templates to beta3 syntax
 ---
 

@@ -1,5 +1,33 @@
 # @backstage/canon
 
+## 0.5.0
+
+### Minor Changes
+
+- 621fac9: We are updating the default size of the Button component in Canon to be small instead of medium.
+- a842554: We set the default size for IconButton in Canon to be small instead of medium.
+- 35fd51d: Move TextField component to use react Aria under the hood. Introducing a new FieldLabel component to help build custom fields.
+- 78204a2: **Breaking** We are adding a new as prop on the Heading and Text component to make it easier to change the component tag. We are removing the render prop in favour of the as prop.
+- c49e335: TextField in Canon now has multiple label sizes as well as the capacity to hide label and description but still make them available for screen readers.
+- 24b45ef: Fixes spacing props on layout components and aligned on naming for the Grid component. You should now call the Grid root component using <Grid.Root /> instead of just <Grid />.
+
+### Patch Changes
+
+- 44df879: Add min-width: 0; by default on every Flex components in Canon to help support truncated texts inside flex elements.
+- ee6ffe6: Fix styling for the title4 prop on the Heading component in Canon.
+- f2f814a: Added a render prop to the Button component in Canon to use it as a link.
+- 98f02a6: Add new Switch component in Canon.
+- c94f8e0: The filter input in menu comboboxes should now always use the full width of the menu it's in.
+- 269316d: Remove leftover console.log from Container component.
+
+## 0.5.0-next.2
+
+### Patch Changes
+
+- 44df879: Add min-width: 0; by default on every Flex components in Canon to help support truncated texts inside flex elements.
+- ee6ffe6: Fix styling for the title4 prop on the Heading component in Canon.
+- f2f814a: Added a render prop to the Button component in Canon to use it as a link.
+
 ## 0.5.0-next.1
 
 ### Minor Changes
