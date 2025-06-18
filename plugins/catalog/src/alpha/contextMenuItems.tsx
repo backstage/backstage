@@ -95,6 +95,9 @@ export const unregisterEntityContextMenuItem =
     name: 'unregister-entity',
     params: {
       icon: <CancelIcon fontSize="small" />,
+      filter: entity => {
+        return Boolean(entity.spec?.type !== 'dataset');
+      },
       useProps: () => {
         const { entity } = useEntity();
         const dialogApi = useApi(dialogApiRef);
