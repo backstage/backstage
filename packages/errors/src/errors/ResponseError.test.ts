@@ -54,8 +54,7 @@ describe('ResponseError', () => {
         body: {
           error: {
             name: 'ConflictError',
-            message:
-              'Location url:https://backstage/backstage/blob/master/catalog-info.yaml already exists',
+            message: 'Conflict message',
           },
           request: {
             method: 'POST',
