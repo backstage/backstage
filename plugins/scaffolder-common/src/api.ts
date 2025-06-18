@@ -61,14 +61,6 @@ export type ScaffolderUsageExample = {
 };
 
 /**
- * A single action example
- *
- * @public
- * @deprecated in favor of ScaffolderUsageExample
- */
-export type ActionExample = ScaffolderUsageExample;
-
-/**
  * The response shape for a single action in the `listActions` call to the `scaffolder-backend`
  *
  * @public
@@ -80,7 +72,7 @@ export type Action = {
     input?: JSONSchema7;
     output?: JSONSchema7;
   };
-  examples?: ActionExample[];
+  examples?: ScaffolderUsageExample[];
 };
 
 /**

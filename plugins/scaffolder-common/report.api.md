@@ -22,11 +22,8 @@ export type Action = {
     input?: JSONSchema7;
     output?: JSONSchema7;
   };
-  examples?: ActionExample[];
+  examples?: ScaffolderUsageExample[];
 };
-
-// @public @deprecated
-export type ActionExample = ScaffolderUsageExample;
 
 // @public
 export const isTemplateEntityV1beta3: (
