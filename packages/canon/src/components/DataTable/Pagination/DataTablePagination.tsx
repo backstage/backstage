@@ -75,14 +75,14 @@ const DataTablePagination = forwardRef(
             variant="secondary"
             size="small"
             onClick={() => table?.previousPage()}
-            disabled={!table?.getCanPreviousPage()}
+            isDisabled={!table?.getCanPreviousPage()}
             icon={<Icon name="chevron-left" />}
           />
           <IconButton
             variant="secondary"
             size="small"
             onClick={() => table?.nextPage()}
-            disabled={!table?.getCanNextPage()}
+            isDisabled={!table?.getCanNextPage()}
             icon={<Icon name="chevron-right" />}
           />
         </div>
