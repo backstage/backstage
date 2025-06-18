@@ -1032,6 +1032,16 @@ describe('scaffolder router', () => {
   describe('GET /v2/tasks/:taskId/eventstream', () => {
     it('should return log messages', async () => {
       const { router, taskBroker } = await createTestRouter();
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as any,
+        status: 'completed',
+        createdAt: '',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        createdBy: '',
+      });
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
@@ -1117,6 +1127,16 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
     it('should return log messages with after query', async () => {
       const { router, taskBroker } = await createTestRouter();
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as any,
+        status: 'completed',
+        createdAt: '',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        createdBy: '',
+      });
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
@@ -1181,6 +1201,16 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
   describe('GET /v2/tasks/:taskId/events', () => {
     it('should return log messages', async () => {
       const { router, taskBroker } = await createTestRouter();
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as any,
+        status: 'completed',
+        createdAt: '',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        createdBy: '',
+      });
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
@@ -1241,6 +1271,16 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
     it('should return log messages with after query', async () => {
       const { router, taskBroker } = await createTestRouter();
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as any,
+        status: 'completed',
+        createdAt: '',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        createdBy: '',
+      });
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;

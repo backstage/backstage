@@ -68,7 +68,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
     onStartOver,
     onToggleLogs,
     onToggleButtonBar,
-    taskId
+    taskId,
   } = props;
   const { getPageTheme } = useTheme();
   const pageTheme = getPageTheme({ themeId: 'website' });
@@ -78,7 +78,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
 
   const { allowed: canReadTask } = usePermission({
     permission: taskReadPermission,
-    resourceRef: taskId
+    resourceRef: taskId,
   });
 
   const { allowed: canCreateTask } = usePermission({
