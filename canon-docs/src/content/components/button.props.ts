@@ -14,6 +14,9 @@ export const buttonPropDefs: Record<string, PropDef> = {
     default: 'medium',
     responsive: true,
   },
+  iconStart: { type: 'enum', values: ['ReactNode'], responsive: false },
+  iconEnd: { type: 'enum', values: ['ReactNode'], responsive: false },
+  children: { type: 'enum', values: ['ReactNode'], responsive: false },
   ...classNamePropDefs,
   ...stylePropDefs,
 };

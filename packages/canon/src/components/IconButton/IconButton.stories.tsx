@@ -40,58 +40,44 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    icon: <Icon name="cloud" />,
-  },
+  render: args => <IconButton {...args} icon={<Icon name="cloud" />} />,
 };
 
 export const Variants: Story = {
-  args: {
-    ...Default.args,
-  },
   render: args => (
     <Flex align="center" gap="2">
-      <IconButton {...args} variant="primary" />
-      <IconButton {...args} variant="secondary" />
+      <IconButton {...args} icon={<Icon name="cloud" />} variant="primary" />
+      <IconButton {...args} icon={<Icon name="cloud" />} variant="secondary" />
     </Flex>
   ),
 };
 
 export const Sizes: Story = {
-  args: {
-    icon: <Icon name="cloud" />,
-  },
   render: args => (
     <Flex align="center" gap="2">
-      <IconButton {...args} size="small" />
-      <IconButton {...args} size="medium" />
+      <IconButton {...args} icon={<Icon name="cloud" />} size="small" />
+      <IconButton {...args} icon={<Icon name="cloud" />} size="medium" />
     </Flex>
   ),
 };
 
 export const Disabled: Story = {
-  args: {
-    icon: <Icon name="cloud" />,
-    disabled: true,
-    'aria-label': 'Cloud icon button',
-  },
+  args: { disabled: true },
   render: args => (
     <Flex direction="row" gap="2">
-      <IconButton {...args} variant="primary" />
-      <IconButton {...args} variant="secondary" />
+      <IconButton {...args} icon={<Icon name="cloud" />} variant="primary" />
+      <IconButton {...args} icon={<Icon name="cloud" />} variant="secondary" />
     </Flex>
   ),
 };
 
 export const AsLink: Story = {
-  render: () => (
-    <IconButton
-      as="a"
-      href="https://canon.backstage.io"
-      target="_blank"
-      icon={<Icon name="cloud" />}
-    />
-  ),
+  args: {
+    as: 'a',
+    href: 'https://canon.backstage.io',
+    target: '_blank',
+  },
+  render: args => <IconButton {...args} icon={<Icon name="cloud" />} />,
 };
 
 export const AsComponent: Story = {
@@ -106,8 +92,6 @@ export const AsComponent: Story = {
 
 export const Responsive: Story = {
   args: {
-    icon: <Icon name="cloud" />,
-    'aria-label': 'Cloud icon button',
     variant: {
       initial: 'primary',
       sm: 'secondary',
@@ -117,15 +101,12 @@ export const Responsive: Story = {
       sm: 'medium',
     },
   },
+  render: args => <IconButton {...args} icon={<Icon name="cloud" />} />,
 };
 
 const variants: string[] = ['primary', 'secondary'];
 
 export const Playground: Story = {
-  args: {
-    icon: <Icon name="cloud" />,
-    'aria-label': 'Cloud icon button',
-  },
   render: args => (
     <Flex direction="column">
       {variants.map(variant => (
@@ -137,6 +118,7 @@ export const Playground: Story = {
                 {...args}
                 variant={variant as IconButtonProps<any>['variant']}
                 size={size as IconButtonProps<any>['size']}
+                icon={<Icon name="cloud" />}
               />
               <IconButton
                 {...args}
