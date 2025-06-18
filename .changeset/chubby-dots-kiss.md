@@ -2,4 +2,4 @@
 '@backstage/plugin-techdocs': patch
 ---
 
-Handle undefined defaultPath in TechDocs initial redirect.
+Fixed an issue causing TechDocs to not properly handle initial redirect.
