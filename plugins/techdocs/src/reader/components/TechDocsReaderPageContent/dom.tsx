@@ -67,7 +67,7 @@ export const useInitialRedirect = (defaultPath?: string) => {
   const { '*': currPath = '' } = useParams();
 
   useLayoutEffect(() => {
-    if (currPath === '' && defaultPath && defaultPath !== '') {
+    if (currPath === '' && defaultPath) {
       navigate(`${location.pathname}${defaultPath}`, { replace: true });
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
