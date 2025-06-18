@@ -212,7 +212,7 @@ export const Playground: Story = {
               <Button
                 variant={variant as ButtonProps<any>['variant']}
                 size={size as ButtonProps<any>['size']}
-                disabled
+                isDisabled
               >
                 Button
               </Button>
@@ -220,7 +220,7 @@ export const Playground: Story = {
                 iconStart={<Icon name="cloud" />}
                 variant={variant as ButtonProps<any>['variant']}
                 size={size as ButtonProps<any>['size']}
-                disabled
+                isDisabled
               >
                 Button
               </Button>
@@ -228,7 +228,7 @@ export const Playground: Story = {
                 iconEnd={<Icon name="chevron-right" />}
                 variant={variant as ButtonProps<any>['variant']}
                 size={size as ButtonProps<any>['size']}
-                disabled
+                isDisabled
               >
                 Button
               </Button>

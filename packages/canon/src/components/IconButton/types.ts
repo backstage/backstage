@@ -15,17 +15,17 @@
  */
 
 import { Breakpoint } from '@backstage/canon';
-import { ReactElement } from 'react';
-import { PolymorphicComponentProp } from '../../types';
+import { ElementType, ReactElement } from 'react';
+import { PolymorphicComponentProps } from '../../types';
 
 /**
  * Properties for {@link IconButton}
  *
  * @public
  */
-export type IconButtonProps<C extends React.ElementType> =
-  PolymorphicComponentProp<
-    C,
+export type IconButtonProps<TAs extends ElementType> =
+  PolymorphicComponentProps<
+    TAs,
     {
       size?:
         | 'small'

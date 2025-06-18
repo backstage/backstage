@@ -15,42 +15,57 @@
  */
 
 import clsx from 'clsx';
+import {
+  ComponentPropsWithRef,
+  ElementType,
+  forwardRef,
+  ReactElement,
+  Ref,
+} from 'react';
+import { Button as RAButton } from 'react-aria-components';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import type { IconButtonProps } from './types';
 
 /** @public */
-export const IconButton = <C extends React.ElementType = 'button'>(
-  props: IconButtonProps<C>,
-) => {
-  const {
-    as,
-    size = 'small',
-    variant = 'primary',
-    icon,
-    className,
-    href,
-    style,
-    ...rest
-  } = props;
+export const IconButton = forwardRef(
+  (props: IconButtonProps<typeof RAButton>, ref: Ref<HTMLButtonElement>) => {
+    const {
+      as,
+      size = 'small',
+      variant = 'primary',
+      icon,
+      className,
+      style,
+      ...rest
+    } = props;
 
-  const Component = as || 'button';
-  const responsiveSize = useResponsiveValue(size);
-  const responsiveVariant = useResponsiveValue(variant);
+    const Component = as || RAButton;
+    const responsiveSize = useResponsiveValue(size);
+    const responsiveVariant = useResponsiveValue(variant);
 
-  return (
-    <Component
-      className={clsx('canon-IconButton', className)}
-      data-variant={responsiveVariant}
-      data-size={responsiveSize}
-      {...rest}
-    >
-      <span
-        className="canon-IconButtonIcon"
-        aria-hidden="true"
+    return (
+      <Component
+        className={clsx('canon-Button', className)}
+        data-variant={responsiveVariant}
         data-size={responsiveSize}
+        ref={ref}
+        {...rest}
       >
-        {icon}
-      </span>
-    </Component>
-  );
+        <span
+          className="canon-IconButtonIcon"
+          aria-hidden="true"
+          data-size={responsiveSize}
+        >
+          {icon}
+        </span>
+      </Component>
+    );
+  },
+) as {
+  <TAs extends ElementType = typeof RAButton>(
+    props: IconButtonProps<TAs> & { ref?: ComponentPropsWithRef<TAs>['ref'] },
+  ): ReactElement;
+  displayName: string;
 };
+
+IconButton.displayName = 'IconButton';

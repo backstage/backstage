@@ -5,13 +5,15 @@
 ```ts
 import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
 import { Breakpoint as Breakpoint_2 } from '@backstage/canon';
+import { Button as Button_2 } from 'react-aria-components';
 import { ChangeEvent } from 'react';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
 import { ComponentProps } from 'react';
-import type { ComponentPropsWithRef } from 'react';
+import { ComponentPropsWithoutRef } from 'react';
+import { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
 import type { CSSProperties } from 'react';
-import type { ElementType } from 'react';
+import { ElementType } from 'react';
 import { FC } from 'react';
 import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
@@ -43,8 +45,8 @@ export type ArbitraryStylingPropDef = {
 };
 
 // @public (undocumented)
-export type AsProp<C extends React.ElementType> = {
-  as?: C;
+export type As<TAs extends ElementType> = {
+  as?: TAs;
 };
 
 // @public (undocumented)
@@ -156,14 +158,20 @@ export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export const breakpoints: Breakpoint[];
 
 // @public (undocumented)
-export const Button: <C extends React.ElementType = 'button'>(
-  props: ButtonProps<C>,
-) => JSX_2.Element;
+export const Button: {
+  <TAs extends ElementType = typeof Button_2>(
+    props: ButtonProps<TAs> & {
+      ref?: ComponentPropsWithRef<TAs>['ref'];
+    },
+  ): ReactElement;
+  displayName: string;
+};
 
 // @public
-export type ButtonProps<C extends React.ElementType> = PolymorphicComponentProp<
-  C,
+export type ButtonProps<TAs extends ElementType> = PolymorphicComponentProps<
+  TAs,
   {
+    children?: ReactNode;
     size?:
       | 'small'
       | 'medium'
@@ -685,14 +693,19 @@ export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
 export const Icon: (props: IconProps) => JSX_2.Element | null;
 
 // @public (undocumented)
-export const IconButton: <C extends React.ElementType = 'button'>(
-  props: IconButtonProps<C>,
-) => JSX_2.Element;
+export const IconButton: {
+  <TAs extends ElementType = typeof Button_2>(
+    props: IconButtonProps<TAs> & {
+      ref?: ComponentPropsWithRef<TAs>['ref'];
+    },
+  ): ReactElement;
+  displayName: string;
+};
 
 // @public
-export type IconButtonProps<C extends React.ElementType> =
-  PolymorphicComponentProp<
-    C,
+export type IconButtonProps<TAs extends ElementType> =
+  PolymorphicComponentProps<
+    TAs,
     {
       size?:
         | 'small'
@@ -1002,11 +1015,12 @@ export const paddingPropDefs: (spacingValues: string[]) => {
 export type PaddingProps = GetPropDefTypes<typeof paddingPropDefs>;
 
 // @public
-export type PolymorphicComponentProp<
-  C extends React.ElementType,
-  Props = {},
-> = React.PropsWithChildren<Props & AsProp<C>> &
-  Omit<React.ComponentPropsWithoutRef<C>, PropsToOmit<C, Props>>;
+export type PolymorphicComponentProps<
+  TAs extends ElementType,
+  TProps = {},
+> = TProps &
+  As<TAs> &
+  Omit<ComponentPropsWithoutRef<TAs>, keyof (As<TAs> & TProps)>;
 
 // @public (undocumented)
 export const positionPropDefs: {
@@ -1023,9 +1037,6 @@ export type PositionProps = GetPropDefTypes<typeof positionPropDefs>;
 
 // @public (undocumented)
 export type PropDef<T = any> = RegularPropDef<T> | ResponsivePropDef<T>;
-
-// @public (undocumented)
-export type PropsToOmit<C extends React.ElementType, P> = keyof (AsProp<C> & P);
 
 // @public (undocumented)
 export type ReactNodePropDef = {

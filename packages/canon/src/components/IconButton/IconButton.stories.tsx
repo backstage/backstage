@@ -40,44 +40,45 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: args => <IconButton {...args} icon={<Icon name="cloud" />} />,
+  render: () => <IconButton icon={<Icon name="cloud" />} />,
 };
 
 export const Variants: Story = {
-  render: args => (
+  render: () => (
     <Flex align="center" gap="2">
-      <IconButton {...args} icon={<Icon name="cloud" />} variant="primary" />
-      <IconButton {...args} icon={<Icon name="cloud" />} variant="secondary" />
+      <IconButton icon={<Icon name="cloud" />} variant="primary" />
+      <IconButton icon={<Icon name="cloud" />} variant="secondary" />
     </Flex>
   ),
 };
 
 export const Sizes: Story = {
-  render: args => (
+  render: () => (
     <Flex align="center" gap="2">
-      <IconButton {...args} icon={<Icon name="cloud" />} size="small" />
-      <IconButton {...args} icon={<Icon name="cloud" />} size="medium" />
+      <IconButton icon={<Icon name="cloud" />} size="small" />
+      <IconButton icon={<Icon name="cloud" />} size="medium" />
     </Flex>
   ),
 };
 
 export const Disabled: Story = {
-  args: { disabled: true },
-  render: args => (
+  render: () => (
     <Flex direction="row" gap="2">
-      <IconButton {...args} icon={<Icon name="cloud" />} variant="primary" />
-      <IconButton {...args} icon={<Icon name="cloud" />} variant="secondary" />
+      <IconButton isDisabled icon={<Icon name="cloud" />} variant="primary" />
+      <IconButton isDisabled icon={<Icon name="cloud" />} variant="secondary" />
     </Flex>
   ),
 };
 
 export const AsLink: Story = {
-  args: {
-    as: 'a',
-    href: 'https://canon.backstage.io',
-    target: '_blank',
-  },
-  render: args => <IconButton {...args} icon={<Icon name="cloud" />} />,
+  render: () => (
+    <IconButton
+      as="a"
+      href="https://canon.backstage.io"
+      target="_blank"
+      icon={<Icon name="cloud" />}
+    />
+  ),
 };
 
 export const AsComponent: Story = {
