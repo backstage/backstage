@@ -15,17 +15,18 @@
  */
 
 import { Breakpoint } from '@backstage/canon';
-import { ReactElement } from 'react';
-import { PolymorphicComponentProp } from '../../types';
+import { ElementType, ReactElement, ReactNode } from 'react';
+import { PolymorphicComponentProps } from '../../types';
 
 /**
  * Properties for {@link Button}
  *
  * @public
  */
-export type ButtonProps<C extends React.ElementType> = PolymorphicComponentProp<
-  C,
+export type ButtonProps<TAs extends ElementType> = PolymorphicComponentProps<
+  TAs,
   {
+    children?: ReactNode;
     size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
     variant?:
       | 'primary'

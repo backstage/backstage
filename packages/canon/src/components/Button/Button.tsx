@@ -15,54 +15,70 @@
  */
 
 import clsx from 'clsx';
+import {
+  ComponentPropsWithRef,
+  ElementType,
+  forwardRef,
+  ReactElement,
+  Ref,
+} from 'react';
+import { Button as RAButton } from 'react-aria-components';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import type { ButtonProps } from './types';
 
 /** @public */
-export const Button = <C extends React.ElementType = 'button'>(
-  props: ButtonProps<C>,
-) => {
-  const {
-    as,
-    size = 'small',
-    variant = 'primary',
-    iconStart,
-    iconEnd,
-    children,
-    className,
-    ...rest
-  } = props;
+export const Button = forwardRef(
+  (props: ButtonProps<typeof RAButton>, ref: Ref<HTMLButtonElement>) => {
+    const {
+      as,
+      size = 'small',
+      variant = 'primary',
+      iconStart,
+      iconEnd,
+      children,
+      className,
+      ...rest
+    } = props;
 
-  const Component = as || 'button';
-  const responsiveSize = useResponsiveValue(size);
-  const responsiveVariant = useResponsiveValue(variant);
+    const Component = as || RAButton;
+    const responsiveSize = useResponsiveValue(size);
+    const responsiveVariant = useResponsiveValue(variant);
 
-  return (
-    <Component
-      className={clsx('canon-Button', className)}
-      data-variant={responsiveVariant}
-      data-size={responsiveSize}
-      {...rest}
-    >
-      {iconStart && (
-        <span
-          className="canon-ButtonIcon"
-          aria-hidden="true"
-          data-size={responsiveSize}
-        >
-          {iconStart}
-        </span>
-      )}
-      {children}
-      {iconEnd && (
-        <span
-          className="canon-ButtonIcon"
-          aria-hidden="true"
-          data-size={responsiveSize}
-        >
-          {iconEnd}
-        </span>
-      )}
-    </Component>
-  );
+    return (
+      <Component
+        className={clsx('canon-Button', className)}
+        data-variant={responsiveVariant}
+        data-size={responsiveSize}
+        ref={ref}
+        {...rest}
+      >
+        {iconStart && (
+          <span
+            className="canon-ButtonIcon"
+            aria-hidden="true"
+            data-size={responsiveSize}
+          >
+            {iconStart}
+          </span>
+        )}
+        {children}
+        {iconEnd && (
+          <span
+            className="canon-ButtonIcon"
+            aria-hidden="true"
+            data-size={responsiveSize}
+          >
+            {iconEnd}
+          </span>
+        )}
+      </Component>
+    );
+  },
+) as {
+  <TAs extends ElementType = typeof RAButton>(
+    props: ButtonProps<TAs> & { ref?: ComponentPropsWithRef<TAs>['ref'] },
+  ): ReactElement;
+  displayName: string;
 };
+
+Button.displayName = 'Button';
