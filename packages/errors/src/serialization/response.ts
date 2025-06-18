@@ -24,7 +24,10 @@ import { SerializedError } from './error';
  */
 export type ErrorResponseBody = {
   /** Details of the error that was caught */
-  error: SerializedError;
+  error: SerializedError & {
+    /** Details about the cause of the error */
+    cause?: SerializedError;
+  };
 
   /** Details about the incoming request */
   request?: {

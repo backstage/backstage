@@ -71,7 +71,7 @@ export class ResponseError extends Error {
     const statusCode = data.response.statusCode || response.status;
     const statusText = response.statusText;
     const message = `Request failed with ${statusCode} ${statusText}`;
-    const cause = deserializeError(data.error);
+    const cause = deserializeError(data.error.cause || data.error);
 
     return new ResponseError({
       message,

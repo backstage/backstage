@@ -41,4 +41,59 @@ describe('ResponseError', () => {
     expect(e.cause.message).toEqual('Expected fives');
     expect(e.cause.stack).toEqual('lines');
   });
+
+  it('correctly parses cause', async () => {
+    const body: ErrorResponseBody = {
+      error: {
+        name: 'ResponseError',
+        message: 'Request failed with 409 Conflict',
+        response: {
+          size: 0,
+          timeout: 0,
+        },
+        body: {
+          error: {
+            name: 'ConflictError',
+            message:
+              'Location url:https://backstage/backstage/blob/master/catalog-info.yaml already exists',
+          },
+          request: {
+            method: 'POST',
+            url: '/locations',
+          },
+          response: {
+            statusCode: 409,
+          },
+        },
+        cause: {
+          name: 'ConflictError',
+          message:
+            'Location url:https://backstage/backstage/blob/master/catalog-info.yaml already exists',
+        },
+        statusCode: 409,
+        statusText: 'Conflict',
+      },
+      request: {
+        method: 'POST',
+        url: '/v1/locations',
+      },
+      response: {
+        statusCode: 409,
+      },
+    };
+
+    const response: Partial<Response> = {
+      status: 409,
+      statusText: 'Conflict',
+      text: async () => JSON.stringify(body),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    };
+
+    const e = await ResponseError.fromResponse(response as Response);
+    expect(e.name).toEqual('ResponseError');
+    expect(e.cause.name).toEqual('ConflictError');
+    expect(e.cause.message).toEqual(
+      'Location url:https://backstage/backstage/blob/master/catalog-info.yaml already exists',
+    );
+  });
 });
