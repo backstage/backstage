@@ -133,9 +133,23 @@ export const Disabled: Story = {
 
 export const AsLink: Story = {
   args: {
-    children: 'I am a link',
+    children: 'Button',
     href: 'https://canon.backstage.io',
     target: '_blank',
+  },
+};
+
+export const AsComponent: Story = {
+  render: () => {
+    const Link = (props: { children: React.ReactNode; to: string }) => (
+      <a {...props} />
+    );
+
+    return (
+      <Button as={Link} to="/">
+        I am a using a custom component
+      </Button>
+    );
   },
 };
 
@@ -167,22 +181,22 @@ export const Playground: Story = {
           {['small', 'medium'].map(size => (
             <Flex align="center" key={size}>
               <Button
-                variant={variant as ButtonProps['variant']}
-                size={size as ButtonProps['size']}
+                variant={variant as ButtonProps<any>['variant']}
+                size={size as ButtonProps<any>['size']}
               >
                 Button
               </Button>
               <Button
                 iconStart={<Icon name="cloud" />}
-                variant={variant as ButtonProps['variant']}
-                size={size as ButtonProps['size']}
+                variant={variant as ButtonProps<any>['variant']}
+                size={size as ButtonProps<any>['size']}
               >
                 Button
               </Button>
               <Button
                 iconEnd={<Icon name="chevron-right" />}
-                variant={variant as ButtonProps['variant']}
-                size={size as ButtonProps['size']}
+                variant={variant as ButtonProps<any>['variant']}
+                size={size as ButtonProps<any>['size']}
               >
                 Button
               </Button>
@@ -190,30 +204,30 @@ export const Playground: Story = {
                 iconStart={<Icon name="cloud" />}
                 iconEnd={<Icon name="chevron-right" />}
                 style={{ width: '200px' }}
-                variant={variant as ButtonProps['variant']}
-                size={size as ButtonProps['size']}
+                variant={variant as ButtonProps<any>['variant']}
+                size={size as ButtonProps<any>['size']}
               >
                 Button
               </Button>
               <Button
-                variant={variant as ButtonProps['variant']}
-                size={size as ButtonProps['size']}
+                variant={variant as ButtonProps<any>['variant']}
+                size={size as ButtonProps<any>['size']}
                 disabled
               >
                 Button
               </Button>
               <Button
                 iconStart={<Icon name="cloud" />}
-                variant={variant as ButtonProps['variant']}
-                size={size as ButtonProps['size']}
+                variant={variant as ButtonProps<any>['variant']}
+                size={size as ButtonProps<any>['size']}
                 disabled
               >
                 Button
               </Button>
               <Button
                 iconEnd={<Icon name="chevron-right" />}
-                variant={variant as ButtonProps['variant']}
-                size={size as ButtonProps['size']}
+                variant={variant as ButtonProps<any>['variant']}
+                size={size as ButtonProps<any>['size']}
                 disabled
               >
                 Button

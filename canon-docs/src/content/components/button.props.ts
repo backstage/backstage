@@ -62,6 +62,12 @@ export const buttonResponsiveSnippet = `<Button variant={{ initial: 'primary', l
   Responsive Button
 </Button>`;
 
-export const buttonAsLinkSnippet = `<Button href="https://canon.backstage.io" target="_blank">
+export const buttonAsLinkSnippet = `// Using the \`as\` prop
+<Button as="a" href="https://canon.backstage.io" target="_blank">
   I am a link
+</Button>
+
+// Using a custom component
+<Button as={Link} to="/">
+  I am a using a custom component
 </Button>`;

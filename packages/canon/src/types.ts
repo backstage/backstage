@@ -131,3 +131,21 @@ export interface UtilityProps extends SpaceProps {
   justifyContent?: Responsive<JustifyContent>;
   rowSpan?: Responsive<Columns | 'full'>;
 }
+
+/** @public */
+export type AsProp<C extends React.ElementType> = {
+  as?: C;
+};
+
+/** @public */
+export type PropsToOmit<C extends React.ElementType, P> = keyof (AsProp<C> & P);
+
+/**
+ * This is the first reusable type utility we built
+ * @public
+ */
+export type PolymorphicComponentProp<
+  C extends React.ElementType,
+  Props = {},
+> = React.PropsWithChildren<Props & AsProp<C>> &
+  Omit<React.ComponentPropsWithoutRef<C>, PropsToOmit<C, Props>>;

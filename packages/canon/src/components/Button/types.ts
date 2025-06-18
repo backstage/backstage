@@ -15,43 +15,23 @@
  */
 
 import { Breakpoint } from '@backstage/canon';
-import {
-  ReactElement,
-  AnchorHTMLAttributes,
-  ButtonHTMLAttributes,
-} from 'react';
-
-/** @public */
-export type ButtonCommonProps = {
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-  variant?:
-    | 'primary'
-    | 'secondary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
-  iconStart?: ReactElement;
-  iconEnd?: ReactElement;
-  className?: string;
-  style?: React.CSSProperties;
-  children?: React.ReactNode;
-};
-
-/** @public */
-export type ButtonAnchorProps = ButtonCommonProps &
-  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'type' | 'onClick'> & {
-    href: string;
-    onClick?: React.MouseEventHandler<HTMLAnchorElement>;
-  };
-
-/** @public */
-export type ButtonNativeProps = ButtonCommonProps &
-  Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'href'> & {
-    href?: undefined;
-    onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  };
+import { ReactElement } from 'react';
+import { PolymorphicComponentProp } from '../../types';
 
 /**
  * Properties for {@link Button}
  *
  * @public
  */
-export type ButtonProps = ButtonAnchorProps | ButtonNativeProps;
+export type ButtonProps<C extends React.ElementType> = PolymorphicComponentProp<
+  C,
+  {
+    size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+    variant?:
+      | 'primary'
+      | 'secondary'
+      | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+    iconStart?: ReactElement;
+    iconEnd?: ReactElement;
+  }
+>;

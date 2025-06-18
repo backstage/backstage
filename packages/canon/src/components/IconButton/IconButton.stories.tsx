@@ -84,11 +84,23 @@ export const Disabled: Story = {
 };
 
 export const AsLink: Story = {
-  args: {
-    icon: <Icon name="cloud" />,
-    href: 'https://canon.backstage.io',
-    target: '_blank',
-    'aria-label': 'Cloud icon button',
+  render: () => (
+    <IconButton
+      as="a"
+      href="https://canon.backstage.io"
+      target="_blank"
+      icon={<Icon name="cloud" />}
+    />
+  ),
+};
+
+export const AsComponent: Story = {
+  render: () => {
+    const Link = (props: { children?: React.ReactNode; to: string }) => (
+      <a {...props} />
+    );
+
+    return <IconButton as={Link} to="/" icon={<Icon name="cloud" />} />;
   },
 };
 
@@ -123,22 +135,22 @@ export const Playground: Story = {
             <Flex align="center" key={size}>
               <IconButton
                 {...args}
-                variant={variant as IconButtonProps['variant']}
-                size={size as IconButtonProps['size']}
+                variant={variant as IconButtonProps<any>['variant']}
+                size={size as IconButtonProps<any>['size']}
               />
               <IconButton
                 {...args}
                 icon={<Icon name="chevron-right" />}
                 aria-label="Chevron right icon button"
-                variant={variant as IconButtonProps['variant']}
-                size={size as IconButtonProps['size']}
+                variant={variant as IconButtonProps<any>['variant']}
+                size={size as IconButtonProps<any>['size']}
               />
               <IconButton
                 {...args}
                 icon={<Icon name="chevron-right" />}
                 aria-label="Chevron right icon button"
-                variant={variant as IconButtonProps['variant']}
-                size={size as IconButtonProps['size']}
+                variant={variant as IconButtonProps<any>['variant']}
+                size={size as IconButtonProps<any>['size']}
               />
             </Flex>
           ))}

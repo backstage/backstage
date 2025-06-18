@@ -14,43 +14,27 @@
  * limitations under the License.
  */
 
-import {
-  AnchorHTMLAttributes,
-  ButtonHTMLAttributes,
-  ReactElement,
-} from 'react';
 import { Breakpoint } from '@backstage/canon';
-
-/** @public */
-export type IconButtonCommonProps = {
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-  variant?:
-    | 'primary'
-    | 'secondary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
-  icon?: ReactElement;
-  className?: string;
-  style?: React.CSSProperties;
-  children?: React.ReactNode;
-};
-
-/** @public */
-export type IconButtonAnchorProps = IconButtonCommonProps &
-  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'type' | 'onClick'> & {
-    href: string;
-    onClick?: React.MouseEventHandler<HTMLAnchorElement>;
-  };
-
-/** @public */
-export type IconButtonNativeProps = IconButtonCommonProps &
-  Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'href'> & {
-    href?: undefined;
-    onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  };
+import { ReactElement } from 'react';
+import { PolymorphicComponentProp } from '../../types';
 
 /**
  * Properties for {@link IconButton}
  *
  * @public
  */
-export type IconButtonProps = IconButtonAnchorProps | IconButtonNativeProps;
+export type IconButtonProps<C extends React.ElementType> =
+  PolymorphicComponentProp<
+    C,
+    {
+      size?:
+        | 'small'
+        | 'medium'
+        | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+      variant?:
+        | 'primary'
+        | 'secondary'
+        | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+      icon?: ReactElement;
+    }
+  >;

@@ -14,32 +14,36 @@
  * limitations under the License.
  */
 
-import { AnchorHTMLAttributes, ButtonHTMLAttributes, forwardRef } from 'react';
 import clsx from 'clsx';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import type { ButtonProps } from './types';
 
 /** @public */
-export const Button = forwardRef<HTMLElement, ButtonProps>((props, ref) => {
+export const Button = <C extends React.ElementType = 'button'>(
+  props: ButtonProps<C>,
+) => {
   const {
+    as,
     size = 'small',
     variant = 'primary',
     iconStart,
     iconEnd,
     children,
-    href,
     className,
-    style,
     ...rest
   } = props;
 
-  const isAnchor = typeof props.href === 'string';
-
+  const Component = as || 'button';
   const responsiveSize = useResponsiveValue(size);
   const responsiveVariant = useResponsiveValue(variant);
 
-  const content = (
-    <>
+  return (
+    <Component
+      className={clsx('canon-Button', className)}
+      data-variant={responsiveVariant}
+      data-size={responsiveSize}
+      {...rest}
+    >
       {iconStart && (
         <span
           className="canon-ButtonIcon"
@@ -59,44 +63,6 @@ export const Button = forwardRef<HTMLElement, ButtonProps>((props, ref) => {
           {iconEnd}
         </span>
       )}
-    </>
+    </Component>
   );
-
-  if (isAnchor) {
-    const { onClick, ...anchorRest } =
-      rest as AnchorHTMLAttributes<HTMLAnchorElement>;
-    return (
-      <a
-        href={href}
-        className={clsx('canon-Button', className)}
-        data-variant={responsiveVariant}
-        data-size={responsiveSize}
-        style={style}
-        ref={ref as React.Ref<HTMLAnchorElement>}
-        onClick={onClick}
-        {...anchorRest}
-      >
-        {content}
-      </a>
-    );
-  } else {
-    const { onClick, ...buttonRest } =
-      rest as ButtonHTMLAttributes<HTMLButtonElement>;
-    return (
-      <button
-        type="button"
-        className={clsx('canon-Button', className)}
-        data-variant={responsiveVariant}
-        data-size={responsiveSize}
-        style={style}
-        ref={ref as React.Ref<HTMLButtonElement>}
-        onClick={onClick}
-        {...buttonRest}
-      >
-        {content}
-      </button>
-    );
-  }
-});
-
-Button.displayName = 'Button';
+};
