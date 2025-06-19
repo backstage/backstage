@@ -272,6 +272,13 @@
   min-width: 10.5rem;
 }
 
+.canon-FieldError {
+  color: var(--canon-fg-danger);
+  font-size: var(--canon-font-size-2);
+  font-weight: var(--canon-font-weight-regular);
+  margin-top: var(--canon-space-2);
+}
+
 .canon-FieldLabel {
   margin-bottom: var(--canon-space-3);
   gap: var(--canon-space-1);
@@ -983,13 +990,6 @@
   opacity: .5;
   cursor: not-allowed;
   border: 1px solid var(--canon-border-disabled);
-}
-
-.canon-TextFieldError {
-  color: var(--canon-fg-danger);
-  font-size: var(--canon-font-size-2);
-  font-weight: var(--canon-font-weight-regular);
-  margin-top: var(--canon-space-2);
 }
 
 .canon-TooltipPopup {

@@ -14,6 +14,7 @@ import { Context } from 'react';
 import type { CSSProperties } from 'react';
 import type { ElementType } from 'react';
 import { FC } from 'react';
+import { FieldErrorProps } from 'react-aria-components';
 import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import { HTMLAttributes } from 'react';
@@ -387,6 +388,11 @@ export type EnumPropDef<T> = {
   default?: T;
   required?: boolean;
 };
+
+// @public (undocumented)
+export const FieldError: ForwardRefExoticComponent<
+  FieldErrorProps & RefAttributes<HTMLDivElement>
+>;
 
 // @public (undocumented)
 export const FieldLabel: ForwardRefExoticComponent<
