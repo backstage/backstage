@@ -2,4 +2,12 @@
 '@backstage/canon': minor
 ---
 
-**Breaking** We are transforming our Button component to allow for beatter support for button links. Instead of using the render prop, we are introducing the ButtonLin component and renaming IconButton to ButtonIcon to make it consistent. We are also removing the render prop on all button components.
+**BREAKING CHANGES**
+
+We’re updating our Button component to provide better support for button links.
+
+- We’re introducing a new `ButtonLink` component, which replaces the previous render prop pattern.
+- To maintain naming consistency across components, `IconButton` is being renamed to `ButtonIcon`.
+- Additionally, the render prop will be removed from all button-related components.
+
+These changes aim to simplify usage and improve clarity in our component API.
