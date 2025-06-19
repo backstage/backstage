@@ -480,7 +480,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: <a href="https://www.linuxfoundation.org/trademark-usage" />https://www.linuxfoundation.org/trademark-usage</a></p>`,
+      copyright: `<p style="text-align:center"><a href="https://spotify.github.io/" target="blank" >Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: <a href="https://www.linuxfoundation.org/trademark-usage" />https://www.linuxfoundation.org/trademark-usage</a></p>`,
     },
     algolia: {
       apiKey: '60d2643a9c6306463f15f8c3556e7f2e', // Owned by @Rugvip
