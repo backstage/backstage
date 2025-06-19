@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { ComponentPropsWithoutRef, ElementType } from 'react';
-
 /** @public */
 export type AsProps =
   | 'div'
@@ -133,19 +131,3 @@ export interface UtilityProps extends SpaceProps {
   justifyContent?: Responsive<JustifyContent>;
   rowSpan?: Responsive<Columns | 'full'>;
 }
-
-/** @public */
-export type As<TAs extends ElementType> = {
-  as?: TAs;
-};
-
-/**
- * This is the first reusable type utility we built
- * @public
- */
-export type PolymorphicComponentProps<
-  TAs extends ElementType,
-  TProps = {},
-> = TProps &
-  As<TAs> &
-  Omit<ComponentPropsWithoutRef<TAs>, keyof (As<TAs> & TProps)>;

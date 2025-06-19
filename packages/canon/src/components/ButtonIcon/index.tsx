@@ -14,27 +14,5 @@
  * limitations under the License.
  */
 
-import { Breakpoint } from '@backstage/canon';
-import { ElementType, ReactElement } from 'react';
-import { PolymorphicComponentProps } from '../../types';
-
-/**
- * Properties for {@link IconButton}
- *
- * @public
- */
-export type IconButtonProps<TAs extends ElementType> =
-  PolymorphicComponentProps<
-    TAs,
-    {
-      size?:
-        | 'small'
-        | 'medium'
-        | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-      variant?:
-        | 'primary'
-        | 'secondary'
-        | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
-      icon?: ReactElement;
-    }
-  >;
+export * from './ButtonIcon';
+export * from './types';

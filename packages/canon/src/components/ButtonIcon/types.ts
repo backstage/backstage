@@ -15,21 +15,19 @@
  */
 
 import { Breakpoint } from '@backstage/canon';
-import { ReactElement, ReactNode } from 'react';
+import { ReactElement } from 'react';
 import { ButtonProps as RAButtonProps } from 'react-aria-components';
 
 /**
- * Properties for {@link Button}
+ * Properties for {@link ButtonIcon}
  *
  * @public
  */
-export interface ButtonProps extends RAButtonProps {
+export interface ButtonIconProps extends RAButtonProps {
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   variant?:
     | 'primary'
     | 'secondary'
     | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
-  iconStart?: ReactElement;
-  iconEnd?: ReactElement;
-  children?: ReactNode;
+  icon?: ReactElement;
 }

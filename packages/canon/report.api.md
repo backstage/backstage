@@ -5,15 +5,14 @@
 ```ts
 import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
 import { Breakpoint as Breakpoint_2 } from '@backstage/canon';
-import { Button as Button_2 } from 'react-aria-components';
+import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
 import { ChangeEvent } from 'react';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
 import { ComponentProps } from 'react';
-import { ComponentPropsWithoutRef } from 'react';
-import { ComponentPropsWithRef } from 'react';
+import type { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
 import type { CSSProperties } from 'react';
-import { ElementType } from 'react';
+import type { ElementType } from 'react';
 import { FC } from 'react';
 import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
@@ -42,11 +41,6 @@ export type ArbitraryStylingPropDef = {
   className: string;
   customProperties: `--${string}`[];
   parseValue?: (value: string) => string | undefined;
-};
-
-// @public (undocumented)
-export type As<TAs extends ElementType> = {
-  as?: TAs;
 };
 
 // @public (undocumented)
@@ -158,32 +152,44 @@ export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export const breakpoints: Breakpoint[];
 
 // @public (undocumented)
-export const Button: {
-  <TAs extends ElementType = typeof Button_2>(
-    props: ButtonProps<TAs> & {
-      ref?: ComponentPropsWithRef<TAs>['ref'];
-    },
-  ): ReactElement;
-  displayName: string;
-};
+export const Button: ForwardRefExoticComponent<
+  ButtonProps & RefAttributes<HTMLButtonElement>
+>;
+
+// @public (undocumented)
+export const ButtonIcon: ForwardRefExoticComponent<
+  ButtonIconProps & RefAttributes<HTMLButtonElement>
+>;
 
 // @public
-export type ButtonProps<TAs extends ElementType> = PolymorphicComponentProps<
-  TAs,
-  {
-    children?: ReactNode;
-    size?:
-      | 'small'
-      | 'medium'
-      | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
-    variant?:
-      | 'primary'
-      | 'secondary'
-      | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
-    iconStart?: ReactElement;
-    iconEnd?: ReactElement;
-  }
->;
+export interface ButtonIconProps extends ButtonProps_2 {
+  // (undocumented)
+  icon?: ReactElement;
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  // (undocumented)
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
+}
+
+// @public
+export interface ButtonProps extends ButtonProps_2 {
+  // (undocumented)
+  children?: ReactNode;
+  // (undocumented)
+  iconEnd?: ReactElement;
+  // (undocumented)
+  iconStart?: ReactElement;
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  // (undocumented)
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
+}
 
 // @public (undocumented)
 export const Checkbox: ForwardRefExoticComponent<
@@ -693,33 +699,6 @@ export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
 export const Icon: (props: IconProps) => JSX_2.Element | null;
 
 // @public (undocumented)
-export const IconButton: {
-  <TAs extends ElementType = typeof Button_2>(
-    props: IconButtonProps<TAs> & {
-      ref?: ComponentPropsWithRef<TAs>['ref'];
-    },
-  ): ReactElement;
-  displayName: string;
-};
-
-// @public
-export type IconButtonProps<TAs extends ElementType> =
-  PolymorphicComponentProps<
-    TAs,
-    {
-      size?:
-        | 'small'
-        | 'medium'
-        | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
-      variant?:
-        | 'primary'
-        | 'secondary'
-        | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
-      icon?: ReactElement;
-    }
-  >;
-
-// @public (undocumented)
 export const IconContext: Context<IconContextProps>;
 
 // @public (undocumented)
@@ -1013,14 +992,6 @@ export const paddingPropDefs: (spacingValues: string[]) => {
 
 // @public (undocumented)
 export type PaddingProps = GetPropDefTypes<typeof paddingPropDefs>;
-
-// @public
-export type PolymorphicComponentProps<
-  TAs extends ElementType,
-  TProps = {},
-> = TProps &
-  As<TAs> &
-  Omit<ComponentPropsWithoutRef<TAs>, keyof (As<TAs> & TProps)>;
 
 // @public (undocumented)
 export const positionPropDefs: {

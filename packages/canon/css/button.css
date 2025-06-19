@@ -69,21 +69,21 @@
 .canon-Button[data-size="medium"] {
   font-size: var(--canon-font-size-4);
   padding: 0 var(--canon-space-3);
-  height: 40px;
+  height: 2.5rem;
 }
 
 .canon-Button[data-size="small"] {
   font-size: var(--canon-font-size-3);
   padding: 0 var(--canon-space-2);
-  height: 32px;
+  height: 2rem;
 }
 
-.canon-ButtonIcon[data-size="small"], .canon-ButtonIcon[data-size="small"] svg {
+.canon-Button[data-size="small"] svg {
   width: 1rem;
   height: 1rem;
 }
 
-.canon-ButtonIcon[data-size="medium"], .canon-ButtonIcon[data-size="medium"] svg {
+.canon-Button[data-size="medium"] svg {
   width: 1.25rem;
   height: 1.25rem;
 }

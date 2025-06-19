@@ -15,22 +15,15 @@
  */
 
 import clsx from 'clsx';
-import {
-  ComponentPropsWithRef,
-  ElementType,
-  forwardRef,
-  ReactElement,
-  Ref,
-} from 'react';
+import { forwardRef, Ref } from 'react';
 import { Button as RAButton } from 'react-aria-components';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
-import type { IconButtonProps } from './types';
+import type { ButtonIconProps } from './types';
 
 /** @public */
-export const IconButton = forwardRef(
-  (props: IconButtonProps<typeof RAButton>, ref: Ref<HTMLButtonElement>) => {
+export const ButtonIcon = forwardRef(
+  (props: ButtonIconProps, ref: Ref<HTMLButtonElement>) => {
     const {
-      as,
       size = 'small',
       variant = 'primary',
       icon,
@@ -39,33 +32,23 @@ export const IconButton = forwardRef(
       ...rest
     } = props;
 
-    const Component = as || RAButton;
     const responsiveSize = useResponsiveValue(size);
     const responsiveVariant = useResponsiveValue(variant);
 
+    console.log(clsx('canon-Button', 'canon-ButtonIcon', className));
+
     return (
-      <Component
-        className={clsx('canon-IconButton', className)}
+      <RAButton
+        className={clsx('canon-Button', 'canon-ButtonIcon', className)}
         data-variant={responsiveVariant}
         data-size={responsiveSize}
         ref={ref}
         {...rest}
       >
-        <span
-          className="canon-IconButtonIcon"
-          aria-hidden="true"
-          data-size={responsiveSize}
-        >
-          {icon}
-        </span>
-      </Component>
+        {icon}
+      </RAButton>
     );
   },
-) as {
-  <TAs extends ElementType = typeof RAButton>(
-    props: IconButtonProps<TAs> & { ref?: ComponentPropsWithRef<TAs>['ref'] },
-  ): ReactElement;
-  displayName: string;
-};
+);
 
-IconButton.displayName = 'IconButton';
+ButtonIcon.displayName = 'ButtonIcon';

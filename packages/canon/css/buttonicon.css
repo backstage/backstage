@@ -1,0 +1,14 @@
+.canon-ButtonIcon {
+  justify-content: center;
+  align-items: center;
+}
+
+.canon-ButtonIcon[data-size="small"] {
+  width: 2rem;
+  padding: 0;
+}
+
+.canon-ButtonIcon[data-size="medium"] {
+  width: 2.5rem;
+  padding: 0;
+}

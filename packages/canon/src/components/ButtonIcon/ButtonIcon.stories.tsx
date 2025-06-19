@@ -15,14 +15,14 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import { IconButton } from './IconButton';
+import { ButtonIcon } from './ButtonIcon';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { Icon } from '../Icon';
 
 const meta = {
-  title: 'Components/IconButton',
-  component: IconButton,
+  title: 'Components/ButtonIcon',
+  component: ButtonIcon,
   argTypes: {
     size: {
       control: 'select',
@@ -33,20 +33,20 @@ const meta = {
       options: ['primary', 'secondary'],
     },
   },
-} satisfies Meta<typeof IconButton>;
+} satisfies Meta<typeof ButtonIcon>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => <IconButton icon={<Icon name="cloud" />} />,
+  render: () => <ButtonIcon icon={<Icon name="cloud" />} />,
 };
 
 export const Variants: Story = {
   render: () => (
     <Flex align="center" gap="2">
-      <IconButton icon={<Icon name="cloud" />} variant="primary" />
-      <IconButton icon={<Icon name="cloud" />} variant="secondary" />
+      <ButtonIcon icon={<Icon name="cloud" />} variant="primary" />
+      <ButtonIcon icon={<Icon name="cloud" />} variant="secondary" />
     </Flex>
   ),
 };
@@ -54,8 +54,8 @@ export const Variants: Story = {
 export const Sizes: Story = {
   render: () => (
     <Flex align="center" gap="2">
-      <IconButton icon={<Icon name="cloud" />} size="small" />
-      <IconButton icon={<Icon name="cloud" />} size="medium" />
+      <ButtonIcon icon={<Icon name="cloud" />} size="small" />
+      <ButtonIcon icon={<Icon name="cloud" />} size="medium" />
     </Flex>
   ),
 };
@@ -63,31 +63,10 @@ export const Sizes: Story = {
 export const Disabled: Story = {
   render: () => (
     <Flex direction="row" gap="2">
-      <IconButton isDisabled icon={<Icon name="cloud" />} variant="primary" />
-      <IconButton isDisabled icon={<Icon name="cloud" />} variant="secondary" />
+      <ButtonIcon isDisabled icon={<Icon name="cloud" />} variant="primary" />
+      <ButtonIcon isDisabled icon={<Icon name="cloud" />} variant="secondary" />
     </Flex>
   ),
-};
-
-export const AsLink: Story = {
-  render: () => (
-    <IconButton
-      as="a"
-      href="https://canon.backstage.io"
-      target="_blank"
-      icon={<Icon name="cloud" />}
-    />
-  ),
-};
-
-export const AsComponent: Story = {
-  render: () => {
-    const Link = (props: { children?: React.ReactNode; to: string }) => (
-      <a {...props} />
-    );
-
-    return <IconButton as={Link} to="/" icon={<Icon name="cloud" />} />;
-  },
 };
 
 export const Responsive: Story = {
@@ -101,7 +80,7 @@ export const Responsive: Story = {
       sm: 'medium',
     },
   },
-  render: args => <IconButton {...args} icon={<Icon name="cloud" />} />,
+  render: args => <ButtonIcon {...args} icon={<Icon name="cloud" />} />,
 };
 
 const variants = ['primary', 'secondary'] as const;
@@ -115,20 +94,20 @@ export const Playground: Story = {
           <Text>{variant}</Text>
           {sizes.map(size => (
             <Flex align="center" key={size}>
-              <IconButton
+              <ButtonIcon
                 {...args}
                 variant={variant}
                 size={size}
                 icon={<Icon name="cloud" />}
               />
-              <IconButton
+              <ButtonIcon
                 {...args}
                 icon={<Icon name="chevron-right" />}
                 aria-label="Chevron right icon button"
                 variant={variant}
                 size={size}
               />
-              <IconButton
+              <ButtonIcon
                 {...args}
                 icon={<Icon name="chevron-right" />}
                 aria-label="Chevron right icon button"

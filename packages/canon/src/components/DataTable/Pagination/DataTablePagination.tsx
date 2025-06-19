@@ -17,7 +17,7 @@
 import { forwardRef } from 'react';
 import { Text } from '../../Text';
 import { DataTablePaginationProps } from './types';
-import { IconButton } from '../../IconButton';
+import { ButtonIcon } from '../../ButtonIcon';
 import clsx from 'clsx';
 import { Select } from '../../Select';
 import { useDataTable } from '../Root/DataTableRoot';
@@ -71,14 +71,14 @@ const DataTablePagination = forwardRef(
         </div>
         <div className="canon-DataTablePagination--right">
           <Text variant="body">{`${fromCount} - ${toCount} of ${rowCount}`}</Text>
-          <IconButton
+          <ButtonIcon
             variant="secondary"
             size="small"
             onClick={() => table?.previousPage()}
             isDisabled={!table?.getCanPreviousPage()}
             icon={<Icon name="chevron-left" />}
           />
-          <IconButton
+          <ButtonIcon
             variant="secondary"
             size="small"
             onClick={() => table?.nextPage()}

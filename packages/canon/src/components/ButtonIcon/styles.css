@@ -14,5 +14,17 @@
  * limitations under the License.
  */
 
-export * from './IconButton';
-export * from './types';
+.canon-ButtonIcon {
+  align-items: center;
+  justify-content: center;
+}
+
+.canon-ButtonIcon[data-size='small'] {
+  padding: 0;
+  width: 2rem;
+}
+
+.canon-ButtonIcon[data-size='medium'] {
+  padding: 0;
+  width: 2.5rem;
+}
