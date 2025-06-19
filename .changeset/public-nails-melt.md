@@ -2,4 +2,4 @@
 '@backstage/canon': minor
 ---
 
-**Breaking** We are transforming the way we handle custom tags for both Button and IconButton. We are introducing a new as prop for both of these components and we are removing support for the render prop.
+**Breaking** We are transforming our Button component to allow for beatter support for button links. Instead of using the render prop, we are introducing the ButtonLin component and renaming IconButton to ButtonIcon to make it consistent. We are also removing the render prop on all button components.
