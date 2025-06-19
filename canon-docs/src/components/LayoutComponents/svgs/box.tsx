@@ -1,18 +1,3 @@
-/*
- * Copyright 2024 The Backstage Authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 export const BoxSvg = () => {
   return (
     <svg
@@ -22,7 +7,7 @@ export const BoxSvg = () => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <rect width="100" height="60" rx="4" fill="black" fillOpacity="0.06" />
+      <rect width="100" height="60" rx="4" fill="var(--surface-1)" />
       <path
         d="M94.5 0.5H96C97.933 0.5 99.5 2.067 99.5 4V5.5"
         stroke="#4765FF"

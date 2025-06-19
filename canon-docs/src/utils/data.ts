@@ -14,8 +14,8 @@ export const overview: Page[] = [
     slug: 'about',
   },
   {
-    title: 'Releases',
-    slug: 'releases',
+    title: 'Changelog',
+    slug: 'changelog',
   },
 ];
 
@@ -114,6 +114,11 @@ export const components: Page[] = [
   {
     title: 'Select',
     slug: 'select',
+    status: 'alpha',
+  },
+  {
+    title: 'Switch',
+    slug: 'switch',
     status: 'alpha',
   },
   {

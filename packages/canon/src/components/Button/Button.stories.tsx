@@ -34,14 +34,16 @@ const meta = {
       options: ['primary', 'secondary'],
     },
   },
-  args: {
-    size: 'medium',
-    variant: 'primary',
-  },
 } satisfies Meta<typeof Button>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {
+    children: 'Button',
+  },
+};
 
 export const Variants: Story = {
   args: {
@@ -72,11 +74,11 @@ export const Sizes: Story = {
   },
   render: () => (
     <Flex align="center">
-      <Button size="medium" iconStart={<Icon name="cloud" />}>
-        Medium
-      </Button>
       <Button size="small" iconStart={<Icon name="cloud" />}>
         Small
+      </Button>
+      <Button size="medium" iconStart={<Icon name="cloud" />}>
+        Medium
       </Button>
     </Flex>
   ),
@@ -126,6 +128,18 @@ export const Disabled: Story = {
       <Button {...args} variant="primary" />
       <Button {...args} variant="secondary" />
     </Flex>
+  ),
+};
+
+export const AsLink: Story = {
+  args: {
+    children: 'I am a link',
+  },
+  render: args => (
+    <Button
+      {...args}
+      render={<a href="https://canon.backstage.io" target="_blank" />}
+    />
   ),
 };
 

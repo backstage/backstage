@@ -51,5 +51,71 @@ export interface Config {
               };
         }
     >;
+
+    /**
+     * This section enables you to override certain properties of specific or
+     * groups of plugins.
+     *
+     * @remarks
+     * All matching entries will be applied to each plugin, with the later
+     * entries taking precedence.
+     *
+     * This configuration is intended to be used primarily to apply overrides
+     * for third-party plugins.
+     *
+     * @deepVisibility frontend
+     */
+    pluginOverrides?: Array<{
+      /**
+       * The criteria for matching plugins to override.
+       *
+       * @remarks
+       * If no match criteria are provided, the override will be applied to
+       * all plugins.
+       */
+      match?: {
+        /**
+         * A pattern that is matched against the plugin ID.
+         *
+         * @remarks
+         * By default the string is interpreted as a glob pattern, but if the
+         * string is surrounded by '/' it is interpreted as a regex.
+         */
+        pluginId?: string;
+
+        /**
+         * A pattern that is matched against the package name.
+         *
+         * @remarks
+         * By default the string is interpreted as a glob pattern, but if the
+         * string is surrounded by '/' it is interpreted as a regex.
+         *
+         * Note that this will only work for plugins that provide a
+         * `package.json` info loader.
+         */
+        packageName?: string;
+      };
+      /**
+       * Overrides individual top-level fields of the plugin info.
+       */
+      info: {
+        /**
+         * Override the description of the plugin.
+         */
+        description?: string;
+        /**
+         * Override the owner entity references of the plugin.
+         *
+         * @remarks
+         * The provided values are interpreted as entity references defaulting
+         * to Group entities in the default namespace.
+         */
+        ownerEntityRefs?: string[];
+        /**
+         * Override the links of the plugin.
+         */
+        links?: Array<{ title: string; url: string }>;
+      };
+    }>;
   };
 }

@@ -13,6 +13,7 @@ import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 const _default: FrontendPlugin<
@@ -202,6 +203,39 @@ const _default: FrontendPlugin<
   }
 >;
 export default _default;
+
+// @alpha (undocumented)
+export const orgTranslationRef: TranslationRef<
+  'org',
+  {
+    readonly 'groupProfileCard.groupNotFound': 'Group not found';
+    readonly 'groupProfileCard.editIconButtonTitle': 'Edit Metadata';
+    readonly 'groupProfileCard.refreshIconButtonTitle': 'Schedule entity refresh';
+    readonly 'groupProfileCard.refreshIconButtonAriaLabel': 'Refresh';
+    readonly 'groupProfileCard.listItemTitle.email': 'Email';
+    readonly 'groupProfileCard.listItemTitle.entityRef': 'Entity Ref';
+    readonly 'groupProfileCard.listItemTitle.parentGroup': 'Parent Group';
+    readonly 'groupProfileCard.listItemTitle.childGroups': 'Child Groups';
+    readonly 'membersListCard.title': 'Members';
+    readonly 'membersListCard.subtitle': 'of {{groupName}}';
+    readonly 'membersListCard.paginationLabel': ', page {{page}} of {{nbPages}}';
+    readonly 'membersListCard.noMembersDescription': 'This group has no members.';
+    readonly 'membersListCard.aggregateMembersToggle.ariaLabel': 'Users Type Switch';
+    readonly 'membersListCard.aggregateMembersToggle.directMembers': 'Direct Members';
+    readonly 'membersListCard.aggregateMembersToggle.aggregatedMembers': 'Aggregated Members';
+    readonly 'ownershipCard.title': 'Ownership';
+    readonly 'ownershipCard.aggregateRelationsToggle.ariaLabel': 'Ownership Type Switch';
+    readonly 'ownershipCard.aggregateRelationsToggle.directRelations': 'Direct Relations';
+    readonly 'ownershipCard.aggregateRelationsToggle.aggregatedRelations': 'Aggregated Relations';
+    readonly 'userProfileCard.editIconButtonTitle': 'Edit Metadata';
+    readonly 'userProfileCard.listItemTitle.email': 'Email';
+    readonly 'userProfileCard.listItemTitle.memberOf': 'Member of';
+    readonly 'userProfileCard.userNotFound': 'User not found';
+    readonly 'userProfileCard.moreGroupButtonTitle': '...More ({{number}})';
+    readonly 'userProfileCard.allGroupDialog.title': "All {{name}}'s groups:";
+    readonly 'userProfileCard.allGroupDialog.closeButtonTitle': 'Close';
+  }
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

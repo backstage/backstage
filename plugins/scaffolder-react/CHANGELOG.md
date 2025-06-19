@@ -1,5 +1,68 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.17.0
+
+### Minor Changes
+
+- 6c972fe: Added information about the `entityRef` and `taskId` to the analytics events whenever is possible.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/catalog-client@1.10.1
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.35
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 1.16.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 1.16.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 1.16.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.0
+
 ## 1.16.0
 
 ### Minor Changes

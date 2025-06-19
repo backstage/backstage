@@ -111,7 +111,7 @@ export const WrappedInLink: Story = {
 export const CustomRender: Story = {
   args: {
     ...Default.args,
-    render: <span />,
+    as: 'span',
   },
 };
 

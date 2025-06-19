@@ -281,6 +281,60 @@ describe('createFrontendPlugin', () => {
     ).toThrow("Plugin 'test' provided duplicate extensions: test/2, test/3");
   });
 
+  describe('info', () => {
+    it('should support reading info from package.json', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        info: { packageJson: () => Promise.resolve({ name: '@test/test' }) },
+      });
+
+      await expect((plugin as any).infoOptions?.packageJson()).resolves.toEqual(
+        { name: '@test/test' },
+      );
+    });
+
+    it('should support reading info from actual package.json', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        info: { packageJson: () => import('../../package.json') },
+      });
+
+      await expect(
+        (plugin as any).infoOptions?.packageJson(),
+      ).resolves.toMatchObject({ name: '@backstage/frontend-plugin-api' });
+    });
+
+    it('should support reading info from opaque manifest', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        info: { manifest: () => Promise.resolve({ owner: 'me' }) },
+      });
+
+      await expect((plugin as any).infoOptions?.manifest()).resolves.toEqual({
+        owner: 'me',
+      });
+    });
+
+    it('should throw when trying to load info without installing in an app', async () => {
+      await expect(
+        createFrontendPlugin({
+          pluginId: 'test',
+        }).info(),
+      ).rejects.toThrow(
+        "Attempted to load plugin info for plugin 'test', but the plugin instance is not installed in an app",
+      );
+
+      await expect(
+        createFrontendPlugin({
+          pluginId: 'test',
+          info: { packageJson: () => Promise.resolve({ name: '@test/test' }) },
+        }).info(),
+      ).rejects.toThrow(
+        "Attempted to load plugin info for plugin 'test', but the plugin instance is not installed in an app",
+      );
+    });
+  });
+
   describe('overrides', () => {
     it('should return a plugin instance with the correct namespace', () => {
       const plugin = createFrontendPlugin({

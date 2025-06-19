@@ -2,7 +2,6 @@
 id: index
 title: Building Backends
 sidebar_label: Overview
-# prettier-ignore
 description: Building backends using the new backend system
 ---
 

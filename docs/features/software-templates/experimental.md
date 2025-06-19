@@ -1,7 +1,6 @@
 ---
 id: experimental
 title: Experimental Features
-# prettier-ignore
 description: Information on Experimental Features that are currently available in the Scaffolder
 ---
 

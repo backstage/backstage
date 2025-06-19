@@ -30,12 +30,12 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 
 type GithubPullRequestActionInput = ReturnType<
   typeof createPublishGithubPullRequestAction
-> extends TemplateAction<infer U>
+> extends TemplateAction<infer U, any, any>
   ? U
   : never;
 
 describe('createPublishGithubPullRequestAction', () => {
-  let instance: TemplateAction<GithubPullRequestActionInput>;
+  let instance: TemplateAction<GithubPullRequestActionInput, any, any>;
   let fakeClient: {
     createPullRequest: jest.Mock;
     rest: {
@@ -97,7 +97,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with targetBranchName', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       fakeClient = {
@@ -181,7 +181,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with no sourcePath', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -250,7 +250,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with sourcePath', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -306,7 +306,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with repoUrl', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -359,7 +359,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with reviewers and teamReviewers', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -406,7 +406,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with no reviewers and teamReviewers', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -431,7 +431,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with assignees', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -475,7 +475,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with broken symlink', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -520,7 +520,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with executable file mode 755', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -579,7 +579,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with executable file mode 775', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -638,7 +638,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with commit message', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -683,7 +683,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with force fork', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -729,7 +729,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with author name and email', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -779,7 +779,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with author name', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -828,7 +828,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with author email', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -877,7 +877,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with author from config file', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -946,7 +946,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with author attributes and config file', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -1017,7 +1017,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with author fallback and no config', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -1112,7 +1112,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with createWhenEmpty equals true', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -1175,7 +1175,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with createWhenEmpty equals false', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       fakeClient.createPullRequest.mockResolvedValueOnce(null);

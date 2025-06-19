@@ -15,7 +15,7 @@
  */
 
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
-import { mockServices } from '../next';
+import { mockServices } from '../services';
 
 /**
  * A mock for error handler middleware that can be used in router tests.

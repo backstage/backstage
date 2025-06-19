@@ -55,6 +55,8 @@ import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import { LinksGroup } from '../../Meta';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { orgTranslationRef } from '../../../../translation';
 
 const CardTitle = (props: { title: string }) => (
   <Box display="flex" alignItems="center">
@@ -74,6 +76,7 @@ export const GroupProfileCard = (props: {
   const { allowed: canRefresh } = useEntityPermission(
     catalogEntityRefreshPermission,
   );
+  const { t } = useTranslationRef(orgTranslationRef);
 
   const refreshEntity = useCallback(async () => {
     await catalogApi.refreshEntity(stringifyEntityRef(group));
@@ -85,7 +88,9 @@ export const GroupProfileCard = (props: {
   }, [catalogApi, alertApi, group]);
 
   if (!group) {
-    return <Alert severity="error">Group not found</Alert>;
+    return (
+      <Alert severity="error">{t('groupProfileCard.groupNotFound')}</Alert>
+    );
   }
 
   const {
@@ -111,15 +116,19 @@ export const GroupProfileCard = (props: {
   const emailHref = profile?.email ? `mailto:${profile.email}` : '#';
   const infoCardAction = entityMetadataEditUrl ? (
     <IconButton
-      aria-label="Edit"
-      title="Edit Metadata"
+      aria-label={t('groupProfileCard.editIconButtonTitle')}
+      title={t('groupProfileCard.editIconButtonTitle')}
       component={Link}
       to={entityMetadataEditUrl}
     >
       <EditIcon />
     </IconButton>
   ) : (
-    <IconButton aria-label="Edit" disabled title="Edit Metadata">
+    <IconButton
+      aria-label={t('groupProfileCard.editIconButtonTitle')}
+      disabled
+      title={t('groupProfileCard.editIconButtonTitle')}
+    >
       <EditIcon />
     </IconButton>
   );
@@ -133,8 +142,8 @@ export const GroupProfileCard = (props: {
         <>
           {allowRefresh && canRefresh && (
             <IconButton
-              aria-label="Refresh"
-              title="Schedule entity refresh"
+              aria-label={t('groupProfileCard.refreshIconButtonAriaLabel')}
+              title={t('groupProfileCard.refreshIconButtonTitle')}
               onClick={refreshEntity}
             >
               <CachedIcon />
@@ -152,31 +161,33 @@ export const GroupProfileCard = (props: {
           <List>
             <ListItem>
               <ListItemIcon>
-                <Tooltip title="Entity Ref">
+                <Tooltip title={t('groupProfileCard.listItemTitle.entityRef')}>
                   <PermIdentityIcon />
                 </Tooltip>
               </ListItemIcon>
               <ListItemText
                 primary={stringifyEntityRef(group)}
-                secondary="Entity Ref"
+                secondary={t('groupProfileCard.listItemTitle.entityRef')}
               />
             </ListItem>
             {profile?.email && (
               <ListItem>
                 <ListItemIcon>
-                  <Tooltip title="Email">
+                  <Tooltip title={t('groupProfileCard.listItemTitle.email')}>
                     <EmailIcon />
                   </Tooltip>
                 </ListItemIcon>
                 <ListItemText
                   primary={<Link to={emailHref}>{profile.email}</Link>}
-                  secondary="Email"
+                  secondary={t('groupProfileCard.listItemTitle.email')}
                 />
               </ListItem>
             )}
             <ListItem>
               <ListItemIcon>
-                <Tooltip title="Parent Group">
+                <Tooltip
+                  title={t('groupProfileCard.listItemTitle.parentGroup')}
+                >
                   <AccountTreeIcon />
                 </Tooltip>
               </ListItemIcon>
@@ -191,12 +202,14 @@ export const GroupProfileCard = (props: {
                     'N/A'
                   )
                 }
-                secondary="Parent Group"
+                secondary={t('groupProfileCard.listItemTitle.parentGroup')}
               />
             </ListItem>
             <ListItem>
               <ListItemIcon>
-                <Tooltip title="Child Groups">
+                <Tooltip
+                  title={t('groupProfileCard.listItemTitle.childGroups')}
+                >
                   <GroupIcon />
                 </Tooltip>
               </ListItemIcon>
@@ -211,7 +224,7 @@ export const GroupProfileCard = (props: {
                     'N/A'
                   )
                 }
-                secondary="Child Groups"
+                secondary={t('groupProfileCard.listItemTitle.childGroups')}
               />
             </ListItem>
             {props?.showLinks && <LinksGroup links={links} />}

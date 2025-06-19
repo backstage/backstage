@@ -2,7 +2,6 @@
 id: index
 title: Building Frontend Plugins
 sidebar_label: Overview
-# prettier-ignore
 description: Building frontend plugins using the new frontend system
 ---
 

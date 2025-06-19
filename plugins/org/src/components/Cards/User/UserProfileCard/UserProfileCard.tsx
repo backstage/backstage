@@ -55,6 +55,8 @@ import { LinksGroup } from '../../Meta';
 import PersonIcon from '@material-ui/icons/Person';
 
 import { useCallback, useState } from 'react';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { orgTranslationRef } from '../../../../translation';
 
 const useStyles = makeStyles((theme: any) => ({
   closeButton: {
@@ -92,6 +94,7 @@ export const UserProfileCard = (props: {
   const classes = useStyles();
   const { entity: user } = useEntity<UserEntity>();
   const [isAllGroupsDialogOpen, setIsAllGroupsDialogOpen] = useState(false);
+  const { t } = useTranslationRef(orgTranslationRef);
 
   const toggleAllGroupsDialog = useCallback(
     () =>
@@ -102,7 +105,7 @@ export const UserProfileCard = (props: {
   );
 
   if (!user) {
-    return <Alert severity="error">User not found</Alert>;
+    return <Alert severity="error">{t('userProfileCard.userNotFound')}</Alert>;
   }
 
   const entityMetadataEditUrl =
@@ -127,8 +130,8 @@ export const UserProfileCard = (props: {
         <>
           {entityMetadataEditUrl && (
             <IconButton
-              aria-label="Edit"
-              title="Edit Metadata"
+              aria-label={t('userProfileCard.editIconButtonTitle')}
+              title={t('userProfileCard.editIconButtonTitle')}
               component={Link}
               to={entityMetadataEditUrl}
             >
@@ -148,7 +151,7 @@ export const UserProfileCard = (props: {
             {profile?.email && (
               <ListItem>
                 <ListItemIcon>
-                  <Tooltip title="Email">
+                  <Tooltip title={t('userProfileCard.listItemTitle.email')}>
                     <EmailIcon />
                   </Tooltip>
                 </ListItemIcon>
@@ -161,7 +164,7 @@ export const UserProfileCard = (props: {
             {maxRelations === undefined || maxRelations > 0 ? (
               <ListItem>
                 <ListItemIcon>
-                  <Tooltip title="Member of">
+                  <Tooltip title={t('userProfileCard.listItemTitle.memberOf')}>
                     <GroupIcon />
                   </Tooltip>
                 </ListItemIcon>
@@ -179,9 +182,11 @@ export const UserProfileCard = (props: {
                         onClick={toggleAllGroupsDialog}
                         disableRipple
                       >
-                        {` ...More (${
-                          memberOfRelations.length - maxRelations
-                        })`}
+                        {t('userProfileCard.moreGroupButtonTitle', {
+                          number: String(
+                            memberOfRelations.length - maxRelations,
+                          ),
+                        })}
                       </BaseButton>
                     </>
                   ) : null}
@@ -203,10 +208,12 @@ export const UserProfileCard = (props: {
         fullWidth
       >
         <DialogTitle id="view-all-groups-dialog-title">
-          All {user.metadata.name}'s groups:
+          {t('userProfileCard.allGroupDialog.title', {
+            name: user.metadata.name,
+          })}
           <IconButton
             className={classes.closeButton}
-            aria-label="close"
+            aria-label={t('userProfileCard.allGroupDialog.closeButtonTitle')}
             onClick={toggleAllGroupsDialog}
           >
             <CloseIcon />
@@ -216,7 +223,9 @@ export const UserProfileCard = (props: {
           <EntityRefLinks entityRefs={memberOfRelations} defaultKind="Group" />
         </DialogContent>
         <DialogActions>
-          <Button onClick={toggleAllGroupsDialog}>Close</Button>
+          <Button onClick={toggleAllGroupsDialog}>
+            {t('userProfileCard.allGroupDialog.closeButtonTitle')}
+          </Button>
         </DialogActions>
       </Dialog>
     </InfoCard>

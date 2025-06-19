@@ -315,76 +315,112 @@ describe('TemplatingExtensionsPage', () => {
     });
   });
   describe('renders global', () => {
-    it('renders global functions', async () => {
-      listTemplatingExtensions.mockResolvedValue({
-        ...emptyExtensions,
-        globals: {
-          ...emptyExtensions.globals,
-          functions: {
-            truthy: {
-              description: 'evaluate truthiness',
-              schema: {
-                arguments: [
-                  {
-                    title: 'input',
-                  },
-                ],
-                output: {
-                  type: 'boolean',
-                },
-              },
-              examples: [
-                {
-                  description: 'basic usage',
-                  example: "truthy('foo')",
-                  notes: 'yields `true`',
-                },
-              ],
+    describe('renders global functions', () => {
+      it('without metadata', async () => {
+        listTemplatingExtensions.mockResolvedValue({
+          ...emptyExtensions,
+          globals: {
+            ...emptyExtensions.globals,
+            functions: {
+              anything: {},
             },
           },
-        },
+        });
+        const { findByTestId, getByRole } = await r();
+
+        fireEvent.click(within(getByRole('tablist')).getByText('Functions'));
+
+        const functions = await findByTestId('functions');
+
+        const anything = within(functions).getByTestId('anything');
+        const title = within(anything).getByText('anything');
+        expect(title).toBeInTheDocument();
+        expect(title.id).toBe('function_anything');
+
+        const link = within(anything).getByRole('link');
+        expect(link).toBeInTheDocument();
+        expect(link).toHaveAttribute(
+          'href',
+          expect.stringMatching(new RegExp(`#${title.id}$`)),
+        );
+        expect(
+          within(anything).getByTestId('anything.metadataAbsent'),
+        ).toBeInTheDocument();
       });
-      const { findByTestId, getByRole } = await r();
+      it('with metadata', async () => {
+        listTemplatingExtensions.mockResolvedValue({
+          ...emptyExtensions,
+          globals: {
+            ...emptyExtensions.globals,
+            functions: {
+              truthy: {
+                description: 'evaluate truthiness',
+                schema: {
+                  arguments: [
+                    {
+                      title: 'input',
+                    },
+                  ],
+                  output: {
+                    type: 'boolean',
+                  },
+                },
+                examples: [
+                  {
+                    description: 'basic usage',
+                    example: "truthy('foo')",
+                    notes: 'yields `true`',
+                  },
+                ],
+              },
+            },
+          },
+        });
+        const { findByTestId, getByRole } = await r();
 
-      fireEvent.click(within(getByRole('tablist')).getByText('Functions'));
+        fireEvent.click(within(getByRole('tablist')).getByText('Functions'));
 
-      const functions = await findByTestId('functions');
+        const functions = await findByTestId('functions');
 
-      const truthy = within(functions).getByTestId('truthy');
-      const title = within(truthy).getByText('truthy');
-      expect(title).toBeInTheDocument();
-      expect(title.id).toBe('function_truthy');
+        const truthy = within(functions).getByTestId('truthy');
+        const title = within(truthy).getByText('truthy');
+        expect(title).toBeInTheDocument();
+        expect(title.id).toBe('function_truthy');
 
-      const link = within(truthy).getByRole('link');
-      expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute(
-        'href',
-        expect.stringMatching(new RegExp(`#${title.id}$`)),
-      );
+        const link = within(truthy).getByRole('link');
+        expect(link).toBeInTheDocument();
+        expect(link).toHaveAttribute(
+          'href',
+          expect.stringMatching(new RegExp(`#${title.id}$`)),
+        );
+        expect(
+          within(truthy).queryByTestId('truthy.metadataAbsent'),
+        ).not.toBeInTheDocument();
 
-      expect(
-        within(truthy).getByText('evaluate truthiness'),
-      ).toBeInTheDocument();
+        expect(
+          within(truthy).getByText('evaluate truthiness'),
+        ).toBeInTheDocument();
 
-      expect(within(truthy).getByText('[0]')).toBeInTheDocument();
-      expect(
-        within(truthy).getByTestId('root_truthy.arg0'),
-      ).toBeInTheDocument();
-      expect(
-        within(truthy).queryByTestId('root_truthy.arg1'),
-      ).not.toBeInTheDocument();
-      expect(
-        within(truthy).getByTestId('root_truthy.output'),
-      ).toBeInTheDocument();
+        expect(within(truthy).getByText('[0]')).toBeInTheDocument();
+        expect(
+          within(truthy).getByTestId('root_truthy.arg0'),
+        ).toBeInTheDocument();
+        expect(
+          within(truthy).queryByTestId('root_truthy.arg1'),
+        ).not.toBeInTheDocument();
+        expect(
+          within(truthy).getByTestId('root_truthy.output'),
+        ).toBeInTheDocument();
 
-      const x = within(truthy).getByTestId('examples');
-      expect(x).toBeInTheDocument();
-      const xd0 = within(x).getByTestId('example_desc0');
-      expect(xd0).toBeInTheDocument();
-      expect(xd0).toHaveTextContent(/basic usage\s*yields\s*true/);
+        const x = within(truthy).getByTestId('examples');
+        expect(x).toBeInTheDocument();
+        const xd0 = within(x).getByTestId('example_desc0');
+        expect(xd0).toBeInTheDocument();
+        expect(xd0).toHaveTextContent(/basic usage\s*yields\s*true/);
 
-      const xc0 = within(x).getByTestId('example_code0');
-      expect(within(xc0).getByText("truthy('foo')")).toBeInTheDocument();
+        const xc0 = within(x).getByTestId('example_code0');
+        expect(within(xc0).getByText("truthy('foo')")).toBeInTheDocument();
+      });
     });
     it('renders global values', async () => {
       const msvValue = ['foo', 'bar', 'baz'];

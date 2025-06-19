@@ -1,5 +1,60 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.3.0
+
+### Minor Changes
+
+- 3cea7ee: **BREAKING CHANGES**
+
+  Because of the removal of the `logStream` property to the `ActionsContext` this has been removed from the `createMockActionContext` method.
+
+  You can remove this as it's no longer supported in the scaffolder actions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0
+  - @backstage/backend-test-utils@1.6.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/types@1.2.1
+
+## 0.3.0-next.2
+
+### Minor Changes
+
+- 3cea7ee: **BREAKING CHANGES**
+
+  Because of the removal of the `logStream` property to the `ActionsContext` this has been removed from the `createMockActionContext` method.
+
+  You can remove this as it's no longer supported in the scaffolder actions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0-next.2
+  - @backstage/backend-test-utils@1.6.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/types@1.2.1
+
+## 0.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.3-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/backend-test-utils@1.6.0-next.1
+  - @backstage/types@1.2.1
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.3-next.0
+  - @backstage/backend-test-utils@1.6.0-next.0
+  - @backstage/backend-plugin-api@1.4.0-next.0
+
 ## 0.2.2
 
 ### Patch Changes

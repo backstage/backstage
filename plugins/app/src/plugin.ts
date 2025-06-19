@@ -42,6 +42,7 @@ import { apis } from './defaultApis';
 /** @public */
 export const appPlugin = createFrontendPlugin({
   pluginId: 'app',
+  info: { packageJson: () => import('../package.json') },
   extensions: [
     ...apis,
     App,

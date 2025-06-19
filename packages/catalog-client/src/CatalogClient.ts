@@ -305,7 +305,7 @@ export class CatalogClient implements CatalogApi {
     );
 
     if (response.status !== 200) {
-      throw new Error(await response.text());
+      throw await ResponseError.fromResponse(response);
     }
   }
 
@@ -345,7 +345,7 @@ export class CatalogClient implements CatalogApi {
     );
 
     if (response.status !== 201) {
-      throw new Error(await response.text());
+      throw await ResponseError.fromResponse(response);
     }
 
     const { location, entities, exists } = await response.json();

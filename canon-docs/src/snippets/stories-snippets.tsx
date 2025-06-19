@@ -18,6 +18,7 @@ import * as LinkStories from '../../../packages/canon/src/components/Link/Link.s
 import * as AvatarStories from '../../../packages/canon/src/components/Avatar/Avatar.stories';
 import * as CollapsibleStories from '../../../packages/canon/src/components/Collapsible/Collapsible.stories';
 import * as TabsStories from '../../../packages/canon/src/components/Tabs/Tabs.stories';
+import * as SwitchStories from '../../../packages/canon/src/components/Switch/Switch.stories';
 
 export const BoxSnippet = ({ story }: { story: keyof typeof BoxStories }) => {
   const stories = composeStories(BoxStories);
@@ -169,6 +170,17 @@ export const CollapsibleSnippet = ({
 
 export const TabsSnippet = ({ story }: { story: keyof typeof TabsStories }) => {
   const stories = composeStories(TabsStories);
+  const StoryComponent = stories[story as keyof typeof stories];
+
+  return StoryComponent ? <StoryComponent /> : null;
+};
+
+export const SwitchSnippet = ({
+  story,
+}: {
+  story: keyof typeof SwitchStories;
+}) => {
+  const stories = composeStories(SwitchStories);
   const StoryComponent = stories[story as keyof typeof stories];
 
   return StoryComponent ? <StoryComponent /> : null;

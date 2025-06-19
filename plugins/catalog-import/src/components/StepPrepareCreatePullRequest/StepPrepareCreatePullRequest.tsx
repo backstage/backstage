@@ -227,9 +227,10 @@ export const StepPrepareCreatePullRequest = (
   return (
     <>
       <Typography>
-        You entered a link to a {analyzeResult.integrationType} repository but a{' '}
-        <code>{catalogFilename}</code> could not be found. Use this form to open
-        a Pull Request that creates one.
+        {t('stepPrepareCreatePullRequest.description', {
+          integrationType: analyzeResult.integrationType,
+          catalogFilename: <code>{catalogFilename}</code>,
+        })}
       </Typography>
 
       {!prDefaultsLoading && (

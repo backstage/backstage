@@ -8,7 +8,7 @@
 ## Sequences
 
 - `location_update_log_id_seq` (bigint)
-- `refresh_state_references_id_seq` (integer)
+- `refresh_state_references_id_seq` (bigint)
 
 ## Table `final_entities`
 
@@ -93,12 +93,12 @@
 
 ## Table `refresh_state_references`
 
-| Column              | Type      | Nullable | Max Length | Default                                                |
-| ------------------- | --------- | -------- | ---------- | ------------------------------------------------------ |
-| `id`                | `integer` | false    | -          | `nextval('refresh_state_references_id_seq'::regclass)` |
-| `source_entity_ref` | `text`    | true     | -          | -                                                      |
-| `source_key`        | `text`    | true     | -          | -                                                      |
-| `target_entity_ref` | `text`    | false    | -          | -                                                      |
+| Column              | Type     | Nullable | Max Length | Default                                                |
+| ------------------- | -------- | -------- | ---------- | ------------------------------------------------------ |
+| `id`                | `bigint` | false    | -          | `nextval('refresh_state_references_id_seq'::regclass)` |
+| `source_entity_ref` | `text`   | true     | -          | -                                                      |
+| `source_key`        | `text`   | true     | -          | -                                                      |
+| `target_entity_ref` | `text`   | false    | -          | -                                                      |
 
 ### Indices
 

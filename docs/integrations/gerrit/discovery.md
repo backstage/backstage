@@ -2,7 +2,6 @@
 id: discovery
 title: Gerrit Discovery
 sidebar_label: Discovery
-# prettier-ignore
 description: Automatically discovering catalog entities from Gerrit repositories
 ---
 

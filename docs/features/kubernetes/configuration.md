@@ -2,7 +2,6 @@
 id: configuration
 title: Configuring Kubernetes integration
 sidebar_label: Configuration
-# prettier-ignore
 description: Configuring the Kubernetes integration for Backstage expose your entity's objects
 ---
 
@@ -202,6 +201,28 @@ procedure like the
 or the
 [`AwsEKSClusterProcessor`](https://backstage.io/docs/reference/plugin-catalog-backend-module-aws.awseksclusterprocessor/)
 to automatically update the set of clusters tracked by Backstage.
+
+For this method to work any entity that would be using this `Resource` to help drive the Kubernetes details in the Catalog's Entity pages needs to have a `dependsOn` relationship setup. Here's a quick example:
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  annotations:
+    backstage.io/kubernetes-id: dice-roller
+    backstage.io/kubernetes-namespace: default
+  name: dice-roller
+  description: It rolls dice
+  tags:
+    - go
+spec:
+  type: service
+  lifecycle: production
+  owner: guest
+  dependsOn: ['resource:my-cluster']
+```
+
+This example assumes it's using the default namespace, if that's not the case for you then make sure to include it like this: `resource:my-namespace/my-cluster`.
 
 #### `config`
 
@@ -677,6 +698,7 @@ rules:
       - '*'
     resources:
       - pods
+      - pods/log
       - configmaps
       - services
       - deployments

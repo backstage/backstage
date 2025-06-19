@@ -26,6 +26,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useEffect, useState } from 'react';
 import { ComponentsGrid } from './ComponentsGrid';
 import { EntityRelationAggregation } from '../types';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { orgTranslationRef } from '../../../translation';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -83,6 +85,7 @@ export const OwnershipCard = (props: {
     hideRelationsToggle === undefined ? false : hideRelationsToggle;
   const classes = useStyles();
   const { entity } = useEntity();
+  const { t } = useTranslationRef(orgTranslationRef);
 
   const defaultRelationAggregation =
     entity.kind === 'User' ? 'aggregated' : 'direct';
@@ -98,7 +101,7 @@ export const OwnershipCard = (props: {
 
   return (
     <InfoCard
-      title="Ownership"
+      title={t('ownershipCard.title')}
       variant={variant}
       className={classes.card}
       cardClassName={classes.cardContent}
@@ -110,13 +113,19 @@ export const OwnershipCard = (props: {
             <ListItemSecondaryAction
               className={classes.listItemSecondaryAction}
             >
-              Direct Relations
+              {t('ownershipCard.aggregateRelationsToggle.directRelations')}
               <Tooltip
                 placement="top"
                 arrow
-                title={`${
-                  getRelationAggregation === 'direct' ? 'Direct' : 'Aggregated'
-                } Relations`}
+                title={
+                  getRelationAggregation === 'direct'
+                    ? t(
+                        'ownershipCard.aggregateRelationsToggle.directRelations',
+                      )
+                    : t(
+                        'ownershipCard.aggregateRelationsToggle.aggregatedRelations',
+                      )
+                }
               >
                 <Switch
                   color="primary"
@@ -129,10 +138,14 @@ export const OwnershipCard = (props: {
                     setRelationAggregation(updatedRelationAggregation);
                   }}
                   name="pin"
-                  inputProps={{ 'aria-label': 'Ownership Type Switch' }}
+                  inputProps={{
+                    'aria-label': t(
+                      'ownershipCard.aggregateRelationsToggle.ariaLabel',
+                    ),
+                  }}
                 />
               </Tooltip>
-              Aggregated Relations
+              {t('ownershipCard.aggregateRelationsToggle.aggregatedRelations')}
             </ListItemSecondaryAction>
           </ListItem>
         </List>

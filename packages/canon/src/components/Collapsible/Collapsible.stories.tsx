@@ -15,7 +15,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import { Collapsible } from './';
+import { Collapsible } from './Collapsible';
 import { Button } from '../Button';
 import { Box } from '../Box';
 import { Text } from '../Text';

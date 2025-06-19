@@ -71,20 +71,17 @@ const Content = () => {
       {selectedComponents.find(c => c === 'text') && (
         <Line content={<TextSnippet story="Playground" />} title="Text" />
       )}
-      {/* {selectedComponents.find(c => c === 'input') && (
-        <Line content={<InputPlayground />} title="Input" />
-      )} */}
     </Flex>
   );
 };
 
 const Line = ({ content, title }: { content: ReactNode; title: string }) => {
   return (
-    <Grid gap={{ xs: '2', md: '4' }}>
+    <Grid.Root gap={{ xs: '2', md: '4' }}>
       <Grid.Item colSpan="2">
         <Text>{title}</Text>
       </Grid.Item>
       <Grid.Item colSpan="10">{content}</Grid.Item>
-    </Grid>
+    </Grid.Root>
   );
 };
