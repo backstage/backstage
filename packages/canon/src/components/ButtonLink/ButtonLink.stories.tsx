@@ -15,14 +15,14 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import { Button } from './Button';
+import { ButtonLink } from './ButtonLink';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { Icon } from '../Icon';
 
 const meta = {
-  title: 'Components/Button',
-  component: Button,
+  title: 'Components/ButtonLink',
+  component: ButtonLink,
   argTypes: {
     size: {
       control: 'select',
@@ -33,7 +33,7 @@ const meta = {
       options: ['primary', 'secondary'],
     },
   },
-} satisfies Meta<typeof Button>;
+} satisfies Meta<typeof ButtonLink>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -45,24 +45,24 @@ export const Default: Story = {
 };
 
 export const Variants: Story = {
-  args: {
-    children: 'Button',
-  },
-  parameters: {
-    argTypes: {
-      variant: {
-        control: false,
-      },
-    },
-  },
   render: () => (
     <Flex align="center">
-      <Button iconStart={<Icon name="cloud" />} variant="primary">
+      <ButtonLink
+        iconStart={<Icon name="cloud" />}
+        variant="primary"
+        href="https://canon.backstage.io"
+        target="_blank"
+      >
         Button
-      </Button>
-      <Button iconStart={<Icon name="cloud" />} variant="secondary">
+      </ButtonLink>
+      <ButtonLink
+        iconStart={<Icon name="cloud" />}
+        variant="secondary"
+        href="https://canon.backstage.io"
+        target="_blank"
+      >
         Button
-      </Button>
+      </ButtonLink>
     </Flex>
   ),
 };
@@ -73,12 +73,12 @@ export const Sizes: Story = {
   },
   render: () => (
     <Flex align="center">
-      <Button size="small" iconStart={<Icon name="cloud" />}>
+      <ButtonLink size="small" iconStart={<Icon name="cloud" />}>
         Small
-      </Button>
-      <Button size="medium" iconStart={<Icon name="cloud" />}>
+      </ButtonLink>
+      <ButtonLink size="medium" iconStart={<Icon name="cloud" />}>
         Medium
-      </Button>
+      </ButtonLink>
     </Flex>
   ),
 };
@@ -89,9 +89,9 @@ export const WithIcons: Story = {
   },
   render: args => (
     <Flex align="center">
-      <Button {...args} iconStart={<Icon name="cloud" />} />
-      <Button {...args} iconEnd={<Icon name="chevron-right" />} />
-      <Button
+      <ButtonLink {...args} iconStart={<Icon name="cloud" />} />
+      <ButtonLink {...args} iconEnd={<Icon name="chevron-right" />} />
+      <ButtonLink
         {...args}
         iconStart={<Icon name="cloud" />}
         iconEnd={<Icon name="chevron-right" />}
@@ -106,9 +106,9 @@ export const FullWidth: Story = {
   },
   render: args => (
     <Flex direction="column" gap="4" style={{ width: '300px' }}>
-      <Button {...args} iconStart={<Icon name="cloud" />} />
-      <Button {...args} iconEnd={<Icon name="chevron-right" />} />
-      <Button
+      <ButtonLink {...args} iconStart={<Icon name="cloud" />} />
+      <ButtonLink {...args} iconEnd={<Icon name="chevron-right" />} />
+      <ButtonLink
         {...args}
         iconStart={<Icon name="cloud" />}
         iconEnd={<Icon name="chevron-right" />}
@@ -120,12 +120,12 @@ export const FullWidth: Story = {
 export const Disabled: Story = {
   render: () => (
     <Flex direction="row" gap="4">
-      <Button variant="primary" isDisabled>
+      <ButtonLink variant="primary" isDisabled>
         Primary
-      </Button>
-      <Button variant="secondary" isDisabled>
+      </ButtonLink>
+      <ButtonLink variant="secondary" isDisabled>
         Secondary
-      </Button>
+      </ButtonLink>
     </Flex>
   ),
 };
@@ -158,24 +158,24 @@ export const Playground: Story = {
           <Text>{variant}</Text>
           {sizes.map(size => (
             <Flex align="center" key={size}>
-              <Button variant={variant} size={size}>
+              <ButtonLink variant={variant} size={size}>
                 Button
-              </Button>
-              <Button
+              </ButtonLink>
+              <ButtonLink
                 iconStart={<Icon name="cloud" />}
                 variant={variant}
                 size={size}
               >
                 Button
-              </Button>
-              <Button
+              </ButtonLink>
+              <ButtonLink
                 iconEnd={<Icon name="chevron-right" />}
                 variant={variant}
                 size={size}
               >
                 Button
-              </Button>
-              <Button
+              </ButtonLink>
+              <ButtonLink
                 iconStart={<Icon name="cloud" />}
                 iconEnd={<Icon name="chevron-right" />}
                 style={{ width: '200px' }}
@@ -183,26 +183,26 @@ export const Playground: Story = {
                 size={size}
               >
                 Button
-              </Button>
-              <Button variant={variant} size={size} isDisabled>
+              </ButtonLink>
+              <ButtonLink variant={variant} size={size} isDisabled>
                 Button
-              </Button>
-              <Button
+              </ButtonLink>
+              <ButtonLink
                 iconStart={<Icon name="cloud" />}
                 variant={variant}
                 size={size}
                 isDisabled
               >
                 Button
-              </Button>
-              <Button
+              </ButtonLink>
+              <ButtonLink
                 iconEnd={<Icon name="chevron-right" />}
                 variant={variant}
                 size={size}
                 isDisabled
               >
                 Button
-              </Button>
+              </ButtonLink>
             </Flex>
           ))}
         </Flex>

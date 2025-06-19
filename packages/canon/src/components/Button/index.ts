@@ -14,22 +14,5 @@
  * limitations under the License.
  */
 
-import { Breakpoint } from '@backstage/canon';
-import { ReactElement, ReactNode } from 'react';
-import { ButtonProps as RAButtonProps } from 'react-aria-components';
-
-/**
- * Properties for {@link Button}
- *
- * @public
- */
-export interface ButtonProps extends RAButtonProps {
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-  variant?:
-    | 'primary'
-    | 'secondary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
-  iconStart?: ReactElement;
-  iconEnd?: ReactElement;
-  children?: ReactNode;
-}
+export * from './Button';
+export * from './types';

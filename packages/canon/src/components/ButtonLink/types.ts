@@ -16,14 +16,14 @@
 
 import { Breakpoint } from '@backstage/canon';
 import { ReactElement, ReactNode } from 'react';
-import { ButtonProps as RAButtonProps } from 'react-aria-components';
+import { LinkProps as RALinkProps } from 'react-aria-components';
 
 /**
- * Properties for {@link Button}
+ * Properties for {@link ButtonLink}
  *
  * @public
  */
-export interface ButtonProps extends RAButtonProps {
+export interface ButtonLinkProps extends RALinkProps {
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   variant?:
     | 'primary'
