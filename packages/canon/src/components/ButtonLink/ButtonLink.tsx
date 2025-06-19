@@ -44,25 +44,9 @@ export const ButtonLink = forwardRef(
         ref={ref}
         {...rest}
       >
-        {iconStart && (
-          <span
-            className="canon-ButtonIcon"
-            aria-hidden="true"
-            data-size={responsiveSize}
-          >
-            {iconStart}
-          </span>
-        )}
+        {iconStart}
         {children}
-        {iconEnd && (
-          <span
-            className="canon-ButtonIcon"
-            aria-hidden="true"
-            data-size={responsiveSize}
-          >
-            {iconEnd}
-          </span>
-        )}
+        {iconEnd}
       </RALink>
     );
   },

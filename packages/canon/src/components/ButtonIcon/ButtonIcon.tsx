@@ -35,8 +35,6 @@ export const ButtonIcon = forwardRef(
     const responsiveSize = useResponsiveValue(size);
     const responsiveVariant = useResponsiveValue(variant);
 
-    console.log(clsx('canon-Button', 'canon-ButtonIcon', className));
-
     return (
       <RAButton
         className={clsx('canon-Button', 'canon-ButtonIcon', className)}

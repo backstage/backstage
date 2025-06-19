@@ -45,22 +45,22 @@ export const Default: Story = {
 };
 
 export const Variants: Story = {
-  args: {
-    children: 'Button',
-  },
-  parameters: {
-    argTypes: {
-      variant: {
-        control: false,
-      },
-    },
-  },
   render: () => (
     <Flex align="center">
-      <ButtonLink iconStart={<Icon name="cloud" />} variant="primary">
+      <ButtonLink
+        iconStart={<Icon name="cloud" />}
+        variant="primary"
+        href="https://canon.backstage.io"
+        target="_blank"
+      >
         Button
       </ButtonLink>
-      <ButtonLink iconStart={<Icon name="cloud" />} variant="secondary">
+      <ButtonLink
+        iconStart={<Icon name="cloud" />}
+        variant="secondary"
+        href="https://canon.backstage.io"
+        target="_blank"
+      >
         Button
       </ButtonLink>
     </Flex>

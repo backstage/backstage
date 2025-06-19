@@ -16,7 +16,14 @@ export const buttonPropDefs: Record<string, PropDef> = {
   },
   iconStart: { type: 'enum', values: ['ReactNode'], responsive: false },
   iconEnd: { type: 'enum', values: ['ReactNode'], responsive: false },
+  isDisabled: { type: 'boolean', default: 'false', responsive: false },
   children: { type: 'enum', values: ['ReactNode'], responsive: false },
+  type: {
+    type: 'enum',
+    values: ['button', 'submit', 'reset'],
+    default: 'button',
+    responsive: false,
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };
@@ -32,9 +39,6 @@ export const buttonVariantsSnippet = `<Flex align="center">
   <Button iconStart="cloud" variant="secondary">
     Button
   </Button>
-  <Button iconStart="cloud" variant="tertiary">
-    Button
-  </Button>
 </Flex>`;
 
 export const buttonSizesSnippet = `<Flex align="center">
@@ -43,20 +47,16 @@ export const buttonSizesSnippet = `<Flex align="center">
 </Flex>`;
 
 export const buttonIconsSnippet = `<Flex align="center">
-  <Button iconStart="cloud">Button</Button>
-  <Button iconEnd="chevronRight">Button</Button>
-  <Button iconStart="cloud" iconEnd="chevronRight">Button</Button>
-</Flex>`;
-
-export const buttonFullWidthSnippet = `<Flex direction="column" gap="4" style={{ width: '300px' }}>
-  <Button fullWidth>Full width</Button>
+  <Button iconStart={<Icon name="cloud" />}>Button</Button>
+  <Button iconEnd={<Icon name="chevronRight" />}>Button</Button>
+  <Button iconStart={<Icon name="cloud" />} iconEnd={<Icon name="chevronRight" />}>Button</Button>
 </Flex>`;
 
 export const buttonDisabledSnippet = `<Flex gap="4">
-  <Button variant="primary" disabled>
+  <Button variant="primary" isDisabled>
     Primary
   </Button>
-  <Button variant="secondary" disabled>
+  <Button variant="secondary" isDisabled>
     Secondary
   </Button>
 </Flex>`;
@@ -65,12 +65,8 @@ export const buttonResponsiveSnippet = `<Button variant={{ initial: 'primary', l
   Responsive Button
 </Button>`;
 
-export const buttonAsLinkSnippet = `// Using the \`as\` prop
-<Button as="a" href="https://canon.backstage.io" target="_blank">
-  I am a link
-</Button>
+export const buttonAsLinkSnippet = `import { ButtonLink } from '@backstage/canon';
 
-// Using a custom component
-<Button as={Link} to="/">
-  I am a using a custom component
-</Button>`;
+<ButtonLink href="https://canon.backstage.io" target="_blank">
+  Button
+</ButtonLink>`;

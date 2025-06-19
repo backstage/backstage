@@ -1,14 +1,13 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { ButtonSnippet } from '@/snippets/stories-snippets';
+import { ButtonSnippet, ButtonLinkSnippet } from '@/snippets/stories-snippets';
 import {
   buttonPropDefs,
   buttonSnippetUsage,
   buttonVariantsSnippet,
   buttonSizesSnippet,
   buttonIconsSnippet,
-  buttonFullWidthSnippet,
   buttonDisabledSnippet,
   buttonResponsiveSnippet,
   buttonAsLinkSnippet,
@@ -74,18 +73,6 @@ Here's a view when buttons have icons.
   code={buttonIconsSnippet}
 />
 
-### Full width
-
-Here's a view when buttons are full width.
-
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<ButtonSnippet story="FullWidth" />}
-  code={buttonFullWidthSnippet}
-/>
-
 ### Disabled
 
 Here's a view when buttons are disabled.
@@ -106,12 +93,12 @@ Here's a view when buttons are responsive.
 
 ### As Link
 
-You can use the `as` prop to make a button act as a link.
+If you want to use a button as a link, please use the `ButtonLink` component.
 
 <Snippet
   align="center"
   py={4}
   open
-  preview={<ButtonSnippet story="AsLink" />}
+  preview={<ButtonLinkSnippet story="Variants" />}
   code={buttonAsLinkSnippet}
 />

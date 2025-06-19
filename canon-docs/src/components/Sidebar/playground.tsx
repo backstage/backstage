@@ -38,9 +38,7 @@ export const Playground = () => {
 
   return (
     <motion.div
-      className={`${styles.section} ${
-        isPlayground ? styles.playgroundSection : ''
-      }`}
+      className={styles.section}
       animate={{
         opacity: isPlayground ? 1 : 0,
         x: isPlayground ? 0 : 20,
@@ -52,6 +50,7 @@ export const Playground = () => {
         visibility: isPlayground ? 'visible' : 'hidden',
       }}
       transition={{ duration: 0.2 }}
+      style={{ position: 'absolute' }}
     >
       <div className={styles.sectionTitle}>Components</div>
       {components.map(({ slug, title }) => (
