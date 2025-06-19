@@ -18,7 +18,6 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { IconButton } from './IconButton';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
-import { IconButtonProps } from './types';
 import { Icon } from '../Icon';
 
 const meta = {
@@ -105,7 +104,8 @@ export const Responsive: Story = {
   render: args => <IconButton {...args} icon={<Icon name="cloud" />} />,
 };
 
-const variants: string[] = ['primary', 'secondary'];
+const variants = ['primary', 'secondary'] as const;
+const sizes = ['small', 'medium'] as const;
 
 export const Playground: Story = {
   render: args => (
@@ -113,27 +113,27 @@ export const Playground: Story = {
       {variants.map(variant => (
         <Flex direction="column" key={variant}>
           <Text>{variant}</Text>
-          {['small', 'medium'].map(size => (
+          {sizes.map(size => (
             <Flex align="center" key={size}>
               <IconButton
                 {...args}
-                variant={variant as IconButtonProps<any>['variant']}
-                size={size as IconButtonProps<any>['size']}
+                variant={variant}
+                size={size}
                 icon={<Icon name="cloud" />}
               />
               <IconButton
                 {...args}
                 icon={<Icon name="chevron-right" />}
                 aria-label="Chevron right icon button"
-                variant={variant as IconButtonProps<any>['variant']}
-                size={size as IconButtonProps<any>['size']}
+                variant={variant}
+                size={size}
               />
               <IconButton
                 {...args}
                 icon={<Icon name="chevron-right" />}
                 aria-label="Chevron right icon button"
-                variant={variant as IconButtonProps<any>['variant']}
-                size={size as IconButtonProps<any>['size']}
+                variant={variant}
+                size={size}
               />
             </Flex>
           ))}
