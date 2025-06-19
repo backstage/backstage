@@ -38,6 +38,7 @@ export * from './components/Checkbox';
 export * from './components/Collapsible';
 export * from './components/DataTable';
 export * from './components/FieldLabel';
+export * from './components/FieldError';
 export * from './components/Heading';
 export * from './components/Icon';
 export * from './components/Link';

@@ -97,16 +97,28 @@ export const Disabled: Story = {
 export const WithIcon: Story = {
   args: {
     ...Default.args,
-    defaultValue: 'Search...',
-    icon: <Icon name="search" />,
   },
+  render: args => (
+    <TextField
+      {...args}
+      icon={<Icon name="search" />}
+      defaultValue="Search..."
+    />
+  ),
 };
 
 export const DisabledWithIcon: Story = {
   args: {
-    ...WithIcon.args,
-    isDisabled: true,
+    ...Default.args,
   },
+  render: args => (
+    <TextField
+      {...args}
+      icon={<Icon name="search" />}
+      defaultValue="Search..."
+      isDisabled
+    />
+  ),
 };
 
 export const ShowError: Story = {

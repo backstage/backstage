@@ -18,10 +18,10 @@ import { forwardRef, useEffect } from 'react';
 import {
   RadioGroup as AriaRadioGroup,
   Radio as AriaRadio,
-  FieldError,
 } from 'react-aria-components';
 import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
+import { FieldError } from '../FieldError';
 
 import type { RadioGroupProps, RadioProps } from './types';
 
@@ -66,7 +66,7 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
           description={description}
         />
         <div className="canon-RadioGroupContent">{children}</div>
-        <FieldError className="canon-TextFieldError" />
+        <FieldError />
       </AriaRadioGroup>
     );
   },

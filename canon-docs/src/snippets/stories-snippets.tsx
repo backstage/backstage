@@ -18,6 +18,7 @@ import * as MenuStories from '../../../packages/canon/src/components/Menu/Menu.s
 import * as LinkStories from '../../../packages/canon/src/components/Link/Link.stories';
 import * as AvatarStories from '../../../packages/canon/src/components/Avatar/Avatar.stories';
 import * as CollapsibleStories from '../../../packages/canon/src/components/Collapsible/Collapsible.stories';
+import * as RadioGroupStories from '../../../packages/canon/src/components/RadioGroup/RadioGroup.stories';
 import * as TabsStories from '../../../packages/canon/src/components/Tabs/Tabs.stories';
 import * as SwitchStories from '../../../packages/canon/src/components/Switch/Switch.stories';
 
@@ -193,6 +194,17 @@ export const SwitchSnippet = ({
   story: keyof typeof SwitchStories;
 }) => {
   const stories = composeStories(SwitchStories);
+  const StoryComponent = stories[story as keyof typeof stories];
+
+  return StoryComponent ? <StoryComponent /> : null;
+};
+
+export const RadioGroupSnippet = ({
+  story,
+}: {
+  story: keyof typeof RadioGroupStories;
+}) => {
+  const stories = composeStories(RadioGroupStories);
   const StoryComponent = stories[story as keyof typeof stories];
 
   return StoryComponent ? <StoryComponent /> : null;

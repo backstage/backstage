@@ -15,14 +15,11 @@
  */
 
 import { forwardRef, useEffect } from 'react';
-import {
-  Input,
-  TextField as AriaTextField,
-  FieldError,
-} from 'react-aria-components';
+import { Input, TextField as AriaTextField } from 'react-aria-components';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
+import { FieldError } from '../FieldError';
 
 import type { TextFieldProps } from './types';
 
@@ -86,7 +83,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
             {...(icon && { 'data-icon': true })}
           />
         </div>
-        <FieldError className="canon-TextFieldError" />
+        <FieldError />
       </AriaTextField>
     );
   },
