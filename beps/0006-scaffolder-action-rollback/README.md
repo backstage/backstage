@@ -151,8 +151,8 @@ Example usage:
 ```typescript
 // Repository creation with rollback
 await ctx.checkpoint(
-  'repository-created',
-  async () => {
+  key: 'repository-created',
+  fn: async () => {
     const { owner, repo } = ctx.input;
     const repository = await githubClient.repos.create({ owner, repo });
     return {
@@ -161,7 +161,8 @@ await ctx.checkpoint(
       repo,
     };
   },
-  async ({ data }) => {
+  // Optional rollback function where data represents the data saved by the checkpoint
+  rollback: async ({ data }) => {
     // Rollback function using saved checkpoint data
     const { owner, repo } = data;
 
