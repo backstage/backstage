@@ -24,6 +24,7 @@ import {
   TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
+import path from 'node:path';
 import { createPublishGithubPullRequestAction } from './githubPullRequest';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
@@ -304,16 +305,13 @@ describe('createPublishGithubPullRequestAction', () => {
     });
   });
 
-  describe('with deletionMarker', () => {
-    const deletionMarker =
-      'if-you-find-a-file-whose-contents-matches-this-delete-it';
-
+  describe('with filesToDelete', () => {
     let input: GithubPullRequestActionInput;
     let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
-        deletionMarker,
+        filesToDelete: ['changed-file-to-delete.txt', 'delete-me-too.md'],
         repoUrl: 'github.com?owner=myorg&repo=myrepo',
         title: 'Create my new app',
         branchName: 'new-app',
@@ -323,6 +321,7 @@ describe('createPublishGithubPullRequestAction', () => {
       mockDir.setContent({
         [workspacePath]: {
           'catpants.md': 'cat + pants',
+          'changed-file-to-delete.txt': 'file is changed and deleted',
           'foobar.txt': 'Hello there!',
         },
       });
@@ -330,7 +329,7 @@ describe('createPublishGithubPullRequestAction', () => {
       ctx = createMockActionContext({ input, workspacePath });
     });
 
-    it('should create a pull request when no files match the marker', async () => {
+    it('should delete named files', async () => {
       await instance.handler(ctx);
 
       expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
@@ -353,25 +352,37 @@ describe('createPublishGithubPullRequestAction', () => {
                 encoding: 'base64',
                 mode: '100644',
               },
+              'changed-file-to-delete.txt': DELETE_FILE,
+              'delete-me-too.md': DELETE_FILE,
             },
           },
         ],
       });
     });
 
-    describe('when files are marked for deletion', () => {
+    describe('with targetPath', () => {
+      const targetPath = `target-path-${Date.now()}`;
+
       beforeEach(() => {
+        Object.assign(input, {
+          filesToDelete: [
+            path.posix.join('nested', 'catpants.md'),
+            path.posix.join('nested', 'delete-me.too'),
+          ],
+          targetPath,
+        });
+
         mockDir.setContent({
           [workspacePath]: {
-            'foo.txt': 'Hello there!',
-            'im-here-to-be-deleted': deletionMarker,
-            'baz.txt': 'baz text',
-            'delete-me-too': deletionMarker,
+            'catpants.md': 'cat + pants',
+            'foobar.txt': 'Hello there!',
+            [path.posix.join('nested', 'catpants.md')]: 'delete me',
+            [path.posix.join('nested', 'delete-me.too')]: 'delete me too',
           },
         });
       });
 
-      it('should delete marked files', async () => {
+      it('should delete named files', async () => {
         await instance.handler(ctx);
 
         expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
@@ -384,18 +395,20 @@ describe('createPublishGithubPullRequestAction', () => {
             {
               commit: input.title,
               files: {
-                'foo.txt': {
+                [path.posix.join(targetPath, 'catpants.md')]: {
+                  content: Buffer.from('cat + pants').toString('base64'),
+                  encoding: 'base64',
+                  mode: '100644',
+                },
+                [path.posix.join(targetPath, 'foobar.txt')]: {
                   content: Buffer.from('Hello there!').toString('base64'),
                   encoding: 'base64',
                   mode: '100644',
                 },
-                'im-here-to-be-deleted': DELETE_FILE,
-                'baz.txt': {
-                  content: Buffer.from('baz text').toString('base64'),
-                  encoding: 'base64',
-                  mode: '100644',
-                },
-                'delete-me-too': DELETE_FILE,
+                [path.posix.join(targetPath, 'nested', 'catpants.md')]:
+                  DELETE_FILE,
+                [path.posix.join(targetPath, 'nested', 'delete-me.too')]:
+                  DELETE_FILE,
               },
             },
           ],

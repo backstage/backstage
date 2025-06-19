@@ -446,7 +446,7 @@ export const createPublishGithubPullRequestAction: (
     branchName: string;
     title: string;
     description: string;
-    deletionMarker?: string | undefined;
+    filesToDelete?: string[] | undefined;
     targetBranchName?: string | undefined;
     draft?: boolean | undefined;
     sourcePath?: string | undefined;
