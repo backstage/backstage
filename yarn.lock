@@ -3182,6 +3182,7 @@ __metadata:
     "@types/d3-selection": "npm:^3.0.1"
     "@types/d3-shape": "npm:^3.0.1"
     "@types/d3-zoom": "npm:^3.0.1"
+    "@types/fscreen": "npm:^1"
     "@types/google-protobuf": "npm:^3.7.2"
     "@types/react": "npm:^18.0.0"
     "@types/react-helmet": "npm:^6.1.0"
@@ -3207,6 +3208,7 @@ __metadata:
     rc-progress: "npm:3.5.1"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
+    react-full-screen: "npm:^1.1.1"
     react-helmet: "npm:6.1.0"
     react-hook-form: "npm:^7.12.2"
     react-idle-timer: "npm:5.7.2"
@@ -20266,6 +20268,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/fscreen@npm:^1":
+  version: 1.0.4
+  resolution: "@types/fscreen@npm:1.0.4"
+  checksum: 10/78459a457ce7a6b7d72a5f17fdb54bbeb93c58ab77fd2858aac610fed2435bc4be9e5d2fb9883b6669b7f3a1204115cc2be59a027ab937ee8b5186225d2ea53d
+  languageName: node
+  linkType: hard
+
 "@types/git-url-parse@npm:^9.0.0":
   version: 9.0.3
   resolution: "@types/git-url-parse@npm:9.0.3"
@@ -31290,6 +31299,13 @@ __metadata:
   version: 1.0.0
   resolution: "fs.realpath@npm:1.0.0"
   checksum: 10/e703107c28e362d8d7b910bbcbfd371e640a3bb45ae157a362b5952c0030c0b6d4981140ec319b347bce7adc025dd7813da1ff908a945ac214d64f5402a51b96
+  languageName: node
+  linkType: hard
+
+"fscreen@npm:^1.0.2":
+  version: 1.2.0
+  resolution: "fscreen@npm:1.2.0"
+  checksum: 10/ac50f9ac52a157b8fe6aaecdf9efa7c1cfa90b42a76c3bc6b85372fab05c5a9cd72c1b7f4c2e273eba1a0e630e381fd72ae135fcc57acd05a0943d5d0c21b451
   languageName: node
   linkType: hard
 
@@ -42820,6 +42836,17 @@ __metadata:
   version: 3.2.0
   resolution: "react-fast-compare@npm:3.2.0"
   checksum: 10/26ed35d425f197f04c85d572eac943d901a2713335b79483d4f3f94ee5caf97f20678f89bedd385ace9b1637890c88fc5442d732bad0871135643d9703312cd7
+  languageName: node
+  linkType: hard
+
+"react-full-screen@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "react-full-screen@npm:1.1.1"
+  dependencies:
+    fscreen: "npm:^1.0.2"
+  peerDependencies:
+    react: ">= 16.8.0"
+  checksum: 10/70ad927b9d6c485ac46b5bb4b1639ef9a860da28290b3a1c419c42b9c427d78b80e8dba403eb6451458af56838012c81d5e12ef05097395f154defc32fe06c34
   languageName: node
   linkType: hard
 
