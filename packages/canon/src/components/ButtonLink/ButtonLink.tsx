@@ -16,13 +16,13 @@
 
 import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
-import { Button as RAButton } from 'react-aria-components';
+import { Link as RALink } from 'react-aria-components';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
-import type { ButtonProps } from './types';
+import type { ButtonLinkProps } from './types';
 
 /** @public */
-export const Button = forwardRef(
-  (props: ButtonProps, ref: Ref<HTMLButtonElement>) => {
+export const ButtonLink = forwardRef(
+  (props: ButtonLinkProps, ref: Ref<HTMLAnchorElement>) => {
     const {
       size = 'small',
       variant = 'primary',
@@ -37,8 +37,8 @@ export const Button = forwardRef(
     const responsiveVariant = useResponsiveValue(variant);
 
     return (
-      <RAButton
-        className={clsx('canon-Button', className)}
+      <RALink
+        className={clsx('canon-Button', 'canon-ButtonLink', className)}
         data-variant={responsiveVariant}
         data-size={responsiveSize}
         ref={ref}
@@ -47,9 +47,9 @@ export const Button = forwardRef(
         {iconStart}
         {children}
         {iconEnd}
-      </RAButton>
+      </RALink>
     );
   },
 );
 
-Button.displayName = 'Button';
+ButtonLink.displayName = 'ButtonLink';

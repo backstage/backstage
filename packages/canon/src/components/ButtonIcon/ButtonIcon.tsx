@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
 import clsx from 'clsx';
+import { forwardRef, Ref } from 'react';
+import { Button as RAButton } from 'react-aria-components';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
-
-import type { IconButtonProps } from './types';
+import type { ButtonIconProps } from './types';
 
 /** @public */
-export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
-  (props: IconButtonProps, ref) => {
+export const ButtonIcon = forwardRef(
+  (props: ButtonIconProps, ref: Ref<HTMLButtonElement>) => {
     const {
       size = 'small',
       variant = 'primary',
@@ -36,24 +36,17 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
     const responsiveVariant = useResponsiveValue(variant);
 
     return (
-      <button
-        ref={ref}
-        className={clsx('canon-IconButton', className)}
-        data-size={responsiveSize}
+      <RAButton
+        className={clsx('canon-Button', 'canon-ButtonIcon', className)}
         data-variant={responsiveVariant}
-        style={style}
+        data-size={responsiveSize}
+        ref={ref}
         {...rest}
       >
-        <span
-          className="canon-IconButtonIcon"
-          aria-hidden="true"
-          data-size={responsiveSize}
-        >
-          {icon}
-        </span>
-      </button>
+        {icon}
+      </RAButton>
     );
   },
 );
 
-export default IconButton;
+ButtonIcon.displayName = 'ButtonIcon';

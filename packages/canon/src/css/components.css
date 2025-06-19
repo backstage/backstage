@@ -17,6 +17,7 @@
 @import '../components/Avatar/Avatar.styles.css';
 @import '../components/Box/styles.css';
 @import '../components/Button/styles.css';
+@import '../components/ButtonIcon/styles.css';
 @import '../components/Checkbox/styles.css';
 @import '../components/Collapsible/Collapsible.styles.css';
 @import '../components/Container/styles.css';
@@ -27,7 +28,6 @@
 @import '../components/Grid/styles.css';
 @import '../components/Heading/styles.css';
 @import '../components/Icon/styles.css';
-@import '../components/IconButton/styles.css';
 @import '../components/Link/styles.css';
 @import '../components/Menu/Menu.styles.css';
 @import '../components/Table/styles.css';

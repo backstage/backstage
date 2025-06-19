@@ -5,6 +5,7 @@
 ```ts
 import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
 import { Breakpoint as Breakpoint_2 } from '@backstage/canon';
+import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
 import { ChangeEvent } from 'react';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
 import { ComponentProps } from 'react';
@@ -152,36 +153,42 @@ export const breakpoints: Breakpoint[];
 
 // @public (undocumented)
 export const Button: ForwardRefExoticComponent<
-  Omit<ButtonProps, 'ref'> & RefAttributes<HTMLButtonElement>
+  ButtonProps & RefAttributes<HTMLButtonElement>
 >;
 
 // @public (undocumented)
-export type ButtonOwnProps = GetPropDefTypes<typeof buttonPropDefs>;
-
-// @public (undocumented)
-export const buttonPropDefs: {
-  variant: {
-    type: 'enum';
-    values: ('primary' | 'secondary')[];
-    className: string;
-    default: 'primary';
-    responsive: true;
-  };
-  size: {
-    type: 'enum';
-    values: ('small' | 'medium')[];
-    className: string;
-    default: 'medium';
-    responsive: true;
-  };
-};
+export const ButtonIcon: ForwardRefExoticComponent<
+  ButtonIconProps & RefAttributes<HTMLButtonElement>
+>;
 
 // @public
-export interface ButtonProps extends useRender.ComponentProps<'button'> {
+export interface ButtonIconProps extends ButtonProps_2 {
+  // (undocumented)
+  icon?: ReactElement;
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  // (undocumented)
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
+}
+
+// @public
+export interface ButtonProps extends ButtonProps_2 {
+  // (undocumented)
+  children?: ReactNode;
+  // (undocumented)
   iconEnd?: ReactElement;
+  // (undocumented)
   iconStart?: ReactElement;
-  size?: ButtonOwnProps['size'];
-  variant?: ButtonOwnProps['variant'];
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  // (undocumented)
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
 }
 
 // @public (undocumented)
@@ -690,40 +697,6 @@ export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
 
 // @public (undocumented)
 export const Icon: (props: IconProps) => JSX_2.Element | null;
-
-// @public (undocumented)
-export const IconButton: ForwardRefExoticComponent<
-  IconButtonProps & RefAttributes<HTMLButtonElement>
->;
-
-// @public (undocumented)
-export type IconButtonOwnProps = GetPropDefTypes<typeof iconButtonPropDefs>;
-
-// @public (undocumented)
-export const iconButtonPropDefs: {
-  variant: {
-    type: 'enum';
-    values: ('primary' | 'secondary')[];
-    className: string;
-    default: 'primary';
-    responsive: true;
-  };
-  size: {
-    type: 'enum';
-    values: ('small' | 'medium')[];
-    className: string;
-    default: 'medium';
-    responsive: true;
-  };
-};
-
-// @public
-export interface IconButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  icon: ReactElement;
-  size?: IconButtonOwnProps['size'];
-  variant?: IconButtonOwnProps['variant'];
-}
 
 // @public (undocumented)
 export const IconContext: Context<IconContextProps>;

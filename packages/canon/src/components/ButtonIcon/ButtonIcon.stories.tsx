@@ -15,15 +15,14 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import { IconButton } from './IconButton';
+import { ButtonIcon } from './ButtonIcon';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
-import { IconButtonProps } from './types';
 import { Icon } from '../Icon';
 
 const meta = {
-  title: 'Components/IconButton',
-  component: IconButton,
+  title: 'Components/ButtonIcon',
+  component: ButtonIcon,
   argTypes: {
     size: {
       control: 'select',
@@ -34,59 +33,44 @@ const meta = {
       options: ['primary', 'secondary'],
     },
   },
-} satisfies Meta<typeof IconButton>;
+} satisfies Meta<typeof ButtonIcon>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    icon: <Icon name="cloud" />,
-  },
+  render: () => <ButtonIcon icon={<Icon name="cloud" />} />,
 };
 
 export const Variants: Story = {
-  args: {
-    ...Default.args,
-  },
-  render: args => (
+  render: () => (
     <Flex align="center" gap="2">
-      <IconButton {...args} variant="primary" />
-      <IconButton {...args} variant="secondary" />
+      <ButtonIcon icon={<Icon name="cloud" />} variant="primary" />
+      <ButtonIcon icon={<Icon name="cloud" />} variant="secondary" />
     </Flex>
   ),
 };
 
 export const Sizes: Story = {
-  args: {
-    icon: <Icon name="cloud" />,
-  },
-  render: args => (
+  render: () => (
     <Flex align="center" gap="2">
-      <IconButton {...args} size="small" />
-      <IconButton {...args} size="medium" />
+      <ButtonIcon icon={<Icon name="cloud" />} size="small" />
+      <ButtonIcon icon={<Icon name="cloud" />} size="medium" />
     </Flex>
   ),
 };
 
 export const Disabled: Story = {
-  args: {
-    icon: <Icon name="cloud" />,
-    disabled: true,
-    'aria-label': 'Cloud icon button',
-  },
-  render: args => (
+  render: () => (
     <Flex direction="row" gap="2">
-      <IconButton {...args} variant="primary" />
-      <IconButton {...args} variant="secondary" />
+      <ButtonIcon isDisabled icon={<Icon name="cloud" />} variant="primary" />
+      <ButtonIcon isDisabled icon={<Icon name="cloud" />} variant="secondary" />
     </Flex>
   ),
 };
 
 export const Responsive: Story = {
   args: {
-    icon: <Icon name="cloud" />,
-    'aria-label': 'Cloud icon button',
     variant: {
       initial: 'primary',
       sm: 'secondary',
@@ -96,40 +80,39 @@ export const Responsive: Story = {
       sm: 'medium',
     },
   },
+  render: args => <ButtonIcon {...args} icon={<Icon name="cloud" />} />,
 };
 
-const variants: string[] = ['primary', 'secondary'];
+const variants = ['primary', 'secondary'] as const;
+const sizes = ['small', 'medium'] as const;
 
 export const Playground: Story = {
-  args: {
-    icon: <Icon name="cloud" />,
-    'aria-label': 'Cloud icon button',
-  },
   render: args => (
     <Flex direction="column">
       {variants.map(variant => (
         <Flex direction="column" key={variant}>
           <Text>{variant}</Text>
-          {['small', 'medium'].map(size => (
+          {sizes.map(size => (
             <Flex align="center" key={size}>
-              <IconButton
+              <ButtonIcon
                 {...args}
-                variant={variant as IconButtonProps['variant']}
-                size={size as IconButtonProps['size']}
+                variant={variant}
+                size={size}
+                icon={<Icon name="cloud" />}
               />
-              <IconButton
+              <ButtonIcon
                 {...args}
                 icon={<Icon name="chevron-right" />}
                 aria-label="Chevron right icon button"
-                variant={variant as IconButtonProps['variant']}
-                size={size as IconButtonProps['size']}
+                variant={variant}
+                size={size}
               />
-              <IconButton
+              <ButtonIcon
                 {...args}
                 icon={<Icon name="chevron-right" />}
                 aria-label="Chevron right icon button"
-                variant={variant as IconButtonProps['variant']}
-                size={size as IconButtonProps['size']}
+                variant={variant}
+                size={size}
               />
             </Flex>
           ))}

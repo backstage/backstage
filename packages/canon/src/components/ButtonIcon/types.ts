@@ -14,30 +14,20 @@
  * limitations under the License.
  */
 
-import type { IconButtonOwnProps } from './IconButton.props';
+import { Breakpoint } from '@backstage/canon';
 import { ReactElement } from 'react';
+import { ButtonProps as RAButtonProps } from 'react-aria-components';
 
 /**
- * Properties for {@link IconButton}
+ * Properties for {@link ButtonIcon}
  *
  * @public
  */
-export interface IconButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  /**
-   * The size of the button
-   * @defaultValue 'medium'
-   */
-  size?: IconButtonOwnProps['size'];
-
-  /**
-   * The visual variant of the button
-   * @defaultValue 'primary'
-   */
-  variant?: IconButtonOwnProps['variant'];
-
-  /**
-   * Icon to display in the button
-   */
-  icon: ReactElement;
+export interface ButtonIconProps extends RAButtonProps {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+  icon?: ReactElement;
 }
