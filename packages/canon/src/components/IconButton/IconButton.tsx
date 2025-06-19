@@ -45,7 +45,7 @@ export const IconButton = forwardRef(
 
     return (
       <Component
-        className={clsx('canon-Button', className)}
+        className={clsx('canon-IconButton', className)}
         data-variant={responsiveVariant}
         data-size={responsiveSize}
         ref={ref}
