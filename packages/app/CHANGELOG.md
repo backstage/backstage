@@ -1,5 +1,13 @@
 # example-app
 
+## 0.2.111
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.13.1
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.25
+
 ## 0.2.110
 
 ### Patch Changes
