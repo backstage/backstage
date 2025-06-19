@@ -140,7 +140,7 @@ The checkpoint API will be extended to include an optional rollback function tha
 async checkpoint<T>(
   key: string,
   fn: () => Promise<T>,
-  rollback?: (data: T) => Promise<void>
+  rollback?: (opts: { data: T }) => Promise<void>
 ): Promise<T>;
 ```
 
@@ -161,9 +161,14 @@ await ctx.checkpoint(
       repo,
     };
   },
-  async data => {
+  async ({ data }) => {
     // Rollback function using saved checkpoint data
     const { owner, repo } = data;
+
+    ctx.logger.info('Rolling back repository creation', {
+      id: data.repository.id,
+    });
+
     await githubClient.repos.delete({ owner, repo });
   },
 );
@@ -212,7 +217,7 @@ The implementation will ensure that:
 // Pseudo-code for rollback execution
 for (const checkpoint of completedCheckpointsWithRollback.reverse()) {
   try {
-    await checkpoint.rollback(checkpoint.data);
+    await checkpoint.rollback?.(checkpoint.data);
     logger.info(`Successfully rolled back checkpoint: ${checkpoint.key}`);
   } catch (error) {
     logger.error(`Failed to rollback checkpoint ${checkpoint.key}: ${error}`);
