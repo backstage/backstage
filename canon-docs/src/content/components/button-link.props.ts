@@ -36,10 +36,10 @@ export const buttonLinkSnippetUsage = `import { ButtonLink } from '@backstage/ca
 <ButtonLink />`;
 
 export const buttonLinkVariantsSnippet = `<Flex align="center">
-  <ButtonLink iconStart="cloud" variant="primary">
+  <ButtonLink iconStart={<Icon name="cloud" />} variant="primary">
     Button
   </ButtonLink>
-  <ButtonLink iconStart="cloud" variant="secondary">
+  <ButtonLink iconStart={<Icon name="cloud" />} variant="secondary">
     Button
   </ButtonLink>
 </Flex>`;

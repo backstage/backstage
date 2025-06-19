@@ -48,7 +48,7 @@ export const buttonIconSizesSnippet = `<Flex align="center">
   <ButtonIcon icon={<Icon name="cloud" />} size="medium" />
 </Flex>`;
 
-export const buttonIconDisabledSnippet = `<ButtonIcon icon={<Icon name="cloud" />} disabled />`;
+export const buttonIconDisabledSnippet = `<ButtonIcon icon={<Icon name="cloud" />} isDisabled />`;
 
 export const buttonIconResponsiveSnippet = `<ButtonIcon icon={<Icon name="cloud" />} variant={{ initial: 'primary', lg: 'secondary' }} />`;
 
