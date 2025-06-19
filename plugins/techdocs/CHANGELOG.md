@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs
 
+## 1.13.1
+
+### Patch Changes
+
+- 0fe8d2e: Fixed an issue causing TechDocs to not properly handle initial redirect.
+
 ## 1.13.0
 
 ### Minor Changes
