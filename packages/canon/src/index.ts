@@ -38,7 +38,7 @@ export * from './components/Collapsible';
 export * from './components/DataTable';
 export * from './components/FieldLabel';
 export * from './components/Icon';
-export * from './components/IconButton';
+export * from './components/ButtonIcon';
 export * from './components/Checkbox';
 export * from './components/Table';
 export * from './components/Tabs';

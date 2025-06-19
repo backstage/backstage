@@ -55,10 +55,6 @@
   gap: 2px;
 }
 
-.playgroundSection {
-  position: absolute;
-}
-
 .sectionTitle {
   font-size: var(--canon-font-size-3);
   font-weight: var(--canon-font-weight-bold);

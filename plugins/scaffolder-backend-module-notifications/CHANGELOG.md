@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-notifications
 
+## 0.1.11
+
+### Patch Changes
+
+- 1fb5f06: Adds ability for user to turn on/off notifications for specific topics within an origin.
+- 3f56115: Removed `octokit` dependency as it was not being used
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0
+  - @backstage/plugin-notifications-common@0.0.9
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-notifications-node@0.2.16
+
 ## 0.1.11-next.2
 
 ### Patch Changes

@@ -138,7 +138,6 @@ integrations:
       secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 
 catalog:
-  useUrlReadersSearch: true
   import:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration

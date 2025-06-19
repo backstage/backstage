@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-cloud
 
+## 0.2.10
+
+### Patch Changes
+
+- ca9fdc0: Migrate `bitbucket-cloud` to new actions format
+- 9c8ff0c: Update pull request creation filter to include .gitignore files in the created pull request
+- 280611d: Fix `bitbucketCloudBranchRestrictions` API calls to accept null to prevent 400 errors for some branch restriction kinds defined.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0
+
 ## 0.2.10-next.2
 
 ### Patch Changes

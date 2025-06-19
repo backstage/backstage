@@ -1,5 +1,51 @@
 # @backstage/backend-test-utils
 
+## 1.6.0
+
+### Minor Changes
+
+- 6dfb7be: Added `mockServices.permissions()` that can return actual results.
+- c999c25: Added an `actionsRegistryServiceMock` and `actionsServiceMock` to `/alpha` export for the experimental services.
+
+  This allows you to write tests for your actions by doing something similar to the following:
+
+  ```ts
+  import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+
+  const mockActionsRegistry = actionsRegistryServiceMock();
+  const mockCatalog = catalogServiceMock({
+    entities: [
+     ...
+    ],
+  });
+
+  createGetCatalogEntityAction({
+    catalog: mockCatalog,
+    actionsRegistry: mockActionsRegistry,
+  });
+
+  await expect(
+    mockActionsRegistry.invoke({
+      id: 'test:get-catalog-entity',
+      input: { name: 'test' },
+    }),
+  ).resolves.toEqual(...)
+  ```
+
+### Patch Changes
+
+- 12c1fd4: Make the `user` credentials mock behave more like production
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.0
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/backend-app-api@1.2.4
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/plugin-permission-common@0.9.0
+
 ## 1.6.0-next.2
 
 ### Patch Changes

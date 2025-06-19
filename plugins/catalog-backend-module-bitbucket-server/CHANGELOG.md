@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-server
 
+## 0.5.0
+
+### Minor Changes
+
+- eb8b3aa: Add validateLocationsExist option to avoid generating locations for catalog-info.yaml files that do not exist in the source repository.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-events-node@0.4.12
+
 ## 0.4.2-next.1
 
 ### Patch Changes

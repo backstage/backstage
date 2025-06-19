@@ -1,5 +1,19 @@
 # @backstage/plugin-app
 
+## 0.1.10
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/integration-react@1.2.8
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-react@0.4.35
+
 ## 0.1.10-next.1
 
 ### Patch Changes

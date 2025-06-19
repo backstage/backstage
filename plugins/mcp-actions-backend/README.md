@@ -89,6 +89,7 @@ backend:
       - type: static
         options:
           token: ${MCP_TOKEN}
+          subject: mcp-clients
         accessRestrictions:
           - plugin: mcp-actions
           - plugin: catalog

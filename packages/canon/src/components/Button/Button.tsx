@@ -14,69 +14,42 @@
  * limitations under the License.
  */
 
-import { forwardRef, useRef } from 'react';
 import clsx from 'clsx';
+import { forwardRef, Ref } from 'react';
+import { Button as RAButton } from 'react-aria-components';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
-import { useRender } from '@base-ui-components/react/use-render';
-
 import type { ButtonProps } from './types';
 
 /** @public */
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (props: ButtonProps, ref) => {
+export const Button = forwardRef(
+  (props: ButtonProps, ref: Ref<HTMLButtonElement>) => {
     const {
       size = 'small',
       variant = 'primary',
       iconStart,
       iconEnd,
       children,
-      render = <button />,
       className,
-      style,
       ...rest
     } = props;
 
-    // Get the responsive value for the variant
     const responsiveSize = useResponsiveValue(size);
     const responsiveVariant = useResponsiveValue(variant);
-    const internalRef = useRef<HTMLElement | null>(null);
 
-    const { renderElement } = useRender({
-      render,
-      props: {
-        className: clsx('canon-Button', className),
-        ['data-variant']: responsiveVariant,
-        ['data-size']: responsiveSize,
-        ...rest,
-        children: (
-          <>
-            {iconStart && (
-              <span
-                className="canon-ButtonIcon"
-                aria-hidden="true"
-                data-size={responsiveSize}
-              >
-                {iconStart}
-              </span>
-            )}
-            {children}
-            {iconEnd && (
-              <span
-                className="canon-ButtonIcon"
-                aria-hidden="true"
-                data-size={responsiveSize}
-              >
-                {iconEnd}
-              </span>
-            )}
-          </>
-        ),
-      },
-      refs: [ref, internalRef],
-    });
-
-    return renderElement();
+    return (
+      <RAButton
+        className={clsx('canon-Button', className)}
+        data-variant={responsiveVariant}
+        data-size={responsiveSize}
+        ref={ref}
+        {...rest}
+      >
+        {iconStart}
+        {children}
+        {iconEnd}
+      </RAButton>
+    );
   },
 );
 
-export default Button;
+Button.displayName = 'Button';
