@@ -72,55 +72,57 @@ This approach aligns with the atomic nature of checkpoints and provides a more g
 
 ## Example Scenario
 
-Consider a GitHub repository creation template with the following checkpoints:
+Consider a service creation template with the following checkpoints that interact with multiple external systems:
 
-1. Create repository
-2. Setup branch protection rules
-3. Configure team access
-4. Create initial pull request
+1. Create repository (GitHub, GitLab, etc.)
+1. Setup bug report tool (Sentry, Bugsnag, etc.)
+1. Create configuration PR in infrastructure repository (Terraform, CloudFormation, etc.)
+1. Setup CI/CD workflow (CircleCi, GitHub Actions, etc.)
+1. Setup observability (Datadog, New Relic, etc.)
 
-If the template fails during the "Create initial pull request" step, the rollback process would:
+If the template fails during the "Setup CI/CD workflow" step, step 5 would not execute and the rollback process would:
 
-1. Attempt to rollback "Configure team access" by removing configured teams
-2. Attempt to rollback "Setup branch protection rules" by removing the rules
-3. Attempt to rollback "Create repository" by deleting the repository
+1. Attempt to rollback "Create configuration PR in infrastructure repository" by closing and deleting the PR
+1. Attempt to rollback "Setup bug reporting tool" by deleting the project
+1. Attempt to rollback "Create repository" by deleting the repository
 
-Each checkpoint's rollback function handles its specific resource cleanup, ensuring atomic operations with clear boundaries.
+Each checkpoint's rollback function handles cleanup of resources in its respective external system, ensuring atomic operations with clear boundaries across different platforms.
 
 ```mermaid
 sequenceDiagram
     participant User
     participant Backstage UI
     participant NunjucksWorkflowRunner
-    participant Action as "GitHub Action"
+    participant Action as "Multi-System Action"
     participant CP1 as "Checkpoint 1<br/>(Create Repo)"
-    participant CP2 as "Checkpoint 2<br/>(Branch Rules)"
-    participant CP3 as "Checkpoint 3<br/>(Team Access)"
-    participant CP4 as "Checkpoint 4<br/>(Create PR)"
+    participant CP2 as "Checkpoint 2<br/>(Setup bug reporting)"
+    participant CP3 as "Checkpoint 3<br/>(Infra Config PR)"
+    participant CP4 as "Checkpoint 4<br/>(Setup CI/CD)"
+    participant CP5 as "Checkpoint 4<br/>(Setup observability pipeline)"
 
     User->>Backstage UI: Start Template Execution
     Backstage UI->>NunjucksWorkflowRunner: Execute Template
 
     Note over NunjucksWorkflowRunner: Normal Execution Flow
 
-    NunjucksWorkflowRunner->>Action: Execute GitHub Action
-    Action->>CP1: Process (success)
-    CP1-->>Action: Complete with data
-    Action->>CP2: Process (success)
-    CP2-->>Action: Complete with data
-    Action->>CP3: Process (success)
-    CP3-->>Action: Complete with data
-    Action->>CP4: Process (fails)
+    NunjucksWorkflowRunner->>Action: Execute Multi-System Action
+    Action->>CP1: Create Repository (success)
+    CP1-->>Action: Complete with repo data
+    Action->>CP2: Setup reporting tool (success)
+    CP2-->>Action: Complete with dashboard data
+    Action->>CP3: Create Infra Config PR (success)
+    CP3-->>Action: Complete with PR data
+    Action->>CP4: Setup CI/CD Workflow (fails)
     CP4--xAction: Error
     Action--xNunjucksWorkflowRunner: Action Failed
 
     Note over NunjucksWorkflowRunner: Rollback Flow (LIFO order by checkpoint)
 
-    NunjucksWorkflowRunner->>CP3: Rollback (Team Access)
+    NunjucksWorkflowRunner->>CP3: Rollback (Close/Delete PR)
     CP3-->>NunjucksWorkflowRunner: Rollback Complete
-    NunjucksWorkflowRunner->>CP2: Rollback (Branch Rules)
+    NunjucksWorkflowRunner->>CP2: Rollback (Delete bug reporting project)
     CP2-->>NunjucksWorkflowRunner: Rollback Complete
-    NunjucksWorkflowRunner->>CP1: Rollback (Repository)
+    NunjucksWorkflowRunner->>CP1: Rollback (Delete GitHub Repository)
     CP1-->>NunjucksWorkflowRunner: Rollback Complete
 
     NunjucksWorkflowRunner-->>Backstage UI: Template Execution Failed
@@ -259,7 +261,7 @@ Additionally, we will add a system-level configuration option to enable/disable 
 3. Add specific rules for rollback operations to `scaffolderActionRules`
 4. Log all rollback attempts and outcomes to provide a clear audit trail
 
-### Securing Rollbacks
+<!-- ### Securing Rollbacks
 
 !!! warning Is this still needed?
 
@@ -283,7 +285,7 @@ export function createSecureCheckpointRollback<T>(
     await rollbackFn(data);
   };
 }
-```
+``` -->
 
 ## Release Plan
 
@@ -307,3 +309,33 @@ We will update the documentation to include:
 - Manual rollback templates: Requiring template authors to create separate rollback templates (introduces burden and could lead to inconsistent implementations.
 - No rollback: Continue with the current approach of manual cleanup, which leads to orphaned resources and poor user experience.
 - Allow the template author to specify a rollback mechanism for each step in yaml
+
+## FAQ
+
+> What happens when a single rollback function fails?
+
+The system will continue to attempt to rollback the remaining checkpoints, and report the failure in a summary of the task.
+
+> How are tasks which provide rollback functions tracked?
+
+The system will track the checkpoints that have rollback functions defined, and execute them in reverse order when a task fails.
+
+> What order are rollback functions executed in?
+
+The system will execute the rollback functions in reverse order of the checkpoints that have rollback functions defined.
+
+> How can someone writing a template disable a rollback function for a given action?
+
+The template author can set the `rollbackEnabled` flag to `false` for the action.
+
+> What security issues are introduced if the scaffolder rollback means the deletion of the resource?
+
+The system will validate the resources being rolled back match what was originally created by validating the checkpoint data.
+
+> Should rollbacks be an opt-in only approach, rather than requiring the template writer to set rollback: false?
+
+Yes, the system will be opt-in only.
+
+> What does a runtime validation mechanism to ensure rollbacks only operate on resources that were actually created by the action look like?
+
+The system will validate the resources being rolled back match what was originally created by validating the checkpoint data.
