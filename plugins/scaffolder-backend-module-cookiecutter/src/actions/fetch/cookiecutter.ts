@@ -169,9 +169,14 @@ export function createFetchCookiecutterAction(options: {
             })
             .optional(),
         values: z =>
-          z.record(z.unknown(), {
-            description: 'Values to pass on to cookiecutter for templating',
-          }),
+          z
+            .object(
+              {},
+              {
+                description: 'Values to pass on to cookiecutter for templating',
+              },
+            )
+            .passthrough(),
         copyWithoutRender: z =>
           z
             .array(z.string(), {
