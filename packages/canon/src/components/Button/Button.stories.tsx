@@ -118,21 +118,22 @@ export const FullWidth: Story = {
 };
 
 export const Disabled: Story = {
-  args: {
-    children: 'Button',
-    disabled: true,
-  },
-  render: args => (
+  render: () => (
     <Flex direction="row" gap="4">
-      <Button {...args} variant="primary" />
-      <Button {...args} variant="secondary" />
+      <Button variant="primary" isDisabled>
+        Primary
+      </Button>
+      <Button variant="secondary" isDisabled>
+        Secondary
+      </Button>
     </Flex>
   ),
 };
 
 export const AsLink: Story = {
   args: {
-    children: 'Button',
+    as: 'a',
+    children: 'I am a link',
     href: 'https://canon.backstage.io',
     target: '_blank',
   },
