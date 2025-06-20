@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { componentDefinitions } from './utils/componentDefinitions';
+
 /** @public */
 export type AsProps =
   | 'div'
@@ -131,3 +133,36 @@ export interface UtilityProps extends SpaceProps {
   justifyContent?: Responsive<JustifyContent>;
   rowSpan?: Responsive<Columns | 'full'>;
 }
+
+// Base types for the component styles structure
+type ClassNamesMap = Record<string, string>;
+type DataAttributeValues = readonly (string | number | boolean)[];
+type DataAttributesMap = Record<string, DataAttributeValues>;
+
+export interface ComponentDefinition {
+  classNames: ClassNamesMap;
+  dataAttributes?: DataAttributesMap;
+}
+
+// Type utilities for extracting information from the component styles
+export type ComponentDefinitionName = keyof typeof componentDefinitions;
+
+export type ComponentClassNames<T extends ComponentDefinitionName> =
+  (typeof componentDefinitions)[T]['classNames'];
+
+export type ComponentDataAttributes<T extends ComponentDefinitionName> =
+  (typeof componentDefinitions)[T] extends { dataAttributes: infer DA }
+    ? DA
+    : Record<string, never>;
+
+export type ComponentDataAttributeProps<T extends ComponentDefinitionName> = {
+  [K in keyof ComponentDataAttributes<T>]?: ComponentDataAttributes<T>[K] extends readonly (infer U)[]
+    ? U
+    : never;
+};
+
+// Helper type to check if a component has data attributes
+export type HasDataAttributes<T extends ComponentDefinitionName> =
+  (typeof componentDefinitions)[T] extends { dataAttributes: any }
+    ? true
+    : false;
