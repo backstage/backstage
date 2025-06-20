@@ -55,7 +55,16 @@ export const componentDefinitions = {
       root: 'canon-ButtonLink',
     },
   },
-
+  Checkbox: {
+    classNames: {
+      root: 'canon-CheckboxRoot',
+      label: 'canon-CheckboxLabel',
+      indicator: 'canon-CheckboxIndicator',
+    },
+    dataAttributes: {
+      checked: [true, false] as const,
+    },
+  },
   Container: {
     classNames: {
       root: 'canon-Container',
@@ -137,20 +146,6 @@ export const componentDefinitions = {
       invalid: [true, false] as const,
       disabled: [true, false] as const,
       open: [true, false] as const,
-    },
-  },
-
-  Checkbox: {
-    classNames: {
-      root: 'canon-Checkbox',
-      input: 'canon-Checkbox-input',
-      indicator: 'canon-Checkbox-indicator',
-      label: 'canon-Checkbox-label',
-    },
-    dataAttributes: {
-      checked: [true, false] as const,
-      indeterminate: [true, false] as const,
-      disabled: [true, false] as const,
     },
   },
 

@@ -18,6 +18,7 @@ import { forwardRef } from 'react';
 import { Checkbox as CheckboxPrimitive } from '@base-ui-components/react/checkbox';
 import { Icon } from '@backstage/canon';
 import type { CheckboxProps } from './types';
+import { useStyles } from '../../hooks/useStyles';
 import clsx from 'clsx';
 
 /** @public */
@@ -35,10 +36,12 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
       style,
     } = props;
 
+    const { classNames } = useStyles('Checkbox');
+
     const checkboxElement = (
       <CheckboxPrimitive.Root
         ref={ref}
-        className={clsx('canon-CheckboxRoot', className)}
+        className={clsx(classNames.root, className)}
         checked={checked}
         onCheckedChange={onChange}
         disabled={disabled}
