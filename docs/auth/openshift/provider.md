@@ -10,14 +10,61 @@ provider that can authenticate users using OpenShift OAuth.
 
 ## Use Case
 
-This setup enables the Kubernetes integration to use the users rights to access the OpenShift clusters (OAuth 2.0 On-Behalf-Of / [Kubernetes Client Side Provider](https://backstage.io/docs/features/kubernetes/authentication/#client-side-providers)).
+This setup enables the [Kubernetes plugin](../../features/kubernetes/index.md) to access OpenShift clusters using the user's permissions,
+leveraging OAuth 2.0 _On-Behalf-Of_ flow via the [Kubernetes Client Side Provider](../../features/kubernetes/authentication.md).
 
-The users in Backstage are imported from LDAP using the [LDAP organizational data provider](https://backstage.io/docs/integrations/ldap/org).
-The OpenShift OAuth server is connected to an SSO, which is also backed by the same LDAP service.
+To make this work, the corresponding `User` entities must exist in the Backstage catalog,
+and their names must match the OpenShift users.
 
-With this setup everything is aligned across services. The LDAP relative distinguished name (RDN) matches the name of the OpenShift user entity.
+Although the OpenShift authentication provider does not support OIDC natively,
+you can still configure it for use with the Kubernetes integration by treating it as an OIDC provider
+in the `KubernetesAuthProviders` configuration.
 
-The OpenShift [built-in OAuth server](https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html/authentication_and_authorization/configuring-internal-oauth#oauth-server-metadata_configuring-internal-oauth) is based on OAuth 2.0. Therefore this Auth implementation builds on [passport-oauth2](https://github.com/jaredhanson/passport-oauth2)
+```ts title="packages/app/src/apis.ts"
+import {
+  KubernetesAuthProviders,
+  kubernetesAuthProvidersApiRef,
+} from '@backstage/plugin-kubernetes';
+import {
+  googleAuthApiRef,
+  microsoftAuthApiRef,
+  openshiftAuthApiRef,
+} from '@backstage/core-plugin-api';
+
+export const apis: AnyApiFactory[] = [
+  // ...
+  createApiFactory({
+    api: kubernetesAuthProvidersApiRef,
+    deps: {
+      microsoftAuthApi: microsoftAuthApiRef,
+      googleAuthApi: googleAuthApiRef,
+      openshiftAuthApi: openshiftAuthApiRef,
+    },
+    factory({ microsoftAuthApi, googleAuthApi, openshiftAuthApi }) {
+      return new KubernetesAuthProviders({
+        microsoftAuthApi,
+        googleAuthApi,
+        oidcProviders: {
+          openshift: {
+            async getIdToken(_) {
+              return await openshiftAuthApi.getAccessToken('user:full');
+            },
+          },
+        },
+      });
+    },
+  }),
+  //...
+];
+```
+
+:::note Note
+
+The OpenShift auth API does **not** implement the `OpenIdConnectApi` interface. In other words, it does **not** return an ID token.
+Instead, it returns an **access token**, which is used by the Kubernetes integration in place of an ID token.
+This is the only functional difference from the standard OIDC-based authentication flow.
+
+:::
 
 ## Create an OAuth client in OpenShift
 
