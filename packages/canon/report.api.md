@@ -1299,6 +1299,7 @@ export interface TextFieldProps
   extends TextFieldProps_2,
     Omit<FieldLabelProps, 'htmlFor' | 'id'> {
   icon?: ReactNode;
+  placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 

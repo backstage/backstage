@@ -39,6 +39,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       isRequired,
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
+      placeholder,
       ...rest
     } = props;
 
@@ -84,6 +85,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           <Input
             className="canon-TextFieldInput"
             {...(icon && { 'data-icon': true })}
+            placeholder={placeholder}
           />
         </div>
         <FieldError className="canon-TextFieldError" />
