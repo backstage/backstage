@@ -17,10 +17,38 @@
 import type { ComponentDefinition } from '../types';
 
 export const componentDefinitions = {
-  // Layout Components
+  Avatar: {
+    classNames: {
+      root: 'canon-AvatarRoot',
+      image: 'canon-AvatarImage',
+      fallback: 'canon-AvatarFallback',
+    },
+    dataAttributes: {
+      size: ['small', 'medium', 'large'] as const,
+    },
+  },
   Box: {
     classNames: {
       root: 'canon-Box',
+    },
+  },
+  Button: {
+    classNames: {
+      root: 'canon-Button',
+    },
+    dataAttributes: {
+      size: ['small', 'medium', 'large'] as const,
+      variant: ['primary', 'secondary', 'ghost'] as const,
+    },
+  },
+  ButtonIcon: {
+    classNames: {
+      root: 'canon-ButtonIcon',
+    },
+  },
+  ButtonLink: {
+    classNames: {
+      root: 'canon-ButtonLink',
     },
   },
 
@@ -63,33 +91,6 @@ export const componentDefinitions = {
       variant: ['title1', 'title2', 'title3', 'subtitle'] as const,
       color: ['primary', 'secondary', 'muted'] as const,
       truncate: [true, false] as const,
-    },
-  },
-
-  // Form Components
-  Button: {
-    classNames: {
-      root: 'canon-Button',
-    },
-    dataAttributes: {
-      size: ['small', 'medium', 'large'] as const,
-      variant: ['primary', 'secondary', 'ghost'] as const,
-    },
-  },
-
-  ButtonIcon: {
-    classNames: {
-      root: 'canon-ButtonIcon',
-    },
-    dataAttributes: {
-      size: ['small', 'medium', 'large'] as const,
-      variant: ['primary', 'secondary', 'ghost'] as const,
-    },
-  },
-
-  ButtonLink: {
-    classNames: {
-      root: 'canon-ButtonLink',
     },
   },
 
@@ -220,18 +221,6 @@ export const componentDefinitions = {
       pagination: 'canon-DataTable-pagination',
       search: 'canon-DataTable-search',
       filters: 'canon-DataTable-filters',
-    },
-  },
-
-  Avatar: {
-    classNames: {
-      root: 'canon-Avatar',
-      image: 'canon-Avatar-image',
-      fallback: 'canon-Avatar-fallback',
-      indicator: 'canon-Avatar-indicator',
-    },
-    dataAttributes: {
-      size: ['small', 'medium', 'large'] as const,
     },
   },
 

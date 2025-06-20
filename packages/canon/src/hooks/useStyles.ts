@@ -15,7 +15,7 @@
  */
 import { useBreakpoint, breakpoints } from './useBreakpoint';
 import { componentDefinitions } from '../utils/componentDefinitions';
-import type { ComponentDefinitionName } from '../types';
+import type { ComponentDefinitionName, ComponentClassNames } from '../types';
 
 /**
  * Resolve a responsive value based on the current breakpoint
@@ -61,9 +61,14 @@ function resolveResponsiveValue(
 export function useStyles<T extends ComponentDefinitionName>(
   componentName: T,
   props: Record<string, any> = {},
-) {
+): {
+  classNames: ComponentClassNames<T>;
+  dataAttributes: Record<string, string>;
+  resolvedProps: Record<string, string>;
+} {
   const { breakpoint } = useBreakpoint();
-  const classNames = componentDefinitions[componentName].classNames;
+  const classNames = componentDefinitions[componentName]
+    .classNames as ComponentClassNames<T>;
 
   // Resolve responsive values and generate data attributes
   const dataAttributes: Record<string, string> = {};

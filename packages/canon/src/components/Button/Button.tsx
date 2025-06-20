@@ -18,7 +18,7 @@ import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
 import { Button as RAButton } from 'react-aria-components';
 import type { ButtonProps } from './types';
-import { useStyles } from '../../definition';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
 export const Button = forwardRef(
