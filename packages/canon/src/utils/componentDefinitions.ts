@@ -16,6 +16,10 @@
 
 import type { ComponentDefinition } from '../types';
 
+/**
+ * Component definitions for the Canon library
+ * @public
+ */
 export const componentDefinitions = {
   Avatar: {
     classNames: {

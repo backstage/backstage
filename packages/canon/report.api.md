@@ -244,6 +244,9 @@ export interface CheckboxProps {
 }
 
 // @public
+export type ClassNamesMap = Record<string, string>;
+
+// @public
 export const Collapsible: {
   Root: ForwardRefExoticComponent<
     Omit<Collapsible_2.Root.Props & RefAttributes<HTMLDivElement>, 'ref'> &
@@ -264,6 +267,250 @@ export const Collapsible: {
 
 // @public (undocumented)
 export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 'auto';
+
+// @public
+export type ComponentClassNames<T extends ComponentDefinitionName> =
+  (typeof componentDefinitions)[T]['classNames'];
+
+// @public
+export interface ComponentDefinition {
+  // (undocumented)
+  classNames: ClassNamesMap;
+  // (undocumented)
+  dataAttributes?: DataAttributesMap;
+}
+
+// @public
+export type ComponentDefinitionName = keyof typeof componentDefinitions;
+
+// @public
+export const componentDefinitions: {
+  readonly Avatar: {
+    readonly classNames: {
+      readonly root: 'canon-AvatarRoot';
+      readonly image: 'canon-AvatarImage';
+      readonly fallback: 'canon-AvatarFallback';
+    };
+    readonly dataAttributes: {
+      readonly size: readonly ['small', 'medium', 'large'];
+    };
+  };
+  readonly Box: {
+    readonly classNames: {
+      readonly root: 'canon-Box';
+    };
+  };
+  readonly Button: {
+    readonly classNames: {
+      readonly root: 'canon-Button';
+    };
+    readonly dataAttributes: {
+      readonly size: readonly ['small', 'medium', 'large'];
+      readonly variant: readonly ['primary', 'secondary', 'ghost'];
+    };
+  };
+  readonly ButtonIcon: {
+    readonly classNames: {
+      readonly root: 'canon-ButtonIcon';
+    };
+  };
+  readonly ButtonLink: {
+    readonly classNames: {
+      readonly root: 'canon-ButtonLink';
+    };
+  };
+  readonly Container: {
+    readonly classNames: {
+      readonly root: 'canon-Container';
+    };
+  };
+  readonly Flex: {
+    readonly classNames: {
+      readonly root: 'canon-Flex';
+    };
+  };
+  readonly Grid: {
+    readonly classNames: {
+      readonly root: 'canon-Grid';
+    };
+  };
+  readonly Text: {
+    readonly classNames: {
+      readonly root: 'canon-Text';
+    };
+    readonly dataAttributes: {
+      readonly variant: readonly ['body', 'caption', 'label'];
+      readonly weight: readonly ['regular', 'medium', 'bold'];
+      readonly color: readonly ['primary', 'secondary', 'muted'];
+      readonly truncate: readonly [true, false];
+    };
+  };
+  readonly Heading: {
+    readonly classNames: {
+      readonly root: 'canon-Heading';
+    };
+    readonly dataAttributes: {
+      readonly variant: readonly ['title1', 'title2', 'title3', 'subtitle'];
+      readonly color: readonly ['primary', 'secondary', 'muted'];
+      readonly truncate: readonly [true, false];
+    };
+  };
+  readonly TextField: {
+    readonly classNames: {
+      readonly root: 'canon-TextField';
+      readonly input: 'canon-TextField-input';
+      readonly label: 'canon-TextField-label';
+      readonly error: 'canon-TextField-error';
+      readonly helper: 'canon-TextField-helper';
+      readonly container: 'canon-TextField-container';
+    };
+    readonly dataAttributes: {
+      readonly invalid: readonly [true, false];
+      readonly disabled: readonly [true, false];
+    };
+  };
+  readonly FieldLabel: {
+    readonly classNames: {
+      readonly root: 'canon-FieldLabel';
+      readonly required: 'canon-FieldLabel-required';
+    };
+    readonly dataAttributes: {
+      readonly required: readonly [true, false];
+    };
+  };
+  readonly Select: {
+    readonly classNames: {
+      readonly root: 'canon-Select';
+      readonly trigger: 'canon-Select-trigger';
+      readonly content: 'canon-Select-content';
+      readonly item: 'canon-Select-item';
+      readonly value: 'canon-Select-value';
+      readonly icon: 'canon-Select-icon';
+      readonly separator: 'canon-Select-separator';
+    };
+    readonly dataAttributes: {
+      readonly invalid: readonly [true, false];
+      readonly disabled: readonly [true, false];
+      readonly open: readonly [true, false];
+    };
+  };
+  readonly Checkbox: {
+    readonly classNames: {
+      readonly root: 'canon-Checkbox';
+      readonly input: 'canon-Checkbox-input';
+      readonly indicator: 'canon-Checkbox-indicator';
+      readonly label: 'canon-Checkbox-label';
+    };
+    readonly dataAttributes: {
+      readonly checked: readonly [true, false];
+      readonly indeterminate: readonly [true, false];
+      readonly disabled: readonly [true, false];
+    };
+  };
+  readonly Switch: {
+    readonly classNames: {
+      readonly root: 'canon-Switch';
+      readonly thumb: 'canon-Switch-thumb';
+      readonly track: 'canon-Switch-track';
+    };
+    readonly dataAttributes: {
+      readonly checked: readonly [true, false];
+      readonly disabled: readonly [true, false];
+    };
+  };
+  readonly Link: {
+    readonly classNames: {
+      readonly root: 'canon-Link';
+    };
+    readonly dataAttributes: {
+      readonly variant: readonly ['primary', 'secondary'];
+    };
+  };
+  readonly Menu: {
+    readonly classNames: {
+      readonly root: 'canon-Menu';
+      readonly trigger: 'canon-Menu-trigger';
+      readonly content: 'canon-Menu-content';
+      readonly item: 'canon-Menu-item';
+      readonly separator: 'canon-Menu-separator';
+      readonly label: 'canon-Menu-label';
+      readonly group: 'canon-Menu-group';
+    };
+  };
+  readonly Tabs: {
+    readonly classNames: {
+      readonly root: 'canon-Tabs';
+      readonly list: 'canon-Tabs-list';
+      readonly tab: 'canon-Tabs-tab';
+      readonly panel: 'canon-Tabs-panel';
+      readonly trigger: 'canon-Tabs-trigger';
+    };
+  };
+  readonly Table: {
+    readonly classNames: {
+      readonly root: 'canon-Table';
+      readonly header: 'canon-Table-header';
+      readonly body: 'canon-Table-body';
+      readonly footer: 'canon-Table-footer';
+      readonly row: 'canon-Table-row';
+      readonly cell: 'canon-Table-cell';
+      readonly headerCell: 'canon-Table-headerCell';
+      readonly caption: 'canon-Table-caption';
+    };
+  };
+  readonly DataTable: {
+    readonly classNames: {
+      readonly root: 'canon-DataTable';
+      readonly container: 'canon-DataTable-container';
+      readonly header: 'canon-DataTable-header';
+      readonly body: 'canon-DataTable-body';
+      readonly row: 'canon-DataTable-row';
+      readonly cell: 'canon-DataTable-cell';
+      readonly headerCell: 'canon-DataTable-headerCell';
+      readonly toolbar: 'canon-DataTable-toolbar';
+      readonly pagination: 'canon-DataTable-pagination';
+      readonly search: 'canon-DataTable-search';
+      readonly filters: 'canon-DataTable-filters';
+    };
+  };
+  readonly Icon: {
+    readonly classNames: {
+      readonly root: 'canon-Icon';
+    };
+    readonly dataAttributes: {
+      readonly size: readonly ['small', 'medium', 'large'];
+    };
+  };
+  readonly Tooltip: {
+    readonly classNames: {
+      readonly root: 'canon-Tooltip';
+      readonly trigger: 'canon-Tooltip-trigger';
+      readonly content: 'canon-Tooltip-content';
+      readonly arrow: 'canon-Tooltip-arrow';
+    };
+  };
+  readonly Collapsible: {
+    readonly classNames: {
+      readonly root: 'canon-Collapsible';
+      readonly trigger: 'canon-Collapsible-trigger';
+      readonly content: 'canon-Collapsible-content';
+      readonly icon: 'canon-Collapsible-icon';
+    };
+    readonly dataAttributes: {
+      readonly open: readonly [true, false];
+    };
+  };
+  readonly ScrollArea: {
+    readonly classNames: {
+      readonly root: 'canon-ScrollArea';
+      readonly viewport: 'canon-ScrollArea-viewport';
+      readonly scrollbar: 'canon-ScrollArea-scrollbar';
+      readonly thumb: 'canon-ScrollArea-thumb';
+      readonly corner: 'canon-ScrollArea-corner';
+      readonly track: 'canon-ScrollArea-track';
+    };
+  };
+};
 
 // @public (undocumented)
 export const Container: ForwardRefExoticComponent<
@@ -291,6 +538,12 @@ export interface ContainerProps {
   // (undocumented)
   style?: React.CSSProperties;
 }
+
+// @public
+export type DataAttributesMap = Record<string, DataAttributeValues>;
+
+// @public
+export type DataAttributeValues = readonly (string | number | boolean)[];
 
 // @public
 export const DataTable: {

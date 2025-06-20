@@ -134,35 +134,42 @@ export interface UtilityProps extends SpaceProps {
   rowSpan?: Responsive<Columns | 'full'>;
 }
 
-// Base types for the component styles structure
-type ClassNamesMap = Record<string, string>;
-type DataAttributeValues = readonly (string | number | boolean)[];
-type DataAttributesMap = Record<string, DataAttributeValues>;
+/**
+ * Base type for the component styles structure
+ * @public
+ */
+export type ClassNamesMap = Record<string, string>;
 
+/**
+ * Base type for the component styles structure
+ * @public
+ */
+export type DataAttributeValues = readonly (string | number | boolean)[];
+
+/**
+ * Base type for the component styles structure
+ * @public
+ */
+export type DataAttributesMap = Record<string, DataAttributeValues>;
+
+/**
+ * Base type for the component styles structure
+ * @public
+ */
 export interface ComponentDefinition {
   classNames: ClassNamesMap;
   dataAttributes?: DataAttributesMap;
 }
 
-// Type utilities for extracting information from the component styles
+/**
+ * Type utilities for extracting information from the component styles
+ * @public
+ */
 export type ComponentDefinitionName = keyof typeof componentDefinitions;
 
+/**
+ * Helper type to extract class names for a component
+ * @public
+ */
 export type ComponentClassNames<T extends ComponentDefinitionName> =
   (typeof componentDefinitions)[T]['classNames'];
-
-export type ComponentDataAttributes<T extends ComponentDefinitionName> =
-  (typeof componentDefinitions)[T] extends { dataAttributes: infer DA }
-    ? DA
-    : Record<string, never>;
-
-export type ComponentDataAttributeProps<T extends ComponentDefinitionName> = {
-  [K in keyof ComponentDataAttributes<T>]?: ComponentDataAttributes<T>[K] extends readonly (infer U)[]
-    ? U
-    : never;
-};
-
-// Helper type to check if a component has data attributes
-export type HasDataAttributes<T extends ComponentDefinitionName> =
-  (typeof componentDefinitions)[T] extends { dataAttributes: any }
-    ? true
-    : false;
