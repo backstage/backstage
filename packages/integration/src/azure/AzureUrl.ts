@@ -30,7 +30,11 @@ export class AzureUrl {
     let repo;
 
     const parts = url.pathname.split('/').map(part => decodeURIComponent(part));
-    if (parts[2] === '_git') {
+    if (url.host.includes('visualstudio.com') && parts[2] === '_git') {
+      owner = url.host.split('.')[0];
+      project = parts[1];
+      repo = parts[3];
+    } else if (parts[2] === '_git') {
       owner = parts[1];
       project = repo = parts[3];
     } else if (parts[3] === '_git') {
@@ -98,7 +102,9 @@ export class AzureUrl {
    */
   toRepoUrl(): string {
     let url;
-    if (this.#project === this.#repo) {
+    if (this.#origin.includes('visualstudio.com')) {
+      url = this.#baseUrl(this.#project, '_git', this.#repo);
+    } else if (this.#project === this.#repo) {
       url = this.#baseUrl(this.#owner, '_git', this.#repo);
     } else {
       url = this.#baseUrl(this.#owner, this.#project, '_git', this.#repo);
@@ -126,15 +132,28 @@ export class AzureUrl {
       );
     }
 
-    const url = this.#baseUrl(
-      this.#owner,
-      this.#project,
-      '_apis',
-      'git',
-      'repositories',
-      this.#repo,
-      'items',
-    );
+    let url;
+    if (this.#origin.includes('visualstudio.com')) {
+      url = this.#baseUrl(
+        this.#project,
+        '_apis',
+        'git',
+        'repositories',
+        this.#repo,
+        'items',
+      );
+    } else {
+      url = this.#baseUrl(
+        this.#owner,
+        this.#project,
+        '_apis',
+        'git',
+        'repositories',
+        this.#repo,
+        'items',
+      );
+    }
+
     url.searchParams.set('api-version', '6.0');
     url.searchParams.set('path', this.#path);
 
@@ -151,15 +170,28 @@ export class AzureUrl {
    * Throws an error if the URL does not point to a repo.
    */
   toArchiveUrl(): string {
-    const url = this.#baseUrl(
-      this.#owner,
-      this.#project,
-      '_apis',
-      'git',
-      'repositories',
-      this.#repo,
-      'items',
-    );
+    let url;
+    if (this.#origin.includes('visualstudio.com')) {
+      url = this.#baseUrl(
+        this.#project,
+        '_apis',
+        'git',
+        'repositories',
+        this.#repo,
+        'items',
+      );
+    } else {
+      url = this.#baseUrl(
+        this.#owner,
+        this.#project,
+        '_apis',
+        'git',
+        'repositories',
+        this.#repo,
+        'items',
+      );
+    }
+
     url.searchParams.set('recursionLevel', 'full');
     url.searchParams.set('download', 'true');
     url.searchParams.set('api-version', '6.0');
@@ -180,15 +212,28 @@ export class AzureUrl {
    * Throws an error if the URL does not point to a commit.
    */
   toCommitsUrl(): string {
-    const url = this.#baseUrl(
-      this.#owner,
-      this.#project,
-      '_apis',
-      'git',
-      'repositories',
-      this.#repo,
-      'commits',
-    );
+    let url;
+    if (this.#origin.includes('visualstudio.com')) {
+      url = this.#baseUrl(
+        this.#project,
+        '_apis',
+        'git',
+        'repositories',
+        this.#repo,
+        'commits',
+      );
+    } else {
+      url = this.#baseUrl(
+        this.#owner,
+        this.#project,
+        '_apis',
+        'git',
+        'repositories',
+        this.#repo,
+        'commits',
+      );
+    }
+
     url.searchParams.set('api-version', '6.0');
 
     if (this.#ref) {

@@ -445,5 +445,26 @@ describe('DefaultAzureDevOpsCredentialProvider', () => {
         });
       });
     });
+    describe('Azure DevOps (visualstudio.com)', () => {
+      it('Should return a token when a credential with the same organization is specified', async () => {
+        const provider = buildProvider([
+          {
+            host: 'org1.visualstudio.com',
+            credentials: [
+              {
+                organizations: ['org1'],
+                personalAccessToken: 'pat',
+              },
+            ],
+          },
+        ]);
+
+        const credentials = provider.getCredentials({
+          url: 'https://org1.visualstudio.com/project1',
+        });
+
+        expect(credentials).toBeDefined();
+      });
+    });
   });
 });
