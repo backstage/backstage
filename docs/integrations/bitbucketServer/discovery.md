@@ -2,7 +2,6 @@
 id: discovery
 title: Bitbucket Server Discovery
 sidebar_label: Discovery
-# prettier-ignore
 description: Automatically discovering catalog entities from repositories in Bitbucket Server
 ---
 
@@ -67,6 +66,7 @@ catalog:
           projectKey: '^apis-.*$' # optional; RegExp
           repoSlug: '^service-.*$' # optional; RegExp
           skipArchivedRepos: true # optional; boolean
+        validateLocationsExist: false # optional; boolean
         schedule: # same options as in SchedulerServiceTaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
@@ -87,6 +87,10 @@ catalog:
     Regular expression used to filter results based on the repo slug.
   - **`skipArchivedRepos`** _(optional)_:
     Boolean flag to filter out archived repositories.
+- **`validateLocationsExist`** _(optional)_:
+  Defaults to `false`.
+  Whether to validate locations that exist before emitting them.
+  This option avoids generating locations for catalog info files that do not exist in the source repository.
 - **`schedule`**:
   - **`frequency`**:
     How often you want the task to run. The system does its best to avoid overlapping invocations.

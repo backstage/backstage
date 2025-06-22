@@ -51,6 +51,7 @@ import {
   useSanitizerTransformer,
   useStylesTransformer,
   handleMetaRedirects,
+  addNavLinkKeyboardToggle,
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -60,15 +61,13 @@ const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 // If a defaultPath is specified then we should navigate to that path replacing the
 // current location in the history. This should only happen on the initial load so
 // navigating to the root of the docs doesn't also redirect.
-const useInitialRedirect = (defaultPath?: string) => {
-  // const hasRun = useRef(false);
-
+export const useInitialRedirect = (defaultPath?: string) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { '*': currPath = '' } = useParams();
 
   useLayoutEffect(() => {
-    if (currPath === '' && defaultPath !== '') {
+    if (currPath === '' && defaultPath) {
       navigate(`${location.pathname}${defaultPath}`, { replace: true });
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -293,6 +292,7 @@ export const useTechDocsReaderDom = (
           },
           onLoaded: () => {},
         }),
+        addNavLinkKeyboardToggle(),
       ]),
     [theme, navigate, analytics, entityRef.name, configApi],
   );

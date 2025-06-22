@@ -14,47 +14,51 @@
  * limitations under the License.
  */
 
-import { forwardRef, useRef } from 'react';
+import { forwardRef } from 'react';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
-import { useRender } from '@base-ui-components/react/use-render';
 import clsx from 'clsx';
-
+import type { ElementType } from 'react';
 import type { TextProps } from './types';
 
+function TextComponent<T extends ElementType = 'p'>(
+  {
+    as,
+    variant = 'body',
+    weight = 'regular',
+    color = 'primary',
+    className,
+    truncate,
+    style,
+    ...restProps
+  }: TextProps<T>,
+  ref: React.Ref<any>,
+) {
+  const Component = as || 'p';
+
+  // Get the responsive values for the variant and weight
+  const responsiveVariant = useResponsiveValue(variant);
+  const responsiveWeight = useResponsiveValue(weight);
+  const responsiveColor = useResponsiveValue(color);
+
+  return (
+    <Component
+      ref={ref}
+      className={clsx('canon-Text', className)}
+      data-variant={responsiveVariant}
+      data-weight={responsiveWeight}
+      data-color={responsiveColor}
+      data-truncate={truncate}
+      style={style}
+      {...restProps}
+    />
+  );
+}
+
+TextComponent.displayName = 'Text';
+
 /** @public */
-export const Text = forwardRef<HTMLParagraphElement, TextProps>(
-  (props, ref) => {
-    const {
-      variant = 'body',
-      weight = 'regular',
-      color = 'primary',
-      className,
-      truncate,
-      render = <p />,
-      ...restProps
-    } = props;
+export const Text = forwardRef(TextComponent) as <T extends ElementType = 'p'>(
+  props: TextProps<T> & { ref?: React.Ref<any> },
+) => React.ReactElement | null;
 
-    // Get the responsive values for the variant and weight
-    const responsiveVariant = useResponsiveValue(variant);
-    const responsiveWeight = useResponsiveValue(weight);
-    const responsiveColor = useResponsiveValue(color);
-    const internalRef = useRef<HTMLElement | null>(null);
-
-    const { renderElement } = useRender({
-      render,
-      props: {
-        className: clsx('canon-Text', className),
-        ['data-variant']: responsiveVariant,
-        ['data-weight']: responsiveWeight,
-        ['data-color']: responsiveColor,
-        ['data-truncate']: truncate,
-        ...restProps,
-      },
-      refs: [ref, internalRef],
-    });
-
-    return renderElement();
-  },
-);
-
-Text.displayName = 'Text';
+(Text as any).displayName = 'Text';

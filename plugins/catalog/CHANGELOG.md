@@ -1,5 +1,96 @@
 # @backstage/plugin-catalog
 
+## 1.31.0
+
+### Minor Changes
+
+- 406acb6: Add support to customize the about card icon links via `EntityIconLinkBlueprint` and provide a default catalog view catalog source, launch scaffolder template and read techdocs docs icon links extensions.
+
+  **BREAKING ALPHA**
+
+  The `Scaffolder` launch template and `TechDocs` read documentation icons have been extracted from the default `Catalog` about card links and are now provided respectively by the `Scaffolder` and `TechDocs` plugins in the new frontend system. It means that they will not be available unless you install the `TechDocs` and `Scaffolder` plugins. Also If you are using translation for these icon link titles other than the default, you should now translate them using the scaffolder translation reference or the TechDocs translation reference (the translation keys are still the same, `aboutCard.viewTechdocs` and `aboutCard.launchTemplate`).
+
+- ec7b35d: Introduced `backstage.io/techdocs-entity-path` annotation which allows deep linking into another entities TechDocs in conjunction with `backstage.io/techdocs-entity`.
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/catalog-client@1.10.1
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/plugin-techdocs-react@1.3.0
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-search-react@1.9.1
+  - @backstage/integration-react@1.2.8
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-react@0.4.35
+  - @backstage/plugin-scaffolder-common@1.5.11
+  - @backstage/plugin-search-common@1.2.18
+
+## 1.31.0-next.2
+
+### Minor Changes
+
+- 406acb6: Add support to customize the about card icon links via `EntityIconLinkBlueprint` and provide a default catalog view catalog source, launch scaffolder template and read techdocs docs icon links extensions.
+
+  **BREAKING ALPHA**
+
+  The `Scaffolder` launch template and `TechDocs` read documentation icons have been extracted from the default `Catalog` about card links and are now provided respectively by the `Scaffolder` and `TechDocs` plugins in the new frontend system. It means that they will not be available unless you install the `TechDocs` and `Scaffolder` plugins. Also If you are using translation for these icon link titles other than the default, you should now translate them using the scaffolder translation reference or the TechDocs translation reference (the translation keys are still the same, `aboutCard.viewTechdocs` and `aboutCard.launchTemplate`).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/plugin-search-react@1.9.1-next.1
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/integration-react@1.2.7
+  - @backstage/plugin-techdocs-react@1.3.0-next.1
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/plugin-scaffolder-common@1.5.11
+  - @backstage/plugin-search-common@1.2.18
+  - @backstage/plugin-techdocs-common@0.1.1-next.0
+
+## 1.31.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3-next.1
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/integration-react@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/plugin-scaffolder-common@1.5.11
+  - @backstage/plugin-search-common@1.2.18
+  - @backstage/plugin-search-react@1.9.1-next.0
+  - @backstage/plugin-techdocs-common@0.1.1-next.0
+  - @backstage/plugin-techdocs-react@1.3.0-next.0
+
 ## 1.31.0-next.0
 
 ### Minor Changes

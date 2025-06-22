@@ -32,6 +32,7 @@ export type BitbucketServerEntityProviderConfig = {
     repoSlug?: RegExp;
     skipArchivedRepos?: boolean;
   };
+  validateLocationsExist: boolean;
   schedule?: SchedulerServiceTaskScheduleDefinition;
 };
 
@@ -66,7 +67,8 @@ function readProviderConfig(
   const skipArchivedReposFlag = config.getOptionalBoolean(
     'filters.skipArchivedRepos',
   );
-
+  const validateLocationsExistFlag =
+    config?.getOptionalBoolean('validateLocationsExist') ?? false;
   const schedule = config.has('schedule')
     ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
         config.getConfig('schedule'),
@@ -82,6 +84,7 @@ function readProviderConfig(
       repoSlug: repoSlugPattern ? new RegExp(repoSlugPattern) : undefined,
       skipArchivedRepos: skipArchivedReposFlag,
     },
+    validateLocationsExist: validateLocationsExistFlag,
     schedule,
   };
 }

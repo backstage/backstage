@@ -2,7 +2,6 @@
 id: configuration
 title: Configuring Kubernetes integration
 sidebar_label: Configuration
-# prettier-ignore
 description: Configuring the Kubernetes integration for Backstage expose your entity's objects
 ---
 
@@ -699,6 +698,7 @@ rules:
       - '*'
     resources:
       - pods
+      - pods/log
       - configmaps
       - services
       - deployments

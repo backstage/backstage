@@ -182,7 +182,7 @@ export default createPlugin({
 })
 ```
 
-Here is the `plugins/techdocs/alpha.tsx` final version, and you can also take a look at the [actual implementation](https://github.com/backstage/backstage/blob/master/plugins/techdocs/src/alpha.tsx) of a custom `TechDocs` search result item:
+Here is the `plugins/techdocs/alpha/index.tsx` final version, and you can also take a look at the [actual implementation](https://github.com/backstage/backstage/blob/master/plugins/techdocs/src/alpha/index.tsx) of a custom `TechDocs` search result item:
 
 ```tsx
 // plugins/techdocs/alpha.tsx

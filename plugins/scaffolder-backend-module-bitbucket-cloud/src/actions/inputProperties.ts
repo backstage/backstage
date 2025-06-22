@@ -14,238 +14,224 @@
  * limitations under the License.
  */
 
-const repoUrl = {
-  title: 'Repository Location',
-  description: `Accepts the format 'bitbucket.org?repo=reponame&workspace=workspace&project=project' where 'reponame' is the new repository name`,
-  type: 'string',
-};
+import { z as zod } from 'zod';
 
-const workspace = {
-  title: 'Workspace',
-  description: `The workspace name`,
-  type: 'string',
-};
+const repoUrl = (z: typeof zod) =>
+  z.string({
+    description: `Accepts the format 'bitbucket.org?repo=reponame&workspace=workspace&project=project' where 'reponame' is the new repository name`,
+  });
 
-const repo_slug = {
-  title: 'Repository name',
-  description: 'The repository name',
-  type: 'string',
-};
+const workspace = (z: typeof zod) =>
+  z.string({
+    description: 'The workspace name',
+  });
 
-const ref_type = {
-  title: 'ref_type',
-  type: 'string',
-};
+const repo_slug = (z: typeof zod) =>
+  z.string({
+    description: 'The repository name',
+  });
 
-const type = {
-  title: 'type',
-  type: 'string',
-};
+const ref_type = (z: typeof zod) =>
+  z.string({
+    description: 'ref_type',
+  });
 
-const ref_name = {
-  title: 'ref_name',
-  type: 'string',
-};
-const source = {
-  title: 'source',
-  type: 'string',
-};
-const destination = {
-  title: 'destination',
-  type: 'string',
-};
-const hash = {
-  title: 'hash',
-  type: 'string',
-};
+const type = (z: typeof zod) =>
+  z.string({
+    description: 'type',
+  });
 
-const pattern = {
-  title: 'pattern',
-  type: 'string',
-};
+const ref_name = (z: typeof zod) =>
+  z.string({
+    description: 'ref_name',
+  });
 
-const id = {
-  title: 'id',
-  type: 'string',
-};
+const source = (z: typeof zod) =>
+  z.string({
+    description: 'source',
+  });
 
-const key = {
-  title: 'key',
-  type: 'string',
-};
-const value = {
-  title: 'value',
-  type: 'string',
-};
-const secured = {
-  title: 'secured',
-  type: 'boolean',
-};
+const destination = (z: typeof zod) =>
+  z.string({
+    description: 'destination',
+  });
 
-const token = {
-  title: 'Authentication Token',
-  type: 'string',
-  description: 'The token to use for authorization to BitBucket Cloud',
-};
+const hash = (z: typeof zod) =>
+  z.string({
+    description: 'hash',
+  });
 
-const destination_commit = {
-  title: 'destination_commit',
-  type: 'object',
-  properties: {
-    hash,
-  },
-};
+const pattern = (z: typeof zod) =>
+  z.string({
+    description: 'pattern',
+  });
 
-const commit = {
-  title: 'commit',
-  type: 'object',
-  properties: {
-    type,
-    hash,
-  },
-};
+const id = (z: typeof zod) =>
+  z.string({
+    description: 'id',
+  });
 
-const selector = {
-  title: 'selector',
-  type: 'object',
-  properties: {
-    type,
-    pattern,
-  },
-};
+const key = (z: typeof zod) =>
+  z.string({
+    description: 'key',
+  });
 
-const pull_request = {
-  title: 'pull_request',
-  type: 'object',
-  properties: {
-    id,
-  },
-};
+const value = (z: typeof zod) =>
+  z.string({
+    description: 'value',
+  });
 
-const pipelinesRunBody = {
-  title: 'Request Body',
-  description:
-    'Request body properties: see Bitbucket Cloud Rest API documentation for more details',
-  type: 'object',
-  properties: {
-    target: {
-      title: 'target',
-      type: 'object',
-      properties: {
-        ref_type,
-        type,
-        ref_name,
-        source,
-        destination,
-        destination_commit,
-        commit,
-        selector,
-        pull_request,
+const secured = (z: typeof zod) =>
+  z.boolean({
+    description: 'secured',
+  });
+
+const token = (z: typeof zod) =>
+  z
+    .string({
+      description: 'The token to use for authorization to BitBucket Cloud',
+    })
+    .optional();
+
+const destination_commit = (z: typeof zod) =>
+  z.object({
+    hash: hash(z),
+  });
+
+const commit = (z: typeof zod) =>
+  z.object({
+    type: type(z),
+    hash: hash(z),
+  });
+
+const selector = (z: typeof zod) =>
+  z.object({
+    type: type(z),
+    pattern: pattern(z),
+  });
+
+const pull_request = (z: typeof zod) =>
+  z.object({
+    id: id(z),
+  });
+
+const pipelinesRunBody = (z: typeof zod) =>
+  z
+    .object(
+      {
+        target: z
+          .object({
+            ref_type: ref_type(z).optional(),
+            type: type(z).optional(),
+            ref_name: ref_name(z).optional(),
+            source: source(z).optional(),
+            destination: destination(z).optional(),
+            destination_commit: destination_commit(z).optional(),
+            commit: commit(z).optional(),
+            selector: selector(z).optional(),
+            pull_request: pull_request(z).optional(),
+          })
+          .optional(),
+        variables: z
+          .array(
+            z.object({
+              key: key(z),
+              value: value(z),
+              secured: secured(z),
+            }),
+          )
+          .optional(),
       },
-    },
-    variables: {
-      title: 'variables',
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          key,
-          value,
-          secured,
-        },
+      {
+        description:
+          'Request body properties: see Bitbucket Cloud Rest API documentation for more details',
       },
-    },
-  },
-};
+    )
+    .optional();
 
 const restriction = {
-  kind: {
-    title: 'kind',
-    description: 'The kind of restriction.',
-    type: 'string',
-    enum: [
-      'push',
-      'force',
-      'delete',
-      'restrict_merges',
-      'require_tasks_to_be_completed',
-      'require_approvals_to_merge',
-      'require_default_reviewer_approvals_to_merge',
-      'require_no_changes_requested',
-      'require_passing_builds_to_merge',
-      'require_commits_behind',
-      'reset_pullrequest_approvals_on_change',
-      'smart_reset_pullrequest_approvals',
-      'reset_pullrequest_changes_requested_on_change',
-      'require_all_dependencies_merged',
-      'enforce_merge_checks',
-      'allow_auto_merge_when_builds_pass',
-    ],
-  },
-  branchMatchKind: {
-    title: 'branch_match_kind',
-    description: 'The branch match kind.',
-    type: 'string',
-    enum: ['glob', 'branching_model'],
-  },
-  branchType: {
-    title: 'branch_type',
-    description:
-      'The branch type. When branchMatchKind is set to branching_model, this field is required.',
-    type: 'string',
-    enum: [
-      'feature',
-      'bugfix',
-      'release',
-      'hotfix',
-      'development',
-      'production',
-    ],
-  },
-  pattern: {
-    title: 'pattern',
-    description:
-      'The pattern to match branches against. This field is required when branchMatchKind is set to glob.',
-    type: 'string',
-  },
-  value: {
-    title: 'value',
-    description:
-      'The value of the restriction. This field is required when kind is one of require_approvals_to_merge / require_default_reviewer_approvals_to_merge / require_passing_builds_to_merge / require_commits_behind.',
-    type: 'number',
-  },
-  users: {
-    title: 'users',
-    description:
-      'Names of users that can bypass the push / restrict_merges restriction kind. For any other kind, this field will be ignored.',
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        uuid: {
-          title: 'uuid',
-          description: 'The UUID of the user in the format "{a-b-c-d}".',
-          type: 'string',
-        },
+  kind: (z: typeof zod) =>
+    z.enum(
+      [
+        'push',
+        'force',
+        'delete',
+        'restrict_merges',
+        'require_tasks_to_be_completed',
+        'require_approvals_to_merge',
+        'require_default_reviewer_approvals_to_merge',
+        'require_no_changes_requested',
+        'require_passing_builds_to_merge',
+        'require_commits_behind',
+        'reset_pullrequest_approvals_on_change',
+        'smart_reset_pullrequest_approvals',
+        'reset_pullrequest_changes_requested_on_change',
+        'require_all_dependencies_merged',
+        'enforce_merge_checks',
+        'allow_auto_merge_when_builds_pass',
+      ],
+      {
+        description: 'The kind of restriction.',
       },
-    },
-  },
-  groups: {
-    title: 'groups',
-    description:
-      'Names of groups that can bypass the push / restrict_merges restriction kind. For any other kind, this field will be ignored.',
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        slug: {
-          title: 'slug',
-          description: 'The name of the group.',
-          type: 'string',
+    ),
+  branchMatchKind: (z: typeof zod) =>
+    z
+      .enum(['glob', 'branching_model'], {
+        description: 'The branch match kind.',
+      })
+      .optional(),
+  branchType: (z: typeof zod) =>
+    z
+      .enum(
+        ['feature', 'bugfix', 'release', 'hotfix', 'development', 'production'],
+        {
+          description:
+            'The branch type. When branchMatchKind is set to branching_model, this field is required.',
         },
-      },
-    },
-  },
+      )
+      .optional(),
+  pattern: (z: typeof zod) =>
+    z
+      .string({
+        description:
+          'The pattern to match branches against. This field is required when branchMatchKind is set to glob.',
+      })
+      .optional(),
+  value: (z: typeof zod) =>
+    z
+      .union([z.number(), z.null()], {
+        description:
+          'The value of the restriction. This field is required when kind is one of require_approvals_to_merge / require_default_reviewer_approvals_to_merge / require_passing_builds_to_merge / require_commits_behind.',
+      })
+      .optional(),
+  users: (z: typeof zod) =>
+    z
+      .array(
+        z.object({
+          uuid: z.string({
+            description: 'The UUID of the user in the format "{a-b-c-d}".',
+          }),
+        }),
+        {
+          description:
+            'Names of users that can bypass the push / restrict_merges restriction kind. For any other kind, this field will be ignored.',
+        },
+      )
+      .optional(),
+  groups: (z: typeof zod) =>
+    z
+      .array(
+        z.object({
+          slug: z.string({
+            description: 'The name of the group.',
+          }),
+        }),
+        {
+          description:
+            'Names of groups that can bypass the push / restrict_merges restriction kind. For any other kind, this field will be ignored.',
+        },
+      )
+      .optional(),
 };
 
 export { workspace, repo_slug, pipelinesRunBody, token };

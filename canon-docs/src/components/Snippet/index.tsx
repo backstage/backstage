@@ -1,16 +1,14 @@
-import { ReactNode, CSSProperties } from 'react';
 import { CodeBlock } from '../CodeBlock';
-import { Collapsible } from '@base-ui-components/react/collapsible';
-import styles from './styles.module.css';
+import { SnippetClient } from './client';
 
 interface SnippetProps {
-  preview: ReactNode;
+  preview: JSX.Element;
   code: string;
   align?: 'left' | 'center';
   px?: number;
   py?: number;
   open?: boolean;
-  height?: CSSProperties['height'];
+  height?: string | number;
 }
 
 export const Snippet = ({
@@ -23,21 +21,14 @@ export const Snippet = ({
   height = 'auto',
 }: SnippetProps) => {
   return (
-    <Collapsible.Root className={styles.container} defaultOpen={open}>
-      <div className={styles.preview} style={{ height }}>
-        <div
-          className={`${styles.previewContent} ${styles[align]}`}
-          style={{ padding: `${py}rem ${px}rem` }}
-        >
-          {preview}
-        </div>
-        <Collapsible.Trigger className={styles.trigger}>
-          View code
-        </Collapsible.Trigger>
-      </div>
-      <Collapsible.Panel className={styles.panel}>
-        <CodeBlock code={code} />
-      </Collapsible.Panel>
-    </Collapsible.Root>
+    <SnippetClient
+      preview={preview}
+      codeContent={<CodeBlock code={code} />}
+      align={align}
+      px={px}
+      py={py}
+      open={open}
+      height={height}
+    />
   );
 };

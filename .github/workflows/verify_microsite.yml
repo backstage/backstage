@@ -325,13 +325,13 @@ jobs:
         working-directory: microsite
 
       - name: download stable reference (beta)
-        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: stable-reference-beta
           path: api/stable/
 
       - name: download next reference (beta)
-        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: next-reference-beta
           path: api/next/

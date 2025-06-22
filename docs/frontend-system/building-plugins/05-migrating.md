@@ -2,7 +2,6 @@
 id: migrating
 title: Migrating Plugins
 sidebar_label: Migration Guide
-# prettier-ignore
 description: How to migrate an existing frontend plugin to the new frontend system
 ---
 

@@ -23,11 +23,9 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
   createTemplateAction,
   TaskSecrets,
-  TemplateAction,
   TaskContext,
 } from '@backstage/plugin-scaffolder-node';
 import { UserEntity } from '@backstage/catalog-model';
-import { z } from 'zod';
 import {
   AuthorizeResult,
   PermissionEvaluator,
@@ -38,7 +36,6 @@ import {
   mockCredentials,
   mockServices,
 } from '@backstage/backend-test-utils';
-import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 
 describe('NunjucksWorkflowRunner', () => {
   let actionRegistry: TemplateActionRegistry;
@@ -127,30 +124,10 @@ describe('NunjucksWorkflowRunner', () => {
         handler: fakeActionHandler,
         schema: {
           input: {
-            type: 'object',
-            required: ['foo'],
-            properties: {
-              foo: {
-                type: 'number',
-              },
-            },
+            foo: z => z.number(),
           },
         },
       }),
-    );
-
-    actionRegistry.register(
-      createTemplateAction({
-        id: 'jest-legacy-zod-validated-action',
-        description: 'Mock action for testing',
-        handler: fakeActionHandler,
-        supportsDryRun: true,
-        schema: {
-          input: z.object({
-            foo: z.number(),
-          }),
-        },
-      }) as TemplateAction,
     );
 
     actionRegistry.register(
@@ -186,13 +163,14 @@ describe('NunjucksWorkflowRunner', () => {
         id: 'checkpoints-action',
         description: 'Mock action with checkpoints',
         schema: {
-          output: z.object({
-            key1: z.string(),
-            key2: z.string(),
-            key3: z.string(),
-            key4: z.string(),
-            key5: z.string(),
-          }),
+          output: z =>
+            z.object({
+              key1: z.string(),
+              key2: z.string(),
+              key3: z.string(),
+              key4: z.string(),
+              key5: z.string(),
+            }),
         },
         handler: async ctx => {
           const key1 = await ctx.checkpoint({
@@ -222,7 +200,9 @@ describe('NunjucksWorkflowRunner', () => {
           ctx.output('key2', key2);
           ctx.output('key3', key3);
 
+          // @ts-expect-error - not valid output type
           ctx.output('key4', key4);
+          // @ts-expect-error - not valid output type
           ctx.output('key5', key5);
         },
       }),
@@ -236,7 +216,7 @@ describe('NunjucksWorkflowRunner', () => {
       actionRegistry,
       integrations,
       workingDirectory: mockDir.path,
-      logger: loggerToWinstonLogger(logger),
+      logger,
       permissions: mockedPermissionApi,
     });
   });
@@ -280,22 +260,6 @@ describe('NunjucksWorkflowRunner', () => {
       );
     });
 
-    it('should throw an error if the action has legacy zod schema and the input does not match', async () => {
-      const task = createMockTaskWithSpec({
-        steps: [
-          {
-            id: 'test',
-            name: 'name',
-            action: 'jest-legacy-zod-validated-action',
-          },
-        ],
-      });
-
-      await expect(runner.execute(task)).rejects.toThrow(
-        /Invalid input passed to action jest-legacy-zod-validated-action, instance requires property \"foo\"/,
-      );
-    });
-
     it('should run the action when the zod validation passes', async () => {
       const task = createMockTaskWithSpec({
         steps: [
@@ -303,23 +267,6 @@ describe('NunjucksWorkflowRunner', () => {
             id: 'test',
             name: 'name',
             action: 'jest-zod-validated-action',
-            input: { foo: 1 },
-          },
-        ],
-      });
-
-      await runner.execute(task);
-
-      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
-    });
-
-    it('should run the action when the zod validation passes with legacy zod', async () => {
-      const task = createMockTaskWithSpec({
-        steps: [
-          {
-            id: 'test',
-            name: 'name',
-            action: 'jest-legacy-zod-validated-action',
             input: { foo: 1 },
           },
         ],
@@ -885,6 +832,42 @@ describe('NunjucksWorkflowRunner', () => {
       });
     });
 
+    it('should run a step repeatedly - flat values with secrets', async () => {
+      const secrets = {
+        s1: 'secret-value1',
+        s2: 'secret-value2',
+        s3: 'secret-value3',
+      };
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              each: [
+                '${{ secrets.s1 }}',
+                '${{ secrets.s2 }}',
+                '${{ secrets.s3 }}',
+              ],
+              action: 'jest-mock-action',
+              input: { secret: '${{each.value}}' },
+            },
+          ],
+        },
+        secrets,
+      );
+      await runner.execute(task);
+
+      Object.values(secrets).forEach((secret, idx) => {
+        expectTaskLog(
+          `info: Running step each: {"key":"${idx}","value":"***"}`,
+        );
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({ input: { secret } }),
+        );
+      });
+    });
+
     it('should run a step repeatedly - object list', async () => {
       const task = createMockTaskWithSpec({
         steps: [
@@ -913,6 +896,46 @@ describe('NunjucksWorkflowRunner', () => {
           input: { key: '0', value: { color: 'blue' } },
         }),
       );
+    });
+
+    it('should run a step repeatedly - object list with secrets', async () => {
+      const secrets = {
+        s1: 'secret-value1',
+        s2: 'secret-value2',
+      };
+      const names = ['Service1', 'Service2'];
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              each: [
+                { name: names[0], token: '${{ secrets.s1 }}' },
+                { name: names[1], token: '${{ secrets.s2 }}' },
+              ],
+              action: 'jest-mock-action',
+              input: {
+                name: '${{each.value.name}}',
+                token: '${{each.value.token}}',
+              },
+            },
+          ],
+        },
+        secrets,
+      );
+      await runner.execute(task);
+
+      Object.values(secrets).forEach((secret, idx) => {
+        expectTaskLog(
+          `info: Running step each: {"key":"${idx}","value":"[object Object]"}`,
+        );
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({
+            input: { name: names[idx], token: secret },
+          }),
+        );
+      });
     });
 
     it('should run a step repeatedly - object', async () => {

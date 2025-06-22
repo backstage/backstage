@@ -20,13 +20,16 @@ import { UserSettingsSignInAvatar } from './UserSettingsSignInAvatar';
 import { UserSettingsMenu } from './UserSettingsMenu';
 import { useUserProfile } from '../useUserProfileInfo';
 import { InfoCard } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
 /** @public */
 export const UserSettingsProfileCard = () => {
   const { profile, displayName } = useUserProfile();
+  const { t } = useTranslationRef(userSettingsTranslationRef);
 
   return (
-    <InfoCard title="Profile" variant="gridItem">
+    <InfoCard title={t('profileCard.title')} variant="gridItem">
       <Grid container spacing={6}>
         <Grid item>
           <UserSettingsSignInAvatar size={96} />

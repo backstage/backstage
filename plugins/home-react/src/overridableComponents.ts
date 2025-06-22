@@ -16,7 +16,7 @@
 
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
-import { PluginHomeContentModalClassKey } from './';
+import { PluginHomeContentModalClassKey } from './components/ContentModal';
 
 /** @public */
 export type PluginHomeComponentsNameToClassKey = {

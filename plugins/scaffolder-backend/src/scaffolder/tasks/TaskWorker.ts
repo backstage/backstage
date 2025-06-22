@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AuditorService } from '@backstage/backend-plugin-api';
+import { AuditorService, LoggerService } from '@backstage/backend-plugin-api';
 import { assertError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -25,7 +25,6 @@ import {
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import PQueue from 'p-queue';
-import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { WorkflowRunner } from './types';
@@ -43,7 +42,7 @@ export type TaskWorkerOptions = {
   };
   concurrentTasksLimit: number;
   permissions?: PermissionEvaluator;
-  logger?: Logger;
+  logger?: LoggerService;
   auditor?: AuditorService;
   gracefulShutdown?: boolean;
 };
@@ -58,7 +57,7 @@ export type CreateWorkerOptions = {
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
-  logger: Logger;
+  logger: LoggerService;
   auditor?: AuditorService;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   /**
@@ -86,7 +85,7 @@ export type CreateWorkerOptions = {
  */
 export class TaskWorker {
   private taskQueue: PQueue;
-  private logger: Logger | undefined;
+  private logger: LoggerService | undefined;
   private auditor: AuditorService | undefined;
   private stopWorkers: boolean;
 

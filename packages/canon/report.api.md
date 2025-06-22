@@ -5,26 +5,31 @@
 ```ts
 import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
 import { Breakpoint as Breakpoint_2 } from '@backstage/canon';
+import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
 import { ChangeEvent } from 'react';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
 import { ComponentProps } from 'react';
+import type { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
 import type { CSSProperties } from 'react';
+import type { ElementType } from 'react';
 import { FC } from 'react';
 import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { LinkProps as LinkProps_2 } from 'react-aria-components';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
-import type { MouseEventHandler } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
+import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { Table as Table_2 } from '@tanstack/react-table';
 import { Tabs as Tabs_2 } from '@base-ui-components/react/tabs';
 import { TdHTMLAttributes } from 'react';
+import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import { ThHTMLAttributes } from 'react';
 import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
 import type { useRender } from '@base-ui-components/react/use-render';
@@ -153,34 +158,60 @@ export const Button: ForwardRefExoticComponent<
 >;
 
 // @public (undocumented)
-export type ButtonOwnProps = GetPropDefTypes<typeof buttonPropDefs>;
-
-// @public (undocumented)
-export const buttonPropDefs: {
-  variant: {
-    type: 'enum';
-    values: ('primary' | 'secondary')[];
-    className: string;
-    default: 'primary';
-    responsive: true;
-  };
-  size: {
-    type: 'enum';
-    values: ('small' | 'medium')[];
-    className: string;
-    default: 'medium';
-    responsive: true;
-  };
-};
+export const ButtonIcon: ForwardRefExoticComponent<
+  ButtonIconProps & RefAttributes<HTMLButtonElement>
+>;
 
 // @public
-export interface ButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  children: React.ReactNode;
+export interface ButtonIconProps extends ButtonProps_2 {
+  // (undocumented)
+  icon?: ReactElement;
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  // (undocumented)
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
+}
+
+// @public (undocumented)
+export const ButtonLink: ForwardRefExoticComponent<
+  ButtonLinkProps & RefAttributes<HTMLAnchorElement>
+>;
+
+// @public
+export interface ButtonLinkProps extends LinkProps_2 {
+  // (undocumented)
+  children?: ReactNode;
+  // (undocumented)
   iconEnd?: ReactElement;
+  // (undocumented)
   iconStart?: ReactElement;
-  size?: ButtonOwnProps['size'];
-  variant?: ButtonOwnProps['variant'];
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  // (undocumented)
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
+}
+
+// @public
+export interface ButtonProps extends ButtonProps_2 {
+  // (undocumented)
+  children?: ReactNode;
+  // (undocumented)
+  iconEnd?: ReactElement;
+  // (undocumented)
+  iconStart?: ReactElement;
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  // (undocumented)
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
 }
 
 // @public (undocumented)
@@ -354,6 +385,20 @@ export type EnumPropDef<T> = {
   default?: T;
   required?: boolean;
 };
+
+// @public (undocumented)
+export const FieldLabel: ForwardRefExoticComponent<
+  FieldLabelProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface FieldLabelProps {
+  description?: string | null;
+  htmlFor?: string;
+  id?: string;
+  label?: string | null;
+  secondaryLabel?: string | null;
+}
 
 // @public (undocumented)
 export const Flex: ForwardRefExoticComponent<
@@ -613,25 +658,15 @@ export interface GridProps extends SpaceProps {
 }
 
 // @public (undocumented)
-export const Heading: ForwardRefExoticComponent<
-  Omit<HeadingProps, 'ref'> & RefAttributes<HTMLHeadingElement>
->;
+export const Heading: <T extends ElementType = 'h1'>(
+  props: HeadingProps<T> & {
+    ref?: React.Ref<any>;
+  },
+) => React.ReactElement | null;
 
 // @public (undocumented)
-export interface HeadingProps
-  extends Omit<useRender.ComponentProps<'h1'>, 'color'> {
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  color?:
-    | 'primary'
-    | 'secondary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
-  // (undocumented)
-  style?: React.CSSProperties;
-  // (undocumented)
-  truncate?: boolean;
-  // (undocumented)
+export type HeadingOwnProps = {
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   variant?:
     | 'display'
     | 'title1'
@@ -645,7 +680,18 @@ export interface HeadingProps
           'display' | 'title1' | 'title2' | 'title3' | 'title4' | 'title5'
         >
       >;
-}
+  color?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+  truncate?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+// @public (undocumented)
+export type HeadingProps<T extends ElementType = 'h1'> = HeadingOwnProps &
+  Omit<ComponentPropsWithRef<T>, keyof HeadingOwnProps>;
 
 // @public (undocumented)
 export const heightPropDefs: {
@@ -674,40 +720,6 @@ export type HeightProps = GetPropDefTypes<typeof heightPropDefs>;
 
 // @public (undocumented)
 export const Icon: (props: IconProps) => JSX_2.Element | null;
-
-// @public (undocumented)
-export const IconButton: ForwardRefExoticComponent<
-  IconButtonProps & RefAttributes<HTMLButtonElement>
->;
-
-// @public (undocumented)
-export type IconButtonOwnProps = GetPropDefTypes<typeof iconButtonPropDefs>;
-
-// @public (undocumented)
-export const iconButtonPropDefs: {
-  variant: {
-    type: 'enum';
-    values: ('primary' | 'secondary')[];
-    className: string;
-    default: 'primary';
-    responsive: true;
-  };
-  size: {
-    type: 'enum';
-    values: ('small' | 'medium')[];
-    className: string;
-    default: 'medium';
-    responsive: true;
-  };
-};
-
-// @public
-export interface IconButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  icon: ReactElement;
-  size?: IconButtonOwnProps['size'];
-  variant?: IconButtonOwnProps['variant'];
-}
 
 // @public (undocumented)
 export const IconContext: Context<IconContextProps>;
@@ -1161,6 +1173,16 @@ export type StylingPropDef = {
   parseValue?: (value: string) => string | undefined;
 };
 
+// @public (undocumented)
+export const Switch: ForwardRefExoticComponent<
+  SwitchProps & RefAttributes<HTMLLabelElement>
+>;
+
+// @public (undocumented)
+export interface SwitchProps extends SwitchProps_2 {
+  label?: string;
+}
+
 // @public
 export const Table: {
   Root: ForwardRefExoticComponent<
@@ -1260,9 +1282,11 @@ export interface TabsRootWithoutOrientation
   > {}
 
 // @public (undocumented)
-const Text_2: ForwardRefExoticComponent<
-  Omit<TextProps, 'ref'> & RefAttributes<HTMLParagraphElement>
->;
+const Text_2: <T extends ElementType = 'p'>(
+  props: TextProps<T> & {
+    ref?: React.Ref<any>;
+  },
+) => React.ReactElement | null;
 export { Text_2 as Text };
 
 // @public (undocumented)
@@ -1272,23 +1296,22 @@ export const TextField: ForwardRefExoticComponent<
 
 // @public (undocumented)
 export interface TextFieldProps
-  extends Omit<React.ComponentPropsWithoutRef<'input'>, 'size'> {
-  className?: string;
-  description?: string;
-  error?: string | null;
+  extends TextFieldProps_2,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
   icon?: ReactNode;
-  label?: string;
-  name: string;
-  onClear?: MouseEventHandler<HTMLButtonElement>;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 
 // @public (undocumented)
-export interface TextProps
-  extends Omit<useRender.ComponentProps<'p'>, 'color'> {
-  // (undocumented)
-  className?: string;
-  // (undocumented)
+export type TextOwnProps = {
+  as?: 'p' | 'span' | 'label';
+  variant?:
+    | 'subtitle'
+    | 'body'
+    | 'caption'
+    | 'label'
+    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
+  weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
   color?:
     | 'primary'
     | 'secondary'
@@ -1301,20 +1324,14 @@ export interface TextProps
           'primary' | 'secondary' | 'danger' | 'warning' | 'success'
         >
       >;
-  // (undocumented)
-  style?: CSSProperties;
-  // (undocumented)
   truncate?: boolean;
-  // (undocumented)
-  variant?:
-    | 'subtitle'
-    | 'body'
-    | 'caption'
-    | 'label'
-    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
-  // (undocumented)
-  weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
-}
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+// @public (undocumented)
+export type TextProps<T extends ElementType = 'p'> = TextOwnProps &
+  Omit<ComponentPropsWithRef<T>, keyof TextOwnProps>;
 
 // @public (undocumented)
 export const Tooltip: {

@@ -253,6 +253,37 @@ export class BitbucketServerEntityProvider implements EntityProvider {
         if (this.config?.filters?.skipArchivedRepos && repository.archived) {
           continue;
         }
+        if (this.config.validateLocationsExist) {
+          try {
+            const response = await client.getFile({
+              projectKey: project.key,
+              repo: repository.slug,
+              path: this.config.catalogPath,
+            });
+            if (!response.ok) {
+              if (response.status === 404) {
+                this.logger.debug(
+                  `Skipping repository ${repository.slug} in project ${project.key} because the catalog file does not exist.`,
+                );
+              } else {
+                this.logger.warn(
+                  `Unexpected response code ${
+                    response.status
+                  } while fetching the catalog file from repository ${
+                    repository.slug
+                  } in project ${
+                    project.key
+                  }. Response details: ${JSON.stringify(response)}`,
+                );
+              }
+              continue;
+            }
+          } catch (error) {
+            this.logger.error(
+              `An error occurred while fetching the catalog file from repository ${repository.slug} in project ${project.key}: ${error}`,
+            );
+          }
+        }
         for await (const entity of this.parser({
           client,
           logger: this.logger,

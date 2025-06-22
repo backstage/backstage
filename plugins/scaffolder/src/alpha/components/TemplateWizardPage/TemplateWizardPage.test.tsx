@@ -151,14 +151,10 @@ describe('TemplateWizardPage', () => {
     });
 
     // Go to the final page
-    await act(async () => {
-      fireEvent.click(await findByRole('button', { name: 'Review' }));
-    });
+    fireEvent.click(await findByRole('button', { name: 'Review' }));
 
     // Create the software
-    await act(async () => {
-      fireEvent.click(await findByRole('button', { name: 'Create' }));
-    });
+    fireEvent.click(await findByRole('button', { name: 'Create' }));
 
     // The "Next Step" button should have fired an event
     expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
@@ -172,15 +168,20 @@ describe('TemplateWizardPage', () => {
     );
 
     // And the "Create" button should have fired an event
-    expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
-      expect.objectContaining({
-        action: 'create',
-        subject: 'expected-name',
-        context: expect.objectContaining({
-          entityRef: 'template:default/test',
+    await waitFor(() =>
+      expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'create',
+          subject: 'Task has been created',
+          attributes: {
+            templateSteps: 1,
+          },
+          context: expect.objectContaining({
+            entityRef: 'template:default/test',
+          }),
+          value: 120,
         }),
-        value: 120,
-      }),
+      ),
     );
   });
 

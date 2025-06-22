@@ -38,7 +38,7 @@
 
 [data-theme='dark'] .previewContent {
   background-image: radial-gradient(
-    rgba(255, 255, 255, 0.14) 1px,
+    rgba(255, 255, 255, 0.18) 1px,
     transparent 0
   );
 }

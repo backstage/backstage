@@ -74,3 +74,5 @@ export default createFrontendPlugin({
     root: rootRouteRef,
   },
 });
+
+export { homeTranslationRef } from './translation';

@@ -1,5 +1,34 @@
 # @backstage/backend-app-api
 
+## 1.2.4
+
+### Patch Changes
+
+- bb9a501: Fixed a bug where occasionally the initialization order of multiple modules consuming a single extension point could happen in the wrong order.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.2.4-next.2
+
+### Patch Changes
+
+- bb9a501: Fixed a bug where occasionally the initialization order of multiple modules consuming a single extension point could happen in the wrong order.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.2.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 1.2.4-next.0
 
 ### Patch Changes
