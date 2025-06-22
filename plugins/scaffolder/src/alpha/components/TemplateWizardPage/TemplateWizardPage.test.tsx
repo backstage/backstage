@@ -21,7 +21,7 @@ import {
   renderInTestApp,
   TestApiRegistry,
 } from '@backstage/test-utils';
-import { act, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 import { useLocation } from 'react-router-dom';
 import {
   ScaffolderApi,
