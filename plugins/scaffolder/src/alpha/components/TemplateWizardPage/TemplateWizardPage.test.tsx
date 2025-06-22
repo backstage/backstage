@@ -21,7 +21,8 @@ import {
   renderInTestApp,
   TestApiRegistry,
 } from '@backstage/test-utils';
-import { act, fireEvent } from '@testing-library/react';
+import { act, fireEvent, waitFor } from '@testing-library/react';
+import { useLocation } from 'react-router-dom';
 import {
   ScaffolderApi,
   scaffolderApiRef,
@@ -36,11 +37,19 @@ import { ScaffolderFormDecoratorsApi } from '../../api/types';
 import { formDecoratorsApiRef } from '../../api/ref';
 
 jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
   return {
-    ...(jest.requireActual('react-router-dom') as any),
+    ...actual,
     useParams: () => ({
       templateName: 'test',
     }),
+    useLocation: jest.fn(() => ({
+      pathname: '/',
+      search: '',
+      hash: '',
+      state: null,
+      key: 'default-key',
+    })),
   };
 });
 
@@ -88,7 +97,22 @@ const entityRefResponse = {
   },
 };
 
+const mockedUseLocation = useLocation as jest.MockedFunction<
+  typeof useLocation
+>;
+
 describe('TemplateWizardPage', () => {
+  beforeEach(() => {
+    mockedUseLocation.mockClear();
+    mockedUseLocation.mockReturnValue({
+      pathname: '/create',
+      search: '',
+      hash: '',
+      state: null,
+      key: 'testkey',
+    });
+  });
+
   it('captures expected analytics events', async () => {
     scaffolderApiMock.scaffold.mockResolvedValue({ taskId: 'xyz' });
     scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
@@ -158,6 +182,51 @@ describe('TemplateWizardPage', () => {
         value: 120,
       }),
     );
+  });
+
+  it('should display "Template [Specific Title]" in the document title when templateTitle is in location state', async () => {
+    scaffolderApiMock.scaffold.mockResolvedValue({ taskId: 'xyz' });
+    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+      steps: [
+        {
+          title: 'Step 1',
+          schema: {
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      ],
+      title: 'React JSON Schema Form Test',
+    });
+    catalogApi.getEntityByRef.mockResolvedValue(entityRefResponse);
+
+    const templateTitleForState = 'React JSON Schema Form Test';
+    mockedUseLocation.mockReturnValue({
+      pathname: '/create',
+      search: '',
+      hash: '',
+      state: { templateTitle: templateTitleForState },
+      key: 'testkey-doc-title',
+    });
+
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <SecretsContextProvider>
+          <TemplateWizardPage customFieldExtensions={[]} />
+        </SecretsContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/create': rootRouteRef,
+        },
+      },
+    );
+    await waitFor(() => {
+      expect(document.title).toContain(`Template ${templateTitleForState}`);
+    });
   });
 
   describe('scaffolder page context menu', () => {
