@@ -321,9 +321,34 @@ export const componentDefinitions: {
       readonly root: 'canon-ButtonLink';
     };
   };
+  readonly Checkbox: {
+    readonly classNames: {
+      readonly root: 'canon-CheckboxRoot';
+      readonly label: 'canon-CheckboxLabel';
+      readonly indicator: 'canon-CheckboxIndicator';
+    };
+    readonly dataAttributes: {
+      readonly checked: readonly [true, false];
+    };
+  };
+  readonly Collapsible: {
+    readonly classNames: {
+      readonly root: 'canon-CollapsibleRoot';
+      readonly trigger: 'canon-CollapsibleTrigger';
+      readonly panel: 'canon-CollapsiblePanel';
+    };
+  };
   readonly Container: {
     readonly classNames: {
       readonly root: 'canon-Container';
+    };
+  };
+  readonly FieldLabel: {
+    readonly classNames: {
+      readonly root: 'canon-FieldLabel';
+      readonly label: 'canon-FieldLabelLabel';
+      readonly secondaryLabel: 'canon-FieldLabelSecondaryLabel';
+      readonly description: 'canon-FieldLabelDescription';
     };
   };
   readonly Flex: {
@@ -334,17 +359,7 @@ export const componentDefinitions: {
   readonly Grid: {
     readonly classNames: {
       readonly root: 'canon-Grid';
-    };
-  };
-  readonly Text: {
-    readonly classNames: {
-      readonly root: 'canon-Text';
-    };
-    readonly dataAttributes: {
-      readonly variant: readonly ['body', 'caption', 'label'];
-      readonly weight: readonly ['regular', 'medium', 'bold'];
-      readonly color: readonly ['primary', 'secondary', 'muted'];
-      readonly truncate: readonly [true, false];
+      readonly item: 'canon-GridItem';
     };
   };
   readonly Heading: {
@@ -357,67 +372,9 @@ export const componentDefinitions: {
       readonly truncate: readonly [true, false];
     };
   };
-  readonly TextField: {
+  readonly Icon: {
     readonly classNames: {
-      readonly root: 'canon-TextField';
-      readonly input: 'canon-TextField-input';
-      readonly label: 'canon-TextField-label';
-      readonly error: 'canon-TextField-error';
-      readonly helper: 'canon-TextField-helper';
-      readonly container: 'canon-TextField-container';
-    };
-    readonly dataAttributes: {
-      readonly invalid: readonly [true, false];
-      readonly disabled: readonly [true, false];
-    };
-  };
-  readonly FieldLabel: {
-    readonly classNames: {
-      readonly root: 'canon-FieldLabel';
-      readonly required: 'canon-FieldLabel-required';
-    };
-    readonly dataAttributes: {
-      readonly required: readonly [true, false];
-    };
-  };
-  readonly Select: {
-    readonly classNames: {
-      readonly root: 'canon-Select';
-      readonly trigger: 'canon-Select-trigger';
-      readonly content: 'canon-Select-content';
-      readonly item: 'canon-Select-item';
-      readonly value: 'canon-Select-value';
-      readonly icon: 'canon-Select-icon';
-      readonly separator: 'canon-Select-separator';
-    };
-    readonly dataAttributes: {
-      readonly invalid: readonly [true, false];
-      readonly disabled: readonly [true, false];
-      readonly open: readonly [true, false];
-    };
-  };
-  readonly Checkbox: {
-    readonly classNames: {
-      readonly root: 'canon-Checkbox';
-      readonly input: 'canon-Checkbox-input';
-      readonly indicator: 'canon-Checkbox-indicator';
-      readonly label: 'canon-Checkbox-label';
-    };
-    readonly dataAttributes: {
-      readonly checked: readonly [true, false];
-      readonly indeterminate: readonly [true, false];
-      readonly disabled: readonly [true, false];
-    };
-  };
-  readonly Switch: {
-    readonly classNames: {
-      readonly root: 'canon-Switch';
-      readonly thumb: 'canon-Switch-thumb';
-      readonly track: 'canon-Switch-track';
-    };
-    readonly dataAttributes: {
-      readonly checked: readonly [true, false];
-      readonly disabled: readonly [true, false];
+      readonly root: 'canon-Icon';
     };
   };
   readonly Link: {
@@ -425,91 +382,131 @@ export const componentDefinitions: {
       readonly root: 'canon-Link';
     };
     readonly dataAttributes: {
-      readonly variant: readonly ['primary', 'secondary'];
+      readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
+      readonly weight: readonly ['regular', 'bold'];
     };
   };
   readonly Menu: {
     readonly classNames: {
-      readonly root: 'canon-Menu';
-      readonly trigger: 'canon-Menu-trigger';
-      readonly content: 'canon-Menu-content';
-      readonly item: 'canon-Menu-item';
-      readonly separator: 'canon-Menu-separator';
-      readonly label: 'canon-Menu-label';
-      readonly group: 'canon-Menu-group';
+      readonly trigger: 'canon-MenuTrigger';
+      readonly backdrop: 'canon-MenuBackdrop';
+      readonly positioner: 'canon-MenuPositioner';
+      readonly popup: 'canon-MenuPopup';
+      readonly arrow: 'canon-MenuArrow';
+      readonly item: 'canon-MenuItem';
+      readonly group: 'canon-MenuGroup';
+      readonly groupLabel: 'canon-MenuGroupLabel';
+      readonly radioGroup: 'canon-MenuRadioGroup';
+      readonly radioItem: 'canon-MenuRadioItem';
+      readonly radioItemIndicator: 'canon-MenuRadioItemIndicator';
+      readonly checkboxItem: 'canon-MenuCheckboxItem';
+      readonly checkboxItemIndicator: 'canon-MenuCheckboxItemIndicator';
+      readonly submenuTrigger: 'canon-MenuSubmenuTrigger';
+      readonly separator: 'canon-MenuSeparator';
     };
   };
-  readonly Tabs: {
+  readonly RadioGroup: {
     readonly classNames: {
-      readonly root: 'canon-Tabs';
-      readonly list: 'canon-Tabs-list';
-      readonly tab: 'canon-Tabs-tab';
-      readonly panel: 'canon-Tabs-panel';
-      readonly trigger: 'canon-Tabs-trigger';
-    };
-  };
-  readonly Table: {
-    readonly classNames: {
-      readonly root: 'canon-Table';
-      readonly header: 'canon-Table-header';
-      readonly body: 'canon-Table-body';
-      readonly footer: 'canon-Table-footer';
-      readonly row: 'canon-Table-row';
-      readonly cell: 'canon-Table-cell';
-      readonly headerCell: 'canon-Table-headerCell';
-      readonly caption: 'canon-Table-caption';
-    };
-  };
-  readonly DataTable: {
-    readonly classNames: {
-      readonly root: 'canon-DataTable';
-      readonly container: 'canon-DataTable-container';
-      readonly header: 'canon-DataTable-header';
-      readonly body: 'canon-DataTable-body';
-      readonly row: 'canon-DataTable-row';
-      readonly cell: 'canon-DataTable-cell';
-      readonly headerCell: 'canon-DataTable-headerCell';
-      readonly toolbar: 'canon-DataTable-toolbar';
-      readonly pagination: 'canon-DataTable-pagination';
-      readonly search: 'canon-DataTable-search';
-      readonly filters: 'canon-DataTable-filters';
-    };
-  };
-  readonly Icon: {
-    readonly classNames: {
-      readonly root: 'canon-Icon';
-    };
-    readonly dataAttributes: {
-      readonly size: readonly ['small', 'medium', 'large'];
-    };
-  };
-  readonly Tooltip: {
-    readonly classNames: {
-      readonly root: 'canon-Tooltip';
-      readonly trigger: 'canon-Tooltip-trigger';
-      readonly content: 'canon-Tooltip-content';
-      readonly arrow: 'canon-Tooltip-arrow';
-    };
-  };
-  readonly Collapsible: {
-    readonly classNames: {
-      readonly root: 'canon-Collapsible';
-      readonly trigger: 'canon-Collapsible-trigger';
-      readonly content: 'canon-Collapsible-content';
-      readonly icon: 'canon-Collapsible-icon';
-    };
-    readonly dataAttributes: {
-      readonly open: readonly [true, false];
+      readonly root: 'canon-RadioGroup';
+      readonly content: 'canon-RadioGroupContent';
+      readonly radio: 'canon-Radio';
     };
   };
   readonly ScrollArea: {
     readonly classNames: {
-      readonly root: 'canon-ScrollArea';
-      readonly viewport: 'canon-ScrollArea-viewport';
-      readonly scrollbar: 'canon-ScrollArea-scrollbar';
-      readonly thumb: 'canon-ScrollArea-thumb';
-      readonly corner: 'canon-ScrollArea-corner';
-      readonly track: 'canon-ScrollArea-track';
+      readonly root: 'canon-ScrollAreaRoot';
+      readonly viewport: 'canon-ScrollAreaViewport';
+      readonly scrollbar: 'canon-ScrollAreaScrollbar';
+      readonly thumb: 'canon-ScrollAreaThumb';
+    };
+  };
+  readonly Select: {
+    readonly classNames: {
+      readonly root: 'canon-Select';
+      readonly required: 'canon-SelectRequired';
+      readonly trigger: 'canon-SelectTrigger';
+      readonly value: 'canon-SelectValue';
+      readonly icon: 'canon-SelectIcon';
+      readonly popup: 'canon-SelectPopup';
+      readonly item: 'canon-SelectItem';
+      readonly itemIndicator: 'canon-SelectItemIndicator';
+      readonly itemText: 'canon-SelectItemText';
+      readonly description: 'canon-SelectDescription';
+      readonly error: 'canon-SelectError';
+    };
+    readonly dataAttributes: {
+      readonly size: readonly ['small', 'medium'];
+    };
+  };
+  readonly Switch: {
+    readonly classNames: {
+      readonly root: 'canon-Switch';
+      readonly indicator: 'canon-SwitchIndicator';
+    };
+  };
+  readonly Table: {
+    readonly classNames: {
+      readonly root: 'canon-TableRoot';
+      readonly header: 'canon-TableHeader';
+      readonly body: 'canon-TableBody';
+      readonly row: 'canon-TableRow';
+      readonly head: 'canon-TableHead';
+      readonly caption: 'canon-TableCaption';
+      readonly cell: 'canon-TableCell';
+      readonly cellText: 'canon-TableCellText';
+      readonly cellLink: 'canon-TableCellLink';
+      readonly cellProfile: 'canon-TableCellProfile';
+      readonly cellProfileAvatar: 'canon-TableCellProfileAvatar';
+      readonly cellProfileAvatarImage: 'canon-TableCellProfileAvatarImage';
+      readonly cellProfileAvatarFallback: 'canon-TableCellProfileAvatarFallback';
+      readonly cellProfileName: 'canon-TableCellProfileName';
+      readonly cellProfileLink: 'canon-TableCellProfileLink';
+    };
+  };
+  readonly Tabs: {
+    readonly classNames: {
+      readonly root: 'canon-TabsRoot';
+      readonly list: 'canon-TabsList';
+      readonly indicator: 'canon-TabsIndicator';
+      readonly tab: 'canon-TabsTab';
+      readonly panel: 'canon-TabsPanel';
+    };
+  };
+  readonly Text: {
+    readonly classNames: {
+      readonly root: 'canon-Text';
+    };
+    readonly dataAttributes: {
+      readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
+      readonly weight: readonly ['regular', 'bold'];
+      readonly color: readonly [
+        'primary',
+        'secondary',
+        'danger',
+        'warning',
+        'success',
+      ];
+      readonly truncate: readonly [true, false];
+    };
+  };
+  readonly TextField: {
+    readonly classNames: {
+      readonly root: 'canon-TextField';
+      readonly inputWrapper: 'canon-TextFieldInputWrapper';
+      readonly icon: 'canon-TextFieldIcon';
+      readonly input: 'canon-TextFieldInput';
+    };
+    readonly dataAttributes: {
+      readonly invalid: readonly [true, false];
+      readonly disabled: readonly [true, false];
+    };
+  };
+  readonly Tooltip: {
+    readonly classNames: {
+      readonly trigger: 'canon-TooltipTrigger';
+      readonly positioner: 'canon-TooltipPositioner';
+      readonly popup: 'canon-TooltipPopup';
+      readonly arrow: 'canon-TooltipArrow';
     };
   };
 };

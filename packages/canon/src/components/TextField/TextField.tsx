@@ -73,12 +73,12 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
         />
         <div
           className={classNames.inputWrapper}
-          data-size={dataAttributes.size}
+          data-size={dataAttributes['data-size']}
         >
           {icon && (
             <div
               className={classNames.icon}
-              data-size={dataAttributes.size}
+              data-size={dataAttributes['data-size']}
               aria-hidden="true"
             >
               {icon}

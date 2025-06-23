@@ -20,7 +20,6 @@ import { Icon } from '../Icon';
 import clsx from 'clsx';
 import './Select.styles.css';
 import { SelectProps } from './types';
-import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
@@ -38,7 +37,9 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
     ...rest
   } = props;
 
-  const { classNames, dataAttributes } = useStyles('Select');
+  const { classNames, dataAttributes } = useStyles('Select', {
+    size,
+  });
 
   // Generate unique IDs for accessibility
   const selectId = useId();
@@ -79,7 +80,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
           ref={triggerRef}
           id={selectId}
           className={classNames.trigger}
-          data-size={dataAttributes.size}
+          data-size={dataAttributes['data-size']}
           data-invalid={error}
         >
           <SelectPrimitive.Value
