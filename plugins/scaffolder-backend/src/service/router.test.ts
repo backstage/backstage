@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DatabaseManager } from '@backstage/backend-common';
+import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
 import request from 'supertest';
 import ObservableImpl from 'zen-observable';
@@ -77,7 +77,10 @@ function createDatabase(): DatabaseService {
         },
       },
     }),
-  ).forPlugin('scaffolder');
+  ).forPlugin('scaffolder', {
+    logger: mockServices.logger.mock(),
+    lifecycle: mockServices.lifecycle.mock(),
+  });
 }
 
 const config = new ConfigReader({});
