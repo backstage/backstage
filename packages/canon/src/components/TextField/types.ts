@@ -33,4 +33,9 @@ export interface TextFieldProps
    * @defaultValue 'medium'
    */
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+
+  /**
+   * Text to display in the input when it has no value
+   */
+  placeholder?: string;
 }
