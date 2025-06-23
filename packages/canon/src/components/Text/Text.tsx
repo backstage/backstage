@@ -15,10 +15,10 @@
  */
 
 import { forwardRef } from 'react';
-import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
 import type { ElementType } from 'react';
 import type { TextProps } from './types';
+import { useStyles } from '../../hooks/useStyles';
 
 function TextComponent<T extends ElementType = 'p'>(
   {
@@ -35,19 +35,18 @@ function TextComponent<T extends ElementType = 'p'>(
 ) {
   const Component = as || 'p';
 
-  // Get the responsive values for the variant and weight
-  const responsiveVariant = useResponsiveValue(variant);
-  const responsiveWeight = useResponsiveValue(weight);
-  const responsiveColor = useResponsiveValue(color);
+  const { classNames, dataAttributes } = useStyles('Text', {
+    variant,
+    weight,
+    color,
+    truncate,
+  });
 
   return (
     <Component
       ref={ref}
-      className={clsx('canon-Text', className)}
-      data-variant={responsiveVariant}
-      data-weight={responsiveWeight}
-      data-color={responsiveColor}
-      data-truncate={truncate}
+      className={clsx(classNames.root, className)}
+      {...dataAttributes}
       style={style}
       {...restProps}
     />

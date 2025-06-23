@@ -139,6 +139,13 @@ export const componentDefinitions = {
       separator: 'canon-MenuSeparator',
     },
   },
+  RadioGroup: {
+    classNames: {
+      root: 'canon-RadioGroup',
+      content: 'canon-RadioGroupContent',
+      radio: 'canon-Radio',
+    },
+  },
   ScrollArea: {
     classNames: {
       root: 'canon-ScrollAreaRoot',
@@ -147,117 +154,87 @@ export const componentDefinitions = {
       thumb: 'canon-ScrollAreaThumb',
     },
   },
-
-  // Typography Components
+  Select: {
+    classNames: {
+      root: 'canon-Select',
+      required: 'canon-SelectRequired',
+      trigger: 'canon-SelectTrigger',
+      value: 'canon-SelectValue',
+      icon: 'canon-SelectIcon',
+      popup: 'canon-SelectPopup',
+      item: 'canon-SelectItem',
+      itemIndicator: 'canon-SelectItemIndicator',
+      itemText: 'canon-SelectItemText',
+      description: 'canon-SelectDescription',
+      error: 'canon-SelectError',
+    },
+    dataAttributes: {
+      size: ['small', 'medium'] as const,
+    },
+  },
+  Switch: {
+    classNames: {
+      root: 'canon-Switch',
+      indicator: 'canon-SwitchIndicator',
+    },
+  },
+  Table: {
+    classNames: {
+      root: 'canon-TableRoot',
+      header: 'canon-TableHeader',
+      body: 'canon-TableBody',
+      row: 'canon-TableRow',
+      head: 'canon-TableHead',
+      caption: 'canon-TableCaption',
+      cell: 'canon-TableCell',
+      cellText: 'canon-TableCellText',
+      cellLink: 'canon-TableCellLink',
+      cellProfile: 'canon-TableCellProfile',
+      cellProfileAvatar: 'canon-TableCellProfileAvatar',
+      cellProfileAvatarImage: 'canon-TableCellProfileAvatarImage',
+      cellProfileAvatarFallback: 'canon-TableCellProfileAvatarFallback',
+      cellProfileName: 'canon-TableCellProfileName',
+      cellProfileLink: 'canon-TableCellProfileLink',
+    },
+  },
+  Tabs: {
+    classNames: {
+      root: 'canon-TabsRoot',
+      list: 'canon-TabsList',
+      indicator: 'canon-TabsIndicator',
+      tab: 'canon-TabsTab',
+      panel: 'canon-TabsPanel',
+    },
+  },
   Text: {
     classNames: {
       root: 'canon-Text',
     },
     dataAttributes: {
-      variant: ['body', 'caption', 'label'] as const,
-      weight: ['regular', 'medium', 'bold'] as const,
-      color: ['primary', 'secondary', 'muted'] as const,
+      variant: ['subtitle', 'body', 'caption', 'label'] as const,
+      weight: ['regular', 'bold'] as const,
+      color: ['primary', 'secondary', 'danger', 'warning', 'success'] as const,
       truncate: [true, false] as const,
     },
   },
-
   TextField: {
     classNames: {
       root: 'canon-TextField',
-      input: 'canon-TextField-input',
-      label: 'canon-TextField-label',
-      error: 'canon-TextField-error',
-      helper: 'canon-TextField-helper',
-      container: 'canon-TextField-container',
+      inputWrapper: 'canon-TextFieldInputWrapper',
+      icon: 'canon-TextFieldIcon',
+      input: 'canon-TextFieldInput',
     },
     dataAttributes: {
       invalid: [true, false] as const,
       disabled: [true, false] as const,
     },
   },
-
-  Select: {
-    classNames: {
-      root: 'canon-Select',
-      trigger: 'canon-Select-trigger',
-      content: 'canon-Select-content',
-      item: 'canon-Select-item',
-      value: 'canon-Select-value',
-      icon: 'canon-Select-icon',
-      separator: 'canon-Select-separator',
-    },
-    dataAttributes: {
-      invalid: [true, false] as const,
-      disabled: [true, false] as const,
-      open: [true, false] as const,
-    },
-  },
-
-  Switch: {
-    classNames: {
-      root: 'canon-Switch',
-      thumb: 'canon-Switch-thumb',
-      track: 'canon-Switch-track',
-    },
-    dataAttributes: {
-      checked: [true, false] as const,
-      disabled: [true, false] as const,
-    },
-  },
-
-  // Navigation Components
-
-  Tabs: {
-    classNames: {
-      root: 'canon-Tabs',
-      list: 'canon-Tabs-list',
-      tab: 'canon-Tabs-tab',
-      panel: 'canon-Tabs-panel',
-      trigger: 'canon-Tabs-trigger',
-    },
-  },
-
-  // Data Display Components
-  Table: {
-    classNames: {
-      root: 'canon-Table',
-      header: 'canon-Table-header',
-      body: 'canon-Table-body',
-      footer: 'canon-Table-footer',
-      row: 'canon-Table-row',
-      cell: 'canon-Table-cell',
-      headerCell: 'canon-Table-headerCell',
-      caption: 'canon-Table-caption',
-    },
-  },
-
-  DataTable: {
-    classNames: {
-      root: 'canon-DataTable',
-      container: 'canon-DataTable-container',
-      header: 'canon-DataTable-header',
-      body: 'canon-DataTable-body',
-      row: 'canon-DataTable-row',
-      cell: 'canon-DataTable-cell',
-      headerCell: 'canon-DataTable-headerCell',
-      toolbar: 'canon-DataTable-toolbar',
-      pagination: 'canon-DataTable-pagination',
-      search: 'canon-DataTable-search',
-      filters: 'canon-DataTable-filters',
-    },
-  },
-
-  // Feedback Components
   Tooltip: {
     classNames: {
-      root: 'canon-Tooltip',
-      trigger: 'canon-Tooltip-trigger',
-      content: 'canon-Tooltip-content',
-      arrow: 'canon-Tooltip-arrow',
+      trigger: 'canon-TooltipTrigger',
+      positioner: 'canon-TooltipPositioner',
+      popup: 'canon-TooltipPopup',
+      arrow: 'canon-TooltipArrow',
     },
   },
-
-  // Disclosure Components
-
-  // Utility Components
 } as const satisfies Record<string, ComponentDefinition>;
