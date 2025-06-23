@@ -17,17 +17,21 @@
 import { forwardRef, useEffect } from 'react';
 import {
   Input,
-  TextField as AriaTextField,
+  SearchField as AriaSearchField,
   FieldError,
+  Button,
+  Label,
+  Text,
 } from 'react-aria-components';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
+import { RiSearch2Line, RiCloseCircleLine } from '@remixicon/react';
 
-import type { TextFieldProps } from './types';
+import type { SearchFieldProps } from './types';
 
 /** @public */
-export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
+export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
   (props, ref) => {
     const {
       className,
@@ -37,6 +41,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       secondaryLabel,
       description,
       isRequired,
+      placeholder = 'Search',
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
       ...rest
@@ -45,7 +50,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
     useEffect(() => {
       if (!label && !ariaLabel && !ariaLabelledBy) {
         console.warn(
-          'TextField requires either a visible label, aria-label, or aria-labelledby for accessibility',
+          'SearchField requires either a visible label, aria-label, or aria-labelledby for accessibility',
         );
       }
     }, [label, ariaLabel, ariaLabelledBy]);
@@ -57,9 +62,19 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
     const secondaryLabelText =
       secondaryLabel || (isRequired ? 'Required' : null);
 
+    // return (
+    //   <AriaSearchField>
+    //     <Label />
+    //     <Input />
+    //     <Button />
+    //     <Text slot="description" />
+    //     <FieldError />
+    //   </AriaSearchField>
+    // );
+
     return (
-      <AriaTextField
-        className={clsx('canon-TextField', className)}
+      <AriaSearchField
+        className={clsx('canon-TextField', 'canon-SearchField', className)}
         data-size={responsiveSize}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
@@ -72,21 +87,27 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           description={description}
         />
         <div className="canon-Input" data-size={responsiveSize}>
-          {icon && (
+          {icon !== false && (
             <div
               className="canon-InputIcon"
               data-size={responsiveSize}
               aria-hidden="true"
             >
-              {icon}
+              {icon || <RiSearch2Line />}
             </div>
           )}
-          <Input {...(icon && { 'data-icon': true })} />
+          <Input
+            {...(icon !== false && { 'data-icon': true })}
+            placeholder={placeholder}
+          />
+          <Button className="canon-InputClear" data-size={responsiveSize}>
+            <RiCloseCircleLine />
+          </Button>
         </div>
         <FieldError className="canon-TextFieldError" />
-      </AriaTextField>
+      </AriaSearchField>
     );
   },
 );
 
-TextField.displayName = 'TextField';
+SearchField.displayName = 'searchField';
