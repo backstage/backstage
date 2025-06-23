@@ -5930,14 +5930,14 @@ __metadata:
   linkType: hard
 
 "docusaurus-plugin-sass@npm:^0.2.3":
-  version: 0.2.5
-  resolution: "docusaurus-plugin-sass@npm:0.2.5"
+  version: 0.2.6
+  resolution: "docusaurus-plugin-sass@npm:0.2.6"
   dependencies:
-    sass-loader: "npm:^10.1.1"
+    sass-loader: "npm:^16.0.2"
   peerDependencies:
     "@docusaurus/core": ^2.0.0-beta || ^3.0.0-alpha
     sass: ^1.30.0
-  checksum: 10/bcf9627c0491ab6f6a6d8387c2b72b9aac9bf31575f3affb6441516c8c60512cd9c68444f7b5be6167cfd86379b9beffa8a97f297d77c6ad3ee9e4cc882fa4db
+  checksum: 10/2baff278140a77f3d848e90014c1a975391f87f723bcdc860df3d70c34f92fb4f1da1777384af17cf6c515a4371a818a0d0fd321937890d8c86c183fdfc60f18
   languageName: node
   linkType: hard
 
@@ -8634,13 +8634,6 @@ __metadata:
   version: 4.1.5
   resolution: "kleur@npm:4.1.5"
   checksum: 10/44d84cc4eedd4311099402ef6d4acd9b2d16e08e499d6ef3bb92389bd4692d7ef09e35248c26e27f98acac532122acb12a1bfee645994ae3af4f0a37996da7df
-  languageName: node
-  linkType: hard
-
-"klona@npm:^2.0.4":
-  version: 2.0.6
-  resolution: "klona@npm:2.0.6"
-  checksum: 10/ed7e2c9af58cb646e758e60b75dec24bf72466066290f78c515a2bae23a06fa280f11ff3210c43b94a18744954aa5358f9d46583d5e4c36da073ecc3606355c4
   languageName: node
   linkType: hard
 
@@ -12954,31 +12947,6 @@ __metadata:
   version: 2.1.2
   resolution: "safer-buffer@npm:2.1.2"
   checksum: 10/7eaf7a0cf37cc27b42fb3ef6a9b1df6e93a1c6d98c6c6702b02fe262d5fcbd89db63320793b99b21cb5348097d0a53de81bd5f4e8b86e20cc9412e3f1cfb4e83
-  languageName: node
-  linkType: hard
-
-"sass-loader@npm:^10.1.1":
-  version: 10.4.1
-  resolution: "sass-loader@npm:10.4.1"
-  dependencies:
-    klona: "npm:^2.0.4"
-    loader-utils: "npm:^2.0.0"
-    neo-async: "npm:^2.6.2"
-    schema-utils: "npm:^3.0.0"
-    semver: "npm:^7.3.2"
-  peerDependencies:
-    fibers: ">= 3.1.0"
-    node-sass: ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
-    sass: ^1.3.0
-    webpack: ^4.36.0 || ^5.0.0
-  peerDependenciesMeta:
-    fibers:
-      optional: true
-    node-sass:
-      optional: true
-    sass:
-      optional: true
-  checksum: 10/cffe9f85a20c1a9cd486a032f05d74f9c50f4296735642d18eab25582c64afcd1e8a6038156b4ea2224e876b215089e93639fc99385c432da3be87254561b7a9
   languageName: node
   linkType: hard
 
