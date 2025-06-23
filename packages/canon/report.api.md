@@ -18,6 +18,7 @@ import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { LinkProps as LinkProps_2 } from 'react-aria-components';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
@@ -165,6 +166,28 @@ export const ButtonIcon: ForwardRefExoticComponent<
 export interface ButtonIconProps extends ButtonProps_2 {
   // (undocumented)
   icon?: ReactElement;
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  // (undocumented)
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
+}
+
+// @public (undocumented)
+export const ButtonLink: ForwardRefExoticComponent<
+  ButtonLinkProps & RefAttributes<HTMLAnchorElement>
+>;
+
+// @public
+export interface ButtonLinkProps extends LinkProps_2 {
+  // (undocumented)
+  children?: ReactNode;
+  // (undocumented)
+  iconEnd?: ReactElement;
+  // (undocumented)
+  iconStart?: ReactElement;
   // (undocumented)
   size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
   // (undocumented)
