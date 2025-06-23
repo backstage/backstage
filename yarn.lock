@@ -19086,8 +19086,8 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-core@npm:^1.18.0, @stoplight/spectral-core@npm:^1.18.3, @stoplight/spectral-core@npm:^1.19.2, @stoplight/spectral-core@npm:^1.19.4, @stoplight/spectral-core@npm:^1.8.1":
-  version: 1.19.5
-  resolution: "@stoplight/spectral-core@npm:1.19.5"
+  version: 1.20.0
+  resolution: "@stoplight/spectral-core@npm:1.20.0"
   dependencies:
     "@stoplight/better-ajv-errors": "npm:1.0.3"
     "@stoplight/json": "npm:~3.21.0"
@@ -19110,7 +19110,7 @@ __metadata:
     pony-cause: "npm:^1.1.1"
     simple-eval: "npm:1.0.1"
     tslib: "npm:^2.8.1"
-  checksum: 10/db0f6c1c0ca67bc4a49c480259d261283ccb72958cd3a2a761dccbbbb1fdd04911df9c0a05f7ce4453e303de737206fbf3e799a1ace5db49d433a2848abe13b2
+  checksum: 10/63628dcf4b1556db166a020dd78d17033908fa7d1c67c62739e35848e5d0e095714524b4c142aa7d6524fe556152f4dbb8cb388b36bc6e37026bf07c31a0e69b
   languageName: node
   linkType: hard
 
