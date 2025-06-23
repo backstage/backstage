@@ -20,8 +20,6 @@ import {
   SearchField as AriaSearchField,
   FieldError,
   Button,
-  Label,
-  Text,
 } from 'react-aria-components';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
@@ -61,16 +59,6 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
       secondaryLabel || (isRequired ? 'Required' : null);
-
-    // return (
-    //   <AriaSearchField>
-    //     <Label />
-    //     <Input />
-    //     <Button />
-    //     <Text slot="description" />
-    //     <FieldError />
-    //   </AriaSearchField>
-    // );
 
     return (
       <AriaSearchField

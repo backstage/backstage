@@ -27,6 +27,7 @@ import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
+import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { Table as Table_2 } from '@tanstack/react-table';
 import { Tabs as Tabs_2 } from '@base-ui-components/react/tabs';
@@ -1100,6 +1101,20 @@ export const ScrollArea: {
       RefAttributes<HTMLDivElement>
   >;
 };
+
+// @public (undocumented)
+export const SearchField: ForwardRefExoticComponent<
+  SearchFieldProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface SearchFieldProps
+  extends SearchFieldProps_2,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+  icon?: ReactNode | false;
+  placeholder?: string;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+}
 
 // @public (undocumented)
 export const Select: ForwardRefExoticComponent<
