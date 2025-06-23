@@ -11251,14 +11251,14 @@ __metadata:
   linkType: hard
 
 "@keyv/redis@npm:^4.0.1":
-  version: 4.4.0
-  resolution: "@keyv/redis@npm:4.4.0"
+  version: 4.4.1
+  resolution: "@keyv/redis@npm:4.4.1"
   dependencies:
     "@redis/client": "npm:^1.6.0"
     cluster-key-slot: "npm:^1.1.2"
   peerDependencies:
-    keyv: ^5.3.3
-  checksum: 10/61ad0a026f1ee8bbd0f09bb1b3c731619b37dc4bba0d5f2111cb5249e643e6a776816786090c53d5ac1fa62a43e1b43d406dae06cfb119abcb47b6ac837eebb0
+    keyv: ^5.3.4
+  checksum: 10/85bf5830d5a19f45fbba864f7eb830cff0059f3f7c59c711a65b439821008a3321a94fb06c4d1f09295f0f233422586458652d266696c0925b5c8d1d695700ec
   languageName: node
   linkType: hard
 
