@@ -76,10 +76,19 @@ export namespace mockCredentials {
    * Creates a mocked credentials object for a unauthenticated principal.
    */
   export function none(): BackstageCredentials<BackstageNonePrincipal> {
-    return {
+    const result = {
       $$type: '@backstage/BackstageCredentials',
       principal: { type: 'none' },
-    };
+    } as const;
+    Object.defineProperties(result, {
+      toString: {
+        enumerable: false,
+        configurable: true,
+        writable: true,
+        value: () => `mockCredentials{nonePrincipal}`,
+      },
+    });
+    return result;
   }
 
   /**
@@ -111,24 +120,32 @@ export namespace mockCredentials {
     options?: { actor?: { subject: string } },
   ): BackstageCredentials<BackstageUserPrincipal> {
     validateUserEntityRef(userEntityRef);
-    return Object.defineProperty(
-      {
-        $$type: '@backstage/BackstageCredentials',
-        principal: {
-          type: 'user',
-          userEntityRef,
-          ...(options?.actor && {
-            actor: { type: 'service', subject: options.actor.subject },
-          }),
-        },
+    const result = {
+      $$type: '@backstage/BackstageCredentials',
+      principal: {
+        type: 'user',
+        userEntityRef,
+        ...(options?.actor && {
+          actor: { type: 'service', subject: options.actor.subject } as const,
+        }),
       },
-      'token',
-      {
+    } as const;
+    Object.defineProperties(result, {
+      toString: {
+        enumerable: false,
+        configurable: true,
+        value: () =>
+          `mockCredentials{userPrincipal{${userEntityRef}${
+            options?.actor ? `,actor={${options.actor.subject}}` : ''
+          }}}`,
+      },
+      token: {
         enumerable: false,
         configurable: true,
         value: user.token(),
       },
-    );
+    });
+    return result;
   }
 
   /**
@@ -231,14 +248,27 @@ export namespace mockCredentials {
     subject: string = DEFAULT_MOCK_SERVICE_SUBJECT,
     accessRestrictions?: BackstagePrincipalAccessRestrictions,
   ): BackstageCredentials<BackstageServicePrincipal> {
-    return {
+    const result = {
       $$type: '@backstage/BackstageCredentials',
       principal: {
         type: 'service',
         subject,
         ...(accessRestrictions ? { accessRestrictions } : {}),
       },
-    };
+    } as const;
+    Object.defineProperties(result, {
+      toString: {
+        enumerable: false,
+        configurable: true,
+        value: () =>
+          `mockCredentials{servicePrincipal{${subject}${
+            accessRestrictions
+              ? `,accessRestrictions=${JSON.stringify(accessRestrictions)}`
+              : ''
+          }}}`,
+      },
+    });
+    return result;
   }
 
   /**
