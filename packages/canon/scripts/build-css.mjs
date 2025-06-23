@@ -48,7 +48,7 @@ async function buildCSS(logs = true) {
   const { code } = transform({
     filename: distFile,
     code: bundleCode,
-    minify: true,
+    minify: false,
   });
   fs.writeFileSync(distFile, code);
   if (logs) {
