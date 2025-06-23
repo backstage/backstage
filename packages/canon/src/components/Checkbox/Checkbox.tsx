@@ -50,14 +50,14 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
         value={value}
         style={style}
       >
-        <CheckboxPrimitive.Indicator className="canon-CheckboxIndicator">
+        <CheckboxPrimitive.Indicator className={classNames.indicator}>
           <Icon name="check" size={12} />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
     );
 
     return label ? (
-      <label className="canon-CheckboxLabel">
+      <label className={classNames.label}>
         {checkboxElement}
         {label}
       </label>

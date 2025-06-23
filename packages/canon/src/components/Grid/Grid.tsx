@@ -21,6 +21,7 @@ import { gridItemPropDefs, gridPropDefs } from './Grid.props';
 import clsx from 'clsx';
 import type { GridItemProps, GridProps } from './types';
 import { spacingPropDefs } from '../../props/spacing.props';
+import { useStyles } from '../../hooks/useStyles';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
   const propDefs = {
@@ -29,11 +30,13 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
     ...spacingPropDefs,
   };
 
+  const { classNames } = useStyles('Grid');
+
   const { className, style } = extractProps(props, propDefs);
 
   return createElement('div', {
     ref,
-    className: clsx('canon-Grid', className),
+    className: clsx(classNames.root, className),
     style,
     children: props.children,
   });
@@ -44,11 +47,12 @@ const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
     ...gridItemPropDefs,
   };
 
+  const { classNames } = useStyles('Grid');
   const { className, style } = extractProps(props, propDefs);
 
   return createElement('div', {
     ref,
-    className: clsx('canon-GridItem', className),
+    className: clsx(classNames.item, className),
     style,
     children: props.children,
   });

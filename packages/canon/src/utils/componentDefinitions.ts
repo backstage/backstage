@@ -65,21 +65,86 @@ export const componentDefinitions = {
       checked: [true, false] as const,
     },
   },
+  Collapsible: {
+    classNames: {
+      root: 'canon-CollapsibleRoot',
+      trigger: 'canon-CollapsibleTrigger',
+      panel: 'canon-CollapsiblePanel',
+    },
+  },
   Container: {
     classNames: {
       root: 'canon-Container',
     },
   },
-
+  FieldLabel: {
+    classNames: {
+      root: 'canon-FieldLabel',
+      label: 'canon-FieldLabelLabel',
+      secondaryLabel: 'canon-FieldLabelSecondaryLabel',
+      description: 'canon-FieldLabelDescription',
+    },
+  },
   Flex: {
     classNames: {
       root: 'canon-Flex',
     },
   },
-
   Grid: {
     classNames: {
       root: 'canon-Grid',
+      item: 'canon-GridItem',
+    },
+  },
+  Heading: {
+    classNames: {
+      root: 'canon-Heading',
+    },
+    dataAttributes: {
+      variant: ['title1', 'title2', 'title3', 'subtitle'] as const,
+      color: ['primary', 'secondary', 'muted'] as const,
+      truncate: [true, false] as const,
+    },
+  },
+  Icon: {
+    classNames: {
+      root: 'canon-Icon',
+    },
+  },
+  Link: {
+    classNames: {
+      root: 'canon-Link',
+    },
+    dataAttributes: {
+      variant: ['subtitle', 'body', 'caption', 'label'] as const,
+      weight: ['regular', 'bold'] as const,
+    },
+  },
+  Menu: {
+    classNames: {
+      trigger: 'canon-MenuTrigger',
+      backdrop: 'canon-MenuBackdrop',
+      positioner: 'canon-MenuPositioner',
+      popup: 'canon-MenuPopup',
+      arrow: 'canon-MenuArrow',
+      item: 'canon-MenuItem',
+      group: 'canon-MenuGroup',
+      groupLabel: 'canon-MenuGroupLabel',
+      radioGroup: 'canon-MenuRadioGroup',
+      radioItem: 'canon-MenuRadioItem',
+      radioItemIndicator: 'canon-MenuRadioItemIndicator',
+      checkboxItem: 'canon-MenuCheckboxItem',
+      checkboxItemIndicator: 'canon-MenuCheckboxItemIndicator',
+      submenuTrigger: 'canon-MenuSubmenuTrigger',
+      separator: 'canon-MenuSeparator',
+    },
+  },
+  ScrollArea: {
+    classNames: {
+      root: 'canon-ScrollAreaRoot',
+      viewport: 'canon-ScrollAreaViewport',
+      scrollbar: 'canon-ScrollAreaScrollbar',
+      thumb: 'canon-ScrollAreaThumb',
     },
   },
 
@@ -91,17 +156,6 @@ export const componentDefinitions = {
     dataAttributes: {
       variant: ['body', 'caption', 'label'] as const,
       weight: ['regular', 'medium', 'bold'] as const,
-      color: ['primary', 'secondary', 'muted'] as const,
-      truncate: [true, false] as const,
-    },
-  },
-
-  Heading: {
-    classNames: {
-      root: 'canon-Heading',
-    },
-    dataAttributes: {
-      variant: ['title1', 'title2', 'title3', 'subtitle'] as const,
       color: ['primary', 'secondary', 'muted'] as const,
       truncate: [true, false] as const,
     },
@@ -119,16 +173,6 @@ export const componentDefinitions = {
     dataAttributes: {
       invalid: [true, false] as const,
       disabled: [true, false] as const,
-    },
-  },
-
-  FieldLabel: {
-    classNames: {
-      root: 'canon-FieldLabel',
-      required: 'canon-FieldLabel-required',
-    },
-    dataAttributes: {
-      required: [true, false] as const,
     },
   },
 
@@ -162,26 +206,6 @@ export const componentDefinitions = {
   },
 
   // Navigation Components
-  Link: {
-    classNames: {
-      root: 'canon-Link',
-    },
-    dataAttributes: {
-      variant: ['primary', 'secondary'] as const,
-    },
-  },
-
-  Menu: {
-    classNames: {
-      root: 'canon-Menu',
-      trigger: 'canon-Menu-trigger',
-      content: 'canon-Menu-content',
-      item: 'canon-Menu-item',
-      separator: 'canon-Menu-separator',
-      label: 'canon-Menu-label',
-      group: 'canon-Menu-group',
-    },
-  },
 
   Tabs: {
     classNames: {
@@ -223,15 +247,6 @@ export const componentDefinitions = {
     },
   },
 
-  Icon: {
-    classNames: {
-      root: 'canon-Icon',
-    },
-    dataAttributes: {
-      size: ['small', 'medium', 'large'] as const,
-    },
-  },
-
   // Feedback Components
   Tooltip: {
     classNames: {
@@ -243,27 +258,6 @@ export const componentDefinitions = {
   },
 
   // Disclosure Components
-  Collapsible: {
-    classNames: {
-      root: 'canon-Collapsible',
-      trigger: 'canon-Collapsible-trigger',
-      content: 'canon-Collapsible-content',
-      icon: 'canon-Collapsible-icon',
-    },
-    dataAttributes: {
-      open: [true, false] as const,
-    },
-  },
 
   // Utility Components
-  ScrollArea: {
-    classNames: {
-      root: 'canon-ScrollArea',
-      viewport: 'canon-ScrollArea-viewport',
-      scrollbar: 'canon-ScrollArea-scrollbar',
-      thumb: 'canon-ScrollArea-thumb',
-      corner: 'canon-ScrollArea-corner',
-      track: 'canon-ScrollArea-track',
-    },
-  },
 } as const satisfies Record<string, ComponentDefinition>;
