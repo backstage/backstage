@@ -11769,8 +11769,8 @@ __metadata:
   linkType: hard
 
 "@modelcontextprotocol/sdk@npm:^1.12.3":
-  version: 1.12.3
-  resolution: "@modelcontextprotocol/sdk@npm:1.12.3"
+  version: 1.13.1
+  resolution: "@modelcontextprotocol/sdk@npm:1.13.1"
   dependencies:
     ajv: "npm:^6.12.6"
     content-type: "npm:^1.0.5"
@@ -11783,7 +11783,7 @@ __metadata:
     raw-body: "npm:^3.0.0"
     zod: "npm:^3.23.8"
     zod-to-json-schema: "npm:^3.24.1"
-  checksum: 10/abab9b3fcce45370aadc260e9f02587308455ea907cf58b5e7f2e27c0ef4d19bf591f80284592b69f3d1656e4b362b2a96788eb1492daa3e7e2129c49b3eea98
+  checksum: 10/b516d72e1cd14c67c8a2e5cb95fcc1c03c50be989850e3e963a7ed11000acb604e65efeaad47ea93c847130536ee51859a8d34e6dbe99d408e1a24224592e57f
   languageName: node
   linkType: hard
 
