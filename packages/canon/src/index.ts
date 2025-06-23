@@ -41,6 +41,7 @@ export * from './components/Icon';
 export * from './components/ButtonIcon';
 export * from './components/ButtonLink';
 export * from './components/Checkbox';
+export * from './components/RadioGroup';
 export * from './components/Table';
 export * from './components/Tabs';
 export * from './components/TextField';

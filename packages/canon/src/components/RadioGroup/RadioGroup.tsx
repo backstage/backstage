@@ -15,50 +15,46 @@
  */
 
 import { forwardRef, useEffect } from 'react';
-import { Input, TextField as AriaTextField } from 'react-aria-components';
-import { useResponsiveValue } from '../../hooks/useResponsiveValue';
+import {
+  RadioGroup as AriaRadioGroup,
+  Radio as AriaRadio,
+} from 'react-aria-components';
 import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 
-import type { TextFieldProps } from './types';
+import type { RadioGroupProps, RadioProps } from './types';
 
 /** @public */
-export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
+export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
   (props, ref) => {
     const {
       className,
-      icon,
-      size = 'small',
       label,
       secondaryLabel,
       description,
       isRequired,
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
-      placeholder,
+      children,
       ...rest
     } = props;
 
     useEffect(() => {
       if (!label && !ariaLabel && !ariaLabelledBy) {
         console.warn(
-          'TextField requires either a visible label, aria-label, or aria-labelledby for accessibility',
+          'RadioGroup requires either a visible label, aria-label, or aria-labelledby for accessibility',
         );
       }
     }, [label, ariaLabel, ariaLabelledBy]);
-
-    // Get the responsive value for the variant
-    const responsiveSize = useResponsiveValue(size);
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
       secondaryLabel || (isRequired ? 'Required' : null);
 
     return (
-      <AriaTextField
-        className={clsx('canon-TextField', className)}
-        data-size={responsiveSize}
+      <AriaRadioGroup
+        className={clsx('canon-RadioGroup', className)}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         {...rest}
@@ -69,26 +65,22 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           secondaryLabel={secondaryLabelText}
           description={description}
         />
-        <div className="canon-TextFieldInputWrapper" data-size={responsiveSize}>
-          {icon && (
-            <div
-              className="canon-TextFieldIcon"
-              data-size={responsiveSize}
-              aria-hidden="true"
-            >
-              {icon}
-            </div>
-          )}
-          <Input
-            className="canon-TextFieldInput"
-            {...(icon && { 'data-icon': true })}
-            placeholder={placeholder}
-          />
-        </div>
+        <div className="canon-RadioGroupContent">{children}</div>
         <FieldError />
-      </AriaTextField>
+      </AriaRadioGroup>
     );
   },
 );
 
-TextField.displayName = 'TextField';
+RadioGroup.displayName = 'RadioGroup';
+
+/** @public */
+export const Radio = forwardRef<HTMLLabelElement, RadioProps>((props, ref) => {
+  const { className, ...rest } = props;
+
+  return (
+    <AriaRadio className={clsx('canon-Radio', className)} {...rest} ref={ref} />
+  );
+});
+
+RadioGroup.displayName = 'RadioGroup';
