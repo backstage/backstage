@@ -2,4 +2,4 @@
 '@backstage/integration-react': patch
 ---
 
-Separated gitlab `write_repository` scope to pass checks in `RefreshingAuthSessionManager`
+Separated gitlab `write_repository` and `api` scope to pass checks in `RefreshingAuthSessionManager`
