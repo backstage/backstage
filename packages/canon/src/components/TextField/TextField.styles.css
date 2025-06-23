@@ -109,10 +109,3 @@
   cursor: not-allowed;
   border: 1px solid var(--canon-border-disabled);
 }
-
-.canon-TextFieldError {
-  color: var(--canon-fg-danger);
-  font-size: var(--canon-font-size-2);
-  font-weight: var(--canon-font-weight-regular);
-  margin-top: var(--canon-space-2);
-}

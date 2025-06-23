@@ -14,28 +14,19 @@
  * limitations under the License.
  */
 
-import type { TextFieldProps as AriaTextFieldProps } from 'react-aria-components';
-import { ReactNode } from 'react';
-import type { Breakpoint } from '../../types';
+import type {
+  RadioGroupProps as AriaRadioGroupProps,
+  RadioProps as AriaRadioProps,
+} from 'react-aria-components';
 import type { FieldLabelProps } from '../FieldLabel/types';
+import { ReactNode } from 'react';
 
 /** @public */
-export interface TextFieldProps
-  extends AriaTextFieldProps,
+export interface RadioGroupProps
+  extends Omit<AriaRadioGroupProps, 'children'>,
     Omit<FieldLabelProps, 'htmlFor' | 'id'> {
-  /**
-   * An icon to render before the input
-   */
-  icon?: ReactNode;
-
-  /**
-   * The size of the text field
-   * @defaultValue 'medium'
-   */
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-
-  /**
-   * Text to display in the input when it has no value
-   */
-  placeholder?: string;
+  children?: ReactNode;
 }
+
+/** @public */
+export interface RadioProps extends AriaRadioProps {}

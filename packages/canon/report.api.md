@@ -20,6 +20,8 @@ import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LinkProps as LinkProps_2 } from 'react-aria-components';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
+import type { RadioGroupProps as RadioGroupProps_2 } from 'react-aria-components';
+import type { RadioProps as RadioProps_2 } from 'react-aria-components';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
@@ -1033,6 +1035,27 @@ export type PositionProps = GetPropDefTypes<typeof positionPropDefs>;
 export type PropDef<T = any> = RegularPropDef<T> | ResponsivePropDef<T>;
 
 // @public (undocumented)
+export const Radio: ForwardRefExoticComponent<
+  RadioProps & RefAttributes<HTMLLabelElement>
+>;
+
+// @public (undocumented)
+export const RadioGroup: ForwardRefExoticComponent<
+  RadioGroupProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface RadioGroupProps
+  extends Omit<RadioGroupProps_2, 'children'>,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+  // (undocumented)
+  children?: ReactNode;
+}
+
+// @public (undocumented)
+export interface RadioProps extends RadioProps_2 {}
+
+// @public (undocumented)
 export type ReactNodePropDef = {
   type: 'ReactNode';
   default?: ReactNode;
@@ -1299,6 +1322,7 @@ export interface TextFieldProps
   extends TextFieldProps_2,
     Omit<FieldLabelProps, 'htmlFor' | 'id'> {
   icon?: ReactNode;
+  placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 
