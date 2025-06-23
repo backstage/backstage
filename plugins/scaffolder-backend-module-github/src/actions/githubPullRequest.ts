@@ -333,8 +333,8 @@ export const createPublishGithubPullRequestAction = (
         file: SerializedFile,
       ): 'utf-8' | 'base64' => (file.symlink ? 'utf-8' : 'base64');
 
-      const files = Object.fromEntries(
-        directoryContents.map(file => [
+      const files = Object.fromEntries([
+        ...directoryContents.map(file => [
           targetPath ? path.posix.join(targetPath, file.path) : file.path,
           {
             // See the properties of tree items
@@ -351,19 +351,13 @@ export const createPublishGithubPullRequestAction = (
             content: file.content.toString(determineFileEncoding(file)),
           },
         ]),
-      );
-
-      if (filesToDelete) {
-        Object.assign(
-          files,
-          Object.fromEntries(
-            filesToDelete.map(filePath => [
-              targetPath ? path.posix.join(targetPath, filePath) : filePath,
-              DELETE_FILE,
-            ]),
-          ),
-        );
-      }
+        // order of arrays is important so filesToDelete will overwrite
+        // changes from files above
+        ...(filesToDelete || []).map(filePath => [
+          targetPath ? path.posix.join(targetPath, filePath) : filePath,
+          DELETE_FILE,
+        ]),
+      ]);
 
       // If this is a dry run, log and return
       if (ctx.isDryRun) {
