@@ -19127,8 +19127,8 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-formatters@npm:^1.1.0":
-  version: 1.4.3
-  resolution: "@stoplight/spectral-formatters@npm:1.4.3"
+  version: 1.5.0
+  resolution: "@stoplight/spectral-formatters@npm:1.5.0"
   dependencies:
     "@stoplight/path": "npm:^1.3.2"
     "@stoplight/spectral-core": "npm:^1.19.4"
@@ -19143,7 +19143,7 @@ __metadata:
     strip-ansi: "npm:6.0"
     text-table: "npm:^0.2.0"
     tslib: "npm:^2.8.1"
-  checksum: 10/38cdb6dd756a5b859f0768bd7a6730d9ff816a8e21880385e75d0b663a98a2ca62283b6ab50bcce92384e0117d354813591faec9d5da85a3d6ed491afd5b1830
+  checksum: 10/565f939d4363d6de357cb6292fce3f656ea106097b675562a958a2fb0b351f2ebc8516602ebdad83f57a73d6da178ce3e18e8a484b565d5c46e24aa588e7f04b
   languageName: node
   linkType: hard
 
