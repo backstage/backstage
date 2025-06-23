@@ -137,13 +137,15 @@ import {
   createBackendPlugin,
   coreServices,
 } from '@backstage/backend-plugin-api';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
+
 
 export const myPlugin = createBackendPlugin({
   pluginId: 'my-plugin',
   register(env) {
     env.registerInit({
       deps: {
-        actionsRegistry: coreServices.actionsRegistry,
+        actionsRegistry: actionsRegistryServiceRef,
         logger: coreServices.logger,
       },
       async init({ actionsRegistry, logger }) {
