@@ -301,7 +301,9 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     const ses: Record<string, string> = {};
     const sourceArn = this.sesConfig.getOptionalString('SourceArn');
     const fromArn = this.sesConfig.getOptionalString('FromArn');
-    const configurationSetName = this.sesConfig.getOptionalString('ConfigurationSetName');
+    const configurationSetName = this.sesConfig.getOptionalString(
+      'ConfigurationSetName',
+    );
 
     if (sourceArn) ses.SourceArn = sourceArn;
     if (fromArn) ses.FromArn = fromArn;
@@ -317,7 +319,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       html: this.getHtmlContent(notification),
       text: this.getTextContent(notification),
       replyTo: this.replyTo,
-      ses: await this.getSesOptions()
+      ses: await this.getSesOptions(),
     };
 
     await this.sendMails(mailOptions, emails);
