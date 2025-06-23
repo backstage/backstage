@@ -47,6 +47,7 @@ import {
   TaskSpec,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
+  TemplateParametersV1beta3,
 } from '@backstage/plugin-scaffolder-common';
 import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
