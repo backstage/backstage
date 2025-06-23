@@ -271,6 +271,7 @@ export async function createRouter(
       integrations,
       logger,
       auditor,
+      config,
       workingDirectory,
       concurrentTasksLimit,
       permissions,
