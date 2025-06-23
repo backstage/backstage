@@ -23,6 +23,8 @@ import {
   BackstageCredentials,
   LoggerService,
 } from '@backstage/backend-plugin-api';
+import { CheckpointContext } from '@backstage/plugin-scaffolder-node/alpha';
+
 /**
  * ActionContext is passed into scaffolder actions.
  * @public
@@ -36,10 +38,9 @@ export type ActionContext<
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
-  checkpoint<T extends JsonValue | void>(opts: {
-    key: string;
-    fn: () => Promise<T> | T;
-  }): Promise<T>;
+  checkpoint<T extends JsonValue | void>(
+    opts: CheckpointContext<T>,
+  ): Promise<T>;
   output(
     name: keyof TActionOutput,
     value: TActionOutput[keyof TActionOutput],

@@ -7499,7 +7499,6 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend@workspace:plugins/scaffolder-backend"
   dependencies:
     "@backstage/backend-app-api": "workspace:^"
-    "@backstage/backend-common": "npm:^0.25.0"
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
@@ -8757,9 +8756,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@changesets/assemble-release-plan@npm:^6.0.8":
-  version: 6.0.8
-  resolution: "@changesets/assemble-release-plan@npm:6.0.8"
+"@changesets/assemble-release-plan@npm:^6.0.9":
+  version: 6.0.9
+  resolution: "@changesets/assemble-release-plan@npm:6.0.9"
   dependencies:
     "@changesets/errors": "npm:^0.2.0"
     "@changesets/get-dependents-graph": "npm:^2.1.3"
@@ -8767,7 +8766,7 @@ __metadata:
     "@changesets/types": "npm:^6.1.0"
     "@manypkg/get-packages": "npm:^1.1.3"
     semver: "npm:^7.5.3"
-  checksum: 10/5d01fc42c67229874cc70b93fbdc971e11909aa7a72f1909c585ecb3fdc69f3ac105d243e1341cd5b07c02dee133be461fa48138125f00d137e71f8b7e8f428e
+  checksum: 10/f84656eabb700ed77f97751b282e1701636ed45a44b443abd9af0291870495cc046fee301478010f39a1dc455799065ae007b9d7d2bb5ae8b793b65bbb8e052a
   languageName: node
   linkType: hard
 
@@ -8781,16 +8780,16 @@ __metadata:
   linkType: hard
 
 "@changesets/cli@npm:^2.14.0":
-  version: 2.29.4
-  resolution: "@changesets/cli@npm:2.29.4"
+  version: 2.29.5
+  resolution: "@changesets/cli@npm:2.29.5"
   dependencies:
     "@changesets/apply-release-plan": "npm:^7.0.12"
-    "@changesets/assemble-release-plan": "npm:^6.0.8"
+    "@changesets/assemble-release-plan": "npm:^6.0.9"
     "@changesets/changelog-git": "npm:^0.2.1"
     "@changesets/config": "npm:^3.1.1"
     "@changesets/errors": "npm:^0.2.0"
     "@changesets/get-dependents-graph": "npm:^2.1.3"
-    "@changesets/get-release-plan": "npm:^4.0.12"
+    "@changesets/get-release-plan": "npm:^4.0.13"
     "@changesets/git": "npm:^3.0.4"
     "@changesets/logger": "npm:^0.1.1"
     "@changesets/pre": "npm:^2.0.2"
@@ -8814,7 +8813,7 @@ __metadata:
     term-size: "npm:^2.1.0"
   bin:
     changeset: bin.js
-  checksum: 10/fc325447b81a811464107e72a687f6c0414c5f928e518cb122d1efde1d71c205b1972464795ab97fb26087900ea55b99a551e9a010c9681def3d7561fd1c3f0b
+  checksum: 10/f401da29025d7bcc07b732bb09a9627f785bfc21c7c2005861d11ffea732bc14d33394fc2fcae50cc5f2b710f6080c5babe2fa90d432de5fdb47ae6afc147936
   languageName: node
   linkType: hard
 
@@ -8854,17 +8853,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@changesets/get-release-plan@npm:^4.0.12":
-  version: 4.0.12
-  resolution: "@changesets/get-release-plan@npm:4.0.12"
+"@changesets/get-release-plan@npm:^4.0.13":
+  version: 4.0.13
+  resolution: "@changesets/get-release-plan@npm:4.0.13"
   dependencies:
-    "@changesets/assemble-release-plan": "npm:^6.0.8"
+    "@changesets/assemble-release-plan": "npm:^6.0.9"
     "@changesets/config": "npm:^3.1.1"
     "@changesets/pre": "npm:^2.0.2"
     "@changesets/read": "npm:^0.6.5"
     "@changesets/types": "npm:^6.1.0"
     "@manypkg/get-packages": "npm:^1.1.3"
-  checksum: 10/d6482ecb6f1c2c47266493a36d05b484f0950d0a4472820649e953d073e3fdd612cdd8a4df9e3d7e00756d4e446dae639f9d6e0dab8a25f76bb6df77cd91c21c
+  checksum: 10/9983fae5a68012c4c418ddd62f2fb3d325363f21160252ff7b868503a1a2effb8fdd32e4a0289b72653afc3605ce19d163ff69205c942a0004efb571a5f78fd0
   languageName: node
   linkType: hard
 
@@ -9105,11 +9104,11 @@ __metadata:
   linkType: hard
 
 "@dagrejs/dagre@npm:^1.1.4":
-  version: 1.1.4
-  resolution: "@dagrejs/dagre@npm:1.1.4"
+  version: 1.1.5
+  resolution: "@dagrejs/dagre@npm:1.1.5"
   dependencies:
     "@dagrejs/graphlib": "npm:2.2.4"
-  checksum: 10/0b3744b170c68ae0666e03aca19c3100d5131feafeb54b3ea096b749a9f0fe5385b8bd8889c11a49493cfab945b2486b9e30bc41b321755ed718e9f5cb4b74f1
+  checksum: 10/c00abd1e04d19f90ad8dfa0a4e16365371bc4309affead3827a1b39f6b0b946643b8af0b1e5519011deca3fda4c7471b27e9ebb03423309a94f95ac0b881ac4f
   languageName: node
   linkType: hard
 
@@ -14865,13 +14864,13 @@ __metadata:
   linkType: hard
 
 "@playwright/test@npm:^1.32.3":
-  version: 1.53.0
-  resolution: "@playwright/test@npm:1.53.0"
+  version: 1.53.1
+  resolution: "@playwright/test@npm:1.53.1"
   dependencies:
-    playwright: "npm:1.53.0"
+    playwright: "npm:1.53.1"
   bin:
     playwright: cli.js
-  checksum: 10/968df4fba133dd18b8c65504c3cc5a3a6071e49f0706c6524711cdfab321a51debfeb506b9ff0a8f7dd8ce3015921d82fa51429d8f11d392cc68de1938703c33
+  checksum: 10/98fb9b962710183d465b695daab2006296fd9a703ecb1b763a38cd12a39f7d6066f9539d1758e54313d393353fafb16b90fb31e4add1ca99ffec99b8b1b40fb9
   languageName: node
   linkType: hard
 
@@ -21782,9 +21781,9 @@ __metadata:
   linkType: hard
 
 "@types/lodash@npm:^4.14.151":
-  version: 4.17.17
-  resolution: "@types/lodash@npm:4.17.17"
-  checksum: 10/496459a3cb1a0733bb60532de3899ad6297717af0b9b26ad6821154b2005fec86f29ccd47a2e6f4da4a8c7c818bb8ae73901144e8057ea86b7b02a3d7bb9d13f
+  version: 4.17.18
+  resolution: "@types/lodash@npm:4.17.18"
+  checksum: 10/54ebb15b29925112dbe9da3abd99fb80d7202bc5ba20fc1b4fc8ea835d0012f00cbd9a3e7f367b70e7c3f2d5ee635964e3920a489625647b558f02994b3dd381
   languageName: node
   linkType: hard
 
@@ -42032,27 +42031,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.53.0":
-  version: 1.53.0
-  resolution: "playwright-core@npm:1.53.0"
+"playwright-core@npm:1.53.1":
+  version: 1.53.1
+  resolution: "playwright-core@npm:1.53.1"
   bin:
     playwright-core: cli.js
-  checksum: 10/881f27a9b7edd9954700489a5a4212cb91bcada226fd1d79a239b2eab0f333df1e2e41e275e6fa846d7f57c6a92afe14dca33ca7a2ce303dfb687d02511b7c69
+  checksum: 10/d0ea8674c3abb76069255ca81bc0dfdef3f9548207f1404eec036bb8724135710f25ee791bfd7c043d5b9c2ccfa42288b0308d61dc5efc60a13b18811a15c4cd
   languageName: node
   linkType: hard
 
-"playwright@npm:1.53.0":
-  version: 1.53.0
-  resolution: "playwright@npm:1.53.0"
+"playwright@npm:1.53.1":
+  version: 1.53.1
+  resolution: "playwright@npm:1.53.1"
   dependencies:
     fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.53.0"
+    playwright-core: "npm:1.53.1"
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     playwright: cli.js
-  checksum: 10/0b0258630f39b4d6ff1555d008ee4d591fe45cbe1e0f643a612397e3e6b1f7a99a2037a957eaa7351edd907ba10966ba105b2d244eafd1b247378910b660f086
+  checksum: 10/74b3178d5ae3fde8de08fe6c221578530368f1abb8794fce234d06e0043178201eb3b7410354418517f23c105bd54ac1432da5f46c50353a5e6a80198a95f2cf
   languageName: node
   linkType: hard
 

@@ -28,30 +28,28 @@ export * from './components/Box';
 export * from './components/Grid';
 export * from './components/Flex';
 export * from './components/Container';
+export * from './components/Text';
+export * from './components/Heading';
 
 // UI components
 export * from './components/Avatar';
 export * from './components/Button';
-export * from './components/ButtonIcon';
-export * from './components/ButtonLink';
-export * from './components/Checkbox';
 export * from './components/Collapsible';
 export * from './components/DataTable';
 export * from './components/FieldLabel';
-export * from './components/FieldError';
-export * from './components/Heading';
 export * from './components/Icon';
-export * from './components/Link';
-export * from './components/Menu';
-export * from './components/RadioGroup';
-export * from './components/ScrollArea';
-export * from './components/Select';
-export * from './components/Switch';
+export * from './components/ButtonIcon';
+export * from './components/ButtonLink';
+export * from './components/Checkbox';
 export * from './components/Table';
 export * from './components/Tabs';
-export * from './components/Text';
 export * from './components/TextField';
 export * from './components/Tooltip';
+export * from './components/Menu';
+export * from './components/ScrollArea';
+export * from './components/Link';
+export * from './components/Select';
+export * from './components/Switch';
 
 // Types
 export * from './types';
