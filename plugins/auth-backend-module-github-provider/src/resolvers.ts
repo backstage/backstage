@@ -20,6 +20,7 @@ import {
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
+import { z } from 'zod';
 
 /**
  * Available sign-in resolvers for the GitHub auth provider.
@@ -31,7 +32,12 @@ export namespace githubSignInResolvers {
    * Looks up the user by matching their GitHub username to the entity name.
    */
   export const usernameMatchingUserEntityName = createSignInResolverFactory({
-    create() {
+    optionsSchema: z
+      .object({
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+      })
+      .optional(),
+    create(options = {}) {
       return async (
         info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
         ctx,
@@ -43,7 +49,17 @@ export namespace githubSignInResolvers {
           throw new Error(`GitHub user profile does not contain a username`);
         }
 
-        return ctx.signInWithCatalogUser({ entityRef: { name: userId } });
+        return ctx.signInWithCatalogUser(
+          {
+            entityRef: { name: userId },
+          },
+          {
+            dangerousEntityRefFallback:
+              options?.dangerouslyAllowSignInWithoutUserInCatalog
+                ? { entityRef: { name: userId } }
+                : undefined,
+          },
+        );
       };
     },
   });

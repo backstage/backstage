@@ -101,7 +101,7 @@ describe('publish:github', () => {
     jest.requireActual('./gitHelpers');
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext({
     input: {
@@ -605,6 +605,7 @@ describe('publish:github', () => {
 
     const customAuthorIntegrations =
       ScmIntegrations.fromConfig(customAuthorConfig);
+
     const customAuthorAction = createPublishGithubAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,

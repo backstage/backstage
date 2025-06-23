@@ -2,12 +2,11 @@
 id: discovery
 title: GitHub Discovery
 sidebar_label: Discovery
-# prettier-ignore
 description: Automatically discovering catalog entities from repositories in a GitHub organization
 ---
 
 :::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./discovery--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/integrations/github/discovery--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
 :::
 
 ## GitHub Provider
@@ -148,7 +147,7 @@ If you do so, `default` will be used as provider ID.
 - **`catalogPath`** _(optional)_:
   Default: `/catalog-info.yaml`.
   Path where to look for `catalog-info.yaml` files.
-  You can use wildcards - `*` or `**` - to search the path and/or the filename.
+  You can use wildcards - `*`, `**` or a glob pattern supported by [`minimatch`](https://github.com/isaacs/minimatch) - to search the path and/or the filename.
   Wildcards cannot be used if the `validateLocationsExist` option is set to `true`.
 - **`filters`** _(optional)_:
   - **`branch`** _(optional)_:
@@ -168,6 +167,8 @@ If you do so, `default` will be used as provider ID.
       If configured, all repositories _except_ those with one (or more) topics(s) present in the exclusion filter will be ingested.
   - **`visibility`** _(optional)_:
     An array of strings used to filter results based on their visibility. Available options are `private`, `internal`, `public`. If configured (non empty), only repositories with visibility present in the filter will be ingested
+  - **`allowArchived`** _(optional)_:
+    Whether to include archived repositories. Defaults to `false`.
 - **`host`** _(optional)_:
   The hostname of your GitHub Enterprise instance. It must match a host defined in [integrations.github](locations.md).
 - **`organization`**:

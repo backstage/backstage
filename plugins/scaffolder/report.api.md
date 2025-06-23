@@ -71,7 +71,7 @@ export type CustomFieldValidator<TReturnFieldData> =
 // @public
 export const EntityNamePickerFieldExtension: FieldExtensionComponent_2<
   string,
-  {}
+  any
 >;
 
 // @public
@@ -104,7 +104,7 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
 >;
 
 // @public (undocumented)
-export const EntityPickerFieldSchema: FieldSchema<
+export const EntityPickerFieldSchema: FieldSchema_2<
   string,
   {
     defaultKind?: string | undefined;
@@ -133,8 +133,9 @@ export const EntityPickerFieldSchema: FieldSchema<
 >;
 
 // @public
-export type EntityPickerUiOptions =
-  typeof EntityPickerFieldSchema.uiOptionsType;
+export type EntityPickerUiOptions = NonNullable<
+  (typeof EntityPickerFieldSchema.TProps.uiSchema)['ui:options']
+>;
 
 // @public
 export const EntityTagsPickerFieldExtension: FieldExtensionComponent_2<
@@ -147,7 +148,7 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent_2<
 >;
 
 // @public (undocumented)
-export const EntityTagsPickerFieldSchema: FieldSchema<
+export const EntityTagsPickerFieldSchema: FieldSchema_2<
   string[],
   {
     helperText?: string | undefined;
@@ -157,8 +158,9 @@ export const EntityTagsPickerFieldSchema: FieldSchema<
 >;
 
 // @public
-export type EntityTagsPickerUiOptions =
-  typeof EntityTagsPickerFieldSchema.uiOptionsType;
+export type EntityTagsPickerUiOptions = NonNullable<
+  (typeof EntityTagsPickerFieldSchema.TProps.uiSchema)['ui:options']
+>;
 
 // @public @deprecated (undocumented)
 export type FieldExtensionComponent<_TReturnValue, _TInputProps> =
@@ -233,27 +235,19 @@ export const MultiEntityPickerFieldExtension: FieldExtensionComponent_2<
 // @public
 export const MyGroupsPickerFieldExtension: FieldExtensionComponent_2<
   string,
-  {
-    title?: string | undefined;
-    description?: string | undefined;
-  }
+  any
 >;
 
 // @public
-export const MyGroupsPickerFieldSchema: FieldSchema<
-  string,
-  {
-    title?: string | undefined;
-    description?: string | undefined;
-  }
->;
+export const MyGroupsPickerFieldSchema: FieldSchema_2<string, any>;
 
 // @public
 export const MyGroupsPickerSchema: CustomFieldExtensionSchema_2;
 
 // @public
-export type MyGroupsPickerUiOptions =
-  typeof MyGroupsPickerFieldSchema.uiOptionsType;
+export type MyGroupsPickerUiOptions = NonNullable<
+  (typeof MyGroupsPickerFieldSchema.TProps.uiSchema)['ui:options']
+>;
 
 // @public
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
@@ -285,7 +279,7 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
 >;
 
 // @public (undocumented)
-export const OwnedEntityPickerFieldSchema: FieldSchema<
+export const OwnedEntityPickerFieldSchema: FieldSchema_2<
   string,
   {
     defaultKind?: string | undefined;
@@ -314,8 +308,9 @@ export const OwnedEntityPickerFieldSchema: FieldSchema<
 >;
 
 // @public
-export type OwnedEntityPickerUiOptions =
-  typeof OwnedEntityPickerFieldSchema.uiOptionsType;
+export type OwnedEntityPickerUiOptions = NonNullable<
+  (typeof OwnedEntityPickerFieldSchema.TProps.uiSchema)['ui:options']
+>;
 
 // @public
 export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
@@ -346,7 +341,7 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
 >;
 
 // @public (undocumented)
-export const OwnerPickerFieldSchema: FieldSchema<
+export const OwnerPickerFieldSchema: FieldSchema_2<
   string,
   {
     defaultNamespace?: string | false | undefined;
@@ -374,7 +369,9 @@ export const OwnerPickerFieldSchema: FieldSchema<
 >;
 
 // @public
-export type OwnerPickerUiOptions = typeof OwnerPickerFieldSchema.uiOptionsType;
+export type OwnerPickerUiOptions = NonNullable<
+  (typeof OwnerPickerFieldSchema.TProps.uiSchema)['ui:options']
+>;
 
 // @public
 export const RepoBranchPickerFieldExtension: FieldExtensionComponent_2<
@@ -462,8 +459,9 @@ export const RepoUrlPickerFieldSchema: FieldSchema_2<
 >;
 
 // @public @deprecated
-export type RepoUrlPickerUiOptions =
-  typeof RepoUrlPickerFieldSchema.uiOptionsType;
+export type RepoUrlPickerUiOptions = NonNullable<
+  (typeof RepoUrlPickerFieldSchema.TProps.uiSchema)['ui:options']
+>;
 
 export { ReviewStepProps };
 

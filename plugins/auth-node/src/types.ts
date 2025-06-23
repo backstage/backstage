@@ -162,10 +162,26 @@ export type AuthResolverContext = {
    * Finds a single user in the catalog using the provided query, and then
    * issues an identity for that user using default ownership resolution.
    *
+   * If the user is not found, an optional `dangerousEntityRefFallback`
+   * entity ref can be provided to allow sign-in to proceed by issuing an
+   * identity based on the given ref. This bypasses the requirement for the
+   * user to exist in the catalog and should be used with caution.
+   *
    * See {@link AuthResolverCatalogUserQuery} for details.
    */
   signInWithCatalogUser(
     query: AuthResolverCatalogUserQuery,
+    options?: {
+      dangerousEntityRefFallback?: {
+        entityRef:
+          | string
+          | {
+              kind?: string;
+              namespace?: string;
+              name: string;
+            };
+      };
+    },
   ): Promise<BackstageSignInResult>;
 
   /**

@@ -17,41 +17,48 @@
 import { forwardRef } from 'react';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
-
+import type { ElementType } from 'react';
 import type { TextProps } from './types';
 
+function TextComponent<T extends ElementType = 'p'>(
+  {
+    as,
+    variant = 'body',
+    weight = 'regular',
+    color = 'primary',
+    className,
+    truncate,
+    style,
+    ...restProps
+  }: TextProps<T>,
+  ref: React.Ref<any>,
+) {
+  const Component = as || 'p';
+
+  // Get the responsive values for the variant and weight
+  const responsiveVariant = useResponsiveValue(variant);
+  const responsiveWeight = useResponsiveValue(weight);
+  const responsiveColor = useResponsiveValue(color);
+
+  return (
+    <Component
+      ref={ref}
+      className={clsx('canon-Text', className)}
+      data-variant={responsiveVariant}
+      data-weight={responsiveWeight}
+      data-color={responsiveColor}
+      data-truncate={truncate}
+      style={style}
+      {...restProps}
+    />
+  );
+}
+
+TextComponent.displayName = 'Text';
+
 /** @public */
-export const Text = forwardRef<HTMLParagraphElement, TextProps>(
-  (props, ref) => {
-    const {
-      children,
-      variant = 'body',
-      weight = 'regular',
-      color = 'primary',
-      style,
-      className,
-      ...restProps
-    } = props;
+export const Text = forwardRef(TextComponent) as <T extends ElementType = 'p'>(
+  props: TextProps<T> & { ref?: React.Ref<any> },
+) => React.ReactElement | null;
 
-    // Get the responsive values for the variant and weight
-    const responsiveVariant = useResponsiveValue(variant);
-    const responsiveWeight = useResponsiveValue(weight);
-    const responsiveColor = useResponsiveValue(color);
-
-    return (
-      <p
-        ref={ref}
-        className={clsx('canon-Text', className)}
-        data-variant={responsiveVariant}
-        data-weight={responsiveWeight}
-        data-color={responsiveColor}
-        style={style}
-        {...restProps}
-      >
-        {children}
-      </p>
-    );
-  },
-);
-
-Text.displayName = 'Text';
+(Text as any).displayName = 'Text';

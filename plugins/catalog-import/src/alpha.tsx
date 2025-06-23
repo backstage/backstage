@@ -87,8 +87,11 @@ const catalogImportApi = ApiBlueprint.make({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'catalog-import',
+  info: { packageJson: () => import('../package.json') },
   extensions: [catalogImportApi, catalogImportPage],
   routes: {
     importPage: convertLegacyRouteRef(rootRouteRef),
   },
 });
+
+export { catalogImportTranslationRef } from './translation';

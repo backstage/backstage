@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { Breakpoint } from '../../types';
+import type { ElementType, ComponentPropsWithRef } from 'react';
+import type { Breakpoint } from '../../types';
 
 /** @public */
-export interface HeadingProps {
-  children: React.ReactNode;
+export type HeadingOwnProps = {
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   variant?:
     | 'display'
     | 'title1'
@@ -32,7 +33,15 @@ export interface HeadingProps {
           'display' | 'title1' | 'title2' | 'title3' | 'title4' | 'title5'
         >
       >;
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  color?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+  truncate?: boolean;
   className?: string;
   style?: React.CSSProperties;
-}
+};
+
+/** @public */
+export type HeadingProps<T extends ElementType = 'h1'> = HeadingOwnProps &
+  Omit<ComponentPropsWithRef<T>, keyof HeadingOwnProps>;

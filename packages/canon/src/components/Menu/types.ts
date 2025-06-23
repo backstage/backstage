@@ -13,7 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Menu as MenuPrimitive } from '@base-ui-components/react/menu';
+import {
+  ForwardRefExoticComponent,
+  RefAttributes,
+  ComponentProps,
+} from 'react';
+
+/** @public */
+export type MenuComboboxOption = {
+  label: string;
+  value: string;
+  disabled?: boolean;
+};
+
+/** @public */
+export interface MenuComboboxProps extends ComponentProps<'div'> {
+  options: MenuComboboxOption[];
+  value?: string[];
+  onValueChange?: (value: string[]) => void;
+  multiselect?: boolean;
+  closeParentOnEsc?: boolean;
+}
 
 /** @public */
 export type MenuComponent = {
@@ -34,4 +56,7 @@ export type MenuComponent = {
   CheckboxItemIndicator: typeof MenuPrimitive.CheckboxItemIndicator;
   SubmenuTrigger: typeof MenuPrimitive.SubmenuTrigger;
   Separator: typeof MenuPrimitive.Separator;
+  Combobox: ForwardRefExoticComponent<
+    MenuComboboxProps & RefAttributes<HTMLDivElement>
+  >;
 };

@@ -147,6 +147,42 @@ export const myPluginTranslationRef = createTranslationRef({
 });
 ```
 
+#### JSX Elements
+
+The translation API supports interpolation of JSX elements by passing them directly as values to the translation function. If any of the provided interpolation values are JSX elements, the translation function will return a JSX element instead of a string.
+
+For example, you might define the following messages:
+
+```ts title="define the message"
+export const myPluginTranslationRef = createTranslationRef({
+  id: 'plugin.my-plugin',
+  messages: {
+    entityPage: {
+      redirect: {
+        message: 'The entity you are looking for has been moved to {{link}}.',
+        link: 'new location',
+      },
+    },
+  },
+});
+```
+
+Which can be used within a component like this:
+
+```tsx title="use within a component"
+const { t } = useTranslationRef(myPluginTranslationRef);
+
+return (
+  <div>
+    {t('entityPage.redirect.message', {
+      link: <a href="/new-location">{t('entityPage.redirect.link')}</a>,
+    })}
+  </div>
+);
+```
+
+The return type of the outer `t` function will be a `JSX.Element`, with the underlying value being a React fragment of the different parts of the message.
+
 ## For an application developer overwrite plugin messages
 
 Step 1: Create translation resources

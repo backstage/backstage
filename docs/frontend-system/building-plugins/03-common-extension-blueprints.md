@@ -2,7 +2,6 @@
 id: common-extension-blueprints
 title: Common Extension Blueprints
 sidebar_label: Common Extension Blueprints
-# prettier-ignore
 description: Extension blueprints provided by the frontend system and core features
 ---
 

@@ -15,7 +15,7 @@
  */
 
 import os from 'os';
-import { DatabaseManager } from '@backstage/backend-common';
+import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker } from './StorageTaskBroker';
@@ -49,7 +49,10 @@ async function createStore(): Promise<DatabaseTaskStore> {
         },
       },
     }),
-  ).forPlugin('scaffolder');
+  ).forPlugin('scaffolder', {
+    logger: mockServices.logger.mock(),
+    lifecycle: mockServices.lifecycle.mock(),
+  });
   return await DatabaseTaskStore.create({
     database: manager,
   });

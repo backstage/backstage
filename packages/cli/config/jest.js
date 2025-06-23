@@ -212,6 +212,11 @@ function getRoleConfig(role, pkgJson) {
   if (FRONTEND_ROLES.includes(role)) {
     return {
       testEnvironment: require.resolve('jest-environment-jsdom'),
+      // The caching module loader is only used to speed up frontend tests,
+      // as it breaks real dynamic imports of ESM modules.
+      runtime: envOptions.oldTests
+        ? undefined
+        : require.resolve('./jestCachingModuleLoader'),
       transform,
     };
   }
@@ -256,10 +261,6 @@ async function getProjectConfig(targetPath, extraConfig, extraOptions) {
 
     // A bit more opinionated
     testMatch: [`**/*.test.{${SRC_EXTS.join(',')}}`],
-
-    runtime: envOptions.oldTests
-      ? undefined
-      : require.resolve('./jestCachingModuleLoader'),
 
     transformIgnorePatterns: [`/node_modules/(?:${transformIgnorePattern})/`],
     ...getRoleConfig(pkgJson.backstage?.role, pkgJson),

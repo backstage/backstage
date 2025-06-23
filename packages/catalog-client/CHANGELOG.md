@@ -1,5 +1,35 @@
 # @backstage/catalog-client
 
+## 1.10.1
+
+### Patch Changes
+
+- 22fad0d: Fixed `CatalogClient` error responses for `refreshEntity` and `addLocation`.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+
+## 1.10.1-next.0
+
+### Patch Changes
+
+- 22fad0d: Fixed `CatalogClient` error responses for `refreshEntity` and `addLocation`.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+
+## 1.10.0
+
+### Minor Changes
+
+- 1a003ff: Add `getLocations` method to `CatalogApi` and `CatalogClient`. This method calls the [`GET /locations`](https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-locations) endpoint from the catalog backend.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+
 ## 1.10.0-next.0
 
 ### Minor Changes

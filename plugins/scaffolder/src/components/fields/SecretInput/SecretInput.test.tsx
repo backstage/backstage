@@ -19,6 +19,7 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { SecretInput } from './SecretInput';
 import { renderInTestApp } from '@backstage/test-utils';
+import { ScaffolderRJSFFormProps as FormProps } from '@backstage/plugin-scaffolder-react';
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import validator from '@rjsf/validator-ajv8';
 import { fireEvent, act, waitFor } from '@testing-library/react';
@@ -72,5 +73,93 @@ describe('<SecretInput />', () => {
       },
       { timeout: 500 },
     );
+  });
+
+  describe('SecretInput description', () => {
+    const description = {
+      fromSchema: 'MyGroupsPicker description from schema',
+      fromUiSchema: 'MyGroupsPicker description from uiSchema',
+    } as { fromSchema: string; fromUiSchema: string };
+
+    it('omits description', async () => {
+      const props = {
+        validator,
+        schema: {
+          properties: { myKey: { type: 'string', title: 'secret' } },
+        },
+        uiSchema: {
+          myKey: {
+            'ui:field': 'Secret',
+          },
+        },
+        fields: {
+          Secret: SecretInput,
+        },
+      } as unknown as FormProps<any>;
+
+      const { queryByText } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Form {...props} />
+          <SecretsComponent />
+        </SecretsContextProvider>,
+      );
+      expect(queryByText(description.fromSchema)).toBe(null);
+      expect(queryByText(description.fromUiSchema)).toBe(null);
+    });
+
+    it('presents schema description', async () => {
+      const props = {
+        validator,
+        schema: {
+          properties: { myKey: { type: 'string', title: 'secret' } },
+          description: description.fromSchema,
+        },
+        uiSchema: {
+          myKey: {
+            'ui:field': 'Secret',
+          },
+        },
+        fields: {
+          Secret: SecretInput,
+        },
+      } as unknown as FormProps<any>;
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Form {...props} />
+          <SecretsComponent />
+        </SecretsContextProvider>,
+      );
+      expect(getByText(description.fromSchema)).toBeInTheDocument();
+      expect(queryByText(description.fromUiSchema)).toBe(null);
+    });
+
+    it('presents uiSchema description', async () => {
+      const props = {
+        validator,
+        schema: {
+          properties: { myKey: { type: 'string', title: 'secret' } },
+          description: description.fromSchema,
+        },
+        uiSchema: {
+          myKey: {
+            'ui:field': 'Secret',
+          },
+          'ui:description': description.fromUiSchema,
+        },
+        fields: {
+          Secret: SecretInput,
+        },
+      } as unknown as FormProps<any>;
+
+      const { getByText, queryByText } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Form {...props} />
+          <SecretsComponent />
+        </SecretsContextProvider>,
+      );
+      expect(queryByText(description.fromSchema)).toBe(null);
+      expect(getByText(description.fromUiSchema)).toBeInTheDocument();
+    });
   });
 });

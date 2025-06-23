@@ -28,6 +28,7 @@ import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/ana
 import { AppNode, useComponentRef } from '../apis';
 import { coreComponentRefs } from './coreComponentRefs';
 import { coreExtensionData } from '../wiring';
+import { AppNodeProvider } from './AppNodeProvider';
 
 type RouteTrackerProps = PropsWithChildren<{
   disableTracking?: boolean;
@@ -69,26 +70,28 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
     node.instance?.getData(coreExtensionData.routePath),
   );
 
-  const plugin = node.spec.source;
+  const plugin = node.spec.plugin;
   const Progress = useComponentRef(coreComponentRefs.progress);
   const fallback = useComponentRef(coreComponentRefs.errorBoundaryFallback);
 
   // Skipping "routeRef" attribute in the new system, the extension "id" should provide more insight
   const attributes = {
     extensionId: node.spec.id,
-    pluginId: node.spec.source?.id ?? 'app',
+    pluginId: node.spec.plugin?.id ?? 'app',
   };
 
   return (
-    <Suspense fallback={<Progress />}>
-      <ErrorBoundary plugin={plugin} Fallback={fallback}>
-        <AnalyticsContext attributes={attributes}>
-          <RouteTracker disableTracking={!(routable ?? doesOutputRoutePath)}>
-            {children}
-          </RouteTracker>
-        </AnalyticsContext>
-      </ErrorBoundary>
-    </Suspense>
+    <AppNodeProvider node={node}>
+      <Suspense fallback={<Progress />}>
+        <ErrorBoundary plugin={plugin} Fallback={fallback}>
+          <AnalyticsContext attributes={attributes}>
+            <RouteTracker disableTracking={!(routable ?? doesOutputRoutePath)}>
+              {children}
+            </RouteTracker>
+          </AnalyticsContext>
+        </ErrorBoundary>
+      </Suspense>
+    </AppNodeProvider>
   );
 }
 

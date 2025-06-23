@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  // useRef,
+  useState,
+} from 'react';
 
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
@@ -45,11 +51,27 @@ import {
   useSanitizerTransformer,
   useStylesTransformer,
   handleMetaRedirects,
+  addNavLinkKeyboardToggle,
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
-import { useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
+
+// If a defaultPath is specified then we should navigate to that path replacing the
+// current location in the history. This should only happen on the initial load so
+// navigating to the root of the docs doesn't also redirect.
+export const useInitialRedirect = (defaultPath?: string) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { '*': currPath = '' } = useParams();
+
+  useLayoutEffect(() => {
+    if (currPath === '' && defaultPath) {
+      navigate(`${location.pathname}${defaultPath}`, { replace: true });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+};
 
 /**
  * Hook that encapsulates the behavior of getting raw HTML and applying
@@ -58,6 +80,7 @@ const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
  */
 export const useTechDocsReaderDom = (
   entityRef: CompoundEntityRef,
+  defaultPath?: string,
 ): Element | null => {
   const navigate = useNavigateUrl();
   const theme = useTheme();
@@ -75,6 +98,8 @@ export const useTechDocsReaderDom = (
 
   const [dom, setDom] = useState<HTMLElement | null>(null);
   const isStyleLoading = useShadowDomStylesLoading(dom);
+
+  useInitialRedirect(defaultPath);
 
   const updateSidebarPositionAndHeight = useCallback(() => {
     if (!dom) return;
@@ -229,6 +254,13 @@ export const useTechDocsReaderDom = (
                 transformedElement
                   ?.querySelector(`[id="${parsedUrl.hash.slice(1)}"]`)
                   ?.scrollIntoView();
+
+                // Focus first focusable element in the target section
+                (
+                  transformedElement
+                    ?.querySelector(`[id="${parsedUrl.hash.slice(1)}"]`)
+                    ?.querySelector('a, button, [tabindex]') as HTMLElement
+                )?.focus();
               }
             } else {
               if (modifierActive) {
@@ -260,6 +292,7 @@ export const useTechDocsReaderDom = (
           },
           onLoaded: () => {},
         }),
+        addNavLinkKeyboardToggle(),
       ]),
     [theme, navigate, analytics, entityRef.name, configApi],
   );

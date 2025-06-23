@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { IssueType } from '../commonGitlabConfig';
 import { createGitlabIssueAction } from './gitlabIssueCreate';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const mockGitlabClient = {
   Issues: {
@@ -45,15 +45,17 @@ describe('gitlab:issues:create', () => {
     jest.useRealTimers();
   });
 
-  const config = new ConfigReader({
-    integrations: {
-      gitlab: [
-        {
-          host: 'gitlab.com',
-          token: 'myIntegrationsToken',
-          apiBaseUrl: 'https://gitlab.com/api/v4',
-        },
-      ],
+  const config = mockServices.rootConfig({
+    data: {
+      integrations: {
+        gitlab: [
+          {
+            host: 'gitlab.com',
+            token: 'myIntegrationsToken',
+            apiBaseUrl: 'https://gitlab.com/api/v4',
+          },
+        ],
+      },
     },
   });
   const integrations = ScmIntegrations.fromConfig(config);

@@ -34,6 +34,7 @@ import { LdapVendor } from './vendors';
 import { GroupTransformer, UserTransformer } from './types';
 import { mapStringAttr } from './util';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { InputError } from '@backstage/errors';
 
 /**
  * The default implementation of the transformation from an LDAP entry to a
@@ -70,6 +71,13 @@ export async function defaultUserTransformer(
   mapStringAttr(entry, vendor, map.name, v => {
     entity.metadata.name = v;
   });
+
+  if (!entity.metadata.name) {
+    throw new InputError(
+      `User syncing failed: missing '${map.name}' attribute, consider applying a user filter to skip processing users with incomplete data.`,
+    );
+  }
+
   mapStringAttr(entry, vendor, map.description, v => {
     entity.metadata.description = v;
   });
@@ -138,6 +146,7 @@ export async function readLdapUsers(
       mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
         ensureItems(userMemberOf, myDn, vs);
       });
+
       entities.push(entity);
     });
   }
@@ -180,6 +189,13 @@ export async function defaultGroupTransformer(
   mapStringAttr(entry, vendor, map.name, v => {
     entity.metadata.name = v;
   });
+
+  if (!entity.metadata.name) {
+    throw new InputError(
+      `Group syncing failed: missing '${map.name}' attribute, consider applying a group filter to skip processing groups with incomplete data.`,
+    );
+  }
+
   mapStringAttr(entry, vendor, map.description, v => {
     entity.metadata.description = v;
   });
@@ -262,6 +278,7 @@ export async function readLdapGroups(
       mapReferencesAttr(entry, vendor, map.memberOf, (myDn, vs) => {
         ensureItems(groupMemberOf, myDn, vs);
       });
+
       mapReferencesAttr(entry, vendor, map.members, (myDn, vs) => {
         ensureItems(groupMember, myDn, vs);
       });
@@ -334,7 +351,7 @@ export async function readLdapOrg(
 function mapReferencesAttr(
   entry: SearchEntry,
   vendor: LdapVendor,
-  attributeName: string | undefined,
+  attributeName: string | undefined | null,
   setter: (sourceDn: string, targets: string[]) => void,
 ) {
   if (attributeName) {

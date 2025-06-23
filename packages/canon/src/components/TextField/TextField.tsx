@@ -14,81 +14,79 @@
  * limitations under the License.
  */
 
-import { useId, forwardRef } from 'react';
-import { Input } from '@base-ui-components/react/input';
+import { forwardRef, useEffect } from 'react';
+import { Input, TextField as AriaTextField } from 'react-aria-components';
 import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
+import { FieldLabel } from '../FieldLabel';
+import { FieldError } from '../FieldError';
 
 import type { TextFieldProps } from './types';
 
 /** @public */
 export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
-  (props: TextFieldProps, ref) => {
+  (props, ref) => {
     const {
       className,
-      size = 'medium',
+      icon,
+      size = 'small',
       label,
+      secondaryLabel,
       description,
-      error,
-      required,
-      style,
-      disabled,
+      isRequired,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
+      placeholder,
       ...rest
     } = props;
+
+    useEffect(() => {
+      if (!label && !ariaLabel && !ariaLabelledBy) {
+        console.warn(
+          'TextField requires either a visible label, aria-label, or aria-labelledby for accessibility',
+        );
+      }
+    }, [label, ariaLabel, ariaLabelledBy]);
 
     // Get the responsive value for the variant
     const responsiveSize = useResponsiveValue(size);
 
-    // Generate unique IDs for accessibility
-    const inputId = useId();
-    const descriptionId = useId();
-    const errorId = useId();
+    // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
+    const secondaryLabelText =
+      secondaryLabel || (isRequired ? 'Required' : null);
 
     return (
-      <div
+      <AriaTextField
         className={clsx('canon-TextField', className)}
-        style={style}
+        data-size={responsiveSize}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
+        {...rest}
         ref={ref}
       >
-        {label && (
-          <label
-            className="canon-TextFieldLabel"
-            htmlFor={inputId}
-            data-disabled={disabled}
-          >
-            {label}
-            {required && (
-              <span aria-hidden="true" className="canon-TextFieldRequired">
-                (Required)
-              </span>
-            )}
-          </label>
-        )}
-        <Input
-          id={inputId}
-          className="canon-TextFieldInput"
-          data-size={responsiveSize}
-          aria-labelledby={label ? inputId : undefined}
-          aria-describedby={clsx({
-            [descriptionId]: description,
-            [errorId]: error,
-          })}
-          data-invalid={error}
-          required={required}
-          disabled={disabled}
-          {...rest}
+        <FieldLabel
+          label={label}
+          secondaryLabel={secondaryLabelText}
+          description={description}
         />
-        {description && (
-          <p className="canon-TextFieldDescription" id={descriptionId}>
-            {description}
-          </p>
-        )}
-        {error && (
-          <p className="canon-TextFieldError" id={errorId} role="alert">
-            {error}
-          </p>
-        )}
-      </div>
+        <div className="canon-TextFieldInputWrapper" data-size={responsiveSize}>
+          {icon && (
+            <div
+              className="canon-TextFieldIcon"
+              data-size={responsiveSize}
+              aria-hidden="true"
+            >
+              {icon}
+            </div>
+          )}
+          <Input
+            className="canon-TextFieldInput"
+            {...(icon && { 'data-icon': true })}
+            placeholder={placeholder}
+          />
+        </div>
+        <FieldError />
+      </AriaTextField>
     );
   },
 );

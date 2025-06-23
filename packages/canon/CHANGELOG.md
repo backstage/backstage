@@ -1,5 +1,86 @@
 # @backstage/canon
 
+## 0.5.0
+
+### Minor Changes
+
+- 621fac9: We are updating the default size of the Button component in Canon to be small instead of medium.
+- a842554: We set the default size for IconButton in Canon to be small instead of medium.
+- 35fd51d: Move TextField component to use react Aria under the hood. Introducing a new FieldLabel component to help build custom fields.
+- 78204a2: **Breaking** We are adding a new as prop on the Heading and Text component to make it easier to change the component tag. We are removing the render prop in favour of the as prop.
+- c49e335: TextField in Canon now has multiple label sizes as well as the capacity to hide label and description but still make them available for screen readers.
+- 24b45ef: Fixes spacing props on layout components and aligned on naming for the Grid component. You should now call the Grid root component using <Grid.Root /> instead of just <Grid />.
+
+### Patch Changes
+
+- 44df879: Add min-width: 0; by default on every Flex components in Canon to help support truncated texts inside flex elements.
+- ee6ffe6: Fix styling for the title4 prop on the Heading component in Canon.
+- f2f814a: Added a render prop to the Button component in Canon to use it as a link.
+- 98f02a6: Add new Switch component in Canon.
+- c94f8e0: The filter input in menu comboboxes should now always use the full width of the menu it's in.
+- 269316d: Remove leftover console.log from Container component.
+
+## 0.5.0-next.2
+
+### Patch Changes
+
+- 44df879: Add min-width: 0; by default on every Flex components in Canon to help support truncated texts inside flex elements.
+- ee6ffe6: Fix styling for the title4 prop on the Heading component in Canon.
+- f2f814a: Added a render prop to the Button component in Canon to use it as a link.
+
+## 0.5.0-next.1
+
+### Minor Changes
+
+- 621fac9: We are updating the default size of the Button component in Canon to be small instead of medium.
+- a842554: We set the default size for IconButton in Canon to be small instead of medium.
+
+## 0.5.0-next.0
+
+### Minor Changes
+
+- 24b45ef: Fixes spacing props on layout components and aligned on naming for the Grid component. You should now call the Grid root component using <Grid.Root /> instead of just <Grid />.
+
+### Patch Changes
+
+- 269316d: Remove leftover console.log from Container component.
+
+## 0.4.0
+
+### Minor Changes
+
+- ea36f74: **Breaking Change** Icons on Button and IconButton now need to be imported and placed like this: <Button iconStart={<ChevronDownIcon />} />
+- ccb1fc6: We are modifying the way we treat custom render using 'useRender()' under the hood from BaseUI.
+- 04a65c6: The icon prop in TextField now accept a ReactNode instead of an icon name. We also updated the icon sizes for each input sizes.
+
+### Patch Changes
+
+- c8f32db: Use correct colour token for TextField clear button icon, prevent layout shift whenever it is hidden or shown and properly size focus area around it. Also stop leading icon shrinking when used together with clear button.
+- e996368: Fix Canon missing dependencies
+- 720033c: For improved a11y, clicking a Select component label now focuses the Select trigger element, and the TextField component's label is now styled to indicate it's interactive.
+- 6189bfd: Added new icon and onClear props to the TextField to make it easier to accessorize inputs.
+- 9510105: Add new Tabs component to Canon
+- 97b25a1: Pin version of @base-ui-components/react.
+- 206ffbe: Fixed an issue with Canon's DataTable.Pagination component showing the wrong number for the "to" count.
+- 72d019d: Removed various typos
+- 4551fb7: Update Menu component in Canon to make the UI more condensed. We are also adding a new Combobox option for nested navigation.
+- 185d3a8: Use the Field component from Base UI within the TextField.
+- 1ea1db0: Add new truncate prop to Text and Heading components in Canon.
+
+## 0.4.0-next.3
+
+### Patch Changes
+
+- c8f32db: Use correct colour token for TextField clear button icon, prevent layout shift whenever it is hidden or shown and properly size focus area around it. Also stop leading icon shrinking when used together with clear button.
+
+## 0.4.0-next.2
+
+### Patch Changes
+
+- 6189bfd: Added new icon and onClear props to the TextField to make it easier to accessorize inputs.
+- 97b25a1: Pin version of @base-ui-components/react.
+- 185d3a8: Use the Field component from Base UI within the TextField.
+
 ## 0.4.0-next.1
 
 ### Minor Changes

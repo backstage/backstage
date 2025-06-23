@@ -78,6 +78,13 @@ export const AllColors: Story = {
   ),
 };
 
+export const Truncate: Story = {
+  args: {
+    ...Default.args,
+    truncate: true,
+  },
+};
+
 export const Responsive: Story = {
   args: {
     ...Default.args,
@@ -99,6 +106,13 @@ export const WrappedInLink: Story = {
       </a>
     ),
   ],
+};
+
+export const CustomRender: Story = {
+  args: {
+    ...Default.args,
+    as: 'span',
+  },
 };
 
 export const Playground: Story = {

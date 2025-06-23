@@ -8,6 +8,7 @@ import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ListItemProps } from '@material-ui/core/ListItem';
 import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchResult } from '@backstage/plugin-search-common';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
 // @alpha (undocumented)
 export type BaseSearchResultListItemProps<T = {}> = T & {
@@ -93,6 +94,24 @@ export interface SearchFilterResultTypeBlueprintParams {
   name: string;
   value: string;
 }
+
+// @alpha (undocumented)
+export const searchReactTranslationRef: TranslationRef<
+  'search-react',
+  {
+    readonly 'searchBar.title': 'Search';
+    readonly 'searchBar.placeholder': 'Search in {{org}}';
+    readonly 'searchBar.clearButtonTitle': 'Clear';
+    readonly 'searchFilter.allOptionTitle': 'All';
+    readonly 'searchPagination.limitLabel': 'Results per page:';
+    readonly 'searchPagination.limitText': 'of {{num}}';
+    readonly noResultsDescription: 'Sorry, no results were found';
+    readonly 'searchResultGroup.linkTitle': 'See All';
+    readonly 'searchResultGroup.addFilterButtonTitle': 'Add filter';
+    readonly 'searchResultPager.next': 'Next';
+    readonly 'searchResultPager.previous': 'Previous';
+  }
+>;
 
 // @alpha (undocumented)
 export type SearchResultItemExtensionComponent = <

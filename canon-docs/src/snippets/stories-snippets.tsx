@@ -3,11 +3,12 @@
 import { composeStories } from '@storybook/react';
 import * as BoxStories from '../../../packages/canon/src/components/Box/Box.stories';
 import * as ButtonStories from '../../../packages/canon/src/components/Button/Button.stories';
+import * as ButtonIconStories from '../../../packages/canon/src/components/ButtonIcon/ButtonIcon.stories';
+import * as ButtonLinkStories from '../../../packages/canon/src/components/ButtonLink/ButtonLink.stories';
 import * as CheckboxStories from '../../../packages/canon/src/components/Checkbox/Checkbox.stories';
 import * as ContainerStories from '../../../packages/canon/src/components/Container/Container.stories';
 import * as GridStories from '../../../packages/canon/src/components/Grid/Grid.stories';
 import * as HeadingStories from '../../../packages/canon/src/components/Heading/Heading.stories';
-import * as IconButtonStories from '../../../packages/canon/src/components/IconButton/IconButton.stories';
 import * as IconStories from '../../../packages/canon/src/components/Icon/Icon.stories';
 import * as TextFieldStories from '../../../packages/canon/src/components/TextField/TextField.stories';
 import * as TextStories from '../../../packages/canon/src/components/Text/Text.stories';
@@ -17,6 +18,9 @@ import * as MenuStories from '../../../packages/canon/src/components/Menu/Menu.s
 import * as LinkStories from '../../../packages/canon/src/components/Link/Link.stories';
 import * as AvatarStories from '../../../packages/canon/src/components/Avatar/Avatar.stories';
 import * as CollapsibleStories from '../../../packages/canon/src/components/Collapsible/Collapsible.stories';
+import * as RadioGroupStories from '../../../packages/canon/src/components/RadioGroup/RadioGroup.stories';
+import * as TabsStories from '../../../packages/canon/src/components/Tabs/Tabs.stories';
+import * as SwitchStories from '../../../packages/canon/src/components/Switch/Switch.stories';
 
 export const BoxSnippet = ({ story }: { story: keyof typeof BoxStories }) => {
   const stories = composeStories(BoxStories);
@@ -31,6 +35,28 @@ export const ButtonSnippet = ({
   story: keyof typeof ButtonStories;
 }) => {
   const stories = composeStories(ButtonStories);
+  const StoryComponent = stories[story as keyof typeof stories];
+
+  return StoryComponent ? <StoryComponent /> : null;
+};
+
+export const ButtonIconSnippet = ({
+  story,
+}: {
+  story: keyof typeof ButtonIconStories;
+}) => {
+  const stories = composeStories(ButtonIconStories);
+  const StoryComponent = stories[story as keyof typeof stories];
+
+  return StoryComponent ? <StoryComponent /> : null;
+};
+
+export const ButtonLinkSnippet = ({
+  story,
+}: {
+  story: keyof typeof ButtonLinkStories;
+}) => {
+  const stories = composeStories(ButtonLinkStories);
   const StoryComponent = stories[story as keyof typeof stories];
 
   return StoryComponent ? <StoryComponent /> : null;
@@ -94,17 +120,6 @@ export const HeadingSnippet = ({
   return StoryComponent ? <StoryComponent /> : null;
 };
 
-export const IconButtonSnippet = ({
-  story,
-}: {
-  story: keyof typeof IconButtonStories;
-}) => {
-  const stories = composeStories(IconButtonStories);
-  const StoryComponent = stories[story as keyof typeof stories];
-
-  return StoryComponent ? <StoryComponent /> : null;
-};
-
 export const IconSnippet = ({ story }: { story: keyof typeof IconStories }) => {
   const stories = composeStories(IconStories);
   const StoryComponent = stories[story as keyof typeof stories];
@@ -161,6 +176,35 @@ export const CollapsibleSnippet = ({
   story: keyof typeof CollapsibleStories;
 }) => {
   const stories = composeStories(CollapsibleStories);
+  const StoryComponent = stories[story as keyof typeof stories];
+
+  return StoryComponent ? <StoryComponent /> : null;
+};
+
+export const TabsSnippet = ({ story }: { story: keyof typeof TabsStories }) => {
+  const stories = composeStories(TabsStories);
+  const StoryComponent = stories[story as keyof typeof stories];
+
+  return StoryComponent ? <StoryComponent /> : null;
+};
+
+export const SwitchSnippet = ({
+  story,
+}: {
+  story: keyof typeof SwitchStories;
+}) => {
+  const stories = composeStories(SwitchStories);
+  const StoryComponent = stories[story as keyof typeof stories];
+
+  return StoryComponent ? <StoryComponent /> : null;
+};
+
+export const RadioGroupSnippet = ({
+  story,
+}: {
+  story: keyof typeof RadioGroupStories;
+}) => {
+  const stories = composeStories(RadioGroupStories);
   const StoryComponent = stories[story as keyof typeof stories];
 
   return StoryComponent ? <StoryComponent /> : null;

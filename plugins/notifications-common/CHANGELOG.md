@@ -1,5 +1,21 @@
 # @backstage/plugin-notifications-common
 
+## 0.0.9
+
+### Patch Changes
+
+- 1fb5f06: Adds ability for user to turn on/off notifications for specific topics within an origin.
+- Updated dependencies
+  - @backstage/config@1.3.2
+
+## 0.0.9-next.0
+
+### Patch Changes
+
+- 1fb5f06: Adds ability for user to turn on/off notifications for specific topics within an origin.
+- Updated dependencies
+  - @backstage/config@1.3.2
+
 ## 0.0.8
 
 ### Patch Changes

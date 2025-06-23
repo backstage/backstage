@@ -63,8 +63,8 @@ export type GroupConfig = {
     displayName: string;
     email?: string;
     picture?: string;
-    memberOf: string;
-    members: string;
+    memberOf: string | null;
+    members: string | null;
   };
 };
 
@@ -259,7 +259,7 @@ export type UserConfig = {
     displayName: string;
     email: string;
     picture?: string;
-    memberOf: string;
+    memberOf: string | null;
   };
 };
 
@@ -274,5 +274,15 @@ export type UserTransformer = (
 export type VendorConfig = {
   dnAttributeName?: string;
   uuidAttributeName?: string;
+};
+
+// @public
+export const vendors: {
+  readonly activeDirectory: LdapVendor;
+  readonly aeDir: LdapVendor;
+  readonly freeIpa: LdapVendor;
+  readonly googleLdap: LdapVendor;
+  readonly lldap: LdapVendor;
+  readonly default: LdapVendor;
 };
 ```

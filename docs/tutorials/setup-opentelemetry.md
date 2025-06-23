@@ -4,7 +4,7 @@ title: Setup OpenTelemetry
 description: Tutorial to setup OpenTelemetry metrics and traces exporters in Backstage
 ---
 
-Backstage uses [OpenTelemetery](https://opentelemetry.io/) to instrument its components by reporting traces and metrics.
+Backstage uses [OpenTelemetry](https://opentelemetry.io/) to instrument its components by reporting traces and metrics.
 
 This tutorial shows how to setup exporters in your Backstage backend package. For demonstration purposes we will use a Prometheus exporter, but you can adjust your solution to use another one that suits your needs; see for example the article on [OTLP exporters](https://opentelemetry.io/docs/instrumentation/js/exporters/).
 
@@ -26,7 +26,7 @@ yarn --cwd packages/backend add \
 
 In your `packages/backend/src` folder, create an `instrumentation.js` file.
 
-```typescript title="in packages/backend/src/instrumentation.js"
+```js title="in packages/backend/src/instrumentation.js"
 // Prevent from running more than once (due to worker threads)
 const { isMainThread } = require('node:worker_threads');
 
@@ -52,6 +52,42 @@ if (isMainThread) {
 You probably won't need all of the instrumentation inside `getNodeAutoInstrumentations()` so make sure to
 check the [documentation](https://www.npmjs.com/package/@opentelemetry/auto-instrumentations-node) and tweak it properly.
 
+### Views
+
+The default histogram buckets for OpenTelemetry are in milliseconds, but the histograms that are created for Catalog processing emit metrics in second. You might want to adjust this to what fits your need. To do this you can use the [Views feature](https://opentelemetry.io/docs/concepts/signals/metrics/#views) like this:
+
+```js
+const prometheus = new PrometheusExporter();
+const sdk = new NodeSDK({
+  metricReader: prometheus,
+  views: [
+    new View({
+      instrumentName: 'catalog.test',
+      aggregation: new ExplicitBucketHistogramAggregation([
+        0.01, 0.1, 0.5, 1, 5, 10, 25, 50, 100, 500, 1000,
+      ]),
+    }),
+  ],
+});
+```
+
+The above will make all the histogram buckets use the same config. If you would like to take a more targeted approach you can do this:
+
+```js
+const prometheus = new PrometheusExporter();
+const sdk = new NodeSDK({
+  metricReader: prometheus,
+  views: [
+    new View({
+      instrumentName: 'catalog.test',
+      aggregation: new ExplicitBucketHistogramAggregation([
+        0, 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 30, 60, 120, 300, 1000,
+      ]),
+    }),
+  ],
+});
+```
+
 ## Local Development Setup
 
 It's important to setup the NodeSDK and the automatic instrumentation **before**
@@ -67,13 +103,13 @@ For local development, you can add the required flag in your `packages/backend/p
   ...
 ```
 
-You can now start your Backstage instance as usual, using `yarn start`.
+You can now start your Backstage instance as usual, using `yarn start` and you'll be able to see your metrics at: <http://localhost:9464/metrics>
 
 ## Production Setup
 
 In your `.dockerignore`, add this line:
 
-```
+```text
 !packages/backend/src/instrumentation.js
 ```
 

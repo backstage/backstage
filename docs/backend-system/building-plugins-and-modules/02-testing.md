@@ -2,7 +2,6 @@
 id: testing
 title: Testing Backend Plugins and Modules
 sidebar_label: Testing
-# prettier-ignore
 description: Learn how to test your backend plugins and modules
 ---
 
@@ -37,7 +36,7 @@ describe('myPlugin', () => {
       features: [
         myPlugin(),
         mockServices.rootConfig.factory({ data: fakeConfig }),
-        mockLogger,
+        mockLogger.factory,
       ],
     });
 
