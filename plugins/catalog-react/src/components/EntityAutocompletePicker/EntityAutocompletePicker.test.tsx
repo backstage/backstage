@@ -410,4 +410,44 @@ describe('<EntityAutocompletePicker/>', () => {
     );
     await waitFor(() => expect(screen.queryByText('Options')).toBeNull());
   });
+
+  it('clears invalid selected options when not available anymore', async () => {
+    const mockCatalogApi = makeMockCatalogApi(['option2', 'option3']);
+    const updateFilters = jest.fn();
+
+    render(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+        <MockEntityListContextProvider<EntityFilters>
+          value={{
+            updateFilters,
+            queryParameters: { options: ['option1', 'option2'] },
+          }}
+        >
+          <EntityAutocompletePicker<EntityFilters>
+            label="Options"
+            path="spec.options"
+            name="options"
+            Filter={EntityOptionFilter}
+          />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+
+    // Wait until the options are loaded
+    await waitFor(() => {
+      expect(screen.getByText('Options')).toBeInTheDocument();
+    });
+
+    // "option1" was in query params but not returned from catalog facets
+    // So only "option2" should remain selected and sent via updateFilters
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        options: new EntityOptionFilter(['option2']),
+      }),
+    );
+
+    // Ensure that option1 is no longer rendered as selected
+    fireEvent.click(screen.getByTestId('options-picker-expand'));
+    expect(screen.queryByText('option1')).not.toBeInTheDocument();
+  });
 });
