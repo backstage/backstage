@@ -11272,11 +11272,11 @@ __metadata:
   linkType: hard
 
 "@keyv/valkey@npm:^1.0.1":
-  version: 1.0.4
-  resolution: "@keyv/valkey@npm:1.0.4"
+  version: 1.0.6
+  resolution: "@keyv/valkey@npm:1.0.6"
   dependencies:
-    iovalkey: "npm:^0.3.1"
-  checksum: 10/93362c51c14bb8e515a9af8df4a22e028fcec5a09931eb68f854698676cb16cecad691330c75c1dca8b6a986a4763cac9f1b2fd4e5b8216f06648d9379f55cc6
+    iovalkey: "npm:^0.3.3"
+  checksum: 10/36e48930928845e6a14dfb4f9f8069851ff10d3aeef62277f78c8dcea735f8dca5faf4399f67fc2730231b24270d9ab6be77a46e122e9006d3f6e55cc5c0b97a
   languageName: node
   linkType: hard
 
@@ -34270,9 +34270,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"iovalkey@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "iovalkey@npm:0.3.1"
+"iovalkey@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "iovalkey@npm:0.3.3"
   dependencies:
     "@iovalkey/commands": "npm:^0.1.0"
     cluster-key-slot: "npm:^1.1.0"
@@ -34283,7 +34283,7 @@ __metadata:
     redis-errors: "npm:^1.2.0"
     redis-parser: "npm:^3.0.0"
     standard-as-callback: "npm:^2.1.0"
-  checksum: 10/afe5e0218810d902263dca2b22dd4501fb74698111f1850804d0948bd6a97793a7f5006757f9b6e8c8131bac6bd532d07ad971e7776bed7f6dc1f6e471706c53
+  checksum: 10/39368842e6a9dbc85e92dfcd4c1c917a76240bac5c4210e19a0bd3bc7984af9b567dce5de7c560c4517d5d4cb03af229f38582c1dd055c6fd452060774318e8c
   languageName: node
   linkType: hard
 
