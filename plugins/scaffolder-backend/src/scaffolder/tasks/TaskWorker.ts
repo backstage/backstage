@@ -29,6 +29,8 @@ import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { WorkflowRunner } from './types';
 import { setTimeout } from 'timers/promises';
+import { JsonObject } from '@backstage/types';
+import { Config } from '@backstage/config';
 
 /**
  * TaskWorkerOptions
@@ -44,6 +46,7 @@ export type TaskWorkerOptions = {
   permissions?: PermissionEvaluator;
   logger?: LoggerService;
   auditor?: AuditorService;
+  config?: Config;
   gracefulShutdown?: boolean;
 };
 
@@ -59,6 +62,7 @@ export type CreateWorkerOptions = {
   workingDirectory: string;
   logger: LoggerService;
   auditor?: AuditorService;
+  config?: Config;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   /**
    * The number of tasks that can be executed at the same time by the worker
@@ -87,12 +91,14 @@ export class TaskWorker {
   private taskQueue: PQueue;
   private logger: LoggerService | undefined;
   private auditor: AuditorService | undefined;
+  private config: Config | undefined;
   private stopWorkers: boolean;
 
   private constructor(private readonly options: TaskWorkerOptions) {
     this.stopWorkers = false;
     this.logger = options.logger;
     this.auditor = options.auditor;
+    this.config = options.config;
     this.taskQueue = new PQueue({
       concurrency: options.concurrentTasksLimit,
     });
@@ -103,6 +109,7 @@ export class TaskWorker {
       taskBroker,
       logger,
       auditor,
+      config,
       actionRegistry,
       integrations,
       workingDirectory,
@@ -130,6 +137,7 @@ export class TaskWorker {
       concurrentTasksLimit,
       permissions,
       auditor,
+      config,
       gracefulShutdown,
     });
   }
@@ -182,6 +190,28 @@ export class TaskWorker {
     });
   }
 
+  protected truncateParameters(parameters: JsonObject) {
+    const auditMaxLength =
+      this.config?.getOptionalNumber('scaffolder.auditor.maxLength') ?? 256;
+    const truncatedParameters: JsonObject = {};
+
+    for (const key in parameters) {
+      if (Object.prototype.hasOwnProperty.call(parameters, key)) {
+        const rawValue = parameters[key];
+        const value = rawValue?.toString();
+        if (value && value.length > auditMaxLength) {
+          truncatedParameters[key] = value
+            .slice(0, auditMaxLength)
+            .concat('...<truncated>');
+        } else {
+          truncatedParameters[key] = rawValue;
+        }
+      }
+    }
+
+    return truncatedParameters;
+  }
+
   async runOneTask(task: TaskContext) {
     const auditorEvent = await this.auditor?.createEvent({
       eventId: 'task',
@@ -189,7 +219,7 @@ export class TaskWorker {
       meta: {
         actionType: 'execution',
         taskId: task.taskId,
-        taskParameters: task.spec.parameters,
+        taskParameters: this.truncateParameters(task.spec.parameters),
         templateRef: task.spec.templateInfo?.entityRef,
       },
     });
