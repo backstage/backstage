@@ -709,7 +709,7 @@ export async function createRouter(
         const credentials = await httpAuth.credentials(req);
         const task = await taskBroker.get(taskId);
 
-        // Requires both read and cancel permissions
+        // Requires both read and create permissions
         await checkPermission({
           credentials,
           permissions: [taskCreatePermission],
