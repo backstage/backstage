@@ -132,10 +132,6 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
     recursive: true,
     force: true,
   });
-  await rm(cliPaths.resolveTargetRoot('dist-types'), {
-    recursive: true,
-    force: true,
-  });
   const selectedPackageDirs = await resolvePackagePaths({
     paths,
     include: opts.include,
