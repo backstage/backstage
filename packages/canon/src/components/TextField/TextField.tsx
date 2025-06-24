@@ -71,7 +71,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           description={description}
         />
         <div
-          className={classNames.input}
+          className={classNames.inputWrapper}
           data-size={dataAttributes['data-size']}
         >
           {icon && (
@@ -84,6 +84,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
             </div>
           )}
           <Input
+            className={classNames.input}
             {...(icon && { 'data-icon': true })}
             placeholder={placeholder}
           />

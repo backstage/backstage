@@ -79,10 +79,10 @@ export const componentDefinitions = {
   },
   FieldLabel: {
     classNames: {
-      root: 'canon-FieldLabel',
-      label: 'canon-FieldLabelLabel',
-      secondaryLabel: 'canon-FieldLabelSecondaryLabel',
-      description: 'canon-FieldLabelDescription',
+      root: 'canon-FieldLabelWrapper',
+      label: 'canon-FieldLabel',
+      secondaryLabel: 'canon-FieldSecondaryLabel',
+      description: 'canon-FieldDescription',
     },
   },
   Flex: {
@@ -226,6 +226,7 @@ export const componentDefinitions = {
   TextField: {
     classNames: {
       root: 'canon-TextField',
+      inputWrapper: 'canon-InputWrapper',
       input: 'canon-Input',
       inputIcon: 'canon-InputIcon',
     },

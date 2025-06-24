@@ -87,7 +87,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
           description={description}
         />
         <div
-          className={textFieldClassNames.input}
+          className={textFieldClassNames.inputWrapper}
           data-size={dataAttributes['data-size']}
         >
           {icon !== false && (
@@ -100,6 +100,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
             </div>
           )}
           <Input
+            className={textFieldClassNames.input}
             {...(icon !== false && { 'data-icon': true })}
             placeholder={placeholder}
           />

@@ -346,10 +346,10 @@ export const componentDefinitions: {
   };
   readonly FieldLabel: {
     readonly classNames: {
-      readonly root: 'canon-FieldLabel';
-      readonly label: 'canon-FieldLabelLabel';
-      readonly secondaryLabel: 'canon-FieldLabelSecondaryLabel';
-      readonly description: 'canon-FieldLabelDescription';
+      readonly root: 'canon-FieldLabelWrapper';
+      readonly label: 'canon-FieldLabel';
+      readonly secondaryLabel: 'canon-FieldSecondaryLabel';
+      readonly description: 'canon-FieldDescription';
     };
   };
   readonly Flex: {
@@ -499,6 +499,7 @@ export const componentDefinitions: {
   readonly TextField: {
     readonly classNames: {
       readonly root: 'canon-TextField';
+      readonly inputWrapper: 'canon-InputWrapper';
       readonly input: 'canon-Input';
       readonly inputIcon: 'canon-InputIcon';
     };
