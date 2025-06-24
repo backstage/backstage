@@ -17,8 +17,8 @@
 import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
 import { Button as RAButton } from 'react-aria-components';
-import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import type { ButtonIconProps } from './types';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
 export const ButtonIcon = forwardRef(
@@ -32,15 +32,18 @@ export const ButtonIcon = forwardRef(
       ...rest
     } = props;
 
-    const responsiveSize = useResponsiveValue(size);
-    const responsiveVariant = useResponsiveValue(variant);
+    const { classNames, dataAttributes } = useStyles('Button', {
+      size,
+      variant,
+    });
+
+    const { classNames: classNamesButtonIcon } = useStyles('ButtonIcon');
 
     return (
       <RAButton
-        className={clsx('canon-Button', 'canon-ButtonIcon', className)}
-        data-variant={responsiveVariant}
-        data-size={responsiveSize}
+        className={clsx(classNames.root, classNamesButtonIcon.root, className)}
         ref={ref}
+        {...dataAttributes}
         {...rest}
       >
         {icon}

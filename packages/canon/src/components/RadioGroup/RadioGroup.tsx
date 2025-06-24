@@ -22,6 +22,7 @@ import {
 import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
+import { useStyles } from '../../hooks/useStyles';
 
 import type { RadioGroupProps, RadioProps } from './types';
 
@@ -40,6 +41,8 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
       ...rest
     } = props;
 
+    const { classNames } = useStyles('RadioGroup');
+
     useEffect(() => {
       if (!label && !ariaLabel && !ariaLabelledBy) {
         console.warn(
@@ -54,7 +57,7 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
 
     return (
       <AriaRadioGroup
-        className={clsx('canon-RadioGroup', className)}
+        className={clsx(classNames.root, className)}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         {...rest}
@@ -65,7 +68,7 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
           secondaryLabel={secondaryLabelText}
           description={description}
         />
-        <div className="canon-RadioGroupContent">{children}</div>
+        <div className={classNames.content}>{children}</div>
         <FieldError />
       </AriaRadioGroup>
     );
@@ -78,8 +81,14 @@ RadioGroup.displayName = 'RadioGroup';
 export const Radio = forwardRef<HTMLLabelElement, RadioProps>((props, ref) => {
   const { className, ...rest } = props;
 
+  const { classNames } = useStyles('RadioGroup');
+
   return (
-    <AriaRadio className={clsx('canon-Radio', className)} {...rest} ref={ref} />
+    <AriaRadio
+      className={clsx(classNames.radio, className)}
+      {...rest}
+      ref={ref}
+    />
   );
 });
 

@@ -18,6 +18,7 @@ import { ComponentType } from 'react';
 import { useIcons } from './context';
 import type { IconProps } from './types';
 import clsx from 'clsx';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
 export const Icon = (props: IconProps) => {
@@ -31,9 +32,11 @@ export const Icon = (props: IconProps) => {
     return null;
   }
 
+  const { classNames } = useStyles('Icon');
+
   return (
     <CanonIcon
-      className={clsx('canon-Icon', className)}
+      className={clsx(classNames.root, className)}
       style={{
         ...(size ? { width: size, height: size } : {}),
         ...style,

@@ -19,27 +19,32 @@ import clsx from 'clsx';
 import { TableCellLinkProps } from './types';
 import { Text } from '../../Text/Text';
 import { Link } from '../../Link/Link';
+import { useStyles } from '../../../hooks/useStyles';
 
 /** @public */
 const TableCellLink = forwardRef<HTMLDivElement, TableCellLinkProps>(
-  ({ className, title, description, href, render, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={clsx('canon-TableCellLink', className)}
-      {...props}
-    >
-      {title && (
-        <Link href={href} render={render}>
-          {title}
-        </Link>
-      )}
-      {description && (
-        <Text variant="body" color="secondary">
-          {description}
-        </Text>
-      )}
-    </div>
-  ),
+  ({ className, title, description, href, render, ...props }, ref) => {
+    const { classNames } = useStyles('Table');
+
+    return (
+      <div
+        ref={ref}
+        className={clsx(classNames.cellLink, className)}
+        {...props}
+      >
+        {title && (
+          <Link href={href} render={render}>
+            {title}
+          </Link>
+        )}
+        {description && (
+          <Text variant="body" color="secondary">
+            {description}
+          </Text>
+        )}
+      </div>
+    );
+  },
 );
 TableCellLink.displayName = 'TableCellLink';
 
