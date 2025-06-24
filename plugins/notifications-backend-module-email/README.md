@@ -81,9 +81,9 @@ notifications:
         receiver: 'users'
       # Optional SES config
       # sesConfig:
-      #   SourceArn: 'arn:aws:ses:us-west-2:123456789012:identity/example.com'
-      #   FromArn: 'arn:aws:ses:us-west-2:123456789012:identity/example.com'
-      #   ConfigurationSetName: 'custom-config'
+      #   sourceArn: 'arn:aws:ses:us-west-2:123456789012:identity/example.com'
+      #   fromArn: 'arn:aws:ses:us-west-2:123456789012:identity/example.com'
+      #   configurationSetName: 'custom-config'
       # How many emails to send concurrently, defaults to 2
       concurrencyLimit: 10
       # How much to throttle between emails, defaults to 100ms

@@ -139,15 +139,15 @@ export interface Config {
           /**
            * ARN of the identity to use as the source of the email
            */
-          SourceArn?: string;
+          sourceArn?: string;
           /**
            * ARN of the identity to use for the "From"/sender address of the email
            */
-          FromArn?: string;
+          fromArn?: string;
           /**
            * Name of the configuration set to use when sending email via ses
            */
-          ConfigurationSetName?: string;
+          configurationSetName?: string;
         };
         cache?: {
           /**

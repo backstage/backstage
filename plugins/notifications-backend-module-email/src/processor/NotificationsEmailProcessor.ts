@@ -299,10 +299,10 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       return undefined;
     }
     const ses: Record<string, string> = {};
-    const sourceArn = this.sesConfig.getOptionalString('SourceArn');
-    const fromArn = this.sesConfig.getOptionalString('FromArn');
+    const sourceArn = this.sesConfig.getOptionalString('sourceArn');
+    const fromArn = this.sesConfig.getOptionalString('fromArn');
     const configurationSetName = this.sesConfig.getOptionalString(
-      'ConfigurationSetName',
+      'configurationSetName',
     );
 
     if (sourceArn) ses.SourceArn = sourceArn;

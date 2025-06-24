@@ -458,9 +458,9 @@ describe('NotificationsEmailProcessor', () => {
             sender: 'backstage@backstage.io',
             replyTo: 'no-reply@backstage.io',
             sesConfig: {
-              SourceArn:
+              sourceArn:
                 'arn:aws:ses:us-west-2:123456789012:identity/example.com',
-              FromArn:
+              fromArn:
                 'arn:aws:ses:us-west-2:123456789012:identity/example.com',
             },
           },
