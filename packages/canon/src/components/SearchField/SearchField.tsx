@@ -15,16 +15,21 @@
  */
 
 import { forwardRef, useEffect } from 'react';
-import { Input, TextField as AriaTextField } from 'react-aria-components';
+import {
+  Input,
+  SearchField as AriaSearchField,
+  Button,
+} from 'react-aria-components';
 import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
-
-import type { TextFieldProps } from './types';
+import { RiSearch2Line, RiCloseCircleLine } from '@remixicon/react';
 import { useStyles } from '../../hooks/useStyles';
 
+import type { SearchFieldProps } from './types';
+
 /** @public */
-export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
+export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
   (props, ref) => {
     const {
       className,
@@ -34,21 +39,28 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       secondaryLabel,
       description,
       isRequired,
+      placeholder = 'Search',
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
-      placeholder,
       ...rest
     } = props;
 
     useEffect(() => {
       if (!label && !ariaLabel && !ariaLabelledBy) {
         console.warn(
-          'TextField requires either a visible label, aria-label, or aria-labelledby for accessibility',
+          'SearchField requires either a visible label, aria-label, or aria-labelledby for accessibility',
         );
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
-    const { classNames, dataAttributes } = useStyles('TextField', {
+    const { classNames: textFieldClassNames, dataAttributes } = useStyles(
+      'TextField',
+      {
+        size,
+      },
+    );
+
+    const { classNames: searchFieldClassNames } = useStyles('SearchField', {
       size,
     });
 
@@ -57,8 +69,12 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       secondaryLabel || (isRequired ? 'Required' : null);
 
     return (
-      <AriaTextField
-        className={clsx(classNames.root, className)}
+      <AriaSearchField
+        className={clsx(
+          textFieldClassNames.root,
+          searchFieldClassNames.root,
+          className,
+        )}
         {...dataAttributes}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
@@ -71,28 +87,34 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           description={description}
         />
         <div
-          className={classNames.inputWrapper}
+          className={textFieldClassNames.inputWrapper}
           data-size={dataAttributes['data-size']}
         >
-          {icon && (
+          {icon !== false && (
             <div
-              className={classNames.inputIcon}
+              className={textFieldClassNames.inputIcon}
               data-size={dataAttributes['data-size']}
               aria-hidden="true"
             >
-              {icon}
+              {icon || <RiSearch2Line />}
             </div>
           )}
           <Input
-            className={classNames.input}
-            {...(icon && { 'data-icon': true })}
+            className={textFieldClassNames.input}
+            {...(icon !== false && { 'data-icon': true })}
             placeholder={placeholder}
           />
+          <Button
+            className={searchFieldClassNames.clear}
+            data-size={dataAttributes['data-size']}
+          >
+            <RiCloseCircleLine />
+          </Button>
         </div>
         <FieldError />
-      </AriaTextField>
+      </AriaSearchField>
     );
   },
 );
 
-TextField.displayName = 'TextField';
+SearchField.displayName = 'searchField';

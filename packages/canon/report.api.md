@@ -27,6 +27,7 @@ import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
+import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { Table as Table_2 } from '@tanstack/react-table';
 import { Tabs as Tabs_2 } from '@base-ui-components/react/tabs';
@@ -345,10 +346,10 @@ export const componentDefinitions: {
   };
   readonly FieldLabel: {
     readonly classNames: {
-      readonly root: 'canon-FieldLabel';
-      readonly label: 'canon-FieldLabelLabel';
-      readonly secondaryLabel: 'canon-FieldLabelSecondaryLabel';
-      readonly description: 'canon-FieldLabelDescription';
+      readonly root: 'canon-FieldLabelWrapper';
+      readonly label: 'canon-FieldLabel';
+      readonly secondaryLabel: 'canon-FieldSecondaryLabel';
+      readonly description: 'canon-FieldDescription';
     };
   };
   readonly Flex: {
@@ -418,6 +419,12 @@ export const componentDefinitions: {
       readonly viewport: 'canon-ScrollAreaViewport';
       readonly scrollbar: 'canon-ScrollAreaScrollbar';
       readonly thumb: 'canon-ScrollAreaThumb';
+    };
+  };
+  readonly SearchField: {
+    readonly classNames: {
+      readonly root: 'canon-SearchField';
+      readonly clear: 'canon-InputClear';
     };
   };
   readonly Select: {
@@ -492,9 +499,9 @@ export const componentDefinitions: {
   readonly TextField: {
     readonly classNames: {
       readonly root: 'canon-TextField';
-      readonly inputWrapper: 'canon-TextFieldInputWrapper';
-      readonly icon: 'canon-TextFieldIcon';
-      readonly input: 'canon-TextFieldInput';
+      readonly inputWrapper: 'canon-InputWrapper';
+      readonly input: 'canon-Input';
+      readonly inputIcon: 'canon-InputIcon';
     };
     readonly dataAttributes: {
       readonly invalid: readonly [true, false];
@@ -1350,6 +1357,20 @@ export const ScrollArea: {
       RefAttributes<HTMLDivElement>
   >;
 };
+
+// @public (undocumented)
+export const SearchField: ForwardRefExoticComponent<
+  SearchFieldProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface SearchFieldProps
+  extends SearchFieldProps_2,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+  icon?: ReactNode | false;
+  placeholder?: string;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+}
 
 // @public (undocumented)
 export const Select: ForwardRefExoticComponent<

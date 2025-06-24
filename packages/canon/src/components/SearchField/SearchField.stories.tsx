@@ -15,15 +15,15 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import { TextField } from './TextField';
+import { SearchField } from './SearchField';
 import { Form } from 'react-aria-components';
 import { Icon } from '../Icon';
 import { Flex } from '../Flex';
 import { FieldLabel } from '../FieldLabel';
 
 const meta = {
-  title: 'Forms/TextField',
-  component: TextField,
+  title: 'Forms/SearchField',
+  component: SearchField,
   argTypes: {
     isRequired: {
       control: 'boolean',
@@ -31,8 +31,11 @@ const meta = {
     icon: {
       control: 'object',
     },
+    placeholder: {
+      control: 'text',
+    },
   },
-} satisfies Meta<typeof TextField>;
+} satisfies Meta<typeof SearchField>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -40,7 +43,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     name: 'url',
-    placeholder: 'Enter a URL',
     style: {
       maxWidth: '300px',
     },
@@ -53,8 +55,8 @@ export const Sizes: Story = {
   },
   render: args => (
     <Flex direction="row" gap="4" style={{ width: '100%', maxWidth: '600px' }}>
-      <TextField {...args} size="small" icon={<Icon name="sparkling" />} />
-      <TextField {...args} size="medium" icon={<Icon name="sparkling" />} />
+      <SearchField {...args} size="small" />
+      <SearchField {...args} size="medium" />
     </Flex>
   ),
 };
@@ -99,7 +101,7 @@ export const WithIcon: Story = {
     ...Default.args,
   },
   render: args => (
-    <TextField
+    <SearchField
       {...args}
       placeholder="Enter a URL"
       size="small"
@@ -121,7 +123,7 @@ export const ShowError: Story = {
   },
   render: args => (
     <Form validationErrors={{ url: 'Invalid URL' }}>
-      <TextField {...args} />
+      <SearchField {...args} />
     </Form>
   ),
 };
@@ -141,7 +143,7 @@ export const CustomField: Story = {
         id="custom-field-label"
         label="Custom Field"
       />
-      <TextField
+      <SearchField
         id="custom-field"
         aria-labelledby="custom-field-label"
         name="custom-field"

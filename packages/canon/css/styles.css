@@ -9503,14 +9503,14 @@
   margin-top: var(--canon-space-2);
 }
 
-.canon-FieldLabel {
+.canon-FieldLabelWrapper {
   margin-bottom: var(--canon-space-3);
   gap: var(--canon-space-1);
   flex-direction: column;
   display: flex;
 }
 
-.canon-FieldLabelLabel {
+.canon-FieldLabel {
   color: var(--canon-fg-primary);
   cursor: pointer;
   font-weight: var(--canon-font-weight-regular);
@@ -9518,13 +9518,13 @@
   margin-right: auto;
 }
 
-.canon-FieldLabelSecondaryLabel {
+.canon-FieldSecondaryLabel {
   color: var(--canon-fg-secondary);
   font-weight: var(--canon-font-weight-regular);
   margin-left: var(--canon-space-1);
 }
 
-.canon-FieldLabelDescription {
+.canon-FieldDescription {
   font-weight: var(--canon-font-weight-regular);
   font-size: var(--canon-font-size-2);
   color: var(--canon-fg-secondary);
@@ -10135,19 +10135,27 @@
   display: flex;
 }
 
-.canon-TextFieldInputWrapper {
+.canon-InputWrapper {
   position: relative;
+
+  &[data-size="small"] .canon-Input {
+    height: 2rem;
+  }
+
+  &[data-size="medium"] .canon-Input {
+    height: 2.5rem;
+  }
+
+  &[data-size="small"] .canon-Input[data-icon] {
+    padding-left: var(--canon-space-8);
+  }
+
+  &[data-size="medium"] .canon-Input[data-icon] {
+    padding-left: var(--canon-space-9);
+  }
 }
 
-.canon-TextFieldInputWrapper[data-size="small"] {
-  height: 2rem;
-}
-
-.canon-TextFieldInputWrapper[data-size="medium"] {
-  height: 2.5rem;
-}
-
-.canon-TextFieldIcon {
+.canon-InputIcon {
   left: var(--canon-space-3);
   margin-right: var(--canon-space-1);
   color: var(--canon-fg-primary);
@@ -10155,19 +10163,19 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+
+  &[data-size="small"], &[data-size="small"] svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &[data-size="medium"], &[data-size="medium"] svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 }
 
-.canon-TextFieldIcon[data-size="small"], .canon-TextFieldIcon[data-size="small"] svg {
-  width: 1rem;
-  height: 1rem;
-}
-
-.canon-TextFieldIcon[data-size="medium"], .canon-TextFieldIcon[data-size="medium"] svg {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.canon-TextFieldInput {
+.canon-Input {
   padding: 0 var(--canon-space-3);
   border-radius: var(--canon-radius-3);
   border: 1px solid var(--canon-border);
@@ -10182,38 +10190,78 @@
   align-items: center;
   transition: border-color .2s ease-in-out, outline-color .2s ease-in-out;
   display: flex;
+
+  &::-webkit-search-cancel-button, &::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
+
+  &::placeholder {
+    color: var(--canon-fg-secondary);
+  }
+
+  &[data-focused] {
+    outline-color: var(--canon-border-pressed);
+    outline-width: 0;
+  }
+
+  &[data-hovered] {
+    border-color: var(--canon-border-hover);
+  }
+
+  &[data-focused] {
+    border-color: var(--canon-border-pressed);
+    outline-width: 0;
+  }
+
+  &[data-invalid] {
+    border-color: var(--canon-fg-danger);
+  }
+
+  &[data-disabled] {
+    opacity: .5;
+    cursor: not-allowed;
+    border: 1px solid var(--canon-border-disabled);
+  }
 }
 
-.canon-TextFieldInput::placeholder {
+.canon-SearchField[data-empty] .canon-InputClear {
+  display: none;
+}
+
+.canon-InputClear {
+  cursor: pointer;
   color: var(--canon-fg-secondary);
+  background-color: #0000;
+  border: none;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  transition: color .2s ease-in-out;
+  display: flex;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
 }
 
-.canon-TextFieldInput[data-icon] {
-  padding-left: var(--canon-space-8);
+.canon-InputClear:hover {
+  color: var(--canon-fg-primary);
 }
 
-.canon-TextFieldInput[data-focused] {
-  outline-color: var(--canon-border-pressed);
-  outline-width: 0;
+.canon-InputClear[data-size="small"] {
+  width: 2rem;
+  height: 2rem;
 }
 
-.canon-TextFieldInput[data-hovered] {
-  border-color: var(--canon-border-hover);
+.canon-InputClear[data-size="medium"] {
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
-.canon-TextFieldInput[data-focused] {
-  border-color: var(--canon-border-pressed);
-  outline-width: 0;
-}
-
-.canon-TextFieldInput[data-invalid] {
-  border-color: var(--canon-fg-danger);
-}
-
-.canon-TextFieldInput[data-disabled] {
-  opacity: .5;
-  cursor: not-allowed;
-  border: 1px solid var(--canon-border-disabled);
+.canon-InputClear svg {
+  width: 1rem;
+  height: 1rem;
 }
 
 .canon-TooltipPopup {

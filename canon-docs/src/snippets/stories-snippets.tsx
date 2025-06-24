@@ -21,6 +21,7 @@ import * as CollapsibleStories from '../../../packages/canon/src/components/Coll
 import * as RadioGroupStories from '../../../packages/canon/src/components/RadioGroup/RadioGroup.stories';
 import * as TabsStories from '../../../packages/canon/src/components/Tabs/Tabs.stories';
 import * as SwitchStories from '../../../packages/canon/src/components/Switch/Switch.stories';
+import * as SearchFieldStories from '../../../packages/canon/src/components/SearchField/SearchField.stories';
 
 export const BoxSnippet = ({ story }: { story: keyof typeof BoxStories }) => {
   const stories = composeStories(BoxStories);
@@ -205,6 +206,17 @@ export const RadioGroupSnippet = ({
   story: keyof typeof RadioGroupStories;
 }) => {
   const stories = composeStories(RadioGroupStories);
+  const StoryComponent = stories[story as keyof typeof stories];
+
+  return StoryComponent ? <StoryComponent /> : null;
+};
+
+export const SearchFieldSnippet = ({
+  story,
+}: {
+  story: keyof typeof SearchFieldStories;
+}) => {
+  const stories = composeStories(SearchFieldStories);
   const StoryComponent = stories[story as keyof typeof stories];
 
   return StoryComponent ? <StoryComponent /> : null;

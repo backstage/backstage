@@ -79,10 +79,10 @@ export const componentDefinitions = {
   },
   FieldLabel: {
     classNames: {
-      root: 'canon-FieldLabel',
-      label: 'canon-FieldLabelLabel',
-      secondaryLabel: 'canon-FieldLabelSecondaryLabel',
-      description: 'canon-FieldLabelDescription',
+      root: 'canon-FieldLabelWrapper',
+      label: 'canon-FieldLabel',
+      secondaryLabel: 'canon-FieldSecondaryLabel',
+      description: 'canon-FieldDescription',
     },
   },
   Flex: {
@@ -154,6 +154,12 @@ export const componentDefinitions = {
       thumb: 'canon-ScrollAreaThumb',
     },
   },
+  SearchField: {
+    classNames: {
+      root: 'canon-SearchField',
+      clear: 'canon-InputClear',
+    },
+  },
   Select: {
     classNames: {
       root: 'canon-Select',
@@ -220,9 +226,9 @@ export const componentDefinitions = {
   TextField: {
     classNames: {
       root: 'canon-TextField',
-      inputWrapper: 'canon-TextFieldInputWrapper',
-      icon: 'canon-TextFieldIcon',
-      input: 'canon-TextFieldInput',
+      inputWrapper: 'canon-InputWrapper',
+      input: 'canon-Input',
+      inputIcon: 'canon-InputIcon',
     },
     dataAttributes: {
       invalid: [true, false] as const,
