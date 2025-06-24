@@ -37,13 +37,13 @@ function HeadingComponent<T extends ElementType = 'h1'>(
   const { classNames, dataAttributes } = useStyles('Heading', {
     variant,
     color,
-    truncate,
   });
 
   return (
     <Component
       ref={ref}
       className={clsx(classNames.root, className)}
+      data-truncate={truncate}
       {...dataAttributes}
       style={style}
       {...restProps}

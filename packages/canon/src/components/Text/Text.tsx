@@ -39,13 +39,13 @@ function TextComponent<T extends ElementType = 'p'>(
     variant,
     weight,
     color,
-    truncate,
   });
 
   return (
     <Component
       ref={ref}
       className={clsx(classNames.root, className)}
+      data-truncate={truncate}
       {...dataAttributes}
       style={style}
       {...restProps}
