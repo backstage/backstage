@@ -139,7 +139,6 @@ import {
 } from '@backstage/backend-plugin-api';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 
-
 export const myPlugin = createBackendPlugin({
   pluginId: 'my-plugin',
   register(env) {
