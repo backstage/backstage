@@ -27,7 +27,7 @@ import { HumanDuration } from '@backstage/types';
 
 export class IncrementalIngestionEngine implements IterationEngine {
   private readonly restLength: Duration;
-  private readonly burstLength: HumanDuration;
+  private readonly burstLength: Duration;
   private readonly backoff: HumanDuration[];
   private readonly lastStarted: Gauge;
   private readonly lastCompleted: Gauge;
@@ -39,7 +39,7 @@ export class IncrementalIngestionEngine implements IterationEngine {
 
     this.manager = options.manager;
     this.restLength = Duration.fromObject(options.restLength);
-    this.burstLength = options.burstLength;
+    this.burstLength = Duration.fromObject(options.burstLength);
     this.backoff = options.backoff ?? [
       { minutes: 1 },
       { minutes: 5 },
@@ -251,12 +251,10 @@ export class IncrementalIngestionEngine implements IterationEngine {
           break;
         } else if (
           performance.now() - start >
-          Duration.fromObject(this.burstLength).as('milliseconds')
+          this.burstLength.as('milliseconds')
         ) {
           this.options.logger.info(
-            `incremental-engine: Ingestion '${id}' burst exceeded length of ${Duration.fromObject(
-              this.burstLength,
-            ).toHuman()}.`,
+            `incremental-engine: Ingestion '${id}' burst exceeded length of ${this.burstLength.toHuman()}.`,
           );
           break;
         } else {
