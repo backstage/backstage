@@ -154,6 +154,12 @@ export const componentDefinitions = {
       thumb: 'canon-ScrollAreaThumb',
     },
   },
+  SearchField: {
+    classNames: {
+      root: 'canon-SearchField',
+      clear: 'canon-InputClear',
+    },
+  },
   Select: {
     classNames: {
       root: 'canon-Select',
@@ -220,9 +226,8 @@ export const componentDefinitions = {
   TextField: {
     classNames: {
       root: 'canon-TextField',
-      inputWrapper: 'canon-TextFieldInputWrapper',
-      icon: 'canon-TextFieldIcon',
-      input: 'canon-TextFieldInput',
+      input: 'canon-Input',
+      inputIcon: 'canon-InputIcon',
     },
     dataAttributes: {
       invalid: [true, false] as const,

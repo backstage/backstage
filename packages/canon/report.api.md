@@ -421,6 +421,12 @@ export const componentDefinitions: {
       readonly thumb: 'canon-ScrollAreaThumb';
     };
   };
+  readonly SearchField: {
+    readonly classNames: {
+      readonly root: 'canon-SearchField';
+      readonly clear: 'canon-InputClear';
+    };
+  };
   readonly Select: {
     readonly classNames: {
       readonly root: 'canon-Select';
@@ -493,9 +499,8 @@ export const componentDefinitions: {
   readonly TextField: {
     readonly classNames: {
       readonly root: 'canon-TextField';
-      readonly inputWrapper: 'canon-TextFieldInputWrapper';
-      readonly icon: 'canon-TextFieldIcon';
-      readonly input: 'canon-TextFieldInput';
+      readonly input: 'canon-Input';
+      readonly inputIcon: 'canon-InputIcon';
     };
     readonly dataAttributes: {
       readonly invalid: readonly [true, false];

@@ -18,13 +18,13 @@ import { forwardRef, useEffect } from 'react';
 import {
   Input,
   SearchField as AriaSearchField,
-  FieldError,
   Button,
 } from 'react-aria-components';
-import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
+import { FieldError } from '../FieldError';
 import { RiSearch2Line, RiCloseCircleLine } from '@remixicon/react';
+import { useStyles } from '../../hooks/useStyles';
 
 import type { SearchFieldProps } from './types';
 
@@ -53,8 +53,16 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
-    // Get the responsive value for the variant
-    const responsiveSize = useResponsiveValue(size);
+    const { classNames: textFieldClassNames, dataAttributes } = useStyles(
+      'TextField',
+      {
+        size,
+      },
+    );
+
+    const { classNames: searchFieldClassNames } = useStyles('SearchField', {
+      size,
+    });
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
@@ -62,8 +70,12 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
 
     return (
       <AriaSearchField
-        className={clsx('canon-TextField', 'canon-SearchField', className)}
-        data-size={responsiveSize}
+        className={clsx(
+          textFieldClassNames.root,
+          searchFieldClassNames.root,
+          className,
+        )}
+        {...dataAttributes}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         {...rest}
@@ -74,11 +86,14 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
           secondaryLabel={secondaryLabelText}
           description={description}
         />
-        <div className="canon-Input" data-size={responsiveSize}>
+        <div
+          className={textFieldClassNames.input}
+          data-size={dataAttributes['data-size']}
+        >
           {icon !== false && (
             <div
-              className="canon-InputIcon"
-              data-size={responsiveSize}
+              className={textFieldClassNames.inputIcon}
+              data-size={dataAttributes['data-size']}
               aria-hidden="true"
             >
               {icon || <RiSearch2Line />}
@@ -88,11 +103,14 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
             {...(icon !== false && { 'data-icon': true })}
             placeholder={placeholder}
           />
-          <Button className="canon-InputClear" data-size={responsiveSize}>
+          <Button
+            className={searchFieldClassNames.clear}
+            data-size={dataAttributes['data-size']}
+          >
             <RiCloseCircleLine />
           </Button>
         </div>
-        <FieldError className="canon-TextFieldError" />
+        <FieldError />
       </AriaSearchField>
     );
   },

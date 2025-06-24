@@ -48,7 +48,6 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
-    // Get the responsive value for the variant
     const { classNames, dataAttributes } = useStyles('TextField', {
       size,
     });
@@ -72,12 +71,12 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           description={description}
         />
         <div
-          className={classNames.inputWrapper}
+          className={classNames.input}
           data-size={dataAttributes['data-size']}
         >
           {icon && (
             <div
-              className={classNames.icon}
+              className={classNames.inputIcon}
               data-size={dataAttributes['data-size']}
               aria-hidden="true"
             >
@@ -85,7 +84,6 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
             </div>
           )}
           <Input
-            className={classNames.input}
             {...(icon && { 'data-icon': true })}
             placeholder={placeholder}
           />
