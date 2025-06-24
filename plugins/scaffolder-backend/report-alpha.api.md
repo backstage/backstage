@@ -11,6 +11,7 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { SerializedTask } from '@backstage/plugin-scaffolder-node';
+import { TaskFilter } from '@backstage/plugin-scaffolder-node';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 
@@ -87,10 +88,7 @@ export const scaffolderActionConditions: Conditions<{
 export const scaffolderTaskConditions: Conditions<{
   isTaskOwner: PermissionRule<
     SerializedTask,
-    {
-      key: string;
-      values: any;
-    },
+    TaskFilter,
     'scaffolder-task',
     {
       createdBy: string[];
