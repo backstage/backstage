@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-defaults",
-  "version": "0.10.1-next.1",
+  "version": "0.11.1-next.0",
   "description": "Backend defaults used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -20,8 +20,6 @@
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
-    "./actions": "./src/entrypoints/actions/index.ts",
-    "./actionsRegistry": "./src/entrypoints/actionsRegistry/index.ts",
     "./auditor": "./src/entrypoints/auditor/index.ts",
     "./auth": "./src/entrypoints/auth/index.ts",
     "./cache": "./src/entrypoints/cache/index.ts",
@@ -41,18 +39,13 @@
     "./scheduler": "./src/entrypoints/scheduler/index.ts",
     "./urlReader": "./src/entrypoints/urlReader/index.ts",
     "./userInfo": "./src/entrypoints/userInfo/index.ts",
+    "./alpha": "./src/alpha/index.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
-      "actions": [
-        "src/entrypoints/actions/index.ts"
-      ],
-      "actionsRegistry": [
-        "src/entrypoints/actionsRegistry/index.ts"
-      ],
       "auditor": [
         "src/entrypoints/auditor/index.ts"
       ],
@@ -109,6 +102,9 @@
       ],
       "userInfo": [
         "src/entrypoints/userInfo/index.ts"
+      ],
+      "alpha": [
+        "src/alpha/index.ts"
       ],
       "package.json": [
         "package.json"
@@ -168,6 +164,7 @@
     "cron": "^3.0.0",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
+    "express-rate-limit": "^7.5.0",
     "fs-extra": "^11.2.0",
     "git-url-parse": "^15.0.0",
     "helmet": "^6.0.0",
@@ -187,6 +184,7 @@
     "pg": "^8.11.3",
     "pg-connection-string": "^2.3.0",
     "pg-format": "^1.0.4",
+    "rate-limit-redis": "^4.2.0",
     "raw-body": "^2.4.1",
     "selfsigned": "^2.0.0",
     "tar": "^6.1.12",

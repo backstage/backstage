@@ -7,16 +7,15 @@ import { AuditorService } from '@backstage/backend-plugin-api';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
 import { EventsService } from '@backstage/plugin-events-node';
 import { HumanDuration } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
-import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
@@ -38,6 +37,7 @@ import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal } from '@backstage/plugin-scaffolder-node';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node/alpha';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 
@@ -52,39 +52,32 @@ export type ActionPermissionRuleInput<
 >;
 
 // @public
-export const createBuiltinActions: (
-  options: CreateBuiltInActionsOptions,
-) => TemplateAction[];
-
-// @public
-export interface CreateBuiltInActionsOptions {
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-  // (undocumented)
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-  auth?: AuthService;
-  catalogClient: CatalogApi;
-  config: Config;
-  integrations: ScmIntegrations;
-  reader: UrlReaderService;
-}
-
-// @public
 export function createCatalogRegisterAction(options: {
-  catalogClient: CatalogApi;
+  catalog: CatalogService;
   integrations: ScmIntegrations;
-  auth?: AuthService;
 }): TemplateAction<
   | {
       catalogInfoUrl: string;
-      optional?: boolean;
+      optional?: boolean | undefined;
+    }
+  | {
+      catalogInfoUrl: string;
+      optional?: boolean | undefined;
+      catalogInfoPath?: string | undefined;
     }
   | {
       repoContentsUrl: string;
-      catalogInfoPath?: string;
-      optional?: boolean;
+      optional?: boolean | undefined;
+    }
+  | {
+      repoContentsUrl: string;
+      optional?: boolean | undefined;
+      catalogInfoPath?: string | undefined;
     },
-  JsonObject,
-  'v1'
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
@@ -93,17 +86,27 @@ export function createCatalogWriteAction(): TemplateAction<
     entity: Record<string, any>;
     filePath?: string | undefined;
   },
-  any,
-  'v1'
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
-export function createDebugLogAction(): TemplateAction<any, any, 'v1'>;
+export function createDebugLogAction(): TemplateAction<
+  {
+    message?: string | undefined;
+    listWorkspace?: boolean | 'with-contents' | 'with-filenames' | undefined;
+  },
+  {
+    [x: string]: any;
+  },
+  'v2'
+>;
 
 // @public
 export function createFetchCatalogEntityAction(options: {
-  catalogClient: CatalogApi;
-  auth?: AuthService;
+  catalog: CatalogService;
 }): TemplateAction<
   {
     entityRef?: string | undefined;
@@ -126,11 +129,13 @@ export function createFetchPlainAction(options: {
 }): TemplateAction<
   {
     url: string;
-    targetPath?: string;
-    token?: string;
+    targetPath?: string | undefined;
+    token?: string | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
@@ -141,10 +146,12 @@ export function createFetchPlainFileAction(options: {
   {
     url: string;
     targetPath: string;
-    token?: string;
+    token?: string | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
@@ -156,18 +163,21 @@ export function createFetchTemplateAction(options: {
 }): TemplateAction<
   {
     url: string;
-    targetPath?: string;
-    values: any;
-    templateFileExtension?: string | boolean;
-    copyWithoutTemplating?: string[];
-    cookiecutterCompat?: boolean;
-    replace?: boolean;
-    trimBlocks?: boolean;
-    lstripBlocks?: boolean;
-    token?: string;
+    targetPath?: string | undefined;
+    values?: Record<string, any> | undefined;
+    copyWithoutRender?: string[] | undefined;
+    copyWithoutTemplating?: string[] | undefined;
+    cookiecutterCompat?: boolean | undefined;
+    templateFileExtension?: string | boolean | undefined;
+    replace?: boolean | undefined;
+    trimBlocks?: boolean | undefined;
+    lstripBlocks?: boolean | undefined;
+    token?: string | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
@@ -180,15 +190,17 @@ export function createFetchTemplateFileAction(options: {
   {
     url: string;
     targetPath: string;
-    values: any;
-    cookiecutterCompat?: boolean;
-    replace?: boolean;
-    trimBlocks?: boolean;
-    lstripBlocks?: boolean;
-    token?: string;
+    values?: Record<string, any> | undefined;
+    cookiecutterCompat?: boolean | undefined;
+    replace?: boolean | undefined;
+    trimBlocks?: boolean | undefined;
+    lstripBlocks?: boolean | undefined;
+    token?: string | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
@@ -196,15 +208,17 @@ export const createFilesystemDeleteAction: () => TemplateAction<
   {
     files: string[];
   },
-  JsonObject,
-  'v1'
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
 export const createFilesystemReadDirAction: () => TemplateAction<
   {
-    recursive: boolean;
     paths: string[];
+    recursive: boolean;
   },
   {
     files: {
@@ -218,26 +232,38 @@ export const createFilesystemReadDirAction: () => TemplateAction<
       fullPath: string;
     }[];
   },
-  'v1'
+  'v2'
 >;
 
 // @public
 export const createFilesystemRenameAction: () => TemplateAction<
   {
-    files: Array<{
+    files: {
       from: string;
       to: string;
-      overwrite?: boolean;
-    }>;
+      overwrite?: boolean | undefined;
+    }[];
   },
-  JsonObject,
-  'v1'
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
 export function createWaitAction(options?: {
   maxWaitTime?: Duration | HumanDuration;
-}): TemplateAction<HumanDuration, JsonObject, 'v1'>;
+}): TemplateAction<
+  {
+    minutes?: number | undefined;
+    seconds?: number | undefined;
+    milliseconds?: number | undefined;
+  },
+  {
+    [x: string]: any;
+  },
+  'v2'
+>;
 
 // @public @deprecated
 export type CreateWorkerOptions = {
@@ -245,7 +271,7 @@ export type CreateWorkerOptions = {
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
-  logger: Logger;
+  logger: LoggerService;
   auditor?: AuditorService;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   concurrentTasksLimit?: number;
@@ -382,7 +408,7 @@ export class TaskManager implements TaskContext {
     task: CurrentClaimedTask,
     storage: TaskStore,
     abortSignal: AbortSignal,
-    logger: Logger,
+    logger: LoggerService,
     auth?: AuthService,
     config?: Config,
     additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
@@ -416,19 +442,7 @@ export class TaskManager implements TaskContext {
   // (undocumented)
   get spec(): TaskSpecV1beta3;
   // (undocumented)
-  updateCheckpoint?(
-    options:
-      | {
-          key: string;
-          status: 'success';
-          value: JsonValue;
-        }
-      | {
-          key: string;
-          status: 'failed';
-          reason: string;
-        },
-  ): Promise<void>;
+  updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 }
 
 // @public @deprecated

@@ -2,7 +2,6 @@
 id: migrating
 title: Migrating Apps
 sidebar_label: Migration Guide
-# prettier-ignore
 description: How to migrate existing apps to the new frontend system
 ---
 

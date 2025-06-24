@@ -1,5 +1,51 @@
 # @backstage/plugin-api-docs
 
+## 0.12.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.31.1-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-react@0.4.35
+
+## 0.12.8
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/plugin-catalog@1.31.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-react@0.4.35
+
+## 0.12.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog@1.31.0-next.2
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-react@0.4.34
+
 ## 0.12.8-next.1
 
 ### Patch Changes

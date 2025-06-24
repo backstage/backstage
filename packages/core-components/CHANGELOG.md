@@ -1,5 +1,40 @@
 # @backstage/core-components
 
+## 0.17.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.3
+
+### Patch Changes
+
+- 6232160: table actions header support i18n
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.6
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.3-next.0
+
+### Patch Changes
+
+- 6232160: table actions header support i18n
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.6
+  - @backstage/version-bridge@1.0.11
+
 ## 0.17.2
 
 ### Patch Changes

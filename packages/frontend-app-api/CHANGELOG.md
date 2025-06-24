@@ -1,5 +1,49 @@
 # @backstage/frontend-app-api
 
+## 0.11.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.17.1
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-defaults@0.2.4-next.0
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.11.3
+
+### Patch Changes
+
+- 0169b23: Internal tweak to avoid circular dependencies
+- c38c9e8: Implemented support for the `plugin.info()` method in specialized apps with a default resolved for `package.json` and `catalog-info.yaml`. The default resolution logic can be overridden via the `pluginInfoResolver` option to `createSpecializedApp`, and plugin-specific overrides can be applied via the new `app.pluginOverrides` key in static configuration.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/frontend-defaults@0.2.3
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.17.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.11.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-defaults@0.2.3-next.1
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.11.3-next.0
 
 ### Patch Changes

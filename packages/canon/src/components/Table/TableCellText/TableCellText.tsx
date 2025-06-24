@@ -18,23 +18,28 @@ import { forwardRef } from 'react';
 import clsx from 'clsx';
 import { TableCellTextProps } from './types';
 import { Text } from '../../Text/Text';
+import { useStyles } from '../../../hooks/useStyles';
 
 /** @public */
 const TableCellText = forwardRef<HTMLDivElement, TableCellTextProps>(
-  ({ className, title, description, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={clsx('canon-TableCellText', className)}
-      {...props}
-    >
-      {title && <Text variant="body">{title}</Text>}
-      {description && (
-        <Text variant="body" color="secondary">
-          {description}
-        </Text>
-      )}
-    </div>
-  ),
+  ({ className, title, description, ...props }, ref) => {
+    const { classNames } = useStyles('Table');
+
+    return (
+      <div
+        ref={ref}
+        className={clsx(classNames.cellText, className)}
+        {...props}
+      >
+        {title && <Text variant="body">{title}</Text>}
+        {description && (
+          <Text variant="body" color="secondary">
+            {description}
+          </Text>
+        )}
+      </div>
+    );
+  },
 );
 TableCellText.displayName = 'TableCellText';
 

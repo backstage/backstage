@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-github",
-  "version": "0.7.2-next.1",
+  "version": "0.8.1-next.0",
   "description": "The github module for @backstage/plugin-scaffolder-backend",
   "backstage": {
     "role": "backend-plugin-module",
@@ -43,11 +43,11 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@octokit/webhooks": "^10.9.2",

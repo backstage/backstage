@@ -2,7 +2,6 @@
 id: built-in-extensions
 title: App Built-in Extensions
 sidebar_label: Built-in extensions
-# prettier-ignore
 description: Configuring or overriding built-in extensions
 ---
 

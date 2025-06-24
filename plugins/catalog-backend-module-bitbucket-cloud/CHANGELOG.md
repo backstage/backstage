@@ -1,5 +1,58 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-cloud
 
+## 0.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/plugin-bitbucket-cloud-common@0.3.1-next.0
+  - @backstage/catalog-client@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/plugin-catalog-common@1.1.4
+
+## 0.5.0
+
+### Minor Changes
+
+- 8a150bf: **BREAKING**: `BitbucketCloudEntityProvider` now accepts a `CatalogService` instead of a `CatalogApi`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-events-node@0.4.12
+
+## 0.5.0-next.2
+
+### Minor Changes
+
+- 8a150bf: **BREAKING**: `BitbucketCloudEntityProvider` now accepts a `CatalogService` instead of a `CatalogApi`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.0
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+
 ## 0.4.9-next.1
 
 ### Patch Changes

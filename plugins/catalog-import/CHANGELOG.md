@@ -1,5 +1,63 @@
 # @backstage/plugin-catalog-import
 
+## 0.13.2-next.0
+
+### Patch Changes
+
+- 406b8b8: Fixed bug with error message since ResponseError is now thrown from CatalogClient
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/integration-react@1.2.9-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/catalog-client@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/core-compat-api@0.4.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/plugin-catalog-common@1.1.4
+
+## 0.13.1
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- 5d7c539: Catalog import plugin full support i18n
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/catalog-client@1.10.1
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/integration-react@1.2.8
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/core-compat-api@0.4.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-catalog-common@1.1.4
+
+## 0.13.1-next.2
+
+### Patch Changes
+
+- 5d7c539: Catalog import plugin full support i18n
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/integration-react@1.2.7
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-catalog-common@1.1.4
+
 ## 0.13.1-next.1
 
 ### Patch Changes

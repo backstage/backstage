@@ -21,6 +21,7 @@ import { flexPropDefs } from './Flex.props';
 import { extractProps } from '../../utils/extractProps';
 import { gapPropDefs } from '../../props/gap-props';
 import { spacingPropDefs } from '../../props/spacing.props';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
@@ -30,11 +31,12 @@ export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
     ...spacingPropDefs,
   };
 
+  const { classNames } = useStyles('Flex');
   const { className, style } = extractProps(props, propDefs);
 
   return createElement('div', {
     ref,
-    className: clsx('canon-Flex', className),
+    className: clsx(classNames.root, className),
     style,
     children: props.children,
   });

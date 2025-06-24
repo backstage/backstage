@@ -2,7 +2,6 @@
 id: plugins
 title: Frontend Plugins
 sidebar_label: Plugins
-# prettier-ignore
 description: Frontend plugins
 ---
 

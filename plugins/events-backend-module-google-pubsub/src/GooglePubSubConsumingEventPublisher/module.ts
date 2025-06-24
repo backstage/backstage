@@ -24,8 +24,6 @@ import { GooglePubSubConsumingEventPublisher } from './GooglePubSubConsumingEven
 /**
  * Reads messages off of Google Pub/Sub subscriptions and forwards them into the
  * Backstage events system.
- *
- * @public
  */
 export const eventsModuleGooglePubsubConsumingEventPublisher =
   createBackendModule({

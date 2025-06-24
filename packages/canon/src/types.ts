@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { componentDefinitions } from './utils/componentDefinitions';
+
 /** @public */
 export type AsProps =
   | 'div'
@@ -131,3 +133,43 @@ export interface UtilityProps extends SpaceProps {
   justifyContent?: Responsive<JustifyContent>;
   rowSpan?: Responsive<Columns | 'full'>;
 }
+
+/**
+ * Base type for the component styles structure
+ * @public
+ */
+export type ClassNamesMap = Record<string, string>;
+
+/**
+ * Base type for the component styles structure
+ * @public
+ */
+export type DataAttributeValues = readonly (string | number | boolean)[];
+
+/**
+ * Base type for the component styles structure
+ * @public
+ */
+export type DataAttributesMap = Record<string, DataAttributeValues>;
+
+/**
+ * Base type for the component styles structure
+ * @public
+ */
+export interface ComponentDefinition {
+  classNames: ClassNamesMap;
+  dataAttributes?: DataAttributesMap;
+}
+
+/**
+ * Type utilities for extracting information from the component styles
+ * @public
+ */
+export type ComponentDefinitionName = keyof typeof componentDefinitions;
+
+/**
+ * Helper type to extract class names for a component
+ * @public
+ */
+export type ComponentClassNames<T extends ComponentDefinitionName> =
+  (typeof componentDefinitions)[T]['classNames'];

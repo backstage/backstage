@@ -24,9 +24,8 @@ import { getOctokitOptions } from '../util';
 import { Octokit } from 'octokit';
 import Sodium from 'libsodium-wrappers';
 import { examples } from './gitHubEnvironment.examples';
-import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import { AuthService } from '@backstage/backend-plugin-api';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 
 /**
  * Creates an `github:environment:create` Scaffolder action that creates a Github Environment.
@@ -35,10 +34,9 @@ import { AuthService } from '@backstage/backend-plugin-api';
  */
 export function createGithubEnvironmentAction(options: {
   integrations: ScmIntegrationRegistry;
-  catalogClient?: CatalogApi;
-  auth?: AuthService;
+  catalog: CatalogService;
 }) {
-  const { integrations, catalogClient, auth } = options;
+  const { integrations, catalog } = options;
   // For more information on how to define custom actions, see
   //   https://backstage.io/docs/features/software-templates/writing-custom-actions
   return createTemplateAction({
@@ -147,11 +145,6 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
         reviewers,
       } = ctx.input;
 
-      const { token } = (await auth?.getPluginRequestToken({
-        onBehalfOf: await ctx.getInitiatorCredentials(),
-        targetPluginId: 'catalog',
-      })) ?? { token: ctx.secrets?.backstageToken };
-
       // When environment creation step is executed right after a repo publish step, the repository might not be available immediately.
       // Add a 2-second delay before initiating the steps in this action.
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -190,12 +183,12 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
       if (reviewers) {
         let reviewersEntityRefs: Array<Entity | undefined> = [];
         // Fetch reviewers from Catalog
-        const catalogResponse = await catalogClient?.getEntitiesByRefs(
+        const catalogResponse = await catalog.getEntitiesByRefs(
           {
             entityRefs: reviewers,
           },
           {
-            token,
+            credentials: await ctx.getInitiatorCredentials(),
           },
         );
         if (catalogResponse?.items?.length) {

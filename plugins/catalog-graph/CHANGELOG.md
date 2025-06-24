@@ -1,5 +1,49 @@
 # @backstage/plugin-catalog-graph
 
+## 0.4.21-next.0
+
+### Patch Changes
+
+- fe1a2f4: Catalog graph plugin support i18n
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/catalog-client@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/types@1.2.1
+
+## 0.4.20
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/catalog-client@1.10.1
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3
+  - @backstage/types@1.2.1
+
+## 0.4.20-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/types@1.2.1
+
 ## 0.4.20-next.1
 
 ### Patch Changes

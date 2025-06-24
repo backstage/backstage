@@ -188,7 +188,7 @@ describe('gitlab core', () => {
   });
 
   describe('getGitLabRequestOptions', () => {
-    it('should return Authorization header when oauthToken is provided', () => {
+    it('should return Authorization bearer header when a token is provided', () => {
       const token = '1234567890';
       const result = getGitLabRequestOptions(
         configSelfHosteWithRelativePath,
@@ -202,29 +202,12 @@ describe('gitlab core', () => {
       });
     });
 
-    it('should return private-token header when gl-token is provided', () => {
-      const token = 'glpat-1234566';
-      const result = getGitLabRequestOptions(
-        configSelfHosteWithRelativePath,
-        token,
-      );
+    it('should return Authorization bearer header using the config token when no token is provided', () => {
+      const result = getGitLabRequestOptions(configSelfHosteWithRelativePath);
 
       expect(result).toEqual({
         headers: {
-          'PRIVATE-TOKEN': token,
-        },
-      });
-    });
-
-    it('should return private-token header when oauthToken is undefined', () => {
-      const oauthToken = undefined;
-      const result = getGitLabRequestOptions(
-        configSelfHosteWithRelativePath,
-        oauthToken,
-      );
-      expect(result).toEqual({
-        headers: {
-          'PRIVATE-TOKEN': configSelfHosteWithRelativePath.token,
+          Authorization: `Bearer ${configSelfHosteWithRelativePath.token}`,
         },
       });
     });

@@ -2,7 +2,6 @@
 id: routes
 title: Frontend Routes
 sidebar_label: Routes
-# prettier-ignore
 description: Frontend routes
 ---
 

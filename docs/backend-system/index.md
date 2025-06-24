@@ -2,7 +2,6 @@
 id: index
 title: The Backend System
 sidebar_label: Introduction
-# prettier-ignore
 description: Introduction to Backstage's backend system and its documentation
 ---
 

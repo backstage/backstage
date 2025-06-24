@@ -1,7 +1,7 @@
 'use client';
 
 import { components } from '@/utils/data';
-import { Checkbox } from '../../../../packages/canon';
+import { Checkbox } from '@backstage/canon';
 import { motion } from 'motion/react';
 import styles from './Sidebar.module.css';
 import { usePathname } from 'next/navigation';

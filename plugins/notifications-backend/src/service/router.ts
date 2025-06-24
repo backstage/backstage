@@ -17,13 +17,13 @@
 import express, { Request, Response } from 'express';
 import Router from 'express-promise-router';
 import {
-  DatabaseNotificationsStore,
   normalizeSeverity,
   NotificationGetOptions,
+  NotificationsStore,
   TopicGetOptions,
 } from '../database';
 import { v4 as uuid } from 'uuid';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import {
   NotificationProcessor,
   NotificationSendOptions,
@@ -31,7 +31,6 @@ import {
 import { InputError, NotFoundError } from '@backstage/errors';
 import {
   AuthService,
-  DatabaseService,
   HttpAuthService,
   LoggerService,
   UserInfoService,
@@ -58,12 +57,12 @@ import pThrottle from 'p-throttle';
 export interface RouterOptions {
   logger: LoggerService;
   config: Config;
-  database: DatabaseService;
+  store: NotificationsStore;
   auth: AuthService;
   httpAuth: HttpAuthService;
   userInfo: UserInfoService;
   signals?: SignalsService;
-  catalog: CatalogApi;
+  catalog: CatalogService;
   processors?: NotificationProcessor[];
 }
 
@@ -74,7 +73,7 @@ export async function createRouter(
   const {
     config,
     logger,
-    database,
+    store,
     auth,
     httpAuth,
     userInfo,
@@ -84,7 +83,6 @@ export async function createRouter(
   } = options;
 
   const WEB_NOTIFICATION_CHANNEL = 'Web';
-  const store = await DatabaseNotificationsStore.create({ database });
   const frontendBaseUrl = config.getString('app.baseUrl');
   const concurrencyLimit =
     config.getOptionalNumber('notifications.concurrencyLimit') ?? 10;
@@ -672,7 +670,7 @@ export async function createRouter(
         users = await getUsersForEntityRef(
           entityRef,
           recipients.excludeEntityRef ?? [],
-          { auth, catalogClient: catalog },
+          { auth, catalog },
         );
       } catch (e) {
         throw new InputError('Failed to resolve notification receivers', e);
