@@ -254,7 +254,7 @@ export class IncrementalIngestionEngine implements IterationEngine {
           this.burstLength.as('milliseconds')
         ) {
           this.options.logger.info(
-            `incremental-engine: Ingestion '${id}' burst exceeded length of ${this.burstLength.toHuman()}.`,
+            `incremental-engine: Ingestion '${id}' burst ending after ${this.burstLength.toHuman()}.`,
           );
           break;
         } else {
