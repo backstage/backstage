@@ -16,31 +16,31 @@
 import { Label } from 'react-aria-components';
 import { forwardRef } from 'react';
 import type { FieldLabelProps } from './types';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
 export const FieldLabel = forwardRef<HTMLDivElement, FieldLabelProps>(
   (props: FieldLabelProps, ref) => {
     const { label, secondaryLabel, description, htmlFor, id, ...rest } = props;
 
+    const { classNames } = useStyles('FieldLabel');
+
     if (!label) return null;
 
     return (
-      <div className="canon-FieldLabel" {...rest} ref={ref}>
+      <div className={classNames.root} {...rest} ref={ref}>
         {label && (
-          <Label className="canon-FieldLabelLabel" htmlFor={htmlFor} id={id}>
+          <Label className={classNames.label} htmlFor={htmlFor} id={id}>
             {label}
             {secondaryLabel && (
-              <span
-                aria-hidden="true"
-                className="canon-FieldLabelSecondaryLabel"
-              >
+              <span aria-hidden="true" className={classNames.secondaryLabel}>
                 ({secondaryLabel})
               </span>
             )}
           </Label>
         )}
         {description && (
-          <div className="canon-FieldLabelDescription">{description}</div>
+          <div className={classNames.description}>{description}</div>
         )}
       </div>
     );

@@ -17,13 +17,16 @@
 import { forwardRef } from 'react';
 import { Switch as AriaSwitch } from 'react-aria-components';
 import type { SwitchProps } from './types';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
 export const Switch = forwardRef<HTMLLabelElement, SwitchProps>(
   ({ label, ...props }, ref) => {
+    const { classNames } = useStyles('Switch');
+
     return (
-      <AriaSwitch className="canon-Switch" ref={ref} {...props}>
-        <div className="canon-SwitchIndicator" />
+      <AriaSwitch className={classNames.root} ref={ref} {...props}>
+        <div className={classNames.indicator} />
         {label}
       </AriaSwitch>
     );

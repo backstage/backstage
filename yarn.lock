@@ -19127,8 +19127,8 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-formatters@npm:^1.1.0":
-  version: 1.4.3
-  resolution: "@stoplight/spectral-formatters@npm:1.4.3"
+  version: 1.5.0
+  resolution: "@stoplight/spectral-formatters@npm:1.5.0"
   dependencies:
     "@stoplight/path": "npm:^1.3.2"
     "@stoplight/spectral-core": "npm:^1.19.4"
@@ -19143,13 +19143,13 @@ __metadata:
     strip-ansi: "npm:6.0"
     text-table: "npm:^0.2.0"
     tslib: "npm:^2.8.1"
-  checksum: 10/38cdb6dd756a5b859f0768bd7a6730d9ff816a8e21880385e75d0b663a98a2ca62283b6ab50bcce92384e0117d354813591faec9d5da85a3d6ed491afd5b1830
+  checksum: 10/565f939d4363d6de357cb6292fce3f656ea106097b675562a958a2fb0b351f2ebc8516602ebdad83f57a73d6da178ce3e18e8a484b565d5c46e24aa588e7f04b
   languageName: node
   linkType: hard
 
 "@stoplight/spectral-functions@npm:^1.6.1, @stoplight/spectral-functions@npm:^1.7.2, @stoplight/spectral-functions@npm:^1.9.1":
-  version: 1.9.4
-  resolution: "@stoplight/spectral-functions@npm:1.9.4"
+  version: 1.10.1
+  resolution: "@stoplight/spectral-functions@npm:1.10.1"
   dependencies:
     "@stoplight/better-ajv-errors": "npm:1.0.3"
     "@stoplight/json": "npm:^3.17.1"
@@ -19162,7 +19162,7 @@ __metadata:
     ajv-formats: "npm:~2.1.1"
     lodash: "npm:~4.17.21"
     tslib: "npm:^2.8.1"
-  checksum: 10/8da84358ccfcf60afc2f61db3296eef5718e9f837cfaec99a006faf42f5e1f7a6f47fbbe02161e39ffe6a5fe9dc5cacf1270ff59b22a8ba6264d6381d6a94d65
+  checksum: 10/dceb3aa64ef5342183a1175ccf6d1a81e6c44dd0dd128a2b0b00f7d8b0eb467a47faac96b2a3a42554e99116af0e5a1d8be3d51ae82c3a96fc683d53fb0127ca
   languageName: node
   linkType: hard
 
@@ -19192,8 +19192,8 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-rulesets@npm:^1.14.1, @stoplight/spectral-rulesets@npm:^1.18.0":
-  version: 1.21.4
-  resolution: "@stoplight/spectral-rulesets@npm:1.21.4"
+  version: 1.22.0
+  resolution: "@stoplight/spectral-rulesets@npm:1.22.0"
   dependencies:
     "@asyncapi/specs": "npm:^6.8.0"
     "@stoplight/better-ajv-errors": "npm:1.0.3"
@@ -19210,7 +19210,7 @@ __metadata:
     leven: "npm:3.1.0"
     lodash: "npm:~4.17.21"
     tslib: "npm:^2.8.1"
-  checksum: 10/f5154e70285e3e7caac24a33fec0904d342923402f4bc2fb0a4d184d1e9f8a70d555d7ed9118dda004b8fd5ad51357e57abc68b657315934a03beb0e55d842d5
+  checksum: 10/1e93a302436b62532324dadb5c0cd1f89606533a8fefb1437288b6dec6c28c350d41723718b978c0c4c806cffe9019a2b8b0df5f71f78349a23f98a2f847c036
   languageName: node
   linkType: hard
 
@@ -20770,8 +20770,8 @@ __metadata:
   linkType: hard
 
 "@testing-library/react@npm:^16.0.0":
-  version: 16.1.0
-  resolution: "@testing-library/react@npm:16.1.0"
+  version: 16.3.0
+  resolution: "@testing-library/react@npm:16.3.0"
   dependencies:
     "@babel/runtime": "npm:^7.12.5"
   peerDependencies:
@@ -20785,7 +20785,7 @@ __metadata:
       optional: true
     "@types/react-dom":
       optional: true
-  checksum: 10/2a20e0dbfadbc93d45a84e82281ed47deed54a6a5fc1461a523172d7fbc0481e8502cf98a2080f38aba94290b3d745671a1c9e320e6f76ad6afcca67c580b963
+  checksum: 10/0ee9e31dd0d2396a924682d0e61a4ecc6bfab8eaff23dbf8a72c3c2ce22c116fa578148baeb4de75b968ef99d22e6e6aa0a00dba40286f71184918bb6bb5b06a
   languageName: node
   linkType: hard
 

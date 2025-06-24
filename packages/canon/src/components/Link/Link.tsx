@@ -16,8 +16,8 @@
 
 import { useRef, forwardRef } from 'react';
 import { useRender } from '@base-ui-components/react/use-render';
-import { useResponsiveValue } from '../../hooks/useResponsiveValue';
 import clsx from 'clsx';
+import { useStyles } from '../../hooks/useStyles';
 
 import type { LinkProps } from './types';
 
@@ -31,16 +31,14 @@ export const Link = forwardRef<HTMLElement, LinkProps>((props, ref) => {
     ...restProps
   } = props;
 
-  const responsiveVariant = useResponsiveValue(variant);
-  const responsiveWeight = useResponsiveValue(weight);
+  const { classNames, dataAttributes } = useStyles('Link', { variant, weight });
   const internalRef = useRef<HTMLElement | null>(null);
 
   const { renderElement } = useRender({
     render,
     props: {
-      className: clsx('canon-Link', className),
-      ['data-variant']: responsiveVariant,
-      ['data-weight']: responsiveWeight,
+      className: clsx(classNames.root, className),
+      ...dataAttributes,
       ...restProps,
     },
     refs: [ref, internalRef],

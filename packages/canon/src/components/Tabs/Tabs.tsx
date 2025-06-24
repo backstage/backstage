@@ -18,56 +18,73 @@ import { forwardRef } from 'react';
 import { Tabs as TabsPrimitive } from '@base-ui-components/react/tabs';
 import type { TabsRootWithoutOrientation } from './types';
 import clsx from 'clsx';
+import { useStyles } from '../../hooks/useStyles';
 
 const TabsRoot = forwardRef<
   React.ElementRef<typeof TabsPrimitive.Root>,
   TabsRootWithoutOrientation
->(({ className, ...props }, ref) => (
-  <TabsPrimitive.Root
-    ref={ref}
-    className={clsx('canon-TabsRoot', className)}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const { classNames } = useStyles('Tabs');
+
+  return (
+    <TabsPrimitive.Root
+      ref={ref}
+      className={clsx(classNames.root, className)}
+      {...props}
+    />
+  );
+});
 TabsRoot.displayName = TabsPrimitive.Root.displayName;
 
 const TabsList = forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
->(({ className, children, ...props }, ref) => (
-  <TabsPrimitive.List
-    ref={ref}
-    className={clsx('canon-TabsList', className)}
-    {...props}
-  >
-    {children}
-    <TabsPrimitive.Indicator className="canon-TabsIndicator" />
-  </TabsPrimitive.List>
-));
+>(({ className, children, ...props }, ref) => {
+  const { classNames } = useStyles('Tabs');
+
+  return (
+    <TabsPrimitive.List
+      ref={ref}
+      className={clsx(classNames.list, className)}
+      {...props}
+    >
+      {children}
+      <TabsPrimitive.Indicator className={classNames.indicator} />
+    </TabsPrimitive.List>
+  );
+});
 TabsList.displayName = TabsPrimitive.List.displayName;
 
 const TabsTab = forwardRef<
   React.ElementRef<typeof TabsPrimitive.Tab>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Tab>
->(({ className, ...props }, ref) => (
-  <TabsPrimitive.Tab
-    ref={ref}
-    className={clsx('canon-TabsTab', className)}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const { classNames } = useStyles('Tabs');
+
+  return (
+    <TabsPrimitive.Tab
+      ref={ref}
+      className={clsx(classNames.tab, className)}
+      {...props}
+    />
+  );
+});
 TabsTab.displayName = TabsPrimitive.Tab.displayName;
 
 const TabsPanel = forwardRef<
   React.ElementRef<typeof TabsPrimitive.Panel>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Panel>
->(({ className, ...props }, ref) => (
-  <TabsPrimitive.Panel
-    ref={ref}
-    className={clsx('canon-TabsPanel', className)}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const { classNames } = useStyles('Tabs');
+
+  return (
+    <TabsPrimitive.Panel
+      ref={ref}
+      className={clsx(classNames.panel, className)}
+      {...props}
+    />
+  );
+});
 TabsPanel.displayName = TabsPrimitive.Panel.displayName;
 
 /** @public */
