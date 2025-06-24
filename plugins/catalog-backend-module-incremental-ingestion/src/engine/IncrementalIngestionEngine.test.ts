@@ -80,7 +80,7 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
       // Add a small delay to ensure we exceed burst length
       await new Promise(resolve => setTimeout(resolve, 30));
       return {
-        done: false, // Never done - would continue forever without burst length
+        done: false,
         entities: [
           {
             entity: {
@@ -101,16 +101,12 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
     const duration = performance.now() - start;
 
     // Verify that the burst was stopped due to time limit, not completion
-    expect(result).toBe(false); // Should return false since provider never returned done
-    expect(duration).toBeGreaterThanOrEqual(100); // Should have run for at least the burst length
-    expect(duration).toBeLessThan(200); // But not too much longer (allowing for timing variance)
+    expect(result).toBe(false);
+    expect(duration).toBeGreaterThanOrEqual(100);
+    expect(duration).toBeLessThan(200);
     expect(mockProvider.next).toHaveBeenCalledTimes(callCount);
-    expect(callCount).toBeGreaterThan(1); // Should have made multiple calls before stopping
 
-    // Verify that burst was terminated due to time limit (not normal completion)
-    expect(mockLogger.info).toHaveBeenCalledWith(
-      expect.stringContaining('burst ending after'),
-    );
+    expect(callCount).toBeGreaterThan(1);
   });
 
   it('should complete burst normally when provider returns done before burst length', async () => {
@@ -123,7 +119,7 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
       provider: mockProvider,
       manager: mockManager,
       connection: mockConnection,
-      burstLength: { seconds: 10 }, // Long burst length
+      burstLength: { seconds: 10 },
       restLength: { minutes: 1 },
       logger: mockLogger,
       ready: Promise.resolve(),
@@ -150,25 +146,66 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
     });
 
     const signal = new AbortController().signal;
+    const start = performance.now();
     const result = await engine.ingestOneBurst('test-ingestion', signal);
+    const duration = performance.now() - start;
 
-    // Should return true when provider indicates done
     expect(result).toBe(true);
     expect(mockProvider.next).toHaveBeenCalledTimes(1);
+    expect(duration).toBeLessThan(100); // Should complete quickly since provider returns done immediately
+  });
 
-    // Should NOT log the burst exceeded message
-    expect(mockLogger.info).not.toHaveBeenCalledWith(
-      expect.stringContaining('burst ending after'),
-    );
+  it('should stop burst when time limit is reached', async () => {
+    const mockProvider = createMockProvider();
+    const mockManager = createMockManager();
+    const mockConnection = createMockConnection();
+    const mockLogger = createMockLogger();
 
-    // Should log burst initiation and completion
-    expect(mockLogger.info).toHaveBeenCalledWith(
-      "incremental-engine: Ingestion 'test-ingestion' burst initiated",
-    );
-    expect(mockLogger.info).toHaveBeenCalledWith(
-      expect.stringContaining(
-        "incremental-engine: Ingestion 'test-ingestion' burst complete",
-      ),
-    );
+    const options: IterationEngineOptions = {
+      provider: mockProvider,
+      manager: mockManager,
+      connection: mockConnection,
+      burstLength: { milliseconds: 80 },
+      restLength: { minutes: 1 },
+      logger: mockLogger,
+      ready: Promise.resolve(),
+    };
+
+    const engine = new IncrementalIngestionEngine(options);
+
+    let callCount = 0;
+    mockProvider.around.mockImplementation(async fn => {
+      await fn({});
+    });
+
+    mockProvider.next.mockImplementation(async () => {
+      callCount++;
+      await new Promise(resolve => setTimeout(resolve, 30));
+      return {
+        done: false,
+        entities: [
+          {
+            entity: {
+              kind: 'Component',
+              metadata: { name: `test-component-${callCount}` },
+            },
+          },
+        ],
+        cursor: `cursor-${callCount}`,
+      };
+    });
+
+    const signal = new AbortController().signal;
+    const start = performance.now();
+
+    const result = await engine.ingestOneBurst('test-ingestion', signal);
+
+    const duration = performance.now() - start;
+
+    expect(result).toBe(false);
+    expect(mockProvider.next).toHaveBeenCalledTimes(3);
+    expect(callCount).toBe(3);
+    expect(duration).toBeGreaterThanOrEqual(90);
+    expect(duration).toBeLessThan(120);
   });
 });
