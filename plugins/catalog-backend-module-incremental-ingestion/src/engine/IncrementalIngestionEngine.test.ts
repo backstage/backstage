@@ -103,12 +103,13 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
     // Verify that the burst was stopped due to time limit, not completion
     expect(result).toBe(false); // Should return false since provider never returned done
     expect(duration).toBeGreaterThanOrEqual(100); // Should have run for at least the burst length
+    expect(duration).toBeLessThan(200); // But not too much longer (allowing for timing variance)
     expect(mockProvider.next).toHaveBeenCalledTimes(callCount);
     expect(callCount).toBeGreaterThan(1); // Should have made multiple calls before stopping
 
-    // Verify the correct log message was called
+    // Verify that burst was terminated due to time limit (not normal completion)
     expect(mockLogger.info).toHaveBeenCalledWith(
-      expect.stringContaining('burst exceeded length of 100 milliseconds'),
+      expect.stringContaining('burst ending after'),
     );
   });
 
@@ -157,7 +158,7 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
 
     // Should NOT log the burst exceeded message
     expect(mockLogger.info).not.toHaveBeenCalledWith(
-      expect.stringContaining('burst exceeded length of'),
+      expect.stringContaining('burst ending after'),
     );
 
     // Should log burst initiation and completion
