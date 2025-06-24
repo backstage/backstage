@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.3.13-next.0
+
+### Patch Changes
+
+- cf9ba6f: Fixing the typescript issue with using `z.unknown()`
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.1-next.0
+  - @backstage/plugin-scaffolder-node@0.9.1-next.0
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.3.11
 
 ### Patch Changes

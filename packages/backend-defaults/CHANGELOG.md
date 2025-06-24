@@ -1,5 +1,27 @@
 # @backstage/backend-defaults
 
+## 0.11.1-next.0
+
+### Patch Changes
+
+- ead925a: Add a standard `toString` on credentials objects
+- e0189b8: UrlReader: Fix handling of access tokens for GitLab readURL requests
+- d1e4a6d: Fixed bug where the GitLab user token and GitLab integration token were being merged together
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/backend-app-api@1.2.4
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/plugin-permission-node@0.10.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.16
+  - @backstage/types@1.2.1
+
 ## 0.11.0
 
 ### Minor Changes

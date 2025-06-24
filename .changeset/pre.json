@@ -203,5 +203,31 @@
     "@backstage/plugin-user-settings-backend": "0.3.3",
     "@backstage/plugin-user-settings-common": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "chubby-dots-kiss",
+    "clear-bananas-end",
+    "curly-zoos-thank",
+    "cyan-islands-swim",
+    "dark-cougars-go",
+    "empty-mugs-agree",
+    "empty-poets-give",
+    "gentle-llamas-press",
+    "mean-lemons-dream",
+    "petite-paths-remain",
+    "public-nails-melt",
+    "red-trams-join",
+    "rich-eagles-rule",
+    "shaggy-cobras-rhyme",
+    "sharp-stars-report",
+    "silent-vans-tie",
+    "six-dots-agree",
+    "sixty-ties-matter",
+    "social-insects-cheat",
+    "stupid-donuts-sit",
+    "three-shoes-behave",
+    "tired-bats-attend",
+    "wicked-socks-share",
+    "wise-frogs-talk",
+    "yummy-pugs-battle"
+  ]
 }

@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.6.7-next.0
+
+### Patch Changes
+
+- b68d269: Update uncomfortably bright color in recently visited and top visited home page cards
+
 ## 0.6.6
 
 ### Patch Changes

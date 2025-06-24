@@ -1,5 +1,23 @@
 # @backstage/plugin-notifications-backend
 
+## 0.5.8-next.0
+
+### Patch Changes
+
+- 9a5a73f: Fix `addTopic` migration when `user_settings` present
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/plugin-notifications-node@0.2.16
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.9
+  - @backstage/plugin-signals-node@0.1.21
+
 ## 0.5.7
 
 ### Patch Changes

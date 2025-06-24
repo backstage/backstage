@@ -1,5 +1,28 @@
 # @backstage/canon
 
+## 0.6.0-next.0
+
+### Minor Changes
+
+- 4c6d891: **BREAKING CHANGES**
+
+  We’re updating our Button component to provide better support for button links.
+
+  - We’re introducing a new `ButtonLink` component, which replaces the previous render prop pattern.
+  - To maintain naming consistency across components, `IconButton` is being renamed to `ButtonIcon`.
+  - Additionally, the render prop will be removed from all button-related components.
+
+  These changes aim to simplify usage and improve clarity in our component API.
+
+### Patch Changes
+
+- 140f652: We are consolidating all css files into a single styles.css in Canon.
+- 8154fb9: Add new SearchField component in Canon
+- 6910892: Add new `RadioGroup` + `Radio` component to Canon
+- a8a8514: We are transforming how we structure our class names and data attributes definitions for all components. They are now all set in the same place.
+- 667b951: Added placeholder prop to TextField component.
+- e71333a: adding export for ButtonLink so it's importable
+
 ## 0.5.0
 
 ### Minor Changes
