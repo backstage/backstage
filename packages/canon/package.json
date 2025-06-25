@@ -40,6 +40,9 @@
     "storybook": "storybook dev -p 6006",
     "test": "backstage-cli package test"
   },
+  "resolutions": {
+    "ast-types": "0.14.2"
+  },
   "dependencies": {
     "@base-ui-components/react": "1.0.0-alpha.7",
     "@remixicon/react": "^4.6.0",
