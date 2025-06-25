@@ -25367,21 +25367,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ast-types@npm:0.16.1, ast-types@npm:^0.16.1":
+  version: 0.16.1
+  resolution: "ast-types@npm:0.16.1"
+  dependencies:
+    tslib: "npm:^2.0.1"
+  checksum: 10/f569b475eb1c8cb93888cb6e7b7e36dc43fa19a77e4eb132cbff6e3eb1598ca60f850db6e60b070e5a0ee8c1559fca921dac0916e576f2f104e198793b0bdd8d
+  languageName: node
+  linkType: hard
+
 "ast-types@npm:^0.13.4":
   version: 0.13.4
   resolution: "ast-types@npm:0.13.4"
   dependencies:
     tslib: "npm:^2.0.1"
   checksum: 10/c55b375b9aaf44713d8c0f77a08215ab6d44f368b13e44f2141c421022af3c62b615a30c8ea629457f0cbaec409c713401c0188a124552c8fe4a5ad6b17ff3c3
-  languageName: node
-  linkType: hard
-
-"ast-types@npm:^0.16.1":
-  version: 0.16.1
-  resolution: "ast-types@npm:0.16.1"
-  dependencies:
-    tslib: "npm:^2.0.1"
-  checksum: 10/f569b475eb1c8cb93888cb6e7b7e36dc43fa19a77e4eb132cbff6e3eb1598ca60f850db6e60b070e5a0ee8c1559fca921dac0916e576f2f104e198793b0bdd8d
   languageName: node
   linkType: hard
 
@@ -45757,6 +45757,7 @@ __metadata:
     "@types/webpack": "npm:^5.28.0"
     "@useoptic/optic": "npm:^1.0.0"
     array-to-table: "npm:^1.0.1"
+    ast-types: "npm:0.16.1"
     command-exists: "npm:^1.2.9"
     cross-env: "npm:^7.0.0"
     e2e-test: "workspace:*"
