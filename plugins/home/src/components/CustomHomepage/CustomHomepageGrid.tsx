@@ -381,6 +381,8 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
             ...(w.settings ?? {}),
           };
 
+          const Component = widget.component.type;
+
           return (
             <div
               key={l.i}
@@ -389,7 +391,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
               }`}
             >
               <ErrorBoundary>
-                <widget.component.type {...widgetProps} />
+                <Component {...widgetProps} />
               </ErrorBoundary>
               {editMode && (
                 <WidgetSettingsOverlay
