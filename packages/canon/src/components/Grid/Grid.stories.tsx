@@ -49,10 +49,8 @@ export const Default = meta.story({
   },
 });
 
-export const LargeGap = meta.story({
-  args: {
-    gap: '64px',
-  },
+export const LargeGap = Default.extend({
+  args: { gap: '64px' },
 });
 
 export const ColumnSizes = meta.story({
