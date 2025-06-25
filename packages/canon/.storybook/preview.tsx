@@ -6,12 +6,7 @@ import '../src/css/styles.css';
 
 export default definePreview({
   parameters: {
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
-    },
+    controls: {},
     backgrounds: {
       disable: true,
     },
@@ -19,52 +14,6 @@ export default definePreview({
       storySort: {
         method: 'alphabetical',
         order: ['Core Concepts', 'Components'],
-      },
-    },
-    viewport: {
-      viewports: {
-        initial: {
-          name: 'Initial',
-          styles: {
-            width: '320px',
-            height: '100%',
-          },
-        },
-        xs: {
-          name: 'Extra Small',
-          styles: {
-            width: '640px',
-            height: '100%',
-          },
-        },
-        sm: {
-          name: 'Small',
-          styles: {
-            width: '768px',
-            height: '100%',
-          },
-        },
-        md: {
-          name: 'Medium',
-          styles: {
-            width: '1024px',
-            height: '100%',
-          },
-        },
-        lg: {
-          name: 'Large',
-          styles: {
-            width: '1280px',
-            height: '100%',
-          },
-        },
-        xl: {
-          name: 'Extra Large',
-          styles: {
-            width: '1536px',
-            height: '100%',
-          },
-        },
       },
     },
   },

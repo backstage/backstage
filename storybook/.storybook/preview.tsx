@@ -1,3 +1,4 @@
+import React from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { Content, AlertDisplay } from '@backstage/core-components';
 import { lightTheme, darkTheme } from '@backstage/theme';
@@ -9,12 +10,7 @@ import type { Preview, ReactRenderer } from '@storybook/react';
 
 const preview: Preview = {
   parameters: {
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
-    },
+    controls: {},
     darkMode: {
       current: 'light',
     },

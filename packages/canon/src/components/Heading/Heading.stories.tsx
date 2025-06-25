@@ -25,7 +25,7 @@ const meta = preview.meta({
   },
 });
 
-export const Default = meta.story();
+export const Default = meta.story({});
 
 export const Title1 = meta.story({
   args: {
@@ -48,9 +48,6 @@ export const AllVariants = meta.story({
 });
 
 export const AllColors = meta.story({
-  args: {
-    ...Default.input.args,
-  },
   render: args => (
     <Flex gap="4" direction="column">
       <Heading color="primary" {...args} />
@@ -77,9 +74,6 @@ export const Responsive = meta.story({
 });
 
 export const WrappedInLink = meta.story({
-  args: {
-    ...Default.input.args,
-  },
   decorators: [
     Story => (
       <a href="/">
@@ -91,7 +85,6 @@ export const WrappedInLink = meta.story({
 
 export const CustomRender = meta.story({
   args: {
-    ...Default.input.args,
     as: 'h4',
   },
 });
