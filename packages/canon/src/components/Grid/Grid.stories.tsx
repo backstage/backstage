@@ -51,7 +51,6 @@ export const Default = meta.story({
 
 export const LargeGap = meta.story({
   args: {
-    ...Default.input.args,
     gap: '64px',
   },
 });
