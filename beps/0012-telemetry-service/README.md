@@ -7,13 +7,10 @@ owners:
   - '@kurtaking'
 project-areas:
   - backend
+  - core
   - framework
 creation-date: 2025-06-23
 ---
-
-<!--
-**Note:** When your BEP is complete, all these pre-existing comments should be removed
--->
 
 # BEP: Backstage Telemetry Service
 
@@ -33,9 +30,11 @@ Add a core telemetry service to Backstage's backend system that provides a unifi
 
 ## Motivation
 
-While individual plugins may implement their own metrics or tracing, there's no unified service that provides a standardized approach for telemetry and observability. This gap makes it difficult for operators to monitor Backstage deployments effectively and for plugin developers to add observability to their plugins consistently.
+There is currently no guidance for plugin authors when it comes to telemetry and while individual plugins may implement their own metrics or tracing, there's no unified service that provides a standardized approach for telemetry and observability. This gap makes it difficult for operators to monitor Backstage deployments effectively and for plugin developers to add observability to their plugins consistently.
 
 ### Goals
+
+Provide a unified service that provides a standardized approach for telemetry where setup docs like [these](https://backstage.io/docs/tutorials/setup-opentelemetry/) are not needed.
 
 - Consistent telemetry patterns across all plugins
 - Zero-configuration defaults that work out of the box
@@ -45,41 +44,28 @@ While individual plugins may implement their own metrics or tracing, there's no 
 
 ### Non-Goals
 
+- We will not backfill missing telemetry for existing plugins.
+- We will not recreate the OTEL Node SDK
+
 ## Proposal
 
-<!--
-This is where we get down to the specifics of what the proposal actually is.
-This should have enough detail that reviewers can understand exactly what
-you're proposing, but should not include things like API designs or
-implementation.
--->
+Following similar patterns to other core services, we will create a new `RootTelemetryService` responsible for initializing telemetry and app-wide concerns, and the creation of plugin-specific telemetry services.
 
 ## Design Details
 
-<!--
-This section should contain enough information that the specifics of your
-change are understandable. This may include API specs or even code snippets.
-If there's any ambiguity about HOW your proposal will be implemented, this is the place to discuss them.
--->
+We will provide a thin wrapper around the OpenTelemetry Node SDK to provide a consistent interface while re-exporting the types from the SDK. This lets us provide a consistent telemetry interface while leveraging types and concepts already familiar to the community.
+
+The decision to leverage the SDK comes from the fact that OpenTelemetry is already the fundamental abstraction for metrics and tracing.
 
 ## Release Plan
 
-<!--
-This section should describe the rollout process for any new features. It must take our version policies into account and plan for a phased rollout if this change affects any existing stable APIs.
-
-If there is any particular feedback to be gathered during the rollout, this should be described here as well.
--->
+TBD
 
 ## Dependencies
 
-<!--
-List any dependencies that this work has on other BEPs or features.
--->
+- There are one-off implementations of telemetry in the wild that may conflict with the proposed service.
 
 ## Alternatives
 
-<!--
-What other approaches did you consider, and why did you rule them out? These do
-not need to be as detailed as the proposal, but should include enough
-information to express the idea and why it was not acceptable.
--->
+1. Plugin authors continue to implement their own telemetry as they see fit.
+2. Adopters continue using the [setup-opentelemetry](https://backstage.io/docs/tutorials/setup-opentelemetry/) docs as a guide.
