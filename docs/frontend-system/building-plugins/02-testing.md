@@ -1,6 +1,6 @@
 ---
 id: testing
-title: Frontend System Testing Plugins
+title: Testing Frontend Plugins
 sidebar_label: Testing
 # prettier-ignore
 description: Testing plugins in the frontend system
