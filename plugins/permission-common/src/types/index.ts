@@ -53,3 +53,4 @@ export type {
   ResourcePermission,
   AuthorizeRequestOptions,
 } from './permission';
+export { type PermissionIdentity } from './identity';
