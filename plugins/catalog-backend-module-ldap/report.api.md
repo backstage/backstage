@@ -12,7 +12,6 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { GroupEntity } from '@backstage/catalog-model';
-import { GroupTransformer as GroupTransformer_2 } from '@backstage/plugin-catalog-backend-module-ldap';
 import { JsonValue } from '@backstage/types';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -22,7 +21,6 @@ import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugi
 import { SearchEntry } from 'ldapjs';
 import { SearchOptions } from 'ldapjs';
 import { UserEntity } from '@backstage/catalog-model';
-import { UserTransformer as UserTransformer_2 } from '@backstage/plugin-catalog-backend-module-ldap';
 
 // @public
 export type BindConfig = {
@@ -152,10 +150,10 @@ export type LdapOrgEntityProviderOptions =
 // @public
 export interface LdapOrgEntityProviderTransformsExtensionPoint {
   setGroupTransformer(
-    transformer: GroupTransformer_2 | Record<string, GroupTransformer_2>,
+    transformer: GroupTransformer | Record<string, GroupTransformer>,
   ): void;
   setUserTransformer(
-    transformer: UserTransformer_2 | Record<string, UserTransformer_2>,
+    transformer: UserTransformer | Record<string, UserTransformer>,
   ): void;
 }
 

@@ -20,7 +20,7 @@ import {
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 
-import { EntityPredicate } from '../predicates';
+import { EntityPredicate } from '../predicates/types';
 import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
 
 import {
