@@ -19,7 +19,7 @@ import {
   createServiceRef,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
-import { dynamicPluginsServiceRef } from '@backstage/backend-dynamic-feature-service';
+import { dynamicPluginsServiceRef } from '../manager';
 import { spec } from '../schema/openapi';
 import { ManifestFileName } from '@module-federation/sdk';
 import { RemoteInfo } from '../schema/openapi/generated/models';
