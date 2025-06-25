@@ -201,3 +201,17 @@ Or write an open source plugin for Backstage in our
 See all the ways you can
 [contribute here](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md).
 We'd love to have you as part of the community.
+
+---
+
+### Does Backstage support authentication and authorization?
+
+Yes, Backstage supports multiple authentication providers, such as OAuth, SAML, LDAP, and more. You can configure authentication providers and set up authorization policies to control access to different features and plugins. Check the [authentication documentation](https://backstage.io/docs/auth/) for more details.
+
+### Can Backstage be deployed on Kubernetes or cloud platforms?
+
+Yes, Backstage is cloud-native and can be deployed on Kubernetes or other cloud platforms. There are [community Helm charts](https://github.com/backstage/charts) and deployment examples available, and you can use Docker images built from your app for cloud deployments.
+
+### How do I manage secrets and configuration in Backstage?
+
+Sensitive configuration, such as API keys or credentials, should be managed using environment variables or external secret management tools like HashiCorp Vault or AWS Secrets Manager. Refer to the [configuration documentation](https://backstage.io/docs/conf/) for recommended best practices.
