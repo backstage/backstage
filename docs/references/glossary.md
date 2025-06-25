@@ -10,7 +10,7 @@ A [token](#token) that gives access to perform actions on behalf of a user. It w
 
 ## Administrator
 
-Someone responsible for installing and maintaining a Backstage [app](#app) for an organization. A [user role](#user-role).
+Someone responsible for installing, configuring, and maintaining a Backstage [app](#app) for an organization. A [user role](#user-role).
 
 ## API (catalog plugin)
 
@@ -19,6 +19,14 @@ An [entity](#entity) representing a schema that two [components](#component) use
 ## App
 
 An installed instance of Backstage. An app can be local, intended for a single development group or individual developer, or organizational, for use by an entire enterprise.
+
+## Authentication
+
+The process of verifying the identity of a user, system, or entity attempting to access a resource, system, or network. It answers the question: "Are you who you claim to be?" See [this Wikipedia article](https://en.wikipedia.org/wiki/Authentication) for more details.
+
+## Authorization
+
+The process of determining what an authenticated user or system is allowed to do within a system, application, or resource. It comes after authentication, and answers the question: "What are you allowed to access or do?" It involves assigning specific privileges or access rights or roles to the user. See [this Wikipedia article](https://en.wikipedia.org/wiki/Authorization) for more details.
 
 ## Authorization Code
 
@@ -42,7 +50,7 @@ The actual framework that Backstage [plugins](#plugin) sit on. This spans both t
 
 ## Catalog
 
-1. The core Backstage plugin that handle ingestion and display of your organizations software products.
+1. The core Backstage plugin that handles ingestion and display of your organization's software products.
 
 2. An organization's portfolio of software products managed in Backstage.
 
@@ -50,15 +58,11 @@ The actual framework that Backstage [plugins](#plugin) sit on. This spans both t
 
 A set of technologies that "empower organizations to build and run scalable applications in modern, dynamic environments such as public, private, and hybrid clouds. Containers, service meshes, microservices, immutable infrastructure, and declarative APIs exemplify this approach." ([CNCF Cloud Native Definition v1.0](https://github.com/cncf/toc/blob/main/DEFINITION.md)).
 
-## Cloud Native Computing Foundation
+## Cloud Native Computing Foundation (AKA CNCF)
 
 A foundation dedicated to the promotion and advancement of [Cloud Native Computing](#Cloud-Native-Computing). The mission of the Cloud Native Computing Foundation (CNCF) is "to make cloud native computing ubiquitous" ([CNCF Charter](https://github.com/cncf/foundation/blob/main/charter.md)).
 
 CNCF is part of the [Linux Foundation](https://www.linuxfoundation.org/).
-
-## CNCF
-
-Cloud Native Computing Foundation.
 
 ## Code Grant
 
@@ -98,9 +102,9 @@ An executable or package file with all of the necessary information required to 
 
 ## Developer
 
-1. Someone who writes code and develops software.
+1. A professional who designs, builds, tests, deploys, and maintains software applications and systems. Developers essentially turn ideas or requirements into functional digital products.
 
-2. A [user role](#user-role) defined as someone who uses a Backstage [app](#app). Might or might not actually be a software developer.
+2. A [user role](#user-role) defined as someone who creates, modifies, or uses a Backstage [app](#app). Might or might not actually be a software developer.
 
 ## Developer Portal
 
@@ -108,15 +112,21 @@ A centralized system comprising a user interface and database used to facilitate
 
 ## Document (search plugin)
 
-An abstract concept representing something that can be found by searching for it. A document can represent a software entity, a TechDocs page, etc. Documents are made up of metadata fields, at a minimum -- a title, text, and location (as in a URL).
+1. A piece of information or data that is recorded on some medium for the purpose of storing and conveying information.
+
+2. An abstract concept representing something that can be found by searching for it. A document can represent a software entity, a TechDocs page, etc. Documents are made up of metadata fields, at a minimum -- a title, body (text), and location (as in a URL).
 
 ## Domain
 
-An area that relates systems or entities to a business unit. See [the catalog docs](https://backstage.io/docs/features/software-catalog/system-model) for more information.
+1. A collection of systems that share terminology, domain models, metrics, KPIs, business purpose, or documentation; that is, it forms a bounded context.
+
+2. An area that relates systems or entities to a business unit. See [the catalog docs](https://backstage.io/docs/features/software-catalog/system-model) for more information.
 
 ## Entity
 
-What is cataloged in the Backstage Software Catalog. An entity is identified by a unique combination of [kind](#Kind), [namespace](#Namespace), and name. See [the catalog docs](https://backstage.io/docs/features/software-catalog/system-model) for more information.
+1. Something that exists as a separate and distinct unit. Its existence can be real or abstract, physical or conceptual, persistent or ephemeral.
+
+2. What is cataloged in the Backstage Software Catalog. An entity is identified by a unique combination of [kind](#Kind), [namespace](#Namespace), and name. See [the catalog docs](https://backstage.io/docs/features/software-catalog/system-model) for more information.
 
 ## Evaluator
 
@@ -124,11 +134,13 @@ Someone who assesses whether Backstage is a suitable solution for their organiza
 
 ## ID Token
 
-A [JWT](#jwt) used to prove a user's identity, containing for example the user's email. Part of [OpenID Connect](#openid-connect).
+A security token used in authentication processes, primarily defined by the [OpenID Connect (OIDC) standard](#openid-connect). Its main purpose is to prove that a user has been successfully authenticated by an identity provider.
+
+See [JSON Web Token](#json-web-token).
 
 ## Index (search plugin)
 
-An index is a collection of [documents](#documents) of a given type.
+A collection of [documents](#documents) of a given type.
 
 ## Indexer (search plugin)
 
@@ -138,11 +150,9 @@ A write stream of [documents](#documents).
 
 Someone who develops one or more plugins that enable Backstage to interoperate with another software system. A [user role](#user-role).
 
-## JWT
+## JSON Web Token (AKA JWT)
 
-JSON Web Token.
-
-A popular JSON based token format that is commonly encrypted and/or signed, see [the Wikipedia article](https://en.wikipedia.org/wiki/JSON_Web_Token) for more details.
+A popular, compact, and self-contained open standard for securely transmitting information between parties as a JSON object. It is commonly used to verify a user's identity [authentication](#authentication) and permissions [authorization](#authorization). Each JWT consists of a header, payload, and digital signature separated by dots. While often encrypted, JWTs are always signed for integrity. This standard is a key component of [OpenID Connect](#openid-connect). For more details, see [the Wikipedia article](https://en.wikipedia.org/wiki/JSON_Web_Token).
 
 ## Kind
 
@@ -158,7 +168,7 @@ A core Backstage plugin enabling a service owner-focused view of Kubernetes reso
 
 ## Local Package
 
-One of the [packages](#package) within a [monorepo](#monorepo). These package may or may not also be published to a [package registry](#package-registry).
+One of the [packages](#package) within a [monorepo](#monorepo). A package may or may not also be published to a [package registry](#package-registry).
 
 ## Monorepo
 
@@ -172,11 +182,11 @@ An optional attribute that can be used to organize [entities](#entity).
 
 ## Objective
 
-A high level goal of a [user role](#User-Role) interacting with Backstage. Some goals of the _administrator_ user role, for example, are to maintain an instance ("app") of Backstage; to add and update functionality via plugins; and to troubleshoot issues.
+A high-level goal of a [user role](#User-Role) interacting with Backstage. Some goals of the _administrator_ user role, for example, are to maintain an instance ("app") of Backstage; to add and update functionality via plugins; and to troubleshoot issues.
 
 ## OAuth
 
-Refers to: OAuth 2.0, a standard protocol for authorization. See [oauth.net/2/](https://oauth.net/2/).
+Refers to: OAuth 2.0, a standard protocol and framework for granting third-party applications access to their data on other websites or services without sharing their passwords. See [oauth.net/2/](https://oauth.net/2/).
 
 ## Offline Access
 
@@ -201,6 +211,10 @@ A service that hosts [packages](#package). The most prominent example is [NPM](h
 ## Package Role
 
 The declared role of a package, see [package roles](../tooling/cli/02-build-system.md#package-roles).
+
+## Permission
+
+Specific rules or settings that define the level of access and types of actions that a user, group, or system process is allowed to perform on a particular resource. They are a core component of authorization that determine "what you can do" after you've been authenticated. Permissions are properties of objects or resources. Closely related to [Privilege](#privilege) (the terms are often used interchangeably).
 
 ## Permission (core Backstage plugin)
 
@@ -230,6 +244,10 @@ A specific response to a user's request to perform an action on a list of [resou
 
 A separate browser window opened on top of the previous one.
 
+## Privilege
+
+Specific rules or settings that define what a user or process is allowed to do within the system, often relating to system-wide operations or capabilities. Privileges are properties of a subject, such as a user account or process, and represent a higher-level authority or right to perform certain security-critical functions. Closely related to [Permission](#permission) (the terms are often used interchangeably).
+
 ## Procedure (use cases)
 
 A set of actions that accomplish a goal, usually as part of a [use case](#Use-Case). A procedure can be high-level, containing other procedures, or can be as simple as a single [task](#Task).
@@ -240,9 +258,7 @@ An abstraction layer between a search engine and the [Backstage Search](#search)
 
 ## Refresh token
 
-A special token that an [OAuth](#oauth) client can use to get a new [access token](#access-token) when the latter expires.
-
-https://oauth.net/2/refresh-tokens/
+A special token that an [OAuth](#oauth) client can use to get a new [access token](#access-token) when the latter expires. See [OAuth Refresh Tokens](https://oauth.net/2/refresh-tokens/) for details.
 
 ## Resource (catalog plugin)
 
@@ -290,7 +306,7 @@ A "skeleton" software project created and managed in the Backstage Software Temp
 
 ## System (catalog plugin)
 
-A system is a collection of [entities](#entity) that cooperate to perform a function. A system generally provides one or a few public APIs and consists of a handful of components, resources and private APIs. See [the catalog docs](https://backstage.io/docs/features/software-catalog/system-model) for more information.
+A collection of [entities](#entity) that cooperate to perform a function. A system generally provides one or a few public APIs and consists of a handful of components, resources, and private or public APIs. See [the catalog docs](https://backstage.io/docs/features/software-catalog/system-model) for more information.
 
 ## Task (use cases)
 
@@ -298,7 +314,7 @@ A low-level step-by-step [Procedure](#Procedure).
 
 ## TechDocs
 
-A documentation solution that manages and generates a technical documentation from Markdown files stored with software component code. A core feature of Backstage.
+A documentation solution that manages and generates technical documentation from Markdown files stored with software component code. A core feature of Backstage.
 
 ## Token
 
@@ -306,8 +322,12 @@ A string containing information.
 
 ## Use Case
 
-A purpose for which a [user role](#User-Role) interacts with Backstage. Related to [Objective](#objective): An objective is _what_ the user wants to do; a use case is _how_ the user does it.
+A purpose for which a [user role](#User-Role) interacts with Backstage. Related to [Objective](#objective): An objective is _what_ the user wants to do, a use case is _how_ the user does it.
+
+## User
+
+Any consumer of Backstage or Backstage products/applications. Includes individuals like employees and contractors, as well as software that interacts with the backend through an API or acts as a proxy for a person by operating the user interface.
 
 ## User Role
 
-A class of Backstage user for purposes of analyzing [use cases](#use-case). One of: evaluator; administrator; developer; integrator; and contributor.
+A class of Backstage user for purposes of analyzing [use cases](#use-case). One of: [evaluator](#evaluator); [administrator](#administrator); [developer](#developer); [integrator](#integrator); and [contributor](#contributor).
