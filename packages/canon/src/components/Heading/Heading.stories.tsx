@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '../../../.storybook/preview';
 import { Heading } from './Heading';
 import { Flex } from '../Flex';
 
-const meta = {
+const meta = preview.meta({
   title: 'Components/Heading',
   component: Heading,
   args: {
     children: 'Heading',
   },
-} satisfies Meta<typeof Heading>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export const Default = meta.story();
 
-export const Default: Story = {};
-
-export const Title1: Story = {
+export const Title1 = meta.story({
   args: {
     children: 'Look mum, no hands!',
     variant: 'title1',
   },
-};
+});
 
-export const AllVariants: Story = {
+export const AllVariants = meta.story({
   render: () => (
     <Flex direction="column" gap="4">
       <Heading variant="display">Display</Heading>
@@ -49,11 +45,11 @@ export const AllVariants: Story = {
       <Heading variant="title5">Title 5</Heading>
     </Flex>
   ),
-};
+});
 
-export const AllColors: Story = {
+export const AllColors = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <Flex gap="4" direction="column">
@@ -61,28 +57,28 @@ export const AllColors: Story = {
       <Heading color="secondary" {...args} />
     </Flex>
   ),
-};
+});
 
-export const Truncate: Story = {
+export const Truncate = meta.story({
   args: {
-    ...Title1.args,
+    ...Title1.input.args,
     truncate: true,
     style: { maxWidth: '400px' },
   },
-};
+});
 
-export const Responsive: Story = {
+export const Responsive = meta.story({
   args: {
     variant: {
       xs: 'title4',
       md: 'display',
     },
   },
-};
+});
 
-export const WrappedInLink: Story = {
+export const WrappedInLink = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   decorators: [
     Story => (
@@ -91,16 +87,16 @@ export const WrappedInLink: Story = {
       </a>
     ),
   ],
-};
+});
 
-export const CustomRender: Story = {
+export const CustomRender = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     as: 'h4',
   },
-};
+});
 
-export const Playground: Story = {
+export const Playground = meta.story({
   render: () => (
     <Flex direction="column" gap="4">
       <Heading variant="display">Display</Heading>
@@ -111,4 +107,4 @@ export const Playground: Story = {
       <Heading variant="title5">Title 5</Heading>
     </Flex>
   ),
-};
+});

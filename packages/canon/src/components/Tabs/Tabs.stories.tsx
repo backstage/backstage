@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '../../../.storybook/preview';
 import { Tabs } from './Tabs';
 
-const meta = {
+const meta = preview.meta({
   title: 'Components/Tabs',
   component: Tabs.Root,
-} satisfies Meta<typeof Tabs.Root>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const panelStyles = {
   padding: 'var(--canon-space-3)',
   fontSize: 'var(--canon-font-size-2)',
 };
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: (
       <Tabs.Root>
@@ -45,4 +41,4 @@ export const Default: Story = {
       </Tabs.Root>
     ),
   },
-};
+});

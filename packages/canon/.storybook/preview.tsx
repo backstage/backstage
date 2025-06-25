@@ -1,8 +1,10 @@
-import type { Preview, ReactRenderer } from '@storybook/react-webpack5';
+import addonDocs from '@storybook/addon-docs';
+import { definePreview } from '@storybook/react-webpack5';
+import type { ReactRenderer } from '@storybook/react-webpack5';
 import { withThemeByDataAttribute } from '@storybook/addon-themes';
 import '../src/css/styles.css';
 
-const preview: Preview = {
+export default definePreview({
   parameters: {
     controls: {
       matchers: {
@@ -66,6 +68,7 @@ const preview: Preview = {
       },
     },
   },
+
   decorators: [
     withThemeByDataAttribute<ReactRenderer>({
       themes: {
@@ -85,6 +88,6 @@ const preview: Preview = {
       return <Story />;
     },
   ],
-};
 
-export default preview;
+  addons: [addonDocs()],
+});

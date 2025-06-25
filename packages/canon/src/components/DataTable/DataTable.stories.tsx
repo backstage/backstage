@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '../../../.storybook/preview';
 import { DataTable } from '.';
 import { data, DataProps } from './mocked-components';
 import { columns } from './mocked-columns';
@@ -27,14 +26,11 @@ import {
 } from '@tanstack/react-table';
 import { useState } from 'react';
 
-const meta = {
+const meta = preview.meta({
   title: 'Components/DataTable',
-} satisfies Meta;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Uncontrolled: Story = {
+export const Uncontrolled = meta.story({
   render: () => {
     const table = useReactTable<DataProps>({
       data,
@@ -50,9 +46,9 @@ export const Uncontrolled: Story = {
       </DataTable.Root>
     );
   },
-};
+});
 
-export const Controlled: Story = {
+export const Controlled = meta.story({
   render: () => {
     const [pagination, setPagination] = useState<PaginationState>({
       pageIndex: 4,
@@ -77,9 +73,9 @@ export const Controlled: Story = {
       </DataTable.Root>
     );
   },
-};
+});
 
-export const WithCustomTable: Story = {
+export const WithCustomTable = meta.story({
   render: () => {
     const table = useReactTable<DataProps>({
       data,
@@ -142,4 +138,4 @@ export const WithCustomTable: Story = {
       </DataTable.Root>
     );
   },
-};
+});

@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '../../../.storybook/preview';
 import { Select } from './Select';
 import { Flex } from '../Flex';
 
-const meta = {
+const meta = preview.meta({
   title: 'Components/Select',
   component: Select,
-} satisfies Meta<typeof Select>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const fontOptions = [
   { value: 'sans', label: 'Sans-serif' },
@@ -32,14 +29,14 @@ const fontOptions = [
   { value: 'cursive', label: 'Cursive' },
 ];
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     options: fontOptions,
     name: 'font',
   },
-};
+});
 
-export const Preview: Story = {
+export const Preview = meta.story({
   args: {
     label: 'Font Family',
     options: fontOptions,
@@ -47,18 +44,18 @@ export const Preview: Story = {
     name: 'font',
     style: { maxWidth: 260 },
   },
-};
+});
 
-export const WithDescription: Story = {
+export const WithDescription = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
     description: 'Choose a font family for your document',
   },
-};
+});
 
-export const Sizes: Story = {
+export const Sizes = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: args => (
     <Flex direction="row" gap="2" style={{ width: '100%', maxWidth: 540 }}>
@@ -66,55 +63,55 @@ export const Sizes: Story = {
       <Select {...args} size="medium" />
     </Flex>
   ),
-};
+});
 
-export const Required: Story = {
+export const Required = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
     required: true,
   },
-};
+});
 
-export const Disabled: Story = {
+export const Disabled = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
     disabled: true,
   },
-};
+});
 
-export const DisabledOption: Story = {
+export const DisabledOption = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
     options: [
       ...fontOptions,
       { value: 'comic-sans', label: 'Comic sans', disabled: true },
     ],
   },
-};
+});
 
-export const NoOptions: Story = {
+export const NoOptions = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
     options: undefined,
   },
-};
+});
 
-export const WithValue: Story = {
+export const WithValue = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
     value: 'mono',
     defaultValue: 'serif',
   },
-};
+});
 
-export const WithDefaultValue: Story = {
+export const WithDefaultValue = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
     defaultValue: 'serif',
     options: fontOptions,
     name: 'font',
   },
-};
+});
 
 const generateOptions = (count = 100) => {
   const firstWords = [
@@ -238,22 +235,22 @@ const generateOptions = (count = 100) => {
   }));
 };
 
-export const WithManyOptions: Story = {
+export const WithManyOptions = meta.story({
   args: {
     label: 'Font Family',
     options: generateOptions(),
     name: 'font',
   },
-};
+});
 
-export const WithErrorAndDescription: Story = {
+export const WithErrorAndDescription = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
     error: 'Invalid font family',
   },
-};
+});
 
-export const WithLongOptionNames: Story = {
+export const WithLongOptionNames = meta.story({
   args: {
     label: 'Document Template',
     options: [
@@ -288,4 +285,4 @@ export const WithLongOptionNames: Story = {
     style: { maxWidth: 400 },
     value: 'annual-report-2024',
   },
-};
+});

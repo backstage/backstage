@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,33 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '../../../.storybook/preview';
 import { Text } from './Text';
 import { Flex } from '../Flex';
 
-const meta = {
+const meta = preview.meta({
   title: 'Components/Text',
   component: Text,
   args: {
     children: 'Text',
   },
-} satisfies Meta<typeof Text>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children:
       "A man looks at a painting in a museum and says, “Brothers and sisters I have none, but that man's father is my father's son.” Who is in the painting?",
     style: { maxWidth: '600px' },
   },
-};
+});
 
-export const AllVariants: Story = {
+export const AllVariants = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <Flex gap="4" direction="column">
@@ -49,11 +45,11 @@ export const AllVariants: Story = {
       <Text variant="label" {...args} />
     </Flex>
   ),
-};
+});
 
-export const AllWeights: Story = {
+export const AllWeights = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <Flex gap="4" direction="column">
@@ -61,11 +57,11 @@ export const AllWeights: Story = {
       <Text weight="bold" {...args} />
     </Flex>
   ),
-};
+});
 
-export const AllColors: Story = {
+export const AllColors = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <Flex gap="4" direction="column">
@@ -76,28 +72,28 @@ export const AllColors: Story = {
       <Text color="success" {...args} />
     </Flex>
   ),
-};
+});
 
-export const Truncate: Story = {
+export const Truncate = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     truncate: true,
   },
-};
+});
 
-export const Responsive: Story = {
+export const Responsive = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     variant: {
       xs: 'label',
       md: 'body',
     },
   },
-};
+});
 
-export const WrappedInLink: Story = {
+export const WrappedInLink = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   decorators: [
     Story => (
@@ -106,16 +102,16 @@ export const WrappedInLink: Story = {
       </a>
     ),
   ],
-};
+});
 
-export const CustomRender: Story = {
+export const CustomRender = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     as: 'span',
   },
-};
+});
 
-export const Playground: Story = {
+export const Playground = meta.story({
   render: () => (
     <Flex gap="4" direction="column">
       <Text>Subtitle</Text>
@@ -144,4 +140,4 @@ export const Playground: Story = {
       </Text>
     </Flex>
   ),
-};
+});

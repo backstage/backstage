@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,35 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '../../../../.storybook/preview';
 import { TableCellProfile } from './TableCellProfile';
 
-const meta = {
+const meta = preview.meta({
   title: 'Components/Table/TableCellProfile',
   component: TableCellProfile,
-} satisfies Meta<typeof TableCellProfile>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     src: 'https://avatars.githubusercontent.com/u/1540635?v=4',
     name: 'Charles de Dreuille',
   },
-};
+});
 
-export const Fallback: Story = {
+export const Fallback = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     src: 'https://avatars.githubusercontent.com/u/15406AAAAAAAAA',
   },
-};
+});
 
-export const WithLink: Story = {
+export const WithLink = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     to: 'https://www.google.com',
   },
-};
+});

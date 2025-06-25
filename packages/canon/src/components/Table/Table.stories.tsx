@@ -1,3 +1,4 @@
+import preview from '../../../.storybook/preview';
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -15,7 +16,6 @@
  */
 
 import { ComponentType } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { Table } from '../Table';
 
 const invoices = [
@@ -63,7 +63,7 @@ const invoices = [
   },
 ];
 
-const meta = {
+const meta = preview.meta({
   title: 'Components/Table',
   component: Table.Root,
   subcomponents: {
@@ -73,12 +73,9 @@ const meta = {
     Header: Table.Header as ComponentType<unknown>,
     Row: Table.Row as ComponentType<unknown>,
   },
-} satisfies Meta<typeof Table>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   render: () => (
     <Table.Root>
       <Table.Header>
@@ -103,4 +100,4 @@ export const Default: Story = {
       </Table.Body>
     </Table.Root>
   ),
-};
+});

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '../../../.storybook/preview';
 import { Menu } from './Menu';
 import { Text, Icon, Button, Flex } from '../../index';
 import { useState } from 'react';
 
-const meta = {
+const meta = preview.meta({
   title: 'Components/Menu',
   component: Menu.Root,
-} satisfies Meta<typeof Menu.Root>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const options = [
   { label: 'Apple', value: 'apple' },
@@ -39,7 +35,7 @@ const options = [
   { label: 'Honeydew', value: 'honeydew' },
 ];
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: (
       <>
@@ -68,23 +64,23 @@ export const Default: Story = {
       </>
     ),
   },
-};
+});
 
-export const Open: Story = {
+export const Open = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     open: true,
   },
-};
+});
 
-export const OpenOnHover: Story = {
+export const OpenOnHover = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     openOnHover: true,
   },
-};
+});
 
-export const Submenu: Story = {
+export const Submenu = meta.story({
   args: {
     children: (
       <>
@@ -125,9 +121,9 @@ export const Submenu: Story = {
       </>
     ),
   },
-};
+});
 
-export const SubmenuCombobox = () => {
+export const SubmenuCombobox = meta.story(() => {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
 
   return (
@@ -175,9 +171,9 @@ export const SubmenuCombobox = () => {
       </Menu.Root>
     </Flex>
   );
-};
+});
 
-export const SubmenuComboboxMultiselect = () => {
+export const SubmenuComboboxMultiselect = meta.story(() => {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
 
   return (
@@ -228,4 +224,4 @@ export const SubmenuComboboxMultiselect = () => {
       </Menu.Root>
     </Flex>
   );
-};
+});

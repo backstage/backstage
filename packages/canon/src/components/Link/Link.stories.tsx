@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,34 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '../../../.storybook/preview';
 import { Link } from './Link';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { Link as RouterLink, MemoryRouter } from 'react-router-dom';
 
-const meta = {
+const meta = preview.meta({
   title: 'Components/Link',
   component: Link,
   args: {
     children: 'Link',
   },
-} satisfies Meta<typeof Link>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     to: 'https://canon.backstage.io',
     children: 'Sign up for Backstage',
   },
-};
+});
 
-export const AllVariants: Story = {
+export const AllVariants = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <Flex gap="4" direction="column">
@@ -50,11 +46,11 @@ export const AllVariants: Story = {
       <Link href="https://canon.backstage.io" variant="label" {...args} />
     </Flex>
   ),
-};
+});
 
-export const AllWeights: Story = {
+export const AllWeights = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <Flex gap="4" direction="column">
@@ -62,19 +58,19 @@ export const AllWeights: Story = {
       <Link weight="bold" style={{ maxWidth: '600px' }} {...args} />
     </Flex>
   ),
-};
+});
 
-export const Responsive: Story = {
+export const Responsive = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     variant: {
       xs: 'label',
       md: 'body',
     },
   },
-};
+});
 
-export const CustomRender: Story = {
+export const CustomRender = meta.story({
   render: () => {
     return (
       <Flex gap="4" direction="column" align="start">
@@ -89,11 +85,11 @@ export const CustomRender: Story = {
       </MemoryRouter>
     ),
   ],
-};
+});
 
-export const Playground: Story = {
+export const Playground = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <Flex gap="4" direction="column">
@@ -107,4 +103,4 @@ export const Playground: Story = {
       <Link variant="label" style={{ maxWidth: '600px' }} {...args} />
     </Flex>
   ),
-};
+});

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '../../../../.storybook/preview';
 import { DataTablePagination } from './DataTablePagination';
 import {
   getCoreRowModel,
@@ -27,15 +26,12 @@ import { data, DataProps } from '../mocked-components';
 import { columns } from '../mocked-columns';
 import { DataTable } from '../DataTable';
 
-const meta = {
+const meta = preview.meta({
   title: 'Components/DataTable/Pagination',
   component: DataTablePagination,
-} satisfies Meta<typeof DataTablePagination>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   render: () => {
     const table = useReactTable<DataProps>({
       data,
@@ -52,4 +48,4 @@ export const Default: Story = {
       </DataTable.Root>
     );
   },
-};
+});
