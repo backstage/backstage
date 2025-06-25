@@ -38,6 +38,8 @@ import {
   EntityRelationsGraph,
   EntityRelationsGraphProps,
 } from '../EntityRelationsGraph';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { catalogGraphTranslationRef } from '../../translation';
 
 /** @public */
 export type CatalogGraphCardClassKey = 'card' | 'graph';
@@ -66,6 +68,7 @@ export const CatalogGraphCard = (
     action?: ReactNode;
   },
 ) => {
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
   const {
     variant = 'gridItem',
     relationPairs = ALL_RELATION_PAIRS,
@@ -81,7 +84,7 @@ export const CatalogGraphCard = (
     action,
     rootEntityNames,
     onNodeClick,
-    title = 'Relations',
+    title = t('catalogGraphCard.title'),
     zoom = 'enable-on-click',
   } = props;
 
@@ -133,7 +136,7 @@ export const CatalogGraphCard = (
       variant={variant}
       noPadding
       deepLink={{
-        title: 'View graph',
+        title: t('catalogGraphCard.deepLinkTitle'),
         link: catalogGraphUrl,
       }}
     >

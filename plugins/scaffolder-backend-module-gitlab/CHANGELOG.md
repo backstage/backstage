@@ -1,5 +1,30 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.9.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.1-next.0
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.9.2
+
+### Patch Changes
+
+- 063b2d3: Fixed dependency to frontend package from tests
+- a296637: Migrate to new action format
+- 3d6493a: Support merge request labels in publish:gitlab:merge-request
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+
 ## 0.9.2-next.2
 
 ### Patch Changes

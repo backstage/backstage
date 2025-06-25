@@ -36,6 +36,12 @@ backend:
   #   keys:
   #     - secret: ${BACKEND_SECRET}
 
+  # Used for testing rate limiting locally
+  # rateLimit:
+  #   windowMs: 1m
+  #   incomingRequestLimit: 1
+  #   ipAllowList: []
+
   auth:
     # TODO: once plugins have been migrated we can remove this, but right now it
     # is require for the backend-next to work in this repo
@@ -132,7 +138,6 @@ integrations:
       secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 
 catalog:
-  useUrlReadersSearch: true
   import:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration

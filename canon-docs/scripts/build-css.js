@@ -5,10 +5,8 @@ const { bundle } = require('lightningcss');
 const source = '../../packages/canon/src/css';
 const destination = '../public';
 
-const source1 = path.join(__dirname, `${source}/core.css`);
-const destination1 = path.join(__dirname, `${destination}/core.css`);
-const source2 = path.join(__dirname, `${source}/components.css`);
-const destination2 = path.join(__dirname, `${destination}/components.css`);
+const source1 = path.join(__dirname, `${source}/styles.css`);
+const destination1 = path.join(__dirname, `${destination}/styles.css`);
 
 // Function to bundle and copy the CSS file
 const bundleAndCopyFile = async (source, destination) => {
@@ -26,10 +24,7 @@ const bundleAndCopyFile = async (source, destination) => {
 };
 
 // Initial bundle and copy
-Promise.all([
-  bundleAndCopyFile(source1, destination1),
-  bundleAndCopyFile(source2, destination2),
-])
+Promise.all([bundleAndCopyFile(source1, destination1)])
   .then(() => {
     // Add an empty line after all operations are complete - It looks better in the terminal :)
     console.log('');

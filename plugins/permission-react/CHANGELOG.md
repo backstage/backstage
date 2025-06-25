@@ -1,5 +1,14 @@
 # @backstage/plugin-permission-react
 
+## 0.4.35
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-common@0.9.0
+
 ## 0.4.34
 
 ### Patch Changes

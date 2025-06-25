@@ -18,28 +18,36 @@ import { forwardRef, ElementRef } from 'react';
 import { Avatar as AvatarPrimitive } from '@base-ui-components/react/avatar';
 import clsx from 'clsx';
 import { AvatarProps } from './types';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
 export const Avatar = forwardRef<
   ElementRef<typeof AvatarPrimitive.Root>,
   AvatarProps
->(({ className, src, name, size = 'medium', ...props }, ref) => (
-  <AvatarPrimitive.Root
-    ref={ref}
-    className={clsx('canon-AvatarRoot', className)}
-    data-size={size}
-    {...props}
-  >
-    <AvatarPrimitive.Image className="canon-AvatarImage" src={src} />
-    <AvatarPrimitive.Fallback className="canon-AvatarFallback">
-      {(name || '')
-        .split(' ')
-        .map(word => word[0])
-        .join('')
-        .toLocaleUpperCase('en-US')
-        .slice(0, 2)}
-    </AvatarPrimitive.Fallback>
-  </AvatarPrimitive.Root>
-));
+>((props, ref) => {
+  const { className, src, name, size = 'medium', ...rest } = props;
+  const { classNames } = useStyles('Avatar', {
+    size,
+  });
+
+  return (
+    <AvatarPrimitive.Root
+      ref={ref}
+      className={clsx(classNames.root, className)}
+      data-size={size}
+      {...rest}
+    >
+      <AvatarPrimitive.Image className={classNames.image} src={src} />
+      <AvatarPrimitive.Fallback className={classNames.fallback}>
+        {(name || '')
+          .split(' ')
+          .map(word => word[0])
+          .join('')
+          .toLocaleUpperCase('en-US')
+          .slice(0, 2)}
+      </AvatarPrimitive.Fallback>
+    </AvatarPrimitive.Root>
+  );
+});
 
 Avatar.displayName = AvatarPrimitive.Root.displayName;

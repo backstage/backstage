@@ -1,5 +1,34 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- dbde180: An internal refactor which adds additional types to experimental checkpoints
+- Updated dependencies
+  - @backstage/backend-test-utils@1.7.0-next.0
+  - @backstage/plugin-scaffolder-node@0.9.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/types@1.2.1
+
+## 0.3.0
+
+### Minor Changes
+
+- 3cea7ee: **BREAKING CHANGES**
+
+  Because of the removal of the `logStream` property to the `ActionsContext` this has been removed from the `createMockActionContext` method.
+
+  You can remove this as it's no longer supported in the scaffolder actions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0
+  - @backstage/backend-test-utils@1.6.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/types@1.2.1
+
 ## 0.3.0-next.2
 
 ### Minor Changes

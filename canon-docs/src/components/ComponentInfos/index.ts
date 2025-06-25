@@ -1,0 +1,1 @@
+export { ComponentInfos } from './ComponentInfos';

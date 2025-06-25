@@ -14,88 +14,83 @@
  * limitations under the License.
  */
 
-import { Field } from '@base-ui-components/react/field';
-import { forwardRef } from 'react';
-import { useResponsiveValue } from '../../hooks/useResponsiveValue';
+import { forwardRef, useEffect } from 'react';
+import { Input, TextField as AriaTextField } from 'react-aria-components';
 import clsx from 'clsx';
+import { FieldLabel } from '../FieldLabel';
+import { FieldError } from '../FieldError';
 
 import type { TextFieldProps } from './types';
-import { Icon } from '../Icon';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
 export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
-  (props: TextFieldProps, ref) => {
+  (props, ref) => {
     const {
       className,
+      icon,
       size = 'small',
       label,
+      secondaryLabel,
       description,
-      error,
-      required,
-      style,
-      disabled,
-      icon,
-      onClear,
+      isRequired,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
+      placeholder,
       ...rest
     } = props;
 
-    // Get the responsive value for the variant
-    const responsiveSize = useResponsiveValue(size);
+    useEffect(() => {
+      if (!label && !ariaLabel && !ariaLabelledBy) {
+        console.warn(
+          'TextField requires either a visible label, aria-label, or aria-labelledby for accessibility',
+        );
+      }
+    }, [label, ariaLabel, ariaLabelledBy]);
+
+    const { classNames, dataAttributes } = useStyles('TextField', {
+      size,
+    });
+
+    // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
+    const secondaryLabelText =
+      secondaryLabel || (isRequired ? 'Required' : null);
 
     return (
-      <Field.Root
-        className={clsx('canon-TextField', className)}
-        disabled={disabled}
-        invalid={!!error}
-        style={style}
+      <AriaTextField
+        className={clsx(classNames.root, className)}
+        {...dataAttributes}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
+        {...rest}
         ref={ref}
       >
-        {label && (
-          <Field.Label className="canon-TextFieldLabel">
-            {label}
-            {required && (
-              <span aria-hidden="true" className="canon-TextFieldRequired">
-                (Required)
-              </span>
-            )}
-          </Field.Label>
-        )}
-        <div className="canon-TextFieldInputWrapper" data-size={responsiveSize}>
+        <FieldLabel
+          label={label}
+          secondaryLabel={secondaryLabelText}
+          description={description}
+        />
+        <div
+          className={classNames.inputWrapper}
+          data-size={dataAttributes['data-size']}
+        >
           {icon && (
             <div
-              className="canon-TextFieldIcon"
+              className={classNames.inputIcon}
+              data-size={dataAttributes['data-size']}
               aria-hidden="true"
-              data-size={responsiveSize}
             >
               {icon}
             </div>
           )}
-          <Field.Control
-            className="canon-TextFieldInput"
-            required={required}
-            {...rest}
+          <Input
+            className={classNames.input}
+            {...(icon && { 'data-icon': true })}
+            placeholder={placeholder}
           />
-          {onClear && (
-            <button
-              className="canon-TextFieldClearButton"
-              disabled={disabled}
-              onClick={onClear}
-            >
-              <Icon className="canon-TextFieldClearButtonIcon" name="close" />
-            </button>
-          )}
         </div>
-        {description && (
-          <Field.Description className="canon-TextFieldDescription">
-            {description}
-          </Field.Description>
-        )}
-        {error && (
-          <Field.Error className="canon-TextFieldError" role="alert" forceShow>
-            {error}
-          </Field.Error>
-        )}
-      </Field.Root>
+        <FieldError />
+      </AriaTextField>
     );
   },
 );

@@ -20,7 +20,7 @@ import { Icon } from '../Icon';
 import clsx from 'clsx';
 import './Select.styles.css';
 import { SelectProps } from './types';
-import { useResponsiveValue } from '../../hooks/useResponsiveValue';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
 export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
@@ -37,8 +37,9 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
     ...rest
   } = props;
 
-  // Get the responsive value for the variant
-  const responsiveSize = useResponsiveValue(size);
+  const { classNames, dataAttributes } = useStyles('Select', {
+    size,
+  });
 
   // Generate unique IDs for accessibility
   const selectId = useId();
@@ -58,7 +59,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
   );
 
   return (
-    <div className={clsx('canon-Select', className)} style={style} ref={ref}>
+    <div className={clsx(classNames.root, className)} style={style} ref={ref}>
       {label && (
         <label
           className="canon-SelectLabel"
@@ -68,7 +69,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
         >
           {label}
           {required && (
-            <span aria-hidden="true" className="canon-SelectRequired">
+            <span aria-hidden="true" className={classNames.required}>
               (Required)
             </span>
           )}
@@ -78,33 +79,35 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
         <SelectPrimitive.Trigger
           ref={triggerRef}
           id={selectId}
-          className="canon-SelectTrigger"
-          data-size={responsiveSize}
+          className={classNames.trigger}
+          data-size={dataAttributes['data-size']}
           data-invalid={error}
         >
           <SelectPrimitive.Value
-            className="canon-SelectValue"
+            className={classNames.value}
             placeholder={placeholder}
           />
-          <SelectPrimitive.Icon className="canon-SelectIcon">
+          <SelectPrimitive.Icon className={classNames.icon}>
             <Icon name="chevron-down" />
           </SelectPrimitive.Icon>
         </SelectPrimitive.Trigger>
         <SelectPrimitive.Portal>
           <SelectPrimitive.Backdrop />
           <SelectPrimitive.Positioner>
-            <SelectPrimitive.Popup className="canon-SelectPopup">
+            <SelectPrimitive.Popup className={classNames.popup}>
               {options?.map(option => (
                 <SelectPrimitive.Item
                   key={option.value}
                   value={option.value}
                   disabled={option.disabled}
-                  className="canon-SelectItem"
+                  className={classNames.item}
                 >
-                  <SelectPrimitive.ItemIndicator className="canon-SelectItemIndicator">
+                  <SelectPrimitive.ItemIndicator
+                    className={classNames.itemIndicator}
+                  >
                     <Icon name="check" />
                   </SelectPrimitive.ItemIndicator>
-                  <SelectPrimitive.ItemText className="canon-SelectItemText">
+                  <SelectPrimitive.ItemText className={classNames.itemText}>
                     {option.label}
                   </SelectPrimitive.ItemText>
                 </SelectPrimitive.Item>
@@ -114,12 +117,12 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
         </SelectPrimitive.Portal>
       </SelectPrimitive.Root>
       {description && (
-        <p className="canon-SelectDescription" id={descriptionId}>
+        <p className={classNames.description} id={descriptionId}>
           {description}
         </p>
       )}
       {error && (
-        <p className="canon-SelectError" id={errorId} role="alert">
+        <p className={classNames.error} id={errorId} role="alert">
           {error}
         </p>
       )}

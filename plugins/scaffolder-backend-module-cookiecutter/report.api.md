@@ -4,10 +4,12 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { objectOutputType } from 'zod';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { Writable } from 'stream';
+import { ZodTypeAny } from 'zod';
 
 // @public
 export interface ContainerRunner {
@@ -47,7 +49,7 @@ export function createFetchCookiecutterAction(options: {
 }): TemplateAction<
   {
     url: string;
-    values: Record<string, unknown>;
+    values: objectOutputType<{}, ZodTypeAny, 'passthrough'>;
     targetPath?: string | undefined;
     copyWithoutRender?: string[] | undefined;
     extensions?: string[] | undefined;

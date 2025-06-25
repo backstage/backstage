@@ -126,6 +126,9 @@ nav:
       - GitLab:
           - Locations: 'integrations/gitlab/locations.md'
           - Discovery: 'integrations/gitlab/discovery.md'
+      - Gitea:
+          - Locations: 'integrations/gitea/locations.md'
+          - Discovery: 'integrations/gitea/discovery.md'
       - Google GCS:
           - Locations: 'integrations/google-cloud-storage/locations.md'
       - LDAP:

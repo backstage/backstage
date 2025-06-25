@@ -1,5 +1,25 @@
 # @backstage/plugin-home-react
 
+## 0.1.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+
+## 0.1.27
+
+### Patch Changes
+
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- cef60db: Home plugin support i18n
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+
 ## 0.1.27-next.0
 
 ### Patch Changes

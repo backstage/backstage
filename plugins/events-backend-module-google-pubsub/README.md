@@ -19,11 +19,24 @@ events:
             # The fully qualified name of the subscription
             subscriptionName: 'projects/my-google-project/subscriptions/github-enterprise-events'
             # The event system topic to transfer to. This can also be just a plain string
-            targetTopic:
-              # This example picks the topic name from a message attribute + a prefix
-              fromMessageAttribute:
-                attributeName: 'x-github-event'
-                withPrefix: 'github.'
+            targetTopic: 'github.{{ event.attributes.x-github-event }}'
+```
+
+The following configuration enables the transfer of events from a Backstage events topic into a Google
+Pub/Sub topic.
+
+```yaml
+events:
+  modules:
+    googlePubSub:
+      eventConsumingGooglePubSubPublisher:
+        subscriptions:
+          # A unique key for your subscription, to be used in logging and metrics
+          mySubscription:
+            # The source topic (or array of topics)
+            sourceTopic: 'github'
+            # The fully qualified name of the target topic
+            targetTopicName: 'projects/my-google-project/topics/github-enterprise-events'
 ```
 
 ## Installation

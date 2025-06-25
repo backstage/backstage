@@ -14,35 +14,22 @@
  * limitations under the License.
  */
 
-import type { ButtonOwnProps } from './Button.props';
-import { ReactElement } from 'react';
-import type { useRender } from '@base-ui-components/react/use-render';
+import { Breakpoint } from '@backstage/canon';
+import { ReactElement, ReactNode } from 'react';
+import { ButtonProps as RAButtonProps } from 'react-aria-components';
 
 /**
  * Properties for {@link Button}
  *
  * @public
  */
-export interface ButtonProps extends useRender.ComponentProps<'button'> {
-  /**
-   * The size of the button
-   * @defaultValue 'medium'
-   */
-  size?: ButtonOwnProps['size'];
-
-  /**
-   * The visual variant of the button
-   * @defaultValue 'primary'
-   */
-  variant?: ButtonOwnProps['variant'];
-
-  /**
-   * Optional icon to display at the start of the button
-   */
+export interface ButtonProps extends RAButtonProps {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
   iconStart?: ReactElement;
-
-  /**
-   * Optional icon to display at the end of the button
-   */
   iconEnd?: ReactElement;
+  children?: ReactNode;
 }
