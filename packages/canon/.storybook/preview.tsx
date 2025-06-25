@@ -1,4 +1,4 @@
-import type { Preview, ReactRenderer } from '@storybook/react';
+import type { Preview, ReactRenderer } from '@storybook/react-webpack5';
 import { withThemeByDataAttribute } from '@storybook/addon-themes';
 import '../src/css/styles.css';
 

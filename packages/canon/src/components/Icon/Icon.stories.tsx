@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { Icon } from './Icon';
 import { IconProvider } from './provider';
 import { icons } from './icons';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { Grid } from './Grid';
 import type { GridItemProps } from './types';
 import { Box } from '../Box/Box';
