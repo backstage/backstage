@@ -149,8 +149,6 @@ describe('afterWorkspaceDependencyAddition', () => {
     );
 
     expect(input.range).toBe('backstage:^');
-    expect(consoleInfoSpy).not.toHaveBeenCalledWith(
-      `Setting ${input.scope}/${input.name} to backstage:^`,
-    );
+    expect(consoleInfoSpy).not.toHaveBeenCalled();
   });
 });
