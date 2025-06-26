@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
+import { EvaluatePermissionRequest, EvaluatePermissionResponse } from './api';
+import { AuthorizeRequestOptions } from './permission';
+
 /**
- * Common permission and authorization utilities for backend plugins
- *
- * @packageDocumentation
+ * A client interacting with the permission backend can implement this authorizer interface.
+ * @public
+ * @deprecated Use {@link @backstage/plugin-permission-common#PermissionEvaluator} instead
  */
-export * from './integration';
-export * from './policy';
-export type { PermissionRule, PermissionRuleset } from './types';
-export { ServerPermissionClient } from './ServerPermissionClient';
+export interface PermissionAuthorizer {
+  authorize(
+    requests: EvaluatePermissionRequest[],
+    options?: AuthorizeRequestOptions,
+  ): Promise<EvaluatePermissionResponse[]>;
+}
