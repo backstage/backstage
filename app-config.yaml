@@ -200,6 +200,8 @@ catalog:
         - allow: [Template]
 
 scaffolder:
+  auditor:
+    maxLength: 256
   # Use to customize default commit author info used when new components are created
   defaultAuthor:
     name: Scaffolder
