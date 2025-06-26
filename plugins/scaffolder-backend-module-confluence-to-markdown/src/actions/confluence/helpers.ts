@@ -183,31 +183,27 @@ export const getAndWriteAttachments = async (
   return productArr;
 };
 
-export const createConfluenceVariables = (url: string) => {
-  let spacekey: string | undefined = undefined;
-  let title: string | undefined = undefined;
-  let titleWithSpaces: string | undefined = '';
+export const createConfluenceVariables = (url) => {
+  let spacekey, title, titleWithSpaces = "";
   const params = new URL(url);
-  if (params.pathname.split('/')[1] === 'display') {
-    // https://confluence.example.com/display/SPACEKEY/Page+Title
-    spacekey = params.pathname.split('/')[2];
-    title = params.pathname.split('/')[3];
-    titleWithSpaces = title?.replace(/\+/g, ' ');
-    return { spacekey, title, titleWithSpaces };
-  } else if (params.pathname.split('/')[2] === 'display') {
-    // https://confluence.example.com/prefix/display/SPACEKEY/Page+Title
-    spacekey = params.pathname.split('/')[3];
-    title = params.pathname.split('/')[4];
-    titleWithSpaces = title?.replace(/\+/g, ' ');
-    return { spacekey, title, titleWithSpaces };
-  } else if (params.pathname.split('/')[2] === 'spaces') {
-    // https://example.atlassian.net/wiki/spaces/SPACEKEY/pages/1234567/Page+Title
-    spacekey = params.pathname.split('/')[3];
-    title = params.pathname.split('/')[6];
-    titleWithSpaces = title?.replace(/\+/g, ' ');
-    return { spacekey, title, titleWithSpaces };
+  const pathParts = params.pathname.split("/").filter(Boolean);
+
+  if (pathParts.includes("display")) {
+    // /display/<SPACEKEY>/<TITLE>
+    const idx = pathParts.indexOf("display");
+    spacekey = pathParts[idx + 1];
+    title = pathParts[idx + 2];
+  } else if (pathParts.includes("spaces")) {
+    // /spaces/<SPACEKEY>/pages/<PAGEID>/<TITLE>
+    const idx = pathParts.indexOf("spaces");
+    spacekey = pathParts[idx + 1];
+    title = pathParts[pathParts.length - 1];
+  } else {
+    throw new errors.InputError(
+      "The Url format for Confluence is incorrect. Acceptable format is `<CONFLUENCE_BASE_URL>/display/<SPACEKEY>/<PAGE+TITLE>` or `<CONFLUENCE_BASE_URL>/spaces/<SPACEKEY>/pages/<PAGEID>/<PAGE+TITLE>` for Confluence cloud"
+    );
   }
-  throw new InputError(
-    'The Url format for Confluence is incorrect. Acceptable format is `<CONFLUENCE_BASE_URL>/display/<SPACEKEY>/<PAGE+TITLE>` or `<CONFLUENCE_BASE_URL>/spaces/<SPACEKEY>/pages/<PAGEID>/<PAGE+TITLE>` for Confluence cloud',
-  );
+
+  titleWithSpaces = title?.replace(/\+/g, " ");
+  return { spacekey, title, titleWithSpaces };
 };
