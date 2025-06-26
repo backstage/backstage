@@ -110,7 +110,10 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     const lastActivity = (await this.cache.get(this.getCacheKey())) as string;
     const opts = {
       group,
-      page: 1,
+      per_page: 100,
+      order_by: 'id',
+      sort: 'asc' as const,
+      pagination: 'keyset' as const,
       // We check for the existence of lastActivity and only set it if it's present to ensure
       // that the options doesn't include the key so that the API doesn't receive an empty query parameter.
       ...(lastActivity && { last_activity_after: lastActivity }),

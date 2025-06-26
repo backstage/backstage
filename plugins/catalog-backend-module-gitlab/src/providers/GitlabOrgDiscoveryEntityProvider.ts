@@ -372,7 +372,6 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
           options =>
             this.gitLabClient.listGroupMembers(this.config.group, options), // calls /groups/<groupId>/members
           {
-            page: 1,
             per_page: 100,
           },
         ),
@@ -384,7 +383,6 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       groups = paginated<GitLabGroup>(
         options => this.gitLabClient.listGroups(options),
         {
-          page: 1,
           per_page: 100,
           all_available: true,
         },
@@ -392,7 +390,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       allUsers.push(
         paginated<GitLabUser>(
           options => this.gitLabClient.listUsers(options), // calls /users?
-          { page: 1, per_page: 100, active: true },
+          { per_page: 100, active: true },
         ),
       );
     }
@@ -423,7 +421,6 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
                 this.config.includeUsersWithoutSeat,
               ),
             {
-              page: 1,
               per_page: 100,
             },
           ),
