@@ -71,6 +71,40 @@ Following similar patterns to other core services, we will create a new `RootTel
 
 A core concern is not initializing the telemetry service early enough in the backend lifecycle. Services that initialize before the telemetry service risk receiving no-op meters. To mitigate this, the root service will include a bootstrapping functionality that will be called as early as possible in the backend lifecycle.
 
+## Configuration
+
+All OTEL configuration will be supported via the app's `app-config.yaml` file. The config schema should be based on existing resources such as the [OTEL collector configuration](https://opentelemetry.io/docs/collector/configuration/).
+
+```yaml
+# this is not a complete example, but it shows the general idea
+telemetry:
+  enabled: true
+
+  resource:
+    serviceName: backstage-telemetry
+    serviceVersion: 0.0.1
+
+  metrics:
+    enabled: true
+    collection:
+      exportIntervalMillis: 15000
+
+    exporters:
+      - type: prometheus
+        enabled: true
+        config:
+          port: 9464
+
+  tracing:
+    enabled: false
+
+  instrumentations:
+    http: false
+    knex: false
+    express: true
+    # ...
+```
+
 ## Design Details
 
 We will provide a thin wrapper around the OpenTelemetry Node SDK to provide a consistent interface while re-exporting the types from the SDK. This lets us provide a consistent telemetry interface while leveraging types and concepts already familiar to the community. Additionally, we will rely on the auto instrumentation features of the SDK as much as possible.
@@ -110,39 +144,15 @@ export function createBackend(): Backend {
 }
 ```
 
-### Configuration
+### Plugins & Modules
 
-All OTEL configuration will be supported via the app's `app-config.yaml` file. The config schema should be based on existing resources such as the [OTEL collector configuration](https://opentelemetry.io/docs/collector/configuration/).
+WIP
 
-```yaml
-# this is not a complete example, but it shows the general idea
-telemetry:
-  enabled: true
+<!--
+Plugins leverage the plugin-scoped `TelemetryService` to attach and expose the public api for their instrumentation. This is how modules will be able to attach additional instrumentation to the plugin-scoped telemetry service.
 
-  resource:
-    serviceName: backstage-telemetry
-    serviceVersion: 0.0.1
-
-  metrics:
-    enabled: true
-    collection:
-      exportIntervalMillis: 15000
-
-    exporters:
-      - type: prometheus
-        enabled: true
-        config:
-          port: 9464
-
-  tracing:
-    enabled: false
-
-  instrumentations:
-    http: false
-    knex: false
-    express: true
-    # ...
-```
+Modules need to be able to attach additional instrumentation to the plugin-scoped telemetry service. How do we handle this? How do we prevent conflicts?
+-->
 
 ## Release Plan
 
