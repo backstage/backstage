@@ -133,7 +133,7 @@ page for the cluster resource, go to `Overview` > `Properties` tab >
 
 ### Microsoft
 
-The Microsoft provider addresses the topoloy where a custom Microsoft Entra App and [OpenID Connect][9] is used to authenticate to Kubernetes clusters hosted on-premise or in any alternative cloud provider to Azure (e.g. [Amazon EKS][10]);
+The Microsoft provider addresses the topology where a custom Microsoft Entra App and [OpenID Connect][9] is used to authenticate to Kubernetes clusters hosted on-premise or in any alternative cloud provider to Azure (e.g. [Amazon EKS][10]);
 
 > AKS users should generally finde the [Azure provider](#azure) more suitable.
 
