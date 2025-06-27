@@ -161,7 +161,7 @@ auth:
         ...
 ```
 
-The configuration of the [Microsoft Azure authententication provider](../../auth/microsoft/provider.md) is required as the Enterprise Application created for Backstage will be used to get users authorized against the Kubernetes clusters.
+The configuration of the [Microsoft Azure authentication provider](../../auth/microsoft/provider.md) is required as the Enterprise Application created for Backstage will be used to get users authorized against the Kubernetes clusters.
 
 ## Client Side Providers
 
