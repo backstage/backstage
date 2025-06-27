@@ -238,7 +238,7 @@ export default {
           'features/techdocs/techdocs-overview',
           'features/techdocs/getting-started',
           'features/techdocs/concepts',
-          'features/techdocs/addons',
+          'features/techdocs/addons--new',
           'features/techdocs/architecture',
           'features/techdocs/extensions',
           'features/techdocs/creating-and-publishing',
