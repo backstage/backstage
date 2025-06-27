@@ -128,6 +128,10 @@ interface RootTelemetryService extends TelemetryService {
 }
 ```
 
+### Naming Conventions
+
+Visit [0013-telemetry-metrics-naming-conventions](../0013-telemetry-metrics-naming-conventions/README.md) for the naming conventions.
+
 ### Bootstrapping
 
 A core concern is not initializing the telemetry service early enough in the backend lifecycle and services that initialize before the telemetry service risk receiving no-op meters. To mitigate this, the root service will include a bootstrapping mechanism that will be called as early as possible in the backend lifecycle.
