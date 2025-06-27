@@ -20,7 +20,6 @@ export type {
   PgSearchQueryTranslatorOptions,
   PgSearchQueryTranslator,
   PgSearchOptions,
-  PgSearchHighlightOptions,
 } from './PgSearchEngine';
 export type {
   PgSearchEngineIndexer,

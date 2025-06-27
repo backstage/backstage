@@ -18,6 +18,7 @@ export { DatabaseDocumentStore } from './DatabaseDocumentStore';
 export type {
   DatabaseStore,
   DocumentResultRow,
+  PgSearchHighlightOptions,
   PgSearchQuery,
   RawDocumentRow,
 } from './types';

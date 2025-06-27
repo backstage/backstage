@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ConfigReader } from '@backstage/config';
-import { DatabaseStore } from '../database';
+import { DatabaseStore, PgSearchHighlightOptions } from '../database/types';
 import {
   ConcretePgSearchQuery,
   decodePageCursor,
   encodePageCursor,
   PgSearchEngine,
-  PgSearchHighlightOptions,
 } from './PgSearchEngine';
 import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';
 

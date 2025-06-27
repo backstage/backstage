@@ -33,12 +33,7 @@ import { EventsService } from '@backstage/plugin-events-node';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
 
-import {
-  GitLabClient,
-  GitlabProviderConfig,
-  paginated,
-  readGitlabConfigs,
-} from '../lib';
+import { GitLabClient, GitlabProviderConfig, paginated } from '../lib';
 import {
   defaultGroupEntitiesTransformer,
   defaultGroupNameTransformer,
@@ -55,6 +50,7 @@ import {
   SystemHookBaseUserEventsSchema,
   UserTransformer,
 } from '../lib/types';
+import { readGitlabConfigs } from './config';
 
 type UserResult = {
   scanned: number;

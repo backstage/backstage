@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export { readGitlabConfigs } from '../providers/config';
 export { GitLabClient, paginated } from './client';
 export type {
   GitLabGroup,

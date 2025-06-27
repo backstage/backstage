@@ -25,7 +25,7 @@ import { omit } from 'lodash';
 import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { GeneralSign, importJWK, JWK, KeyLike, SignJWT } from 'jose';
-import { BackstageTokenPayload } from './TokenFactory';
+import { BackstageTokenPayload } from './types';
 
 const MS_IN_S = 1000;
 const MAX_TOKEN_LENGTH = 32768; // At 64 bytes per entity ref this still leaves room for about 500 entities

@@ -20,7 +20,7 @@ import {
   mockServices,
 } from '@backstage/backend-test-utils';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { PgSearchHighlightOptions } from '../PgSearchEngine';
+import { PgSearchHighlightOptions } from './types';
 import { DatabaseDocumentStore } from './DatabaseDocumentStore';
 
 const highlightOptions: PgSearchHighlightOptions = {

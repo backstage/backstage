@@ -13,9 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
-import { PgSearchHighlightOptions } from '../PgSearchEngine';
+
+/**
+ * Options for highlighting search terms
+ * @public
+ */
+export type PgSearchHighlightOptions = {
+  useHighlight?: boolean;
+  maxWords?: number;
+  minWords?: number;
+  shortWord?: number;
+  highlightAll?: boolean;
+  maxFragments?: number;
+  fragmentDelimiter?: string;
+  preTag: string;
+  postTag: string;
+};
 
 /** @public */
 export interface PgSearchQuery {

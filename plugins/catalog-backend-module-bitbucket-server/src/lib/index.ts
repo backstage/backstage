@@ -25,4 +25,3 @@ export type {
   BitbucketServerEvents,
   BitbucketServerProject,
 } from './types';
-// export * from './types';

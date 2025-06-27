@@ -16,8 +16,7 @@
 
 import { DateTime } from 'luxon';
 import { Knex } from 'knex';
-
-import { BackstageTokenPayload } from './TokenFactory';
+import { BackstageTokenPayload } from './types';
 
 const TABLE = 'user_info';
 

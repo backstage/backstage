@@ -21,57 +21,10 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   BackstageSignInResult,
   TokenParams,
-  tokenTypes,
 } from '@backstage/plugin-auth-node';
 import { AnyJWK, KeyStore, TokenIssuer } from './types';
-import { JsonValue } from '@backstage/types';
 import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
 import { issueUserToken } from './issueUserToken';
-
-/**
- * The payload contents of a valid Backstage JWT token
- */
-export interface BackstageTokenPayload {
-  /**
-   * The issuer of the token, currently the discovery URL of the auth backend
-   */
-  iss: string;
-
-  /**
-   * The entity ref of the user
-   */
-  sub: string;
-
-  /**
-   * The entity refs that the user claims ownership through
-   */
-  ent: string[];
-
-  /**
-   * A hard coded audience string
-   */
-  aud: typeof tokenTypes.user.audClaim;
-
-  /**
-   * Standard expiry in epoch seconds
-   */
-  exp: number;
-
-  /**
-   * Standard issue time in epoch seconds
-   */
-  iat: number;
-
-  /**
-   * A separate user identity proof that the auth service can convert to a limited user token
-   */
-  uip: string;
-
-  /**
-   * Any other custom claims that the adopter may have added
-   */
-  [claim: string]: JsonValue;
-}
 
 type Options = {
   logger: LoggerService;

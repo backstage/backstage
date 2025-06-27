@@ -36,10 +36,10 @@ import {
   GitLabProject,
   GitlabProviderConfig,
   paginated,
-  readGitlabConfigs,
 } from '../lib';
 
 import * as path from 'path';
+import { readGitlabConfigs } from './config';
 
 const TOPIC_REPO_PUSH = 'gitlab.push';
 

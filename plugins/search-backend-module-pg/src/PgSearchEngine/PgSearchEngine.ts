@@ -21,11 +21,12 @@ import {
   IndexableResult,
 } from '@backstage/plugin-search-common';
 import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';
+import { DatabaseDocumentStore } from '../database/DatabaseDocumentStore';
 import {
-  DatabaseDocumentStore,
   DatabaseStore,
   PgSearchQuery,
-} from '../database';
+  PgSearchHighlightOptions,
+} from '../database/types';
 import { v4 as uuid } from 'uuid';
 import { Config } from '@backstage/config';
 import { DatabaseService, LoggerService } from '@backstage/backend-plugin-api';
@@ -64,22 +65,6 @@ export type PgSearchQueryTranslator = (
 export type PgSearchOptions = {
   database: DatabaseService;
   logger?: LoggerService;
-};
-
-/**
- * Options for highlighting search terms
- * @public
- */
-export type PgSearchHighlightOptions = {
-  useHighlight?: boolean;
-  maxWords?: number;
-  minWords?: number;
-  shortWord?: number;
-  highlightAll?: boolean;
-  maxFragments?: number;
-  fragmentDelimiter?: string;
-  preTag: string;
-  postTag: string;
 };
 
 /** @public */
