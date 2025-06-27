@@ -450,6 +450,7 @@ export const EntityOwnerPicker: (
 // @public (undocumented)
 export type EntityOwnerPickerProps = {
   mode?: 'owners-only' | 'all';
+  hideForKinds?: string[];
 };
 
 // @public
