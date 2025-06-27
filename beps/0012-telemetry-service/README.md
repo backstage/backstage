@@ -130,7 +130,25 @@ interface RootTelemetryService extends TelemetryService {
 
 ### Naming Conventions
 
-Visit [0013-telemetry-metrics-naming-conventions](../0013-telemetry-metrics-naming-conventions/README.md) for the naming conventions.
+Visit [0013-telemetry-metrics-naming-conventions](../0013-telemetry-metrics-naming-conventions/README.md) for details on the naming conventions.
+
+The root telemetry service is responsible for initializing the global meter, namespaced to `backstage`. The root service will initialize a meter for each plugin that is registered based on the `pluginId`. The metric name will be the name of the metric as provided by the plugin author in the form `{category}.{name}`.
+
+```ts
+const rootTelemetry = DefaultRootTelemetryService.fromConfig(config);
+const pluginTelemetryService = rootTelemetry.forPlugin('my-plugin');
+
+const metric = pluginTelemetryService.createCounter('my_category.my_metric');
+
+metric.add(1);
+
+// ...
+// metric is now available as `backstage.my-plugin.my_category.my_metric`
+```
+
+### References
+
+- [General naming considerations](https://opentelemetry.io/docs/specs/semconv/general/naming/#general-naming-considerations)
 
 ### Bootstrapping
 
