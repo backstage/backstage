@@ -14,29 +14,16 @@
  * limitations under the License.
  */
 
-import {
-  Tabs,
-  TabList,
-  Tab as AriaTab,
-  TabListStateContext,
-} from 'react-aria-components';
+import { Tabs, TabList, Tab as AriaTab } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
-import {
-  useId,
-  useContext,
-  useRef,
-  useEffect,
-  useState,
-  useCallback,
-} from 'react';
-import type {
-  ToolbarProps,
-  ToolbarIndicatorsProps,
-  ToolbarTabProps,
-} from './types';
+import { useId, useRef, useState } from 'react';
+import { Indicators } from './Indicators';
+import { RiMore2Line, RiShapesLine } from '@remixicon/react';
+import type { ToolbarProps, ToolbarTabProps } from './types';
+import { ButtonIcon } from '../ButtonIcon';
 
 export const Toolbar = (props: ToolbarProps) => {
-  const { tabs } = props;
+  const { tabs, icon, name } = props;
   const { classNames } = useStyles('Toolbar');
   const tabsRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -52,8 +39,20 @@ export const Toolbar = (props: ToolbarProps) => {
   };
 
   return (
-    <div className={classNames.root}>
-      <div className={classNames.toolbar}>Toolbar</div>
+    <>
+      <div className={classNames.toolbar}>
+        <div className={classNames.toolbarContentWrapper}>
+          <div className={classNames.toolbarContent}>
+            <div className={classNames.name}>
+              <div className={classNames.icon}>{icon || <RiShapesLine />}</div>
+              {name || 'Your plugin'}
+            </div>
+          </div>
+          <div className={classNames.toolbarOptions}>
+            <ButtonIcon icon={<RiMore2Line />} variant="secondary" />
+          </div>
+        </div>
+      </div>
       {tabs && (
         <Tabs className={classNames.tabs} ref={tabsRef}>
           <TabList className={classNames.tabList}>
@@ -76,7 +75,7 @@ export const Toolbar = (props: ToolbarProps) => {
           />
         </Tabs>
       )}
-    </div>
+    </>
   );
 };
 
@@ -95,141 +94,5 @@ const Tab = (props: ToolbarTabProps) => {
     >
       {tab.label}
     </AriaTab>
-  );
-};
-
-const Indicators = (props: ToolbarIndicatorsProps) => {
-  const { tabRefs, tabsRef, hoveredKey, prevHoveredKey } = props;
-  const { classNames } = useStyles('Toolbar');
-  const state = useContext(TabListStateContext);
-
-  const updateCSSVariables = useCallback(() => {
-    if (!tabsRef.current) return;
-
-    const tabsRect = tabsRef.current.getBoundingClientRect();
-
-    // Set active tab variables
-    if (state?.selectedKey) {
-      const activeTab = tabRefs.current.get(state.selectedKey.toString());
-
-      if (activeTab) {
-        const activeRect = activeTab.getBoundingClientRect();
-        const relativeLeft = activeRect.left - tabsRect.left;
-        const relativeTop = activeRect.top - tabsRect.top;
-
-        tabsRef.current.style.setProperty(
-          '--active-tab-left',
-          `${relativeLeft}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--active-tab-right',
-          `${relativeLeft + activeRect.width}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--active-tab-top',
-          `${relativeTop}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--active-tab-bottom',
-          `${relativeTop + activeRect.height}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--active-tab-width',
-          `${activeRect.width}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--active-tab-height',
-          `${activeRect.height}px`,
-        );
-      }
-    }
-
-    // Set hovered tab variables
-    if (hoveredKey) {
-      const hoveredTab = tabRefs.current.get(hoveredKey);
-      if (hoveredTab) {
-        const hoveredRect = hoveredTab.getBoundingClientRect();
-        const relativeLeft = hoveredRect.left - tabsRect.left;
-        const relativeTop = hoveredRect.top - tabsRect.top;
-
-        tabsRef.current.style.setProperty(
-          '--hovered-tab-left',
-          `${relativeLeft}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--hovered-tab-right',
-          `${relativeLeft + hoveredRect.width}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--hovered-tab-top',
-          `${relativeTop}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--hovered-tab-bottom',
-          `${relativeTop + hoveredRect.height}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--hovered-tab-width',
-          `${hoveredRect.width}px`,
-        );
-        tabsRef.current.style.setProperty(
-          '--hovered-tab-height',
-          `${hoveredRect.height}px`,
-        );
-        // Control transition timing based on whether this is a new hover session
-        const isNewHoverSession = prevHoveredKey.current === null;
-
-        if (isNewHoverSession) {
-          // Starting new hover session: no transitions for position
-          tabsRef.current.style.setProperty(
-            '--hovered-transition-duration',
-            '0s',
-          );
-          // Enable transitions on next frame for future tab switches
-          requestAnimationFrame(() => {
-            if (tabsRef.current) {
-              tabsRef.current.style.setProperty(
-                '--hovered-transition-duration',
-                '0.2s',
-              );
-            }
-          });
-        } else {
-          // Moving between tabs in same session: full transitions
-          tabsRef.current.style.setProperty(
-            '--hovered-transition-duration',
-            '0.2s',
-          );
-        }
-
-        // Update previous hover key for next time
-        prevHoveredKey.current = hoveredKey;
-
-        tabsRef.current.style.setProperty('--hovered-tab-opacity', '1');
-      }
-    } else {
-      // When not hovering, hide with opacity and reset for next hover session
-      tabsRef.current.style.setProperty('--hovered-tab-opacity', '0');
-
-      // Reset previous hover key so next hover is treated as new session
-      prevHoveredKey.current = null;
-    }
-  }, [state?.selectedKey, hoveredKey]);
-
-  useEffect(() => {
-    updateCSSVariables();
-  }, [updateCSSVariables]);
-
-  useEffect(() => {
-    const handleResize = () => updateCSSVariables();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [updateCSSVariables]);
-
-  return (
-    <>
-      <div className={classNames.activeIndicator} />
-      <div className={classNames.hoveredIndicator} />
-    </>
   );
 };

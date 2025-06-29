@@ -237,8 +237,13 @@ export const componentDefinitions = {
   },
   Toolbar: {
     classNames: {
-      root: 'canon-ToolbarRoot',
       toolbar: 'canon-Toolbar',
+      toolbarContentWrapper: 'canon-ToolbarContentWrapper',
+      toolbarOverlay: 'canon-ToolbarOverlay',
+      toolbarContent: 'canon-ToolbarContent',
+      toolbarOptions: 'canon-ToolbarOptions',
+      icon: 'canon-ToolbarIcon',
+      name: 'canon-ToolbarName',
       tabs: 'canon-ToolbarTabs',
       tabList: 'canon-ToolbarTabList',
       tab: 'canon-ToolbarTab',

@@ -14,22 +14,64 @@
  * limitations under the License.
  */
 
-.canon-ToolbarRoot {
-  display: flex;
-  flex-direction: column;
-  gap: var(--canon-space-2);
+.canon-Toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding-top: 8px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0px;
+    right: 0px;
+    height: 16px;
+    background-color: var(--canon-bg);
+    z-index: 0;
+  }
 }
 
-.canon-Toolbar {
+.canon-ToolbarContentWrapper {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   background-color: var(--canon-bg-surface-1);
   padding-inline: var(--canon-space-3);
   border-radius: var(--canon-radius-2);
   border: 1px solid var(--canon-border);
   color: var(--canon-fg-primary);
   height: 52px;
+}
+
+.canon-ToolbarContent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--canon-space-2);
+}
+
+.canon-ToolbarName {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--canon-space-2);
+  font-size: var(--canon-font-size-3);
+  font-weight: var(--canon-font-weight-regular);
+}
+
+.canon-ToolbarIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--canon-fg-primary);
+
+  & svg {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .canon-ToolbarTabs {
@@ -41,6 +83,7 @@
   padding-inline: var(--canon-space-1);
   border-radius: var(--canon-radius-2);
   border: 1px solid var(--canon-border);
+  margin-top: 8px;
 
   /* Initialize CSS variables */
   --active-tab-left: 0px;

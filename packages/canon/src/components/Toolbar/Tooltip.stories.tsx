@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj, StoryFn } from '@storybook/react';
 import { Toolbar } from './Toolbar';
 
 const meta = {
@@ -25,18 +25,81 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const tabs = [
+  {
+    label: 'Home',
+  },
+  {
+    label: 'About',
+  },
+];
+
+// Extract layout decorator as a reusable constant
+const withLayoutDecorator = [
+  (Story: StoryFn) => (
+    <>
+      <div
+        style={{
+          width: '250px',
+          position: 'fixed',
+          left: 8,
+          top: 8,
+          bottom: 8,
+          backgroundColor: 'var(--canon-bg-surface-1',
+          borderRadius: 'var(--canon-radius-2)',
+          border: '1px solid var(--canon-border)',
+          zIndex: 1,
+        }}
+      />
+      <div
+        style={{
+          paddingInline: '266px',
+          minHeight: '200vh',
+        }}
+      >
+        <Story />
+      </div>
+      <div
+        style={{
+          width: '250px',
+          position: 'fixed',
+          right: 8,
+          top: 8,
+          bottom: 8,
+          backgroundColor: 'var(--canon-bg-surface-1',
+          borderRadius: 'var(--canon-radius-2)',
+          border: '1px solid var(--canon-border)',
+          zIndex: 1,
+        }}
+      />
+    </>
+  ),
+];
+
 export const Default: Story = {
+  args: {},
+};
+
+export const WithTabs: Story = {
   args: {
-    tabs: [
-      {
-        label: 'Home',
-      },
-      {
-        label: 'About',
-      },
-      {
-        label: 'Contact Super long tab name',
-      },
-    ],
+    tabs,
+  },
+};
+
+export const WithLayout: Story = {
+  args: {},
+  decorators: withLayoutDecorator,
+  parameters: {
+    layout: 'fullscreen',
+  },
+};
+
+export const WithTabsInLayout: Story = {
+  args: {
+    tabs,
+  },
+  decorators: withLayoutDecorator,
+  parameters: {
+    layout: 'fullscreen',
   },
 };

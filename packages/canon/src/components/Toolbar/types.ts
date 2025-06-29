@@ -21,7 +21,9 @@ export interface ToolbarTab {
 }
 
 export interface ToolbarProps {
-  tabs: ToolbarTab[];
+  icon?: React.ReactNode;
+  name?: string;
+  tabs?: ToolbarTab[];
 }
 
 export interface ToolbarTabProps {
