@@ -28,9 +28,12 @@ import {
   useEffect,
   useState,
   useCallback,
-  MutableRefObject,
 } from 'react';
-import { ToolbarProps, ToolbarTab } from './types';
+import type {
+  ToolbarProps,
+  ToolbarIndicatorsProps,
+  ToolbarTabProps,
+} from './types';
 
 export const Toolbar = (props: ToolbarProps) => {
   const { tabs } = props;
@@ -38,6 +41,7 @@ export const Toolbar = (props: ToolbarProps) => {
   const tabsRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+  const prevHoveredKey = useRef<string | null>(null);
 
   const setTabRef = (key: string, element: HTMLDivElement | null) => {
     if (element) {
@@ -48,8 +52,8 @@ export const Toolbar = (props: ToolbarProps) => {
   };
 
   return (
-    <>
-      <div>Toolbar</div>
+    <div className={classNames.root}>
+      <div className={classNames.toolbar}>Toolbar</div>
       {tabs && (
         <Tabs className={classNames.tabs} ref={tabsRef}>
           <TabList className={classNames.tabList}>
@@ -64,26 +68,20 @@ export const Toolbar = (props: ToolbarProps) => {
               );
             })}
           </TabList>
-          <Indicator
+          <Indicators
             tabRefs={tabRefs}
             tabsRef={tabsRef}
             hoveredKey={hoveredKey}
+            prevHoveredKey={prevHoveredKey}
           />
         </Tabs>
       )}
-    </>
+    </div>
   );
 };
 
-const Tab = ({
-  tab,
-  setTabRef,
-  setHoveredKey,
-}: {
-  tab: ToolbarTab;
-  setTabRef: (key: string, element: HTMLDivElement | null) => void;
-  setHoveredKey: (key: string | null) => void;
-}) => {
+const Tab = (props: ToolbarTabProps) => {
+  const { tab, setTabRef, setHoveredKey } = props;
   const id = useId();
   const { classNames } = useStyles('Toolbar');
 
@@ -100,15 +98,8 @@ const Tab = ({
   );
 };
 
-const Indicator = ({
-  tabRefs,
-  tabsRef,
-  hoveredKey,
-}: {
-  tabRefs: MutableRefObject<Map<string, HTMLDivElement>>;
-  tabsRef: MutableRefObject<HTMLDivElement | null>;
-  hoveredKey: string | null;
-}) => {
+const Indicators = (props: ToolbarIndicatorsProps) => {
+  const { tabRefs, tabsRef, hoveredKey, prevHoveredKey } = props;
   const { classNames } = useStyles('Toolbar');
   const state = useContext(TabListStateContext);
 
@@ -120,7 +111,7 @@ const Indicator = ({
     // Set active tab variables
     if (state?.selectedKey) {
       const activeTab = tabRefs.current.get(state.selectedKey.toString());
-      console.log(activeTab);
+
       if (activeTab) {
         const activeRect = activeTab.getBoundingClientRect();
         const relativeLeft = activeRect.left - tabsRect.left;
@@ -185,15 +176,43 @@ const Indicator = ({
           '--hovered-tab-height',
           `${hoveredRect.height}px`,
         );
+        // Control transition timing based on whether this is a new hover session
+        const isNewHoverSession = prevHoveredKey.current === null;
+
+        if (isNewHoverSession) {
+          // Starting new hover session: no transitions for position
+          tabsRef.current.style.setProperty(
+            '--hovered-transition-duration',
+            '0s',
+          );
+          // Enable transitions on next frame for future tab switches
+          requestAnimationFrame(() => {
+            if (tabsRef.current) {
+              tabsRef.current.style.setProperty(
+                '--hovered-transition-duration',
+                '0.2s',
+              );
+            }
+          });
+        } else {
+          // Moving between tabs in same session: full transitions
+          tabsRef.current.style.setProperty(
+            '--hovered-transition-duration',
+            '0.2s',
+          );
+        }
+
+        // Update previous hover key for next time
+        prevHoveredKey.current = hoveredKey;
+
+        tabsRef.current.style.setProperty('--hovered-tab-opacity', '1');
       }
     } else {
-      // Clear hovered variables when no tab is hovered
-      tabsRef.current.style.setProperty('--hovered-tab-left', '0px');
-      tabsRef.current.style.setProperty('--hovered-tab-right', '0px');
-      tabsRef.current.style.setProperty('--hovered-tab-top', '0px');
-      tabsRef.current.style.setProperty('--hovered-tab-bottom', '0px');
-      tabsRef.current.style.setProperty('--hovered-tab-width', '0px');
-      tabsRef.current.style.setProperty('--hovered-tab-height', '0px');
+      // When not hovering, hide with opacity and reset for next hover session
+      tabsRef.current.style.setProperty('--hovered-tab-opacity', '0');
+
+      // Reset previous hover key so next hover is treated as new session
+      prevHoveredKey.current = null;
     }
   }, [state?.selectedKey, hoveredKey]);
 

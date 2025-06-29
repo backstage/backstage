@@ -237,6 +237,8 @@ export const componentDefinitions = {
   },
   Toolbar: {
     classNames: {
+      root: 'canon-ToolbarRoot',
+      toolbar: 'canon-Toolbar',
       tabs: 'canon-ToolbarTabs',
       tabList: 'canon-ToolbarTabList',
       tab: 'canon-ToolbarTab',

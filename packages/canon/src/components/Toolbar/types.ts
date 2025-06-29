@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
+import { MutableRefObject } from 'react';
+
 export interface ToolbarTab {
   label: string;
 }
 
 export interface ToolbarProps {
   tabs: ToolbarTab[];
+}
+
+export interface ToolbarTabProps {
+  tab: ToolbarTab;
+  setTabRef: (key: string, element: HTMLDivElement | null) => void;
+  setHoveredKey: (key: string | null) => void;
+}
+
+export interface ToolbarIndicatorsProps {
+  tabRefs: MutableRefObject<Map<string, HTMLDivElement>>;
+  tabsRef: MutableRefObject<HTMLDivElement | null>;
+  hoveredKey: string | null;
+  prevHoveredKey: MutableRefObject<string | null>;
 }

@@ -14,12 +14,33 @@
  * limitations under the License.
  */
 
+.canon-ToolbarRoot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--canon-space-2);
+}
+
+.canon-Toolbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: var(--canon-bg-surface-1);
+  padding-inline: var(--canon-space-3);
+  border-radius: var(--canon-radius-2);
+  border: 1px solid var(--canon-border);
+  color: var(--canon-fg-primary);
+  height: 52px;
+}
+
 .canon-ToolbarTabs {
   display: flex;
   flex-direction: row;
   align-items: center;
   background-color: var(--canon-bg-surface-1);
   position: relative;
+  padding-inline: var(--canon-space-1);
+  border-radius: var(--canon-radius-2);
+  border: 1px solid var(--canon-border);
 
   /* Initialize CSS variables */
   --active-tab-left: 0px;
@@ -35,6 +56,8 @@
   --hovered-tab-bottom: 0px;
   --hovered-tab-width: 0px;
   --hovered-tab-height: 0px;
+  --hovered-tab-opacity: 0;
+  --hovered-transition-duration: 0s;
 }
 
 .canon-ToolbarTabList {
@@ -52,17 +75,18 @@
   cursor: pointer;
   position: relative;
   z-index: 2;
+  padding-inline: var(--canon-space-2);
 }
 
 /* Active tab indicator */
 .canon-ToolbarActiveIndicator {
   content: '';
   position: absolute;
-  left: var(--active-tab-left);
-  top: var(--active-tab-top);
-  width: var(--active-tab-width);
-  height: var(--active-tab-height);
-  background-color: green;
+  left: calc(var(--active-tab-left) + var(--canon-space-2));
+  bottom: -1px;
+  width: calc(var(--active-tab-width) - var(--canon-space-4));
+  height: 1px;
+  background-color: var(--canon-fg-primary);
   border-radius: 4px;
   transition: all 0.25s ease-out;
   opacity: 1;
@@ -73,10 +97,14 @@
   content: '';
   position: absolute;
   left: var(--hovered-tab-left);
-  top: var(--hovered-tab-top);
+  top: calc(var(--hovered-tab-top) + 4px);
   width: var(--hovered-tab-width);
-  height: var(--hovered-tab-height);
-  background-color: red;
+  height: calc(var(--hovered-tab-height) - 8px);
+  background-color: var(--canon-gray-2);
   border-radius: 4px;
-  transition: all 0.2s ease-out;
+  opacity: var(--hovered-tab-opacity);
+  transition: left var(--hovered-transition-duration) ease-out,
+    top var(--hovered-transition-duration) ease-out,
+    width var(--hovered-transition-duration) ease-out,
+    height var(--hovered-transition-duration) ease-out, opacity 0.15s ease-out;
 }
