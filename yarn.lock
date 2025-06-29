@@ -4974,11 +4974,11 @@ __metadata:
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@types/passport-microsoft": "npm:^1.0.0"
+    "@types/passport-microsoft": "npm:^2.1.0"
     express: "npm:^4.18.2"
     jose: "npm:^5.0.0"
     msw: "npm:^1.0.0"
-    passport-microsoft: "npm:^1.0.0"
+    passport-microsoft: "npm:^2.1.0"
     supertest: "npm:^7.0.0"
     zod: "npm:^3.22.4"
   languageName: unknown
@@ -21979,12 +21979,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/passport-microsoft@npm:^1.0.0":
-  version: 1.0.3
-  resolution: "@types/passport-microsoft@npm:1.0.3"
+"@types/passport-microsoft@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@types/passport-microsoft@npm:2.1.0"
   dependencies:
     "@types/passport-oauth2": "npm:*"
-  checksum: 10/68e9204e90b4a195a1476cfc966d5165febcbb60948a9e98e5dab66f9080a69a2d5f76473a09aed26e00e776038ae63852e44889adb6e45a1851365ca10e5060
+  checksum: 10/711e67ed40bc47a1469d84fcb220e02be040166d8c6ceed97ad77aa647bef1ff0597f48e38fee44d8f576c5b188bc5c5fa7060cd5b527bf450fd99d03565303d
   languageName: node
   linkType: hard
 
@@ -41831,12 +41831,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-microsoft@npm:^1.0.0":
-  version: 1.1.0
-  resolution: "passport-microsoft@npm:1.1.0"
+"passport-microsoft@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "passport-microsoft@npm:2.1.0"
   dependencies:
     passport-oauth2: "npm:1.8.0"
-  checksum: 10/4c18d4074308ca5da67b08b2b9eee97dae017e7c9e62dedb21875f25ced9fd959218977bd1c8cfd6067ce081e9764bbe2541696e09e6e1464e72c699165fc07f
+  checksum: 10/42dd445ff06021dc0138e731655dbbf6e31ee3ed49d34f2e2ff8d05979dfca66a3e0107a964fee4911ac2dc7be7ed14a007f5e36d64c260416fa12be55090a0b
   languageName: node
   linkType: hard
 
