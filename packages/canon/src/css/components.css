@@ -41,6 +41,7 @@
 @import '../components/Text/styles.css';
 @import '../components/TextField/TextField.styles.css';
 @import '../components/SearchField/SearchField.styles.css';
+@import '../components/Toolbar/Toolbar.styles.css';
 @import '../components/Tooltip/Tooltip.styles.css';
 @import '../components/ScrollArea/ScrollArea.styles.css';
 @import '../components/Select/Select.styles.css';

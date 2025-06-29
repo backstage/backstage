@@ -235,6 +235,15 @@ export const componentDefinitions = {
       disabled: [true, false] as const,
     },
   },
+  Toolbar: {
+    classNames: {
+      tabs: 'canon-ToolbarTabs',
+      tabList: 'canon-ToolbarTabList',
+      tab: 'canon-ToolbarTab',
+      activeIndicator: 'canon-ToolbarActiveIndicator',
+      hoveredIndicator: 'canon-ToolbarHoveredIndicator',
+    },
+  },
   Tooltip: {
     classNames: {
       trigger: 'canon-TooltipTrigger',
