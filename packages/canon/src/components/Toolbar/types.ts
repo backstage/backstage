@@ -16,22 +16,54 @@
 
 import { MutableRefObject } from 'react';
 
+/**
+ * Represents a tab item in the toolbar navigation.
+ *
+ * @public
+ */
 export interface ToolbarTab {
   label: string;
 }
 
+/**
+ * Represents an option item in the toolbar dropdown menu.
+ *
+ * @public
+ */
+export interface ToolbarOption {
+  label: string;
+  value: string;
+  onClick?: () => void;
+}
+
+/**
+ * Props for the main Toolbar component.
+ *
+ * @public
+ */
 export interface ToolbarProps {
   icon?: React.ReactNode;
   name?: string;
   tabs?: ToolbarTab[];
+  options?: ToolbarOption[];
 }
 
+/**
+ * Props for individual toolbar tab components.
+ *
+ * @public
+ */
 export interface ToolbarTabProps {
   tab: ToolbarTab;
   setTabRef: (key: string, element: HTMLDivElement | null) => void;
   setHoveredKey: (key: string | null) => void;
 }
 
+/**
+ * Props for the toolbar indicators component that handles tab highlighting and animation.
+ *
+ * @public
+ */
 export interface ToolbarIndicatorsProps {
   tabRefs: MutableRefObject<Map<string, HTMLDivElement>>;
   tabsRef: MutableRefObject<HTMLDivElement | null>;

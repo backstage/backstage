@@ -17,13 +17,19 @@
 import { Tabs, TabList, Tab as AriaTab } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
 import { useId, useRef, useState } from 'react';
-import { Indicators } from './Indicators';
+import { ToolbarTabsIndicators } from './Indicators';
 import { RiMore2Line, RiShapesLine } from '@remixicon/react';
 import type { ToolbarProps, ToolbarTabProps } from './types';
 import { ButtonIcon } from '../ButtonIcon';
+import { Menu } from '../Menu';
 
+/**
+ * A component that renders a toolbar.
+ *
+ * @public
+ */
 export const Toolbar = (props: ToolbarProps) => {
-  const { tabs, icon, name } = props;
+  const { tabs, icon, name, options } = props;
   const { classNames } = useStyles('Toolbar');
   const tabsRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -49,7 +55,34 @@ export const Toolbar = (props: ToolbarProps) => {
             </div>
           </div>
           <div className={classNames.toolbarOptions}>
-            <ButtonIcon icon={<RiMore2Line />} variant="secondary" />
+            {options && (
+              <Menu.Root>
+                <Menu.Trigger
+                  render={props => (
+                    <ButtonIcon
+                      {...props}
+                      size="small"
+                      icon={<RiMore2Line />}
+                      variant="secondary"
+                    />
+                  )}
+                />
+                <Menu.Portal>
+                  <Menu.Positioner sideOffset={4} align="end">
+                    <Menu.Popup>
+                      {options.map(option => (
+                        <Menu.Item
+                          key={option.value}
+                          onClick={() => option.onClick?.()}
+                        >
+                          {option.label}
+                        </Menu.Item>
+                      ))}
+                    </Menu.Popup>
+                  </Menu.Positioner>
+                </Menu.Portal>
+              </Menu.Root>
+            )}
           </div>
         </div>
       </div>
@@ -67,7 +100,7 @@ export const Toolbar = (props: ToolbarProps) => {
               );
             })}
           </TabList>
-          <Indicators
+          <ToolbarTabsIndicators
             tabRefs={tabRefs}
             tabsRef={tabsRef}
             hoveredKey={hoveredKey}
@@ -79,6 +112,11 @@ export const Toolbar = (props: ToolbarProps) => {
   );
 };
 
+/**
+ * A component that renders a toolbar tab.
+ *
+ * @public
+ */
 const Tab = (props: ToolbarTabProps) => {
   const { tab, setTabRef, setHoveredKey } = props;
   const id = useId();

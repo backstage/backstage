@@ -9644,6 +9644,7 @@
 }
 
 .canon-MenuPositioner {
+  z-index: 100;
   outline: 0;
 }
 
@@ -10262,6 +10263,136 @@
 .canon-InputClear svg {
   width: 1rem;
   height: 1rem;
+}
+
+.canon-Toolbar {
+  z-index: 10;
+  padding-top: 8px;
+  position: sticky;
+  top: 0;
+
+  &:before {
+    content: "";
+    background-color: var(--canon-bg);
+    z-index: 0;
+    height: 16px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+}
+
+.canon-ToolbarContentWrapper {
+  z-index: 1;
+  background-color: var(--canon-bg-surface-1);
+  padding-inline: var(--canon-space-3);
+  border-radius: var(--canon-radius-2);
+  border: 1px solid var(--canon-border);
+  color: var(--canon-fg-primary);
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 52px;
+  display: flex;
+  position: relative;
+}
+
+.canon-ToolbarContent {
+  align-items: center;
+  gap: var(--canon-space-2);
+  flex-direction: row;
+  display: flex;
+}
+
+.canon-ToolbarName {
+  align-items: center;
+  gap: var(--canon-space-2);
+  font-size: var(--canon-font-size-3);
+  font-weight: var(--canon-font-weight-regular);
+  flex-direction: row;
+  display: flex;
+}
+
+.canon-ToolbarIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--canon-fg-primary);
+
+  & svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.canon-ToolbarTabs {
+  background-color: var(--canon-bg-surface-1);
+  padding-inline: var(--canon-space-1);
+  border-radius: var(--canon-radius-2);
+  border: 1px solid var(--canon-border);
+  --active-tab-left: 0px;
+  --active-tab-right: 0px;
+  --active-tab-top: 0px;
+  --active-tab-bottom: 0px;
+  --active-tab-width: 0px;
+  --active-tab-height: 0px;
+  --hovered-tab-left: 0px;
+  --hovered-tab-right: 0px;
+  --hovered-tab-top: 0px;
+  --hovered-tab-bottom: 0px;
+  --hovered-tab-width: 0px;
+  --hovered-tab-height: 0px;
+  --hovered-tab-opacity: 0;
+  --hovered-transition-duration: 0s;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 8px;
+  display: flex;
+  position: relative;
+}
+
+.canon-ToolbarTabList {
+  flex-direction: row;
+  display: flex;
+}
+
+.canon-ToolbarTab {
+  font-size: var(--canon-font-size-3);
+  color: var(--canon-fg-primary);
+  cursor: pointer;
+  z-index: 2;
+  height: 36px;
+  padding-inline: var(--canon-space-2);
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  position: relative;
+}
+
+.canon-ToolbarActiveIndicator {
+  content: "";
+  left: calc(var(--active-tab-left)  + var(--canon-space-2));
+  width: calc(var(--active-tab-width)  - var(--canon-space-4));
+  background-color: var(--canon-fg-primary);
+  opacity: 1;
+  border-radius: 4px;
+  height: 1px;
+  transition: all .25s ease-out;
+  position: absolute;
+  bottom: -1px;
+}
+
+.canon-ToolbarHoveredIndicator {
+  content: "";
+  left: var(--hovered-tab-left);
+  top: calc(var(--hovered-tab-top)  + 4px);
+  width: var(--hovered-tab-width);
+  height: calc(var(--hovered-tab-height)  - 8px);
+  background-color: var(--canon-gray-2);
+  opacity: var(--hovered-tab-opacity);
+  transition: left var(--hovered-transition-duration) ease-out, top var(--hovered-transition-duration) ease-out, width var(--hovered-transition-duration) ease-out, height var(--hovered-transition-duration) ease-out, opacity .15s ease-out;
+  border-radius: 4px;
+  position: absolute;
 }
 
 .canon-TooltipPopup {

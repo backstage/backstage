@@ -34,8 +34,19 @@ const tabs = [
   },
 ];
 
+const options = [
+  {
+    label: 'Settings',
+    value: 'settings',
+  },
+  {
+    label: 'Invite new members',
+    value: 'invite-new-members',
+  },
+];
+
 // Extract layout decorator as a reusable constant
-const withLayoutDecorator = [
+const layoutDecorator = [
   (Story: StoryFn) => (
     <>
       <div
@@ -86,19 +97,25 @@ export const WithTabs: Story = {
   },
 };
 
-export const WithLayout: Story = {
-  args: {},
-  decorators: withLayoutDecorator,
-  parameters: {
-    layout: 'fullscreen',
+export const WithOptions: Story = {
+  args: {
+    options,
   },
 };
 
-export const WithTabsInLayout: Story = {
+export const WithOptionsAndTabs: Story = {
   args: {
+    options,
     tabs,
   },
-  decorators: withLayoutDecorator,
+};
+
+export const WithLayout: Story = {
+  args: {
+    options,
+    tabs,
+  },
+  decorators: layoutDecorator,
   parameters: {
     layout: 'fullscreen',
   },

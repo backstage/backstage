@@ -15,3 +15,5 @@
  */
 
 export * from './Toolbar';
+export * from './Indicators';
+export * from './types';

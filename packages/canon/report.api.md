@@ -508,6 +508,22 @@ export const componentDefinitions: {
       readonly disabled: readonly [true, false];
     };
   };
+  readonly Toolbar: {
+    readonly classNames: {
+      readonly toolbar: 'canon-Toolbar';
+      readonly toolbarContentWrapper: 'canon-ToolbarContentWrapper';
+      readonly toolbarOverlay: 'canon-ToolbarOverlay';
+      readonly toolbarContent: 'canon-ToolbarContent';
+      readonly toolbarOptions: 'canon-ToolbarOptions';
+      readonly icon: 'canon-ToolbarIcon';
+      readonly name: 'canon-ToolbarName';
+      readonly tabs: 'canon-ToolbarTabs';
+      readonly tabList: 'canon-ToolbarTabList';
+      readonly tab: 'canon-ToolbarTab';
+      readonly activeIndicator: 'canon-ToolbarActiveIndicator';
+      readonly hoveredIndicator: 'canon-ToolbarHoveredIndicator';
+    };
+  };
   readonly Tooltip: {
     readonly classNames: {
       readonly trigger: 'canon-TooltipTrigger';

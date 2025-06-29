@@ -19,7 +19,12 @@ import { useStyles } from '../../hooks/useStyles';
 import { useContext, useEffect, useCallback } from 'react';
 import type { ToolbarIndicatorsProps } from './types';
 
-export const Indicators = (props: ToolbarIndicatorsProps) => {
+/**
+ * A component that renders the indicators for the toolbar.
+ *
+ * @public
+ */
+export const ToolbarTabsIndicators = (props: ToolbarIndicatorsProps) => {
   const { tabRefs, tabsRef, hoveredKey, prevHoveredKey } = props;
   const { classNames } = useStyles('Toolbar');
   const state = useContext(TabListStateContext);
