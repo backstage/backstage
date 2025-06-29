@@ -84,6 +84,7 @@
   border-radius: var(--canon-radius-2);
   border: 1px solid var(--canon-border);
   margin-top: 8px;
+  overflow: hidden;
 
   /* Initialize CSS variables */
   --active-tab-left: 0px;

@@ -27,10 +27,19 @@ type Story = StoryObj<typeof meta>;
 
 const tabs = [
   {
-    label: 'Home',
+    label: 'Overview',
   },
   {
-    label: 'About',
+    label: 'Checks',
+  },
+  {
+    label: 'Tracks',
+  },
+  {
+    label: 'Campaigns',
+  },
+  {
+    label: 'Integrations',
   },
 ];
 
