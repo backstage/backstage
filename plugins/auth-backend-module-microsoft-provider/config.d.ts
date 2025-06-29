@@ -22,6 +22,8 @@ export interface Config {
       /** @visibility frontend */
       microsoft?: {
         [authEnv: string]: {
+          apiEntryPoint?: string;
+          authorizationURL?: string;
           clientId: string;
           tenantId: string;
           /**
@@ -31,6 +33,7 @@ export interface Config {
           domainHint?: string;
           callbackUrl?: string;
           additionalScopes?: string | string[];
+          graphApiVersion?: string;
           skipUserProfile?: boolean;
           signIn?: {
             resolvers: Array<

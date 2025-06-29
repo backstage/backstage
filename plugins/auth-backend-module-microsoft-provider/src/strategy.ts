@@ -16,10 +16,22 @@
 
 import { PassportProfile } from '@backstage/plugin-auth-node';
 import { decodeJwt } from 'jose';
-import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
+import {
+  Strategy as MicrosoftStrategy,
+  MicrosoftStrategyOptions,
+} from 'passport-microsoft';
+import { VerifyFunction } from 'passport-oauth2';
 
 export class ExtendedMicrosoftStrategy extends MicrosoftStrategy {
+  private _apiEntryPoint: string;
+  private _graphApiVersion: string;
   private shouldSkipUserProfile = false;
+
+  constructor(config: MicrosoftStrategyOptions, verify: VerifyFunction) {
+    super(config, verify);
+    this._apiEntryPoint = config.apiEntryPoint || 'https://graph.microsoft.com';
+    this._graphApiVersion = config.graphApiVersion || 'v1.0';
+  }
 
   public setSkipUserProfile(shouldSkipUserProfile: boolean): void {
     this.shouldSkipUserProfile = shouldSkipUserProfile;
@@ -60,8 +72,8 @@ export class ExtendedMicrosoftStrategy extends MicrosoftStrategy {
         .map(s => s.toLocaleLowerCase('en-US'))
         .some(s =>
           [
-            'https://graph.microsoft.com/user.read',
-            'https://graph.microsoft.com/user.read.all',
+            `${this._apiEntryPoint}/user.read`,
+            `${this._apiEntryPoint}/user.read.all`,
             'user.read',
             'user.read.all',
           ].includes(s),
@@ -95,7 +107,7 @@ export class ExtendedMicrosoftStrategy extends MicrosoftStrategy {
   ): Promise<string | undefined> {
     try {
       const res = await fetch(
-        `https://graph.microsoft.com/v1.0/me/photos/${size}/$value`,
+        `${this._apiEntryPoint}/${this._graphApiVersion}/me/photos/${size}/$value`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

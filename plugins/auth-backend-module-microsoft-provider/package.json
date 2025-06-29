@@ -39,6 +39,7 @@
     "express": "^4.18.2",
     "jose": "^5.0.0",
     "passport-microsoft": "^2.1.0",
+    "passport-oauth2": "^1.6.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -49,6 +50,7 @@
     "@backstage/plugin-auth-backend": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/passport-microsoft": "^2.1.0",
+    "@types/passport-oauth2": "^1.4.15",
     "msw": "^1.0.0",
     "supertest": "^7.0.0"
   },
