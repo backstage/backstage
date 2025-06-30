@@ -1,5 +1,12 @@
 # example-app
 
+## 0.2.112
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-import@0.13.2
+
 ## 0.2.111
 
 ### Patch Changes
