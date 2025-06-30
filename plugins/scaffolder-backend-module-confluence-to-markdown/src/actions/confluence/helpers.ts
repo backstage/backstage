@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { ResponseError, ConflictError, InputError } from '@backstage/errors';
+import { ResponseError, ConflictError } from '@backstage/errors';
 import fs from 'fs-extra';
 import { Readable } from 'stream';
 
