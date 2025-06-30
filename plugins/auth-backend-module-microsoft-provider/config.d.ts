@@ -34,6 +34,7 @@ export interface Config {
           callbackUrl?: string;
           additionalScopes?: string | string[];
           graphApiVersion?: string;
+          tokenURL?: string;
           skipUserProfile?: boolean;
           signIn?: {
             resolvers: Array<
