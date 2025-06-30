@@ -1,6 +1,12 @@
+import React from 'react';
 import type { Preview, ReactRenderer } from '@storybook/react';
 import { withThemeByDataAttribute } from '@storybook/addon-themes';
+
+// Default Backstage theme
 import '../src/css/styles.css';
+
+// Custom themes
+import './themes/spotify.css';
 
 const preview: Preview = {
   parameters: {
@@ -69,10 +75,12 @@ const preview: Preview = {
   decorators: [
     withThemeByDataAttribute<ReactRenderer>({
       themes: {
-        Light: 'light',
-        Dark: 'dark',
+        ['Backstage Light']: 'light',
+        ['Backstage Dark']: 'dark',
+        ['Spotify Light']: 'spotify-light',
+        ['Spotify Dark']: 'spotify-dark',
       },
-      defaultTheme: 'Light',
+      defaultTheme: 'Backstage Light',
     }),
     Story => {
       document.body.style.backgroundColor = 'var(--canon-bg)';

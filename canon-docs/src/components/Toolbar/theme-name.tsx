@@ -7,6 +7,7 @@ import { usePlayground } from '@/utils/playground-context';
 
 const themes = [
   { name: 'Backstage', value: 'default' },
+  { name: 'Spotify', value: 'spotify' },
   { name: 'Custom theme', value: 'custom' },
 ];
 
