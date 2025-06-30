@@ -11,6 +11,8 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { JsonObject } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { KeyboardEvent as KeyboardEvent_2 } from 'react';
+import { KeyboardEventHandler } from 'react';
 import { MouseEvent as MouseEvent_2 } from 'react';
 import { MouseEventHandler } from 'react';
 import { ReactNode } from 'react';
@@ -98,6 +100,7 @@ export type EntityNodeData = {
   focused?: boolean;
   color?: 'primary' | 'secondary' | 'default';
   onClick?: MouseEventHandler<unknown>;
+  onKeyDown?: KeyboardEventHandler<unknown>;
   name: string;
   kind?: string;
   title?: string;
@@ -123,7 +126,10 @@ export type EntityRelationsGraphProps = {
   relations?: string[];
   entityFilter?: (entity: Entity) => boolean;
   direction?: Direction;
-  onNodeClick?: (value: EntityNode, event: MouseEvent_2<unknown>) => void;
+  onNodeClick?: (
+    value: EntityNode,
+    event: KeyboardEvent_2<unknown> | MouseEvent_2<unknown>,
+  ) => void;
   relationPairs?: RelationPairs;
   className?: string;
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';

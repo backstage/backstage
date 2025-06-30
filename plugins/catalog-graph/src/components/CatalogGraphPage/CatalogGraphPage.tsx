@@ -34,7 +34,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import ToggleButton from '@material-ui/lab/ToggleButton';
-import { MouseEvent, useCallback } from 'react';
+import { KeyboardEvent, MouseEvent, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ALL_RELATION_PAIRS,
@@ -164,7 +164,7 @@ export const CatalogGraphPage = (
   } = useCatalogGraphPage({ initialState });
   const analytics = useAnalytics();
   const onNodeClick = useCallback(
-    (node: EntityNode, event: MouseEvent<unknown>) => {
+    (node: EntityNode, event: KeyboardEvent<unknown> | MouseEvent<unknown>) => {
       const nodeEntityName = parseEntityRef(node.id);
 
       if (event.shiftKey) {
