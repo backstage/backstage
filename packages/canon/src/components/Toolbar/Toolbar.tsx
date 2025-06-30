@@ -175,7 +175,11 @@ export const Toolbar = (props: ToolbarProps) => {
         </div>
       </div>
       {tabs && (
-        <Tabs className={classNames.tabs} ref={tabsRef}>
+        <Tabs
+          className={classNames.tabs}
+          ref={tabsRef}
+          keyboardActivation="manual"
+        >
           <TabList className={classNames.tabList} aria-label="Toolbar tabs">
             {tabs.map((tab, index) => {
               return (
