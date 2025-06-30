@@ -17,16 +17,16 @@
 import { TabListStateContext } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
 import { useContext, useEffect, useCallback } from 'react';
-import type { ToolbarIndicatorsProps } from './types';
+import type { HeaderIndicatorsProps } from './types';
 
 /**
  * A component that renders the indicators for the toolbar.
  *
  * @public
  */
-export const ToolbarTabsIndicators = (props: ToolbarIndicatorsProps) => {
+export const HeaderTabsIndicators = (props: HeaderIndicatorsProps) => {
   const { tabRefs, tabsRef, hoveredKey, prevHoveredKey } = props;
-  const { classNames } = useStyles('Toolbar');
+  const { classNames } = useStyles('Header');
   const state = useContext(TabListStateContext);
 
   const updateCSSVariables = useCallback(() => {
@@ -154,8 +154,8 @@ export const ToolbarTabsIndicators = (props: ToolbarIndicatorsProps) => {
 
   return (
     <>
-      <div className={classNames.activeIndicator} />
-      <div className={classNames.hoveredIndicator} />
+      <div className={classNames.tabActive} />
+      <div className={classNames.tabHovered} />
     </>
   );
 };

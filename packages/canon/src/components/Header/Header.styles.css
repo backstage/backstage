@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.canon-Toolbar {
+.canon-HeaderToolbar {
   position: sticky;
   top: 0;
   z-index: 10;
@@ -32,7 +32,7 @@
   }
 }
 
-.canon-ToolbarContentWrapper {
+.canon-HeaderToolbarWrapper {
   position: relative;
   z-index: 1;
   display: flex;
@@ -47,14 +47,14 @@
   height: 52px;
 }
 
-.canon-ToolbarContent {
+.canon-HeaderToolbarContent {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: var(--canon-space-2);
 }
 
-.canon-ToolbarName {
+.canon-HeaderToolbarName {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -64,7 +64,7 @@
   flex-shrink: 0;
 }
 
-.canon-ToolbarIcon {
+.canon-HeaderToolbarIcon {
   width: 16px;
   height: 16px;
   color: var(--canon-fg-primary);
@@ -75,7 +75,14 @@
   }
 }
 
-.canon-ToolbarBreadcrumbs {
+.canon-HeaderToolbarOptions {
+  position: absolute;
+  right: var(--canon-space-2);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.canon-HeaderBreadcrumbs {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -84,14 +91,14 @@
   font-weight: var(--canon-font-weight-regular);
 }
 
-.canon-ToolbarBreadcrumb {
+.canon-HeaderBreadcrumb {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: var(--canon-space-2);
 }
 
-.canon-ToolbarBreadcrumbLink {
+.canon-HeaderBreadcrumbLink {
   color: var(--canon-fg-secondary);
   text-decoration: none;
   cursor: pointer;
@@ -101,20 +108,13 @@
   }
 }
 
-.canon-ToolbarBreadcrumbSeparator {
+.canon-HeaderBreadcrumbSeparator {
   width: 16px;
   height: 16px;
   color: var(--canon-fg-secondary);
 }
 
-.canon-ToolbarOptions {
-  position: absolute;
-  right: var(--canon-space-2);
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.canon-ToolbarTabs {
+.canon-HeaderTabs {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -143,12 +143,12 @@
   --hovered-transition-duration: 0s;
 }
 
-.canon-ToolbarTabList {
+.canon-HeaderTabList {
   display: flex;
   flex-direction: row;
 }
 
-.canon-ToolbarTab {
+.canon-HeaderTab {
   font-size: var(--canon-font-size-3);
   color: var(--canon-fg-primary);
   height: 36px;
@@ -162,7 +162,7 @@
 }
 
 /* Active tab indicator */
-.canon-ToolbarActiveIndicator {
+.canon-HeaderTabActive {
   content: '';
   position: absolute;
   left: calc(var(--active-tab-left) + var(--canon-space-2));
@@ -176,7 +176,7 @@
 }
 
 /* Hovered tab indicator */
-.canon-ToolbarHoveredIndicator {
+.canon-HeaderTabHovered {
   content: '';
   position: absolute;
   left: var(--hovered-tab-left);

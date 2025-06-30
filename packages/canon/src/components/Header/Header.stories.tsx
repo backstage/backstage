@@ -15,18 +15,18 @@
  */
 
 import type { Meta, StoryObj, StoryFn } from '@storybook/react';
-import { Toolbar } from './Toolbar';
-import { ToolbarBreadcrumb, ToolbarOption, ToolbarTab } from './types';
+import { Header } from './Header';
+import { HeaderBreadcrumb, HeaderOption, HeaderTab } from './types';
 
 const meta = {
-  title: 'Components/Toolbar',
-  component: Toolbar,
-} satisfies Meta<typeof Toolbar>;
+  title: 'Components/Header',
+  component: Header,
+} satisfies Meta<typeof Header>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const tabs: ToolbarTab[] = [
+const tabs: HeaderTab[] = [
   {
     label: 'Overview',
   },
@@ -44,7 +44,7 @@ const tabs: ToolbarTab[] = [
   },
 ];
 
-const breadcrumbs: ToolbarBreadcrumb[] = [
+const breadcrumbs: HeaderBreadcrumb[] = [
   {
     label: 'Home',
     href: '/',
@@ -59,7 +59,7 @@ const breadcrumbs: ToolbarBreadcrumb[] = [
   },
 ];
 
-const options: ToolbarOption[] = [
+const options: HeaderOption[] = [
   {
     label: 'Settings',
     value: 'settings',

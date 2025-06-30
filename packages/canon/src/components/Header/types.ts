@@ -17,66 +17,72 @@
 import { MutableRefObject } from 'react';
 
 /**
- * Represents a tab item in the toolbar navigation.
+ * Props for the main Header component.
  *
  * @public
  */
-export interface ToolbarTab {
+export interface HeaderProps {
+  icon?: React.ReactNode;
+  name?: string;
+  tabs?: HeaderTab[];
+  options?: HeaderOption[];
+  breadcrumbs?: HeaderBreadcrumb[];
+  subNavigation?: {
+    name?: string;
+    description?: string;
+    tabs?: HeaderTab[];
+    options?: HeaderOption[];
+  };
+}
+
+/**
+ * Represents a tab item in the header navigation.
+ *
+ * @public
+ */
+export interface HeaderTab {
   label: string;
   href?: string;
 }
 
 /**
- * Represents an option item in the toolbar dropdown menu.
+ * Represents an option item in the header dropdown menu.
  *
  * @public
  */
-export interface ToolbarOption {
+export interface HeaderOption {
   label: string;
   value: string;
   onClick?: () => void;
 }
 
 /**
- * Represents a breadcrumb item in the toolbar.
+ * Represents a breadcrumb item in the header.
  *
  * @public
  */
-export interface ToolbarBreadcrumb {
+export interface HeaderBreadcrumb {
   label: string;
   href: string;
 }
 
 /**
- * Props for the main Toolbar component.
+ * Props for individual header tab components.
  *
  * @public
  */
-export interface ToolbarProps {
-  icon?: React.ReactNode;
-  name?: string;
-  tabs?: ToolbarTab[];
-  options?: ToolbarOption[];
-  breadcrumbs?: ToolbarBreadcrumb[];
-}
-
-/**
- * Props for individual toolbar tab components.
- *
- * @public
- */
-export interface ToolbarTabProps {
-  tab: ToolbarTab;
+export interface HeaderTabProps {
+  tab: HeaderTab;
   setTabRef: (key: string, element: HTMLDivElement | null) => void;
   setHoveredKey: (key: string | null) => void;
 }
 
 /**
- * Props for the toolbar indicators component that handles tab highlighting and animation.
+ * Props for the header indicators component that handles tab highlighting and animation.
  *
  * @public
  */
-export interface ToolbarIndicatorsProps {
+export interface HeaderIndicatorsProps {
   tabRefs: MutableRefObject<Map<string, HTMLDivElement>>;
   tabsRef: MutableRefObject<HTMLDivElement | null>;
   hoveredKey: string | null;

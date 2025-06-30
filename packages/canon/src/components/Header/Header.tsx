@@ -17,9 +17,9 @@
 import { Tabs, TabList, Tab as AriaTab, Link } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
 import { useId, useRef, useState, useEffect } from 'react';
-import { ToolbarTabsIndicators } from './Indicators';
+import { HeaderTabsIndicators } from './Indicators';
 import { RiArrowRightSLine, RiMore2Line, RiShapesLine } from '@remixicon/react';
-import type { ToolbarProps, ToolbarTabProps } from './types';
+import type { HeaderProps, HeaderTabProps } from './types';
 import { ButtonIcon } from '../ButtonIcon';
 import { Menu } from '../Menu';
 import { motion, useScroll, useTransform } from 'framer-motion';
@@ -29,9 +29,9 @@ import { motion, useScroll, useTransform } from 'framer-motion';
  *
  * @public
  */
-export const Toolbar = (props: ToolbarProps) => {
+export const Header = (props: HeaderProps) => {
   const { tabs, icon, name, options, breadcrumbs } = props;
-  const { classNames } = useStyles('Toolbar');
+  const { classNames } = useStyles('Header');
   const tabsRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
@@ -101,13 +101,12 @@ export const Toolbar = (props: ToolbarProps) => {
   return (
     <>
       <div className={classNames.toolbar}>
-        <div
-          className={classNames.toolbarContentWrapper}
-          ref={toolbarWrapperRef}
-        >
+        <div className={classNames.toolbarWrapper} ref={toolbarWrapperRef}>
           <div className={classNames.toolbarContent} ref={toolbarContentRef}>
-            <div className={classNames.name}>
-              <div className={classNames.icon}>{icon || <RiShapesLine />}</div>
+            <div className={classNames.toolbarName}>
+              <div className={classNames.toolbarIcon}>
+                {icon || <RiShapesLine />}
+              </div>
               {name || 'Your plugin'}
             </div>
             {breadcrumbs && (
@@ -192,7 +191,7 @@ export const Toolbar = (props: ToolbarProps) => {
               );
             })}
           </TabList>
-          <ToolbarTabsIndicators
+          <HeaderTabsIndicators
             tabRefs={tabRefs}
             tabsRef={tabsRef}
             hoveredKey={hoveredKey}
@@ -209,10 +208,10 @@ export const Toolbar = (props: ToolbarProps) => {
  *
  * @public
  */
-const Tab = (props: ToolbarTabProps) => {
+const Tab = (props: HeaderTabProps) => {
   const { tab, setTabRef, setHoveredKey } = props;
   const id = useId();
-  const { classNames } = useStyles('Toolbar');
+  const { classNames } = useStyles('Header');
 
   return (
     <AriaTab

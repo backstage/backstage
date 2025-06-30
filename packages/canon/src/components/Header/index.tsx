@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from './Toolbar';
+export * from './Header';
 export * from './Indicators';
 export * from './types';
