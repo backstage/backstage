@@ -205,6 +205,7 @@ export const createConfluenceVariables = (url: string) => {
       'The Url format for Confluence is incorrect. Acceptable format is `<CONFLUENCE_BASE_URL>/display/<SPACEKEY>/<PAGE+TITLE>` or `<CONFLUENCE_BASE_URL>/spaces/<SPACEKEY>/pages/<PAGEID>/<PAGE+TITLE>`',
     );
   }
+
   titleWithSpaces = title?.replace(/\+/g, ' ');
   return { spacekey, title, titleWithSpaces };
 };
