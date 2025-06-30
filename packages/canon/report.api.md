@@ -508,20 +508,24 @@ export const componentDefinitions: {
       readonly disabled: readonly [true, false];
     };
   };
-  readonly Toolbar: {
+  readonly Header: {
     readonly classNames: {
-      readonly toolbar: 'canon-Toolbar';
-      readonly toolbarContentWrapper: 'canon-ToolbarContentWrapper';
-      readonly toolbarOverlay: 'canon-ToolbarOverlay';
-      readonly toolbarContent: 'canon-ToolbarContent';
-      readonly toolbarOptions: 'canon-ToolbarOptions';
-      readonly icon: 'canon-ToolbarIcon';
-      readonly name: 'canon-ToolbarName';
-      readonly tabs: 'canon-ToolbarTabs';
-      readonly tabList: 'canon-ToolbarTabList';
-      readonly tab: 'canon-ToolbarTab';
-      readonly activeIndicator: 'canon-ToolbarActiveIndicator';
-      readonly hoveredIndicator: 'canon-ToolbarHoveredIndicator';
+      readonly toolbar: 'canon-HeaderToolbar';
+      readonly toolbarWrapper: 'canon-HeaderToolbarWrapper';
+      readonly toolbarContent: 'canon-HeaderToolbarContent';
+      readonly toolbarOptions: 'canon-HeaderToolbarOptions';
+      readonly toolbarIcon: 'canon-HeaderToolbarIcon';
+      readonly toolbarName: 'canon-HeaderToolbarName';
+      readonly breadcrumbs: 'canon-HeaderBreadcrumbs';
+      readonly breadcrumb: 'canon-HeaderBreadcrumb';
+      readonly breadcrumbLink: 'canon-HeaderBreadcrumbLink';
+      readonly breadcrumbSeparator: 'canon-HeaderBreadcrumbSeparator';
+      readonly tabs: 'canon-HeaderTabs';
+      readonly tabList: 'canon-HeaderTabList';
+      readonly tab: 'canon-HeaderTab';
+      readonly tabActive: 'canon-HeaderTabActive';
+      readonly tabHovered: 'canon-HeaderTabHovered';
+      readonly subNav: 'canon-HeaderSubNav';
     };
   };
   readonly Tooltip: {

@@ -16,7 +16,12 @@
 
 import type { Meta, StoryObj, StoryFn } from '@storybook/react';
 import { Header } from './Header';
-import { HeaderBreadcrumb, HeaderOption, HeaderTab } from './types';
+import {
+  HeaderBreadcrumb,
+  HeaderOption,
+  HeaderProps,
+  HeaderTab,
+} from './types';
 
 const meta = {
   title: 'Components/Header',
@@ -69,6 +74,13 @@ const options: HeaderOption[] = [
     value: 'invite-new-members',
   },
 ];
+
+const subNavigation: HeaderProps['subNavigation'] = {
+  name: 'Sub Navigation',
+  description: 'Sub Navigation Description',
+  tabs: tabs,
+  options: options,
+};
 
 // Extract layout decorator as a reusable constant
 const layoutDecorator = [
@@ -134,11 +146,19 @@ export const WithBreadcrumbs: Story = {
   },
 };
 
+export const WithTabsAndSubNavigation: Story = {
+  args: {
+    tabs,
+    subNavigation,
+  },
+};
+
 export const WithAllComponents: Story = {
   args: {
     options,
     tabs,
     breadcrumbs,
+    subNavigation,
   },
 };
 
@@ -147,6 +167,19 @@ export const WithLayout: Story = {
     options,
     tabs,
     breadcrumbs,
+  },
+  decorators: layoutDecorator,
+  parameters: {
+    layout: 'fullscreen',
+  },
+};
+
+export const WithSubNavigation: Story = {
+  args: {
+    options,
+    tabs,
+    breadcrumbs,
+    subNavigation,
   },
   decorators: layoutDecorator,
   parameters: {

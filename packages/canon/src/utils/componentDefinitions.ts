@@ -252,6 +252,7 @@ export const componentDefinitions = {
       tab: 'canon-HeaderTab',
       tabActive: 'canon-HeaderTabActive',
       tabHovered: 'canon-HeaderTabHovered',
+      subNav: 'canon-HeaderSubNav',
     },
   },
   Tooltip: {

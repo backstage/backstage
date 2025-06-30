@@ -15,5 +15,5 @@
  */
 
 export * from './Header';
-export * from './Indicators';
+export * from './HeaderTabsIndicators';
 export * from './types';
