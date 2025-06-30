@@ -61,6 +61,7 @@
   gap: var(--canon-space-2);
   font-size: var(--canon-font-size-3);
   font-weight: var(--canon-font-weight-regular);
+  flex-shrink: 0;
 }
 
 .canon-ToolbarIcon {
@@ -74,6 +75,45 @@
   }
 }
 
+.canon-ToolbarBreadcrumbs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--canon-space-2);
+  font-size: var(--canon-font-size-3);
+  font-weight: var(--canon-font-weight-regular);
+}
+
+.canon-ToolbarBreadcrumb {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--canon-space-2);
+}
+
+.canon-ToolbarBreadcrumbLink {
+  color: var(--canon-fg-secondary);
+  text-decoration: none;
+  cursor: pointer;
+
+  &[data-active='true'] {
+    color: var(--canon-fg-primary);
+  }
+}
+
+.canon-ToolbarBreadcrumbSeparator {
+  width: 16px;
+  height: 16px;
+  color: var(--canon-fg-secondary);
+}
+
+.canon-ToolbarOptions {
+  position: absolute;
+  right: var(--canon-space-2);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .canon-ToolbarTabs {
   display: flex;
   flex-direction: row;
@@ -84,7 +124,6 @@
   border-radius: var(--canon-radius-2);
   border: 1px solid var(--canon-border);
   margin-top: 8px;
-  overflow: hidden;
 
   /* Initialize CSS variables */
   --active-tab-left: 0px;

@@ -23,6 +23,7 @@ import { MutableRefObject } from 'react';
  */
 export interface ToolbarTab {
   label: string;
+  href?: string;
 }
 
 /**
@@ -37,6 +38,16 @@ export interface ToolbarOption {
 }
 
 /**
+ * Represents a breadcrumb item in the toolbar.
+ *
+ * @public
+ */
+export interface ToolbarBreadcrumb {
+  label: string;
+  href: string;
+}
+
+/**
  * Props for the main Toolbar component.
  *
  * @public
@@ -46,6 +57,7 @@ export interface ToolbarProps {
   name?: string;
   tabs?: ToolbarTab[];
   options?: ToolbarOption[];
+  breadcrumbs?: ToolbarBreadcrumb[];
 }
 
 /**

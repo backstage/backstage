@@ -16,6 +16,7 @@
 
 import type { Meta, StoryObj, StoryFn } from '@storybook/react';
 import { Toolbar } from './Toolbar';
+import { ToolbarBreadcrumb, ToolbarOption, ToolbarTab } from './types';
 
 const meta = {
   title: 'Components/Toolbar',
@@ -25,7 +26,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const tabs = [
+const tabs: ToolbarTab[] = [
   {
     label: 'Overview',
   },
@@ -43,7 +44,22 @@ const tabs = [
   },
 ];
 
-const options = [
+const breadcrumbs: ToolbarBreadcrumb[] = [
+  {
+    label: 'Home',
+    href: '/',
+  },
+  {
+    label: 'Dashboard',
+    href: '/dashboard',
+  },
+  {
+    label: 'Settings',
+    href: '/settings',
+  },
+];
+
+const options: ToolbarOption[] = [
   {
     label: 'Settings',
     value: 'settings',
@@ -112,10 +128,17 @@ export const WithOptions: Story = {
   },
 };
 
-export const WithOptionsAndTabs: Story = {
+export const WithBreadcrumbs: Story = {
+  args: {
+    breadcrumbs,
+  },
+};
+
+export const WithAllComponents: Story = {
   args: {
     options,
     tabs,
+    breadcrumbs,
   },
 };
 
@@ -123,6 +146,7 @@ export const WithLayout: Story = {
   args: {
     options,
     tabs,
+    breadcrumbs,
   },
   decorators: layoutDecorator,
   parameters: {
