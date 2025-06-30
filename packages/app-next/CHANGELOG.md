@@ -1,5 +1,12 @@
 # example-app-next
 
+## 0.0.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-import@0.13.2
+
 ## 0.0.25
 
 ### Patch Changes

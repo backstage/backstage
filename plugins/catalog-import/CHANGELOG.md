@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-import
 
+## 0.13.2
+
+### Patch Changes
+
+- 00da6d6: Fixed bug with error message since ResponseError is now thrown from CatalogClient
+
 ## 0.13.1
 
 ### Patch Changes
