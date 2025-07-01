@@ -23,6 +23,7 @@ export const instanceMetadataServiceRef = createServiceRef<
   import('./InstanceMetadataService').InstanceMetadataService
 >({
   id: 'core.instanceMetadata',
+  scope: 'root',
 });
 
 /**
