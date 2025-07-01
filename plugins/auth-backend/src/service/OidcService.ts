@@ -21,7 +21,7 @@ import { AuthenticationError, InputError } from '@backstage/errors';
 import { decodeJwt } from 'jose';
 
 export class OidcService {
-  constructor(
+  private constructor(
     private readonly auth: AuthService,
     private readonly tokenIssuer: TokenIssuer,
     private readonly baseUrl: string,
