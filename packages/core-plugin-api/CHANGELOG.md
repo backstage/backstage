@@ -1,5 +1,12 @@
 # @backstage/core-plugin-api
 
+## 1.10.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+
 ## 1.10.8
 
 ### Patch Changes
