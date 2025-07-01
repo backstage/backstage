@@ -22,7 +22,7 @@
       format('woff');
 }
 
-[data-theme='spotify-dark'] {
+[data-theme='dark'][data-theme-name='spotify'] {
   --canon-font-text: CircularSp, CircularSp-Arab, CircularSp-Hebr,
     CircularSp-Cyrl, CircularSp-Grek, CircularSp-Deva;
   --canon-font-title: CircularSpTitle, CircularSp-Arab, CircularSp-Hebr,
