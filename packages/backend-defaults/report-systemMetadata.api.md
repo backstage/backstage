@@ -17,7 +17,7 @@ export const actionsRegistryServiceFactory: ServiceFactory<
 // @public (undocumented)
 export const actionsServiceFactory: ServiceFactory<
   ActionsService,
-import { BackstageInstance } from '@backstage/backend-plugin-api/alpha';
+import { BackstageInstance } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
