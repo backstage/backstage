@@ -22,19 +22,19 @@ import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import Router from 'express-promise-router';
 import request from 'supertest';
 import { bindOidcRouter } from './router';
-import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
+import { UserInfoDatabase } from '../database/UserInfoDatabase';
 
 describe('bindOidcRouter', () => {
   it('should return user info for full tokens', async () => {
     const auth = mockServices.auth.mock();
-    const mockUserInfoDatabaseHandler = {
+    const mockUserInfo = {
       getUserInfo: jest.fn().mockResolvedValue({
         claims: {
           sub: 'k/ns:n',
           ent: ['k/ns:a', 'k/ns:b'],
         },
       }),
-    } as unknown as UserInfoDatabaseHandler;
+    } as unknown as UserInfoDatabase;
 
     const { server } = await startTestBackend({
       features: [
@@ -49,7 +49,7 @@ describe('bindOidcRouter', () => {
                   baseUrl: 'http://localhost:7000',
                   auth,
                   tokenIssuer: {} as any,
-                  userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
+                  userInfo: mockUserInfo,
                 });
                 httpRouter.use(router);
                 httpRouter.addAuthPolicy({
@@ -81,21 +81,19 @@ describe('bindOidcRouter', () => {
         },
       });
 
-    expect(mockUserInfoDatabaseHandler.getUserInfo).toHaveBeenCalledWith(
-      'k/ns:n',
-    );
+    expect(mockUserInfo.getUserInfo).toHaveBeenCalledWith('k/ns:n');
   });
 
   it('should return user info for limited tokens', async () => {
     const auth = mockServices.auth.mock();
-    const mockUserInfoDatabaseHandler = {
+    const mockUserInfo = {
       getUserInfo: jest.fn().mockResolvedValue({
         claims: {
           sub: 'k/ns:n',
           ent: ['k/ns:a', 'k/ns:b'],
         },
       }),
-    } as unknown as UserInfoDatabaseHandler;
+    } as unknown as UserInfoDatabase;
 
     const { server } = await startTestBackend({
       features: [
@@ -110,7 +108,7 @@ describe('bindOidcRouter', () => {
                   baseUrl: 'http://localhost:7000',
                   auth,
                   tokenIssuer: {} as any,
-                  userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
+                  userInfo: mockUserInfo,
                 });
                 httpRouter.use(router);
                 httpRouter.addAuthPolicy({
@@ -140,8 +138,6 @@ describe('bindOidcRouter', () => {
         },
       });
 
-    expect(mockUserInfoDatabaseHandler.getUserInfo).toHaveBeenCalledWith(
-      'k/ns:n',
-    );
+    expect(mockUserInfo.getUserInfo).toHaveBeenCalledWith('k/ns:n');
   });
 });

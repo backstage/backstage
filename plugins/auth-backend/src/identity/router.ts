@@ -20,7 +20,7 @@ import { TokenIssuer } from './types';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { decodeJwt } from 'jose';
 import { AuthenticationError, InputError } from '@backstage/errors';
-import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
+import { UserInfoDatabase } from '../database/UserInfoDatabase';
 
 export function bindOidcRouter(
   targetRouter: express.Router,
@@ -28,10 +28,10 @@ export function bindOidcRouter(
     baseUrl: string;
     auth: AuthService;
     tokenIssuer: TokenIssuer;
-    userInfoDatabaseHandler: UserInfoDatabaseHandler;
+    userInfo: UserInfoDatabase;
   },
 ) {
-  const { baseUrl, auth, tokenIssuer, userInfoDatabaseHandler } = options;
+  const { baseUrl, auth, tokenIssuer, userInfo } = options;
 
   const router = Router();
   targetRouter.use(router);
@@ -99,12 +99,12 @@ export function bindOidcRouter(
       throw new Error('Invalid user token, user entity ref must be a string');
     }
 
-    const userInfo = await userInfoDatabaseHandler.getUserInfo(userEntityRef);
-    if (!userInfo) {
+    const info = await userInfo.getUserInfo(userEntityRef);
+    if (!info) {
       res.status(404).send('User info not found');
       return;
     }
 
-    res.json(userInfo);
+    res.json(info);
   });
 }

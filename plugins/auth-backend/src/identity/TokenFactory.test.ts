@@ -24,7 +24,7 @@ import {
 import { omit } from 'lodash';
 import { MemoryKeyStore } from './MemoryKeyStore';
 import { TokenFactory } from './TokenFactory';
-import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
+import { UserInfoDatabaseHandler } from '../database/UserInfoDatabase';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 import { mockServices } from '@backstage/backend-test-utils';
 
