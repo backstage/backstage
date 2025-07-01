@@ -113,9 +113,12 @@ describe('parseReferenceAnnotation', () => {
   });
 
   it('should throw error without annotation', () => {
+    const logMsgRegex = new RegExp(
+      `No ${TECHDOCS_ANNOTATION} annotation provided`,
+    );
     expect(() => {
       parseReferenceAnnotation(TECHDOCS_ANNOTATION, entityBase);
-    }).toThrow(/No location annotation/);
+    }).toThrow(logMsgRegex);
   });
 
   it('should throw error with bad annotation', () => {
