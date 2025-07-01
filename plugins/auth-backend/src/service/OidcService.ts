@@ -16,6 +16,9 @@
 import { AuthService } from '@backstage/backend-plugin-api';
 import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
+import Router from 'express-promise-router';
+import { AuthenticationError, InputError } from '@backstage/errors';
+import { decodeJwt } from 'jose';
 
 export class OidcService {
   constructor(
@@ -37,5 +40,82 @@ export class OidcService {
       options.baseUrl,
       options.userInfo,
     );
+  }
+
+  public getRouter() {
+    const router = Router();
+
+    const config = {
+      issuer: this.baseUrl,
+      token_endpoint: `${this.baseUrl}/v1/token`,
+      userinfo_endpoint: `${this.baseUrl}/v1/userinfo`,
+      jwks_uri: `${this.baseUrl}/.well-known/jwks.json`,
+      response_types_supported: ['id_token'],
+      subject_types_supported: ['public'],
+      id_token_signing_alg_values_supported: [
+        'RS256',
+        'RS384',
+        'RS512',
+        'ES256',
+        'ES384',
+        'ES512',
+        'PS256',
+        'PS384',
+        'PS512',
+        'EdDSA',
+      ],
+      scopes_supported: ['openid'],
+      token_endpoint_auth_methods_supported: [],
+      claims_supported: ['sub', 'ent'],
+      grant_types_supported: [],
+    };
+
+    router.get('/.well-known/openid-configuration', (_req, res) => {
+      res.json(config);
+    });
+
+    router.get('/.well-known/jwks.json', async (_req, res) => {
+      const { keys } = await this.tokenIssuer.listPublicKeys();
+      res.json({ keys });
+    });
+
+    router.get('/v1/token', (_req, res) => {
+      res.status(501).send('Not Implemented');
+    });
+
+    // This endpoint doesn't use the regular HttpAuthService, since the contract
+    // is specifically for the header to be communicated in the Authorization
+    // header, regardless of token type
+    router.get('/v1/userinfo', async (req, res) => {
+      const matches = req.headers.authorization?.match(/^Bearer[ ]+(\S+)$/i);
+      const token = matches?.[1];
+      if (!token) {
+        throw new AuthenticationError('No token provided');
+      }
+
+      const credentials = await this.auth.authenticate(token, {
+        allowLimitedAccess: true,
+      });
+      if (!this.auth.isPrincipal(credentials, 'user')) {
+        throw new InputError(
+          'Userinfo endpoint must be called with a token that represents a user principal',
+        );
+      }
+
+      const { sub: userEntityRef } = decodeJwt(token);
+
+      if (typeof userEntityRef !== 'string') {
+        throw new Error('Invalid user token, user entity ref must be a string');
+      }
+      const userInfo = await this.userInfo.getUserInfo(userEntityRef);
+      if (!userInfo) {
+        res.status(404).send('User info not found');
+        return;
+      }
+
+      res.json(userInfo);
+    });
+
+    return router;
   }
 }

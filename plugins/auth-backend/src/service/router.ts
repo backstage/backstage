@@ -148,14 +148,14 @@ export async function createRouter(
     auth: options.auth,
   });
 
-  const oidcService = OidcService.create({
-    auth: options.auth,
-    tokenIssuer,
-    baseUrl: authUrl,
-    userInfo,
-  });
-
-  router.use(oidcService.getRouter());
+  router.use(
+    OidcService.create({
+      auth: options.auth,
+      tokenIssuer,
+      baseUrl: authUrl,
+      userInfo,
+    }).getRouter(),
+  );
 
   // Gives a more helpful error message than a plain 404
   router.use('/:provider/', req => {
