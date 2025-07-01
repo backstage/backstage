@@ -18,7 +18,7 @@ import { createLocalJWKSet, jwtVerify } from 'jose';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { StaticKeyStore } from './StaticKeyStore';
 import { mockServices } from '@backstage/backend-test-utils';
-import { UserInfo } from '../database/UserInfoDatabase';
+import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { omit } from 'lodash';
 
 const logger = mockServices.logger.mock();
@@ -31,7 +31,7 @@ const entityRef = stringifyEntityRef({
 describe('StaticTokenIssuer', () => {
   const mockUserInfo = {
     addUserInfo: jest.fn().mockResolvedValue(undefined),
-  } as unknown as UserInfo;
+  } as unknown as UserInfoDatabase;
 
   const staticKeyStore = {
     listKeys: () => {
@@ -85,7 +85,7 @@ describe('StaticTokenIssuer', () => {
         logger,
         issuer: 'my-issuer',
         sessionExpirationSeconds: keyDurationSeconds,
-        UserInfo: mockUserInfo,
+        userInfo: mockUserInfo,
       },
       staticKeyStore as unknown as StaticKeyStore,
     );
@@ -131,7 +131,7 @@ describe('StaticTokenIssuer', () => {
         logger,
         issuer: 'my-issuer',
         sessionExpirationSeconds: keyDurationSeconds,
-        UserInfo: mockUserInfo,
+        userInfo: mockUserInfo,
         omitClaimsFromToken: ['ent'],
       },
       staticKeyStore as unknown as StaticKeyStore,
