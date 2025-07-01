@@ -2,4 +2,4 @@
 '@backstage/canon': patch
 ---
 
-Add new Toolbar component to Canon.
+Add new Header component to Canon.
