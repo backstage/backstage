@@ -18,7 +18,6 @@
   cursor: pointer;
   user-select: none;
   background-color: var(--surface-1);
-  transition: background-color 0.2s ease-in-out;
 
   &:focus-visible {
     outline: 2px solid var(--color-blue);

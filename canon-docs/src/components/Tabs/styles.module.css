@@ -23,5 +23,7 @@
   width: var(--active-tab-width);
   height: 1px;
   background-color: var(--primary);
-  transition: all 0.2s ease-in-out;
+  transition-property: left, width;
+  transition-duration: 200ms;
+  transition-timing-function: ease-in-out;
 }
