@@ -6,8 +6,6 @@ sidebar_label: Testing
 description: Testing plugins in the frontend system
 ---
 
-# Testing Frontend Plugins
-
 :::note Note
 
 The new frontend system is in alpha, and some plugins do not yet fully implement it.
