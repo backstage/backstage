@@ -27,12 +27,6 @@ export interface HeaderProps {
   tabs?: HeaderTab[];
   options?: HeaderOption[];
   breadcrumbs?: HeaderBreadcrumb[];
-  subNavigation?: {
-    name?: string;
-    description?: string;
-    tabs?: HeaderTab[];
-    options?: HeaderOption[];
-  };
 }
 
 /**

@@ -14,27 +14,5 @@
  * limitations under the License.
  */
 
-import type { HeaderProps } from './types';
-import { HeaderToolbar } from './HeaderToolbar';
-import { HeaderTabs } from './HeaderTabs';
-
-/**
- * A component that renders a toolbar.
- *
- * @public
- */
-export const Header = (props: HeaderProps) => {
-  const { tabs, icon, name, options, breadcrumbs } = props;
-
-  return (
-    <>
-      <HeaderToolbar
-        icon={icon}
-        name={name}
-        options={options}
-        breadcrumbs={breadcrumbs}
-      />
-      <HeaderTabs tabs={tabs} />
-    </>
-  );
-};
+export * from './HeaderPage';
+export * from './types';

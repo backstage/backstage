@@ -15,18 +15,18 @@
  */
 
 import type { Meta, StoryObj, StoryFn } from '@storybook/react';
-import { Header } from './Header';
-import { HeaderBreadcrumb, HeaderOption, HeaderTab } from './types';
+import { HeaderPage } from './HeaderPage';
+import { HeaderPageOption, HeaderPageTab } from './types';
 
 const meta = {
-  title: 'Components/Header',
-  component: Header,
-} satisfies Meta<typeof Header>;
+  title: 'Components/HeaderPage',
+  component: HeaderPage,
+} satisfies Meta<typeof HeaderPage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const tabs: HeaderTab[] = [
+const tabs: HeaderPageTab[] = [
   {
     label: 'Overview',
   },
@@ -44,22 +44,7 @@ const tabs: HeaderTab[] = [
   },
 ];
 
-const breadcrumbs: HeaderBreadcrumb[] = [
-  {
-    label: 'Home',
-    href: '/',
-  },
-  {
-    label: 'Dashboard',
-    href: '/dashboard',
-  },
-  {
-    label: 'Settings',
-    href: '/settings',
-  },
-];
-
-const options: HeaderOption[] = [
+const options: HeaderPageOption[] = [
   {
     label: 'Settings',
     value: 'settings',
@@ -113,40 +98,44 @@ const layoutDecorator = [
 ];
 
 export const Default: Story = {
-  args: {},
+  args: {
+    name: 'Header Page',
+  },
+};
+
+export const WithDescription: Story = {
+  args: {
+    ...Default.args,
+    description: 'Header Page Description',
+  },
 };
 
 export const WithTabs: Story = {
   args: {
+    ...Default.args,
     tabs,
   },
 };
 
 export const WithOptions: Story = {
   args: {
+    ...Default.args,
     options,
   },
 };
 
-export const WithBreadcrumbs: Story = {
+export const WithEverything: Story = {
   args: {
-    breadcrumbs,
-  },
-};
-
-export const WithAllComponents: Story = {
-  args: {
-    options,
+    ...Default.args,
+    description: 'Header Page Description',
     tabs,
-    breadcrumbs,
+    options,
   },
 };
 
 export const WithLayout: Story = {
   args: {
-    options,
-    tabs,
-    breadcrumbs,
+    ...WithEverything.args,
   },
   decorators: layoutDecorator,
   parameters: {

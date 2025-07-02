@@ -14,27 +14,35 @@
  * limitations under the License.
  */
 
-import type { HeaderProps } from './types';
-import { HeaderToolbar } from './HeaderToolbar';
-import { HeaderTabs } from './HeaderTabs';
-
 /**
- * A component that renders a toolbar.
+ * Props for the main HeaderPage component.
  *
  * @public
  */
-export const Header = (props: HeaderProps) => {
-  const { tabs, icon, name, options, breadcrumbs } = props;
+export interface HeaderPageProps {
+  name?: string;
+  description?: string;
+  tabs?: HeaderPageTab[];
+  options?: HeaderPageOption[];
+}
 
-  return (
-    <>
-      <HeaderToolbar
-        icon={icon}
-        name={name}
-        options={options}
-        breadcrumbs={breadcrumbs}
-      />
-      <HeaderTabs tabs={tabs} />
-    </>
-  );
-};
+/**
+ * Represents a tab item in the header page.
+ *
+ * @public
+ */
+export interface HeaderPageTab {
+  label: string;
+  href?: string;
+}
+
+/**
+ * Represents an option item in the header page.
+ *
+ * @public
+ */
+export interface HeaderPageOption {
+  label: string;
+  value: string;
+  onClick?: () => void;
+}

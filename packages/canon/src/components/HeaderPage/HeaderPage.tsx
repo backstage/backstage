@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { HeaderProps } from './types';
+
+import type { HeaderPageProps } from './types';
 import { Heading } from '../Heading';
 import { Text } from '../Text';
 import { Flex } from '../Flex';
@@ -21,19 +22,22 @@ import { Menu } from '../Menu';
 import { ButtonIcon } from '../ButtonIcon';
 import { RiMore2Line } from '@remixicon/react';
 
-export const HeaderSubNav = (props: Pick<HeaderProps, 'subNavigation'>) => {
-  const { subNavigation } = props;
-
-  if (!subNavigation) return null;
+/**
+ * A component that renders a header page.
+ *
+ * @public
+ */
+export const HeaderPage = (props: HeaderPageProps) => {
+  const { name, description, options } = props;
 
   return (
     <Flex pl="4" pr="2" mt="6" justify="between">
       <Flex direction="column" gap="2">
-        <Heading variant="title4">{subNavigation.name}</Heading>
-        <Text>{subNavigation.description}</Text>
+        <Heading variant="title4">{name}</Heading>
+        <Text>{description}</Text>
       </Flex>
       <div>
-        {subNavigation.options && (
+        {options && (
           <Menu.Root>
             <Menu.Trigger
               render={props => (
@@ -48,7 +52,7 @@ export const HeaderSubNav = (props: Pick<HeaderProps, 'subNavigation'>) => {
             <Menu.Portal>
               <Menu.Positioner sideOffset={4} align="end">
                 <Menu.Popup>
-                  {subNavigation.options.map(option => (
+                  {options.map(option => (
                     <Menu.Item
                       key={option.value}
                       onClick={() => option.onClick?.()}

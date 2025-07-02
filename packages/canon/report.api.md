@@ -20,6 +20,7 @@ import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LinkProps as LinkProps_2 } from 'react-aria-components';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
+import { MutableRefObject } from 'react';
 import type { RadioGroupProps as RadioGroupProps_2 } from 'react-aria-components';
 import type { RadioProps as RadioProps_2 } from 'react-aria-components';
 import { ReactElement } from 'react';
@@ -935,6 +936,109 @@ export interface GridProps extends SpaceProps {
   // (undocumented)
   style?: React.CSSProperties;
 }
+
+// @public
+export const Header: (props: HeaderProps) => JSX_2.Element;
+
+// @public
+export interface HeaderBreadcrumb {
+  // (undocumented)
+  href: string;
+  // (undocumented)
+  label: string;
+}
+
+// @public
+export interface HeaderIndicatorsProps {
+  // (undocumented)
+  hoveredKey: string | null;
+  // (undocumented)
+  prevHoveredKey: MutableRefObject<string | null>;
+  // (undocumented)
+  tabRefs: MutableRefObject<Map<string, HTMLDivElement>>;
+  // (undocumented)
+  tabsRef: MutableRefObject<HTMLDivElement | null>;
+}
+
+// @public
+export interface HeaderOption {
+  // (undocumented)
+  label: string;
+  // (undocumented)
+  onClick?: () => void;
+  // (undocumented)
+  value: string;
+}
+
+// @public
+export const HeaderPage: (props: HeaderPageProps) => JSX_2.Element;
+
+// @public
+export interface HeaderPageOption {
+  // (undocumented)
+  label: string;
+  // (undocumented)
+  onClick?: () => void;
+  // (undocumented)
+  value: string;
+}
+
+// @public
+export interface HeaderPageProps {
+  // (undocumented)
+  description?: string;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  options?: HeaderPageOption[];
+  // (undocumented)
+  tabs?: HeaderPageTab[];
+}
+
+// @public
+export interface HeaderPageTab {
+  // (undocumented)
+  href?: string;
+  // (undocumented)
+  label: string;
+}
+
+// @public
+export interface HeaderProps {
+  // (undocumented)
+  breadcrumbs?: HeaderBreadcrumb[];
+  // (undocumented)
+  icon?: React.ReactNode;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  options?: HeaderOption[];
+  // (undocumented)
+  tabs?: HeaderTab[];
+}
+
+// @public
+export interface HeaderTab {
+  // (undocumented)
+  href?: string;
+  // (undocumented)
+  label: string;
+}
+
+// @public
+export interface HeaderTabProps {
+  // (undocumented)
+  setHoveredKey: (key: string | null) => void;
+  // (undocumented)
+  setTabRef: (key: string, element: HTMLDivElement | null) => void;
+  // (undocumented)
+  tab: HeaderTab;
+}
+
+// @public
+export const HeaderTabsIndicators: (
+  props: HeaderIndicatorsProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
 export const Heading: <T extends ElementType = 'h1'>(
