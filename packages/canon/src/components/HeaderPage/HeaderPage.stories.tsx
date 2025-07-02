@@ -99,7 +99,7 @@ const layoutDecorator = [
 
 export const Default: Story = {
   args: {
-    name: 'Header Page',
+    title: 'Header Page',
   },
 };
 

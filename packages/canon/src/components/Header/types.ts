@@ -23,7 +23,7 @@ import { MutableRefObject } from 'react';
  */
 export interface HeaderProps {
   icon?: React.ReactNode;
-  name?: string;
+  title?: string;
   tabs?: HeaderTab[];
   options?: HeaderOption[];
   breadcrumbs?: HeaderBreadcrumb[];

@@ -24,13 +24,13 @@ import { HeaderTabs } from './HeaderTabs';
  * @public
  */
 export const Header = (props: HeaderProps) => {
-  const { tabs, icon, name, options, breadcrumbs } = props;
+  const { tabs, icon, title, options, breadcrumbs } = props;
 
   return (
     <>
       <HeaderToolbar
         icon={icon}
-        name={name}
+        title={title}
         options={options}
         breadcrumbs={breadcrumbs}
       />

@@ -20,7 +20,7 @@
  * @public
  */
 export interface HeaderPageProps {
-  name?: string;
+  title?: string;
   description?: string;
   tabs?: HeaderPageTab[];
   options?: HeaderPageOption[];

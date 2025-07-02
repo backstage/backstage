@@ -28,12 +28,12 @@ import { RiMore2Line } from '@remixicon/react';
  * @public
  */
 export const HeaderPage = (props: HeaderPageProps) => {
-  const { name, description, options } = props;
+  const { title, description, options } = props;
 
   return (
     <Flex pl="4" pr="2" mt="6" justify="between">
       <Flex direction="column" gap="2">
-        <Heading variant="title4">{name}</Heading>
+        <Heading variant="title4">{title}</Heading>
         <Text>{description}</Text>
       </Flex>
       <div>

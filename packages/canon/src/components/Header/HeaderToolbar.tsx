@@ -29,7 +29,7 @@ import { motion, useScroll, useTransform } from 'motion/react';
  * @public
  */
 export const HeaderToolbar = (props: HeaderProps) => {
-  const { icon, name, options, breadcrumbs } = props;
+  const { icon, title, options, breadcrumbs } = props;
   const { classNames } = useStyles('Header');
 
   const { scrollY } = useScroll();
@@ -94,7 +94,7 @@ export const HeaderToolbar = (props: HeaderProps) => {
             <div className={classNames.toolbarIcon}>
               {icon || <RiShapesLine />}
             </div>
-            {name || 'Your plugin'}
+            {title || 'Your plugin'}
           </div>
           {breadcrumbs && (
             <motion.div

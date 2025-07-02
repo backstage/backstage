@@ -988,11 +988,11 @@ export interface HeaderPageProps {
   // (undocumented)
   description?: string;
   // (undocumented)
-  name?: string;
-  // (undocumented)
   options?: HeaderPageOption[];
   // (undocumented)
   tabs?: HeaderPageTab[];
+  // (undocumented)
+  title?: string;
 }
 
 // @public
@@ -1010,11 +1010,11 @@ export interface HeaderProps {
   // (undocumented)
   icon?: React.ReactNode;
   // (undocumented)
-  name?: string;
-  // (undocumented)
   options?: HeaderOption[];
   // (undocumented)
   tabs?: HeaderTab[];
+  // (undocumented)
+  title?: string;
 }
 
 // @public
