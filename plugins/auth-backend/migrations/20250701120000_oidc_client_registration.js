@@ -42,6 +42,11 @@ exports.up = async function up(knex) {
       .comment('The name of the client, should be human readable');
 
     table
+      .text('redirect_uris', 'longtext')
+      .notNullable()
+      .comment('JSON array of valid redirect URIs');
+
+    table
       .timestamp('created_at', { useTz: false, precision: 0 })
       .notNullable()
       .defaultTo(knex.fn.now())
