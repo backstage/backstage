@@ -17,6 +17,32 @@ import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 
+// @alpha (undocumented)
+export const CatalogContentHeaderBlueprint: ExtensionBlueprint<{
+  kind: 'catalog-content-header';
+  name: undefined;
+  params: {
+    loader: () => Promise<JSX.Element>;
+  };
+  output: ConfigurableExtensionDataRef<
+    JSX_2.Element,
+    'core.reactElement',
+    {
+      optional: true;
+    }
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    element: ConfigurableExtensionDataRef<
+      JSX_2.Element,
+      'core.reactElement',
+      {}
+    >;
+  };
+}>;
+
 // @alpha
 export const CatalogFilterBlueprint: ExtensionBlueprint<{
   kind: 'catalog-filter';
