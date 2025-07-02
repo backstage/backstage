@@ -1,15 +1,12 @@
-import type { Preview, ReactRenderer } from '@storybook/react';
+import addonDocs from '@storybook/addon-docs';
+import { definePreview } from '@storybook/react-webpack5';
+import type { ReactRenderer } from '@storybook/react-webpack5';
 import { withThemeByDataAttribute } from '@storybook/addon-themes';
 import '../src/css/styles.css';
 
-const preview: Preview = {
+export default definePreview({
   parameters: {
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
-    },
+    controls: {},
     backgrounds: {
       disable: true,
     },
@@ -19,53 +16,8 @@ const preview: Preview = {
         order: ['Core Concepts', 'Components'],
       },
     },
-    viewport: {
-      viewports: {
-        initial: {
-          name: 'Initial',
-          styles: {
-            width: '320px',
-            height: '100%',
-          },
-        },
-        xs: {
-          name: 'Extra Small',
-          styles: {
-            width: '640px',
-            height: '100%',
-          },
-        },
-        sm: {
-          name: 'Small',
-          styles: {
-            width: '768px',
-            height: '100%',
-          },
-        },
-        md: {
-          name: 'Medium',
-          styles: {
-            width: '1024px',
-            height: '100%',
-          },
-        },
-        lg: {
-          name: 'Large',
-          styles: {
-            width: '1280px',
-            height: '100%',
-          },
-        },
-        xl: {
-          name: 'Extra Large',
-          styles: {
-            width: '1536px',
-            height: '100%',
-          },
-        },
-      },
-    },
   },
+
   decorators: [
     withThemeByDataAttribute<ReactRenderer>({
       themes: {
@@ -85,6 +37,6 @@ const preview: Preview = {
       return <Story />;
     },
   ],
-};
 
-export default preview;
+  addons: [addonDocs()],
+});

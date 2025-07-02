@@ -1,4 +1,4 @@
-import type { StorybookConfig } from '@storybook/react-webpack5';
+import { defineMain } from '@storybook/react-webpack5/node';
 import { join, dirname } from 'path';
 
 /**
@@ -8,14 +8,13 @@ import { join, dirname } from 'path';
 function getAbsolutePath(value: string): string {
   return dirname(require.resolve(join(value, 'package.json')));
 }
-const config: StorybookConfig = {
+export default defineMain({
   stories: ['../src/components/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   staticDirs: ['../static'],
   addons: [
     getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
-    getAbsolutePath('@storybook/addon-essentials'),
-    getAbsolutePath('@storybook/addon-interactions'),
     getAbsolutePath('@storybook/addon-themes'),
+    getAbsolutePath('@storybook/addon-docs'),
   ],
   framework: {
     name: getAbsolutePath('@storybook/react-webpack5'),
@@ -31,5 +30,4 @@ const config: StorybookConfig = {
       },
     },
   }),
-};
-export default config;
+});
