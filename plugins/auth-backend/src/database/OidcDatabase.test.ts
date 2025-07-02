@@ -41,7 +41,7 @@ describe('Oidc Database', () => {
   }
 
   describe.each(databases.eachSupportedId())('%p', databaseId => {
-    describe('Client', () => {
+    describe('Clients', () => {
       it('should create and return a client', async () => {
         const { oidc } = await createOidcDatabase(databaseId);
 
@@ -94,7 +94,7 @@ describe('Oidc Database', () => {
       });
     });
 
-    describe('Authorization Code', () => {
+    describe('Authorization Codes', () => {
       it('should create and return an authorization code', async () => {
         const { oidc } = await createOidcDatabase(databaseId);
 
@@ -192,6 +192,97 @@ describe('Oidc Database', () => {
         ).resolves.toEqual({
           ...authorizationCode,
           used: true,
+        });
+      });
+    });
+
+    describe('Access Tokens', () => {
+      it('should create and return an access token', async () => {
+        const { oidc } = await createOidcDatabase(databaseId);
+
+        const mockClient = await oidc.createClient({
+          clientId: 'test-client',
+          clientName: 'Test Client',
+          clientSecret: 'test-secret',
+          redirectUris: ['https://example.com/callback'],
+          responseTypes: ['code'],
+          grantTypes: ['authorization_code'],
+        });
+
+        const accessToken = await oidc.createAccessToken({
+          tokenId: 'test-token',
+          clientId: mockClient.clientId,
+          userEntityRef: 'user:default/blam',
+          expiresAt: '2025-01-01',
+          revoked: false,
+        });
+
+        await expect(
+          oidc.getAccessToken({ tokenId: 'test-token' }),
+        ).resolves.toEqual(accessToken);
+      });
+
+      it('should return null if the access token does not exist', async () => {
+        const { oidc } = await createOidcDatabase(databaseId);
+
+        await expect(
+          oidc.getAccessToken({ tokenId: 'test-token' }),
+        ).resolves.toBeNull();
+      });
+
+      it('should return the access token when created', async () => {
+        const { oidc } = await createOidcDatabase(databaseId);
+
+        const mockClient = await oidc.createClient({
+          clientId: 'test-client',
+          clientName: 'Test Client',
+          clientSecret: 'test-secret',
+          redirectUris: ['https://example.com/callback'],
+          responseTypes: ['code'],
+          grantTypes: ['authorization_code'],
+        });
+
+        const accessToken = await oidc.createAccessToken({
+          tokenId: 'test-token',
+          clientId: mockClient.clientId,
+          userEntityRef: 'user:default/blam',
+          expiresAt: '2025-01-01',
+          revoked: false,
+        });
+
+        await expect(
+          oidc.getAccessToken({ tokenId: 'test-token' }),
+        ).resolves.toEqual(accessToken);
+      });
+
+      it('should allow updating the access token', async () => {
+        const { oidc } = await createOidcDatabase(databaseId);
+
+        const mockClient = await oidc.createClient({
+          clientId: 'test-client',
+          clientName: 'Test Client',
+          clientSecret: 'test-secret',
+          redirectUris: ['https://example.com/callback'],
+          responseTypes: ['code'],
+          grantTypes: ['authorization_code'],
+        });
+
+        const accessToken = await oidc.createAccessToken({
+          tokenId: 'test-token',
+          clientId: mockClient.clientId,
+          userEntityRef: 'user:default/blam',
+          expiresAt: '2025-01-01',
+          revoked: false,
+        });
+
+        await expect(
+          oidc.updateAccessToken({
+            tokenId: 'test-token',
+            revoked: true,
+          }),
+        ).resolves.toEqual({
+          ...accessToken,
+          revoked: true,
         });
       });
     });
