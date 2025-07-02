@@ -4,16 +4,28 @@
 
 .list {
   display: flex;
-  gap: var(--canon-space-6);
+  gap: 24px;
   border-bottom: 1px solid var(--border);
   position: relative;
-  margin-bottom: var(--canon-space-6);
+  margin-bottom: 24px;
 }
 
 .tab {
   all: unset;
   cursor: pointer;
-  padding-bottom: 8px;
+  padding-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+
+  &[data-selected='false'] {
+    color: var(--secondary);
+  }
+
+  &[data-selected='false']:hover {
+    color: var(--primary);
+    transition: color 0.2s ease-in-out;
+  }
 }
 
 .indicator {

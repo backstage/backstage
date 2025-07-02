@@ -30,8 +30,8 @@
 }
 
 .SelectValue {
-  font-size: var(--canon-font-size-3);
-  font-weight: var(--canon-font-weight-regular);
+  font-size: 0.875rem;
+  font-weight: 400;
 }
 
 .Positioner {
@@ -81,8 +81,8 @@
   padding-block: 0.5rem;
   padding-left: 0.625rem;
   padding-right: 1rem;
-  font-size: var(--canon-font-size-3);
-  font-weight: var(--canon-font-weight-bold);
+  font-size: 0.875rem;
+  font-weight: 600;
   display: grid;
   gap: 0.5rem;
   align-items: center;

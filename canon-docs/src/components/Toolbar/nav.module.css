@@ -20,15 +20,15 @@
   display: flex;
   position: relative;
   z-index: 0;
-  gap: var(--canon-space-8);
+  gap: 2rem;
 }
 
 .tab {
   all: unset;
   height: 60px;
   color: var(--secondary);
-  font-size: var(--canon-font-size-3);
-  font-weight: var(--canon-font-weight-bold);
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
 
   &:hover {
