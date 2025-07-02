@@ -45,6 +45,16 @@ type OidcAuthorizationCodeRow = {
   used?: boolean;
 };
 
+type OidcAccessTokenRow = {
+  token_id: string;
+  client_id: string;
+  user_entity_ref: string;
+  scope: string | null;
+  created_at: string;
+  expires_at: string;
+  revoked?: boolean;
+};
+
 type Client = {
   clientId: string;
   clientName: string;
@@ -72,6 +82,23 @@ type AuthorizationCode = {
   used: boolean;
 };
 
+type AccessToken = {
+  tokenId: string;
+  clientId: string;
+  userEntityRef: string;
+  scope?: string;
+  createdAt: string;
+  expiresAt: string;
+  revoked?: boolean;
+};
+
+/**
+ * This class is an implementation for the Database operations that power the OIDC sign-in flow.
+ *
+ * This class provides database operations for OpenID Connect (OIDC) authentication flows.
+ * It manages OIDC clients, authorization codes, and access tokens in the database, as well as the consent requests
+ * for the frontend plugin to accept.
+ */
 export class OidcDatabase {
   private constructor(private readonly db: Knex) {}
 
@@ -161,15 +188,61 @@ export class OidcDatabase {
     const updatedFields = Object.fromEntries(
       Object.entries(row).filter(([_, value]) => value !== undefined),
     );
-    console.log(updatedFields);
-    const updated = await this.db<OidcAuthorizationCodeRow>(
+
+    const [updated] = await this.db<OidcAuthorizationCodeRow>(
       'oidc_authorization_codes',
     )
       .where('code', authorizationCode.code)
       .update(updatedFields)
       .returning('*');
 
-    return this.rowToAuthorizationCode(updated[0]) as AuthorizationCode;
+    return this.rowToAuthorizationCode(updated) as AuthorizationCode;
+  }
+
+  async createAccessToken(accessToken: Omit<AccessToken, 'createdAt'>) {
+    const now = DateTime.now().toString();
+
+    await this.db<OidcAccessTokenRow>('oidc_access_tokens').insert({
+      token_id: accessToken.tokenId,
+      client_id: accessToken.clientId,
+      user_entity_ref: accessToken.userEntityRef,
+      scope: accessToken.scope,
+      created_at: now,
+      expires_at: accessToken.expiresAt,
+      revoked: accessToken.revoked ?? false,
+    });
+
+    return {
+      ...accessToken,
+      createdAt: now,
+    };
+  }
+
+  async getAccessToken({ tokenId }: { tokenId: string }) {
+    const accessToken = await this.db<OidcAccessTokenRow>('oidc_access_tokens')
+      .where('token_id', tokenId)
+      .first();
+
+    if (!accessToken) {
+      return null;
+    }
+
+    return this.rowToAccessToken(accessToken) as AccessToken;
+  }
+
+  async updateAccessToken(
+    accessToken: Partial<AccessToken> & { tokenId: string },
+  ) {
+    const row = this.accessTokenToRow(accessToken);
+    const updatedFields = Object.fromEntries(
+      Object.entries(row).filter(([_, value]) => value !== undefined),
+    );
+    const [updated] = await this.db<OidcAccessTokenRow>('oidc_access_tokens')
+      .where('token_id', accessToken.tokenId)
+      .update(updatedFields)
+      .returning('*');
+
+    return this.rowToAccessToken(updated) as AccessToken;
   }
 
   private rowToClient(row: Partial<OidcClientRow>): Partial<Client> {
@@ -224,6 +297,34 @@ export class OidcDatabase {
       createdAt: row.created_at,
       expiresAt: row.expires_at,
       used: Boolean(row.used),
+    };
+  }
+
+  private accessTokenToRow(
+    accessToken: Partial<AccessToken>,
+  ): Partial<OidcAccessTokenRow> {
+    return {
+      token_id: accessToken.tokenId,
+      client_id: accessToken.clientId,
+      user_entity_ref: accessToken.userEntityRef,
+      scope: accessToken.scope,
+      created_at: accessToken.createdAt,
+      expires_at: accessToken.expiresAt,
+      revoked: accessToken.revoked,
+    };
+  }
+
+  private rowToAccessToken(
+    row: Partial<OidcAccessTokenRow>,
+  ): Partial<AccessToken> {
+    return {
+      tokenId: row.token_id,
+      clientId: row.client_id,
+      userEntityRef: row.user_entity_ref,
+      scope: row.scope ?? undefined,
+      createdAt: row.created_at,
+      expiresAt: row.expires_at,
+      revoked: Boolean(row.revoked),
     };
   }
 }
