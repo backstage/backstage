@@ -40,6 +40,7 @@ import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
 import { OidcService } from './OidcService';
+import { OidcRouter } from './OidcRouter';
 
 interface RouterOptions {
   logger: LoggerService;
@@ -148,14 +149,14 @@ export async function createRouter(
     auth: options.auth,
   });
 
-  router.use(
-    OidcService.create({
-      auth: options.auth,
-      tokenIssuer,
-      baseUrl: authUrl,
-      userInfo,
-    }).getRouter(),
-  );
+  const oidcRouter = OidcRouter.create({
+    auth: options.auth,
+    tokenIssuer,
+    baseUrl: authUrl,
+    userInfo,
+  });
+
+  router.use(oidcRouter.getRouter());
 
   // Gives a more helpful error message than a plain 404
   router.use('/:provider/', req => {

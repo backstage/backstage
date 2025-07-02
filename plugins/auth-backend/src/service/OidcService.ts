@@ -16,8 +16,7 @@
 import { AuthService } from '@backstage/backend-plugin-api';
 import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
-import Router from 'express-promise-router';
-import { AuthenticationError, InputError } from '@backstage/errors';
+import { InputError } from '@backstage/errors';
 import { decodeJwt } from 'jose';
 
 export class OidcService {
@@ -42,10 +41,8 @@ export class OidcService {
     );
   }
 
-  public getRouter() {
-    const router = Router();
-
-    const config = {
+  public getConfiguration() {
+    return {
       issuer: this.baseUrl,
       token_endpoint: `${this.baseUrl}/v1/token`,
       userinfo_endpoint: `${this.baseUrl}/v1/userinfo`,
@@ -69,53 +66,27 @@ export class OidcService {
       claims_supported: ['sub', 'ent'],
       grant_types_supported: [],
     };
+  }
 
-    router.get('/.well-known/openid-configuration', (_req, res) => {
-      res.json(config);
+  public async listPublicKeys() {
+    return await this.tokenIssuer.listPublicKeys();
+  }
+
+  public async getUserInfo({ token }: { token: string }) {
+    const credentials = await this.auth.authenticate(token, {
+      allowLimitedAccess: true,
     });
+    if (!this.auth.isPrincipal(credentials, 'user')) {
+      throw new InputError(
+        'Userinfo endpoint must be called with a token that represents a user principal',
+      );
+    }
 
-    router.get('/.well-known/jwks.json', async (_req, res) => {
-      const { keys } = await this.tokenIssuer.listPublicKeys();
-      res.json({ keys });
-    });
+    const { sub: userEntityRef } = decodeJwt(token);
 
-    router.get('/v1/token', (_req, res) => {
-      res.status(501).send('Not Implemented');
-    });
-
-    // This endpoint doesn't use the regular HttpAuthService, since the contract
-    // is specifically for the header to be communicated in the Authorization
-    // header, regardless of token type
-    router.get('/v1/userinfo', async (req, res) => {
-      const matches = req.headers.authorization?.match(/^Bearer[ ]+(\S+)$/i);
-      const token = matches?.[1];
-      if (!token) {
-        throw new AuthenticationError('No token provided');
-      }
-
-      const credentials = await this.auth.authenticate(token, {
-        allowLimitedAccess: true,
-      });
-      if (!this.auth.isPrincipal(credentials, 'user')) {
-        throw new InputError(
-          'Userinfo endpoint must be called with a token that represents a user principal',
-        );
-      }
-
-      const { sub: userEntityRef } = decodeJwt(token);
-
-      if (typeof userEntityRef !== 'string') {
-        throw new Error('Invalid user token, user entity ref must be a string');
-      }
-      const userInfo = await this.userInfo.getUserInfo(userEntityRef);
-      if (!userInfo) {
-        res.status(404).send('User info not found');
-        return;
-      }
-
-      res.json(userInfo);
-    });
-
-    return router;
+    if (typeof userEntityRef !== 'string') {
+      throw new Error('Invalid user token, user entity ref must be a string');
+    }
+    return await this.userInfo.getUserInfo(userEntityRef);
   }
 }

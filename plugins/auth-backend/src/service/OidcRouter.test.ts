@@ -21,10 +21,11 @@ import {
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import Router from 'express-promise-router';
 import request from 'supertest';
-import { OidcService } from './OidcService';
+import { OidcRouter } from './OidcRouter';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
+import { OidcService } from './OidcService';
 
-describe('OidcService', () => {
+describe('OidcRouter', () => {
   describe('/v1/userinfo', () => {
     it('should return user info for full tokens', async () => {
       const auth = mockServices.auth.mock();
@@ -48,7 +49,7 @@ describe('OidcService', () => {
                   const router = Router();
 
                   router.use(
-                    OidcService.create({
+                    OidcRouter.create({
                       auth,
                       tokenIssuer: {} as any,
                       baseUrl: 'http://localhost:7000',
@@ -110,7 +111,7 @@ describe('OidcService', () => {
                   const router = Router();
 
                   router.use(
-                    OidcService.create({
+                    OidcRouter.create({
                       auth,
                       tokenIssuer: {} as any,
                       baseUrl: 'http://localhost:7000',
