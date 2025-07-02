@@ -1,5 +1,36 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.17.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/plugin-permission-react@0.4.36-next.0
+  - @backstage/plugin-scaffolder-common@1.5.12-next.0
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
+## 1.17.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/catalog-client@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.35
+  - @backstage/plugin-scaffolder-common@1.5.11
+
 ## 1.17.0
 
 ### Minor Changes

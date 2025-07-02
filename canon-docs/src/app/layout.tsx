@@ -6,8 +6,7 @@ import { CustomTheme } from '@/components/CustomTheme';
 import styles from '../css/page.module.css';
 
 import '../css/globals.css';
-import '/public/core.css';
-import '/public/components.css';
+import '/public/styles.css';
 
 export const metadata: Metadata = {
   title: 'Canon',

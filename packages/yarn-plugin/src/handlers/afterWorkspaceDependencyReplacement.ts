@@ -16,11 +16,10 @@
 
 import { Descriptor, structUtils, Workspace } from '@yarnpkg/core';
 import { suggestUtils } from '@yarnpkg/plugin-essentials';
-import { getPackageVersion } from '../util';
 import { PROTOCOL } from '../constants';
 
 export const afterWorkspaceDependencyReplacement = async (
-  workspace: Workspace,
+  _workspace: Workspace,
   _target: suggestUtils.Target,
   _fromDescriptor: Descriptor,
   toDescriptor: Descriptor,
@@ -31,15 +30,8 @@ export const afterWorkspaceDependencyReplacement = async (
     toDescriptor.scope === 'backstage' &&
     toDescriptorRange.protocol !== PROTOCOL
   ) {
-    try {
-      await getPackageVersion(toDescriptor, workspace.project.configuration);
-      console.warn(
-        `${toDescriptor.name} should be set to "${PROTOCOL}^" instead of "${toDescriptor.range}". Make sure this change is intentional and not a mistake.`,
-      );
-    } catch (_error: any) {
-      // if there's no found version then this is likely a deprecated package
-      // or otherwise the plugin won't be able to resolve the real version
-      // and we should not warn them.
-    }
+    console.warn(
+      `${toDescriptor.name} should be set to "${PROTOCOL}^" instead of "${toDescriptor.range}". Make sure this change is intentional and not a mistake.`,
+    );
   }
 };

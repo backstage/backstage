@@ -40,7 +40,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     name: 'url',
-    defaultValue: 'Enter a URL',
+    placeholder: 'Enter a URL',
     style: {
       maxWidth: '300px',
     },
@@ -97,9 +97,15 @@ export const Disabled: Story = {
 export const WithIcon: Story = {
   args: {
     ...Default.args,
-    defaultValue: 'Search...',
-    icon: <Icon name="search" />,
   },
+  render: args => (
+    <TextField
+      {...args}
+      placeholder="Enter a URL"
+      size="small"
+      icon={<Icon name="eye" />}
+    />
+  ),
 };
 
 export const DisabledWithIcon: Story = {

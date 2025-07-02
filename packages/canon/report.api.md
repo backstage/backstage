@@ -18,12 +18,16 @@ import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { LinkProps as LinkProps_2 } from 'react-aria-components';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
+import type { RadioGroupProps as RadioGroupProps_2 } from 'react-aria-components';
+import type { RadioProps as RadioProps_2 } from 'react-aria-components';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
+import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { Table as Table_2 } from '@tanstack/react-table';
 import { Tabs as Tabs_2 } from '@base-ui-components/react/tabs';
@@ -174,6 +178,28 @@ export interface ButtonIconProps extends ButtonProps_2 {
     | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
 }
 
+// @public (undocumented)
+export const ButtonLink: ForwardRefExoticComponent<
+  ButtonLinkProps & RefAttributes<HTMLAnchorElement>
+>;
+
+// @public
+export interface ButtonLinkProps extends LinkProps_2 {
+  // (undocumented)
+  children?: ReactNode;
+  // (undocumented)
+  iconEnd?: ReactElement;
+  // (undocumented)
+  iconStart?: ReactElement;
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  // (undocumented)
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
+}
+
 // @public
 export interface ButtonProps extends ButtonProps_2 {
   // (undocumented)
@@ -221,6 +247,9 @@ export interface CheckboxProps {
 }
 
 // @public
+export type ClassNamesMap = Record<string, string>;
+
+// @public
 export const Collapsible: {
   Root: ForwardRefExoticComponent<
     Omit<Collapsible_2.Root.Props & RefAttributes<HTMLDivElement>, 'ref'> &
@@ -241,6 +270,253 @@ export const Collapsible: {
 
 // @public (undocumented)
 export type Columns = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 'auto';
+
+// @public
+export type ComponentClassNames<T extends ComponentDefinitionName> =
+  (typeof componentDefinitions)[T]['classNames'];
+
+// @public
+export interface ComponentDefinition {
+  // (undocumented)
+  classNames: ClassNamesMap;
+  // (undocumented)
+  dataAttributes?: DataAttributesMap;
+}
+
+// @public
+export type ComponentDefinitionName = keyof typeof componentDefinitions;
+
+// @public
+export const componentDefinitions: {
+  readonly Avatar: {
+    readonly classNames: {
+      readonly root: 'canon-AvatarRoot';
+      readonly image: 'canon-AvatarImage';
+      readonly fallback: 'canon-AvatarFallback';
+    };
+    readonly dataAttributes: {
+      readonly size: readonly ['small', 'medium', 'large'];
+    };
+  };
+  readonly Box: {
+    readonly classNames: {
+      readonly root: 'canon-Box';
+    };
+  };
+  readonly Button: {
+    readonly classNames: {
+      readonly root: 'canon-Button';
+    };
+    readonly dataAttributes: {
+      readonly size: readonly ['small', 'medium', 'large'];
+      readonly variant: readonly ['primary', 'secondary', 'ghost'];
+    };
+  };
+  readonly ButtonIcon: {
+    readonly classNames: {
+      readonly root: 'canon-ButtonIcon';
+    };
+  };
+  readonly ButtonLink: {
+    readonly classNames: {
+      readonly root: 'canon-ButtonLink';
+    };
+  };
+  readonly Checkbox: {
+    readonly classNames: {
+      readonly root: 'canon-CheckboxRoot';
+      readonly label: 'canon-CheckboxLabel';
+      readonly indicator: 'canon-CheckboxIndicator';
+    };
+    readonly dataAttributes: {
+      readonly checked: readonly [true, false];
+    };
+  };
+  readonly Collapsible: {
+    readonly classNames: {
+      readonly root: 'canon-CollapsibleRoot';
+      readonly trigger: 'canon-CollapsibleTrigger';
+      readonly panel: 'canon-CollapsiblePanel';
+    };
+  };
+  readonly Container: {
+    readonly classNames: {
+      readonly root: 'canon-Container';
+    };
+  };
+  readonly FieldLabel: {
+    readonly classNames: {
+      readonly root: 'canon-FieldLabelWrapper';
+      readonly label: 'canon-FieldLabel';
+      readonly secondaryLabel: 'canon-FieldSecondaryLabel';
+      readonly description: 'canon-FieldDescription';
+    };
+  };
+  readonly Flex: {
+    readonly classNames: {
+      readonly root: 'canon-Flex';
+    };
+  };
+  readonly Grid: {
+    readonly classNames: {
+      readonly root: 'canon-Grid';
+      readonly item: 'canon-GridItem';
+    };
+  };
+  readonly Heading: {
+    readonly classNames: {
+      readonly root: 'canon-Heading';
+    };
+    readonly dataAttributes: {
+      readonly variant: readonly ['title1', 'title2', 'title3', 'subtitle'];
+      readonly color: readonly ['primary', 'secondary', 'muted'];
+      readonly truncate: readonly [true, false];
+    };
+  };
+  readonly Icon: {
+    readonly classNames: {
+      readonly root: 'canon-Icon';
+    };
+  };
+  readonly Link: {
+    readonly classNames: {
+      readonly root: 'canon-Link';
+    };
+    readonly dataAttributes: {
+      readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
+      readonly weight: readonly ['regular', 'bold'];
+    };
+  };
+  readonly Menu: {
+    readonly classNames: {
+      readonly trigger: 'canon-MenuTrigger';
+      readonly backdrop: 'canon-MenuBackdrop';
+      readonly positioner: 'canon-MenuPositioner';
+      readonly popup: 'canon-MenuPopup';
+      readonly arrow: 'canon-MenuArrow';
+      readonly item: 'canon-MenuItem';
+      readonly group: 'canon-MenuGroup';
+      readonly groupLabel: 'canon-MenuGroupLabel';
+      readonly radioGroup: 'canon-MenuRadioGroup';
+      readonly radioItem: 'canon-MenuRadioItem';
+      readonly radioItemIndicator: 'canon-MenuRadioItemIndicator';
+      readonly checkboxItem: 'canon-MenuCheckboxItem';
+      readonly checkboxItemIndicator: 'canon-MenuCheckboxItemIndicator';
+      readonly submenuTrigger: 'canon-MenuSubmenuTrigger';
+      readonly separator: 'canon-MenuSeparator';
+    };
+  };
+  readonly RadioGroup: {
+    readonly classNames: {
+      readonly root: 'canon-RadioGroup';
+      readonly content: 'canon-RadioGroupContent';
+      readonly radio: 'canon-Radio';
+    };
+  };
+  readonly ScrollArea: {
+    readonly classNames: {
+      readonly root: 'canon-ScrollAreaRoot';
+      readonly viewport: 'canon-ScrollAreaViewport';
+      readonly scrollbar: 'canon-ScrollAreaScrollbar';
+      readonly thumb: 'canon-ScrollAreaThumb';
+    };
+  };
+  readonly SearchField: {
+    readonly classNames: {
+      readonly root: 'canon-SearchField';
+      readonly clear: 'canon-InputClear';
+    };
+  };
+  readonly Select: {
+    readonly classNames: {
+      readonly root: 'canon-Select';
+      readonly required: 'canon-SelectRequired';
+      readonly trigger: 'canon-SelectTrigger';
+      readonly value: 'canon-SelectValue';
+      readonly icon: 'canon-SelectIcon';
+      readonly popup: 'canon-SelectPopup';
+      readonly item: 'canon-SelectItem';
+      readonly itemIndicator: 'canon-SelectItemIndicator';
+      readonly itemText: 'canon-SelectItemText';
+      readonly description: 'canon-SelectDescription';
+      readonly error: 'canon-SelectError';
+    };
+    readonly dataAttributes: {
+      readonly size: readonly ['small', 'medium'];
+    };
+  };
+  readonly Switch: {
+    readonly classNames: {
+      readonly root: 'canon-Switch';
+      readonly indicator: 'canon-SwitchIndicator';
+    };
+  };
+  readonly Table: {
+    readonly classNames: {
+      readonly root: 'canon-TableRoot';
+      readonly header: 'canon-TableHeader';
+      readonly body: 'canon-TableBody';
+      readonly row: 'canon-TableRow';
+      readonly head: 'canon-TableHead';
+      readonly caption: 'canon-TableCaption';
+      readonly cell: 'canon-TableCell';
+      readonly cellText: 'canon-TableCellText';
+      readonly cellLink: 'canon-TableCellLink';
+      readonly cellProfile: 'canon-TableCellProfile';
+      readonly cellProfileAvatar: 'canon-TableCellProfileAvatar';
+      readonly cellProfileAvatarImage: 'canon-TableCellProfileAvatarImage';
+      readonly cellProfileAvatarFallback: 'canon-TableCellProfileAvatarFallback';
+      readonly cellProfileName: 'canon-TableCellProfileName';
+      readonly cellProfileLink: 'canon-TableCellProfileLink';
+    };
+  };
+  readonly Tabs: {
+    readonly classNames: {
+      readonly root: 'canon-TabsRoot';
+      readonly list: 'canon-TabsList';
+      readonly indicator: 'canon-TabsIndicator';
+      readonly tab: 'canon-TabsTab';
+      readonly panel: 'canon-TabsPanel';
+    };
+  };
+  readonly Text: {
+    readonly classNames: {
+      readonly root: 'canon-Text';
+    };
+    readonly dataAttributes: {
+      readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
+      readonly weight: readonly ['regular', 'bold'];
+      readonly color: readonly [
+        'primary',
+        'secondary',
+        'danger',
+        'warning',
+        'success',
+      ];
+      readonly truncate: readonly [true, false];
+    };
+  };
+  readonly TextField: {
+    readonly classNames: {
+      readonly root: 'canon-TextField';
+      readonly inputWrapper: 'canon-InputWrapper';
+      readonly input: 'canon-Input';
+      readonly inputIcon: 'canon-InputIcon';
+    };
+    readonly dataAttributes: {
+      readonly invalid: readonly [true, false];
+      readonly disabled: readonly [true, false];
+    };
+  };
+  readonly Tooltip: {
+    readonly classNames: {
+      readonly trigger: 'canon-TooltipTrigger';
+      readonly positioner: 'canon-TooltipPositioner';
+      readonly popup: 'canon-TooltipPopup';
+      readonly arrow: 'canon-TooltipArrow';
+    };
+  };
+};
 
 // @public (undocumented)
 export const Container: ForwardRefExoticComponent<
@@ -268,6 +544,12 @@ export interface ContainerProps {
   // (undocumented)
   style?: React.CSSProperties;
 }
+
+// @public
+export type DataAttributesMap = Record<string, DataAttributeValues>;
+
+// @public
+export type DataAttributeValues = readonly (string | number | boolean)[];
 
 // @public
 export const DataTable: {
@@ -1010,6 +1292,27 @@ export type PositionProps = GetPropDefTypes<typeof positionPropDefs>;
 export type PropDef<T = any> = RegularPropDef<T> | ResponsivePropDef<T>;
 
 // @public (undocumented)
+export const Radio: ForwardRefExoticComponent<
+  RadioProps & RefAttributes<HTMLLabelElement>
+>;
+
+// @public (undocumented)
+export const RadioGroup: ForwardRefExoticComponent<
+  RadioGroupProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface RadioGroupProps
+  extends Omit<RadioGroupProps_2, 'children'>,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+  // (undocumented)
+  children?: ReactNode;
+}
+
+// @public (undocumented)
+export interface RadioProps extends RadioProps_2 {}
+
+// @public (undocumented)
 export type ReactNodePropDef = {
   type: 'ReactNode';
   default?: ReactNode;
@@ -1054,6 +1357,20 @@ export const ScrollArea: {
       RefAttributes<HTMLDivElement>
   >;
 };
+
+// @public (undocumented)
+export const SearchField: ForwardRefExoticComponent<
+  SearchFieldProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface SearchFieldProps
+  extends SearchFieldProps_2,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+  icon?: ReactNode | false;
+  placeholder?: string;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+}
 
 // @public (undocumented)
 export const Select: ForwardRefExoticComponent<
@@ -1276,6 +1593,7 @@ export interface TextFieldProps
   extends TextFieldProps_2,
     Omit<FieldLabelProps, 'htmlFor' | 'id'> {
   icon?: ReactNode;
+  placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 

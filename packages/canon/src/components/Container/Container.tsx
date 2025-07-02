@@ -20,11 +20,14 @@ import clsx from 'clsx';
 import { displayPropDefs } from '../../props/display.props';
 import { extractProps } from '../../utils/extractProps';
 import { spacingPropDefs } from '../../props/spacing.props';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
 export const Container = forwardRef<HTMLDivElement, ContainerProps>(
   (props, ref) => {
     const { children } = props;
+
+    const { classNames } = useStyles('Container');
 
     // Create a subset of spacing props that match the interface
     const containerSpacingProps = {
@@ -44,7 +47,7 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
 
     return createElement('div', {
       ref,
-      className: clsx('canon-Container', className),
+      className: clsx(classNames.root, className),
       style,
       children,
     });

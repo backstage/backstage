@@ -1,5 +1,28 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.9.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-scaffolder-common@1.5.12-next.0
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- dbde180: An internal refactor which adds additional types to experimental checkpoints
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
 ## 0.9.0
 
 ### Minor Changes

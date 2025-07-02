@@ -15,16 +15,13 @@
  */
 
 import { forwardRef, useEffect } from 'react';
-import {
-  Input,
-  TextField as AriaTextField,
-  FieldError,
-} from 'react-aria-components';
-import { useResponsiveValue } from '../../hooks/useResponsiveValue';
+import { Input, TextField as AriaTextField } from 'react-aria-components';
 import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
+import { FieldError } from '../FieldError';
 
 import type { TextFieldProps } from './types';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
 export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
@@ -39,6 +36,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       isRequired,
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
+      placeholder,
       ...rest
     } = props;
 
@@ -50,8 +48,9 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
-    // Get the responsive value for the variant
-    const responsiveSize = useResponsiveValue(size);
+    const { classNames, dataAttributes } = useStyles('TextField', {
+      size,
+    });
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
@@ -59,8 +58,8 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
 
     return (
       <AriaTextField
-        className={clsx('canon-TextField', className)}
-        data-size={responsiveSize}
+        className={clsx(classNames.root, className)}
+        {...dataAttributes}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         {...rest}
@@ -71,22 +70,26 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
           secondaryLabel={secondaryLabelText}
           description={description}
         />
-        <div className="canon-TextFieldInputWrapper" data-size={responsiveSize}>
+        <div
+          className={classNames.inputWrapper}
+          data-size={dataAttributes['data-size']}
+        >
           {icon && (
             <div
-              className="canon-TextFieldIcon"
-              data-size={responsiveSize}
+              className={classNames.inputIcon}
+              data-size={dataAttributes['data-size']}
               aria-hidden="true"
             >
               {icon}
             </div>
           )}
           <Input
-            className="canon-TextFieldInput"
+            className={classNames.input}
             {...(icon && { 'data-icon': true })}
+            placeholder={placeholder}
           />
         </div>
-        <FieldError className="canon-TextFieldError" />
+        <FieldError />
       </AriaTextField>
     );
   },

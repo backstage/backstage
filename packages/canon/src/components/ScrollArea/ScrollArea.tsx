@@ -17,53 +17,70 @@
 import { forwardRef } from 'react';
 import { ScrollArea as ScrollAreaPrimitive } from '@base-ui-components/react/scroll-area';
 import clsx from 'clsx';
+import { useStyles } from '../../hooks/useStyles';
 
 const ScrollAreaRoot = forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <ScrollAreaPrimitive.Root
-    ref={ref}
-    className={clsx('canon-ScrollAreaRoot', className)}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const { classNames } = useStyles('ScrollArea');
+
+  return (
+    <ScrollAreaPrimitive.Root
+      ref={ref}
+      className={clsx(classNames.root, className)}
+      {...props}
+    />
+  );
+});
 ScrollAreaRoot.displayName = ScrollAreaPrimitive.Root.displayName;
 
 const ScrollAreaViewport = forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Viewport>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Viewport>
->(({ className, ...props }, ref) => (
-  <ScrollAreaPrimitive.Viewport
-    ref={ref}
-    className={clsx('canon-ScrollAreaViewport', className)}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const { classNames } = useStyles('ScrollArea');
+
+  return (
+    <ScrollAreaPrimitive.Viewport
+      ref={ref}
+      className={clsx(classNames.viewport, className)}
+      {...props}
+    />
+  );
+});
 ScrollAreaViewport.displayName = ScrollAreaPrimitive.Viewport.displayName;
 
 const ScrollAreaScrollbar = forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Scrollbar>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Scrollbar>
->(({ className, ...props }, ref) => (
-  <ScrollAreaPrimitive.Scrollbar
-    ref={ref}
-    className={clsx('canon-ScrollAreaScrollbar', className)}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const { classNames } = useStyles('ScrollArea');
+
+  return (
+    <ScrollAreaPrimitive.Scrollbar
+      ref={ref}
+      className={clsx(classNames.scrollbar, className)}
+      {...props}
+    />
+  );
+});
 ScrollAreaScrollbar.displayName = ScrollAreaPrimitive.Scrollbar.displayName;
 
 const ScrollAreaThumb = forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Thumb>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Thumb>
->(({ className, ...props }, ref) => (
-  <ScrollAreaPrimitive.Thumb
-    ref={ref}
-    className={clsx('canon-ScrollAreaThumb', className)}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const { classNames } = useStyles('ScrollArea');
+
+  return (
+    <ScrollAreaPrimitive.Thumb
+      ref={ref}
+      className={clsx(classNames.thumb, className)}
+      {...props}
+    />
+  );
+});
 ScrollAreaThumb.displayName = ScrollAreaPrimitive.Thumb.displayName;
 
 /** @public */

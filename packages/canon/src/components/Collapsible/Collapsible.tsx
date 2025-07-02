@@ -17,41 +17,54 @@
 import { forwardRef } from 'react';
 import { Collapsible as CollapsiblePrimitive } from '@base-ui-components/react/collapsible';
 import clsx from 'clsx';
+import { useStyles } from '../../hooks/useStyles';
 
 const CollapsibleRoot = forwardRef<
   React.ElementRef<typeof CollapsiblePrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Root>
->(({ className, ...props }, ref) => (
-  <CollapsiblePrimitive.Root
-    ref={ref}
-    className={clsx('canon-CollapsibleRoot', className)}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const { classNames } = useStyles('Collapsible');
+
+  return (
+    <CollapsiblePrimitive.Root
+      ref={ref}
+      className={clsx(classNames.root, className)}
+      {...props}
+    />
+  );
+});
 CollapsibleRoot.displayName = CollapsiblePrimitive.Root.displayName;
 
 const CollapsibleTrigger = forwardRef<
   React.ElementRef<typeof CollapsiblePrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Trigger>
->(({ className, ...props }, ref) => (
-  <CollapsiblePrimitive.Trigger
-    ref={ref}
-    className={clsx('canon-CollapsibleTrigger', className)}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const { classNames } = useStyles('Collapsible');
+
+  return (
+    <CollapsiblePrimitive.Trigger
+      ref={ref}
+      className={clsx(classNames.trigger, className)}
+      {...props}
+    />
+  );
+});
 CollapsibleTrigger.displayName = CollapsiblePrimitive.Trigger.displayName;
 
 const CollapsiblePanel = forwardRef<
   React.ElementRef<typeof CollapsiblePrimitive.Panel>,
   React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Panel>
->(({ className, ...props }, ref) => (
-  <CollapsiblePrimitive.Panel
-    ref={ref}
-    className={clsx('canon-CollapsiblePanel', className)}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const { classNames } = useStyles('Collapsible');
+
+  return (
+    <CollapsiblePrimitive.Panel
+      ref={ref}
+      className={clsx(classNames.panel, className)}
+      {...props}
+    />
+  );
+});
 CollapsiblePanel.displayName = CollapsiblePrimitive.Panel.displayName;
 
 /**
