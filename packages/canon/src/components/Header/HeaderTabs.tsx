@@ -23,7 +23,7 @@ import type { HeaderProps, HeaderTabProps } from './types';
 /**
  * A component that renders header tabs.
  *
- * @public
+ * @internal
  */
 export const HeaderTabs = (props: HeaderProps) => {
   const { tabs } = props;
@@ -70,7 +70,7 @@ export const HeaderTabs = (props: HeaderProps) => {
 /**
  * A component that renders a toolbar tab.
  *
- * @public
+ * @internal
  */
 const Tab = (props: HeaderTabProps) => {
   const { tab, setTabRef, setHoveredKey } = props;

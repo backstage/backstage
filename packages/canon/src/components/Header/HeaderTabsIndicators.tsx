@@ -22,7 +22,7 @@ import type { HeaderIndicatorsProps } from './types';
 /**
  * A component that renders the indicators for the toolbar.
  *
- * @public
+ * @internal
  */
 export const HeaderTabsIndicators = (props: HeaderIndicatorsProps) => {
   const { tabRefs, tabsRef, hoveredKey, prevHoveredKey } = props;

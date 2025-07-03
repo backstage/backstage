@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-export * from './Header';
-export * from './HeaderTabsIndicators';
-export * from './types';
+export { Header } from './Header';
+export type {
+  HeaderProps,
+  HeaderTab,
+  HeaderOption,
+  HeaderBreadcrumb,
+} from './types';

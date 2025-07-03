@@ -20,7 +20,6 @@ import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LinkProps as LinkProps_2 } from 'react-aria-components';
 import { Menu as Menu_2 } from '@base-ui-components/react/menu';
-import { MutableRefObject } from 'react';
 import type { RadioGroupProps as RadioGroupProps_2 } from 'react-aria-components';
 import type { RadioProps as RadioProps_2 } from 'react-aria-components';
 import { ReactElement } from 'react';
@@ -949,18 +948,6 @@ export interface HeaderBreadcrumb {
 }
 
 // @public
-export interface HeaderIndicatorsProps {
-  // (undocumented)
-  hoveredKey: string | null;
-  // (undocumented)
-  prevHoveredKey: MutableRefObject<string | null>;
-  // (undocumented)
-  tabRefs: MutableRefObject<Map<string, HTMLDivElement>>;
-  // (undocumented)
-  tabsRef: MutableRefObject<HTMLDivElement | null>;
-}
-
-// @public
 export interface HeaderOption {
   // (undocumented)
   label: string;
@@ -1024,21 +1011,6 @@ export interface HeaderTab {
   // (undocumented)
   label: string;
 }
-
-// @public
-export interface HeaderTabProps {
-  // (undocumented)
-  setHoveredKey: (key: string | null) => void;
-  // (undocumented)
-  setTabRef: (key: string, element: HTMLDivElement | null) => void;
-  // (undocumented)
-  tab: HeaderTab;
-}
-
-// @public
-export const HeaderTabsIndicators: (
-  props: HeaderIndicatorsProps,
-) => JSX_2.Element;
 
 // @public (undocumented)
 export const Heading: <T extends ElementType = 'h1'>(

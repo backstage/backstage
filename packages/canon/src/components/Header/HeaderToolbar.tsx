@@ -26,7 +26,7 @@ import { motion, useScroll, useTransform } from 'motion/react';
 /**
  * A component that renders a toolbar.
  *
- * @public
+ * @internal
  */
 export const HeaderToolbar = (props: HeaderProps) => {
   const { icon, title, options, breadcrumbs } = props;

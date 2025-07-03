@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from './HeaderPage';
-export * from './types';
+export { HeaderPage } from './HeaderPage';
+export type { HeaderPageProps, HeaderPageTab, HeaderPageOption } from './types';

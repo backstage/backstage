@@ -71,11 +71,6 @@ export interface HeaderTabProps {
   setHoveredKey: (key: string | null) => void;
 }
 
-/**
- * Props for the header indicators component that handles tab highlighting and animation.
- *
- * @public
- */
 export interface HeaderIndicatorsProps {
   tabRefs: MutableRefObject<Map<string, HTMLDivElement>>;
   tabsRef: MutableRefObject<HTMLDivElement | null>;
