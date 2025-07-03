@@ -36,10 +36,13 @@ export class DefaultRootMetricsService implements RootMetricsService {
   private readonly meter: Meter;
 
   private constructor(config: Config) {
+    const metricsConfig = config.getOptionalConfig('backend.metrics');
+
     const serviceName =
-      config.getOptionalString('backend.service.name') ?? 'backstage';
-    const serviceVersion =
-      config.getOptionalString('backend.service.version') ?? '0.1.0';
+      metricsConfig?.getOptionalString('resource.serviceName') ?? 'backstage';
+    const serviceVersion = metricsConfig?.getOptionalString(
+      'resource.serviceVersion',
+    );
 
     this.meter = metrics.getMeter(serviceName, serviceVersion);
   }
