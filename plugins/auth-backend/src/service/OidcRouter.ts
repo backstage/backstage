@@ -144,7 +144,13 @@ export class OidcRouter {
           grantType,
         });
 
-        return res.json(result);
+        return res.json({
+          access_token: result.accessToken,
+          token_type: result.tokenType,
+          expires_in: result.expiresIn,
+          id_token: result.idToken,
+          scope: result.scope,
+        });
       } catch (error) {
         const description = isError(error) ? error.message : 'Unknown error';
         this.logger.error(
