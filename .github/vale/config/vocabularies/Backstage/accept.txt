@@ -542,3 +542,4 @@ scrollable
 severities
 intellij
 tsconfig
+OpenTelemetry
