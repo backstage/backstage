@@ -1,0 +1,19 @@
+# This is in your regular app-config.
+
+# This introduces a made-up "catalog-write" plugin ID that the frontend catalog
+# API implementation can use to resolve where to find the write nodes.
+discovery:
+  endpoints:
+    #
+    # TODO: Replace with actual URLs
+    #
+    # NOTE: Each target can also be an object with "internal" and "external"
+    # keys with different URLs, if they should be different when called by
+    # backends and the frontend, respectively.
+    #
+    - target: https://catalog-read.example.net/api/catalog
+      plugins:
+        - catalog
+    - target: https://catalog-write.example.net/api/catalog
+      plugins:
+        - catalog-write

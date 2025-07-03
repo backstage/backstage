@@ -40,6 +40,8 @@ export {
   createFrontendPlugin,
   type FrontendPlugin,
   type PluginOptions,
+  type FrontendPluginInfo,
+  type FrontendPluginInfoOptions,
 } from './createFrontendPlugin';
 export {
   createFrontendModule,

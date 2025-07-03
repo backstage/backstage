@@ -43,6 +43,7 @@ import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
 import { convertLegacyPlugin } from '@backstage/core-compat-api';
 import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
+import { pluginInfoResolver } from './pluginInfoResolver';
 
 /*
 
@@ -132,6 +133,7 @@ const app = createApp({
     customHomePageModule,
     ...collectedLegacyPlugins,
   ],
+  pluginInfoResolver,
   /* Handled through config instead */
   // bindRoutes({ bind }) {
   //   bind(pagesPlugin.externalRoutes, { pageX: pagesPlugin.routes.pageX });

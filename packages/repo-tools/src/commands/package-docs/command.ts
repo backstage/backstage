@@ -17,11 +17,12 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import { paths as cliPaths, resolvePackagePaths } from '../../lib/paths';
 import { createTemporaryTsConfig } from './utils';
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, rm, writeFile } from 'fs/promises';
 import pLimit from 'p-limit';
 import { mkdirp } from 'fs-extra';
 import { PackageDocsCache } from './Cache';
 import { Lockfile } from '@backstage/cli-node';
+import { glob } from 'glob';
 
 const limit = pLimit(8);
 
@@ -56,6 +57,7 @@ const HIGHLIGHT_LANGUAGES = [
   'diff',
   'js',
   'json',
+  'docker',
 ];
 
 function getExports(packageJson: any) {
@@ -112,6 +114,24 @@ async function generateDocJson(pkg: string) {
 
 export default async function packageDocs(paths: string[] = [], opts: any) {
   console.warn('!!! This is an experimental command !!!');
+
+  const existingDocsJsonPaths = glob.sync(
+    cliPaths.resolveTargetRoot('dist-types/**/docs.json'),
+  );
+  if (existingDocsJsonPaths.length > 0) {
+    console.warn(
+      `!!! Deleting all ${existingDocsJsonPaths.length} existing docs.json files !!!`,
+    );
+
+    for (const path of existingDocsJsonPaths) {
+      await rm(path, { force: true });
+    }
+  }
+  console.warn('!!! Deleting existing docs output !!!');
+  await rm(cliPaths.resolveTargetRoot('type-docs'), {
+    recursive: true,
+    force: true,
+  });
   const selectedPackageDirs = await resolvePackagePaths({
     paths,
     include: opts.include,
@@ -127,7 +147,13 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
   await Promise.all(
     selectedPackageDirs.map(pkg =>
       limit(async () => {
-        if (EXCLUDE.includes(pkg)) {
+        const pkgJson = JSON.parse(
+          await readFile(
+            cliPaths.resolveTargetRoot(pkg, 'package.json'),
+            'utf-8',
+          ),
+        );
+        if (EXCLUDE.includes(pkg) || pkgJson.name.startsWith('@internal/')) {
           return;
         }
         if (await cache.has(pkg)) {

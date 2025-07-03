@@ -509,6 +509,10 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
             previousTooltip: t('table.pagination.previousTooltip'),
             ...localization?.pagination,
           },
+          header: {
+            actions: t('table.header.actions'),
+            ...localization?.header,
+          },
           toolbar: {
             searchPlaceholder: t('table.toolbar.search'),
             searchTooltip: t('table.toolbar.search'),

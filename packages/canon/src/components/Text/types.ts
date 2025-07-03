@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import type { CSSProperties } from 'react';
+import type { ElementType, ComponentPropsWithRef } from 'react';
 import type { Breakpoint } from '../../types';
-import type { useRender } from '@base-ui-components/react/use-render';
 
 /** @public */
-export interface TextProps
-  extends Omit<useRender.ComponentProps<'p'>, 'color'> {
+export type TextOwnProps = {
+  as?: 'p' | 'span' | 'label';
   variant?:
     | 'subtitle'
     | 'body'
@@ -42,5 +41,9 @@ export interface TextProps
       >;
   truncate?: boolean;
   className?: string;
-  style?: CSSProperties;
-}
+  style?: React.CSSProperties;
+};
+
+/** @public */
+export type TextProps<T extends ElementType = 'p'> = TextOwnProps &
+  Omit<ComponentPropsWithRef<T>, keyof TextOwnProps>;

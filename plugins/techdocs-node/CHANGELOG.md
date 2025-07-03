@@ -1,5 +1,67 @@
 # @backstage/plugin-techdocs-node
 
+## 1.13.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/integration-aws-node@0.1.17-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-search-common@1.2.19-next.0
+
+## 1.13.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.16
+  - @backstage/plugin-search-common@1.2.18
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 1.13.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/integration-aws-node@0.1.16
+  - @backstage/plugin-search-common@1.2.18
+
+## 1.13.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/integration-aws-node@0.1.16
+  - @backstage/plugin-search-common@1.2.18
+  - @backstage/plugin-techdocs-common@0.1.1-next.0
+
+## 1.13.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-common@0.1.1-next.0
+  - @backstage/backend-plugin-api@1.4.0-next.0
+
 ## 1.13.3
 
 ### Patch Changes

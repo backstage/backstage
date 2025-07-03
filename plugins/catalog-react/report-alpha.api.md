@@ -9,6 +9,7 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
 import { ReactNode } from 'react';
@@ -385,6 +386,64 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
     element: ConfigurableExtensionDataRef<
       JSX_2.Element,
       'core.reactElement',
+      {}
+    >;
+  };
+}>;
+
+// @alpha (undocumented)
+export const EntityIconLinkBlueprint: ExtensionBlueprint<{
+  kind: 'entity-icon-link';
+  name: undefined;
+  params: {
+    useProps: () => Omit<IconLinkVerticalProps, 'color'>;
+    filter?: EntityPredicate | ((entity: Entity) => boolean);
+  };
+  output:
+    | ConfigurableExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ConfigurableExtensionDataRef<
+        () => IconLinkVerticalProps,
+        'entity-icon-link-props',
+        {}
+      >;
+  inputs: {};
+  config: {
+    label: string | undefined;
+    title: string | undefined;
+    filter: EntityPredicate | undefined;
+  };
+  configInput: {
+    filter?: EntityPredicate | undefined;
+    label?: string | undefined;
+    title?: string | undefined;
+  };
+  dataRefs: {
+    useProps: ConfigurableExtensionDataRef<
+      () => IconLinkVerticalProps,
+      'entity-icon-link-props',
+      {}
+    >;
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
       {}
     >;
   };

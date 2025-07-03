@@ -14,47 +14,53 @@
  * limitations under the License.
  */
 
-import { forwardRef, useRef } from 'react';
-import { useResponsiveValue } from '../../hooks/useResponsiveValue';
-import { useRender } from '@base-ui-components/react/use-render';
+import { forwardRef } from 'react';
 import clsx from 'clsx';
-
+import type { ElementType } from 'react';
 import type { TextProps } from './types';
+import { useStyles } from '../../hooks/useStyles';
+
+function TextComponent<T extends ElementType = 'p'>(
+  {
+    as,
+    variant = 'body',
+    weight = 'regular',
+    color = 'primary',
+    className,
+    truncate,
+    style,
+    ...restProps
+  }: TextProps<T>,
+  ref: React.Ref<any>,
+) {
+  const Component = as || 'p';
+
+  const { classNames, dataAttributes } = useStyles('Text', {
+    variant,
+    weight,
+    color,
+  });
+
+  return (
+    <Component
+      ref={ref}
+      className={clsx(classNames.root, className)}
+      data-truncate={truncate}
+      {...dataAttributes}
+      style={style}
+      {...restProps}
+    />
+  );
+}
+
+TextComponent.displayName = 'Text';
 
 /** @public */
-export const Text = forwardRef<HTMLParagraphElement, TextProps>(
-  (props, ref) => {
-    const {
-      variant = 'body',
-      weight = 'regular',
-      color = 'primary',
-      className,
-      truncate,
-      render = <p />,
-      ...restProps
-    } = props;
-
-    // Get the responsive values for the variant and weight
-    const responsiveVariant = useResponsiveValue(variant);
-    const responsiveWeight = useResponsiveValue(weight);
-    const responsiveColor = useResponsiveValue(color);
-    const internalRef = useRef<HTMLElement | null>(null);
-
-    const { renderElement } = useRender({
-      render,
-      props: {
-        className: clsx('canon-Text', className),
-        ['data-variant']: responsiveVariant,
-        ['data-weight']: responsiveWeight,
-        ['data-color']: responsiveColor,
-        ['data-truncate']: truncate,
-        ...restProps,
-      },
-      refs: [ref, internalRef],
-    });
-
-    return renderElement();
-  },
-);
+export const Text = forwardRef(TextComponent) as {
+  <T extends ElementType = 'p'>(
+    props: TextProps<T> & { ref?: React.ComponentPropsWithRef<T>['ref'] },
+  ): React.ReactElement<TextProps<T>, T>;
+  displayName: string;
+};
 
 Text.displayName = 'Text';

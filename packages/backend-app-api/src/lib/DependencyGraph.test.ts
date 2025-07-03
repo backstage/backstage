@@ -514,5 +514,21 @@ describe('DependencyGraph', () => {
         }).parallelTopologicalTraversal(async id => id),
       ).rejects.toThrow('Circular dependency detected');
     });
+
+    it('awaits all producers', async () => {
+      await expect(
+        DependencyGraph.fromMap({
+          1: { provides: ['a'] },
+          2: { provides: ['a'] },
+          3: { consumes: ['a'] },
+        }).parallelTopologicalTraversal(async id => {
+          // Delaying 2 should not make 3 run, wait for 1 too first
+          if (id === '2') {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+          return id;
+        }),
+      ).resolves.toEqual(['1', '2', '3']);
+    });
   });
 });

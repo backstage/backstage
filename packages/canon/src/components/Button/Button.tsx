@@ -14,63 +14,43 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
 import clsx from 'clsx';
-import { useResponsiveValue } from '../../hooks/useResponsiveValue';
-
+import { forwardRef, Ref } from 'react';
+import { Button as RAButton } from 'react-aria-components';
 import type { ButtonProps } from './types';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (props: ButtonProps, ref) => {
+export const Button = forwardRef(
+  (props: ButtonProps, ref: Ref<HTMLButtonElement>) => {
     const {
-      size = 'medium',
+      size = 'small',
       variant = 'primary',
-      disabled,
       iconStart,
       iconEnd,
       children,
       className,
-      style,
       ...rest
     } = props;
 
-    // Get the responsive value for the variant
-    const responsiveSize = useResponsiveValue(size);
-    const responsiveVariant = useResponsiveValue(variant);
+    const { classNames, dataAttributes } = useStyles('Button', {
+      size,
+      variant,
+    });
 
     return (
-      <button
+      <RAButton
+        className={clsx(classNames.root, className)}
         ref={ref}
-        disabled={disabled}
-        className={clsx('canon-Button', className)}
-        data-size={responsiveSize}
-        data-variant={responsiveVariant}
-        style={style}
+        {...dataAttributes}
         {...rest}
       >
-        {iconStart && (
-          <span
-            className="canon-ButtonIcon"
-            aria-hidden="true"
-            data-size={responsiveSize}
-          >
-            {iconStart}
-          </span>
-        )}
+        {iconStart}
         {children}
-        {iconEnd && (
-          <span
-            className="canon-ButtonIcon"
-            aria-hidden="true"
-            data-size={responsiveSize}
-          >
-            {iconEnd}
-          </span>
-        )}
-      </button>
+        {iconEnd}
+      </RAButton>
     );
   },
 );
 
-export default Button;
+Button.displayName = 'Button';

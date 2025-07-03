@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { Heading } from './Heading';
-export type { HeadingProps } from './types';
+export * from './Heading';
+export * from './types';

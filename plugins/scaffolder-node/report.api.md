@@ -4,10 +4,10 @@
 
 ```ts
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { CheckpointContext } from '@backstage/plugin-scaffolder-node/alpha';
 import { Expand } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
-import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Observable } from '@backstage/types';
 import { Schema } from 'jsonschema';
@@ -16,6 +16,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
+import { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node/alpha';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserEntity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
@@ -25,63 +26,33 @@ import { z } from 'zod';
 export type ActionContext<
   TActionInput extends JsonObject,
   TActionOutput extends JsonObject = JsonObject,
-  TSchemaType extends 'v1' | 'v2' = 'v1',
-> = TSchemaType extends 'v2'
-  ? {
-      logger: LoggerService;
-      secrets?: TaskSecrets;
-      workspacePath: string;
-      input: TActionInput;
-      checkpoint<T extends JsonValue | void>(opts: {
-        key: string;
-        fn: () => Promise<T> | T;
-      }): Promise<T>;
-      output(
-        name: keyof TActionOutput,
-        value: TActionOutput[keyof TActionOutput],
-      ): void;
-      createTemporaryDirectory(): Promise<string>;
-      getInitiatorCredentials(): Promise<BackstageCredentials>;
-      task: {
-        id: string;
-      };
-      templateInfo?: TemplateInfo;
-      isDryRun?: boolean;
-      user?: {
-        entity?: UserEntity;
-        ref?: string;
-      };
-      signal?: AbortSignal;
-      each?: JsonObject;
-    }
-  : {
-      logger: Logger;
-      logStream: Writable;
-      secrets?: TaskSecrets;
-      workspacePath: string;
-      input: TActionInput;
-      checkpoint<T extends JsonValue | void>(opts: {
-        key: string;
-        fn: () => Promise<T> | T;
-      }): Promise<T>;
-      output(
-        name: keyof TActionOutput,
-        value: TActionOutput[keyof TActionOutput],
-      ): void;
-      createTemporaryDirectory(): Promise<string>;
-      getInitiatorCredentials(): Promise<BackstageCredentials>;
-      task: {
-        id: string;
-      };
-      templateInfo?: TemplateInfo;
-      isDryRun?: boolean;
-      user?: {
-        entity?: UserEntity;
-        ref?: string;
-      };
-      signal?: AbortSignal;
-      each?: JsonObject;
-    };
+  _TSchemaType extends 'v2' = 'v2',
+> = {
+  logger: LoggerService;
+  secrets?: TaskSecrets;
+  workspacePath: string;
+  input: TActionInput;
+  checkpoint<T extends JsonValue | void>(
+    opts: CheckpointContext<T>,
+  ): Promise<T>;
+  output(
+    name: keyof TActionOutput,
+    value: TActionOutput[keyof TActionOutput],
+  ): void;
+  createTemporaryDirectory(): Promise<string>;
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
+  task: {
+    id: string;
+  };
+  templateInfo?: TemplateInfo;
+  isDryRun?: boolean;
+  user?: {
+    entity?: UserEntity;
+    ref?: string;
+  };
+  signal?: AbortSignal;
+  each?: JsonObject;
+};
 
 // @public (undocumented)
 export function addFiles(options: {
@@ -95,7 +66,7 @@ export function addFiles(options: {
     | {
         token: string;
       };
-  logger?: Logger | undefined;
+  logger?: LoggerService | undefined;
 }): Promise<void>;
 
 // @public (undocumented)
@@ -110,7 +81,7 @@ export function cloneRepo(options: {
     | {
         token: string;
       };
-  logger?: Logger | undefined;
+  logger?: LoggerService | undefined;
   ref?: string | undefined;
   depth?: number | undefined;
   noCheckout?: boolean | undefined;
@@ -127,7 +98,7 @@ export function commitAndPushBranch(options: {
     | {
         token: string;
       };
-  logger?: Logger | undefined;
+  logger?: LoggerService | undefined;
   commitMessage: string;
   gitAuthorInfo?: {
     name?: string;
@@ -152,7 +123,7 @@ export function commitAndPushRepo(input: {
     | {
         token: string;
       };
-  logger: Logger;
+  logger: LoggerService;
   commitMessage: string;
   gitAuthorInfo?: {
     name?: string;
@@ -177,72 +148,70 @@ export function createBranch(options: {
     | {
         token: string;
       };
-  logger?: Logger | undefined;
+  logger?: LoggerService | undefined;
 }): Promise<void>;
-
-// @public @deprecated (undocumented)
-export function createTemplateAction<
-  TInputParams extends JsonObject = JsonObject,
-  TOutputParams extends JsonObject = JsonObject,
-  TInputSchema extends JsonObject = JsonObject,
-  TOutputSchema extends JsonObject = JsonObject,
-  TActionInput extends JsonObject = TInputParams,
-  TActionOutput extends JsonObject = TOutputParams,
->(
-  action: TemplateActionOptions<
-    TActionInput,
-    TActionOutput,
-    TInputSchema,
-    TOutputSchema,
-    'v1'
-  >,
-): TemplateAction<TActionInput, TActionOutput, 'v1'>;
-
-// @public @deprecated (undocumented)
-export function createTemplateAction<
-  TInputParams extends JsonObject = JsonObject,
-  TOutputParams extends JsonObject = JsonObject,
-  TInputSchema extends z.ZodType = z.ZodType,
-  TOutputSchema extends z.ZodType = z.ZodType,
-  TActionInput extends JsonObject = z.infer<TInputSchema>,
-  TActionOutput extends JsonObject = z.infer<TOutputSchema>,
->(
-  action: TemplateActionOptions<
-    TActionInput,
-    TActionOutput,
-    TInputSchema,
-    TOutputSchema,
-    'v1'
-  >,
-): TemplateAction<TActionInput, TActionOutput, 'v1'>;
 
 // @public
 export function createTemplateAction<
-  TInputSchema extends {
-    [key in string]: (zImpl: typeof z) => z.ZodType;
-  },
-  TOutputSchema extends {
-    [key in string]: (zImpl: typeof z) => z.ZodType;
-  },
+  TInputSchema extends
+    | {
+        [key in string]: (zImpl: typeof z) => z.ZodType;
+      }
+    | ((zImpl: typeof z) => z.ZodType),
+  TOutputSchema extends
+    | {
+        [key in string]: (zImpl: typeof z) => z.ZodType;
+      }
+    | ((zImpl: typeof z) => z.ZodType),
 >(
   action: TemplateActionOptions<
-    {
-      [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
-    },
-    {
-      [key in keyof TOutputSchema]: z.infer<ReturnType<TOutputSchema[key]>>;
-    },
+    TInputSchema extends {
+      [key in string]: (zImpl: typeof z) => z.ZodType;
+    }
+      ? {
+          [key in keyof TInputSchema]: z.infer<ReturnType<TInputSchema[key]>>;
+        }
+      : TInputSchema extends (zImpl: typeof z) => z.ZodType
+      ? z.infer<ReturnType<TInputSchema>>
+      : never,
+    TOutputSchema extends {
+      [key in string]: (zImpl: typeof z) => z.ZodType;
+    }
+      ? {
+          [key in keyof TOutputSchema]: z.infer<ReturnType<TOutputSchema[key]>>;
+        }
+      : TOutputSchema extends (zImpl: typeof z) => z.ZodType
+      ? z.infer<ReturnType<TOutputSchema>>
+      : never,
     TInputSchema,
     TOutputSchema,
     'v2'
   >,
 ): TemplateAction<
-  FlattenOptionalProperties<{
-    [key in keyof TInputSchema]: z.output<ReturnType<TInputSchema[key]>>;
-  }>,
-  FlattenOptionalProperties<{
-    [key in keyof TOutputSchema]: z.output<ReturnType<TOutputSchema[key]>>;
-  }>,
+  FlattenOptionalProperties<
+    TInputSchema extends {
+      [key in string]: (zImpl: typeof z) => z.ZodType;
+    }
+      ? {
+          [key in keyof TInputSchema]: z.output<ReturnType<TInputSchema[key]>>;
+        }
+      : TInputSchema extends (zImpl: typeof z) => z.ZodType
+      ? z.output<ReturnType<TInputSchema>>
+      : never
+  >,
+  FlattenOptionalProperties<
+    TOutputSchema extends {
+      [key in string]: (zImpl: typeof z) => z.ZodType;
+    }
+      ? {
+          [key in keyof TOutputSchema]: z.output<
+            ReturnType<TOutputSchema[key]>
+          >;
+        }
+      : TOutputSchema extends (zImpl: typeof z) => z.ZodType
+      ? z.output<ReturnType<TOutputSchema>>
+      : never
+  >,
   'v2'
 >;
 
@@ -304,7 +273,7 @@ export function initRepoAndPush(input: {
     | {
         token: string;
       };
-  logger: Logger;
+  logger: LoggerService;
   defaultBranch?: string;
   commitMessage?: string;
   gitAuthorInfo?: {
@@ -315,6 +284,9 @@ export function initRepoAndPush(input: {
 }): Promise<{
   commitHash: string;
 }>;
+
+// @public
+export function isNotGitDirectoryOrContents(path: string): boolean;
 
 // @public (undocumented)
 export const parseRepoUrl: (
@@ -475,19 +447,7 @@ export interface TaskContext {
   // (undocumented)
   taskId?: string;
   // (undocumented)
-  updateCheckpoint?(
-    options:
-      | {
-          key: string;
-          status: 'success';
-          value: JsonValue;
-        }
-      | {
-          key: string;
-          status: 'failed';
-          reason: string;
-        },
-  ): Promise<void>;
+  updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 }
 
 // @public
@@ -510,7 +470,7 @@ export type TaskStatus =
 export type TemplateAction<
   TActionInput extends JsonObject = JsonObject,
   TActionOutput extends JsonObject = JsonObject,
-  TSchemaType extends 'v1' | 'v2' = 'v1',
+  TSchemaType extends 'v2' = 'v2',
 > = {
   id: string;
   description?: string;
@@ -533,18 +493,20 @@ export type TemplateActionOptions<
   TActionInput extends JsonObject = {},
   TActionOutput extends JsonObject = {},
   TInputSchema extends
-    | JsonObject
-    | z.ZodType
     | {
         [key in string]: (zImpl: typeof z) => z.ZodType;
-      } = JsonObject,
+      }
+    | ((zImpl: typeof z) => z.ZodType) = {
+    [key in string]: (zImpl: typeof z) => z.ZodType;
+  },
   TOutputSchema extends
-    | JsonObject
-    | z.ZodType
     | {
         [key in string]: (zImpl: typeof z) => z.ZodType;
-      } = JsonObject,
-  TSchemaType extends 'v1' | 'v2' = 'v1' | 'v2',
+      }
+    | ((zImpl: typeof z) => z.ZodType) = {
+    [key in string]: (zImpl: typeof z) => z.ZodType;
+  },
+  TSchemaType extends 'v2' = 'v2',
 > = {
   id: string;
   description?: string;

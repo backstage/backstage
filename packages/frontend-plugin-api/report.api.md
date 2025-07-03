@@ -8,6 +8,7 @@ import { alertApiRef } from '@backstage/core-plugin-api';
 import { AlertMessage } from '@backstage/core-plugin-api';
 import { AnyApiFactory } from '@backstage/core-plugin-api';
 import { AnyApiRef } from '@backstage/core-plugin-api';
+import { AnyRouteRefParams as AnyRouteRefParams_2 } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
@@ -392,7 +393,7 @@ export const coreExtensionData: {
   >;
   routePath: ConfigurableExtensionDataRef<string, 'core.routing.path', {}>;
   routeRef: ConfigurableExtensionDataRef<
-    RouteRef<AnyRouteRefParams>,
+    RouteRef<AnyRouteRefParams_2>,
     'core.routing.ref',
     {}
   >;
@@ -1324,13 +1325,37 @@ export interface FrontendPlugin<
   getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
   // (undocumented)
   readonly id: string;
+  info(): Promise<FrontendPluginInfo>;
   // (undocumented)
   readonly routes: TRoutes;
   // (undocumented)
   withOverrides(options: {
     extensions: Array<ExtensionDefinition>;
+    info?: FrontendPluginInfoOptions;
   }): FrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
 }
+
+// @public
+export interface FrontendPluginInfo {
+  description?: string;
+  links?: Array<{
+    title: string;
+    url: string;
+  }>;
+  ownerEntityRefs?: string[];
+  packageName?: string;
+  version?: string;
+}
+
+// @public
+export type FrontendPluginInfoOptions = {
+  packageJson?: () => Promise<
+    {
+      name: string;
+    } & JsonObject
+  >;
+  manifest?: () => Promise<JsonObject>;
+};
 
 export { githubAuthApiRef };
 
@@ -1515,6 +1540,8 @@ export interface PluginOptions<
   externalRoutes?: TExternalRoutes;
   // (undocumented)
   featureFlags?: FeatureFlagConfig[];
+  // (undocumented)
+  info?: FrontendPluginInfoOptions;
   // (undocumented)
   pluginId: TId;
   // (undocumented)
@@ -1805,6 +1832,9 @@ export function useAnalytics(): AnalyticsTracker;
 export { useApi };
 
 export { useApiHolder };
+
+// @public
+export function useAppNode(): AppNode | undefined;
 
 // @public
 export function useComponentRef<T extends {}>(

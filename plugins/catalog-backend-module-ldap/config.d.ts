@@ -141,7 +141,7 @@ export interface Config {
                * The name of the attribute that shall be used for the values of
                * the spec.memberOf field of the entity. Defaults to "memberOf".
                */
-              memberOf?: string;
+              memberOf?: string | null;
             };
           }
         | Array<{
@@ -221,7 +221,7 @@ export interface Config {
                * The name of the attribute that shall be used for the values of
                * the spec.memberOf field of the entity. Defaults to "memberOf".
                */
-              memberOf?: string;
+              memberOf?: string | null;
             };
           }>;
 
@@ -311,12 +311,12 @@ export interface Config {
                * The name of the attribute that shall be used for the values of
                * the spec.parent field of the entity. Defaults to "memberOf".
                */
-              memberOf?: string;
+              memberOf?: string | null;
               /**
                * The name of the attribute that shall be used for the values of
                * the spec.children field of the entity. Defaults to "member".
                */
-              members?: string;
+              members?: string | null;
             };
           }
         | Array<{
@@ -401,12 +401,12 @@ export interface Config {
                * The name of the attribute that shall be used for the values of
                * the spec.parent field of the entity. Defaults to "memberOf".
                */
-              memberOf?: string;
+              memberOf?: string | null;
               /**
                * The name of the attribute that shall be used for the values of
                * the spec.children field of the entity. Defaults to "member".
                */
-              members?: string;
+              members?: string | null;
             };
           }>;
       /**
@@ -556,7 +556,7 @@ export interface Config {
                    * The name of the attribute that shall be used for the values of
                    * the spec.memberOf field of the entity. Defaults to "memberOf".
                    */
-                  memberOf?: string;
+                  memberOf?: string | null;
                 };
               }
             | Array<{
@@ -588,6 +588,7 @@ export interface Config {
                         pagePause?: boolean;
                       };
                 };
+
                 /**
                  * JSON paths (on a.b.c form) and hard coded values to set on those
                  * paths.
@@ -636,7 +637,7 @@ export interface Config {
                    * The name of the attribute that shall be used for the values of
                    * the spec.memberOf field of the entity. Defaults to "memberOf".
                    */
-                  memberOf?: string;
+                  memberOf?: string | null;
                 };
               }>;
 
@@ -726,12 +727,12 @@ export interface Config {
                    * The name of the attribute that shall be used for the values of
                    * the spec.parent field of the entity. Defaults to "memberOf".
                    */
-                  memberOf?: string;
+                  memberOf?: string | null;
                   /**
                    * The name of the attribute that shall be used for the values of
                    * the spec.children field of the entity. Defaults to "member".
                    */
-                  members?: string;
+                  members?: string | null;
                 };
               }
             | Array<{
@@ -816,12 +817,12 @@ export interface Config {
                    * The name of the attribute that shall be used for the values of
                    * the spec.parent field of the entity. Defaults to "memberOf".
                    */
-                  memberOf?: string;
+                  memberOf?: string | null;
                   /**
                    * The name of the attribute that shall be used for the values of
                    * the spec.children field of the entity. Defaults to "member".
                    */
-                  members?: string;
+                  members?: string | null;
                 };
               }>;
 
@@ -926,7 +927,6 @@ export interface Config {
              * paths.
              *
              * This can be useful for example if you want to hard code a
-             * namespace or similar on the generated entities.
              */
             set?: { [key: string]: JsonValue };
             /**
@@ -969,7 +969,7 @@ export interface Config {
                * The name of the attribute that shall be used for the values of
                * the spec.memberOf field of the entity. Defaults to "memberOf".
                */
-              memberOf?: string;
+              memberOf?: string | null;
             };
           };
 
@@ -1006,6 +1006,7 @@ export interface Config {
                   };
             };
             /**
+             * @default false
              * JSON paths (on a.b.c form) and hard coded values to set on those
              * paths.
              *
@@ -1058,12 +1059,12 @@ export interface Config {
                * The name of the attribute that shall be used for the values of
                * the spec.parent field of the entity. Defaults to "memberOf".
                */
-              memberOf?: string;
+              memberOf?: string | null;
               /**
                * The name of the attribute that shall be used for the values of
                * the spec.children field of the entity. Defaults to "member".
                */
-              members?: string;
+              members?: string | null;
             };
           };
           /**

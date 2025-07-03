@@ -13,6 +13,7 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'table.filter.placeholder': 'All results';
     readonly 'table.filter.clearAll': 'Clear all';
     readonly 'table.body.emptyDataSourceMessage': 'No records to display';
+    readonly 'table.header.actions': 'Actions';
     readonly 'table.toolbar.search': 'Filter';
     readonly 'table.pagination.firstTooltip': 'First Page';
     readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';

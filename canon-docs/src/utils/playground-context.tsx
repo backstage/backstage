@@ -40,16 +40,29 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
   const [selectedComponents, setSelectedComponents] = useState<string[]>(
     components.map(component => component.slug),
   );
-  const [selectedTheme, setSelectedTheme] = useState<Theme>(() => {
-    return isBrowser
-      ? (localStorage.getItem('theme') as Theme) || 'light'
-      : 'light';
-  });
-  const [selectedThemeName, setSelectedThemeName] = useState<ThemeName>(() => {
-    return isBrowser
-      ? (localStorage.getItem('theme-name') as ThemeName) || 'default'
-      : 'default';
-  });
+  const [selectedTheme, setSelectedTheme] = useState<Theme>('light');
+  const [selectedThemeName, setSelectedThemeName] =
+    useState<ThemeName>('default');
+
+  // Load saved theme from localStorage after hydration
+  useEffect(() => {
+    if (isBrowser) {
+      const savedTheme = localStorage.getItem('theme') as Theme;
+      if (savedTheme) {
+        setSelectedTheme(savedTheme);
+      }
+    }
+  }, [isBrowser]);
+
+  // Load saved theme name from localStorage after hydration
+  useEffect(() => {
+    if (isBrowser) {
+      const savedThemeName = localStorage.getItem('theme-name') as ThemeName;
+      if (savedThemeName) {
+        setSelectedThemeName(savedThemeName);
+      }
+    }
+  }, [isBrowser]);
 
   useEffect(() => {
     if (isBrowser) {

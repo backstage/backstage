@@ -15,6 +15,5 @@
  */
 
 export * from './builtin';
-export * from './deprecated';
 
 export { TemplateActionRegistry } from './TemplateActionRegistry';

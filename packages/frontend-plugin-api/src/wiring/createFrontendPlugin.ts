@@ -25,6 +25,67 @@ import {
 } from './resolveExtensionDefinition';
 import { AnyExternalRoutes, AnyRoutes, FeatureFlagConfig } from './types';
 import { MakeSortedExtensionsMap } from './MakeSortedExtensionsMap';
+import { JsonObject } from '@backstage/types';
+
+/**
+ * Information about the plugin.
+ *
+ * @public
+ * @remarks
+ *
+ * This interface is intended to be extended via [module
+ * augmentation](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation)
+ * in order to add fields that are specific to each project.
+ *
+ * For example, one might add a `slackChannel` field that is read from the
+ * opaque manifest file.
+ *
+ * See the options for `createApp` for more information about how to
+ * customize the parsing of manifest files.
+ */
+export interface FrontendPluginInfo {
+  /**
+   * The name of the package that implements the plugin.
+   */
+  packageName?: string;
+
+  /**
+   * The version of the plugin, typically the version of the package.json file.
+   */
+  version?: string;
+
+  /**
+   * As short description of the plugin, typically the description field in
+   * package.json.
+   */
+  description?: string;
+
+  /**
+   * The owner entity references of the plugin.
+   */
+  ownerEntityRefs?: string[];
+
+  /**
+   * Links related to the plugin.
+   */
+  links?: Array<{ title: string; url: string }>;
+}
+
+/**
+ * Options for providing information for a plugin.
+ *
+ * @public
+ */
+export type FrontendPluginInfoOptions = {
+  /**
+   * A loader function for the package.json file for the plugin.
+   */
+  packageJson?: () => Promise<{ name: string } & JsonObject>;
+  /**
+   * A loader function for an opaque manifest file for the plugin.
+   */
+  manifest?: () => Promise<JsonObject>;
+};
 
 /** @public */
 export interface FrontendPlugin<
@@ -38,9 +99,19 @@ export interface FrontendPlugin<
   readonly id: string;
   readonly routes: TRoutes;
   readonly externalRoutes: TExternalRoutes;
+
+  /**
+   * Loads the plugin info.
+   */
+  info(): Promise<FrontendPluginInfo>;
   getExtension<TId extends keyof TExtensionMap>(id: TId): TExtensionMap[TId];
   withOverrides(options: {
     extensions: Array<ExtensionDefinition>;
+
+    /**
+     * Overrides the original info loaders of the plugin one by one.
+     */
+    info?: FrontendPluginInfoOptions;
   }): FrontendPlugin<TRoutes, TExternalRoutes, TExtensionMap>;
 }
 
@@ -56,6 +127,7 @@ export interface PluginOptions<
   externalRoutes?: TExternalRoutes;
   extensions?: TExtensions;
   featureFlags?: FeatureFlagConfig[];
+  info?: FrontendPluginInfoOptions;
 }
 
 /** @public */
@@ -150,6 +222,14 @@ export function createFrontendPlugin<
     externalRoutes: options.externalRoutes ?? ({} as TExternalRoutes),
     featureFlags: options.featureFlags ?? [],
     extensions: extensions,
+    infoOptions: options.info,
+
+    // This method is overridden when the plugin instance is installed in an app
+    async info() {
+      throw new Error(
+        `Attempted to load plugin info for plugin '${pluginId}', but the plugin instance is not installed in an app`,
+      );
+    },
     getExtension(id) {
       const ext = extensionDefinitionsById.get(id);
       if (!ext) {
@@ -178,6 +258,10 @@ export function createFrontendPlugin<
         ...options,
         pluginId,
         extensions: [...nonOverriddenExtensions, ...overrides.extensions],
+        info: {
+          ...options.info,
+          ...overrides.info,
+        },
       });
     },
   });

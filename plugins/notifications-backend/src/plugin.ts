@@ -25,7 +25,9 @@ import {
   notificationsProcessingExtensionPoint,
   NotificationsProcessingExtensionPoint,
 } from '@backstage/plugin-notifications-node';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { DatabaseNotificationsStore } from './database';
+import { NotificationCleaner } from './service/NotificationCleaner.ts';
 
 class NotificationsProcessingExtensionPointImpl
   implements NotificationsProcessingExtensionPoint
@@ -69,6 +71,7 @@ export const notificationsPlugin = createBackendPlugin({
         signals: signalsServiceRef,
         config: coreServices.rootConfig,
         catalog: catalogServiceRef,
+        scheduler: coreServices.scheduler,
       },
       async init({
         auth,
@@ -80,7 +83,10 @@ export const notificationsPlugin = createBackendPlugin({
         signals,
         config,
         catalog,
+        scheduler,
       }) {
+        const store = await DatabaseNotificationsStore.create({ database });
+
         httpRouter.use(
           await createRouter({
             auth,
@@ -88,7 +94,7 @@ export const notificationsPlugin = createBackendPlugin({
             userInfo,
             logger,
             config,
-            database,
+            store,
             catalog,
             signals,
             processors: processingExtensions.processors,
@@ -98,6 +104,14 @@ export const notificationsPlugin = createBackendPlugin({
           path: '/health',
           allow: 'unauthenticated',
         });
+
+        const cleaner = new NotificationCleaner(
+          config,
+          scheduler,
+          logger,
+          store,
+        );
+        await cleaner.initTaskRunner();
       },
     });
   },

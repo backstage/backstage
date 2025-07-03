@@ -101,6 +101,7 @@ export const searchReactTranslationRef: TranslationRef<
   {
     readonly 'searchBar.title': 'Search';
     readonly 'searchBar.placeholder': 'Search in {{org}}';
+    readonly 'searchBar.clearButtonTitle': 'Clear';
     readonly 'searchFilter.allOptionTitle': 'All';
     readonly 'searchPagination.limitLabel': 'Results per page:';
     readonly 'searchPagination.limitText': 'of {{num}}';

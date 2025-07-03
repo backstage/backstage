@@ -1,7 +1,6 @@
 ---
 id: adrs-adr000
 title: 'ADR000: [TITLE]'
-# prettier-ignore
 description: Architecture Decision Record (ADR) for [TITLE] [DESCRIPTION]
 ---
 

@@ -274,6 +274,58 @@ spec:
         password: ${{ secrets.password }}
 ```
 
+You can also consume secrets within `each` step of the template.
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: v1beta3-demo
+  title: Test Action template
+  description: scaffolder v1beta3 template demo
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    - title: Authentication
+      description: Provide authentication for the resource
+      required:
+        - service1
+        - token1
+        - service2
+        - token2
+      properties:
+        service1:
+          type: string
+        token1:
+          type: string
+          ui:field: Secret
+        service2:
+          type: string
+        token2:
+          type: string
+          ui:field: Secret
+
+  steps:
+    - id: setupAuthentication
+      action: auth:create
+      each:
+        [
+          {
+            name: '${{ parameters.service1 }}',
+            token: '${{ secrets.token1 }}',
+          },
+          {
+            name: '${{ parameters.service2 }}',
+            token: '${{ secrets.token2 }}',
+          },
+        ]
+      input:
+        name: ${{ each.value.name }}
+        token: ${{ each.value.token }}
+```
+
 ### Custom step layouts
 
 If you find that the default layout of the form used in a particular step does not meet your needs then you can supply your own [custom step layout](./writing-custom-step-layouts.md).

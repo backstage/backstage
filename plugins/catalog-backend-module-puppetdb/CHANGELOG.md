@@ -1,5 +1,48 @@
 # @backstage/plugin-catalog-backend-module-puppetdb
 
+## 0.2.12-next.0
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+
+## 0.2.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.2.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.2.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.0
+
 ## 0.2.10
 
 ### Patch Changes

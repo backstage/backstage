@@ -43,6 +43,7 @@ bugfixes
 builtins
 bundler
 bundlers
+bursty
 callout
 CDNs
 Chai
@@ -433,6 +434,7 @@ statefulsets
 stdout
 storable
 storages
+Streamable
 stringified
 stringify
 subcommand

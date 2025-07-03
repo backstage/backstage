@@ -90,6 +90,68 @@ export interface Config {
             };
           };
         };
+
+        /**
+         * Configuration for `EventConsumingGooglePubSubPublisher`, which
+         * consumes messages from the Backstage events system and forwards them
+         * into Google Pub/Sub topics.
+         */
+        eventConsumingGooglePubSubPublisher?: {
+          subscriptions: {
+            [name: string]: {
+              /**
+               * The name of the events backend topic(s) that messages are
+               * consumed from.
+               */
+              sourceTopic: string | string[];
+
+              /**
+               * The complete name of the Google Pub/Sub subscription to forward
+               * events to, on the form
+               * `projects/PROJECT_ID/topics/TOPIC_ID`.
+               *
+               * The value can contain placeholders on the form `{{
+               * message.attributes.foo }}`, to mirror attribute `foo` as the
+               * whole or part of the topic name.
+               *
+               * @example
+               *
+               * This example expects the events topic to contain GitHub
+               * webhook events where the HTTP headers were mapped into
+               * event metadata fields. The outcome should be that messages
+               * end up on event topics such as `github.push`,
+               * `github.repository` etc which matches the [`@backstage/plugin-events-backend-module-github`](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github) structure.
+               *
+               * ```yaml
+               * targetTopic: 'projects/my-project/topics/github.{{ event.metadata.x-github-event }}'
+               * ```
+               */
+              targetTopicName: string;
+
+              /**
+               * Event metadata fields are by default copied to the Pub/Sub
+               * message attribute. This setting allows you to override or amend
+               * those attributes.
+               *
+               * @remarks
+               *
+               * The values can contain placeholders on the form `{{ event.metadata.foo }}`,
+               * to mirror metadata field `foo` as the whole or part of a
+               * message attribute value.
+               *
+               * @example
+               *
+               * ```yaml
+               * messageAttributes:
+               *   x-gitHub-event: '{{ event.metadata.event }}'
+               * ```
+               */
+              messageAttributes?: {
+                [key: string]: string;
+              };
+            };
+          };
+        };
       };
     };
   };

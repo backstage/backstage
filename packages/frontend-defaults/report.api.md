@@ -9,6 +9,7 @@ import { CreateAppRouteBinder } from '@backstage/frontend-app-api';
 import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { FrontendFeatureLoader } from '@backstage/frontend-plugin-api';
+import { FrontendPluginInfoResolver } from '@backstage/frontend-app-api';
 import { JSX as JSX_2 } from 'react';
 import { ReactNode } from 'react';
 
@@ -44,6 +45,8 @@ export interface CreateAppOptions {
     | CreateAppFeatureLoader
   )[];
   loadingComponent?: ReactNode;
+  // (undocumented)
+  pluginInfoResolver?: FrontendPluginInfoResolver;
 }
 
 // @public

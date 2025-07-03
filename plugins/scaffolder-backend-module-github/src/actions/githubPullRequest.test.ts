@@ -24,18 +24,20 @@ import {
   TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
+import path from 'node:path';
 import { createPublishGithubPullRequestAction } from './githubPullRequest';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { DELETE_FILE } from 'octokit-plugin-create-pull-request';
 
 type GithubPullRequestActionInput = ReturnType<
   typeof createPublishGithubPullRequestAction
-> extends TemplateAction<infer U>
+> extends TemplateAction<infer U, any, any>
   ? U
   : never;
 
 describe('createPublishGithubPullRequestAction', () => {
-  let instance: TemplateAction<GithubPullRequestActionInput>;
+  let instance: TemplateAction<GithubPullRequestActionInput, any, any>;
   let fakeClient: {
     createPullRequest: jest.Mock;
     rest: {
@@ -50,8 +52,6 @@ describe('createPublishGithubPullRequestAction', () => {
   const workspacePath = mockDir.resolve('workspace');
 
   beforeEach(() => {
-    mockDir.clear();
-
     config = new ConfigReader({});
     integrations = ScmIntegrations.fromConfig(config);
     fakeClient = {
@@ -92,12 +92,13 @@ describe('createPublishGithubPullRequestAction', () => {
   });
 
   afterEach(() => {
+    mockDir.clear();
     jest.resetAllMocks();
   });
 
   describe('with targetBranchName', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       fakeClient = {
@@ -181,7 +182,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with no sourcePath', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -250,7 +251,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with sourcePath', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -304,9 +305,121 @@ describe('createPublishGithubPullRequestAction', () => {
     });
   });
 
+  describe('with filesToDelete', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
+
+    beforeEach(() => {
+      input = {
+        filesToDelete: ['changed-file-to-delete.txt', 'delete-me-too.md'],
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+      };
+
+      mockDir.setContent({
+        [workspacePath]: {
+          'catpants.md': 'cat + pants',
+          'changed-file-to-delete.txt': 'file is changed and deleted',
+          'foobar.txt': 'Hello there!',
+        },
+      });
+
+      ctx = createMockActionContext({ input, workspacePath });
+    });
+
+    it('should delete named files', async () => {
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: input.title,
+        head: input.branchName,
+        body: input.description,
+        changes: [
+          {
+            commit: input.title,
+            files: {
+              'catpants.md': {
+                content: Buffer.from('cat + pants').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+              'foobar.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+              'changed-file-to-delete.txt': DELETE_FILE,
+              'delete-me-too.md': DELETE_FILE,
+            },
+          },
+        ],
+      });
+    });
+
+    describe('with targetPath', () => {
+      const targetPath = `target-path-${Date.now()}`;
+
+      beforeEach(() => {
+        Object.assign(input, {
+          filesToDelete: [
+            path.posix.join('nested', 'catpants.md'),
+            path.posix.join('nested', 'delete-me.too'),
+          ],
+          targetPath,
+        });
+
+        mockDir.setContent({
+          [workspacePath]: {
+            'catpants.md': 'cat + pants',
+            'foobar.txt': 'Hello there!',
+            [path.posix.join('nested', 'catpants.md')]: 'delete me',
+            [path.posix.join('nested', 'delete-me.too')]: 'delete me too',
+          },
+        });
+      });
+
+      it('should delete named files', async () => {
+        await instance.handler(ctx);
+
+        expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+          owner: 'myorg',
+          repo: 'myrepo',
+          title: input.title,
+          head: input.branchName,
+          body: input.description,
+          changes: [
+            {
+              commit: input.title,
+              files: {
+                [path.posix.join(targetPath, 'catpants.md')]: {
+                  content: Buffer.from('cat + pants').toString('base64'),
+                  encoding: 'base64',
+                  mode: '100644',
+                },
+                [path.posix.join(targetPath, 'foobar.txt')]: {
+                  content: Buffer.from('Hello there!').toString('base64'),
+                  encoding: 'base64',
+                  mode: '100644',
+                },
+                [path.posix.join(targetPath, 'nested', 'catpants.md')]:
+                  DELETE_FILE,
+                [path.posix.join(targetPath, 'nested', 'delete-me.too')]:
+                  DELETE_FILE,
+              },
+            },
+          ],
+        });
+      });
+    });
+  });
+
   describe('with repoUrl', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -359,7 +472,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with reviewers and teamReviewers', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -406,7 +519,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with no reviewers and teamReviewers', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -431,7 +544,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with assignees', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -475,7 +588,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with broken symlink', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -520,7 +633,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with executable file mode 755', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -579,7 +692,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with executable file mode 775', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -638,7 +751,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with commit message', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -683,7 +796,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with force fork', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -729,7 +842,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with author name and email', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -779,7 +892,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with author name', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -828,7 +941,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with author email', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -877,7 +990,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with author from config file', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -946,7 +1059,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with author attributes and config file', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -1017,7 +1130,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with author fallback and no config', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -1112,7 +1225,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with createWhenEmpty equals true', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       input = {
@@ -1175,7 +1288,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   describe('with createWhenEmpty equals false', () => {
     let input: GithubPullRequestActionInput;
-    let ctx: ActionContext<GithubPullRequestActionInput>;
+    let ctx: ActionContext<GithubPullRequestActionInput, any, any>;
 
     beforeEach(() => {
       fakeClient.createPullRequest.mockResolvedValueOnce(null);

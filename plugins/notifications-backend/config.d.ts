@@ -28,5 +28,10 @@ export interface Config {
      * Throttle duration between notification sending, defaults to 50ms
      */
     throttleInterval?: HumanDuration | string;
+    /**
+     * Time to keep the notifications in the database, defaults to 365 days.
+     * Can be disabled by setting to false.
+     */
+    retention?: HumanDuration | string | false;
   };
 }
