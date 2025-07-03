@@ -154,6 +154,7 @@ export async function createRouter(
     auth: options.auth,
     tokenIssuer,
     baseUrl: authUrl,
+    appUrl,
     userInfo,
     oidc,
     logger,
