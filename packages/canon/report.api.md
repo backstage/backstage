@@ -1013,11 +1013,14 @@ export interface HeaderTab {
 }
 
 // @public (undocumented)
-export const Heading: <T extends ElementType = 'h1'>(
-  props: HeadingProps<T> & {
-    ref?: React.Ref<any>;
-  },
-) => React.ReactElement | null;
+export const Heading: {
+  <T extends ElementType = 'h1'>(
+    props: HeadingProps<T> & {
+      ref?: React.ComponentPropsWithRef<T>['ref'];
+    },
+  ): React.ReactElement<HeadingProps<T>, T>;
+  displayName: string;
+};
 
 // @public (undocumented)
 export type HeadingOwnProps = {
@@ -1672,11 +1675,14 @@ export interface TabsRootWithoutOrientation
   > {}
 
 // @public (undocumented)
-const Text_2: <T extends ElementType = 'p'>(
-  props: TextProps<T> & {
-    ref?: React.Ref<any>;
-  },
-) => React.ReactElement | null;
+const Text_2: {
+  <T extends ElementType = 'p'>(
+    props: TextProps<T> & {
+      ref?: React.ComponentPropsWithRef<T>['ref'];
+    },
+  ): React.ReactElement<TextProps<T>, T>;
+  displayName: string;
+};
 export { Text_2 as Text };
 
 // @public (undocumented)

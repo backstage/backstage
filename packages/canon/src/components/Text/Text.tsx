@@ -56,8 +56,11 @@ function TextComponent<T extends ElementType = 'p'>(
 TextComponent.displayName = 'Text';
 
 /** @public */
-export const Text = forwardRef(TextComponent) as <T extends ElementType = 'p'>(
-  props: TextProps<T> & { ref?: React.Ref<any> },
-) => React.ReactElement | null;
+export const Text = forwardRef(TextComponent) as {
+  <T extends ElementType = 'p'>(
+    props: TextProps<T> & { ref?: React.ComponentPropsWithRef<T>['ref'] },
+  ): React.ReactElement<TextProps<T>, T>;
+  displayName: string;
+};
 
-(Text as any).displayName = 'Text';
+Text.displayName = 'Text';

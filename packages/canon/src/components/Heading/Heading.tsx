@@ -54,10 +54,11 @@ function HeadingComponent<T extends ElementType = 'h1'>(
 HeadingComponent.displayName = 'Heading';
 
 /** @public */
-export const Heading = forwardRef(HeadingComponent) as <
-  T extends ElementType = 'h1',
->(
-  props: HeadingProps<T> & { ref?: React.Ref<any> },
-) => React.ReactElement | null;
+export const Heading = forwardRef(HeadingComponent) as {
+  <T extends ElementType = 'h1'>(
+    props: HeadingProps<T> & { ref?: React.ComponentPropsWithRef<T>['ref'] },
+  ): React.ReactElement<HeadingProps<T>, T>;
+  displayName: string;
+};
 
-(Heading as any).displayName = 'Heading';
+Heading.displayName = 'Heading';
