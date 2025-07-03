@@ -107,8 +107,10 @@ export class OidcRouter {
 
         // todo(blam): maybe this URL could be overridable by config if
         // the plugin is mounted somewhere else?
-        const consentUrl = new URL('/oidc/consent', this.appUrl);
-        consentUrl.searchParams.append('consent_id', result.consentRequestId);
+        const consentUrl = new URL(
+          `/auth/consent/${result.consentRequestId}`,
+          this.appUrl,
+        );
 
         return res.redirect(consentUrl.toString());
       } catch (error) {
