@@ -43,6 +43,7 @@ bugfixes
 builtins
 bundler
 bundlers
+bursty
 callout
 CDNs
 Chai
