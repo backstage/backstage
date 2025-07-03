@@ -64,7 +64,6 @@ describe('Oidc Database', () => {
           scope: undefined,
           expiresAt: undefined,
           metadata: undefined,
-          createdAt: expect.any(String),
         });
       });
 
@@ -94,11 +93,195 @@ describe('Oidc Database', () => {
       });
     });
 
+    describe('Authorization Sessions', () => {
+      it('should create and return an authorization session', async () => {
+        const { oidc } = await createOidcDatabase(databaseId);
+
+        const client = await oidc.createClient({
+          clientId: 'test-client',
+          clientName: 'Test Client',
+          clientSecret: 'test-secret',
+          redirectUris: ['https://example.com/callback'],
+          responseTypes: ['code'],
+          grantTypes: ['authorization_code'],
+        });
+
+        const session = await oidc.createAuthorizationSession({
+          id: 'test-session',
+          clientId: client.clientId,
+          userEntityRef: 'user:default/blam',
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid',
+          state: 'test-state',
+          codeChallenge: 'test-challenge',
+          codeChallengeMethod: 'S256',
+          nonce: 'test-nonce',
+          expiresAt: '2025-01-01T00:00:00Z',
+        });
+
+        expect(session).toEqual(
+          expect.objectContaining({
+            id: 'test-session',
+            clientId: client.clientId,
+            userEntityRef: 'user:default/blam',
+            redirectUri: 'https://example.com/callback',
+            responseType: 'code',
+            scope: 'openid',
+            state: 'test-state',
+            codeChallenge: 'test-challenge',
+            codeChallengeMethod: 'S256',
+            nonce: 'test-nonce',
+            expiresAt: '2025-01-01T00:00:00Z',
+            status: 'pending',
+          }),
+        );
+      });
+
+      it('should allow updating the authorization session', async () => {
+        const { oidc } = await createOidcDatabase(databaseId);
+
+        const client = await oidc.createClient({
+          clientId: 'test-client',
+          clientName: 'Test Client',
+          clientSecret: 'test-secret',
+          redirectUris: ['https://example.com/callback'],
+          responseTypes: ['code'],
+          grantTypes: ['authorization_code'],
+        });
+
+        const session = await oidc.createAuthorizationSession({
+          id: 'test-session',
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          expiresAt: '2025-01-01T00:00:00Z',
+        });
+
+        await expect(
+          oidc.updateAuthorizationSession({
+            id: 'test-session',
+            userEntityRef: 'user:default/blam',
+            status: 'approved',
+          }),
+        ).resolves.toEqual({
+          ...session,
+          userEntityRef: 'user:default/blam',
+          status: 'approved',
+        });
+      });
+    });
+
+    describe('Consent Requests', () => {
+      it('should create and return a consent request', async () => {
+        const { oidc } = await createOidcDatabase(databaseId);
+
+        const client = await oidc.createClient({
+          clientId: 'test-client',
+          clientName: 'Test Client',
+          clientSecret: 'test-secret',
+          redirectUris: ['https://example.com/callback'],
+          responseTypes: ['code'],
+          grantTypes: ['authorization_code'],
+        });
+
+        const session = await oidc.createAuthorizationSession({
+          id: 'test-session',
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          expiresAt: '2025-01-01T00:00:00Z',
+        });
+
+        const consentRequest = await oidc.createConsentRequest({
+          id: 'test-consent',
+          sessionId: session.id,
+          expiresAt: '2025-01-01T00:00:00Z',
+        });
+
+        await expect(
+          oidc.getConsentRequest({ id: 'test-consent' }),
+        ).resolves.toEqual(consentRequest);
+      });
+
+      it('should return consent request with session data', async () => {
+        const { oidc } = await createOidcDatabase(databaseId);
+
+        const client = await oidc.createClient({
+          clientId: 'test-client',
+          clientName: 'Test Client',
+          clientSecret: 'test-secret',
+          redirectUris: ['https://example.com/callback'],
+          responseTypes: ['code'],
+          grantTypes: ['authorization_code'],
+        });
+
+        const session = await oidc.createAuthorizationSession({
+          id: 'test-session',
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid',
+          state: 'test-state',
+          expiresAt: '2025-01-01T00:00:00Z',
+        });
+
+        const consentRequest = await oidc.createConsentRequest({
+          id: 'test-consent',
+          sessionId: session.id,
+          expiresAt: '2025-01-01T00:00:00Z',
+        });
+
+        const consentFromDb = await oidc.getConsentRequest({
+          id: 'test-consent',
+        });
+        const sessionFromDb = await oidc.getAuthorizationSession({
+          id: consentFromDb!.sessionId,
+        });
+
+        expect(consentFromDb).toEqual(consentRequest);
+        expect(sessionFromDb).toEqual(session);
+      });
+
+      it('should delete consent request', async () => {
+        const { oidc } = await createOidcDatabase(databaseId);
+
+        const client = await oidc.createClient({
+          clientId: 'test-client',
+          clientName: 'Test Client',
+          clientSecret: 'test-secret',
+          redirectUris: ['https://example.com/callback'],
+          responseTypes: ['code'],
+          grantTypes: ['authorization_code'],
+        });
+
+        const session = await oidc.createAuthorizationSession({
+          id: 'test-session',
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          expiresAt: '2025-01-01T00:00:00Z',
+        });
+
+        await oidc.createConsentRequest({
+          id: 'test-consent',
+          sessionId: session.id,
+          expiresAt: '2025-01-01T00:00:00Z',
+        });
+
+        await oidc.deleteConsentRequest({ id: 'test-consent' });
+
+        await expect(
+          oidc.getConsentRequest({ id: 'test-consent' }),
+        ).resolves.toBeNull();
+      });
+    });
+
     describe('Authorization Codes', () => {
       it('should create and return an authorization code', async () => {
         const { oidc } = await createOidcDatabase(databaseId);
 
-        const mockClient = await oidc.createClient({
+        const client = await oidc.createClient({
           clientId: 'test-client',
           clientName: 'Test Client',
           clientSecret: 'test-secret',
@@ -107,35 +290,33 @@ describe('Oidc Database', () => {
           grantTypes: ['authorization_code'],
         });
 
-        const authorizationCode = await oidc.createAuthorizationCode({
-          code: 'test-code',
-          clientId: mockClient.clientId,
-          userEntityRef: 'user:default/blam',
+        const session = await oidc.createAuthorizationSession({
+          id: 'test-session',
+          clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
-          scope: undefined,
-          codeChallenge: 'test-challenge',
-          codeChallengeMethod: 'S256',
-          nonce: 'test-nonce',
-          expiresAt: '2025-01-01',
+          responseType: 'code',
+          expiresAt: '2025-01-01T00:00:00Z',
         });
 
-        await expect(
-          oidc.getAuthorizationCode({ code: 'test-code' }),
-        ).resolves.toEqual(authorizationCode);
+        const authCode = await oidc.createAuthorizationCode({
+          code: 'test-code',
+          sessionId: session.id,
+          expiresAt: '2025-01-01T00:00:00Z',
+        });
+
+        expect(authCode).toEqual(
+          expect.objectContaining({
+            code: 'test-code',
+            sessionId: session.id,
+            expiresAt: '2025-01-01T00:00:00Z',
+          }),
+        );
       });
 
-      it('should return null if the authorization code does not exist', async () => {
+      it('should return authorization code with session data', async () => {
         const { oidc } = await createOidcDatabase(databaseId);
 
-        await expect(
-          oidc.getAuthorizationCode({ code: 'test-code' }),
-        ).resolves.toBeNull();
-      });
-
-      it('should return the authorization code when created', async () => {
-        const { oidc } = await createOidcDatabase(databaseId);
-
-        const mockClient = await oidc.createClient({
+        const client = await oidc.createClient({
           clientId: 'test-client',
           clientName: 'Test Client',
           clientSecret: 'test-secret',
@@ -144,27 +325,40 @@ describe('Oidc Database', () => {
           grantTypes: ['authorization_code'],
         });
 
-        const authorizationCode = await oidc.createAuthorizationCode({
-          code: 'test-code',
-          clientId: mockClient.clientId,
+        const session = await oidc.createAuthorizationSession({
+          id: 'test-session',
+          clientId: client.clientId,
           userEntityRef: 'user:default/blam',
           redirectUri: 'https://example.com/callback',
-          scope: undefined,
+          responseType: 'code',
+          scope: 'openid',
           codeChallenge: 'test-challenge',
           codeChallengeMethod: 'S256',
           nonce: 'test-nonce',
-          expiresAt: '2025-01-01',
+          expiresAt: '2025-01-01T00:00:00Z',
         });
 
-        await expect(
-          oidc.getAuthorizationCode({ code: 'test-code' }),
-        ).resolves.toEqual(authorizationCode);
+        const authCode = await oidc.createAuthorizationCode({
+          code: 'test-code',
+          sessionId: session.id,
+          expiresAt: '2025-01-01T00:00:00Z',
+        });
+
+        const authCodeFromDb = await oidc.getAuthorizationCode({
+          code: 'test-code',
+        });
+        const sessionFromDb = await oidc.getAuthorizationSession({
+          id: authCodeFromDb!.sessionId,
+        });
+
+        expect(authCodeFromDb).toEqual(authCode);
+        expect(sessionFromDb).toEqual(session);
       });
 
       it('should allow updating the authorization code', async () => {
         const { oidc } = await createOidcDatabase(databaseId);
 
-        const mockClient = await oidc.createClient({
+        const client = await oidc.createClient({
           clientId: 'test-client',
           clientName: 'Test Client',
           clientSecret: 'test-secret',
@@ -173,24 +367,27 @@ describe('Oidc Database', () => {
           grantTypes: ['authorization_code'],
         });
 
-        const authorizationCode = await oidc.createAuthorizationCode({
-          code: 'test-code',
-          clientId: mockClient.clientId,
-          userEntityRef: 'user:default/blam',
+        const session = await oidc.createAuthorizationSession({
+          id: 'test-session',
+          clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
-          codeChallenge: 'test-challenge',
-          codeChallengeMethod: 'S256',
-          nonce: 'test-nonce',
-          expiresAt: '2025-01-01',
+          responseType: 'code',
+          expiresAt: '2025-01-01T00:00:00Z',
         });
 
-        await expect(
-          oidc.updateAuthorizationCode({
-            code: 'test-code',
-            used: true,
-          }),
-        ).resolves.toEqual({
-          ...authorizationCode,
+        const authCode = await oidc.createAuthorizationCode({
+          code: 'test-code',
+          sessionId: session.id,
+          expiresAt: '2025-01-01T00:00:00Z',
+        });
+
+        const updatedAuthCode = await oidc.updateAuthorizationCode({
+          code: 'test-code',
+          used: true,
+        });
+
+        expect(updatedAuthCode).toEqual({
+          ...authCode,
           used: true,
         });
       });
@@ -200,7 +397,7 @@ describe('Oidc Database', () => {
       it('should create and return an access token', async () => {
         const { oidc } = await createOidcDatabase(databaseId);
 
-        const mockClient = await oidc.createClient({
+        const client = await oidc.createClient({
           clientId: 'test-client',
           clientName: 'Test Client',
           clientSecret: 'test-secret',
@@ -209,81 +406,27 @@ describe('Oidc Database', () => {
           grantTypes: ['authorization_code'],
         });
 
-        const accessToken = await oidc.createAccessToken({
-          tokenId: 'test-token',
-          clientId: mockClient.clientId,
-          userEntityRef: 'user:default/blam',
-          expiresAt: '2025-01-01',
-          revoked: false,
-        });
-
-        await expect(
-          oidc.getAccessToken({ tokenId: 'test-token' }),
-        ).resolves.toEqual(accessToken);
-      });
-
-      it('should return null if the access token does not exist', async () => {
-        const { oidc } = await createOidcDatabase(databaseId);
-
-        await expect(
-          oidc.getAccessToken({ tokenId: 'test-token' }),
-        ).resolves.toBeNull();
-      });
-
-      it('should return the access token when created', async () => {
-        const { oidc } = await createOidcDatabase(databaseId);
-
-        const mockClient = await oidc.createClient({
-          clientId: 'test-client',
-          clientName: 'Test Client',
-          clientSecret: 'test-secret',
-          redirectUris: ['https://example.com/callback'],
-          responseTypes: ['code'],
-          grantTypes: ['authorization_code'],
+        const session = await oidc.createAuthorizationSession({
+          id: 'test-session',
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          expiresAt: '2025-01-01T00:00:00Z',
         });
 
         const accessToken = await oidc.createAccessToken({
           tokenId: 'test-token',
-          clientId: mockClient.clientId,
-          userEntityRef: 'user:default/blam',
-          expiresAt: '2025-01-01',
-          revoked: false,
+          sessionId: session.id,
+          expiresAt: '2025-01-01T00:00:00Z',
         });
 
-        await expect(
-          oidc.getAccessToken({ tokenId: 'test-token' }),
-        ).resolves.toEqual(accessToken);
-      });
-
-      it('should allow updating the access token', async () => {
-        const { oidc } = await createOidcDatabase(databaseId);
-
-        const mockClient = await oidc.createClient({
-          clientId: 'test-client',
-          clientName: 'Test Client',
-          clientSecret: 'test-secret',
-          redirectUris: ['https://example.com/callback'],
-          responseTypes: ['code'],
-          grantTypes: ['authorization_code'],
-        });
-
-        const accessToken = await oidc.createAccessToken({
-          tokenId: 'test-token',
-          clientId: mockClient.clientId,
-          userEntityRef: 'user:default/blam',
-          expiresAt: '2025-01-01',
-          revoked: false,
-        });
-
-        await expect(
-          oidc.updateAccessToken({
+        expect(accessToken).toEqual(
+          expect.objectContaining({
             tokenId: 'test-token',
-            revoked: true,
+            sessionId: session.id,
+            expiresAt: '2025-01-01T00:00:00Z',
           }),
-        ).resolves.toEqual({
-          ...accessToken,
-          revoked: true,
-        });
+        );
       });
     });
   });

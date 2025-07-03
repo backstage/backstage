@@ -16,13 +16,10 @@
 import { Knex } from 'knex';
 import { AuthDatabase } from './AuthDatabase';
 
-import { DateTime } from 'luxon';
-
 type OidcClientRow = {
   client_id: string;
   client_secret: string;
   client_name: string;
-  created_at: string;
   expires_at: string | null;
   response_types: string;
   grant_types: string;
@@ -31,31 +28,41 @@ type OidcClientRow = {
   metadata: string | null;
 };
 
-type OidcAuthorizationCodeRow = {
-  code: string;
+type OAuthAuthorizationSessionRow = {
+  id: string;
   client_id: string;
-  user_entity_ref: string;
+  user_entity_ref: string | null;
   redirect_uri: string;
   scope: string | null;
+  state: string | null;
+  response_type: string;
   code_challenge: string | null;
   code_challenge_method: string | null;
   nonce: string | null;
-  created_at: string;
+  status: 'pending' | 'approved' | 'rejected' | 'expired';
   expires_at: string;
-  used?: boolean;
+};
+
+type OidcConsentRequestRow = {
+  id: string;
+  session_id: string;
+  expires_at: string;
+};
+
+type OidcAuthorizationCodeRow = {
+  code: string;
+  session_id: string;
+  expires_at: string;
+  used: boolean;
 };
 
 type OidcAccessTokenRow = {
   token_id: string;
-  client_id: string;
-  user_entity_ref: string;
-  scope: string | null;
-  created_at: string;
+  session_id: string;
   expires_at: string;
-  revoked?: boolean;
 };
 
-type Client = {
+export type Client = {
   clientId: string;
   clientName: string;
   clientSecret: string;
@@ -65,31 +72,40 @@ type Client = {
   scope?: string;
   expiresAt?: string;
   metadata?: Record<string, unknown>;
-  createdAt: string;
 };
 
-type AuthorizationCode = {
-  code: string;
+export type AuthorizationSession = {
+  id: string;
   clientId: string;
-  userEntityRef: string;
+  userEntityRef?: string;
   redirectUri: string;
   scope?: string;
+  state?: string;
+  responseType: string;
   codeChallenge?: string;
   codeChallengeMethod?: string;
   nonce?: string;
-  createdAt: string;
+  status: 'pending' | 'approved' | 'rejected' | 'expired';
+  expiresAt: string;
+};
+
+export type ConsentRequest = {
+  id: string;
+  sessionId: string;
+  expiresAt: string;
+};
+
+export type AuthorizationCode = {
+  code: string;
+  sessionId: string;
   expiresAt: string;
   used: boolean;
 };
 
-type AccessToken = {
+export type AccessToken = {
   tokenId: string;
-  clientId: string;
-  userEntityRef: string;
-  scope?: string;
-  createdAt: string;
+  sessionId: string;
   expiresAt: string;
-  revoked?: boolean;
 };
 
 /**
@@ -104,14 +120,11 @@ export class OidcDatabase {
     return new OidcDatabase(client);
   }
 
-  async createClient(client: Omit<Client, 'createdAt'>) {
-    const now = DateTime.now().toString();
-
+  async createClient(client: Client) {
     await this.db<OidcClientRow>('oidc_clients').insert({
       client_id: client.clientId,
       client_secret: client.clientSecret,
       client_name: client.clientName,
-      created_at: now,
       expires_at: client.expiresAt,
       response_types: JSON.stringify(client.responseTypes),
       grant_types: JSON.stringify(client.grantTypes),
@@ -120,10 +133,7 @@ export class OidcDatabase {
       metadata: JSON.stringify(client.metadata),
     });
 
-    return {
-      ...client,
-      createdAt: now,
-    };
+    return client;
   }
 
   async getClient({ clientId }: { clientId: string }) {
@@ -138,44 +148,122 @@ export class OidcDatabase {
     return this.rowToClient(client) as Client;
   }
 
-  async createAuthorizationCode(
-    authorizationCode: Omit<AuthorizationCode, 'createdAt' | 'used'>,
+  async createAuthorizationSession(
+    session: Omit<AuthorizationSession, 'status'>,
   ) {
-    const now = DateTime.now().toString();
+    await this.db<OAuthAuthorizationSessionRow>(
+      'oauth_authorization_sessions',
+    ).insert({
+      id: session.id,
+      client_id: session.clientId,
+      user_entity_ref: session.userEntityRef,
+      redirect_uri: session.redirectUri,
+      scope: session.scope,
+      state: session.state,
+      response_type: session.responseType,
+      code_challenge: session.codeChallenge,
+      code_challenge_method: session.codeChallengeMethod,
+      nonce: session.nonce,
+      status: 'pending',
+      expires_at: session.expiresAt,
+    });
 
+    return {
+      ...session,
+      status: 'pending',
+    };
+  }
+
+  async updateAuthorizationSession(
+    session: Partial<AuthorizationSession> & { id: string },
+  ) {
+    const row = this.authorizationSessionToRow(session);
+    const updatedFields = Object.fromEntries(
+      Object.entries(row).filter(([_, value]) => value !== undefined),
+    );
+
+    const [updated] = await this.db<OAuthAuthorizationSessionRow>(
+      'oauth_authorization_sessions',
+    )
+      .where('id', session.id)
+      .update(updatedFields)
+      .returning('*');
+
+    return this.rowToAuthorizationSession(updated) as AuthorizationSession;
+  }
+
+  async createConsentRequest(consentRequest: ConsentRequest) {
+    await this.db<OidcConsentRequestRow>('oidc_consent_requests').insert({
+      id: consentRequest.id,
+      session_id: consentRequest.sessionId,
+      expires_at: consentRequest.expiresAt,
+    });
+
+    return consentRequest;
+  }
+
+  async getConsentRequest({ id }: { id: string }) {
+    const consentRequest = await this.db<OidcConsentRequestRow>(
+      'oidc_consent_requests',
+    )
+      .where('id', id)
+      .first();
+
+    if (!consentRequest) {
+      return null;
+    }
+
+    return this.rowToConsentRequest(consentRequest) as ConsentRequest;
+  }
+
+  async getAuthorizationSession({ id }: { id: string }) {
+    const session = await this.db<OAuthAuthorizationSessionRow>(
+      'oauth_authorization_sessions',
+    )
+      .where('id', id)
+      .first();
+
+    if (!session) {
+      return null;
+    }
+
+    return this.rowToAuthorizationSession(session) as AuthorizationSession;
+  }
+
+  async deleteConsentRequest({ id }: { id: string }) {
+    await this.db<OidcConsentRequestRow>('oidc_consent_requests')
+      .where('id', id)
+      .delete();
+  }
+
+  async createAuthorizationCode(
+    authorizationCode: Omit<AuthorizationCode, 'used'>,
+  ) {
     await this.db<OidcAuthorizationCodeRow>('oidc_authorization_codes').insert({
       code: authorizationCode.code,
-      client_id: authorizationCode.clientId,
-      user_entity_ref: authorizationCode.userEntityRef,
-      redirect_uri: authorizationCode.redirectUri,
-      scope: authorizationCode.scope,
-      code_challenge: authorizationCode.codeChallenge,
-      code_challenge_method: authorizationCode.codeChallengeMethod,
-      nonce: authorizationCode.nonce,
+      session_id: authorizationCode.sessionId,
       expires_at: authorizationCode.expiresAt,
-      created_at: now,
       used: false,
     });
 
     return {
       ...authorizationCode,
-      createdAt: now,
       used: false,
     };
   }
 
   async getAuthorizationCode({ code }: { code: string }) {
-    const authorizationCode = await this.db<OidcAuthorizationCodeRow>(
+    const authCode = await this.db<OidcAuthorizationCodeRow>(
       'oidc_authorization_codes',
     )
       .where('code', code)
       .first();
 
-    if (!authorizationCode) {
+    if (!authCode) {
       return null;
     }
 
-    return this.rowToAuthorizationCode(authorizationCode) as AuthorizationCode;
+    return this.rowToAuthorizationCode(authCode) as AuthorizationCode;
   }
 
   async updateAuthorizationCode(
@@ -196,50 +284,14 @@ export class OidcDatabase {
     return this.rowToAuthorizationCode(updated) as AuthorizationCode;
   }
 
-  async createAccessToken(accessToken: Omit<AccessToken, 'createdAt'>) {
-    const now = DateTime.now().toString();
-
+  async createAccessToken(accessToken: AccessToken) {
     await this.db<OidcAccessTokenRow>('oidc_access_tokens').insert({
       token_id: accessToken.tokenId,
-      client_id: accessToken.clientId,
-      user_entity_ref: accessToken.userEntityRef,
-      scope: accessToken.scope,
-      created_at: now,
+      session_id: accessToken.sessionId,
       expires_at: accessToken.expiresAt,
-      revoked: accessToken.revoked ?? false,
     });
 
-    return {
-      ...accessToken,
-      createdAt: now,
-    };
-  }
-
-  async getAccessToken({ tokenId }: { tokenId: string }) {
-    const accessToken = await this.db<OidcAccessTokenRow>('oidc_access_tokens')
-      .where('token_id', tokenId)
-      .first();
-
-    if (!accessToken) {
-      return null;
-    }
-
-    return this.rowToAccessToken(accessToken) as AccessToken;
-  }
-
-  async updateAccessToken(
-    accessToken: Partial<AccessToken> & { tokenId: string },
-  ) {
-    const row = this.accessTokenToRow(accessToken);
-    const updatedFields = Object.fromEntries(
-      Object.entries(row).filter(([_, value]) => value !== undefined),
-    );
-    const [updated] = await this.db<OidcAccessTokenRow>('oidc_access_tokens')
-      .where('token_id', accessToken.tokenId)
-      .update(updatedFields)
-      .returning('*');
-
-    return this.rowToAccessToken(updated) as AccessToken;
+    return accessToken;
   }
 
   private rowToClient(row: Partial<OidcClientRow>): Partial<Client> {
@@ -257,7 +309,54 @@ export class OidcDatabase {
       scope: row.scope ?? undefined,
       expiresAt: row.expires_at ?? undefined,
       metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
-      createdAt: row.created_at,
+    };
+  }
+
+  private authorizationSessionToRow(
+    session: Partial<AuthorizationSession>,
+  ): Partial<OAuthAuthorizationSessionRow> {
+    return {
+      id: session.id,
+      client_id: session.clientId,
+      user_entity_ref: session.userEntityRef,
+      redirect_uri: session.redirectUri,
+      scope: session.scope,
+      state: session.state,
+      response_type: session.responseType,
+      code_challenge: session.codeChallenge,
+      code_challenge_method: session.codeChallengeMethod,
+      nonce: session.nonce,
+      status: session.status,
+      expires_at: session.expiresAt,
+    };
+  }
+
+  private rowToAuthorizationSession(
+    row: Partial<OAuthAuthorizationSessionRow>,
+  ): Partial<AuthorizationSession> {
+    return {
+      id: row.id,
+      clientId: row.client_id,
+      userEntityRef: row.user_entity_ref ?? undefined,
+      redirectUri: row.redirect_uri,
+      scope: row.scope ?? undefined,
+      state: row.state ?? undefined,
+      responseType: row.response_type,
+      codeChallenge: row.code_challenge ?? undefined,
+      codeChallengeMethod: row.code_challenge_method ?? undefined,
+      nonce: row.nonce ?? undefined,
+      status: row.status,
+      expiresAt: row.expires_at,
+    };
+  }
+
+  private rowToConsentRequest(
+    row: Partial<OidcConsentRequestRow>,
+  ): Partial<ConsentRequest> {
+    return {
+      id: row.id,
+      sessionId: row.session_id,
+      expiresAt: row.expires_at,
     };
   }
 
@@ -266,14 +365,7 @@ export class OidcDatabase {
   ): Partial<OidcAuthorizationCodeRow> {
     return {
       code: authorizationCode.code,
-      client_id: authorizationCode.clientId,
-      user_entity_ref: authorizationCode.userEntityRef,
-      redirect_uri: authorizationCode.redirectUri,
-      scope: authorizationCode.scope,
-      code_challenge: authorizationCode.codeChallenge,
-      code_challenge_method: authorizationCode.codeChallengeMethod,
-      nonce: authorizationCode.nonce,
-      created_at: authorizationCode.createdAt,
+      session_id: authorizationCode.sessionId,
       expires_at: authorizationCode.expiresAt,
       used: authorizationCode.used,
     };
@@ -284,44 +376,9 @@ export class OidcDatabase {
   ): Partial<AuthorizationCode> {
     return {
       code: row.code,
-      clientId: row.client_id,
-      userEntityRef: row.user_entity_ref,
-      redirectUri: row.redirect_uri,
-      scope: row.scope ?? undefined,
-      codeChallenge: row.code_challenge ?? undefined,
-      codeChallengeMethod: row.code_challenge_method ?? undefined,
-      nonce: row.nonce ?? undefined,
-      createdAt: row.created_at,
+      sessionId: row.session_id,
       expiresAt: row.expires_at,
       used: Boolean(row.used),
-    };
-  }
-
-  private accessTokenToRow(
-    accessToken: Partial<AccessToken>,
-  ): Partial<OidcAccessTokenRow> {
-    return {
-      token_id: accessToken.tokenId,
-      client_id: accessToken.clientId,
-      user_entity_ref: accessToken.userEntityRef,
-      scope: accessToken.scope,
-      created_at: accessToken.createdAt,
-      expires_at: accessToken.expiresAt,
-      revoked: accessToken.revoked,
-    };
-  }
-
-  private rowToAccessToken(
-    row: Partial<OidcAccessTokenRow>,
-  ): Partial<AccessToken> {
-    return {
-      tokenId: row.token_id,
-      clientId: row.client_id,
-      userEntityRef: row.user_entity_ref,
-      scope: row.scope ?? undefined,
-      createdAt: row.created_at,
-      expiresAt: row.expires_at,
-      revoked: Boolean(row.revoked),
     };
   }
 }
