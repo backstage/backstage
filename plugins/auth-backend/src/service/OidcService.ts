@@ -112,6 +112,9 @@ export class OidcService {
     const generatedClientId = crypto.randomUUID();
     const generatedClientSecret = crypto.randomUUID();
 
+    // todo(blam): add validation for redirectUris here.
+    // should be a list of urls and / or allowed schemes or something.
+
     return await this.oidc.createClient({
       clientId: generatedClientId,
       clientName: opts.clientName,
@@ -121,6 +124,194 @@ export class OidcService {
       grantTypes: opts.grantTypes ?? ['authorization_code'],
       scope: opts.scope,
     });
+  }
+
+  public async createConsentRequest(opts: {
+    clientId: string;
+    redirectUri: string;
+    responseType: string;
+    scope?: string;
+    state?: string;
+    nonce?: string;
+    codeChallenge?: string;
+    codeChallengeMethod?: string;
+  }) {
+    const {
+      clientId,
+      redirectUri,
+      responseType,
+      scope,
+      state,
+      nonce,
+      codeChallenge,
+      codeChallengeMethod,
+    } = opts;
+
+    if (responseType !== 'code') {
+      throw new InputError('Only authorization code flow is supported');
+    }
+
+    const client = await this.oidc.getClient({ clientId });
+    if (!client) {
+      throw new InputError('Invalid client_id');
+    }
+
+    if (!client.redirectUris.includes(redirectUri)) {
+      throw new InputError('Invalid redirect_uri');
+    }
+
+    if (codeChallenge) {
+      if (
+        !codeChallengeMethod ||
+        !['S256', 'plain'].includes(codeChallengeMethod)
+      ) {
+        throw new InputError('Invalid code_challenge_method');
+      }
+    }
+
+    const sessionId = crypto.randomUUID();
+    const sessionExpiresAt = DateTime.now().plus({ hours: 1 }).toISO();
+
+    await this.oidc.createAuthorizationSession({
+      id: sessionId,
+      clientId,
+      redirectUri,
+      responseType,
+      scope,
+      state,
+      codeChallenge,
+      codeChallengeMethod,
+      nonce,
+      expiresAt: sessionExpiresAt,
+    });
+
+    const consentRequestId = crypto.randomUUID();
+    const consentExpiresAt = DateTime.now().plus({ minutes: 30 }).toISO();
+
+    await this.oidc.createConsentRequest({
+      id: consentRequestId,
+      sessionId,
+      expiresAt: consentExpiresAt,
+    });
+
+    return {
+      consentRequestId,
+      clientName: client.clientName,
+      scope,
+      redirectUri,
+    };
+  }
+
+  public async approveConsentRequest(opts: {
+    consentRequestId: string;
+    userEntityRef: string;
+  }) {
+    const { consentRequestId, userEntityRef } = opts;
+
+    const consentRequest = await this.oidc.getConsentRequest({
+      id: consentRequestId,
+    });
+    if (!consentRequest) {
+      throw new InputError('Invalid consent request');
+    }
+
+    if (DateTime.fromISO(consentRequest.expiresAt) < DateTime.now()) {
+      throw new InputError('Consent request expired');
+    }
+
+    const session = await this.oidc.getAuthorizationSession({
+      id: consentRequest.sessionId,
+    });
+    if (!session) {
+      throw new InputError('Invalid authorization session');
+    }
+
+    if (DateTime.fromISO(session.expiresAt) < DateTime.now()) {
+      throw new InputError('Authorization session expired');
+    }
+
+    await this.oidc.updateAuthorizationSession({
+      id: session.id,
+      userEntityRef,
+      status: 'approved',
+    });
+
+    const authorizationCode = crypto.randomBytes(32).toString('base64url');
+    const codeExpiresAt = DateTime.now().plus({ minutes: 10 }).toISO();
+
+    await this.oidc.createAuthorizationCode({
+      code: authorizationCode,
+      sessionId: session.id,
+      expiresAt: codeExpiresAt,
+    });
+
+    await this.oidc.deleteConsentRequest({ id: consentRequestId });
+
+    const redirectUrl = new URL(session.redirectUri);
+    redirectUrl.searchParams.append('code', authorizationCode);
+    if (session.state) {
+      redirectUrl.searchParams.append('state', session.state);
+    }
+
+    return {
+      redirectUrl: redirectUrl.toString(),
+    };
+  }
+
+  public async getConsentRequest(opts: { consentRequestId: string }) {
+    const consentRequest = await this.oidc.getConsentRequest({
+      id: opts.consentRequestId,
+    });
+    if (!consentRequest) {
+      throw new InputError('Invalid consent request');
+    }
+
+    if (DateTime.fromISO(consentRequest.expiresAt) < DateTime.now()) {
+      throw new InputError('Consent request expired');
+    }
+
+    const session = await this.oidc.getAuthorizationSession({
+      id: consentRequest.sessionId,
+    });
+
+    if (!session) {
+      throw new InputError('Invalid authorization session');
+    }
+
+    const client = await this.oidc.getClient({ clientId: session.clientId });
+    if (!client) {
+      throw new InputError('Invalid client_id');
+    }
+
+    return {
+      id: consentRequest.id,
+      clientId: session.clientId,
+      clientName: client.clientName,
+      redirectUri: session.redirectUri,
+      scope: session.scope,
+      state: session.state,
+      responseType: session.responseType,
+      codeChallenge: session.codeChallenge,
+      codeChallengeMethod: session.codeChallengeMethod,
+      nonce: session.nonce,
+      expiresAt: consentRequest.expiresAt,
+    };
+  }
+
+  public async deleteConsentRequest(opts: { consentRequestId: string }) {
+    const consentRequest = await this.oidc.getConsentRequest({
+      id: opts.consentRequestId,
+    });
+    if (!consentRequest) {
+      return;
+    }
+
+    await this.oidc.updateAuthorizationSession({
+      id: consentRequest.sessionId,
+      status: 'rejected',
+    });
+
+    await this.oidc.deleteConsentRequest({ id: opts.consentRequestId });
   }
 
   public async authorize(opts: {
@@ -168,19 +359,35 @@ export class OidcService {
       }
     }
 
-    const authorizationCode = crypto.randomBytes(32).toString('base64url');
-    const expiresAt = DateTime.now().plus({ minutes: 10 }).toISO();
+    const sessionId = crypto.randomUUID();
+    const sessionExpiresAt = DateTime.now().plus({ hours: 1 }).toISO();
 
-    await this.oidc.createAuthorizationCode({
-      code: authorizationCode,
+    await this.oidc.createAuthorizationSession({
+      id: sessionId,
       clientId,
       userEntityRef,
       redirectUri,
+      responseType,
       scope,
+      state,
       codeChallenge,
       codeChallengeMethod,
       nonce,
-      expiresAt,
+      expiresAt: sessionExpiresAt,
+    });
+
+    await this.oidc.updateAuthorizationSession({
+      id: sessionId,
+      status: 'approved',
+    });
+
+    const authorizationCode = crypto.randomBytes(32).toString('base64url');
+    const codeExpiresAt = DateTime.now().plus({ minutes: 10 }).toISO();
+
+    await this.oidc.createAuthorizationCode({
+      code: authorizationCode,
+      sessionId,
+      expiresAt: codeExpiresAt,
     });
 
     const redirectUrl = new URL(redirectUri);
@@ -237,24 +444,38 @@ export class OidcService {
       throw new AuthenticationError('Authorization code already used');
     }
 
-    if (authCode.clientId !== clientId) {
+    const session = await this.oidc.getAuthorizationSession({
+      id: authCode.sessionId,
+    });
+    if (!session) {
+      throw new AuthenticationError('Invalid authorization session');
+    }
+    if (session.clientId !== clientId) {
       throw new AuthenticationError('Client ID mismatch');
     }
 
-    if (authCode.redirectUri !== redirectUri) {
+    if (session.redirectUri !== redirectUri) {
       throw new AuthenticationError('Redirect URI mismatch');
     }
 
-    if (authCode.codeChallenge) {
+    if (session.status !== 'approved') {
+      throw new AuthenticationError('Authorization not approved');
+    }
+
+    if (!session.userEntityRef) {
+      throw new AuthenticationError('No user associated with authorization');
+    }
+
+    if (session.codeChallenge) {
       if (!codeVerifier) {
         throw new AuthenticationError('Code verifier required for PKCE');
       }
 
       if (
         !this.verifyPkce(
-          authCode.codeChallenge,
+          session.codeChallenge,
           codeVerifier,
-          authCode.codeChallengeMethod,
+          session.codeChallengeMethod,
         )
       ) {
         throw new AuthenticationError('Invalid code verifier');
@@ -271,15 +492,13 @@ export class OidcService {
 
     await this.oidc.createAccessToken({
       tokenId: accessTokenId,
-      clientId,
-      userEntityRef: authCode.userEntityRef,
-      scope: authCode.scope,
+      sessionId: session.id,
       expiresAt,
     });
 
     const { token } = await this.tokenIssuer.issueToken({
       claims: {
-        sub: authCode.userEntityRef,
+        sub: session.userEntityRef,
       },
     });
 
@@ -288,7 +507,7 @@ export class OidcService {
       tokenType: 'Bearer',
       expiresIn: 3600,
       idToken: token,
-      scope: authCode.scope || 'openid',
+      scope: session.scope || 'openid',
     };
   }
 
