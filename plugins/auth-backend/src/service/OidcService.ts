@@ -18,6 +18,8 @@ import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { InputError } from '@backstage/errors';
 import { decodeJwt } from 'jose';
+import crypto from 'crypto';
+import { OidcDatabase } from '../database/OidcDatabase';
 
 export class OidcService {
   private constructor(
@@ -25,6 +27,7 @@ export class OidcService {
     private readonly tokenIssuer: TokenIssuer,
     private readonly baseUrl: string,
     private readonly userInfo: UserInfoDatabase,
+    private readonly oidc: OidcDatabase,
   ) {}
 
   static create(options: {
@@ -32,12 +35,14 @@ export class OidcService {
     tokenIssuer: TokenIssuer;
     baseUrl: string;
     userInfo: UserInfoDatabase;
+    oidc: OidcDatabase;
   }) {
     return new OidcService(
       options.auth,
       options.tokenIssuer,
       options.baseUrl,
       options.userInfo,
+      options.oidc,
     );
   }
 
@@ -65,6 +70,8 @@ export class OidcService {
       token_endpoint_auth_methods_supported: [],
       claims_supported: ['sub', 'ent'],
       grant_types_supported: [],
+      authorization_endpoint: `${this.baseUrl}/v1/authorize`,
+      registration_endpoint: `${this.baseUrl}/v1/register`,
     };
   }
 
@@ -88,5 +95,26 @@ export class OidcService {
       throw new Error('Invalid user token, user entity ref must be a string');
     }
     return await this.userInfo.getUserInfo(userEntityRef);
+  }
+
+  public async registerClient(opts: {
+    responseTypes?: string[];
+    grantTypes?: string[];
+    clientName: string;
+    redirectUris?: string[];
+    scope?: string;
+  }) {
+    const generatedClientId = crypto.randomUUID();
+    const generatedClientSecret = crypto.randomUUID();
+
+    return await this.oidc.createClient({
+      clientId: generatedClientId,
+      clientName: opts.clientName,
+      clientSecret: generatedClientSecret,
+      redirectUris: opts.redirectUris ?? [],
+      responseTypes: opts.responseTypes ?? ['code'],
+      grantTypes: opts.grantTypes ?? ['authorization_code'],
+      scope: opts.scope,
+    });
   }
 }
