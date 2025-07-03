@@ -37,6 +37,8 @@ describe('OidcRouter', () => {
         }),
       } as unknown as UserInfoDatabase;
 
+      const mockOidc = {};
+
       const { server } = await startTestBackend({
         features: [
           createBackendPlugin({

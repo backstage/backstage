@@ -15,10 +15,12 @@
  */
 import Router from 'express-promise-router';
 import { OidcService } from './OidcService';
-import { AuthenticationError } from '@backstage/errors';
+import { AuthenticationError, isError } from '@backstage/errors';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
+import { rest } from 'lodash';
+import { OidcDatabase } from '../database/OidcDatabase';
 
 export class OidcRouter {
   private constructor(private readonly oidc: OidcService) {}
@@ -28,6 +30,7 @@ export class OidcRouter {
     tokenIssuer: TokenIssuer;
     baseUrl: string;
     userInfo: UserInfoDatabase;
+    oidc: OidcDatabase;
   }) {
     return new OidcRouter(OidcService.create(options));
   }
@@ -66,6 +69,29 @@ export class OidcRouter {
       }
 
       res.json(userInfo);
+    });
+
+    router.get('/v1/register', async (req, res) => {
+      // todo(blam): maybe add zod types for validating input
+      const registrationRequest = req.body;
+      if (!registrationRequest.redirect_uris?.length) {
+        res.status(400).json({
+          error: 'invalid_request',
+          error_description: 'redirect_uris is required',
+        });
+        return;
+      }
+
+      try {
+        res.json(await this.oidc.registerClient(registrationRequest));
+      } catch (e) {
+        res.status(500).json({
+          error: 'server_error',
+          error_description: `Failed to register client: ${
+            isError(e) ? e.message : 'Unknown error'
+          }`,
+        });
+      }
     });
 
     return router;
