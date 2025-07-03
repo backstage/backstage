@@ -284,10 +284,10 @@ export class OidcService {
     });
 
     return {
-      access_token: token,
-      token_type: 'Bearer',
-      expires_in: 3600,
-      id_token: token,
+      accessToken: token,
+      tokenType: 'Bearer',
+      expiresIn: 3600,
+      idToken: token,
       scope: authCode.scope || 'openid',
     };
   }

@@ -106,18 +106,7 @@ export class OidcDatabase {
 
   async createClient(client: Omit<Client, 'createdAt'>) {
     const now = DateTime.now().toString();
-    console.log({
-      client_id: client.clientId,
-      client_secret: client.clientSecret,
-      client_name: client.clientName,
-      created_at: now,
-      expires_at: client.expiresAt,
-      response_types: JSON.stringify(client.responseTypes),
-      grant_types: JSON.stringify(client.grantTypes),
-      redirect_uris: JSON.stringify(client.redirectUris),
-      scope: client.scope,
-      metadata: JSON.stringify(client.metadata),
-    });
+
     await this.db<OidcClientRow>('oidc_clients').insert({
       client_id: client.clientId,
       client_secret: client.clientSecret,
