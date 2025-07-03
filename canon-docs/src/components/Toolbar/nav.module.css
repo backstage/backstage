@@ -20,19 +20,19 @@
   display: flex;
   position: relative;
   z-index: 0;
-  gap: var(--canon-space-8);
+  gap: 2rem;
 }
 
 .tab {
   all: unset;
   height: 60px;
   color: var(--secondary);
-  font-size: var(--canon-font-size-3);
-  font-weight: var(--canon-font-weight-bold);
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: color 0.2s ease-in-out;
 
   &:hover {
+    transition: color 0.2s ease-in-out;
     color: var(--primary);
   }
 
@@ -72,7 +72,7 @@
   height: 1px;
   border-radius: 0.25rem;
   background-color: var(--primary);
-  transition-property: translate, width, background-color;
+  transition-property: translate, width;
   transition-duration: 200ms;
   transition-timing-function: ease-in-out;
 }
