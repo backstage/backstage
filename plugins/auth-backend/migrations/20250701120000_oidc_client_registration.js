@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
+  // These tables make up the OIDC client registration flow.
+  // Clients are the top of the tree, that are created by the client registration flow.
   await knex.schema.createTable('oidc_clients', table => {
     table.comment(
       'OIDC clients that are registered via dynamic client registration',
@@ -42,35 +44,26 @@ exports.up = async function up(knex) {
       .comment('The name of the client, should be human readable');
 
     table
-      .text('redirect_uris', 'longtext')
-      .notNullable()
-      .comment('JSON array of valid redirect URIs');
-
-    table
-      .timestamp('created_at', { useTz: false, precision: 0 })
-      .notNullable()
-      .defaultTo(knex.fn.now())
-      .comment('Client registration timestamp');
-
-    table
       .timestamp('expires_at', { useTz: false, precision: 0 })
       .nullable()
       .comment('Client registration expiration timestamp');
 
     table
-      .text('response_types', 'longtext')
+      .text('response_types')
       .notNullable()
       .comment('JSON array of supported response types');
 
     table
-      .text('grant_types', 'longtext')
+      .text('grant_types')
       .notNullable()
       .comment('JSON array of supported grant types');
 
     table
-      .text('scope')
-      .nullable()
-      .comment('Space-separated list of allowed scopes');
+      .text('redirect_uris', 'longtext')
+      .notNullable()
+      .comment('Allowed redirect URIs as JSON array');
+
+    table.text('scope').nullable().comment('Default scopes for the client');
 
     table
       .text('metadata', 'longtext')
@@ -78,27 +71,29 @@ exports.up = async function up(knex) {
       .comment('Additional client metadata as JSON');
   });
 
-  await knex.schema.createTable('oidc_authorization_codes', table => {
-    table.comment('Authorization codes for OIDC authorization code flow');
-
-    table.string('code').primary().notNullable().comment('Authorization code');
+  await knex.schema.createTable('oauth_authorization_sessions', table => {
+    table.comment('Core OAuth authorization sessions with shared context');
 
     table
-      .string('client_id')
+      .string('id')
+      .primary()
       .notNullable()
-      .comment('Client ID that requested the code');
+      .comment('Unique session identifier');
+
+    table.string('client_id').notNullable().comment('OIDC client identifier');
 
     table
       .string('user_entity_ref')
-      .notNullable()
-      .comment('User entity reference who authorized');
+      .nullable()
+      .comment('Backstage user entity reference');
 
-    table
-      .text('redirect_uri')
-      .notNullable()
-      .comment('Redirect URI used in authorization request');
+    table.text('redirect_uri').notNullable().comment('Client redirect URI');
 
-    table.text('scope').nullable().comment('Requested scopes');
+    table.text('scope').nullable().comment('Requested scopes space-separated');
+
+    table.string('state').nullable().comment('Client state parameter');
+
+    table.string('response_type').notNullable().comment('OAuth2 response type');
 
     table.string('code_challenge').nullable().comment('PKCE code challenge');
 
@@ -107,65 +102,104 @@ exports.up = async function up(knex) {
       .nullable()
       .comment('PKCE code challenge method');
 
-    table.string('nonce').nullable().comment('Nonce value for ID token');
+    table.string('nonce').nullable().comment('OIDC nonce parameter');
 
     table
-      .timestamp('created_at', { useTz: false, precision: 0 })
-      .notNullable()
-      .defaultTo(knex.fn.now())
-      .comment('Code creation timestamp');
+      .enum('status', ['pending', 'approved', 'rejected', 'expired'])
+      .defaultTo('pending')
+      .comment('Authorization session status');
 
     table
       .timestamp('expires_at', { useTz: false, precision: 0 })
       .notNullable()
-      .comment('Code expiration timestamp');
+      .comment('Session expiration timestamp');
+
+    table.foreign('client_id').references('client_id').inTable('oidc_clients');
+    table.index(['client_id', 'user_entity_ref']);
+    table.index(['status', 'expires_at']);
+  });
+
+  await knex.schema.createTable('oidc_consent_requests', table => {
+    table.comment('User consent requests for OAuth authorization');
+
+    table
+      .string('id')
+      .primary()
+      .notNullable()
+      .comment('Unique consent request identifier');
+
+    table
+      .string('session_id')
+      .notNullable()
+      .comment('Authorization session identifier');
+
+    table
+      .timestamp('expires_at', { useTz: false, precision: 0 })
+      .notNullable()
+      .comment('Consent request expiration timestamp');
+
+    table
+      .foreign('session_id')
+      .references('id')
+      .inTable('oauth_authorization_sessions')
+      .onDelete('CASCADE');
+  });
+
+  await knex.schema.createTable('oidc_authorization_codes', table => {
+    table.comment('OAuth authorization codes for code exchange flow');
+
+    table
+      .string('code')
+      .primary()
+      .notNullable()
+      .comment('Unique authorization code');
+
+    table
+      .string('session_id')
+      .notNullable()
+      .comment('Authorization session identifier');
+
+    table
+      .timestamp('expires_at', { useTz: false, precision: 0 })
+      .notNullable()
+      .comment('Authorization code expiration timestamp');
 
     table
       .boolean('used')
       .defaultTo(false)
-      .comment('Whether the code has been used');
+      .comment('Whether the authorization code has been used');
 
-    table.foreign('client_id').references('client_id').inTable('oidc_clients');
+    table
+      .foreign('session_id')
+      .references('id')
+      .inTable('oauth_authorization_sessions')
+      .onDelete('CASCADE');
   });
 
   await knex.schema.createTable('oidc_access_tokens', table => {
-    table.comment('Access tokens issued by OIDC server');
+    table.comment('OAuth access tokens for API access');
 
     table
       .string('token_id')
       .primary()
       .notNullable()
-      .comment('Unique token identifier');
+      .comment('Unique access token identifier');
 
     table
-      .string('client_id')
+      .string('session_id')
       .notNullable()
-      .comment('Client ID that owns the token');
-
-    table
-      .string('user_entity_ref')
-      .notNullable()
-      .comment('User entity reference');
-
-    table.text('scope').nullable().comment('Token scopes');
-
-    table
-      .timestamp('created_at', { useTz: false, precision: 0 })
-      .notNullable()
-      .defaultTo(knex.fn.now())
-      .comment('Token creation timestamp');
+      .comment('Authorization session identifier');
 
     table
       .timestamp('expires_at', { useTz: false, precision: 0 })
       .notNullable()
-      .comment('Token expiration timestamp');
+      .comment('Access token expiration timestamp');
 
     table
-      .boolean('revoked')
-      .defaultTo(false)
-      .comment('Whether the token has been revoked');
-
-    table.foreign('client_id').references('client_id').inTable('oidc_clients');
+      .foreign('session_id')
+      .references('id')
+      .inTable('oauth_authorization_sessions')
+      .onDelete('CASCADE');
   });
 };
 
@@ -175,5 +209,7 @@ exports.up = async function up(knex) {
 exports.down = async function down(knex) {
   await knex.schema.dropTable('oidc_access_tokens');
   await knex.schema.dropTable('oidc_authorization_codes');
+  await knex.schema.dropTable('oidc_consent_requests');
+  await knex.schema.dropTable('oauth_authorization_sessions');
   await knex.schema.dropTable('oidc_clients');
 };
