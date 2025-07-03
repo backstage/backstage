@@ -23,6 +23,7 @@ import Router from 'express-promise-router';
 import request from 'supertest';
 import { OidcRouter } from './OidcRouter';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
+import { OidcDatabase } from '../database/OidcDatabase';
 
 describe('OidcRouter', () => {
   describe('/v1/userinfo', () => {
@@ -37,7 +38,12 @@ describe('OidcRouter', () => {
         }),
       } as unknown as UserInfoDatabase;
 
-      const mockOidc = {};
+      const mockOidc = {
+        createClient: jest.fn().mockResolvedValue({
+          clientId: 'test',
+          clientSecret: 'test',
+        }),
+      } as unknown as OidcDatabase;
 
       const { server } = await startTestBackend({
         features: [
@@ -55,6 +61,7 @@ describe('OidcRouter', () => {
                       tokenIssuer: {} as any,
                       baseUrl: 'http://localhost:7000',
                       userInfo: mockUserInfo,
+                      oidc: mockOidc,
                     }).getRouter(),
                   );
                   httpRouter.use(router);
@@ -101,6 +108,13 @@ describe('OidcRouter', () => {
         }),
       } as unknown as UserInfoDatabase;
 
+      const mockOidc = {
+        createClient: jest.fn().mockResolvedValue({
+          clientId: 'test',
+          clientSecret: 'test',
+        }),
+      } as unknown as OidcDatabase;
+
       const { server } = await startTestBackend({
         features: [
           createBackendPlugin({
@@ -117,6 +131,7 @@ describe('OidcRouter', () => {
                       tokenIssuer: {} as any,
                       baseUrl: 'http://localhost:7000',
                       userInfo: mockUserInfo,
+                      oidc: mockOidc,
                     }).getRouter(),
                   );
                   httpRouter.use(router);
