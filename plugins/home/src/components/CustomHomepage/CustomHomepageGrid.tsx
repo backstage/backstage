@@ -39,6 +39,7 @@ import Typography from '@material-ui/core/Typography';
 import { WidgetSettingsOverlay } from './WidgetSettingsOverlay';
 import { AddWidgetDialog } from './AddWidgetDialog';
 import { CustomHomepageButtons } from './CustomHomepageButtons';
+import { CancelConfirmDialog } from './CancelConfirmDialog';
 import {
   CustomHomepageGridProps,
   CustomHomepageGridStateV1,
@@ -218,7 +219,8 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     defaultLayout,
     'lastStoredWidgets',
   );
-  const [addWidgetDialogOpen, setAddWidgetDialogOpen] = React.useState(false);
+  const [addWidgetDialogOpen, setAddWidgetDialogOpen] = useState(false);
+  const [cancelConfirmDialogOpen, setCancelConfirmDialogOpen] = useState(false);
   const editModeOn = widgets.find(w => w.layout.isResizable) !== undefined;
   const [editMode, setEditMode] = useState(editModeOn);
   const getWidgetByName = (name: string) => {
@@ -300,16 +302,18 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   };
 
   const discardChanges = () => {
-    // eslint-disable-next-line no-alert
-    const accepted = window.confirm(
-      'Are you sure? Unsaved changes will be lost',
-    );
-    if (!accepted) {
-      return;
-    }
+    setCancelConfirmDialogOpen(true);
+  };
+
+  const handleConfirmDiscard = () => {
     setWidgets(lastStoredWidgets);
     setEditMode(false);
     setLastStoredWidgets([]);
+    setCancelConfirmDialogOpen(false);
+  };
+
+  const handleCancelDiscard = () => {
+    setCancelConfirmDialogOpen(false);
   };
 
   const handleLayoutChange = (newLayout: Layout[], _: Layouts) => {
@@ -362,6 +366,11 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
       >
         <AddWidgetDialog widgets={availableWidgets} handleAdd={handleAdd} />
       </Dialog>
+      <CancelConfirmDialog
+        open={cancelConfirmDialogOpen}
+        onClose={handleCancelDiscard}
+        onConfirm={handleConfirmDiscard}
+      />
       {!editMode && widgets.length === 0 && (
         <Typography variant="h5" align="center">
           {t('customHomepage.noWidgets')}
