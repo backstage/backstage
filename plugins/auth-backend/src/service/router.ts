@@ -40,6 +40,7 @@ import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
 import { OidcRouter } from './OidcRouter';
+import { OidcDatabase } from '../database/OidcDatabase';
 
 interface RouterOptions {
   logger: LoggerService;
@@ -148,11 +149,14 @@ export async function createRouter(
     auth: options.auth,
   });
 
+  const oidc = await OidcDatabase.create({ database });
+
   const oidcRouter = OidcRouter.create({
     auth: options.auth,
     tokenIssuer,
     baseUrl: authUrl,
     userInfo,
+    oidc,
   });
 
   router.use(oidcRouter.getRouter());
