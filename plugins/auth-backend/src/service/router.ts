@@ -156,6 +156,7 @@ export async function createRouter(
     baseUrl: authUrl,
     userInfo,
     oidc,
+    logger,
   });
 
   router.use(oidcRouter.getRouter());

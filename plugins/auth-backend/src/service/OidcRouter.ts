@@ -16,26 +16,33 @@
 import Router from 'express-promise-router';
 import { OidcService } from './OidcService';
 import { AuthenticationError, isError } from '@backstage/errors';
-import { AuthService } from '@backstage/backend-plugin-api';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
+import { json } from 'express';
 
 export class OidcRouter {
-  private constructor(private readonly oidc: OidcService) {}
+  private constructor(
+    private readonly oidc: OidcService,
+    private readonly logger: LoggerService,
+  ) {}
 
   static create(options: {
     auth: AuthService;
     tokenIssuer: TokenIssuer;
     baseUrl: string;
+    logger: LoggerService;
     userInfo: UserInfoDatabase;
     oidc: OidcDatabase;
   }) {
-    return new OidcRouter(OidcService.create(options));
+    return new OidcRouter(OidcService.create(options), options.logger);
   }
 
   public getRouter() {
     const router = Router();
+
+    router.use(json());
 
     router.get('/.well-known/openid-configuration', (_req, res) => {
       res.json(this.oidc.getConfiguration());
@@ -60,6 +67,7 @@ export class OidcRouter {
       } = req.query;
 
       if (!clientId || !redirectUri || !responseType) {
+        this.logger.error(`Failed to authorize: Missing required parameters`);
         return res.status(400).json({
           error: 'invalid_request',
           error_description:
@@ -68,8 +76,8 @@ export class OidcRouter {
       }
 
       try {
-        // For simplicity, we'll use a default user entity ref for now
-        // In a real implementation, this should be obtained from the authenticated user
+        // use default user entity ref for now, as we need a redirect to the frontend plugin
+        // for the consent flow in order to issue the right token for the right user.
         const userEntityRef = 'user:default/guest';
 
         const { redirectUrl } = await this.oidc.authorize({
@@ -117,6 +125,9 @@ export class OidcRouter {
       } = req.body;
 
       if (!grantType || !code || !clientId || !clientSecret || !redirectUri) {
+        this.logger.error(
+          `Failed to exchange code for token: Missing required parameters`,
+        );
         return res.status(400).json({
           error: 'invalid_request',
           error_description: 'Missing required parameters',
@@ -135,6 +146,12 @@ export class OidcRouter {
 
         return res.json(result);
       } catch (error) {
+        const description = isError(error) ? error.message : 'Unknown error';
+        this.logger.error(
+          `Failed to exchange code for token: ${description}`,
+          error,
+        );
+
         if (isError(error)) {
           if (error.name === 'AuthenticationError') {
             return res.status(401).json({
@@ -180,6 +197,7 @@ export class OidcRouter {
     router.post('/v1/register', async (req, res) => {
       // todo(blam): maybe add zod types for validating input
       const registrationRequest = req.body;
+
       if (!registrationRequest.redirect_uris?.length) {
         res.status(400).json({
           error: 'invalid_request',
@@ -189,13 +207,26 @@ export class OidcRouter {
       }
 
       try {
-        res.json(await this.oidc.registerClient(registrationRequest));
+        const client = await this.oidc.registerClient({
+          clientName: registrationRequest.client_name,
+          redirectUris: registrationRequest.redirect_uris,
+          responseTypes: registrationRequest.response_types,
+          grantTypes: registrationRequest.grant_types,
+          scope: registrationRequest.scope,
+        });
+
+        res.status(201).json({
+          client_id: client.clientId,
+          redirect_uris: client.redirectUris,
+          client_secret: client.clientSecret,
+        });
       } catch (e) {
+        const description = isError(e) ? e.message : 'Unknown error';
+        this.logger.error(`Failed to register client: ${description}`, e);
+
         res.status(500).json({
           error: 'server_error',
-          error_description: `Failed to register client: ${
-            isError(e) ? e.message : 'Unknown error'
-          }`,
+          error_description: `Failed to register client: ${description}`,
         });
       }
     });
