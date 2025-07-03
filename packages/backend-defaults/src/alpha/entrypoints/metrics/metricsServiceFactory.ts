@@ -36,10 +36,6 @@ export const metricsServiceFactory = createServiceFactory({
     pluginMetadata: coreServices.pluginMetadata,
   },
   factory: ({ rootMetricsService, pluginMetadata }) => {
-    const rootId = 'backstage';
-    const pluginId = pluginMetadata.getId();
-    const id = `${rootId}.plugin.${pluginId}`;
-
-    return rootMetricsService.forPlugin(id);
+    return rootMetricsService.forPlugin(pluginMetadata.getId());
   },
 });

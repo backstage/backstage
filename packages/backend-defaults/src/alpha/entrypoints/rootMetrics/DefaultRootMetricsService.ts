@@ -34,17 +34,19 @@ import { PluginMetricsService } from './PluginMetricsService';
 
 export class DefaultRootMetricsService implements RootMetricsService {
   private readonly meter: Meter;
+  private readonly serviceName: string;
+  private readonly serviceVersion?: string;
 
   private constructor(config: Config) {
     const metricsConfig = config.getOptionalConfig('backend.metrics');
 
-    const serviceName =
+    this.serviceName =
       metricsConfig?.getOptionalString('resource.serviceName') ?? 'backstage';
-    const serviceVersion = metricsConfig?.getOptionalString(
+    this.serviceVersion = metricsConfig?.getOptionalString(
       'resource.serviceVersion',
     );
 
-    this.meter = metrics.getMeter(serviceName, serviceVersion);
+    this.meter = metrics.getMeter(this.serviceName, this.serviceVersion);
   }
 
   static create(config: Config): RootMetricsService {
@@ -56,7 +58,11 @@ export class DefaultRootMetricsService implements RootMetricsService {
   }
 
   forPlugin(pluginId: string): MetricsService {
-    return new PluginMetricsService(pluginId);
+    return new PluginMetricsService({
+      pluginId,
+      serviceName: this.serviceName,
+      serviceVersion: this.serviceVersion,
+    });
   }
 
   createCounter(name: string, options?: MetricOptions): Counter {

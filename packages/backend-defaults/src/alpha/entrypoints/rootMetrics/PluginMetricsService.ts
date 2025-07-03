@@ -27,48 +27,71 @@ import {
   UpDownCounter,
 } from '@opentelemetry/api';
 
+export type PluginMetricsServiceOptions = {
+  pluginId: string;
+  serviceName: string;
+  serviceVersion?: string;
+};
+
 export class PluginMetricsService implements MetricsService {
   private readonly meter: Meter;
+  private readonly pluginId: string;
+  private readonly serviceName: string;
 
-  constructor(pluginId: string, version?: string) {
-    this.meter = metrics.getMeter(pluginId, version);
+  constructor(options: PluginMetricsServiceOptions) {
+    this.pluginId = options.pluginId;
+    this.serviceName = options.serviceName;
+    this.meter = metrics.getMeter(options.serviceName, options.serviceVersion);
+  }
+
+  private prefixMetricName(name: string): string {
+    return `${this.serviceName}.plugin.${this.pluginId}.${name}`;
   }
 
   createCounter(name: string, options?: MetricOptions): Counter {
-    return this.meter.createCounter(name, options);
+    return this.meter.createCounter(this.prefixMetricName(name), options);
   }
 
   createUpDownCounter(name: string, options?: MetricOptions): UpDownCounter {
-    return this.meter.createUpDownCounter(name, options);
+    return this.meter.createUpDownCounter(this.prefixMetricName(name), options);
   }
 
   createHistogram(name: string, options?: MetricOptions): Histogram {
-    return this.meter.createHistogram(name, options);
+    return this.meter.createHistogram(this.prefixMetricName(name), options);
   }
 
   createGauge(name: string, options?: MetricOptions): Gauge {
-    return this.meter.createGauge(name, options);
+    return this.meter.createGauge(this.prefixMetricName(name), options);
   }
 
   createObservableCounter(
     name: string,
     options?: MetricOptions,
   ): ObservableCounter {
-    return this.meter.createObservableCounter(name, options);
+    return this.meter.createObservableCounter(
+      this.prefixMetricName(name),
+      options,
+    );
   }
 
   createObservableUpDownCounter(
     name: string,
     options?: MetricOptions,
   ): ObservableUpDownCounter {
-    return this.meter.createObservableUpDownCounter(name, options);
+    return this.meter.createObservableUpDownCounter(
+      this.prefixMetricName(name),
+      options,
+    );
   }
 
   createObservableGauge(
     name: string,
     options?: MetricOptions,
   ): ObservableGauge {
-    return this.meter.createObservableGauge(name, options);
+    return this.meter.createObservableGauge(
+      this.prefixMetricName(name),
+      options,
+    );
   }
 
   getMeter(): Meter {
