@@ -26,17 +26,25 @@ export class OidcRouter {
   private constructor(
     private readonly oidc: OidcService,
     private readonly logger: LoggerService,
+    private readonly auth: AuthService,
+    private readonly appUrl: string,
   ) {}
 
   static create(options: {
     auth: AuthService;
     tokenIssuer: TokenIssuer;
     baseUrl: string;
+    appUrl: string;
     logger: LoggerService;
     userInfo: UserInfoDatabase;
     oidc: OidcDatabase;
   }) {
-    return new OidcRouter(OidcService.create(options), options.logger);
+    return new OidcRouter(
+      OidcService.create(options),
+      options.logger,
+      options.auth,
+      options.appUrl,
+    );
   }
 
   public getRouter() {
@@ -44,15 +52,25 @@ export class OidcRouter {
 
     router.use(json());
 
+    // OpenID Provider Configuration endpoint
+    // https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
+    // Returns the OpenID Provider Configuration document containing metadata about the provider
     router.get('/.well-known/openid-configuration', (_req, res) => {
       res.json(this.oidc.getConfiguration());
     });
 
+    // JSON Web Key Set endpoint
+    // https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.10.1.1
+    // Returns the public keys used to verify JWTs issued by this provider
     router.get('/.well-known/jwks.json', async (_req, res) => {
       const { keys } = await this.oidc.listPublicKeys();
       res.json({ keys });
     });
 
+    // Authorization endpoint
+    // https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+    // Handles the initial authorization request from the client, validates parameters,
+    // and redirects to the consent page for user approval
     router.get('/v1/authorize', async (req, res) => {
       // todo(blam): maybe add zod types for validating input
       const {
@@ -76,11 +94,7 @@ export class OidcRouter {
       }
 
       try {
-        // use default user entity ref for now, as we need a redirect to the frontend plugin
-        // for the consent flow in order to issue the right token for the right user.
-        const userEntityRef = 'user:default/guest';
-
-        const { redirectUrl } = await this.oidc.authorize({
+        const result = await this.oidc.createConsentRequest({
           clientId: clientId as string,
           redirectUri: redirectUri as string,
           responseType: responseType as string,
@@ -89,10 +103,14 @@ export class OidcRouter {
           nonce: nonce as string,
           codeChallenge: codeChallenge as string,
           codeChallengeMethod: codeChallengeMethod as string,
-          userEntityRef,
         });
 
-        return res.redirect(redirectUrl);
+        // todo(blam): maybe this URL could be overridable by config if
+        // the plugin is mounted somewhere else?
+        const consentUrl = new URL('/oidc/consent', this.appUrl);
+        consentUrl.searchParams.append('consent_id', result.consentRequestId);
+
+        return res.redirect(consentUrl.toString());
       } catch (error) {
         const errorParams = new URLSearchParams();
         errorParams.append(
@@ -113,6 +131,146 @@ export class OidcRouter {
       }
     });
 
+    // Consent request details endpoint
+    // Returns consent request details for the frontend consent page
+    router.get('/v1/consent/:consentId', async (req, res) => {
+      const { consentId } = req.params;
+
+      if (!consentId) {
+        return res.status(400).json({
+          error: 'invalid_request',
+          error_description: 'Missing consent ID',
+        });
+      }
+
+      try {
+        const consentRequest = await this.oidc.getConsentRequest({
+          consentRequestId: consentId,
+        });
+
+        return res.json({
+          id: consentRequest.id,
+          clientName: consentRequest.clientName,
+          scope: consentRequest.scope,
+          redirectUri: consentRequest.redirectUri,
+        });
+      } catch (error) {
+        this.logger.error(
+          `Failed to get consent request: ${
+            isError(error) ? error.message : 'Unknown error'
+          }`,
+          error,
+        );
+        return res.status(404).json({
+          error: 'not_found',
+          error_description: 'Consent request not found or expired',
+        });
+      }
+    });
+
+    // Consent approval endpoint
+    // Handles user approval of consent requests and generates authorization codes
+    router.post('/v1/consent/:consentId/approve', async (req, res) => {
+      const { consentId } = req.params;
+
+      if (!consentId) {
+        return res.status(400).json({
+          error: 'invalid_request',
+          error_description: 'Missing consent ID',
+        });
+      }
+
+      try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader?.startsWith('Bearer ')) {
+          return res.status(401).json({
+            error: 'unauthorized',
+            error_description: 'Bearer token required',
+          });
+        }
+
+        const token = authHeader.substring(7);
+        const credentials = await this.auth.authenticate(token);
+        if (!this.auth.isPrincipal(credentials, 'user')) {
+          return res.status(401).json({
+            error: 'unauthorized',
+            error_description: 'Authentication required',
+          });
+        }
+
+        const userEntityRef = credentials.principal.userEntityRef;
+
+        const result = await this.oidc.approveConsentRequest({
+          consentRequestId: consentId,
+          userEntityRef,
+        });
+
+        return res.json({
+          redirectUrl: result.redirectUrl,
+        });
+      } catch (error) {
+        this.logger.error(
+          `Failed to approve consent: ${
+            isError(error) ? error.message : 'Unknown error'
+          }`,
+          error,
+        );
+        return res.status(400).json({
+          error: 'invalid_request',
+          error_description: isError(error) ? error.message : 'Unknown error',
+        });
+      }
+    });
+
+    // Consent rejection endpoint
+    // Handles user rejection of consent requests and redirects with error
+    router.post('/v1/consent/:consentId/reject', async (req, res) => {
+      const { consentId } = req.params;
+
+      if (!consentId) {
+        return res.status(400).json({
+          error: 'invalid_request',
+          error_description: 'Missing consent ID',
+        });
+      }
+
+      try {
+        const consentRequest = await this.oidc.getConsentRequest({
+          consentRequestId: consentId,
+        });
+
+        await this.oidc.deleteConsentRequest({ consentRequestId: consentId });
+
+        const errorParams = new URLSearchParams();
+        errorParams.append('error', 'access_denied');
+        errorParams.append('error_description', 'User denied the request');
+        if (consentRequest.state) {
+          errorParams.append('state', consentRequest.state);
+        }
+
+        const redirectUrl = new URL(consentRequest.redirectUri);
+        redirectUrl.search = errorParams.toString();
+
+        return res.json({
+          redirectUrl: redirectUrl.toString(),
+        });
+      } catch (error) {
+        this.logger.error(
+          `Failed to reject consent: ${
+            isError(error) ? error.message : 'Unknown error'
+          }`,
+          error,
+        );
+        return res.status(400).json({
+          error: 'invalid_request',
+          error_description: isError(error) ? error.message : 'Unknown error',
+        });
+      }
+    });
+
+    // Token endpoint
+    // https://openid.net/specs/openid-connect-core-1_0.html#TokenRequest
+    // Exchanges authorization codes for access tokens and ID tokens
     router.post('/v1/token', async (req, res) => {
       // todo(blam): maybe add zod types for validating input
       const {
@@ -180,9 +338,9 @@ export class OidcRouter {
       }
     });
 
-    // This endpoint doesn't use the regular HttpAuth, since the contract
-    // is specifically for the header to be communicated in the Authorization
-    // header, regardless of token type
+    // UserInfo endpoint
+    // https://openid.net/specs/openid-connect-core-1_0.html#UserInfo
+    // Returns claims about the authenticated user using an access token
     router.get('/v1/userinfo', async (req, res) => {
       const matches = req.headers.authorization?.match(/^Bearer[ ]+(\S+)$/i);
       const token = matches?.[1];
@@ -200,6 +358,9 @@ export class OidcRouter {
       res.json(userInfo);
     });
 
+    // Dynamic Client Registration endpoint
+    // https://openid.net/specs/openid-connect-registration-1_0.html#ClientRegistration
+    // Allows clients to register themselves dynamically with the provider
     router.post('/v1/register', async (req, res) => {
       // todo(blam): maybe add zod types for validating input
       const registrationRequest = req.body;
