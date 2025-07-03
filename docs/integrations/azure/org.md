@@ -2,12 +2,11 @@
 id: org
 title: Microsoft Entra Tenant Data
 sidebar_label: Org Data
-# prettier-ignore
 description: Importing users and groups from Microsoft Entra ID into Backstage
 ---
 
 :::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./org--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/integrations/azure/org--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
 :::
 
 The Backstage catalog can be set up to ingest organizational data - users and
@@ -125,6 +124,8 @@ microsoftGraphOrg:
 In addition to these groups, one additional group will be created for your organization.
 All imported groups will be a child of this group.
 
+By default the provider will get groups using the msgraph `/group` endpoint, but it is possible to use different endpoints by setting the `path` configuration. All the endpoint containing `/microsoft.graph.group` will return the right type of group object. [See usage](#Using-path-parameter) for more details.
+
 ### Users
 
 There are two modes for importing users - You can import all user objects matching a `filter`.
@@ -147,6 +148,36 @@ microsoftGraphOrg:
       filter: "displayName eq 'Backstage Users'"
       search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
 ```
+
+By default the provider will get user using the msgraph `/user` endpoint, but it is possible to use different endpoints by setting the `path` configuration. All the endpoint containing `/microsoft.graph.user` will return the right type of user object. [See usage](#Using-path-parameter) for more details.
+
+### Using `path` parameter
+
+By default the provider will get groups and users using the msgraph `/group` and `/user` endpoints, but it is possible to use different endpoints by setting the `path` configuration.
+All the endpoint containing `/microsoft.graph.user` will return the right type of user object and all the endpoint containing `/microsoft.graph.group` will return the right type of group object.
+
+#### Example
+
+Given the following org structure it is possible to use the `path` parameter to get all the users and groups that are members of the group `someRootGroup` on all levels.
+
+<div align="center">
+
+![email](../../assets/integrations/azure/org.svg)
+
+</div>
+
+The configuration would look like this:
+
+```yaml
+microsoftGraphOrg:
+  providerId:
+    group:
+      path: /groups/{someRootGroup id}/transitiveMembers/microsoft.graph.group
+    user:
+      path: /groups/{someRootGroup id}/transitiveMembers/microsoft.graph.user
+```
+
+Using the transitive members endpoint will return all the users and groups that are members of the group `someRootGroup` on all levels.
 
 ### User photos
 
@@ -258,65 +289,201 @@ The `myUserTransformer`, `myGroupTransformer`, `myOrganizationTransformer`, and 
 
 The following provides an example of each kind of transformer. We recommend creating a `transformers.ts` file in your `packages/backend/src` folder for these.
 
-```ts title="packages/backend/src/transformers.ts"
+First, lets set up the basic structure of the file, with functions for each kind of transformer that simply passes through the default transformer unchanged.
+
+```ts title="packages/backend/src/extensions/transformers.ts"
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import {
   defaultGroupTransformer,
   defaultUserTransformer,
   defaultOrganizationTransformer,
+  microsoftGraphOrgEntityProviderTransformExtensionPoint,
   MicrosoftGraphProviderConfig,
 } from '@backstage/plugin-catalog-backend-module-msgraph';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import { createBackendModule } from '@backstage/backend-plugin-api';
 
-// This group transformer completely replaces the built in logic with custom logic.
+// The Group transformer transforms Groups that are ingested from MS Graph
 export async function myGroupTransformer(
   group: MicrosoftGraph.Group,
   groupPhoto?: string,
 ): Promise<GroupEntity | undefined> {
-  return {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Group',
-    metadata: {
-      name: group.id!,
-      annotations: {},
-    },
-    spec: {
-      type: 'Microsoft Entra ID',
-      children: [],
-    },
-  };
+  const backstageGroup = await defaultGroupTransformer(group, groupPhoto);
+  return backstageGroup;
 }
 
-// This user transformer makes use of the built in logic, but also sets the description field
+// The User transformer transforms Users that are ingested from MS Graph
 export async function myUserTransformer(
   graphUser: MicrosoftGraph.User,
   userPhoto?: string,
 ): Promise<UserEntity | undefined> {
   const backstageUser = await defaultUserTransformer(graphUser, userPhoto);
-
-  if (backstageUser) {
-    backstageUser.metadata.description = 'Loaded from Microsoft Entra ID';
-  }
-
   return backstageUser;
 }
 
-// Example organization transformer that removes the organization group completely
+// The Organization transformer transforms the root MS Graph Organization into a Group
 export async function myOrganizationTransformer(
   graphOrganization: MicrosoftGraph.Organization,
 ): Promise<GroupEntity | undefined> {
-  return undefined;
+  const backstageOrg = await defaultOrganizationTransformer(graphOrganization);
+  return backstageOrg;
 }
 
-// Example config transformer that expands the group filter to also include 'azure-group-a'
+// The Provider Config transformer enables modification of the plugin config
 export async function myProviderConfigTransformer(
   provider: MicrosoftGraphProviderConfig,
 ): Promise<MicrosoftGraphProviderConfig> {
+  return provider;
+}
+
+// Wrapping these functions in a Module allows us to inject them into the Catalog plugin easily
+export default createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'msgraph-org',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        microsoftGraphTransformers:
+          microsoftGraphOrgEntityProviderTransformExtensionPoint,
+      },
+      async init({ microsoftGraphTransformers }) {
+        // Set the transformers to our custom functions
+        microsoftGraphTransformers.setUserTransformer(myUserTransformer);
+        microsoftGraphTransformers.setGroupTransformer(myGroupTransformer);
+        microsoftGraphTransformers.setOrganizationTransformer(
+          myOrganizationTransformer,
+        );
+        microsoftGraphTransformers.setProviderConfigTransformer(
+          myProviderConfigTransformer,
+        );
+      },
+    });
+  },
+});
+```
+
+Now lets customize each of the providers to suit our needs.
+
+This Group Transformer example will have the default logic completely removed and replaced with our custom logic:
+
+```ts
+export async function myGroupTransformer(
+  group: MicrosoftGraph.Group,
+  groupPhoto?: string,
+): Promise<GroupEntity | undefined> {
+  // highlight-remove-start
+  const backstageGroup = await defaultGroupTransformer(group, groupPhoto);
+  return backstageGroup;
+  // highlight-remove-end
+  // highlight-add-start
+  // All of our groups are prefixed with the organisational unit: 'Engineering - Team A'
+  // We want to drop the org unit from the group name and use it for the namespace instead
+  const groupNameArr = group.displayName.split(' - ');
+  const displayName = groupNameArr[1];
+  // Standardise name and namespace by replacing spaces with hyphens and converting to lowercase
+  const namespace = groupNameArr[0].replace(' ', '-').toLowerCase();
+  const groupName = groupNameArr[1].replace(' ', '-').toLowerCase();
+
+  return {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Group',
+    metadata: {
+      name: groupName,
+      description: group.description,
+      annotations: {},
+    },
+    spec: {
+      type: 'team',
+      displayName: displayName,
+      email: group.mail,
+      children: [],
+    },
+  };
+  // highlight-add-end
+}
+```
+
+This User Transformer example makes use of the built-in logic, but also modifies the username and sets a description
+
+```ts
+export async function myUserTransformer(
+  graphUser: MicrosoftGraph.User,
+  userPhoto?: string,
+): Promise<UserEntity | undefined> {
+  const backstageUser = await defaultUserTransformer(graphUser, userPhoto);
+  // highlight-add-start
+  // Make sure the default transformer returned an entity
+  if (backstageUser) {
+    // Update the description to make it obvious where this entity came from
+    backstageUser.metadata.description =
+      'Loaded from Microsoft Entra ID via MyCustomUserTransformer';
+
+    // The default transformer sets the username to the email address with invalid characters subbed out: 'user_domain.com'
+    // Set the username to the local part of the email address in lowercase without the domain
+    const newName = backstageUser.metadata.name.split('_')[0].toLowerCase();
+    backstageUser.metadata.name = newName;
+
+    return backstageUser;
+  }
+  return undefined;
+  // highlight-add-end
+  // highlight-remove-start
+  return backstageUser;
+  // highlight-remove-end
+}
+```
+
+This Organization Transformer example removes the organization group completely by returning undefined
+
+```ts
+export async function myOrganizationTransformer(
+  graphOrganization: MicrosoftGraph.Organization,
+): Promise<GroupEntity | undefined> {
+  // highlight-remove-start
+  const backstageOrg = await defaultOrganizationTransformer(graphOrganization);
+  return backstageOrg;
+  // highlight-remove-end
+  // highlight-add-start
+  // The org transformer creates a group to be used as the base of the relationship tree for groups
+  // We don't need this to be created, so return undefined instead of an entity
+  return undefined;
+  // highlight-add-end
+}
+```
+
+This Config Transformer example expands the group filter to also include 'azure-group-a'
+
+```ts
+export async function myProviderConfigTransformer(
+  provider: MicrosoftGraphProviderConfig,
+): Promise<MicrosoftGraphProviderConfig> {
+  // highlight-add-start
+  // The filter in our config file relies on a property that has been intermittantly causing this important group to fail ingestion
+  // Ensure the group is always discovered by the filter
   if (!provider.groupFilter?.includes('azure-group-a')) {
     provider.groupFilter = `${provider.groupFilter} or displayName eq 'azure-group-a'`;
   }
+  // highlight-add-end
   return provider;
 }
+```
+
+Now we just need to add our new module to the Backend.
+
+```ts title="packages/backend/src/index.ts"
+// Your file will have more than this in it
+
+const backend = createBackend();
+
+...
+
+// highlight-add-start
+backend.add(import('./extensions/transformers'));
+// highlight-add-end
+
+...
+
+backend.start();
 ```
 
 ## Troubleshooting

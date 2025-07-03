@@ -1,5 +1,349 @@
 # @backstage/create-app
 
+## 0.7.1-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- 2339363: **BREAKING:** The experimental `catalog.useUrlReadersSearch` configuration flag (introduced in v1.36) has been removed.
+
+  The `UrlReaderProcessor` now always uses the `search` method of `UrlReaders`. Built-in `UrlReaderService` implementations have been updated accordingly.
+  If you use custom `UrlReaderService` implementations, you need to adapt their `search` method to correctly handle both specific URLs and potential
+  search patterns (see changes on built-in readers [in the original PR](https://github.com/backstage/backstage/pull/28379/files#diff-68b0452f173ee54bdd40f7b5e047a9cb8bb59200425622c212c217b76dac1d1b)).
+
+  Previous behavior was to call the `search` method only if the parsed Git URL's filename contained a wildcard and use `readUrl` otherwise. Each `UrlReaderService` must implement this logic in the `search` method instead.
+
+  This allows each `UrlReaderService` implementation to check whether it's a search URL (that contains a wildcard pattern) or not using logic that is specific to each provider.
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.0
+
+### Minor Changes
+
+- 30474c4: Add .cache directory to shipped gitignore.
+
+### Patch Changes
+
+- d57a6f7: Bumped create-app version.
+- f628f44: Bumped create-app version.
+- 9c9faf2: Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.0-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.0-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.0-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.0-next.0
+
+### Minor Changes
+
+- 30474c4: Add .cache directory to shipped gitignore.
+
+## 0.6.2
+
+### Patch Changes
+
+- 8448948: Removed `lerna-debug.log*` pattern from `.gitignore` as Lerna was removed from the package in version `@backstage/create-app@0.5.19`.
+- ce2cf32: Bumped create-app version.
+- 125d096: Bumped create-app version.
+- 1c0cb7b: Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.2-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.2-next.2
+
+### Patch Changes
+
+- 8448948: Removed `lerna-debug.log*` pattern from `.gitignore` as Lerna was removed from the package in version `@backstage/create-app@0.5.19`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.2-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.1
+
+### Patch Changes
+
+- 5590536: Bumped create-app version.
+- 2fc663a: Bumped create-app version.
+- edabbd6: Updated the root `package.json` in the template to use the new `backstage-cli repo start` command.
+
+  The `yarn dev` command is now redundant and has been removed from the template. We recommend existing projects to add these or similar scripts to help redirect users:
+
+  ```json
+  {
+    "scripts": {
+      "dev": "echo \"Use 'yarn start' instead\"",
+      "start-backend": "echo \"Use 'yarn start backend' instead\""
+    }
+  }
+  ```
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- c761cf5: **BREAKING** The `publish:github` scaffolder action now defaults to initializing with a branch named "main" instead of "master" when creating new repositories.
+
+  If you or your organization have relied on all new github repositories having a default branch name of "master" you **must** set the `defaultBranch: 'master'` in your existing templates that feature the `publish:github` scaffolder action.
+
+  To keep using the name "master" for your new github repos, these are the **required** changes:
+
+  ```diff
+      - id: publish
+        name: Publish
+        action: publish:github
+        input:
+          allowedHosts: ['github.com']
+          description: This is ${{ parameters.name }}
+          repoUrl: ${{ parameters.repoUrl }}
+  +       defaultBranch: 'master'
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.1-next.2
+
+### Patch Changes
+
+- edabbd6: Updated the root `package.json` in the template to use the new `backstage-cli repo start` command.
+
+  The `yarn dev` command is now redundant and has been removed from the template. We recommend existing projects to add these or similar scripts to help redirect users:
+
+  ```json
+  {
+    "scripts": {
+      "dev": "echo \"Use 'yarn start' instead\"",
+      "start-backend": "echo \"Use 'yarn start backend' instead\""
+    }
+  }
+  ```
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.1-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.1-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.0
+
+### Minor Changes
+
+- 31731b0: Upgraded the TypeScript version in the template to `5.8`.
+
+### Patch Changes
+
+- 7d083ce: Canon is now ready to be used in Alpha. We are adding a custom CSS file at the root of the app to make all styles available for Canon components.
+- aed536a: Bumped create-app version.
+- f9fb465: Bumped create-app version.
+- 19e5c3f: Added link to multi-stage Dockerfile documentation as alternative option
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.0-next.2
+
+### Minor Changes
+
+- 31731b0: Upgraded the TypeScript version in the template to `5.8`.
+
+### Patch Changes
+
+- 19e5c3f: Added link to multi-stage Dockerfile documentation as alternative option
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.5.26-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.5.26-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.5.25
+
+### Patch Changes
+
+- 132173b: Bumped create-app version.
+- 84fdc40: Bumped create-app version.
+- 5aa499b: Bumped create-app version.
+- bfa4ea9: Enable `catalog.useUrlReadersSearch` configuration by default in newly created Backstage installations.
+
+  This parameter makes `UrlReaderProcessor` always use the search method.
+  New adopters are encouraged to enable it as this behavior will be the default in a future release.
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.5.25-next.3
+
+### Patch Changes
+
+- bfa4ea9: Enable `catalog.useUrlReadersSearch` configuration by default in newly created Backstage installations.
+
+  This parameter makes `UrlReaderProcessor` always use the search method.
+  New adopters are encouraged to enable it as this behavior will be the default in a future release.
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.5.25-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.5.25-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.5.25-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.5.24
+
+### Patch Changes
+
+- 2e3fbc1: Bumped create-app version.
+- 0980e40: Bumped create-app version.
+- 828c993: Added `--jobs unlimited` to `dev` script to help cases where the backend does not start up during local development
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.5.24-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.5.24-next.1
+
+### Patch Changes
+
+- 828c993: Added `-j 2` to `dev` script to help cases where the backend does not start up during local development
+
+## 0.5.24-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.5.23
+
+### Patch Changes
+
+- 5819f8d: Updated Dockerfile to include `backstage.json` file
+- 583f3d4: Updated the template to use `@backstage/cli/config/prettier` instead of `@spotify/prettier-config`.
+- e913fdf: Add github backend module to create-app and improve error messages
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.5.23-next.2
+
+### Patch Changes
+
+- e913fdf: Add github backend module to create-app and improve error messages
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.5.23-next.1
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.5.23-next.0
 
 ### Patch Changes

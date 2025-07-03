@@ -29,6 +29,8 @@ import {
   PermissionIntegrationRouterOptions,
 } from './createPermissionIntegrationRouter';
 import { createPermissionRule } from './createPermissionRule';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const testPermission: Permission = createPermission({
   name: 'test.permission',
@@ -109,6 +111,11 @@ const mockedOptionResources: PermissionIntegrationRouterOptions = {
   ],
 };
 
+const middleware = MiddlewareFactory.create({
+  logger: mockServices.logger.mock(),
+  config: mockServices.rootConfig(),
+});
+
 const createApp = (
   mockedGetResources:
     | typeof defaultMockedGetResources1 = defaultMockedGetResources1,
@@ -122,7 +129,7 @@ const createApp = (
       })
     : createPermissionIntegrationRouter({ permissions: [testPermission] });
 
-  return express().use(router);
+  return express().use(router.use(middleware.error()));
 };
 
 describe('createPermissionIntegrationRouter', () => {
@@ -453,7 +460,9 @@ describe('createPermissionIntegrationRouter', () => {
 
       beforeEach(async () => {
         const app = express().use(
-          createPermissionIntegrationRouter(mockedOptionResources),
+          createPermissionIntegrationRouter(mockedOptionResources).use(
+            middleware.error(),
+          ),
         );
 
         response = await request(app)
@@ -554,6 +563,101 @@ describe('createPermissionIntegrationRouter', () => {
         expect(defaultMockedGetResources2).toHaveBeenCalledWith([
           'default:test/resource-2',
           'default:test/resource-4',
+        ]);
+      });
+    });
+
+    describe('batched requests with resourceRef as an array', () => {
+      let response: Response;
+
+      beforeEach(async () => {
+        const app = express().use(
+          createPermissionIntegrationRouter(mockedOptionResources).use(
+            middleware.error(),
+          ),
+        );
+
+        mockTestRule1Apply.mockReturnValueOnce(true);
+        mockTestRule1Apply.mockReturnValueOnce(false);
+        mockTestRule1Apply.mockReturnValueOnce(false);
+
+        response = await request(app)
+          .post('/.well-known/backstage/permissions/apply-conditions')
+          .send({
+            items: [
+              {
+                id: '123',
+                resourceRef: [
+                  'default:test/resource-1',
+                  'default:test/resource-2',
+                ],
+                resourceType: 'test-resource',
+                conditions: {
+                  rule: 'test-rule-1',
+                  resourceType: 'test-resource',
+                  params: {
+                    foo: 'a',
+                    bar: 1,
+                  },
+                },
+              },
+              {
+                id: '234',
+                resourceRef: 'default:test/resource-3',
+                resourceType: 'test-resource',
+                conditions: {
+                  rule: 'test-rule-1',
+                  resourceType: 'test-resource',
+                  params: {
+                    foo: 'a',
+                    bar: 1,
+                  },
+                },
+              },
+              {
+                id: '345',
+                resourceRef: 'default:test/resource-2',
+                resourceType: 'test-resource-2',
+                conditions: {
+                  not: {
+                    rule: 'test-rule-1',
+                    resourceType: 'test-resource-2',
+                    params: {
+                      foo: 'a',
+                      bar: 1,
+                    },
+                  },
+                },
+              },
+            ],
+          });
+      });
+
+      it('processes batched requests', () => {
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({
+          items: [
+            {
+              id: '123',
+              result: [AuthorizeResult.ALLOW, AuthorizeResult.DENY],
+            },
+            {
+              id: '234',
+              result: AuthorizeResult.DENY,
+            },
+            { id: '345', result: AuthorizeResult.ALLOW },
+          ],
+        });
+      });
+
+      it('calls getResources for all required resources at once', () => {
+        expect(defaultMockedGetResources1).toHaveBeenCalledWith([
+          'default:test/resource-1',
+          'default:test/resource-2',
+          'default:test/resource-3',
+        ]);
+        expect(defaultMockedGetResources2).toHaveBeenCalledWith([
+          'default:test/resource-2',
         ]);
       });
     });
@@ -765,7 +869,7 @@ describe('createPermissionIntegrationRouter', () => {
             resourceType: 'test-resource',
             permissions: [testPermission],
             rules: [testRule1, testRule2],
-          }),
+          }).use(middleware.error()),
         ),
       )
         .post('/.well-known/backstage/permissions/apply-conditions')
@@ -904,7 +1008,7 @@ describe('createPermissionIntegrationRouter', () => {
     const response = await request(
       express().use(
         createPermissionIntegrationRouter({
-          permissions: [aPermission],
+          permissions: [aPermission, testPermission],
           resources: [
             {
               resourceType: 'test-resource',
@@ -925,6 +1029,99 @@ describe('createPermissionIntegrationRouter', () => {
 
     expect(response.status).toEqual(200);
     expect(response.body).toEqual({
+      permissions: [aPermission, testPermission, testPermission2],
+      rules: [
+        {
+          name: testRule1.name,
+          description: testRule1.description,
+          resourceType: testRule1.resourceType,
+          paramsSchema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            additionalProperties: false,
+            properties: {
+              foo: {
+                type: 'string',
+              },
+              bar: {
+                description: 'bar',
+                type: 'number',
+              },
+            },
+            required: ['foo', 'bar'],
+            type: 'object',
+          },
+        },
+        {
+          name: testRule2.name,
+          description: testRule2.description,
+          resourceType: testRule2.resourceType,
+          paramsSchema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            additionalProperties: false,
+            properties: {},
+            type: 'object',
+          },
+        },
+        {
+          name: testRule3.name,
+          description: testRule3.description,
+          resourceType: testRule3.resourceType,
+          paramsSchema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            additionalProperties: false,
+            properties: {},
+            type: 'object',
+          },
+        },
+      ],
+    });
+  });
+
+  it('returns a list of basic permissions together with permissions and rules from multiple resource types with mutation', async () => {
+    const aPermission = createPermission({
+      name: 'a.permission',
+      attributes: {},
+    });
+
+    const router = createPermissionIntegrationRouter();
+
+    const responseBefore = await request(express().use(router)).get(
+      '/.well-known/backstage/permissions/metadata',
+    );
+
+    expect(responseBefore.status).toEqual(200);
+    expect(responseBefore.body).toEqual({
+      permissions: [],
+      rules: [],
+    });
+
+    router.addPermissions([aPermission, testPermission]);
+
+    router.addResourceType({
+      resourceType: 'test-resource',
+      permissions: [testPermission],
+      getResources: defaultMockedGetResources1,
+      rules: [testRule1],
+    });
+
+    router.addPermissionRules([testRule2]);
+
+    // This one is for the resource added below, it should be possible to add rules before the resource typeof
+    router.addPermissionRules([testRule3]);
+
+    router.addResourceType({
+      resourceType: 'test-resource-2',
+      permissions: [testPermission2],
+      getResources: defaultMockedGetResources2,
+      rules: [],
+    });
+
+    const responseAfter = await request(express().use(router)).get(
+      '/.well-known/backstage/permissions/metadata',
+    );
+
+    expect(responseAfter.status).toEqual(200);
+    expect(responseAfter.body).toEqual({
       permissions: [aPermission, testPermission, testPermission2],
       rules: [
         {

@@ -14,40 +14,37 @@
  * limitations under the License.
  */
 
-import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
-import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
-import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
 import {
   createServiceRef,
   createServiceFactory,
-  coreServices,
   createBackendPlugin,
   createBackendModule,
   createExtensionPoint,
   createBackendFeatureLoader,
+  ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
-
-class MockLogger {
-  debug() {}
-  info() {}
-  warn() {}
-  error() {}
-  child() {
-    return this;
-  }
-}
+import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const baseFactories = [
-  lifecycleServiceFactory,
-  rootLifecycleServiceFactory,
-  createServiceFactory({
-    service: coreServices.rootLogger,
-    deps: {},
-    factory: () => new MockLogger(),
-  }),
-  loggerServiceFactory,
+  mockServices.rootLifecycle.factory(),
+  mockServices.lifecycle.factory(),
+  mockServices.rootLogger.factory(),
+  mockServices.logger.factory(),
 ];
+
+function mkNoopFactory(ref: ServiceRef<{}, 'plugin'>) {
+  const fn = jest.fn().mockReturnValue({});
+  return Object.assign(
+    fn,
+    createServiceFactory({
+      service: ref,
+      deps: {},
+      factory: fn,
+    }),
+  );
+}
 
 const testPlugin = createBackendPlugin({
   pluginId: 'test',
@@ -164,6 +161,151 @@ describe('BackendInitializer', () => {
     expect(factory2).toHaveBeenCalled();
     expect(pluginInit).toHaveBeenCalled();
     expect(moduleInit).toHaveBeenCalled();
+  });
+
+  it('should ignore services provided by feature loaders that have already been explicitly added', async () => {
+    const ref = createServiceRef<{}>({ id: '1' });
+    const factory1 = mkNoopFactory(ref);
+    const factory2 = mkNoopFactory(ref);
+    const factory3 = mkNoopFactory(ref);
+
+    const init = new BackendInitializer([...baseFactories, factory1]);
+    init.add(factory2);
+    init.add(
+      createBackendFeatureLoader({
+        deps: {},
+        *loader() {
+          yield factory3;
+        },
+      }),
+    );
+    init.add(
+      createBackendPlugin({
+        pluginId: 'tester',
+        register(reg) {
+          reg.registerInit({
+            deps: { ref },
+            async init() {},
+          });
+        },
+      }),
+    );
+
+    await init.start();
+
+    expect(factory1).not.toHaveBeenCalled();
+    expect(factory2).toHaveBeenCalled();
+    expect(factory3).not.toHaveBeenCalled();
+  });
+
+  it('should include all multiton service factories', async () => {
+    expect.assertions(5);
+
+    const ref = createServiceRef<number>({ id: '1', multiton: true });
+    const factory1 = mkNoopFactory(ref).mockResolvedValue(1);
+    const factory2 = mkNoopFactory(ref).mockResolvedValue(2);
+    const factory3 = mkNoopFactory(ref).mockResolvedValue(3);
+    const factory4 = mkNoopFactory(ref).mockResolvedValue(4);
+
+    const init = new BackendInitializer([...baseFactories, factory1]);
+    init.add(factory2);
+    init.add(
+      createBackendFeatureLoader({
+        deps: {},
+        *loader() {
+          yield factory3;
+          yield factory4;
+        },
+      }),
+    );
+    init.add(
+      createBackendPlugin({
+        pluginId: 'tester',
+        register(reg) {
+          reg.registerInit({
+            deps: { ns: ref },
+            async init({ ns }) {
+              expect(ns).toEqual([1, 2, 3, 4]);
+            },
+          });
+        },
+      }),
+    );
+
+    await init.start();
+
+    expect(factory1).toHaveBeenCalled();
+    expect(factory2).toHaveBeenCalled();
+    expect(factory3).toHaveBeenCalled();
+    expect(factory4).toHaveBeenCalled();
+  });
+
+  // Note: this is an important escape hatch in case to loaders conflict and you need to select the winning service factory
+  it('should allow duplicate service from feature loaders if overridden', async () => {
+    const ref = createServiceRef<{}>({ id: '1' });
+    const factory1 = mkNoopFactory(ref);
+    const factory2 = mkNoopFactory(ref);
+    const factory3 = mkNoopFactory(ref);
+    const factory4 = mkNoopFactory(ref);
+
+    const init = new BackendInitializer([...baseFactories, factory1]);
+    init.add(factory2);
+    init.add(
+      createBackendFeatureLoader({
+        deps: {},
+        *loader() {
+          yield factory3;
+          yield factory4;
+        },
+      }),
+    );
+    init.add(
+      createBackendPlugin({
+        pluginId: 'tester',
+        register(reg) {
+          reg.registerInit({
+            deps: { ref },
+            async init() {},
+          });
+        },
+      }),
+    );
+
+    await init.start();
+
+    expect(factory1).not.toHaveBeenCalled();
+    expect(factory2).toHaveBeenCalled();
+    expect(factory3).not.toHaveBeenCalled();
+    expect(factory4).not.toHaveBeenCalled();
+  });
+
+  it('should reject duplicate service factories from feature loader without an explicit override', async () => {
+    const ref = createServiceRef<{}>({ id: '1' });
+    const factory1 = mkNoopFactory(ref);
+    const factory2 = mkNoopFactory(ref);
+    const factory3 = mkNoopFactory(ref);
+
+    const init = new BackendInitializer([...baseFactories, factory1]);
+    init.add(
+      createBackendFeatureLoader({
+        deps: {},
+        *loader() {
+          yield factory2;
+        },
+      }),
+    );
+    init.add(
+      createBackendFeatureLoader({
+        deps: {},
+        *loader() {
+          yield factory3;
+        },
+      }),
+    );
+
+    await expect(init.start()).rejects.toThrow(
+      'Duplicate service implementations provided for 1 by both feature loader created at',
+    );
   });
 
   it('should refuse to override already initialized services through loaded features', async () => {
@@ -399,7 +541,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should forward errors when plugins fail to start', async () => {
-    const init = new BackendInitializer([]);
+    const init = new BackendInitializer(baseFactories);
     init.add(
       createBackendPlugin({
         pluginId: 'test',
@@ -415,6 +557,216 @@ describe('BackendInitializer', () => {
     );
     await expect(init.start()).rejects.toThrow(
       "Plugin 'test' startup failed; caused by Error: NOPE",
+    );
+  });
+
+  it('should permit startup errors for plugins with onPluginBootFailure: continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: { plugins: { test: { onPluginBootFailure: 'continue' } } },
+          },
+        },
+      }),
+    ]);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).resolves.not.toThrow();
+  });
+
+  it('should permit startup errors if the default onPluginBootFailure is continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: { default: { onPluginBootFailure: 'continue' } },
+          },
+        },
+      }),
+    ]);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).resolves.not.toThrow();
+  });
+
+  it('should forward errors for plugins explicitly marked to abort when the default is continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: {
+              default: { onPluginBootFailure: 'continue' },
+              plugins: { test: { onPluginBootFailure: 'abort' } },
+            },
+          },
+        },
+      }),
+    ]);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Plugin 'test' startup failed; caused by Error: NOPE",
+    );
+  });
+
+  it('should forward errors when plugin modules fail to start', async () => {
+    const init = new BackendInitializer(baseFactories);
+    init.add(testPlugin);
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Module 'mod' for plugin 'test' startup failed; caused by Error: NOPE",
+    );
+  });
+
+  it('should permit startup errors for plugin modules with onPluginModuleBootFailure: continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: {
+              plugins: {
+                test: {
+                  modules: { mod: { onPluginModuleBootFailure: 'continue' } },
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+    init.add(testPlugin);
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).resolves.not.toThrow();
+  });
+
+  it('should permit startup errors if the default onPluginModuleBootFailure is continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: { default: { onPluginModuleBootFailure: 'continue' } },
+          },
+        },
+      }),
+    ]);
+    init.add(testPlugin);
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).resolves.not.toThrow();
+  });
+
+  it('should forward errors for plugin modules explicitly marked to abort when the default is continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: {
+              default: { onPluginModuleBootFailure: 'continue' },
+              plugins: {
+                test: {
+                  modules: { mod: { onPluginModuleBootFailure: 'abort' } },
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+    init.add(testPlugin);
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Module 'mod' for plugin 'test' startup failed; caused by Error: NOPE",
     );
   });
 
@@ -548,12 +900,8 @@ describe('BackendInitializer', () => {
     const extA = createExtensionPoint<string>({ id: 'a' });
     const extB = createExtensionPoint<string>({ id: 'b' });
     const init = new BackendInitializer([
-      rootLifecycleServiceFactory,
-      createServiceFactory({
-        service: coreServices.rootLogger,
-        deps: {},
-        factory: () => new MockLogger(),
-      }),
+      mockServices.rootLifecycle.factory(),
+      mockServices.rootLogger.factory(),
     ]);
     init.add(testPlugin);
     init.add(
@@ -723,5 +1071,131 @@ describe('BackendInitializer', () => {
     );
 
     await init.start();
+  });
+
+  it('should properly add plugins + modules to the instance metadata service', async () => {
+    expect.assertions(2);
+    const backend = new BackendInitializer(baseFactories);
+    const plugin = createBackendPlugin({
+      pluginId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {},
+        });
+      },
+    });
+    const instanceMetadataPlugin = createBackendPlugin({
+      pluginId: 'instance-metadata',
+      register(reg) {
+        reg.registerInit({
+          deps: {
+            instanceMetadata: instanceMetadataServiceRef,
+          },
+          async init({ instanceMetadata }) {
+            expect(instanceMetadata.getInstalledFeatures()).toEqual([
+              {
+                pluginId: 'test',
+                type: 'plugin',
+              },
+              {
+                pluginId: 'test',
+                moduleId: 'test',
+                type: 'module',
+              },
+              {
+                pluginId: 'instance-metadata',
+                type: 'plugin',
+              },
+            ]);
+            expect(instanceMetadata.getInstalledFeatures().map(String)).toEqual(
+              [
+                'plugin{pluginId=test}',
+                'module{moduleId=test,pluginId=test}',
+                'plugin{pluginId=instance-metadata}',
+              ],
+            );
+          },
+        });
+      },
+    });
+    const module = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {},
+        });
+      },
+    });
+    backend.add(plugin);
+    backend.add(module);
+    backend.add(instanceMetadataPlugin);
+    await backend.start();
+  });
+
+  it('should properly wait for all modules that consume an extension point to really finish, before starting the module that provides that extension point', async () => {
+    expect.assertions(3);
+    const backend = new BackendInitializer(baseFactories);
+    const ext = createExtensionPoint<{ hello: (message: string) => void }>({
+      id: 'a',
+    });
+    const plugin = createBackendPlugin({
+      pluginId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {},
+        });
+      },
+    });
+    const producerModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'producer',
+      register(reg) {
+        const hello = jest.fn();
+        reg.registerExtensionPoint(ext, { hello });
+        reg.registerInit({
+          deps: {},
+          async init() {
+            // we must not have been initialized before both of the consuming modules have been initialized
+            expect(hello).toHaveBeenCalledTimes(2);
+            expect(hello).toHaveBeenNthCalledWith(1, 'fast');
+            expect(hello).toHaveBeenNthCalledWith(2, 'slow');
+          },
+        });
+      },
+    });
+    const fastConsumerModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'fast-consumer',
+      register(reg) {
+        reg.registerInit({
+          deps: { x: ext },
+          async init({ x }) {
+            x.hello('fast');
+          },
+        });
+      },
+    });
+    const slowConsumerModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'slow-consumer',
+      register(reg) {
+        reg.registerInit({
+          deps: { x: ext },
+          async init({ x }) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            x.hello('slow');
+          },
+        });
+      },
+    });
+    await backend.add(plugin);
+    await backend.add(producerModule);
+    await backend.add(fastConsumerModule);
+    await backend.add(slowConsumerModule);
+    await backend.start();
   });
 });

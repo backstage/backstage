@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Icon } from './Icon';
-import { ThemeProvider } from '../../theme/context';
-import { defaultIcons } from './icons';
+import { IconProvider } from './provider';
+import { icons } from './icons';
 
 const meta = {
   title: 'Components/Icon',
   component: Icon,
-  parameters: {
-    layout: 'centered',
-  },
   argTypes: {
     name: {
       control: 'select',
-      options: Object.keys(defaultIcons),
+      options: Object.keys(icons),
     },
   },
   args: {
@@ -40,7 +36,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
+export const Default: Story = {
   args: {
     name: 'heart',
   },
@@ -48,13 +44,13 @@ export const Primary: Story = {
 
 export const WithCustomIcon: Story = {
   args: {
-    name: 'arrowDown',
+    name: 'arrow-down',
   },
   decorators: [
     Story => (
-      <ThemeProvider overrides={{ arrowDown: () => <div>Custom Icon</div> }}>
+      <IconProvider overrides={{ 'arrow-down': () => <div>Custom Icon</div> }}>
         <Story />
-      </ThemeProvider>
+      </IconProvider>
     ),
   ],
 };

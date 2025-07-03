@@ -164,12 +164,18 @@ export class AwsS3Publish implements PublisherBase {
       'techdocs.publisher.awsS3.s3ForcePathStyle',
     );
 
+    // AWS MAX ATTEMPTS is an optional config. If missing, default value of 3 is used
+    const maxAttempts = config.getOptionalNumber(
+      'techdocs.publisher.awsS3.maxAttempts',
+    );
+
     const storageClient = new S3Client({
       customUserAgent: 'backstage-aws-techdocs-s3-publisher',
       credentialDefaultProvider: () => sdkCredentialProvider,
       ...(region && { region }),
       ...(endpoint && { endpoint }),
       ...(forcePathStyle && { forcePathStyle }),
+      ...(maxAttempts && { maxAttempts }),
       ...(httpsProxy && {
         requestHandler: new NodeHttpHandler({
           httpsAgent: new HttpsProxyAgent({ proxy: httpsProxy }),
@@ -477,7 +483,18 @@ export class AwsS3Publish implements PublisherBase {
           res.setHeader(headerKey, headerValue);
         }
 
-        res.send(await streamToBuffer(resp.Body as Readable));
+        (resp.Body as Readable)
+          .on('error', err => {
+            this.logger.warn(
+              `TechDocs S3 router failed to serve static files from bucket ${this.bucketName} at key ${filePath}: ${err.message}`,
+            );
+            if (!res.headersSent) {
+              res.status(404).send('File Not Found');
+            } else {
+              res.destroy();
+            }
+          })
+          .pipe(res);
       } catch (err) {
         assertError(err);
         this.logger.warn(

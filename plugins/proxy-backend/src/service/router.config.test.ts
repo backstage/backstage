@@ -60,7 +60,7 @@ describe('createRouter reloadable configuration', () => {
 
     const backend = await startTestBackend({
       features: [
-        import('../alpha'),
+        import('..'),
         createServiceFactory({
           service: coreServices.rootConfig,
           deps: {},

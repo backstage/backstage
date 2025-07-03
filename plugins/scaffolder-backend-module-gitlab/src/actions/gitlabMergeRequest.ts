@@ -20,7 +20,14 @@ import {
   SerializedFile,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
-import { Gitlab, RepositoryTreeSchema, CommitAction } from '@gitbeaker/rest';
+import {
+  Camelize,
+  CommitAction,
+  ExpandedMergeRequestSchema,
+  Gitlab,
+  RepositoryTreeSchema,
+  SimpleUserSchema,
+} from '@gitbeaker/rest';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
@@ -76,8 +83,61 @@ async function getFileAction(
   return defaultCommitAction;
 }
 
+async function getReviewersFromApprovalRules(
+  api: InstanceType<typeof Gitlab>,
+  mergerequestIId: number,
+  repoID: string,
+  ctx: any,
+): Promise<number[]> {
+  try {
+    // Because we don't know the code owners before the MR is created, we can't check the approval rules beforehand.
+    // Getting the approval rules beforehand is very difficult, especially, because of the inheritance rules for groups.
+    // Code owners take a moment to be processed and added to the approval rules after the MR is created.
+
+    let mergeRequest:
+      | ExpandedMergeRequestSchema
+      | Camelize<ExpandedMergeRequestSchema> = await api.MergeRequests.show(
+      repoID,
+      mergerequestIId,
+    );
+
+    while (
+      mergeRequest.detailed_merge_status === 'preparing' ||
+      mergeRequest.detailed_merge_status === 'approvals_syncing' ||
+      mergeRequest.detailed_merge_status === 'checking'
+    ) {
+      mergeRequest = await api.MergeRequests.show(repoID, mergeRequest.iid);
+      ctx.logger.info(`${mergeRequest.detailed_merge_status}`);
+    }
+
+    const approvalRules = await api.MergeRequestApprovals.allApprovalRules(
+      repoID,
+      {
+        mergerequestIId: mergeRequest.iid,
+      },
+    );
+
+    return approvalRules
+      .filter(rule => rule.eligible_approvers !== undefined)
+      .map(rule => {
+        return rule.eligible_approvers as SimpleUserSchema[];
+      })
+      .flat()
+      .map(user => user.id);
+  } catch (e) {
+    ctx.logger.warn(
+      `Failed to retrieve approval rules for MR ${mergerequestIId}: ${getErrorMessage(
+        e,
+      )}. Proceeding with MR creation without reviewers from approval rules.`,
+    );
+    return [];
+  }
+}
+
+const commitActions = ['create', 'delete', 'update', 'skip', 'auto'] as const;
+
 /**
- * Create a new action that creates a gitlab merge request.
+ * Create a new action that creates a GitLab merge request.
  *
  * @public
  */
@@ -86,127 +146,102 @@ export const createPublishGitlabMergeRequestAction = (options: {
 }) => {
   const { integrations } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    title: string;
-    description: string;
-    branchName: string;
-    targetBranchName?: string;
-    sourcePath?: string;
-    targetPath?: string;
-    token?: string;
-    commitAction?: 'create' | 'delete' | 'update' | 'skip' | 'auto';
-    /** @deprecated projectID passed as query parameters in the repoUrl */
-    projectid?: string;
-    removeSourceBranch?: boolean;
-    assignee?: string;
-  }>({
+  return createTemplateAction({
     id: 'publish:gitlab:merge-request',
     examples,
     schema: {
       input: {
-        required: ['repoUrl', 'branchName'],
-        type: 'object',
-        properties: {
-          repoUrl: {
-            type: 'string',
-            title: 'Repository Location',
-            description: `\
-Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where \
-'project_name' is the repository name and 'group_name' is a group or username`,
-          },
-          /** @deprecated projectID is passed as query parameters in the repoUrl */
-          projectid: {
-            type: 'string',
-            title: 'projectid',
-            description: 'Project ID/Name(slug) of the Gitlab Project',
-          },
-          title: {
-            type: 'string',
-            title: 'Merge Request Name',
-            description: 'The name for the merge request',
-          },
-          description: {
-            type: 'string',
-            title: 'Merge Request Description',
-            description: 'The description of the merge request',
-          },
-          branchName: {
-            type: 'string',
-            title: 'Source Branch Name',
-            description: 'The source branch name of the merge request',
-          },
-          targetBranchName: {
-            type: 'string',
-            title: 'Target Branch Name',
-            description: 'The target branch name of the merge request',
-          },
-          sourcePath: {
-            type: 'string',
-            title: 'Working Subdirectory',
-            description: `\
+        repoUrl: z =>
+          z.string().describe(`\
+Accepts the format \`gitlab.com?repo=project_name&owner=group_name\` where \
+\`project_name\` is the repository name and \`group_name\` is a group or username`),
+        title: z => z.string().describe('The name for the merge request'),
+        description: z =>
+          z.string().describe('The description of the merge request'),
+        branchName: z =>
+          z.string().describe('The source branch name of the merge request'),
+        targetBranchName: z =>
+          z
+            .string()
+            .optional()
+            .describe(
+              'The target branch name of the merge request (defaults to _default branch of repository_)',
+            ),
+        sourcePath: z =>
+          z.string().optional().describe(`\
 Subdirectory of working directory to copy changes from. \
-For reasons of backward compatibility, any specified 'targetPath' input will \
+For reasons of backward compatibility, any specified \`targetPath\` input will \
 be applied in place of an absent/falsy value for this input. \
-Circumvent this behavior using '.'`,
-          },
-          targetPath: {
-            type: 'string',
-            title: 'Repository Subdirectory',
-            description: 'Subdirectory of repository to apply changes to',
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitLab',
-          },
-          commitAction: {
-            title: 'Commit action',
-            type: 'string',
-            enum: ['create', 'update', 'delete', 'auto'],
-            description: `\
-The action to be used for git commit. Defaults to the custom 'auto' action provided by backstage,
-which uses additional API calls in order to detect whether to 'create', 'update' or 'skip' each source file.`,
-          },
-          removeSourceBranch: {
-            title: 'Delete source branch',
-            type: 'boolean',
-            description:
-              'Option to delete source branch once the MR has been merged. Default: false',
-          },
-          assignee: {
-            title: 'Merge Request Assignee',
-            type: 'string',
-            description: 'User this merge request will be assigned to',
-          },
-        },
+Circumvent this behavior using \`.\``),
+        targetPath: z =>
+          z
+            .string()
+            .optional()
+            .describe('Subdirectory of repository to apply changes to'),
+        token: z =>
+          z
+            .string()
+            .optional()
+            .describe('The token to use for authorization to GitLab'),
+        commitAction: z =>
+          z.enum(commitActions).optional().describe(`\
+The action to be used for \`git\` commit. Defaults to the custom \`auto\` action provided by Backstage,
+which uses additional API calls in order to detect whether to \`create\`, \`update\` or \`skip\` each source file.`),
+        /** @deprecated projectID passed as query parameters in the repoUrl */
+        projectid: z =>
+          z
+            .string()
+            .optional()
+            .describe(
+              `\
+Project ID/Name(slug) of the GitLab Project
+_deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
+            ),
+        removeSourceBranch: z =>
+          z
+            .boolean()
+            .optional()
+            .describe(
+              'Option to delete source branch once the MR has been merged. Default: `false`',
+            ),
+        assignee: z =>
+          z
+            .string()
+            .optional()
+            .describe('User this merge request will be assigned to'),
+        reviewers: z =>
+          z
+            .string()
+            .array()
+            .optional()
+            .describe('Users that will be assigned as reviewers'),
+        assignReviewersFromApprovalRules: z =>
+          z
+            .boolean()
+            .optional()
+            .describe(
+              'Automatically assign reviewers from the approval rules of the MR. Includes `CODEOWNERS`',
+            ),
+        labels: z =>
+          z
+            .string()
+            .or(z.string().array())
+            .optional()
+            .describe('Labels with which to tag the created merge request'),
       },
       output: {
-        type: 'object',
-        properties: {
-          targetBranchName: {
-            title: 'Target branch name of the merge request',
-            type: 'string',
-          },
-          projectid: {
-            title: 'Gitlab Project id/Name(slug)',
-            type: 'string',
-          },
-          projectPath: {
-            title: 'Gitlab Project path',
-            type: 'string',
-          },
-          mergeRequestUrl: {
-            title: 'MergeRequest(MR) URL',
-            type: 'string',
-            description: 'Link to the merge request in GitLab',
-          },
-        },
+        targetBranchName: z =>
+          z.string().describe('Target branch name of the merge request'),
+        projectid: z => z.string().describe('GitLab Project id/Name(slug)'),
+        projectPath: z => z.string().describe('GitLab Project path'),
+        mergeRequestUrl: z =>
+          z.string().describe('Link to the merge request in GitLab'),
       },
     },
     async handler(ctx) {
       const {
         assignee,
+        reviewers,
         branchName,
         targetBranchName,
         description,
@@ -216,6 +251,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
         sourcePath,
         title,
         token,
+        labels,
       } = ctx.input;
 
       const { owner, repo, project } = parseRepoUrl(repoUrl, integrations);
@@ -227,7 +263,7 @@ which uses additional API calls in order to detect whether to 'create', 'update'
         repoUrl,
       });
 
-      let assigneeId = undefined;
+      let assigneeId: number | undefined = undefined;
 
       if (assignee !== undefined) {
         try {
@@ -240,6 +276,27 @@ which uses additional API calls in order to detect whether to 'create', 'update'
             )}. Proceeding with MR creation without an assignee.`,
           );
         }
+      }
+
+      let reviewerIds: number[] | undefined = undefined; // Explicitly set to undefined. Strangely, passing an empty array to the API will result the other options being undefined also being explicitly passed to the Gitlab API call (e.g. assigneeId)
+      if (reviewers !== undefined) {
+        reviewerIds = (
+          await Promise.all(
+            reviewers.map(async reviewer => {
+              try {
+                const reviewerUser = await api.Users.all({
+                  username: reviewer,
+                });
+                return reviewerUser[0].id;
+              } catch (e) {
+                ctx.logger.warn(
+                  `Failed to find gitlab user id for ${reviewer}: ${e}. Proceeding with MR creation without reviewer.`,
+                );
+                return undefined;
+              }
+            }),
+          )
+        ).filter(id => id !== undefined) as number[];
       }
 
       let fileRoot: string;
@@ -318,20 +375,39 @@ which uses additional API calls in order to detect whether to 'create', 'update'
               execute_filemode: file.executable,
             }));
 
-      let createBranch: boolean;
-      if (actions.length) {
-        createBranch = true;
-      } else {
-        try {
-          await api.Branches.show(repoID, branchName);
-          createBranch = false;
-          ctx.logger.info(
-            `Using existing branch ${branchName} without modification.`,
-          );
-        } catch (e) {
-          createBranch = true;
+      let createBranch = actions.length > 0;
+
+      try {
+        const branch = await api.Branches.show(repoID, branchName);
+        if (createBranch) {
+          const mergeRequests = await api.MergeRequests.all({
+            projectId: repoID,
+            source_branch: branchName,
+          });
+
+          if (mergeRequests.length > 0) {
+            // If an open MR exists, include the MR link in the error message
+            throw new InputError(
+              `The branch creation failed because the branch already exists at: ${branch.web_url}. Additionally, there is a Merge Request for this branch: ${mergeRequests[0].web_url}`,
+            );
+          } else {
+            // If no open MR, just notify about the existing branch
+            throw new InputError(
+              `The branch creation failed because the branch already exists at: ${branch.web_url}.`,
+            );
+          }
         }
+
+        ctx.logger.info(
+          `Using existing branch ${branchName} without modification.`,
+        );
+      } catch (e) {
+        if (e instanceof InputError) {
+          throw e;
+        }
+        createBranch = true;
       }
+
       if (createBranch) {
         try {
           await api.Branches.create(repoID, branchName, String(targetBranch));
@@ -343,38 +419,102 @@ which uses additional API calls in order to detect whether to 'create', 'update'
           );
         }
       }
-      if (actions.length) {
-        try {
-          await api.Commits.create(repoID, branchName, title, actions);
-        } catch (e) {
-          throw new InputError(
-            `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${getErrorMessage(
-              e,
-            )}`,
-          );
-        }
-      }
-      try {
-        const mergeRequestUrl = await api.MergeRequests.create(
-          repoID,
-          branchName,
-          String(targetBranch),
-          title,
-          {
-            description,
-            removeSourceBranch: removeSourceBranch ? removeSourceBranch : false,
-            assigneeId,
-          },
-        ).then(mergeRequest => mergeRequest.web_url ?? mergeRequest.webUrl);
-        ctx.output('projectid', repoID);
-        ctx.output('targetBranchName', targetBranch);
-        ctx.output('projectPath', repoID);
-        ctx.output('mergeRequestUrl', mergeRequestUrl);
-      } catch (e) {
-        throw new InputError(
-          `Merge request creation failed. ${getErrorMessage(e)}`,
-        );
-      }
+
+      await ctx.checkpoint({
+        key: `commit.to.${repoID}.${branchName}`,
+        fn: async () => {
+          if (actions.length) {
+            try {
+              const commit = await api.Commits.create(
+                repoID,
+                branchName,
+                title,
+                actions,
+              );
+              return commit.id;
+            } catch (e) {
+              throw new InputError(
+                `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${getErrorMessage(
+                  e,
+                )}`,
+              );
+            }
+          }
+          return null;
+        },
+      });
+
+      const { mrId, mrWebUrl } = await ctx.checkpoint({
+        key: `create.mr.${repoID}.${branchName}`,
+        fn: async () => {
+          try {
+            const mergeRequest = await api.MergeRequests.create(
+              repoID,
+              branchName,
+              String(targetBranch),
+              title,
+              {
+                description,
+                removeSourceBranch: removeSourceBranch
+                  ? removeSourceBranch
+                  : false,
+                assigneeId,
+                reviewerIds,
+                labels,
+              },
+            );
+            return {
+              mrId: mergeRequest.iid,
+              mrWebUrl: mergeRequest.web_url ?? mergeRequest.webUrl,
+            };
+          } catch (e) {
+            throw new InputError(
+              `Merge request creation failed. ${getErrorMessage(e)}`,
+            );
+          }
+        },
+      });
+
+      await ctx.checkpoint({
+        key: `create.mr.assign.reviewers.${repoID}.${branchName}`,
+        fn: async () => {
+          if (ctx.input.assignReviewersFromApprovalRules) {
+            try {
+              const reviewersFromApprovalRules =
+                await getReviewersFromApprovalRules(api, mrId, repoID, ctx);
+              if (reviewersFromApprovalRules.length > 0) {
+                const eligibleUserIds = new Set([
+                  ...reviewersFromApprovalRules,
+                  ...(reviewerIds ?? []),
+                ]);
+
+                const mergeRequest = await api.MergeRequests.edit(
+                  repoID,
+                  mrId,
+                  {
+                    reviewerIds: Array.from(eligibleUserIds),
+                  },
+                );
+                return {
+                  mrWebUrl: mergeRequest.web_url ?? mergeRequest.webUrl,
+                };
+              }
+            } catch (e) {
+              ctx.logger.warn(
+                `Failed to assign reviewers from approval rules: ${getErrorMessage(
+                  e,
+                )}.`,
+              );
+            }
+          }
+          return { mrWebUrl };
+        },
+      });
+
+      ctx.output('projectid', repoID);
+      ctx.output('targetBranchName', targetBranch);
+      ctx.output('projectPath', repoID);
+      ctx.output('mergeRequestUrl', mrWebUrl as string);
     },
   });
 };

@@ -14,54 +14,72 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Button } from './Button';
-import { Box } from '../Box/Box';
+import { Flex } from '../Flex';
+import { Text } from '../Text';
+import { Icon } from '../Icon';
 
 const meta = {
   title: 'Components/Button',
   component: Button,
-  parameters: {
-    layout: 'centered',
-  },
-  tags: ['autodocs'],
   argTypes: {
     size: {
       control: 'select',
       options: ['small', 'medium'],
     },
-  },
-  args: {
-    size: 'medium',
+    variant: {
+      control: 'select',
+      options: ['primary', 'secondary'],
+    },
   },
 } satisfies Meta<typeof Button>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
+export const Default: Story = {
   args: {
-    children: 'Primary button',
+    children: 'Button',
   },
 };
 
-export const Secondary: Story = {
+export const Variants: Story = {
   args: {
-    children: 'Secondary button',
-    variant: 'secondary',
+    children: 'Button',
   },
+  parameters: {
+    argTypes: {
+      variant: {
+        control: false,
+      },
+    },
+  },
+  render: () => (
+    <Flex align="center">
+      <Button iconStart={<Icon name="cloud" />} variant="primary">
+        Button
+      </Button>
+      <Button iconStart={<Icon name="cloud" />} variant="secondary">
+        Button
+      </Button>
+    </Flex>
+  ),
 };
 
 export const Sizes: Story = {
   args: {
     children: 'Button',
   },
-  render: args => (
-    <div style={{ display: 'flex', gap: '10px' }}>
-      <Button {...args} size="small" />
-      <Button {...args} size="medium" />
-    </div>
+  render: () => (
+    <Flex align="center">
+      <Button size="small" iconStart={<Icon name="cloud" />}>
+        Small
+      </Button>
+      <Button size="medium" iconStart={<Icon name="cloud" />}>
+        Medium
+      </Button>
+    </Flex>
   ),
 };
 
@@ -70,11 +88,15 @@ export const WithIcons: Story = {
     children: 'Button',
   },
   render: args => (
-    <div style={{ display: 'flex', gap: '10px' }}>
-      <Button {...args} iconStart="cloud" />
-      <Button {...args} iconEnd="arrowRight" />
-      <Button {...args} iconStart="cloud" iconEnd="arrowRight" />
-    </div>
+    <Flex align="center">
+      <Button {...args} iconStart={<Icon name="cloud" />} />
+      <Button {...args} iconEnd={<Icon name="chevron-right" />} />
+      <Button
+        {...args}
+        iconStart={<Icon name="cloud" />}
+        iconEnd={<Icon name="chevron-right" />}
+      />
+    </Flex>
   ),
 };
 
@@ -83,39 +105,108 @@ export const FullWidth: Story = {
     children: 'Button',
   },
   render: args => (
-    <Box>
-      <Button {...args} iconStart="cloud" />
-      <Button {...args} iconEnd="arrowRight" />
-      <Button {...args} iconStart="cloud" iconEnd="arrowRight" />
-    </Box>
+    <Flex direction="column" gap="4" style={{ width: '300px' }}>
+      <Button {...args} iconStart={<Icon name="cloud" />} />
+      <Button {...args} iconEnd={<Icon name="chevron-right" />} />
+      <Button
+        {...args}
+        iconStart={<Icon name="cloud" />}
+        iconEnd={<Icon name="chevron-right" />}
+      />
+    </Flex>
   ),
 };
 
 export const Disabled: Story = {
+  render: () => (
+    <Flex direction="row" gap="4">
+      <Button variant="primary" isDisabled>
+        Primary
+      </Button>
+      <Button variant="secondary" isDisabled>
+        Secondary
+      </Button>
+    </Flex>
+  ),
+};
+
+export const Responsive: Story = {
   args: {
     children: 'Button',
-    disabled: true,
+    variant: {
+      initial: 'primary',
+      sm: 'secondary',
+    },
+    size: {
+      xs: 'small',
+      sm: 'medium',
+    },
   },
 };
 
-export const CustomTheme: Story = {
+const variants = ['primary', 'secondary'] as const;
+const sizes = ['small', 'medium'] as const;
+
+export const Playground: Story = {
   args: {
-    children: 'Custom Button',
+    children: 'Button',
   },
-  decorators: [
-    Story => (
-      <div
-        style={
-          {
-            '--button-primary-background-color': 'blue',
-            '--button-primary-border-color': 'blue',
-            '--button-primary-text-color': 'white',
-            '--button-primary-border-radius': '8px',
-          } as React.CSSProperties
-        }
-      >
-        <Story />
-      </div>
-    ),
-  ],
+  render: () => (
+    <Flex direction="column">
+      {variants.map(variant => (
+        <Flex direction="column" key={variant}>
+          <Text>{variant}</Text>
+          {sizes.map(size => (
+            <Flex align="center" key={size}>
+              <Button variant={variant} size={size}>
+                Button
+              </Button>
+              <Button
+                iconStart={<Icon name="cloud" />}
+                variant={variant}
+                size={size}
+              >
+                Button
+              </Button>
+              <Button
+                iconEnd={<Icon name="chevron-right" />}
+                variant={variant}
+                size={size}
+              >
+                Button
+              </Button>
+              <Button
+                iconStart={<Icon name="cloud" />}
+                iconEnd={<Icon name="chevron-right" />}
+                style={{ width: '200px' }}
+                variant={variant}
+                size={size}
+              >
+                Button
+              </Button>
+              <Button variant={variant} size={size} isDisabled>
+                Button
+              </Button>
+              <Button
+                iconStart={<Icon name="cloud" />}
+                variant={variant}
+                size={size}
+                isDisabled
+              >
+                Button
+              </Button>
+              <Button
+                iconEnd={<Icon name="chevron-right" />}
+                variant={variant}
+                size={size}
+                isDisabled
+              >
+                Button
+              </Button>
+            </Flex>
+          ))}
+        </Flex>
+      ))}
+    </Flex>
+  ),
 };

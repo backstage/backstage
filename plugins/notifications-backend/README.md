@@ -29,5 +29,5 @@ To be able to do so, `external access` needs to be enabled as described in the [
 Once the API can be accessed, the request can look like:
 
 ```
-curl -X POST [YOUR_SERVER_URL]/api/notifications -H "Content-Type: application/json" -H "Authorization: Bearer [BASE64_ENCODED_ACCESS_TOKEN]" -d '{"recipients":{"type":"entity","entityRef":"user:development/guest"},"payload": {"title": "Title of user-targeted external message","description": "The description","link": "http://foo.com/bar","severity": "high","topic": "The topic"}}'
+curl -X POST [YOUR_SERVER_URL]/api/notifications/notifications -H "Content-Type: application/json" -H "Authorization: Bearer [BASE64_ENCODED_ACCESS_TOKEN]" -d '{"recipients":{"type":"entity","entityRef":"user:development/guest"},"payload": {"title": "Title of user-targeted external message","description": "The description","link": "http://foo.com/bar","severity": "high","topic": "The topic"}}'
 ```

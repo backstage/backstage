@@ -21,5 +21,5 @@
  */
 export * from './integration';
 export * from './policy';
-export * from './types';
+export type { PermissionRule, PermissionRuleset } from './types';
 export { ServerPermissionClient } from './ServerPermissionClient';

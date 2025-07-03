@@ -6,7 +6,7 @@ import {
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 import { Logger } from 'winston';
 
 /**
@@ -41,12 +41,12 @@ import { Logger } from 'winston';
 export class LoadTestingEntityProvider implements EntityProvider {
   constructor(private readonly options: LoadTestingEntityProviderOptions) {}
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName() {
     return `LoadTestingEntityProvider`;
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection) {
     const delayStartup = this.options.delayStartup ?? 10_000;
     const logger = this.options.logger.child({

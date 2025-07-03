@@ -20,7 +20,6 @@ import { createApiRef, errorApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useFormDecorators } from './useFormDecorators';
-import React from 'react';
 import { formDecoratorsApiRef } from '../api/ref';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 
@@ -51,7 +50,7 @@ describe('useFormDecorators', () => {
   };
 
   it('should run the form decorators for a given manifest with the correct input', async () => {
-    const renderedHook = renderHook(() => useFormDecorators({ manifest }), {
+    const renderedHook = renderHook(() => useFormDecorators(), {
       wrapper: ({ children }) => (
         <TestApiProvider
           apis={[
@@ -76,9 +75,83 @@ describe('useFormDecorators', () => {
       await result.run({
         formState: {},
         secrets: {},
+        manifest,
       });
 
       expect(mockApiImplementation.test).toHaveBeenCalledWith('hello');
+    });
+  });
+
+  it('should return existing secrets and formstate', async () => {
+    const renderedHook = renderHook(() => useFormDecorators(), {
+      wrapper: ({ children }) => (
+        <TestApiProvider
+          apis={[
+            [mockApiRef, mockApiImplementation],
+            [
+              formDecoratorsApiRef,
+              DefaultScaffolderFormDecoratorsApi.create({
+                decorators: [mockDecorator],
+              }),
+            ],
+            [errorApiRef, { post: () => {} }],
+          ]}
+        >
+          {children}
+        </TestApiProvider>
+      ),
+    });
+    await waitFor(async () => {
+      const result = renderedHook.result.current!;
+
+      const { secrets, formState } = await result.run({
+        formState: { test: 'formState' },
+        secrets: { test: 'hello' },
+        manifest,
+      });
+
+      expect(secrets).toEqual({ test: 'hello' });
+      expect(formState).toEqual({ test: 'formState' });
+    });
+  });
+
+  it('should allow merging of existing secrets and formstate', async () => {
+    const secretAndFormDataModifier = createScaffolderFormDecorator({
+      id: 'test',
+      async decorator({ setFormState, setSecrets }) {
+        setFormState(state => ({ ...state, new: 'formState' }));
+        setSecrets(state => ({ ...state, new: 'hello' }));
+      },
+    });
+    const renderedHook = renderHook(() => useFormDecorators(), {
+      wrapper: ({ children }) => (
+        <TestApiProvider
+          apis={[
+            [mockApiRef, mockApiImplementation],
+            [
+              formDecoratorsApiRef,
+              DefaultScaffolderFormDecoratorsApi.create({
+                decorators: [mockDecorator, secretAndFormDataModifier],
+              }),
+            ],
+            [errorApiRef, { post: () => {} }],
+          ]}
+        >
+          {children}
+        </TestApiProvider>
+      ),
+    });
+    await waitFor(async () => {
+      const result = renderedHook.result.current!;
+
+      const { secrets, formState } = await result.run({
+        formState: { test: 'formState' },
+        secrets: { test: 'hello' },
+        manifest,
+      });
+
+      expect(secrets).toEqual({ test: 'hello', new: 'hello' });
+      expect(formState).toEqual({ test: 'formState', new: 'formState' });
     });
   });
 });

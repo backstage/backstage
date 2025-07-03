@@ -65,9 +65,11 @@ describe('bitbucket:pipelines:run', () => {
     const actionNoCreds = createBitbucketPipelinesRunAction({
       integrations: integrationsNoCreds,
     });
+
     const testContext = Object.assign({}, mockContext, {
       input: { workspace, repo_slug },
     });
+
     await expect(actionNoCreds.handler(testContext)).rejects.toThrow(
       /Authorization has not been provided for Bitbucket Cloud/,
     );

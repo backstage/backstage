@@ -28,6 +28,7 @@ import {
   GetEntityAncestorsResponse,
   GetEntityFacetsRequest,
   GetEntityFacetsResponse,
+  GetLocationsResponse,
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
@@ -104,6 +105,11 @@ function createFilter(
         }
         if (expectedValue === CATALOG_FILTER_EXISTS) {
           continue;
+        }
+        if (Array.isArray(expectedValue)) {
+          return expectedValue.some(value =>
+            searchValues?.includes(String(value).toLocaleLowerCase('en-US')),
+          );
         }
         if (
           !searchValues?.includes(
@@ -226,6 +232,10 @@ export class InMemoryCatalogClient implements CatalogApi {
     return {
       facets,
     };
+  }
+
+  async getLocations(_request?: {}): Promise<GetLocationsResponse> {
+    throw new NotImplementedError('Method not implemented.');
   }
 
   async getLocationById(_id: string): Promise<Location | undefined> {

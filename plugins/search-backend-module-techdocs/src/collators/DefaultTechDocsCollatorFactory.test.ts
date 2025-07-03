@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
@@ -25,7 +26,6 @@ import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
 import { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory';
 import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
 import {
   MkSearchIndexDoc,
   TechDocsCollatorDocumentTransformer,
@@ -81,14 +81,14 @@ const expectedEntities: Entity[] = [
 ];
 
 describe('DefaultTechDocsCollatorFactory', () => {
-  const config = new ConfigReader({});
-  const mockDiscoveryApi: jest.Mocked<DiscoveryService> = {
-    getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
-    getExternalBaseUrl: jest.fn(),
-  };
+  const config = mockServices.rootConfig.mock();
+  const mockDiscoveryApi = mockServices.discovery.mock({
+    getBaseUrl: async () => 'http://test-backend',
+  });
   const options = {
     logger,
     discovery: mockDiscoveryApi,
+    auth: mockServices.auth(),
   };
 
   it('has expected type', () => {
@@ -183,6 +183,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
       factory = DefaultTechDocsCollatorFactory.fromConfig(_config, {
         discovery: mockDiscoveryApi,
         logger,
+        auth: mockServices.auth(),
       });
       collator = await factory.getCollator();
 
@@ -192,6 +193,18 @@ describe('DefaultTechDocsCollatorFactory', () => {
       expect(documents[0]).toMatchObject({
         location: '/software/test-entity-with-docs',
       });
+    });
+
+    it('should filter catalog entities when a custom filter is set', async () => {
+      factory = DefaultTechDocsCollatorFactory.fromConfig(config, {
+        ...options,
+        entityFilterFunction: entities =>
+          entities.filter(entity => entity.kind !== 'Component'),
+      });
+      collator = await factory.getCollator();
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+      expect(documents).toHaveLength(0);
     });
 
     it('paginates through catalog entities using batchSize', async () => {

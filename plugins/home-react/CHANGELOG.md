@@ -1,5 +1,237 @@
 # @backstage/plugin-home-react
 
+## 0.1.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
+## 0.1.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+
+## 0.1.27
+
+### Patch Changes
+
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- cef60db: Home plugin support i18n
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+
+## 0.1.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/core-plugin-api@1.10.7
+
+## 0.1.26
+
+### Patch Changes
+
+- 16eb4bf: Export ContentModal from `@backstage/plugin-home-react` so people can use this in other scenarios.
+  Renamed `CatalogReactComponentsNameToClassKey` to `PluginHomeComponentsNameToClassKey` in `overridableComponents.ts`
+
+  Made QuickStartCard `docsLinkTitle` prop more flexible to allow for any React.JSX.Element instead of just a string.
+  Added QuickStartCard prop `additionalContent` which can eventually replace the prop `video`.
+
+- Updated dependencies
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+
+## 0.1.26-next.2
+
+### Patch Changes
+
+- 16eb4bf: Export ContentModal from `@backstage/plugin-home-react` so people can use this in other scenarios.
+  Renamed `CatalogReactComponentsNameToClassKey` to `PluginHomeComponentsNameToClassKey` in `overridableComponents.ts`
+
+  Made QuickStartCard `docsLinkTitle` prop more flexible to allow for any React.JSX.Element instead of just a string.
+  Added QuickStartCard prop `additionalContent` which can eventually replace the prop `video`.
+
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/core-plugin-api@1.10.7-next.0
+
+## 0.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/core-components@0.17.2-next.1
+
+## 0.1.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/core-plugin-api@1.10.6
+
+## 0.1.25
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 2e4cb15: Fixes auto-hiding of content divider when title not specified
+- Updated dependencies
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+
+## 0.1.25-next.2
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+
+## 0.1.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/core-plugin-api@1.10.5
+
+## 0.1.25-next.0
+
+### Patch Changes
+
+- 2e4cb15: Fixes auto-hiding of content divider when title not specified
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+
+## 0.1.24
+
+### Patch Changes
+
+- c5a82fc: Don't render header divider on homepage cards if no title was specified.
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+
+## 0.1.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/core-plugin-api@1.10.4
+
+## 0.1.24-next.0
+
+### Patch Changes
+
+- c5a82fc: Don't render header divider on homepage cards if no title was specified.
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/core-plugin-api@1.10.4
+
+## 0.1.23
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/core-plugin-api@1.10.4
+
+## 0.1.23-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+
+## 0.1.23-next.0
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/core-plugin-api@1.10.4-next.0
+
+## 0.1.22
+
+### Patch Changes
+
+- d8f9079: Updated dependency `@rjsf/utils` to `5.23.2`.
+  Updated dependency `@rjsf/core` to `5.23.2`.
+  Updated dependency `@rjsf/material-ui` to `5.23.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.23.2`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/core-components@0.16.3
+
+## 0.1.22-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/core-components@0.16.3-next.0
+
+## 0.1.22-next.0
+
+### Patch Changes
+
+- d8f9079: Updated dependency `@rjsf/utils` to `5.23.2`.
+  Updated dependency `@rjsf/core` to `5.23.2`.
+  Updated dependency `@rjsf/material-ui` to `5.23.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.23.2`.
+
+## 0.1.21
+
+### Patch Changes
+
+- 9951ba4: Updated dependency `@rjsf/utils` to `5.23.1`.
+  Updated dependency `@rjsf/core` to `5.23.1`.
+  Updated dependency `@rjsf/material-ui` to `5.23.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.23.1`.
+- Updated dependencies
+  - @backstage/core-components@0.16.2
+  - @backstage/core-plugin-api@1.10.2
+
+## 0.1.21-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+
+## 0.1.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/core-plugin-api@1.10.1
+
 ## 0.1.21-next.0
 
 ### Patch Changes

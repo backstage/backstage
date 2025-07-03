@@ -44,6 +44,26 @@ import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unproc
 />;
 ```
 
+### Integrating with the New Frontend System
+
+Follow this section if you are using Backstage's [new frontend system](https://backstage.io/docs/frontend-system/).
+
+Import `catalogUnprocessedEntitiesPlugin` in your `App.tsx` and add it to your app's `features` array:
+
+```typescript
+import catalogUnprocessedEntitiesPlugin from '@backstage/plugin-catalog-unprocessed-entities';
+
+// ...
+
+export const app = createApp({
+  features: [
+    // ...
+    catalogUnprocessedEntitiesPlugin,
+    // ...
+  ],
+});
+```
+
 ## Customization
 
 If you want to use the provided endpoints in a different way, you can use the ApiRef doing the following:

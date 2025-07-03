@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { fireEvent, screen } from '@testing-library/react';
 import { CatalogTableRow } from './types';
 import { renderInTestApp } from '@backstage/test-utils';
@@ -61,6 +61,28 @@ describe('OffsetPaginatedCatalogTable', () => {
       </MockEntityListContextProvider>
     );
   };
+
+  it('should display the title and subtitle when passed in', async () => {
+    await renderInTestApp(
+      wrapInContext(
+        <OffsetPaginatedCatalogTable
+          data={data}
+          columns={columns}
+          title="My Title"
+          subtitle="My Subtitle"
+        />,
+        {
+          setOffset: jest.fn(),
+          limit: Number.MAX_SAFE_INTEGER,
+          offset: 0,
+          totalItems: data.length,
+        },
+      ),
+    );
+
+    expect(screen.queryByText('My Title')).toBeInTheDocument();
+    expect(screen.queryByText('My Subtitle')).toBeInTheDocument();
+  });
 
   it('should display all the items', async () => {
     await renderInTestApp(

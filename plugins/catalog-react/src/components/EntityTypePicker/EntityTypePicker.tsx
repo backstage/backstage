@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import Box from '@material-ui/core/Box';
 import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 
@@ -54,6 +54,10 @@ export const EntityTypePicker = (props: EntityTypePickerProps) => {
   }, [error, alertApi, initialFilter, setSelectedTypes, t]);
 
   if (availableTypes.length === 0 || error) return null;
+
+  availableTypes.sort((a, b) =>
+    a.toLocaleLowerCase('en-US').localeCompare(b.toLocaleLowerCase('en-US')),
+  );
 
   const items = [
     { value: 'all', label: t('entityTypePicker.optionAllTitle') },

@@ -171,7 +171,7 @@ async function checkAvailabilityGiteaRepository(
     owner?: string;
     repo: string;
     defaultBranch: string;
-    ctx: ActionContext<any>;
+    ctx: ActionContext<any, any, any>;
   },
 ) {
   const startTimestamp = Date.now();
@@ -210,82 +210,83 @@ export function createPublishGiteaAction(options: {
 }) {
   const { integrations, config } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    description: string;
-    defaultBranch?: string;
-    repoVisibility?: 'private' | 'public';
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    sourcePath?: string;
-  }>({
+  return createTemplateAction({
     id: 'publish:gitea',
     description:
       'Initializes a git repository using the content of the workspace, and publishes it to Gitea.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl'],
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            type: 'string',
-          },
-          description: {
-            title: 'Repository Description',
-            type: 'string',
-          },
-          defaultBranch: {
-            title: 'Default Branch',
-            type: 'string',
-            description: `Sets the default branch on the repository. The default value is 'main'`,
-          },
-          repoVisibility: {
-            title: 'Repository Visibility',
-            description: `Sets the visibility of the repository. The default value is 'public'.`,
-            type: 'string',
-            enum: ['private', 'public'],
-          },
-          gitCommitMessage: {
-            title: 'Git Commit Message',
-            type: 'string',
-            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
-          },
-          gitAuthorName: {
-            title: 'Default Author Name',
-            type: 'string',
-            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
-          },
-          gitAuthorEmail: {
-            title: 'Default Author Email',
-            type: 'string',
-            description: `Sets the default author email for the commit.`,
-          },
-          sourcePath: {
-            title: 'Source Path',
-            type: 'string',
-            description: `Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.`,
-          },
-        },
+        repoUrl: z =>
+          z.string({
+            description: 'Repository Location',
+          }),
+        description: z =>
+          z.string({
+            description: 'Repository Description',
+          }),
+        defaultBranch: z =>
+          z
+            .string({
+              description: `Sets the default branch on the repository. The default value is 'main'`,
+            })
+            .optional(),
+        repoVisibility: z =>
+          z
+            .enum(['private', 'public'], {
+              description: `Sets the visibility of the repository. The default value is 'public'.`,
+            })
+            .optional(),
+        gitCommitMessage: z =>
+          z
+            .string({
+              description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+            })
+            .optional(),
+        gitAuthorName: z =>
+          z
+            .string({
+              description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+            })
+            .optional(),
+        gitAuthorEmail: z =>
+          z
+            .string({
+              description: `Sets the default author email for the commit.`,
+            })
+            .optional(),
+        sourcePath: z =>
+          z
+            .string({
+              description: `Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.`,
+            })
+            .optional(),
+        signCommit: z =>
+          z
+            .boolean({
+              description: 'Sign commit with configured PGP private key',
+            })
+            .optional(),
       },
       output: {
-        type: 'object',
-        properties: {
-          remoteUrl: {
-            title: 'A URL to the repository with the provider',
-            type: 'string',
-          },
-          repoContentsUrl: {
-            title: 'A URL to the root of the repository',
-            type: 'string',
-          },
-          commitHash: {
-            title: 'The git commit hash of the initial commit',
-            type: 'string',
-          },
-        },
+        remoteUrl: z =>
+          z
+            .string({
+              description: 'A URL to the repository with the provider',
+            })
+            .optional(),
+        repoContentsUrl: z =>
+          z
+            .string({
+              description: 'A URL to the root of the repository',
+            })
+            .optional(),
+        commitHash: z =>
+          z
+            .string({
+              description: 'The git commit hash of the initial commit',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {
@@ -298,6 +299,7 @@ export function createPublishGiteaAction(options: {
         gitAuthorEmail,
         gitCommitMessage = 'initial commit',
         sourcePath,
+        signCommit,
       } = ctx.input;
 
       const { repo, host, owner } = parseRepoUrl(repoUrl, integrations);
@@ -338,6 +340,16 @@ export function createPublishGiteaAction(options: {
           ? gitAuthorEmail
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
+
+      const signingKey =
+        integrationConfig.config.commitSigningKey ??
+        config.getOptionalString('scaffolder.defaultCommitSigningKey');
+      if (signCommit && !signingKey) {
+        throw new Error(
+          'Signing commits is enabled but no signing key is provided in the configuration',
+        );
+      }
+
       // The owner to be used should be either the org name or user authenticated with the gitea server
       const remoteUrl = `${integrationConfig.config.baseUrl}/${owner}/${repo}.git`;
       const commitResult = await initRepoAndPush({

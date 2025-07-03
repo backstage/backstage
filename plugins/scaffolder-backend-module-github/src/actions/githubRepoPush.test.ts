@@ -14,28 +14,6 @@
  * limitations under the License.
  */
 
-const mockGit = {
-  init: jest.fn(),
-  add: jest.fn(),
-  checkout: jest.fn(),
-  commit: jest
-    .fn()
-    .mockResolvedValue('220f19cc36b551763d157f1b5e4a4b446165dbd6'),
-  fetch: jest.fn(),
-  addRemote: jest.fn(),
-  push: jest.fn(),
-};
-
-jest.mock('@backstage/backend-common', () => ({
-  loggerToWinstonLogger: jest.requireActual('@backstage/backend-common')
-    .loggerToWinstonLogger,
-  Git: {
-    fromAuth() {
-      return mockGit;
-    },
-  },
-}));
-
 jest.mock('./gitHelpers', () => {
   return {
     ...jest.requireActual('./gitHelpers'),
@@ -74,6 +52,9 @@ const initRepoAndPushMocked = initRepoAndPush as jest.Mock<
   Promise<{ commitHash: string }>
 >;
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
   rest: {
     repos: {
@@ -82,11 +63,7 @@ const mockOctokit = {
   },
 };
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 describe('github:repo:push', () => {
@@ -101,7 +78,7 @@ describe('github:repo:push', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext({
     input: {
@@ -115,6 +92,8 @@ describe('github:repo:push', () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
+    octokitMock.mockImplementation(() => mockOctokit);
+
     initRepoAndPushMocked.mockResolvedValue({ commitHash: 'test123' });
 
     githubCredentialsProvider =
@@ -124,6 +103,21 @@ describe('github:repo:push', () => {
       config,
       githubCredentialsProvider,
     });
+  });
+
+  it('should pass context logger to Octokit client', async () => {
+    mockOctokit.rest.repos.get.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
   });
 
   it('should call initRepoAndPush with the correct values', async () => {
@@ -139,7 +133,7 @@ describe('github:repo:push', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',
@@ -210,7 +204,7 @@ describe('github:repo:push', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',
@@ -251,7 +245,7 @@ describe('github:repo:push', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',
@@ -275,7 +269,7 @@ describe('github:repo:push', () => {
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://github.com/html/url/blob/master',
+      'https://github.com/html/url/blob/main',
     );
   });
 
@@ -320,7 +314,7 @@ describe('github:repo:push', () => {
       client: mockOctokit,
       repoName: 'repository',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
@@ -331,6 +325,7 @@ describe('github:repo:push', () => {
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
       restrictions: undefined,
     });
 
@@ -348,7 +343,7 @@ describe('github:repo:push', () => {
       client: mockOctokit,
       repoName: 'repository',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: true,
@@ -359,6 +354,7 @@ describe('github:repo:push', () => {
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
       restrictions: undefined,
     });
 
@@ -376,7 +372,7 @@ describe('github:repo:push', () => {
       client: mockOctokit,
       repoName: 'repository',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: ['statusCheck'],
       requireBranchesToBeUpToDate: false,
@@ -387,6 +383,7 @@ describe('github:repo:push', () => {
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
       restrictions: undefined,
     });
 
@@ -404,7 +401,7 @@ describe('github:repo:push', () => {
       client: mockOctokit,
       repoName: 'repository',
       logger: mockContext.logger,
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       requireCodeOwnerReviews: false,
       requiredStatusCheckContexts: [],
       requireBranchesToBeUpToDate: true,
@@ -415,6 +412,7 @@ describe('github:repo:push', () => {
       bypassPullRequestAllowances: undefined,
       requiredApprovingReviewCount: 1,
       requiredCommitSigning: false,
+      requiredLinearHistory: false,
       restrictions: undefined,
     });
   });
@@ -465,6 +463,11 @@ describe('github:repo:push', () => {
       overrideValue: true,
     },
     {
+      inputProperty: 'requiredLinearHistory',
+      defaultValue: false,
+      overrideValue: true,
+    },
+    {
       inputProperty: 'protectEnforceAdmins',
       defaultValue: true,
       overrideValue: false,
@@ -497,7 +500,7 @@ describe('github:repo:push', () => {
         client: mockOctokit,
         repoName: 'repository',
         logger: mockContext.logger,
-        defaultBranch: 'master',
+        defaultBranch: 'main',
         requireCodeOwnerReviews: false,
         requiredStatusCheckContexts: [],
         requireBranchesToBeUpToDate: true,
@@ -508,6 +511,7 @@ describe('github:repo:push', () => {
         bypassPullRequestAllowances: undefined,
         requiredApprovingReviewCount: 1,
         requiredCommitSigning: false,
+        requiredLinearHistory: false,
         restrictions: undefined,
         [octokitParameter || inputProperty]: defaultValue,
       });
@@ -525,7 +529,7 @@ describe('github:repo:push', () => {
         client: mockOctokit,
         repoName: 'repository',
         logger: mockContext.logger,
-        defaultBranch: 'master',
+        defaultBranch: 'main',
         requireCodeOwnerReviews: false,
         requiredStatusCheckContexts: [],
         requireBranchesToBeUpToDate: true,
@@ -536,6 +540,7 @@ describe('github:repo:push', () => {
         bypassPullRequestAllowances: undefined,
         requiredApprovingReviewCount: 1,
         requiredCommitSigning: false,
+        requiredLinearHistory: false,
         restrictions: undefined,
         [octokitParameter || inputProperty]: overrideValue,
       });
@@ -553,7 +558,7 @@ describe('github:repo:push', () => {
         client: mockOctokit,
         repoName: 'repository',
         logger: mockContext.logger,
-        defaultBranch: 'master',
+        defaultBranch: 'main',
         requireCodeOwnerReviews: false,
         requiredStatusCheckContexts: [],
         requireBranchesToBeUpToDate: true,
@@ -564,6 +569,7 @@ describe('github:repo:push', () => {
         bypassPullRequestAllowances: undefined,
         requiredApprovingReviewCount: 1,
         requiredCommitSigning: false,
+        requiredLinearHistory: false,
         restrictions: undefined,
         [octokitParameter || inputProperty]: defaultValue,
       });

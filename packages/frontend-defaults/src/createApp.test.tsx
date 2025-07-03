@@ -23,13 +23,15 @@ import {
   createFrontendPlugin,
   ThemeBlueprint,
   createFrontendModule,
+  useAppNode,
+  FrontendPluginInfo,
 } from '@backstage/frontend-plugin-api';
 import { screen, waitFor } from '@testing-library/react';
 import { CreateAppFeatureLoader, createApp } from './createApp';
 import { mockApis, renderWithEffects } from '@backstage/test-utils';
-import React from 'react';
 import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
 import { default as appPluginOriginal } from '@backstage/plugin-app';
+import { useState, useEffect } from 'react';
 
 describe('createApp', () => {
   const appPlugin = appPluginOriginal.withOverrides({
@@ -56,7 +58,7 @@ describe('createApp', () => {
       }),
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             ThemeBlueprint.make({
               name: 'derp',
@@ -85,7 +87,7 @@ describe('createApp', () => {
       configLoader: async () => ({ config: mockApis.config() }),
       features: [
         createFrontendPlugin({
-          id: duplicatedFeatureId,
+          pluginId: duplicatedFeatureId,
           extensions: [
             PageBlueprint.make({
               params: {
@@ -96,7 +98,7 @@ describe('createApp', () => {
           ],
         }),
         createFrontendPlugin({
-          id: duplicatedFeatureId,
+          pluginId: duplicatedFeatureId,
           extensions: [
             PageBlueprint.make({
               params: {
@@ -120,6 +122,52 @@ describe('createApp', () => {
     );
   });
 
+  it('should allow overriding the plugin info resolver', async () => {
+    function TestComponent() {
+      const appNode = useAppNode();
+      const [info, setInfo] = useState<FrontendPluginInfo | undefined>(
+        undefined,
+      );
+
+      useEffect(() => {
+        appNode?.spec.source?.info().then(setInfo);
+      }, [appNode]);
+
+      return <div>Package name: {info?.packageName}</div>;
+    }
+
+    const app = createApp({
+      configLoader: async () => ({ config: mockApis.config() }),
+      features: [
+        appPlugin,
+        createFrontendPlugin({
+          pluginId: 'test',
+          extensions: [
+            PageBlueprint.make({
+              params: {
+                defaultPath: '/',
+                loader: async () => <TestComponent />,
+              },
+            }),
+          ],
+        }),
+      ],
+      pluginInfoResolver: async () => {
+        return {
+          info: {
+            packageName: '@test/test',
+          },
+        };
+      },
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(
+      screen.findByText('Package name: @test/test'),
+    ).resolves.toBeInTheDocument();
+  });
+
   it('should support feature loaders', async () => {
     const loader: CreateAppFeatureLoader = {
       getLoaderName() {
@@ -129,7 +177,7 @@ describe('createApp', () => {
         return {
           features: [
             createFrontendPlugin({
-              id: 'test',
+              pluginId: 'test',
               extensions: [
                 PageBlueprint.make({
                   params: {
@@ -194,7 +242,7 @@ describe('createApp', () => {
           ],
         }),
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           featureFlags: [{ name: 'test-1' }],
           extensions: [
             createExtension({
@@ -220,7 +268,7 @@ describe('createApp', () => {
           ],
         }),
         createFrontendPlugin({
-          id: 'other',
+          pluginId: 'other',
           featureFlags: [{ name: 'test-2' }],
           extensions: [],
         }),
@@ -242,7 +290,7 @@ describe('createApp', () => {
       features: [
         appPlugin,
         createFrontendPlugin({
-          id: 'my-plugin',
+          pluginId: 'my-plugin',
           extensions: [
             PageBlueprint.make({
               params: {
@@ -269,6 +317,7 @@ describe('createApp', () => {
     expect(String(tree.root)).toMatchInlineSnapshot(`
       "<root out=[core.reactElement]>
         apis [
+          <api:app/dialog out=[core.api.factory] />
           <api:app/discovery out=[core.api.factory] />
           <api:app/alert out=[core.api.factory] />
           <api:app/analytics out=[core.api.factory] />
@@ -328,6 +377,7 @@ describe('createApp', () => {
                 elements [
                   <app-root-element:app/oauth-request-dialog out=[core.reactElement] />
                   <app-root-element:app/alert-display out=[core.reactElement] />
+                  <app-root-element:app/dialog-display out=[core.reactElement] />
                 ]
                 signInPage [
                   <sign-in-page:app />
@@ -393,6 +443,46 @@ describe('createApp', () => {
     await renderWithEffects(app.createRoot());
 
     expect(screen.queryByText('Custom app root element')).toBeNull();
+  });
+
+  it('should use a custom extensionFactoryMiddleware', async () => {
+    const app = createApp({
+      configLoader: async () => ({ config: mockApis.config() }),
+      features: [
+        appPlugin,
+        createFrontendPlugin({
+          pluginId: 'test-plugin',
+          extensions: [
+            PageBlueprint.make({
+              name: 'test-page',
+              params: {
+                defaultPath: '/',
+                loader: async () => <>Test Page</>,
+              },
+            }),
+          ],
+        }),
+      ],
+      *extensionFactoryMiddleware(originalFactory, context) {
+        const output = originalFactory();
+        yield* output;
+        const element = output.get(coreExtensionData.reactElement);
+
+        if (element) {
+          yield coreExtensionData.reactElement(
+            <div data-testid={`wrapped(${context.node.spec.id})`}>
+              {element}
+            </div>,
+          );
+        }
+      },
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(
+      screen.findByTestId('wrapped(page:test-plugin/test-page)'),
+    ).resolves.toHaveTextContent('Test Page');
   });
 
   describe('modules', () => {

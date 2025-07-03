@@ -16,7 +16,8 @@
 
 /**
  * @packageDocumentation
- * A module for the search backend that exports Catalog modules.
+ *
+ * A collator module for the search backend that indexes your software catalog.
  */
 
 import {
@@ -24,13 +25,11 @@ import {
   createBackendModule,
   createExtensionPoint,
 } from '@backstage/backend-plugin-api';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
-import {
-  CatalogCollatorEntityTransformer,
-  DefaultCatalogCollatorFactory,
-} from '@backstage/plugin-search-backend-module-catalog';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 import { readScheduleConfigOptions } from './collators/config';
+import { CatalogCollatorEntityTransformer } from './collators';
+import { DefaultCatalogCollatorFactory } from './collators/DefaultCatalogCollatorFactory';
 
 /**
  * Options for {@link catalogCollatorExtensionPoint}.
@@ -60,7 +59,7 @@ export const catalogCollatorExtensionPoint =
  *
  * @public
  */
-export default createBackendModule({
+export const searchModuleCatalogCollator = createBackendModule({
   pluginId: 'search',
   moduleId: 'catalog-collator',
   register(env) {
@@ -79,28 +78,19 @@ export default createBackendModule({
       deps: {
         auth: coreServices.auth,
         config: coreServices.rootConfig,
-        discovery: coreServices.discovery,
         scheduler: coreServices.scheduler,
         indexRegistry: searchIndexRegistryExtensionPoint,
         catalog: catalogServiceRef,
       },
-      async init({
-        auth,
-        config,
-        discovery,
-        scheduler,
-        indexRegistry,
-        catalog,
-      }) {
+      async init({ auth, config, scheduler, indexRegistry, catalog }) {
         indexRegistry.addCollator({
           schedule: scheduler.createScheduledTaskRunner(
             readScheduleConfigOptions(config),
           ),
           factory: DefaultCatalogCollatorFactory.fromConfig(config, {
             auth,
+            catalog,
             entityTransformer,
-            discovery,
-            catalogClient: catalog,
           }),
         });
       },

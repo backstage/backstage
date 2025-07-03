@@ -139,11 +139,37 @@ export interface Config {
     }>;
 
     /**
+     * Disables the compatibility layer for relations in returned entities that
+     * ensures that all relations objects have both `target` and `targetRef`.
+     *
+     * Enabling this option significantly reduces the memory usage of the
+     * catalog, and slightly increases performance, but may break consumers that
+     * rely on the existence of `target` in the relations objects.
+     */
+    disableRelationsCompatibility?: boolean;
+
+    /**
+     * Disables the default backstage processors.
+     *
+     * Enabling this option allows more complete control of which processors are included
+     * in the backstage processing loop.
+     *
+     */
+    disableDefaultProcessors?: boolean;
+
+    /**
      * The strategy to use for entities that are orphaned, i.e. no longer have
      * any other entities or providers referencing them. The default value is
      * "keep".
      */
     orphanStrategy?: 'keep' | 'delete';
+
+    /**
+     * The strategy to use for entities that are referenced by providers that are orphaned,
+     * i.e. entities with no providers currently configured in the catalog. The default value is
+     * "keep".
+     */
+    orphanProviderStrategy?: 'keep' | 'delete';
 
     /**
      * The strategy to use when stitching together the final entities.

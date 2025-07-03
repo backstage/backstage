@@ -5,7 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
@@ -27,7 +26,14 @@ export function createPublishAzureAction(options: {
     gitCommitMessage?: string | undefined;
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
+    signCommit?: boolean | undefined;
   },
-  JsonObject
+  {
+    remoteUrl?: string | undefined;
+    repoContentsUrl?: string | undefined;
+    repositoryId?: string | undefined;
+    commitHash?: string | undefined;
+  },
+  'v2'
 >;
 ```

@@ -25,9 +25,9 @@ import {
 import { createGithubIssuesLabelAction } from './githubIssuesLabel';
 import yaml from 'yaml';
 import { examples } from './githubIssuesLabel.examples';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 
-jest.mock('./helpers', () => {
+jest.mock('../util', () => {
   return {
     getOctokitOptions: jest.fn(),
   };
@@ -61,7 +61,7 @@ describe('github:issues:label examples', () => {
   const getOctokitOptionsMock = getOctokitOptions as jest.Mock;
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext();
 

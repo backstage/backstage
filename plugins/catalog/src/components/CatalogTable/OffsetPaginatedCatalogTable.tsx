@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Table, TableProps } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
@@ -27,10 +27,10 @@ import { CatalogTableToolbar } from './CatalogTableToolbar';
 export function OffsetPaginatedCatalogTable(
   props: TableProps<CatalogTableRow>,
 ) {
-  const { columns, data, isLoading, options } = props;
+  const { columns, data, options, ...restProps } = props;
   const { setLimit, setOffset, limit, totalItems, offset } = useEntityList();
 
-  const [page, setPage] = React.useState(
+  const [page, setPage] = useState(
     offset && limit ? Math.floor(offset / limit) : 0,
   );
 
@@ -47,7 +47,6 @@ export function OffsetPaginatedCatalogTable(
       columns={columns}
       data={data}
       options={{
-        paginationPosition: 'both',
         pageSizeOptions: [5, 10, 20, 50, 100],
         pageSize: limit,
         emptyRowsWhenPaging: false,
@@ -57,15 +56,10 @@ export function OffsetPaginatedCatalogTable(
         Toolbar: CatalogTableToolbar,
       }}
       page={page}
-      onPageChange={newPage => {
-        setPage(newPage);
-      }}
-      onRowsPerPageChange={pageSize => {
-        setLimit(pageSize);
-      }}
+      onPageChange={setPage}
+      onRowsPerPageChange={setLimit}
       totalCount={totalItems}
-      localization={{ pagination: { labelDisplayedRows: '' } }}
-      isLoading={isLoading}
+      {...restProps}
     />
   );
 }

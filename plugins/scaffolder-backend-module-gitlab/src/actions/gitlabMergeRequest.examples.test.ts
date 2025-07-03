@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRootLogger } from '@backstage/backend-common';
+
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -23,9 +23,6 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { examples } from './gitlabMergeRequest.examples';
 import yaml from 'yaml';
 
-// Make sure root logger is initialized ahead of FS mock
-createRootLogger();
-
 const mockGitlabClient = {
   Namespaces: {
     show: jest.fn(),
@@ -34,13 +31,65 @@ const mockGitlabClient = {
     create: jest.fn(),
   },
   Commits: {
-    create: jest.fn(),
+    create: jest.fn(() => ({ id: 'mockId' })),
   },
   MergeRequests: {
     create: jest.fn(async (_: any) => {
       return {
         default_branch: 'main',
       };
+    }),
+    show: jest.fn(async (_: any) => {
+      return {
+        default_branch: 'main',
+      };
+    }),
+    edit: jest.fn(async (_: any) => {
+      return {
+        default_branch: 'main',
+      };
+    }),
+  },
+  MergeRequestApprovals: {
+    allApprovalRules: jest.fn(async (_: any) => {
+      return [
+        {
+          id: 123,
+          name: 'rule1',
+          rule_type: 'regular',
+          eligible_approvers: [
+            {
+              id: 123,
+              username: 'John Smith',
+            },
+            {
+              id: 456,
+              username: 'Jane Doe',
+            },
+          ],
+          approvals_required: 1,
+          users: [],
+          contains_hidden_groups: false,
+          report_type: null,
+          section: null,
+          source_rule: { approvals_required: 1 },
+          overridden: false,
+        },
+        {
+          id: 456,
+          name: 'All Members',
+          rule_type: 'any_approver',
+          eligible_approvers: [],
+          approvals_required: 1,
+          users: [],
+          groups: [],
+          contains_hidden_groups: false,
+          report_type: null,
+          section: null,
+          source_rule: { approvals_required: 1 },
+          overridden: false,
+        },
+      ];
     }),
   },
   Projects: {
@@ -76,7 +125,7 @@ jest.mock('@gitbeaker/rest', () => ({
 }));
 
 describe('createGitLabMergeRequest', () => {
-  let instance: TemplateAction<any>;
+  let instance: TemplateAction<any, any, 'v2'>;
 
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');

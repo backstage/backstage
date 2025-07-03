@@ -22,8 +22,8 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ConflictError, stringifyError } from '@backstage/errors';
 // Direct internal import to avoid duplication
-// eslint-disable-next-line @backstage/no-forbidden-package-imports
-import { InternalServiceFactory } from '@backstage/backend-plugin-api/src/services/system/types';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
 import { DependencyGraph } from '../lib/DependencyGraph';
 /**
  * Keep in sync with `@backstage/backend-plugin-api/src/services/system/types.ts`
@@ -189,6 +189,13 @@ export class ServiceRegistry {
 
       throw new ConflictError(`Circular dependencies detected:\n  ${cycles}`);
     }
+  }
+
+  hasBeenAdded(ref: ServiceRef<any>) {
+    if (ref.id === coreServices.pluginMetadata.id) {
+      return true;
+    }
+    return this.#addedFactoryIds.has(ref.id);
   }
 
   add(factory: ServiceFactory) {

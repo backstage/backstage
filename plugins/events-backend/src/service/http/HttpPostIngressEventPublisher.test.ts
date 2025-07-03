@@ -21,6 +21,13 @@ import Router from 'express-promise-router';
 import request from 'supertest';
 import { HttpPostIngressEventPublisher } from './HttpPostIngressEventPublisher';
 import { mockServices } from '@backstage/backend-test-utils';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import { HttpBodyParser } from '@backstage/plugin-events-node';
+
+const middleware = MiddlewareFactory.create({
+  logger: mockServices.logger.mock(),
+  config: mockServices.rootConfig(),
+});
 
 describe('HttpPostIngressEventPublisher', () => {
   const logger = mockServices.logger.mock();
@@ -90,6 +97,86 @@ describe('HttpPostIngressEventPublisher', () => {
     );
   });
 
+  it('should allow large input', async () => {
+    const config = new ConfigReader({
+      events: {
+        http: {
+          topics: ['testA'],
+        },
+      },
+    });
+
+    const router = Router();
+    const app = express().use(router);
+    const events = new TestEventsService();
+    const data = {
+      testA: 'a'.repeat(1024 * 1024),
+    };
+
+    const publisher = HttpPostIngressEventPublisher.fromConfig({
+      config,
+      events,
+      ingresses: {
+        testB: {},
+      },
+      logger,
+    });
+    publisher.bind(router);
+
+    const response = await request(app)
+      .post('/http/testA')
+      .type('application/json')
+      .set('X-Custom-Header', 'test-value')
+      .timeout(1000)
+      .send(JSON.stringify(data));
+    expect(response.status).toBe(202);
+
+    expect(events.published).toHaveLength(1);
+    expect(events.published[0].topic).toEqual('testA');
+    expect(events.published[0].eventPayload).toEqual(data);
+    expect(events.published[0].metadata).toEqual(
+      expect.objectContaining({
+        'content-type': 'application/json',
+        'x-custom-header': 'test-value',
+      }),
+    );
+  });
+
+  it('should fail on too large input', async () => {
+    const config = new ConfigReader({
+      events: {
+        http: {
+          topics: ['testA'],
+        },
+      },
+    });
+
+    const router = Router();
+    const app = express().use(router);
+    const events = new TestEventsService();
+    const data = {
+      testA: 'a'.repeat(10 * 1024 * 1024),
+    };
+
+    const publisher = HttpPostIngressEventPublisher.fromConfig({
+      config,
+      events,
+      ingresses: {
+        testB: {},
+      },
+      logger,
+    });
+    publisher.bind(router);
+
+    const response = await request(app)
+      .post('/http/testA')
+      .type('application/json')
+      .set('X-Custom-Header', 'test-value')
+      .timeout(1000)
+      .send(JSON.stringify(data));
+    expect(response.status).toBe(413);
+  });
+
   it('no raw body', async () => {
     const config = new ConfigReader({
       events: {
@@ -110,6 +197,7 @@ describe('HttpPostIngressEventPublisher', () => {
       logger,
     });
     publisher.bind(router);
+    router.use(middleware.error());
 
     const response = await request(app)
       .post('/http/testA')
@@ -124,7 +212,7 @@ describe('HttpPostIngressEventPublisher', () => {
             'Failed to retrieve raw body from incoming event for topic testA; not a buffer: object',
           name: 'Error',
         },
-        request: { method: 'POST', url: '/testA' },
+        request: { method: 'POST', url: '/http/testA' },
         response: { statusCode: 500 },
       }),
     );
@@ -149,6 +237,7 @@ describe('HttpPostIngressEventPublisher', () => {
       logger,
     });
     publisher.bind(router);
+    router.use(middleware.error());
 
     const response = await request(app)
       .post('/http/testA')
@@ -163,7 +252,7 @@ describe('HttpPostIngressEventPublisher', () => {
           name: 'UnsupportedCharsetError',
           statusCode: 415,
         },
-        request: { method: 'POST', url: '/testA' },
+        request: { method: 'POST', url: '/http/testA' },
         response: { statusCode: 415 },
       }),
     );
@@ -188,6 +277,7 @@ describe('HttpPostIngressEventPublisher', () => {
       logger,
     });
     publisher.bind(router);
+    router.use(middleware.error());
 
     const response = await request(app)
       .post('/http/testA')
@@ -198,14 +288,143 @@ describe('HttpPostIngressEventPublisher', () => {
     expect(response.body).toEqual(
       expect.objectContaining({
         error: {
-          message: 'Unsupported media type: text/plain',
+          message:
+            'Unsupported media type: text/plain. You need to provide a custom body parser for this media type using the EventsExtensionPoint.',
           name: 'UnsupportedMediaTypeError',
           statusCode: 415,
         },
-        request: { method: 'POST', url: '/testA' },
+        request: { method: 'POST', url: '/http/testA' },
         response: { statusCode: 415 },
       }),
     );
+  });
+
+  it('with a text/plain body parser implementation', async () => {
+    const config = new ConfigReader({
+      events: {
+        http: {
+          topics: ['testA'],
+        },
+      },
+    });
+
+    const router = Router();
+    const app = express().use(router);
+    const events = new TestEventsService();
+
+    const bodyParser: HttpBodyParser = async (req, _topic) => {
+      return {
+        bodyParsed: req.body.toString('utf-8'),
+        bodyBuffer: req.body,
+        encoding: 'utf-8',
+      };
+    };
+
+    const publisher = HttpPostIngressEventPublisher.fromConfig({
+      config,
+      events,
+      bodyParsers: {
+        'text/plain': bodyParser,
+      },
+      logger,
+    });
+    publisher.bind(router);
+    router.use(middleware.error());
+
+    const response = await request(app)
+      .post('/http/testA')
+      .type('text/plain')
+      .timeout(1000)
+      .send('Textual information');
+    expect(response.status).toBe(202);
+  });
+
+  it('with a invalid media type', async () => {
+    const config = new ConfigReader({
+      events: {
+        http: {
+          topics: ['testA'],
+        },
+      },
+    });
+
+    const router = Router();
+    const app = express().use(router);
+    const events = new TestEventsService();
+
+    const publisher = HttpPostIngressEventPublisher.fromConfig({
+      config,
+      events,
+      logger,
+    });
+    publisher.bind(router);
+    router.use(middleware.error());
+
+    const response = await request(app)
+      .post('/http/testA')
+      .type('not-valid-content/plain')
+      .timeout(1000)
+      .send('Textual information');
+    expect(response.status).toBe(415);
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        error: {
+          message:
+            'Unsupported media type: not-valid-content/plain. You need to provide a custom body parser for this media type using the EventsExtensionPoint.',
+          name: 'UnsupportedMediaTypeError',
+          statusCode: 415,
+        },
+        request: { method: 'POST', url: '/http/testA' },
+        response: { statusCode: 415 },
+      }),
+    );
+  });
+
+  it('with a custom application/json body parser implementation', async () => {
+    const config = new ConfigReader({
+      events: {
+        http: {
+          topics: ['testA'],
+        },
+      },
+    });
+
+    const router = Router();
+    const app = express().use(router);
+    const events = new TestEventsService();
+    const customParse = jest.fn();
+
+    const bodyParser: HttpBodyParser = async (
+      req,
+      _parsedMediaType,
+      _topic,
+    ) => {
+      customParse();
+      return {
+        bodyParsed: JSON.parse(req.body.toString('utf-8')),
+        bodyBuffer: req.body,
+        encoding: 'utf-8',
+      };
+    };
+
+    const publisher = HttpPostIngressEventPublisher.fromConfig({
+      config,
+      events,
+      bodyParsers: {
+        'application/json': bodyParser,
+      },
+      logger,
+    });
+    publisher.bind(router);
+    router.use(middleware.error());
+
+    const response = await request(app)
+      .post('/http/testA')
+      .type('application/json')
+      .timeout(1000)
+      .send(JSON.stringify({ testA: 'data' }));
+    expect(response.status).toBe(202);
+    expect(customParse).toHaveBeenCalled();
   });
 
   it('with validator', async () => {

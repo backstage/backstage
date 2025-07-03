@@ -45,6 +45,25 @@ export class IdentityAuthInjectorFetchMiddleware implements FetchMiddleware {
     );
   }
 
+  /**
+   * Returns an array of plugin URL prefixes derived from the static `discovery`
+   * configuration, to be used as `urlPrefixAllowlist` option of {@link create}.
+   */
+  static getDiscoveryUrlPrefixes(config: Config): string[] {
+    const endpointConfigs =
+      config.getOptionalConfigArray('discovery.endpoints') || [];
+    return endpointConfigs.flatMap(c => {
+      const target =
+        typeof c.get('target') === 'object'
+          ? c.getString('target.external')
+          : c.getString('target');
+      const plugins = c.getStringArray('plugins');
+      return plugins.map(pluginId =>
+        target.replace(/\{\{\s*pluginId\s*\}\}/g, pluginId),
+      );
+    });
+  }
+
   constructor(
     public readonly identityApi: IdentityApi,
     public readonly allowUrl: (url: string) => boolean,
@@ -87,7 +106,12 @@ function buildMatcher(options: {
   } else if (options.urlPrefixAllowlist) {
     return buildPrefixMatcher(options.urlPrefixAllowlist);
   } else if (options.config) {
-    return buildPrefixMatcher([options.config.getString('backend.baseUrl')]);
+    return buildPrefixMatcher([
+      options.config.getString('backend.baseUrl'),
+      ...IdentityAuthInjectorFetchMiddleware.getDiscoveryUrlPrefixes(
+        options.config,
+      ),
+    ]);
   }
   return () => false;
 }

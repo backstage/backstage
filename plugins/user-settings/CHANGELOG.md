@@ -1,5 +1,534 @@
 # @backstage/plugin-user-settings
 
+## 0.8.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/core-app-api@1.17.2-next.0
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+  - @backstage/plugin-signals-react@0.0.15-next.0
+
+## 0.8.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-app-api@1.17.1
+  - @backstage/core-compat-api@0.4.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.14
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.23
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- ab6d3dd: Add some translation to user-setting plugin
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-app-api@1.17.1
+  - @backstage/core-compat-api@0.4.3
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.14
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.23-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.13
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.23-next.1
+
+### Patch Changes
+
+- ab6d3dd: Add some translation to user-setting plugin
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.1-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-compat-api@0.4.3-next.1
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.13
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.23-next.0
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/core-compat-api@0.4.3-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.0
+
+## 0.8.22
+
+### Patch Changes
+
+- a7bfdb6: plugin-user-settingsgs support i18n
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 5b04b14: Uppercase language name in language select
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/theme@0.6.6
+  - @backstage/core-app-api@1.17.0
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/plugin-signals-react@0.0.13
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.22-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.17.0-next.1
+  - @backstage/core-compat-api@0.4.2-next.3
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.13-next.0
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.22-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.16.2-next.0
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/core-compat-api@0.4.2-next.2
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/plugin-catalog-react@1.18.0-next.2
+  - @backstage/plugin-signals-react@0.0.13-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.22-next.1
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 5b04b14: Uppercase language name in language select
+- Updated dependencies
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/core-compat-api@0.4.2-next.1
+  - @backstage/plugin-catalog-react@1.18.0-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-app-api@1.16.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.12
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.22-next.0
+
+### Patch Changes
+
+- a7bfdb6: plugin-user-settingsgs support i18n
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-app-api@1.16.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/theme@0.6.5
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.12
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.21
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.17.0
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/core-compat-api@0.4.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/core-app-api@1.16.1
+  - @backstage/theme@0.6.5
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.12
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.21-next.2
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/core-compat-api@0.4.1-next.2
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/core-app-api@1.16.1-next.0
+  - @backstage/plugin-catalog-react@1.17.0-next.2
+  - @backstage/theme@0.6.5-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.12-next.0
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/plugin-catalog-react@1.16.1-next.1
+  - @backstage/core-compat-api@0.4.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-app-api@1.16.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.11
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.16.1-next.0
+  - @backstage/core-compat-api@0.4.1-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-app-api@1.16.0
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.11
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/core-app-api@1.16.0
+  - @backstage/plugin-catalog-react@1.16.0
+  - @backstage/core-compat-api@0.4.0
+  - @backstage/plugin-signals-react@0.0.11
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.20-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/core-app-api@1.16.0-next.0
+  - @backstage/plugin-catalog-react@1.16.0-next.2
+  - @backstage/core-compat-api@0.4.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.10
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/plugin-catalog-react@1.16.0-next.1
+  - @backstage/core-compat-api@0.3.7-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-app-api@1.15.5
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.10
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.16.0-next.0
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+  - @backstage/core-compat-api@0.3.7-next.0
+
+## 0.8.19
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/plugin-catalog-react@1.15.2
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/core-compat-api@0.3.6
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/core-app-api@1.15.5
+  - @backstage/plugin-signals-react@0.0.10
+  - @backstage/theme@0.6.4
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.19-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+  - @backstage/core-compat-api@0.3.6-next.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-app-api@1.15.5-next.0
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-react@1.15.2-next.3
+  - @backstage/plugin-signals-react@0.0.10-next.0
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.19-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/plugin-catalog-react@1.15.2-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-app-api@1.15.5-next.0
+  - @backstage/core-compat-api@0.3.6-next.2
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.10-next.0
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.19-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.1
+  - @backstage/core-compat-api@0.3.6-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/core-app-api@1.15.5-next.0
+  - @backstage/plugin-catalog-react@1.15.2-next.1
+  - @backstage/plugin-signals-react@0.0.10-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-app-api@1.15.4
+  - @backstage/core-compat-api@0.3.6-next.0
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-react@1.15.2-next.0
+  - @backstage/plugin-signals-react@0.0.9
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/core-components@0.16.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-app-api@1.15.4
+  - @backstage/core-compat-api@0.3.5
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-signals-react@0.0.9
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4-next.0
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/types@1.2.1-next.0
+  - @backstage/core-compat-api@0.3.5-next.0
+  - @backstage/plugin-catalog-react@1.15.1-next.1
+  - @backstage/core-app-api@1.15.4-next.0
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/plugin-signals-react@0.0.9-next.0
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1-next.0
+  - @backstage/core-compat-api@0.3.4
+
+## 0.8.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.0
+  - @backstage/core-app-api@1.15.3
+  - @backstage/core-compat-api@0.3.4
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/theme@0.6.3
+  - @backstage/core-components@0.16.2
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/types@1.2.0
+  - @backstage/plugin-signals-react@0.0.8
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.17-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.3.4-next.2
+  - @backstage/plugin-catalog-react@1.14.3-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/core-app-api@1.15.3-next.1
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-signals-react@0.0.8-next.0
+  - @backstage/plugin-user-settings-common@0.0.1
+
+## 0.8.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.1
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-app-api@1.15.3-next.0
+  - @backstage/core-compat-api@0.3.4-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-plugin-api@0.9.3-next.1
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-signals-react@0.0.7
+  - @backstage/plugin-user-settings-common@0.0.1
+
 ## 0.8.17-next.0
 
 ### Patch Changes

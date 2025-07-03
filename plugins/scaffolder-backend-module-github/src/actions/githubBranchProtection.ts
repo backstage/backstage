@@ -22,7 +22,7 @@ import {
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { examples } from './githubBranchProtection.examples';
 import * as inputProps from './inputProperties';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { Octokit } from 'octokit';
 import { enableBranchProtectionOnDefaultRepoBranch } from './gitHelpers';
 
@@ -36,62 +36,28 @@ export function createGithubBranchProtectionAction(options: {
 }) {
   const { integrations } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    branch?: string;
-    enforceAdmins?: boolean;
-    requiredApprovingReviewCount?: number;
-    requireCodeOwnerReviews?: boolean;
-    dismissStaleReviews?: boolean;
-    bypassPullRequestAllowances?:
-      | {
-          users?: string[];
-          teams?: string[];
-          apps?: string[];
-        }
-      | undefined;
-    restrictions?:
-      | {
-          users: string[];
-          teams: string[];
-          apps?: string[];
-        }
-      | undefined;
-    requiredStatusCheckContexts?: string[];
-    requireBranchesToBeUpToDate?: boolean;
-    requiredConversationResolution?: boolean;
-    requireLastPushApproval?: boolean;
-    requiredCommitSigning?: boolean;
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'github:branch-protection:create',
     description: 'Configures Branch Protection',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl'],
-        properties: {
-          repoUrl: inputProps.repoUrl,
-          branch: {
-            title: 'Branch name',
-            description: `The branch to protect. Defaults to the repository's default branch`,
-            type: 'string',
-          },
-          enforceAdmins: inputProps.protectEnforceAdmins,
-          requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
-          requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
-          dismissStaleReviews: inputProps.dismissStaleReviews,
-          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
-          restrictions: inputProps.restrictions,
-          requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
-          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
-          requiredConversationResolution:
-            inputProps.requiredConversationResolution,
-          requireLastPushApproval: inputProps.requireLastPushApproval,
-          requiredCommitSigning: inputProps.requiredCommitSigning,
-          token: inputProps.token,
-        },
+        repoUrl: inputProps.repoUrl,
+        branch: inputProps.branch,
+        enforceAdmins: inputProps.protectEnforceAdmins,
+        requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
+        requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+        dismissStaleReviews: inputProps.dismissStaleReviews,
+        bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
+        restrictions: inputProps.restrictions,
+        requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+        requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
+        requiredConversationResolution:
+          inputProps.requiredConversationResolution,
+        requireLastPushApproval: inputProps.requireLastPushApproval,
+        requiredCommitSigning: inputProps.requiredCommitSigning,
+        requiredLinearHistory: inputProps.requiredLinearHistory,
+        token: inputProps.token,
       },
     },
     async handler(ctx) {
@@ -109,44 +75,62 @@ export function createGithubBranchProtectionAction(options: {
         requiredConversationResolution = false,
         requireLastPushApproval = false,
         requiredCommitSigning = false,
+        requiredLinearHistory = false,
         token: providedToken,
       } = ctx.input;
 
-      const octokitOptions = await getOctokitOptions({
-        integrations,
-        token: providedToken,
-        repoUrl: repoUrl,
-      });
-      const client = new Octokit(octokitOptions);
-
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError(`No owner provided for repo ${repoUrl}`);
       }
 
-      const repository = await client.rest.repos.get({
-        owner: owner,
-        repo: repo,
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        token: providedToken,
+        host,
+        owner,
+        repo,
+      });
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
       });
 
-      await enableBranchProtectionOnDefaultRepoBranch({
-        repoName: repo,
-        client,
-        owner,
-        logger: ctx.logger,
-        requireCodeOwnerReviews,
-        bypassPullRequestAllowances,
-        requiredApprovingReviewCount,
-        restrictions,
-        requiredStatusCheckContexts,
-        requireBranchesToBeUpToDate,
-        requiredConversationResolution,
-        requireLastPushApproval,
-        defaultBranch: branch ?? repository.data.default_branch,
-        enforceAdmins,
-        dismissStaleReviews,
-        requiredCommitSigning,
+      const defaultBranch = await ctx.checkpoint({
+        key: `read.default.branch.${owner}.${repo}`,
+        fn: async () => {
+          const repository = await client.rest.repos.get({
+            owner: owner,
+            repo: repo,
+          });
+          return repository.data.default_branch;
+        },
+      });
+
+      await ctx.checkpoint({
+        key: `enable.branch.protection.${owner}.${repo}`,
+        fn: async () => {
+          await enableBranchProtectionOnDefaultRepoBranch({
+            repoName: repo,
+            client,
+            owner,
+            logger: ctx.logger,
+            requireCodeOwnerReviews,
+            bypassPullRequestAllowances,
+            requiredApprovingReviewCount,
+            restrictions,
+            requiredStatusCheckContexts,
+            requireBranchesToBeUpToDate,
+            requiredConversationResolution,
+            requireLastPushApproval,
+            defaultBranch: branch ?? defaultBranch,
+            enforceAdmins,
+            dismissStaleReviews,
+            requiredCommitSigning,
+            requiredLinearHistory,
+          });
+        },
       });
     },
   });

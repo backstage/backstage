@@ -17,31 +17,35 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Entity, Validators } from '@backstage/catalog-model';
-import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
-import {
-  catalogAnalysisExtensionPoint,
-  CatalogModelExtensionPoint,
-  catalogModelExtensionPoint,
-  CatalogPermissionExtensionPoint,
-  catalogPermissionExtensionPoint,
-  CatalogProcessingExtensionPoint,
-  catalogProcessingExtensionPoint,
-  CatalogLocationsExtensionPoint,
-  catalogLocationsExtensionPoint,
-} from '@backstage/plugin-catalog-node/alpha';
+import { ForwardedError } from '@backstage/errors';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
+  catalogServiceRef,
   EntityProvider,
   LocationAnalyzer,
   PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
-import { merge } from 'lodash';
+import {
+  catalogAnalysisExtensionPoint,
+  CatalogLocationsExtensionPoint,
+  catalogLocationsExtensionPoint,
+  CatalogModelExtensionPoint,
+  catalogModelExtensionPoint,
+  CatalogPermissionExtensionPoint,
+  catalogPermissionExtensionPoint,
+  CatalogPermissionRuleInput,
+  CatalogProcessingExtensionPoint,
+  catalogProcessingExtensionPoint,
+} from '@backstage/plugin-catalog-node/alpha';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Permission } from '@backstage/plugin-permission-common';
-import { ForwardedError } from '@backstage/errors';
+import { merge } from 'lodash';
+import { CatalogBuilder } from './CatalogBuilder';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { createGetCatalogEntityAction } from '../actions/createGetCatalogEntityAction';
 
 class CatalogLocationsExtensionPointImpl
   implements CatalogLocationsExtensionPoint
@@ -227,14 +231,17 @@ export const catalogPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
         reader: coreServices.urlReader,
         permissions: coreServices.permissions,
+        permissionsRegistry: coreServices.permissionsRegistry,
         database: coreServices.database,
         httpRouter: coreServices.httpRouter,
         lifecycle: coreServices.rootLifecycle,
         scheduler: coreServices.scheduler,
-        discovery: coreServices.discovery,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
+        auditor: coreServices.auditor,
         events: eventsServiceRef,
+        catalog: catalogServiceRef,
+        actionsRegistry: actionsRegistryServiceRef,
       },
       async init({
         logger,
@@ -242,24 +249,28 @@ export const catalogPlugin = createBackendPlugin({
         reader,
         database,
         permissions,
+        permissionsRegistry,
         httpRouter,
         lifecycle,
         scheduler,
-        discovery,
         auth,
         httpAuth,
+        catalog,
+        actionsRegistry,
+        auditor,
         events,
       }) {
         const builder = await CatalogBuilder.create({
           config,
           reader,
           permissions,
+          permissionsRegistry,
           database,
           scheduler,
           logger,
-          discovery,
           auth,
           httpAuth,
+          auditor,
         });
 
         builder.setEventBroker(events);
@@ -309,6 +320,11 @@ export const catalogPlugin = createBackendPlugin({
         }
 
         httpRouter.use(router);
+
+        createGetCatalogEntityAction({
+          catalog,
+          actionsRegistry,
+        });
       },
     });
   },

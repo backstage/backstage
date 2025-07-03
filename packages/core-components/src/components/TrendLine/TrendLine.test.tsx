@@ -15,7 +15,6 @@
  */
 
 /* eslint-disable jest/no-disabled-tests */
-import React from 'react';
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 
@@ -43,14 +42,14 @@ describe('TrendLine', () => {
     });
   });
 
-  describe.skip('when the data finishes within the the warning threshold', () => {
+  describe.skip('when the data finishes within the warning threshold', () => {
     it('renders with the correct color', async () => {
       await renderInTestApp(<TrendLine data={[0.5, 0.65]} title="sparkline" />);
       expect(screen.getByTitle('sparkline')).toBeInTheDocument();
     });
   });
 
-  describe.skip('when the data finishes within the the error threshold', () => {
+  describe.skip('when the data finishes within the error threshold', () => {
     it('renders with the correct color', async () => {
       await renderInTestApp(<TrendLine data={[0.5, 0.4]} title="sparkline" />);
       expect(screen.getByTitle('sparkline')).toBeInTheDocument();

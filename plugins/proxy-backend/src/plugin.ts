@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   createBackendPlugin,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { createRouterInternal } from './service/router';
+import { createRouter } from './service/router';
+import { proxyEndpointsExtensionPoint } from '@backstage/plugin-proxy-node/alpha';
 
 /**
  * The proxy backend plugin.
@@ -29,6 +29,13 @@ import { createRouterInternal } from './service/router';
 export const proxyPlugin = createBackendPlugin({
   pluginId: 'proxy',
   register(env) {
+    const additionalEndpoints = {};
+
+    env.registerExtensionPoint(proxyEndpointsExtensionPoint, {
+      addProxyEndpoints(endpoints) {
+        Object.assign(additionalEndpoints, endpoints);
+      },
+    });
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
@@ -37,11 +44,12 @@ export const proxyPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
       },
       async init({ config, discovery, logger, httpRouter }) {
-        await createRouterInternal({
+        await createRouter({
           config,
           discovery,
-          logger: loggerToWinstonLogger(logger),
+          logger,
           httpRouterService: httpRouter,
+          additionalEndpoints,
         });
       },
     });

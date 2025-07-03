@@ -1,0 +1,9 @@
+title: Kyverno Policy Reports
+author: terasky.com
+authorUrl: https://github.com/terasky-oss
+category: Kubernetes
+description: View Kyverno Policy reports for Kubernetes resources related to components in Backstage.
+documentation: https://github.com/TeraSky-OSS/backstage-plugins/tree/main/plugins/kyverno-policy-reports
+iconUrl: https://github.com/cncf/artwork/blob/main/projects/kyverno/icon/color/kyverno-icon-color.png?raw=true
+npmPackageName: '@terasky/backstage-plugin-kyverno-policy-reports'
+addedDate: '2025-01-05'

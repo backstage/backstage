@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import express, { NextFunction, Request, Response } from 'express';
 import Router from 'express-promise-router';
 import {
@@ -36,7 +37,7 @@ export interface RouterOptions {
   events: EventsService;
   discovery: DiscoveryService;
   config: Config;
-  lifecycle?: LifecycleService;
+  lifecycle: LifecycleService;
   userInfo: UserInfoService;
   auth: AuthService;
 }

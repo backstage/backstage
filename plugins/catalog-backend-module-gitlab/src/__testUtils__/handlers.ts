@@ -30,6 +30,9 @@ import {
   some_endpoint,
   unhealthy_endpoint,
   userID,
+  all_saas_subgroup_1_members,
+  all_saas_subgroup_2_members,
+  group_with_subgroups_response,
 } from './mocks';
 
 const httpHandlers = [
@@ -71,6 +74,13 @@ const httpHandlers = [
     return res(ctx.set('x-next-page', ''), ctx.json(all_groups_response));
   }),
 
+  rest.get(`${apiBaseUrl}/groups/group-with-subgroup`, (_, res, ctx) => {
+    return res(
+      ctx.set('x-next-page', ''),
+      ctx.json(group_with_subgroups_response),
+    );
+  }),
+
   rest.get(`${apiBaseUrl}/groups/42`, (_, res, ctx) => {
     return res(ctx.status(500), ctx.json({ error: 'Internal Server Error' }));
   }),
@@ -83,11 +93,29 @@ const httpHandlers = [
   }),
 
   rest.get(
-    `${apiBaseUrlSaas}/groups/subgroup1/members/all`,
+    `${apiBaseUrlSaas}/groups/group1%2Fsubgroup1/members/all`,
     (_req, res, ctx) => {
       return res(ctx.json(subgroup_saas_users_response)); // To-DO change
     },
   ),
+
+  rest.get(`${apiBaseUrlSaas}/groups/456/members/all`, (_req, res, ctx) => {
+    return res(ctx.json(all_saas_users_response));
+  }),
+
+  rest.get(`${apiBaseUrlSaas}/groups/1/members/all`, (_req, res, ctx) => {
+    return res(ctx.json(all_saas_users_response));
+  }),
+
+  // Subgroup 1 members id=6
+  rest.get(`${apiBaseUrlSaas}/groups/6/members/all`, (_req, res, ctx) => {
+    return res(ctx.json(all_saas_subgroup_1_members));
+  }),
+
+  // Subgroup 2 members id=7
+  rest.get(`${apiBaseUrlSaas}/groups/7/members/all`, (_req, res, ctx) => {
+    return res(ctx.json(all_saas_subgroup_2_members));
+  }),
 
   /**
    * Users REST endpoint mocks
@@ -135,6 +163,32 @@ const httpHandlers = [
 ];
 
 // dynamic handlers
+
+// https://docs.gitlab.com/ee/api/groups.html#list-group-details supports encoded path and id
+const httpGroupFindByEncodedPathDynamic = all_groups_response.flatMap(group => [
+  // Handler for apiBaseUrl
+  rest.get(
+    `${apiBaseUrl}/groups/${encodeURIComponent(group.full_path)}`,
+    (_, res, ctx) => {
+      return res(
+        ctx.json(
+          all_groups_response.find(g => g.full_path === group.full_path),
+        ),
+      );
+    },
+  ),
+  // Handler for apiSaaSBaseUrl
+  rest.get(
+    `${apiBaseUrlSaas}/groups/${encodeURIComponent(group.full_path)}`,
+    (_, res, ctx) => {
+      return res(
+        ctx.json(
+          all_groups_response.find(g => g.full_path === group.full_path),
+        ),
+      );
+    },
+  ),
+]);
 
 const httpGroupFindByIdDynamic = all_groups_response.map(group => {
   return rest.get(`${apiBaseUrl}/groups/${group.id}`, (_, res, ctx) => {
@@ -582,7 +636,47 @@ const graphqlHandlers = [
 
   graphql
     .link(saasGraphQlBaseUrl)
-    .query('listDescendantGroups', async (_, res, ctx) => {
+    .query('listDescendantGroups', async (req, res, ctx) => {
+      const { group } = req.variables;
+
+      if (group === 'group1') {
+        return res(
+          ctx.data({
+            group: {
+              descendantGroups: {
+                nodes: req.variables.endCursor
+                  ? [
+                      {
+                        id: 'gid://gitlab/Group/6',
+                        name: 'subgroup1',
+                        description: 'description1',
+                        fullPath: 'path/subgroup1',
+                        parent: {
+                          id: '1',
+                        },
+                      },
+                    ]
+                  : [
+                      {
+                        id: 'gid://gitlab/Group/7',
+                        name: 'subgroup2',
+                        description: 'description2',
+                        fullPath: 'path/subgroup2',
+                        parent: {
+                          id: '1',
+                        },
+                      },
+                    ],
+                pageInfo: {
+                  endCursor: req.variables.endCursor ? 'end' : 'next',
+                  hasNextPage: !req.variables.endCursor,
+                },
+              },
+            },
+          }),
+        );
+      }
+
       return res(
         ctx.data({
           group: {
@@ -618,4 +712,5 @@ export const handlers = [
   ...httpGroupListDescendantProjectsById,
   ...httpGroupListDescendantProjectsByName,
   ...graphqlHandlers,
+  ...httpGroupFindByEncodedPathDynamic,
 ];

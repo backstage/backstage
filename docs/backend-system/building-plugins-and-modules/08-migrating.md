@@ -2,7 +2,6 @@
 id: migrating
 title: Migrating your Backend Plugin to the New Backend System
 sidebar_label: Migration Guide
-# prettier-ignore
 description: How to migrate existing backend plugins to the new backend system
 ---
 
@@ -237,7 +236,7 @@ The development server created above will be automatically configured with the d
 
 ```ts title="in dev/index.js"
 //...
-// This package should be installed as `devDependecies`
+// This package should be installed as `devDependencies`
 import { mockServices } from '@backstage/backend-test-utils';
 
 const backend = createBackend();

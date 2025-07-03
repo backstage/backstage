@@ -12,6 +12,8 @@ It is important to remember that all examples are based on [react-jsonschema-for
 
 ### Simple input with basic validations
 
+We can use a `pattern` to validate the input. The `pattern` is a regular expression that the input must match.
+
 ```yaml
 parameters:
   - title: Fill in some steps
@@ -27,6 +29,8 @@ parameters:
 ```
 
 #### Custom validation error message
+
+This example shows how to customize the error message shown when the `pattern` validation fails.
 
 ```yaml
 parameters:
@@ -46,6 +50,8 @@ parameters:
 ```
 
 ### Multi line text input
+
+If you need to insert a multi-line string, you can use the `ui:widget: textarea` option. This will create a text area input instead of a single line input.
 
 ```yaml
 parameters:
@@ -73,6 +79,8 @@ parameters:
 ## Arrays options
 
 ### Array with custom titles
+
+In the example below the user will see the `enumNames` instead of the `enum` values, making it easier to read.
 
 ```yaml
 parameters:
@@ -103,6 +111,8 @@ parameters:
 
 ### A multiple choices list
 
+This is a simple multiple choice list.
+
 ```yaml
 parameters:
   - title: Fill in some steps
@@ -122,6 +132,8 @@ parameters:
 
 ### Array with another types
 
+In the example below, it will create an array of custom objects. Once you add one, you will see an object where each one contains 3 fields, "How are you?", "Is it sunny?" and "Anything else?".
+
 ```yaml
 parameters:
   - title: Fill in some steps
@@ -138,25 +150,27 @@ parameters:
           type: object
           properties:
             array:
-              title: Array string with default value
+              title: How are you?
               type: string
-              default: value3
+              default: good
               enum:
-                - value1
-                - value2
-                - value3
+                - good
+                - okay
+                - great
             flag:
-              title: Boolean flag
+              title: Is it sunny?
               type: boolean
               ui:widget: radio
             someInput:
-              title: Simple text input
+              title: Anything else?
               type: string
 ```
 
 ## Boolean options
 
 ### Boolean
+
+This adds a simple checkbox to the form. The value will be `true` or `false`.
 
 ```yaml
 parameters:
@@ -168,6 +182,8 @@ parameters:
 ```
 
 ### Boolean Yes or No options
+
+This example shows how to use a radio button instead of a checkbox with `Yes` or `No` options.
 
 ```yaml
 parameters:
@@ -181,6 +197,8 @@ parameters:
 
 ### Boolean multiple options
 
+You can create multiple checkboxes with different options. The example below shows how to create a list of features that can be enabled or disabled for example.
+
 ```yaml
 parameters:
   - title: Fill in some steps
@@ -189,7 +207,7 @@ parameters:
         title: Select features
         type: array
         items:
-          type: boolean
+          type: string
           enum:
             - 'Enable scraping'
             - 'Enable HPA'
@@ -198,9 +216,28 @@ parameters:
         ui:widget: checkboxes
 ```
 
+## Markdown text blocks
+
+Its possible to render markdown text blocks in the form. This is useful to add some help text or instructions for the user.
+
+```yaml
+parameters:
+  - title: Fill in some steps
+    properties:
+      markdown:
+        type: 'null' # Needs to be quoted
+        description: |
+          ## Markdown Text Block
+
+          Standard markdown formatting is supported including *italics*, **bold** and [links](https://example.com)
+
+          * bullet 1
+          * bullet 2
+```
+
 ## Use parameters as condition in steps
 
-Conditions use Javascript equality operators.
+Its possible to conditionally run steps based on the value of a parameter. In the example below, we trigger the steps depending on the value of the `environment` parameter.
 
 ```yaml
 - name: Only development environments
@@ -223,6 +260,8 @@ Conditions use Javascript equality operators.
 ```
 
 ## Use parameters as conditional for fields
+
+Its also possible to conditionally show fields based on the value of a parameter. In the example below, we show the `lastName` field only if the `includeName` parameter is set to `true`.
 
 ```yaml
 parameters:
@@ -248,6 +287,57 @@ parameters:
               # You can use additional fields of parameters within conditional parameters such as required.
               required:
                 - lastName
+```
+
+### Multiple conditional fields with custom ordering
+
+In this example, we show how to conditionally show multiple fields based on the value of a parameter. The `ui:order` property is used to control the order of the fields in the form.
+In this case, we show the `lastName` and `address` fields only if the `includeName` and `includeAddress` parameters are set to `true`.
+
+```yaml
+parameters:
+  - title: Fill in some steps
+    ui:order:
+      - includeName
+      - lastName
+      - includeAddress
+      - address
+    properties:
+      includeName:
+        title: Include Name?
+        type: boolean
+        default: true
+      includeAddress:
+        title: Include Address?
+        type: boolean
+        default: true
+    dependencies:
+      includeName:
+        allOf:
+          - if:
+              properties:
+                includeName:
+                  const: true
+            then:
+              properties:
+                lastName:
+                  title: Name
+                  type: string
+              required:
+                - lastName
+      includeAddress:
+        allOf:
+          - if:
+              properties:
+                includeAddress:
+                  const: true
+            then:
+              properties:
+                address:
+                  title: Address
+                  type: string
+              required:
+                - address
 ```
 
 ## Conditionally set parameters
@@ -284,12 +374,16 @@ Testing of this functionality is not yet supported using _create/edit_. In addit
 
 :::
 
+Its possible to use placeholders to reference remote files. This is useful when you have some standard parameters or actions that you want to reuse across multiple templates.
+
 ### template.yaml
+
+In our template, we use the `$yaml` placeholder to reference the `parameters.yaml` and `action.yaml` files. The `parameters.yaml` file contains some parameters that we want to use in our template, and the `action.yaml` file contains the action that we want to run.
 
 ```yaml
 spec:
   parameters:
-    - $yaml: https://github.com/example/path/to/example.yaml
+    - $yaml: https://github.com/example/path/to/parameters.yaml # This would become the parameters as referenced in the parameters.yaml file
     - title: Fill in some steps
       properties:
         path:
@@ -297,7 +391,7 @@ spec:
           type: string
 
   steps:
-    - $yaml: https://github.com/example/path/to/action.yaml
+    - $yaml: https://github.com/example/path/to/action.yaml # This would become the publish action as referenced in the action.yaml file
 
     - id: fetch
       name: Fetch template
@@ -306,7 +400,9 @@ spec:
         url: ${{ parameters.path if parameters.path else '/root' }}
 ```
 
-### example.yaml
+### parameters.yaml
+
+The `url` parameter will be added to the template.
 
 ```yaml
 title: Provide simple information
@@ -319,6 +415,8 @@ properties:
 ```
 
 ### action.yaml
+
+The `publish:github` action will be included in our template.
 
 ```yaml
 id: publish

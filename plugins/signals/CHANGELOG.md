@@ -1,5 +1,271 @@
 # @backstage/plugin-signals
 
+## 0.0.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+  - @backstage/plugin-signals-react@0.0.15-next.0
+
+## 0.0.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.14
+
+## 0.0.20
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.14
+
+## 0.0.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.13
+
+## 0.0.20-next.0
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+
+## 0.0.19
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/theme@0.6.6
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/plugin-signals-react@0.0.13
+  - @backstage/types@1.2.1
+
+## 0.0.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/plugin-signals-react@0.0.13-next.0
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/types@1.2.1
+
+## 0.0.19-next.0
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.12
+
+## 0.0.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/theme@0.6.5
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.12
+
+## 0.0.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/theme@0.6.5-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.12-next.0
+
+## 0.0.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.11
+
+## 0.0.17
+
+### Patch Changes
+
+- ac3e8c0: Fixed multiple signal connection attempts when there are multiple subscriptions at the same time
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-signals-react@0.0.11
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+
+## 0.0.17-next.2
+
+### Patch Changes
+
+- ac3e8c0: Fixed multiple signal connection attempts when there are multiple subscriptions at the same time
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.10
+
+## 0.0.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.10
+
+## 0.0.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+
+## 0.0.16
+
+### Patch Changes
+
+- 005d241: Added support for the new frontend system via `/alpha` export.
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-signals-react@0.0.10
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+
+## 0.0.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-signals-react@0.0.10-next.0
+
+## 0.0.16-next.0
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/plugin-signals-react@0.0.10-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/types@1.2.1
+
+## 0.0.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/core-components@0.16.3
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-signals-react@0.0.9
+
+## 0.0.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/types@1.2.1-next.0
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/plugin-signals-react@0.0.9-next.0
+  - @backstage/theme@0.6.3
+
+## 0.0.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.3
+  - @backstage/core-components@0.16.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/types@1.2.0
+  - @backstage/plugin-signals-react@0.0.8
+
+## 0.0.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-signals-react@0.0.8-next.0
+
+## 0.0.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-signals-react@0.0.7
+
 ## 0.0.14-next.0
 
 ### Patch Changes

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
-import express, { Request } from 'express';
+import express, { Request, Response } from 'express';
 import Router from 'express-promise-router';
 import {
-  DatabaseNotificationsStore,
   normalizeSeverity,
   NotificationGetOptions,
+  NotificationsStore,
+  TopicGetOptions,
 } from '../database';
 import { v4 as uuid } from 'uuid';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import {
   NotificationProcessor,
   NotificationSendOptions,
@@ -37,6 +37,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import {
+  ChannelSetting,
   isNotificationsEnabledFor,
   NewNotificationSignal,
   Notification,
@@ -44,21 +45,24 @@ import {
   NotificationSettings,
   notificationSeverities,
   NotificationStatus,
+  OriginSetting,
 } from '@backstage/plugin-notifications-common';
 import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 import { getUsersForEntityRef } from './getUsersForEntityRef';
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
+import { durationToMilliseconds } from '@backstage/types';
+import pThrottle from 'p-throttle';
 
 /** @internal */
 export interface RouterOptions {
   logger: LoggerService;
   config: Config;
-  database: PluginDatabaseManager;
+  store: NotificationsStore;
   auth: AuthService;
   httpAuth: HttpAuthService;
   userInfo: UserInfoService;
   signals?: SignalsService;
-  catalog: CatalogApi;
+  catalog: CatalogService;
   processors?: NotificationProcessor[];
 }
 
@@ -69,7 +73,7 @@ export async function createRouter(
   const {
     config,
     logger,
-    database,
+    store,
     auth,
     httpAuth,
     userInfo,
@@ -79,8 +83,20 @@ export async function createRouter(
   } = options;
 
   const WEB_NOTIFICATION_CHANNEL = 'Web';
-  const store = await DatabaseNotificationsStore.create({ database });
   const frontendBaseUrl = config.getString('app.baseUrl');
+  const concurrencyLimit =
+    config.getOptionalNumber('notifications.concurrencyLimit') ?? 10;
+  const throttleInterval = config.has('notifications.throttleInterval')
+    ? durationToMilliseconds(
+        readDurationFromConfig(config, {
+          key: 'notifications.throttleInterval',
+        }),
+      )
+    : 50;
+  const throttle = pThrottle({
+    limit: concurrencyLimit,
+    interval: throttleInterval,
+  });
 
   const getUser = async (req: Request<unknown>) => {
     const credentials = await httpAuth.credentials(req, { allow: ['user'] });
@@ -88,40 +104,86 @@ export async function createRouter(
     return info.userEntityRef;
   };
 
+  const getTopicSettings = (
+    topic: any,
+    existingOrigin: OriginSetting | undefined,
+    defaultEnabled: boolean,
+  ) => {
+    const existingTopic = existingOrigin?.topics?.find(
+      t => t.id === topic.topic,
+    );
+    return {
+      id: topic.topic,
+      enabled: existingTopic ? existingTopic.enabled : defaultEnabled,
+    };
+  };
+
+  const getOriginSettings = (
+    originId: string,
+    existingChannel: ChannelSetting | undefined,
+    topics: { origin: string; topic: string }[],
+  ) => {
+    const existingOrigin = existingChannel?.origins.find(
+      o => o.id === originId,
+    );
+    const defaultEnabled = existingOrigin ? existingOrigin.enabled : true;
+    return {
+      id: originId,
+      enabled: defaultEnabled,
+      topics: topics
+        .filter(t => t.origin === originId)
+        .map(t => getTopicSettings(t, existingOrigin, defaultEnabled)),
+    };
+  };
+
   const getNotificationChannels = () => {
     return [WEB_NOTIFICATION_CHANNEL, ...processors.map(p => p.getName())];
   };
 
+  const getChannelSettings = (
+    channelId: string,
+    settings: NotificationSettings,
+    origins: string[],
+    topics: { origin: string; topic: string }[],
+  ) => {
+    const existingChannel = settings.channels.find(c => c.id === channelId);
+    if (existingChannel) {
+      return existingChannel;
+    }
+    return {
+      id: channelId,
+      origins: origins.map(originId =>
+        getOriginSettings(originId, existingChannel, topics),
+      ),
+    };
+  };
+
   const getNotificationSettings = async (user: string) => {
     const { origins } = await store.getUserNotificationOrigins({ user });
+    const { topics } = await store.getUserNotificationTopics({ user });
     const settings = await store.getNotificationSettings({ user });
     const channels = getNotificationChannels();
 
-    const response: NotificationSettings = {
-      channels: channels.map(channel => {
-        const channelSettings = settings.channels.find(c => c.id === channel);
-        if (channelSettings) {
-          return channelSettings;
-        }
-        return {
-          id: channel,
-          origins: origins.map(origin => ({
-            id: origin,
-            enabled: true,
-          })),
-        };
-      }),
+    return {
+      channels: channels.map(channelId =>
+        getChannelSettings(channelId, settings, origins, topics),
+      ),
     };
-    return response;
   };
 
   const isNotificationsEnabled = async (opts: {
     user: string;
     channel: string;
     origin: string;
+    topic: string | null;
   }) => {
     const settings = await getNotificationSettings(opts.user);
-    return isNotificationsEnabledFor(settings, opts.channel, opts.origin);
+    return isNotificationsEnabledFor(
+      settings,
+      opts.channel,
+      opts.origin,
+      opts.topic,
+    );
   };
 
   const filterProcessors = async (
@@ -138,6 +200,7 @@ export async function createRouter(
           user,
           origin,
           channel: processor.getName(),
+          topic: payload.topic ?? null,
         });
         if (!enabled) {
           continue;
@@ -179,7 +242,7 @@ export async function createRouter(
   const processOptions = async (
     opts: NotificationSendOptions,
     origin: string,
-  ) => {
+  ): Promise<NotificationSendOptions> => {
     const filtered = await filterProcessors({ ...opts, origin, user: null });
     let ret = opts;
     for (const processor of filtered) {
@@ -246,29 +309,10 @@ export async function createRouter(
     }
   };
 
-  // TODO: Move to use OpenAPI router instead
-  const router = Router();
-  router.use(express.json());
-
-  router.get('/health', (_, response) => {
-    logger.info('PONG!');
-    response.json({ status: 'ok' });
-  });
-
-  router.get('/', async (req, res) => {
-    const user = await getUser(req);
-    const opts: NotificationGetOptions = {
-      user: user,
-    };
-    if (req.query.offset) {
-      opts.offset = Number.parseInt(req.query.offset.toString(), 10);
-    }
-    if (req.query.limit) {
-      opts.limit = Number.parseInt(req.query.limit.toString(), 10);
-    }
-    if (req.query.orderField) {
-      opts.orderField = parseEntityOrderFieldParams(req.query);
-    }
+  const appendCommonOptions = (
+    req: Request,
+    opts: NotificationGetOptions | TopicGetOptions,
+  ) => {
     if (req.query.search) {
       opts.search = req.query.search.toString();
     }
@@ -277,10 +321,6 @@ export async function createRouter(
     } else if (req.query.read === 'false') {
       opts.read = false;
       // or keep undefined
-    }
-
-    if (req.query.topic) {
-      opts.topic = req.query.topic.toString();
     }
 
     if (req.query.saved === 'true') {
@@ -301,6 +341,32 @@ export async function createRouter(
         req.query.minimumSeverity.toString(),
       );
     }
+  };
+
+  // TODO: Move to use OpenAPI router instead
+  const router = Router();
+  router.use(express.json());
+
+  const listNotificationsHandler = async (req: Request, res: Response) => {
+    const user = await getUser(req);
+    const opts: NotificationGetOptions = {
+      user: user,
+    };
+    if (req.query.offset) {
+      opts.offset = Number.parseInt(req.query.offset.toString(), 10);
+    }
+    if (req.query.limit) {
+      opts.limit = Number.parseInt(req.query.limit.toString(), 10);
+    }
+    if (req.query.orderField) {
+      opts.orderField = parseEntityOrderFieldParams(req.query);
+    }
+
+    if (req.query.topic) {
+      opts.topic = req.query.topic.toString();
+    }
+
+    appendCommonOptions(req, opts);
 
     const [notifications, totalCount] = await Promise.all([
       store.getNotifications(opts),
@@ -310,7 +376,10 @@ export async function createRouter(
       totalCount,
       notifications,
     });
-  });
+  };
+
+  router.get('/', listNotificationsHandler); // Deprecated endpoint
+  router.get('/notifications', listNotificationsHandler);
 
   router.get('/status', async (req: Request<any, NotificationStatus>, res) => {
     const user = await getUser(req);
@@ -345,8 +414,7 @@ export async function createRouter(
     },
   );
 
-  // Make sure this is the last "GET" handler
-  router.get('/:id', async (req, res) => {
+  const getNotificationHandler = async (req: Request, res: Response) => {
     const user = await getUser(req);
     const opts: NotificationGetOptions = {
       user: user,
@@ -358,9 +426,28 @@ export async function createRouter(
       throw new NotFoundError('Not found');
     }
     res.json(notifications[0]);
-  });
+  };
 
-  router.post('/update', async (req, res) => {
+  // Get topics
+  const listTopicsHandler = async (req: Request, res: Response) => {
+    const user = await getUser(req);
+    const opts: TopicGetOptions = {
+      user: user,
+    };
+
+    appendCommonOptions(req, opts);
+
+    const topics = await store.getTopics(opts);
+    res.json(topics);
+  };
+
+  router.get('/topics', listTopicsHandler);
+
+  // Make sure this is the last "GET" handler
+  router.get('/:id', getNotificationHandler); // Deprecated endpoint
+  router.get('/notifications/:id', getNotificationHandler);
+
+  const updateNotificationsHandler = async (req: Request, res: Response) => {
     const user = await getUser(req);
     const { ids, read, saved } = req.body;
     if (!ids || !Array.isArray(ids)) {
@@ -397,7 +484,10 @@ export async function createRouter(
 
     const notifications = await store.getNotifications({ ids, user: user });
     res.json(notifications);
-  });
+  };
+
+  router.post('/update', updateNotificationsHandler); // Deprecated endpoint
+  router.post('/notifications/update', updateNotificationsHandler);
 
   const sendBroadcastNotification = async (
     baseNotification: Omit<Notification, 'user' | 'id'>,
@@ -442,9 +532,70 @@ export async function createRouter(
         },
         channel: 'notifications',
       });
-      postProcessNotification(ret, opts);
     }
+    postProcessNotification(ret, opts);
     return notification;
+  };
+
+  const sendUserNotification = async (
+    baseNotification: Omit<Notification, 'user' | 'id'>,
+    user: string,
+    opts: NotificationSendOptions,
+    origin: string,
+    scope?: string,
+  ): Promise<Notification | undefined> => {
+    const userNotification = {
+      ...baseNotification,
+      id: uuid(),
+      user,
+    };
+    const notification = await preProcessNotification(userNotification, opts);
+
+    const enabled = await isNotificationsEnabled({
+      user,
+      channel: WEB_NOTIFICATION_CHANNEL,
+      origin: userNotification.origin,
+      topic: userNotification.payload.topic ?? null,
+    });
+
+    let ret = notification;
+
+    if (!enabled) {
+      postProcessNotification(ret, opts);
+      return undefined;
+    }
+
+    let existingNotification;
+    if (scope) {
+      existingNotification = await store.getExistingScopeNotification({
+        user,
+        scope,
+        origin,
+      });
+    }
+
+    if (existingNotification) {
+      const restored = await store.restoreExistingNotification({
+        id: existingNotification.id,
+        notification,
+      });
+      ret = restored ?? notification;
+    } else {
+      await store.saveNotification(notification);
+    }
+
+    if (signals) {
+      await signals.publish<NewNotificationSignal>({
+        recipients: { type: 'user', entityRef: [user] },
+        message: {
+          action: 'new_notification',
+          notification_id: ret.id,
+        },
+        channel: 'notifications',
+      });
+    }
+    postProcessNotification(ret, opts);
+    return ret;
   };
 
   const sendUserNotifications = async (
@@ -452,134 +603,98 @@ export async function createRouter(
     users: string[],
     opts: NotificationSendOptions,
     origin: string,
-  ) => {
-    const notifications = [];
+  ): Promise<Notification[]> => {
     const { scope } = opts.payload;
     const uniqueUsers = [...new Set(users)];
-    for (const user of uniqueUsers) {
-      const userNotification = {
-        ...baseNotification,
-        id: uuid(),
-        user,
-      };
-      const notification = await preProcessNotification(userNotification, opts);
+    const throttled = throttle((user: string) =>
+      sendUserNotification(baseNotification, user, opts, origin, scope),
+    );
+    const sent = await Promise.all(uniqueUsers.map(user => throttled(user)));
+    return sent.filter(n => n !== undefined);
+  };
 
-      const enabled = await isNotificationsEnabled({
-        user,
-        channel: WEB_NOTIFICATION_CHANNEL,
-        origin: userNotification.origin,
-      });
+  const createNotificationHandler = async (
+    req: Request<any, Notification[], NotificationSendOptions>,
+    res: Response,
+  ) => {
+    const credentials = await httpAuth.credentials(req, {
+      allow: ['service'],
+    });
 
-      let ret = notification;
-      if (enabled) {
-        let existingNotification;
-        if (scope) {
-          existingNotification = await store.getExistingScopeNotification({
-            user,
-            scope,
-            origin,
-          });
-        }
+    const origin = credentials.principal.subject;
+    const opts = await processOptions(req.body, origin);
+    const { recipients, payload } = opts;
+    const { title, link } = payload;
+    const notifications: Notification[] = [];
+    let users = [];
 
-        if (existingNotification) {
-          const restored = await store.restoreExistingNotification({
-            id: existingNotification.id,
-            notification,
-          });
-          ret = restored ?? notification;
-        } else {
-          await store.saveNotification(notification);
-        }
-
-        notifications.push(ret);
-
-        if (signals) {
-          await signals.publish<NewNotificationSignal>({
-            recipients: { type: 'user', entityRef: [user] },
-            message: {
-              action: 'new_notification',
-              notification_id: ret.id,
-            },
-            channel: 'notifications',
-          });
-        }
-      }
-      postProcessNotification(ret, opts);
+    if (!recipients || !title) {
+      const missing = [
+        !title ? 'title' : null,
+        !recipients ? 'recipients' : null,
+      ].filter(Boolean);
+      const err = `Invalid notification request received: missing ${missing.join(
+        ', ',
+      )}`;
+      throw new InputError(err);
     }
-    return notifications;
+
+    if (link) {
+      try {
+        validateLink(link);
+      } catch (e) {
+        throw new InputError('Invalid link provided', e);
+      }
+    }
+
+    const baseNotification = {
+      payload: {
+        ...payload,
+        severity: payload.severity ?? 'normal',
+      },
+      origin,
+      created: new Date(),
+    };
+
+    if (recipients.type === 'broadcast') {
+      const broadcast = await sendBroadcastNotification(
+        baseNotification,
+        opts,
+        origin,
+      );
+      notifications.push(broadcast);
+    } else if (recipients.type === 'entity') {
+      const entityRef = recipients.entityRef;
+
+      try {
+        users = await getUsersForEntityRef(
+          entityRef,
+          recipients.excludeEntityRef ?? [],
+          { auth, catalog },
+        );
+      } catch (e) {
+        throw new InputError('Failed to resolve notification receivers', e);
+      }
+
+      const userNotifications = await sendUserNotifications(
+        baseNotification,
+        users,
+        opts,
+        origin,
+      );
+      notifications.push(...userNotifications);
+    } else {
+      throw new InputError(
+        `Invalid recipients type, please use either 'broadcast' or 'entity'`,
+      );
+    }
+
+    res.json(notifications);
   };
 
   // Add new notification
-  router.post(
-    '/',
-    async (req: Request<any, Notification[], NotificationSendOptions>, res) => {
-      const credentials = await httpAuth.credentials(req, {
-        allow: ['service'],
-      });
+  router.post('/', createNotificationHandler);
+  router.post('/notifications', createNotificationHandler);
 
-      const origin = credentials.principal.subject;
-      const opts = await processOptions(req.body, origin);
-      const { recipients, payload } = opts;
-      const { title, link } = payload;
-      const notifications: Notification[] = [];
-      let users = [];
-
-      if (!recipients || !title) {
-        logger.error(`Invalid notification request received`);
-        throw new InputError(`Invalid notification request received`);
-      }
-
-      if (link) {
-        try {
-          validateLink(link);
-        } catch (e) {
-          throw new InputError('Invalid link provided', e);
-        }
-      }
-
-      const baseNotification = {
-        payload: {
-          ...payload,
-          severity: payload.severity ?? 'normal',
-        },
-        origin,
-        created: new Date(),
-      };
-
-      if (recipients.type === 'broadcast') {
-        const broadcast = await sendBroadcastNotification(
-          baseNotification,
-          opts,
-          origin,
-        );
-        notifications.push(broadcast);
-      } else {
-        const entityRef = recipients.entityRef;
-
-        try {
-          users = await getUsersForEntityRef(
-            entityRef,
-            recipients.excludeEntityRef ?? [],
-            { auth, catalogClient: catalog },
-          );
-        } catch (e) {
-          logger.error(`Failed to resolve notification receivers: ${e}`);
-          throw new InputError('Failed to resolve notification receivers', e);
-        }
-
-        const userNotifications = await sendUserNotifications(
-          baseNotification,
-          users,
-          opts,
-          origin,
-        );
-        notifications.push(...userNotifications);
-      }
-
-      res.json(notifications);
-    },
-  );
-
-  router.use(errorHandler());
   return router;
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -26,7 +26,7 @@ import {
   useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { Content, ErrorPage, Progress } from '@backstage/core-components';
+import { Content, Progress } from '@backstage/core-components';
 
 import { TechDocsSearch } from '../../../search';
 import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
@@ -37,6 +37,7 @@ import {
   withTechDocsReaderProvider,
 } from '../TechDocsReaderProvider';
 import { TechDocsReaderPageContentAddons } from './TechDocsReaderPageContentAddons';
+import { useApp } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles({
   search: {
@@ -60,6 +61,11 @@ export type TechDocsReaderPageContentProps = {
    * @deprecated No need to pass down entityRef as property anymore. Consumes the entityName from `TechDocsReaderPageContext`. Use the {@link @backstage/plugin-techdocs-react#useTechDocsReaderPage} hook for custom reader page content.
    */
   entityRef?: CompoundEntityRef;
+  /**
+   * Path in the docs to render by default. This should be used when rendering docs for an entity that specifies the
+   * "backstage.io/techdocs-entity-path" annotation for deep linking into another entities docs.
+   */
+  defaultPath?: string;
   /**
    * Show or hide the search bar, defaults to true.
    */
@@ -92,11 +98,13 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
       setShadowRoot,
     } = useTechDocsReaderPage();
     const { state } = useTechDocsReader();
-    const dom = useTechDocsReaderDom(entityRef);
+    const dom = useTechDocsReaderDom(entityRef, props.defaultPath);
     const path = window.location.pathname;
     const hash = window.location.hash;
     const isStyleLoading = useShadowDomStylesLoading(dom);
     const [hashElement] = useShadowRootElements([`[id="${hash.slice(1)}"]`]);
+    const app = useApp();
+    const { NotFoundErrorPage } = app.getComponents();
 
     useEffect(() => {
       if (isStyleLoading) return;
@@ -122,7 +130,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
 
     // No entity metadata = 404. Don't render content at all.
     if (entityMetadataLoading === false && !entityMetadata)
-      return <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />;
+      return <NotFoundErrorPage />;
 
     // Do not return content until dom is ready; instead, render a state
     // indicator, which handles progress and content errors on our behalf.

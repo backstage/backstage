@@ -33,4 +33,34 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Delete files with wildcard',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'fs:delete',
+          id: 'deleteFiles',
+          name: 'Delete files',
+          input: {
+            files: ['*.txt'],
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Delete all files in workspace',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'fs:delete',
+          id: 'deleteFiles',
+          name: 'Delete files',
+          input: {
+            files: ['**'],
+          },
+        },
+      ],
+    }),
+  },
 ];

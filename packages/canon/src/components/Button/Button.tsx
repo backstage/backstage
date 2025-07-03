@@ -14,46 +14,43 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { button } from './button.css';
-import { Icon } from '../Icon/Icon';
-import type { IconNames } from '../Icon/types';
-
-/**
- * Properties for {@link Button}
- *
- * @public
- */
-export interface ButtonProps {
-  size?: 'small' | 'medium';
-  variant?: 'primary' | 'secondary';
-  children: React.ReactNode;
-  disabled?: boolean;
-  iconStart?: IconNames;
-  iconEnd?: IconNames;
-}
+import clsx from 'clsx';
+import { forwardRef, Ref } from 'react';
+import { Button as RAButton } from 'react-aria-components';
+import type { ButtonProps } from './types';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
-export const Button = ({
-  size = 'medium',
-  variant = 'primary',
-  children,
-  disabled,
-  iconStart,
-  iconEnd,
-  ...props
-}: ButtonProps) => {
-  return (
-    <button
-      {...props}
-      disabled={disabled}
-      className={button({ size, variant, disabled })}
-    >
-      {iconStart && <Icon name={iconStart} />}
-      {children}
-      {iconEnd && <Icon name={iconEnd} />}
-    </button>
-  );
-};
+export const Button = forwardRef(
+  (props: ButtonProps, ref: Ref<HTMLButtonElement>) => {
+    const {
+      size = 'small',
+      variant = 'primary',
+      iconStart,
+      iconEnd,
+      children,
+      className,
+      ...rest
+    } = props;
 
-export default Button;
+    const { classNames, dataAttributes } = useStyles('Button', {
+      size,
+      variant,
+    });
+
+    return (
+      <RAButton
+        className={clsx(classNames.root, className)}
+        ref={ref}
+        {...dataAttributes}
+        {...rest}
+      >
+        {iconStart}
+        {children}
+        {iconEnd}
+      </RAButton>
+    );
+  },
+);
+
+Button.displayName = 'Button';

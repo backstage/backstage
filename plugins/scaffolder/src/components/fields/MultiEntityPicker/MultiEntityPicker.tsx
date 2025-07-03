@@ -30,11 +30,11 @@ import {
   EntityRefPresentationSnapshot,
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
 import Autocomplete, {
   AutocompleteChangeReason,
+  createFilterOptions,
 } from '@material-ui/lab/Autocomplete';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { FieldValidation } from '@rjsf/utils';
 import {
@@ -44,6 +44,9 @@ import {
   MultiEntityPickerFilterQuery,
 } from './schema';
 import { VirtualizedListbox } from '../VirtualizedListbox';
+import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { scaffolderTranslationRef } from '../../../translation';
 
 export { MultiEntityPickerSchema } from './schema';
 
@@ -52,19 +55,26 @@ export { MultiEntityPickerSchema } from './schema';
  * field extension.
  */
 export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const {
     onChange,
-    schema: { title = 'Entity', description = 'An entity from the catalog' },
+    schema: {
+      title = t('fields.multiEntityPicker.title'),
+      description = t('fields.multiEntityPicker.description'),
+    },
     required,
     uiSchema,
     rawErrors,
     formData,
     idSchema,
+    errors,
   } = props;
+
   const catalogFilter = buildCatalogFilter(uiSchema);
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
+  const isDisabled = uiSchema?.['ui:disabled'] ?? false;
   const [noOfItemsSelected, setNoOfItemsSelected] = useState(0);
 
   const catalogApi = useApi(catalogApiRef);
@@ -142,16 +152,21 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   }, [entities, onChange, required, allowArbitraryValues]);
 
   return (
-    <FormControl
-      margin="normal"
+    <ScaffolderField
+      rawErrors={rawErrors}
+      rawDescription={uiSchema['ui:description'] ?? description}
       required={required}
-      error={rawErrors?.length > 0 && !formData}
+      disabled={isDisabled}
+      errors={errors}
     >
       <Autocomplete
         multiple
         filterSelectedOptions
         disabled={
-          required && !allowArbitraryValues && entities?.entities?.length === 1
+          isDisabled ||
+          (required &&
+            !allowArbitraryValues &&
+            entities?.entities?.length === 1)
         }
         id={idSchema?.$id}
         defaultValue={formData}
@@ -175,8 +190,8 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
           <TextField
             {...params}
             label={title}
+            disabled={isDisabled}
             margin="dense"
-            helperText={description}
             FormHelperTextProps={{
               margin: 'dense',
               style: { marginLeft: 0 },
@@ -189,9 +204,14 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
             }}
           />
         )}
+        filterOptions={createFilterOptions<Entity>({
+          stringify: option =>
+            entities?.entityRefToPresentation.get(stringifyEntityRef(option))
+              ?.primaryTitle!,
+        })}
         ListboxComponent={VirtualizedListbox}
       />
-    </FormControl>
+    </ScaffolderField>
   );
 };
 

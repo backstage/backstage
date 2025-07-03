@@ -15,6 +15,7 @@
  */
 
 import { Backend, createSpecializedBackend } from '@backstage/backend-app-api';
+import { auditorServiceFactory } from '@backstage/backend-defaults/auditor';
 import { authServiceFactory } from '@backstage/backend-defaults/auth';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
@@ -24,6 +25,7 @@ import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
 import { permissionsServiceFactory } from '@backstage/backend-defaults/permissions';
+import { permissionsRegistryServiceFactory } from '@backstage/backend-defaults/permissionsRegistry';
 import { rootConfigServiceFactory } from '@backstage/backend-defaults/rootConfig';
 import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
@@ -33,8 +35,13 @@ import { schedulerServiceFactory } from '@backstage/backend-defaults/scheduler';
 import { urlReaderServiceFactory } from '@backstage/backend-defaults/urlReader';
 import { userInfoServiceFactory } from '@backstage/backend-defaults/userInfo';
 import { eventsServiceFactory } from '@backstage/plugin-events-node';
+import {
+  actionsRegistryServiceFactory,
+  actionsServiceFactory,
+} from '@backstage/backend-defaults/alpha';
 
 export const defaultServiceFactories = [
+  auditorServiceFactory,
   authServiceFactory,
   cacheServiceFactory,
   rootConfigServiceFactory,
@@ -45,6 +52,7 @@ export const defaultServiceFactories = [
   lifecycleServiceFactory,
   loggerServiceFactory,
   permissionsServiceFactory,
+  permissionsRegistryServiceFactory,
   rootHealthServiceFactory,
   rootHttpRouterServiceFactory,
   rootLifecycleServiceFactory,
@@ -53,6 +61,10 @@ export const defaultServiceFactories = [
   userInfoServiceFactory,
   urlReaderServiceFactory,
   eventsServiceFactory,
+
+  // alpha services
+  actionsRegistryServiceFactory,
+  actionsServiceFactory,
 ];
 
 /**

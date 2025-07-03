@@ -19,12 +19,12 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/esm/useAsync';
 
 /**
- * Fetch and return all availible kinds.
+ * Fetch and return all available kinds.
  */
 export function useAllKinds(): {
   loading: boolean;
   error?: Error;
-  allKinds: string[];
+  allKinds: Map<string, string>;
 } {
   const catalogApi = useApi(catalogApiRef);
 
@@ -33,50 +33,44 @@ export function useAllKinds(): {
     loading,
     value: allKinds,
   } = useAsync(async () => {
-    const items = await catalogApi
-      .getEntityFacets({ facets: ['kind'] })
-      .then(response => response.facets.kind?.map(f => f.value).sort() || []);
-    return items;
+    const { facets } = await catalogApi.getEntityFacets({ facets: ['kind'] });
+    const kindFacets = (facets.kind ?? []).map(f => f.value);
+    return new Map(
+      kindFacets.map(kind => [kind.toLocaleLowerCase('en-US'), kind]),
+    );
   }, [catalogApi]);
 
-  return { loading, error, allKinds: allKinds ?? [] };
+  return { loading, error, allKinds: allKinds ?? new Map() };
 }
 
 /**
  * Filter and capitalize accessible kinds.
  */
 export function filterKinds(
-  allKinds: string[],
+  allKinds: Map<string, string>,
   allowedKinds?: string[],
   forcedKinds?: string,
-): Record<string, string> {
+): Map<string, string> {
   // Before allKinds is loaded, or when a kind is entered manually in the URL, selectedKind may not
   // be present in allKinds. It should still be shown in the dropdown, but may not have the nice
   // enforced casing from the catalog-backend. This makes a key/value record for the Select options,
   // including selectedKind if it's unknown - but allows the selectedKind to get clobbered by the
   // more proper catalog kind if it exists.
-  let availableKinds = allKinds;
+  let availableKinds = Array.from(allKinds.keys());
   if (allowedKinds) {
-    availableKinds = availableKinds.filter(k =>
-      allowedKinds.some(
-        a => a.toLocaleLowerCase('en-US') === k.toLocaleLowerCase('en-US'),
-      ),
-    );
-  }
-  if (
-    forcedKinds &&
-    !allKinds.some(
-      a =>
-        a.toLocaleLowerCase('en-US') === forcedKinds.toLocaleLowerCase('en-US'),
-    )
-  ) {
-    availableKinds = availableKinds.concat([forcedKinds]);
+    availableKinds = allowedKinds
+      .map(k => k.toLocaleLowerCase('en-US'))
+      .filter(k => allKinds.has(k));
   }
 
-  const kindsMap = availableKinds.sort().reduce((acc, kind) => {
-    acc[kind.toLocaleLowerCase('en-US')] = kind;
-    return acc;
-  }, {} as Record<string, string>);
+  const kindsMap = new Map(
+    availableKinds.map(kind => [kind, allKinds.get(kind) || kind]),
+  );
+
+  if (forcedKinds && !kindsMap.has(forcedKinds)) {
+    // this is the only time we set a label for a kind which is not properly capitalized
+    kindsMap.set(forcedKinds.toLocaleLowerCase('en-US'), forcedKinds);
+  }
 
   return kindsMap;
 }

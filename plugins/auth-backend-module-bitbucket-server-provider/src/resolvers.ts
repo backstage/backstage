@@ -19,6 +19,7 @@ import {
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
+import { z } from 'zod';
 
 /**
  * Available sign-in resolvers for the Bitbucket Server auth provider.
@@ -31,7 +32,12 @@ export namespace bitbucketServerSignInResolvers {
    */
   export const emailMatchingUserEntityProfileEmail =
     createSignInResolverFactory({
-      create() {
+      optionsSchema: z
+        .object({
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        })
+        .optional(),
+      create(options = {}) {
         return async (
           info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
           ctx,
@@ -44,11 +50,19 @@ export namespace bitbucketServerSignInResolvers {
             );
           }
 
-          return ctx.signInWithCatalogUser({
-            filter: {
-              'spec.profile.email': profile.email,
+          return ctx.signInWithCatalogUser(
+            {
+              filter: {
+                'spec.profile.email': profile.email,
+              },
             },
-          });
+            {
+              dangerousEntityRefFallback:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                  ? { entityRef: { name: profile.email } }
+                  : undefined,
+            },
+          );
         };
       },
     });

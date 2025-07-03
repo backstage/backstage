@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRootLogger } from '@backstage/backend-common';
+
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createGitlabRepoPushAction } from './gitlabRepoPush';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-
-// Make sure root logger is initialized ahead of FS mock
-createRootLogger();
 
 const mockGitlabClient = {
   Projects: {
@@ -53,7 +50,7 @@ jest.mock('@gitbeaker/rest', () => ({
 }));
 
 describe('createGitLabCommit', () => {
-  let instance: TemplateAction<any>;
+  let instance: TemplateAction<any, any, any>;
 
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
@@ -335,8 +332,10 @@ describe('createGitLabCommit', () => {
   describe('createCommitToBranchThatDoesNotExist', () => {
     it('should create a new branch', async () => {
       mockGitlabClient.Branches.show.mockRejectedValue({
-        response: {
-          statusCode: 404,
+        cause: {
+          response: {
+            status: 404,
+          },
         },
       });
       const input = {
@@ -374,6 +373,77 @@ describe('createGitLabCommit', () => {
       expect(ctx.output).toHaveBeenCalledWith(
         'commitHash',
         'bb6bce457ed069a38ef8d16ef38602972c7735c5',
+      );
+    });
+  });
+
+  describe('error handling', () => {
+    it('throws appropriate error for create action when commit fails', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Create my new commit',
+        branchName: 'some-branch',
+        commitAction: 'create',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          'foo.txt': 'Hello there!',
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      mockGitlabClient.Commits.create.mockRejectedValue(
+        new Error('Commit failed'),
+      );
+
+      await expect(instance.handler(ctx)).rejects.toThrow(
+        'Committing the changes to some-branch failed. Please check that none of the files created by the template already exists. Error: Commit failed',
+      );
+    });
+
+    it('throws appropriate error for update action when commit fails', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Update my commit',
+        branchName: 'some-branch',
+        commitAction: 'update',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          'foo.txt': 'Hello there!',
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      mockGitlabClient.Commits.create.mockRejectedValue(
+        new Error('Commit failed'),
+      );
+
+      await expect(instance.handler(ctx)).rejects.toThrow(
+        "Committing the changes to some-branch failed. Please verify that all files you're trying to modify exist in the repository. Error: Commit failed",
+      );
+    });
+
+    it('throws appropriate error for delete action when commit fails', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Delete my commit',
+        branchName: 'some-branch',
+        commitAction: 'delete',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          'foo.txt': 'Hello there!',
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      mockGitlabClient.Commits.create.mockRejectedValue(
+        new Error('Commit failed'),
+      );
+
+      await expect(instance.handler(ctx)).rejects.toThrow(
+        "Committing the changes to some-branch failed. Please verify that all files you're trying to modify exist in the repository. Error: Commit failed",
       );
     });
   });

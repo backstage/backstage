@@ -21,7 +21,6 @@ import {
   useEntity,
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
-import React from 'react';
 import {
   InfoCard,
   InfoCardVariants,
@@ -33,10 +32,13 @@ import {
 } from '@backstage/core-components';
 import {
   asComponentEntities,
+  asDomainEntities,
   asResourceEntities,
   asSystemEntities,
   componentEntityColumns,
   componentEntityHelpLink,
+  domainEntityColumns,
+  domainEntityHelpLink,
   resourceEntityColumns,
   resourceEntityHelpLink,
   systemEntityColumns,
@@ -137,3 +139,6 @@ RelatedEntitiesCard.asResourceEntities = asResourceEntities;
 RelatedEntitiesCard.systemEntityColumns = systemEntityColumns;
 RelatedEntitiesCard.systemEntityHelpLink = systemEntityHelpLink;
 RelatedEntitiesCard.asSystemEntities = asSystemEntities;
+RelatedEntitiesCard.domainEntityColums = domainEntityColumns;
+RelatedEntitiesCard.domainEntityHelpLink = domainEntityHelpLink;
+RelatedEntitiesCard.asDomainEntities = asDomainEntities;

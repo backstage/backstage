@@ -78,7 +78,7 @@ export interface ClusterDetails {
    */
   name: string;
   /**
-   * Human-readable name for the cluster, to be dispayed in UIs.
+   * Human-readable name for the cluster, to be displayed in UIs.
    */
   title?: string;
   url: string;
@@ -186,7 +186,8 @@ export type KubernetesObjectTypes =
   | 'ingresses'
   | 'customresources'
   | 'statefulsets'
-  | 'daemonsets';
+  | 'daemonsets'
+  | 'secrets';
 // If updating this list, also make sure to update
 // `objectTypes` and `apiVersionOverrides` in config.d.ts on @backstage/plugin-kubernetes-backend!
 

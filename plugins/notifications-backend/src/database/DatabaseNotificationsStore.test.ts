@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import {
+  mockServices,
   TestDatabaseId,
   TestDatabases,
-  mockServices,
 } from '@backstage/backend-test-utils';
 import { DatabaseNotificationsStore } from './DatabaseNotificationsStore';
 import { Knex } from 'knex';
@@ -157,12 +157,19 @@ const notificationSettings: NotificationSettings = {
       id: 'Web',
       origins: [
         {
-          id: 'plugin-test',
+          id: 'abcd-origin',
           enabled: true,
+          topics: [
+            {
+              id: 'efgh-topic',
+              enabled: false,
+            },
+          ],
         },
         {
-          id: 'plugin-test2',
-          enabled: false,
+          id: 'plugin-test',
+          enabled: true,
+          topics: [],
         },
       ],
     },
@@ -219,6 +226,13 @@ describe.each(databases.eachSupportedId())(
           id3,
           id1,
         ]);
+      });
+
+      it('should return null value for user for broadcast notifications', async () => {
+        await storage.saveBroadcast({ ...testNotification1, read: new Date() });
+        const notifications = await storage.getNotifications({ user });
+        expect(notifications).toHaveLength(1);
+        expect(notifications[0].user).toBeNull();
       });
 
       it('should return read notifications for user', async () => {
@@ -291,7 +305,7 @@ describe.each(databases.eachSupportedId())(
           user: otherUser,
         });
         expect(otherUserNotifications.map(idOnly)).toEqual([id0, id2]);
-        expect(otherUserNotifications[1].user).toBe(otherUser);
+        expect(otherUserNotifications[1].user).toBeNull();
       });
 
       it('should allow searching for notifications', async () => {
@@ -628,7 +642,7 @@ describe.each(databases.eachSupportedId())(
         expect(notification?.user).toBeNull();
         await storage.markRead({ ids: [id1], user });
         notification = await storage.getNotification({ id: id1, user });
-        expect(notification?.user).toBe(user);
+        expect(notification?.user).toBeNull();
 
         const otherNotification = await storage.getNotification({
           id: id1,
@@ -740,6 +754,74 @@ describe.each(databases.eachSupportedId())(
           user: 'user:default/test',
         });
         expect(settings).toEqual(notificationSettings);
+      });
+    });
+
+    describe('topics', () => {
+      it('should return all topics for user', async () => {
+        await storage.saveNotification(testNotification1);
+        await storage.saveNotification(testNotification2);
+        await storage.saveBroadcast(testNotification3);
+        await storage.saveNotification(testNotification4); // One without topic
+        await storage.saveNotification(otherUserNotification);
+
+        const topics = await storage.getTopics({ user });
+        expect(topics.topics.sort()).toEqual([
+          testNotification1.payload.topic,
+          testNotification3.payload.topic,
+          testNotification2.payload.topic,
+        ]);
+      });
+
+      it('should return filtered topics for user by title', async () => {
+        await storage.saveNotification(testNotification1);
+        await storage.saveNotification(testNotification2);
+        await storage.saveBroadcast(testNotification3);
+        await storage.saveBroadcast(testNotification4);
+        await storage.saveNotification(otherUserNotification);
+
+        const topics = await storage.getTopics({
+          user,
+          search: 'Notification 3',
+        });
+        expect(topics).toEqual({
+          topics: [testNotification3.payload.topic],
+        });
+      });
+
+      it('should return filtered topics for user by severity', async () => {
+        await storage.saveNotification(testNotification1);
+        await storage.saveNotification(testNotification2);
+        await storage.saveBroadcast(testNotification3);
+        await storage.saveBroadcast(testNotification4);
+        await storage.saveNotification(otherUserNotification);
+
+        const topics = await storage.getTopics({
+          user,
+          minimumSeverity: 'critical',
+        });
+        expect(topics).toEqual({
+          topics: [testNotification1.payload.topic],
+        });
+      });
+    });
+
+    describe('clearNotifications', () => {
+      it('should clear notifications older than specified days', async () => {
+        const oldDate = new Date();
+        oldDate.setDate(oldDate.getDate() - 10); // 10 days ago
+        await storage.saveNotification({
+          ...testNotification1,
+          created: oldDate,
+        });
+        await storage.saveNotification(testNotification2);
+
+        const result = await storage.clearNotifications({
+          maxAge: { days: 5 },
+        }); // Clear notifications older than 5 days
+        expect(result.deletedCount).toBe(1); // Only the first notification should be cleared
+        const remainingNotifications = await storage.getNotifications({ user });
+        expect(remainingNotifications.map(idOnly)).toEqual([id2]);
       });
     });
   },

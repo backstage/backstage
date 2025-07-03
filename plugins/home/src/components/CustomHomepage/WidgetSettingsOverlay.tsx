@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import SettingsIcon from '@material-ui/icons/Settings';
 import DeleteIcon from '@material-ui/icons/Delete';
-import React from 'react';
+import SettingsIcon from '@material-ui/icons/Settings';
+import { useState } from 'react';
 import { Widget } from './types';
 import { withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import validator from '@rjsf/validator-ajv8';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homeTranslationRef } from '../../translation';
 
 const Form = withTheme(MuiTheme);
 
@@ -61,8 +66,11 @@ interface WidgetSettingsOverlayProps {
 export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
   const { id, widget, settings, handleRemove, handleSettingsSave, deletable } =
     props;
-  const [settingsDialogOpen, setSettingsDialogOpen] = React.useState(false);
+  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const styles = useStyles();
+
+  const onClose = () => setSettingsDialogOpen(false);
+  const { t } = useTranslationRef(homeTranslationRef);
 
   return (
     <div className={styles.settingsOverlay}>
@@ -70,7 +78,7 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
         <Dialog
           open={settingsDialogOpen}
           className="widgetSettingsDialog"
-          onClose={() => setSettingsDialogOpen(false)}
+          onClose={onClose}
         >
           <DialogContent>
             <Form
@@ -90,7 +98,16 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
               experimental_defaultFormStateBehavior={{
                 allOf: 'populateDefaults',
               }}
-            />
+            >
+              <DialogActions>
+                <Button color="primary" variant="contained" type="submit">
+                  {t('widgetSettingsOverlay.submitButtonTitle')}
+                </Button>
+                <Button color="secondary" onClick={onClose}>
+                  {t('widgetSettingsOverlay.cancelButtonTitle')}
+                </Button>
+              </DialogActions>
+            </Form>
           </DialogContent>
         </Dialog>
       )}
@@ -102,7 +119,7 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
       >
         {widget.settingsSchema && (
           <Grid item className="overlayGridItem">
-            <Tooltip title="Edit settings">
+            <Tooltip title={t('widgetSettingsOverlay.editSettingsTooptip')}>
               <IconButton
                 color="primary"
                 onClick={() => setSettingsDialogOpen(true)}
@@ -114,7 +131,7 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
         )}
         {deletable !== false && (
           <Grid item className="overlayGridItem">
-            <Tooltip title="Delete widget">
+            <Tooltip title={t('widgetSettingsOverlay.deleteWidgetTooltip')}>
               <IconButton color="secondary" onClick={() => handleRemove(id)}>
                 <DeleteIcon fontSize="large" />
               </IconButton>

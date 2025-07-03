@@ -5,7 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
@@ -21,16 +20,22 @@ export function createPublishBitbucketServerAction(options: {
   {
     repoUrl: string;
     description?: string | undefined;
-    defaultBranch?: string | undefined;
     repoVisibility?: 'private' | 'public' | undefined;
+    defaultBranch?: string | undefined;
     sourcePath?: string | undefined;
     enableLFS?: boolean | undefined;
     token?: string | undefined;
     gitCommitMessage?: string | undefined;
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
+    signCommit?: boolean | undefined;
   },
-  JsonObject
+  {
+    remoteUrl?: string | undefined;
+    repoContentsUrl?: string | undefined;
+    commitHash?: string | undefined;
+  },
+  'v2'
 >;
 
 // @public
@@ -41,14 +46,17 @@ export function createPublishBitbucketServerPullRequestAction(options: {
   {
     repoUrl: string;
     title: string;
+    sourceBranch: string;
     description?: string | undefined;
     targetBranch?: string | undefined;
-    sourceBranch: string;
     reviewers?: string[] | undefined;
     token?: string | undefined;
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
-  JsonObject
+  {
+    pullRequestUrl?: string | undefined;
+  },
+  'v2'
 >;
 ```

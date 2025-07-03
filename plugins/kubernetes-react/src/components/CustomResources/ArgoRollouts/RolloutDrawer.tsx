@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { KubernetesStructuredMetadataTableDrawer } from '../../KubernetesDrawer';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';

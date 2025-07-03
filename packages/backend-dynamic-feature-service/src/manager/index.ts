@@ -23,8 +23,6 @@ export type {
   BackendDynamicPlugin,
   BackendDynamicPluginInstaller,
   NewBackendPluginInstaller,
-  LegacyBackendPluginInstaller,
-  LegacyPluginEnvironment,
   DynamicPluginProvider,
   FrontendPluginProvider,
   BackendPluginProvider,
@@ -32,7 +30,6 @@ export type {
 
 export {
   DynamicPluginManager,
-  dynamicPluginsFeatureDiscoveryServiceFactory,
   dynamicPluginsServiceFactory,
   dynamicPluginsServiceFactoryWithOptions,
   dynamicPluginsServiceRef,

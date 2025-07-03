@@ -1,5 +1,216 @@
 # @backstage/plugin-events-node
 
+## 0.4.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.1-next.0
+
+## 0.4.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+
+## 0.4.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.9
+
+### Patch Changes
+
+- b95aa77: add `addHttpPostBodyParser` to events extension to allow body parse customization. This feature will enhance flexibility in handling HTTP POST requests in event-related operations.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.9-next.2
+
+### Patch Changes
+
+- b95aa77: add `addHttpPostBodyParser` to events extension to allow body parse customization. This feature will enhance flexibility in handling HTTP POST requests in event-related operations.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+
+## 0.4.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.4.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/errors@1.2.7
+
+## 0.4.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/errors@1.2.7-next.0
+
+## 0.4.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+
+## 0.4.6
+
+### Patch Changes
+
+- 79a06f6: Clarified purpose of subscriber ID in TSDoc for `EventsServiceSubscribeOptions`.
+- 1577511: Allow configuring a timeout for event bus polling requests. This can be set like so in your app-config:
+
+  ```yaml
+  events:
+    notifyTimeoutMs: 30000
+  ```
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+
+## 0.4.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/types@1.2.0
+
+## 0.4.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+
 ## 0.4.6-next.0
 
 ### Patch Changes

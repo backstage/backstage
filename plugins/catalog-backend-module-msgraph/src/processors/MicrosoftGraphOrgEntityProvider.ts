@@ -301,12 +301,12 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     },
   ) {}
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName() {
     return `MicrosoftGraphOrgEntityProvider:${this.options.id}`;
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection) {
     this.connection = connection;
     await this.scheduleFn?.();
@@ -327,6 +327,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       : this.options.provider;
     const { markReadComplete } = trackProgress(logger);
     const client = MicrosoftGraphClient.create(this.options.provider);
+
     const { users, groups } = await readMicrosoftGraphOrg(
       client,
       provider.tenantId,
@@ -334,13 +335,16 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
         userExpand: provider.userExpand,
         userFilter: provider.userFilter,
         userSelect: provider.userSelect,
+        userPath: provider.userPath,
         loadUserPhotos: provider.loadUserPhotos,
         userGroupMemberFilter: provider.userGroupMemberFilter,
         userGroupMemberSearch: provider.userGroupMemberSearch,
+        userGroupMemberPath: provider.userGroupMemberPath,
         groupExpand: provider.groupExpand,
         groupFilter: provider.groupFilter,
         groupSearch: provider.groupSearch,
         groupSelect: provider.groupSelect,
+        groupPath: provider.groupPath,
         groupIncludeSubGroups: provider.groupIncludeSubGroups,
         queryMode: provider.queryMode,
         groupTransformer: this.options.groupTransformer,

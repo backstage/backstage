@@ -1,5 +1,849 @@
 # @backstage/plugin-catalog-backend
 
+## 3.0.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/plugin-permission-node@0.10.2-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-catalog-common@1.1.5-next.0
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+  - @backstage/backend-openapi-utils@0.5.5-next.0
+  - @backstage/plugin-events-node@0.4.13-next.0
+
+## 3.0.0-next.0
+
+### Major Changes
+
+- 2339363: **BREAKING:** The experimental `catalog.useUrlReadersSearch` configuration flag (introduced in v1.36) has been removed.
+
+  The `UrlReaderProcessor` now always uses the `search` method of `UrlReaders`. Built-in `UrlReaderService` implementations have been updated accordingly.
+  If you use custom `UrlReaderService` implementations, you need to adapt their `search` method to correctly handle both specific URLs and potential
+  search patterns (see changes on built-in readers [in the original PR](https://github.com/backstage/backstage/pull/28379/files#diff-68b0452f173ee54bdd40f7b5e047a9cb8bb59200425622c212c217b76dac1d1b)).
+
+  Previous behavior was to call the `search` method only if the parsed Git URL's filename contained a wildcard and use `readUrl` otherwise. Each `UrlReaderService` must implement this logic in the `search` method instead.
+
+  This allows each `UrlReaderService` implementation to check whether it's a search URL (that contains a wildcard pattern) or not using logic that is specific to each provider.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/plugin-permission-node@0.10.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/backend-openapi-utils@0.5.4
+  - @backstage/catalog-client@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-common@0.9.0
+
+## 2.1.0
+
+### Minor Changes
+
+- 2e7adf0: Implement the action `get-catalog-entity` with the `ActionsRegistry`
+
+### Patch Changes
+
+- 2cac8b0: You can now specify an optional value when applying the `HAS_LABEL` permission rule, similar to the `HAS_ANNOTATION` permission rule.
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- 4654a78: Update `refresh_state_references.id` to be a big int
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/backend-openapi-utils@0.5.4
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1
+
+## 2.0.1-next.2
+
+### Patch Changes
+
+- 2cac8b0: You can now specify an optional value when applying the `HAS_LABEL` permission rule, similar to the `HAS_ANNOTATION` permission rule.
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.5.4-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1-next.1
+
+## 2.0.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/backend-openapi-utils@0.5.4-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-events-node@0.4.12-next.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1-next.1
+
+## 2.0.1-next.0
+
+### Patch Changes
+
+- 4654a78: Update `refresh_state_references.id` to be a big int
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.0
+  - @backstage/plugin-events-node@0.4.12-next.0
+  - @backstage/plugin-permission-node@0.10.1-next.0
+  - @backstage/backend-openapi-utils@0.5.4-next.0
+
+## 2.0.0
+
+### Major Changes
+
+- 90ab044: **BREAKING**: Removed all deprecated exports, and removed support for the old backend system.
+
+  It also removes the `CodeOwnersProcessor` from the default set of processors, because it is expensive to run and has vague semantics. You need to update your backend to add it to the `catalogProcessingExtensionPoint` if you wish to continue using it.
+
+  The following removed exports are available from `@backstage/plugin-catalog-node`:
+
+  - `locationSpecToMetadataName`
+  - `locationSpecToLocationEntity`
+  - `processingResult`
+  - `EntitiesSearchFilter`
+  - `EntityFilter`
+  - `DeferredEntity`
+  - `EntityRelationSpec`
+  - `CatalogProcessor`
+  - `CatalogProcessorParser`
+  - `CatalogProcessorCache`
+  - `CatalogProcessorEmit`
+  - `CatalogProcessorLocationResult`
+  - `CatalogProcessorEntityResult`
+  - `CatalogProcessorRelationResult`
+  - `CatalogProcessorErrorResult`
+  - `CatalogProcessorRefreshKeysResult`
+  - `CatalogProcessorResult`
+  - `EntityProvider`
+  - `EntityProviderConnection`
+  - `EntityProviderMutation`
+  - `AnalyzeOptions`
+  - `LocationAnalyzer`
+  - `ScmLocationAnalyzer`
+  - `PlaceholderResolver`
+  - `PlaceholderResolverParams`
+  - `PlaceholderResolverRead`
+  - `PlaceholderResolverResolveUrl`
+  - `parseEntityYaml`
+
+  The following removed exports are available from `@backstage/plugin-catalog-common`:
+
+  - `LocationSpec`
+  - `AnalyzeLocationRequest`
+  - `AnalyzeLocationResponse`
+  - `AnalyzeLocationExistingEntity`
+  - `AnalyzeLocationGenerateEntity`
+  - `AnalyzeLocationEntityField`
+
+  The following removed exports are instead implemented in the new backend system by `@backstage/plugin-search-backend-module-catalog`:
+
+  - `defaultCatalogCollatorEntityTransformer`
+  - `CatalogCollatorEntityTransformer`
+  - `DefaultCatalogCollator`
+
+  The following exports are removed without a direct replacement:
+
+  - `DefaultCatalogCollatorFactory`
+  - `DefaultCatalogCollatorFactoryOptions`
+  - `LocationEntityProcessor`
+  - `LocationEntityProcessorOptions`
+  - `CatalogBuilder`
+  - `CatalogEnvironment`
+  - `CatalogPermissionRuleInput`
+  - `CatalogProcessingEngine`
+  - `createRandomProcessingInterval`
+  - `ProcessingIntervalFunction`
+
+### Minor Changes
+
+- 6c9b88e: **BREAKING ALPHA**: You can no longer import the catalog plugin from the `/alpha` export; please use the regular root default export instead.
+- d88b922: Adds the ability to disable the default entity processors using a new boolean app config item `catalog.disableDefaultProcessors`.
+
+### Patch Changes
+
+- 0e710fc: This patch addresses an issue identified in Backstage when configured with a MySQL database. If an entity of type location
+  (e..all.yaml) has more than 70 referenced entities, clicking "Refresh" does not update the referenced entities as expected. This occurs because the TEXT type in MySQL has a limit of 65,535 bytes, which is insufficient to store all the referenced entities, causing the refresh operation to fail.
+- 8e0f15f: "Added a note clarifying that `entity-fetch` audit events are not visible by default in the logs and are only displayed when the log severity level is adjusted."
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.0
+  - @backstage/catalog-client@1.10.0
+  - @backstage/backend-openapi-utils@0.5.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-events-node@0.4.11
+
+## 2.0.0-next.3
+
+### Patch Changes
+
+- 8e0f15f: "Added a note clarifying that `entity-fetch` audit events are not visible by default in the logs and are only displayed when the log severity level is adjusted."
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/backend-openapi-utils@0.5.3-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.2
+  - @backstage/plugin-events-node@0.4.11-next.2
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.2
+
+## 2.0.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/backend-openapi-utils@0.5.3-next.1
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+
+## 2.0.0-next.1
+
+### Major Changes
+
+- 90ab044: **BREAKING**: Removed all deprecated exports, and removed support for the old backend system.
+
+  It also removes the `CodeOwnersProcessor` from the default set of processors, because it is expensive to run and has vague semantics. You need to update your backend to add it to the `catalogProcessingExtensionPoint` if you wish to continue using it.
+
+  The following removed exports are available from `@backstage/plugin-catalog-node`:
+
+  - `locationSpecToMetadataName`
+  - `locationSpecToLocationEntity`
+  - `processingResult`
+  - `EntitiesSearchFilter`
+  - `EntityFilter`
+  - `DeferredEntity`
+  - `EntityRelationSpec`
+  - `CatalogProcessor`
+  - `CatalogProcessorParser`
+  - `CatalogProcessorCache`
+  - `CatalogProcessorEmit`
+  - `CatalogProcessorLocationResult`
+  - `CatalogProcessorEntityResult`
+  - `CatalogProcessorRelationResult`
+  - `CatalogProcessorErrorResult`
+  - `CatalogProcessorRefreshKeysResult`
+  - `CatalogProcessorResult`
+  - `EntityProvider`
+  - `EntityProviderConnection`
+  - `EntityProviderMutation`
+  - `AnalyzeOptions`
+  - `LocationAnalyzer`
+  - `ScmLocationAnalyzer`
+  - `PlaceholderResolver`
+  - `PlaceholderResolverParams`
+  - `PlaceholderResolverRead`
+  - `PlaceholderResolverResolveUrl`
+  - `parseEntityYaml`
+
+  The following removed exports are available from `@backstage/plugin-catalog-common`:
+
+  - `LocationSpec`
+  - `AnalyzeLocationRequest`
+  - `AnalyzeLocationResponse`
+  - `AnalyzeLocationExistingEntity`
+  - `AnalyzeLocationGenerateEntity`
+  - `AnalyzeLocationEntityField`
+
+  The following removed exports are instead implemented in the new backend system by `@backstage/plugin-search-backend-module-catalog`:
+
+  - `defaultCatalogCollatorEntityTransformer`
+  - `CatalogCollatorEntityTransformer`
+  - `DefaultCatalogCollator`
+
+  The following exports are removed without a direct replacement:
+
+  - `DefaultCatalogCollatorFactory`
+  - `DefaultCatalogCollatorFactoryOptions`
+  - `LocationEntityProcessor`
+  - `LocationEntityProcessorOptions`
+  - `CatalogBuilder`
+  - `CatalogEnvironment`
+  - `CatalogPermissionRuleInput`
+  - `CatalogProcessingEngine`
+  - `createRandomProcessingInterval`
+  - `ProcessingIntervalFunction`
+
+### Minor Changes
+
+- 6c9b88e: **BREAKING ALPHA**: You can no longer import the catalog plugin from the `/alpha` export; please use the regular root default export instead.
+- d88b922: Adds the ability to disable the default entity processors using a new boolean app config item `catalog.disableDefaultProcessors`.
+
+### Patch Changes
+
+- 0e710fc: This patch addresses an issue identified in Backstage when configured with a MySQL database. If an entity of type location
+  (e..all.yaml) has more than 70 referenced entities, clicking "Refresh" does not update the referenced entities as expected. This occurs because the TEXT type in MySQL has a limit of 65,535 bytes, which is insufficient to store all the referenced entities, causing the refresh operation to fail.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/backend-openapi-utils@0.5.3-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-events-node@0.4.11-next.1
+
+## 1.32.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-events-node@0.4.11-next.0
+  - @backstage/plugin-permission-node@0.9.2-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.3.4-next.0
+  - @backstage/backend-openapi-utils@0.5.3-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.32.1
+
+### Patch Changes
+
+- 7cc4995: Fix for duplicate results in `queryEntities` when providing an `orderField` parameter
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/integration@1.16.3
+  - @backstage/plugin-permission-node@0.9.1
+  - @backstage/plugin-search-backend-module-catalog@0.3.3
+  - @backstage/backend-openapi-utils@0.5.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-events-node@0.4.10
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.32.1-next.1
+
+### Patch Changes
+
+- 7cc4995: Fix for duplicate results in `queryEntities` when providing an `orderField` parameter
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.3.3-next.0
+  - @backstage/backend-openapi-utils@0.5.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.32.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/backend-openapi-utils@0.5.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-module-catalog@0.3.2
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.32.0
+
+### Minor Changes
+
+- ca9c51b: Added opt-in ability to evict entities from the catalog whose provider is no longer configured. See [Catalog configuration documentation](https://backstage.io/docs/features/software-catalog/configuration#clean-up-entities-from-orphaned-entity-providers)
+
+### Patch Changes
+
+- 4306303: Added a fix in `@backstage/plugin-catalog-backend` to prevent duplicate path keys in entity search if only casing is different.
+- 5243aa4: Fixed an issue occurred when authorizing permissions using custom rules passed via the `PermissionsRegistryService`.
+- fbc1666: Correctly use the `catalog.useUrlReadersSearch` config.
+- 75cadc1: Minor internal tweak to `refreshByRefreshKeys`
+- Updated dependencies
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/backend-openapi-utils@0.5.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-module-catalog@0.3.2
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.32.0-next.2
+
+### Patch Changes
+
+- 4306303: Added a fix in `@backstage/plugin-catalog-backend` to prevent duplicate path keys in entity search if only casing is different.
+- 5243aa4: Fixed an issue occurred when authorizing permissions using custom rules passed via the `PermissionsRegistryService`.
+- Updated dependencies
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/plugin-events-node@0.4.9-next.2
+  - @backstage/backend-openapi-utils@0.5.1-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1-next.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.9-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.3.2-next.1
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.32.0-next.1
+
+### Minor Changes
+
+- ca9c51b: Added opt-in ability to evict entities from the catalog whose provider is no longer configured. See [Catalog configuration documentation](https://backstage.io/docs/features/software-catalog/configuration#clean-up-entities-from-orphaned-entity-providers)
+
+### Patch Changes
+
+- fbc1666: Correctly use the `catalog.useUrlReadersSearch` config.
+- 75cadc1: Minor internal tweak to `refreshByRefreshKeys`
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.5.1-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1-next.1
+  - @backstage/plugin-events-node@0.4.9-next.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.9-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.3.2-next.1
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.31.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.9-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-catalog-node@1.16.1-next.0
+  - @backstage/plugin-events-node@0.4.9-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.3.2-next.0
+  - @backstage/backend-openapi-utils@0.5.1-next.0
+
+## 1.31.0
+
+### Minor Changes
+
+- 9b9737c: Added support for emitting entities with an explicit location key during processing.
+- 8805f93: The catalog backend now supports the new `PermissionsRegistryService`, which can be used to add custom permission rules.
+- 5aebc13: The `UrlReaderProccessor` accepts a new config flag `catalog.useUrlReadersSearch` to always call the `search` method of `UrlReaders`.
+
+  This flag currently defaults to `false`, but adopters are encouraged to enable it as this behavior will be the default in a future release.
+
+  Previous behavior was to call the `search` method only if the parsed Git URL's filename contained a wildcard and use `readUrl` otherwise. `UrlReaderService` must implement this logic in the `search` method instead.
+
+  This allows each `UrlReaderService` implementation to check whether it's a search URL (that contains a wildcard pattern) or not using logic that is specific to each provider.
+
+- a4aa244: This change integrates the `auditor` service into the Catalog plugin.
+
+### Patch Changes
+
+- c9139e1: Ignore benign database conflict errors during stitching, now logged with debug level instead.
+- f178b12: Cleanup `refresh_state_references` for entity processors and providers that are no longer in control of a `refresh_state` row for entity
+- cd372e4: Improved performance when applying conditional decisions to entities within the permission framework.
+- 4ae6884: Fixed an bug in the entity processing caching that would prevent entities that were emitted during processing to be restored after being overridden.
+- ef73f97: Updated permission integration to use new permission resource ref.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.8
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-catalog-node@1.16.0
+  - @backstage/plugin-search-backend-module-catalog@0.3.1
+  - @backstage/backend-openapi-utils@0.5.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-events-node@0.4.8
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.31.0-next.3
+
+### Minor Changes
+
+- 5aebc13: The `UrlReaderProccessor` accepts a new config flag `catalog.useUrlReadersSearch` to always call the `search` method of `UrlReaders`.
+
+  This flag currently defaults to `false`, but adopters are encouraged to enable it as this behavior will be the default in a future release.
+
+  Previous behavior was to call the `search` method only if the parsed Git URL's filename contained a wildcard and use `readUrl` otherwise. `UrlReaderService` must implement this logic in the `search` method instead.
+
+  This allows each `UrlReaderService` implementation to check whether it's a search URL (that contains a wildcard pattern) or not using logic that is specific to each provider.
+
+### Patch Changes
+
+- ef73f97: Updated permission integration to use new permission resource ref.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.0-next.3
+  - @backstage/plugin-permission-node@0.8.8-next.2
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.3.1-next.3
+  - @backstage/plugin-events-node@0.4.8-next.2
+  - @backstage/backend-openapi-utils@0.5.0-next.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.31.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.3.1-next.2
+  - @backstage/backend-openapi-utils@0.5.0-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.0-next.2
+  - @backstage/plugin-events-node@0.4.8-next.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.8-next.1
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.31.0-next.1
+
+### Minor Changes
+
+- 9b9737c: Added support for emitting entities with an explicit location key during processing.
+
+### Patch Changes
+
+- 4ae6884: Fixed an bug in the entity processing caching that would prevent entities that were emitted during processing to be restored after being overridden.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.0-next.1
+  - @backstage/backend-openapi-utils@0.5.0-next.1
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-events-node@0.4.8-next.0
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.8-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.3.1-next.1
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.31.0-next.0
+
+### Minor Changes
+
+- 8805f93: The catalog backend now supports the new `PermissionsRegistryService`, which can be used to add custom permission rules.
+- a4aa244: This change integrates the `auditor` service into the Catalog plugin.
+
+### Patch Changes
+
+- c9139e1: Ignore benign database conflict errors during stitching, now logged with debug level instead.
+- f178b12: Cleanup `refresh_state_references` for entity processors and providers that are no longer in control of a `refresh_state` row for entity
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.8-next.0
+  - @backstage/plugin-catalog-node@1.15.2-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.3.1-next.0
+  - @backstage/backend-openapi-utils@0.4.2-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-events-node@0.4.8-next.0
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.30.0
+
+### Patch Changes
+
+- d9d62ef: Remove some internal usages of the backend-common package
+- 8379bf4: Remove usages of `PluginDatabaseManager` and `PluginEndpointDiscovery` and replace with their equivalent service types
+- be0aae7: Improved concurrency of the `entities` endpoint when using the streamed query mode behind the `catalog.disableRelationsCompatibility` flag.
+- dd515e3: Internalize the deprecated collator types since they were removed from the collator itself during new-backend-system migration.
+- 3d475a0: Updated condition in `resolveCodeOwner` to fix a bug where `normalizeCodeOwner` could potentially be called with an invalid argument causing an error in `CodeOwnersProcessor`
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.3.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-node@0.8.7
+  - @backstage/integration@1.16.1
+  - @backstage/backend-openapi-utils@0.4.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.15.1
+  - @backstage/plugin-events-node@0.4.7
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-common@1.2.17
+
+## 1.30.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-openapi-utils@0.4.1-next.1
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-catalog-node@1.15.1-next.1
+  - @backstage/plugin-events-node@0.4.7-next.1
+  - @backstage/plugin-permission-common@0.8.4-next.0
+  - @backstage/plugin-permission-node@0.8.7-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.3.0-next.1
+  - @backstage/catalog-client@1.9.1-next.0
+  - @backstage/plugin-catalog-common@1.1.3-next.0
+  - @backstage/integration@1.16.1-next.0
+
+## 1.30.0-next.0
+
+### Minor Changes
+
+- dd515e3: Removed the long-deprecated `DefaultCatalogCollatorFactory` and `DefaultCatalogCollatorFactoryOptions` exports, which now no longer exist in the search plugin's offerings. If you were using these, you want to migrate to [the new backend system](https://backstage.io/docs/backend-system/) and use the [catalog collator](https://backstage.io/docs/features/search/collators#catalog) directly.
+
+### Patch Changes
+
+- d9d62ef: Remove some internal usages of the backend-common package
+- 8379bf4: Remove usages of `PluginDatabaseManager` and `PluginEndpointDiscovery` and replace with their equivalent service types
+- be0aae7: Improved concurrency of the `entities` endpoint when using the streamed query mode behind the `catalog.disableRelationsCompatibility` flag.
+- 3d475a0: Updated condition in `resolveCodeOwner` to fix a bug where `normalizeCodeOwner` could potentially be called with an invalid argument causing an error in `CodeOwnersProcessor`
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.3.0-next.0
+  - @backstage/plugin-permission-node@0.8.7-next.0
+  - @backstage/backend-openapi-utils@0.4.1-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/integration@1.16.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.2
+  - @backstage/plugin-catalog-node@1.15.1-next.0
+  - @backstage/plugin-events-node@0.4.7-next.0
+  - @backstage/plugin-permission-common@0.8.3
+
+## 1.29.0
+
+### Minor Changes
+
+- 02bd2cb: Added a new `catalog.disableRelationsCompatibility` configuration option that avoids JSON deserialization and serialization if possible when reading entities. This significantly reduces the memory usage of the catalog, and slightly increases performance, but it removes the backwards compatibility processing that ensures that both `entity.relation[].target` and `entity.relation[].targetRef` are present in returned entities.
+- c1307b4: Implement `/entities` in terms of `queryEntities` to not run into memory and performance problems on large catalogs
+- 384e494: Internal updates to generated code.
+- 1d0bc11: Fetch all facets in a single database query
+
+### Patch Changes
+
+- dfc8b41: Updated dependency `@opentelemetry/api` to `^1.9.0`.
+- 8013c9c: Perform the by-query count inlined with the main query
+- feba9ee: Internal refactor of filter parsing logic.
+- 1fdb48e: Use a faster count method on pg when computing some metrics
+- e4aab10: Fix a bug where sometimes the `by-query` endpoint could return nulls for entities that were not yet stitched.
+- f159b25: Compute deltas more efficiently, which generally leads to less wasted processing cycles
+- 0c33465: Implement `/entities/by-name/:kind/:namespace/:name` using `getEntitiesByRefs`
+- 56511ba: Be more aggressive in dequeueing entities for stitching
+- 71152e3: Correctly report stitching queue length
+- 5c9cc05: Use native fetch instead of node-fetch
+- d93390d: When parsing filters, do not make redundant `anyOf` and `allOf` nodes when there's only a single entry within them
+- 3ab57c6: Support changing location keys on existing entities, in delta mutations
+- 24ecea8: Avoid extra ordering in by-query when the user doesn't ask for it
+- 2924ffe: Compute some metrics using search table facet aggregations instead of reading the full refresh state
+- Updated dependencies
+  - @backstage/integration@1.16.0
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-search-backend-module-catalog@0.2.6
+  - @backstage/plugin-catalog-node@1.15.0
+  - @backstage/plugin-events-node@0.4.6
+  - @backstage/catalog-client@1.9.0
+  - @backstage/plugin-permission-node@0.8.6
+  - @backstage/backend-openapi-utils@0.4.0
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.2
+  - @backstage/plugin-permission-common@0.8.3
+
+## 1.29.0-next.2
+
+### Minor Changes
+
+- c1307b4: Implement `/entities` in terms of `queryEntities` to not run into memory and performance problems on large catalogs
+
+### Patch Changes
+
+- dfc8b41: Updated dependency `@opentelemetry/api` to `^1.9.0`.
+- 8013c9c: Perform the by-query count inlined with the main query
+- feba9ee: Use a join based strategy for filtering, when having small page sizes
+- 1fdb48e: Use a faster count method on pg when computing some metrics
+- 0c33465: Implement `/entities/by-name/:kind/:namespace/:name` using `getEntitiesByRefs`
+- d93390d: When parsing filters, do not make redundant `anyOf` and `allOf` nodes when there's only a single entry within them
+- 24ecea8: Avoid extra ordering in by-query when the user doesn't ask for it
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/plugin-permission-node@0.8.6-next.2
+  - @backstage/backend-openapi-utils@0.4.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-catalog-node@1.15.0-next.2
+  - @backstage/plugin-events-node@0.4.6-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.2.6-next.2
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.2-next.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+
+## 1.29.0-next.1
+
+### Minor Changes
+
+- 384e494: Internal updates to generated code.
+- 1d0bc11: Fetch all facets in a single database query
+
+### Patch Changes
+
+- e4aab10: Fix a bug where sometimes the `by-query` endpoint could return nulls for entities that were not yet stitched.
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.15.0-next.1
+  - @backstage/catalog-client@1.9.0-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/plugin-permission-node@0.8.6-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.2.6-next.1
+  - @backstage/backend-openapi-utils@0.3.1-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-events-node@0.4.6-next.1
+  - @backstage/plugin-permission-common@0.8.2
+
 ## 1.28.1-next.0
 
 ### Patch Changes

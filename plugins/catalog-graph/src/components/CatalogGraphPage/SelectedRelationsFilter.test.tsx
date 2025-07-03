@@ -19,15 +19,15 @@ import {
   RELATION_HAS_MEMBER,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
-import { render, waitFor, screen } from '@testing-library/react';
+import { waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { ALL_RELATION_PAIRS } from '../EntityRelationsGraph';
 import { SelectedRelationsFilter } from './SelectedRelationsFilter';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<SelectedRelationsFilter/>', () => {
-  test('should render current value', () => {
-    render(
+  test('should render current value', async () => {
+    await renderInTestApp(
       <SelectedRelationsFilter
         relationPairs={ALL_RELATION_PAIRS}
         value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
@@ -41,7 +41,7 @@ describe('<SelectedRelationsFilter/>', () => {
 
   test('should select value', async () => {
     const onChange = jest.fn();
-    render(
+    await renderInTestApp(
       <SelectedRelationsFilter
         relationPairs={ALL_RELATION_PAIRS}
         value={[RELATION_OWNED_BY, RELATION_CHILD_OF]}
@@ -68,7 +68,7 @@ describe('<SelectedRelationsFilter/>', () => {
 
   test('should return undefined if all values are selected', async () => {
     const onChange = jest.fn();
-    render(
+    await renderInTestApp(
       <SelectedRelationsFilter
         relationPairs={ALL_RELATION_PAIRS}
         value={ALL_RELATION_PAIRS.flatMap(p => p).filter(
@@ -93,7 +93,7 @@ describe('<SelectedRelationsFilter/>', () => {
 
   test('should return all values when cleared', async () => {
     const onChange = jest.fn();
-    render(
+    await renderInTestApp(
       <SelectedRelationsFilter
         relationPairs={ALL_RELATION_PAIRS}
         value={[]}

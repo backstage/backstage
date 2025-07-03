@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import { Writable } from 'stream';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { TaskSecrets } from '../tasks';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
 import { Schema } from 'jsonschema';
-import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import {
+  BackstageCredentials,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import { CheckpointContext } from '@backstage/plugin-scaffolder-node/alpha';
 
 /**
  * ActionContext is passed into scaffolder actions.
@@ -30,23 +32,19 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 export type ActionContext<
   TActionInput extends JsonObject,
   TActionOutput extends JsonObject = JsonObject,
+  _TSchemaType extends 'v2' = 'v2',
 > = {
-  // TODO(blam): move this to LoggerService
-  logger: Logger;
-  /** @deprecated - use `ctx.logger` instead */
-  logStream: Writable;
+  logger: LoggerService;
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
-  checkpoint<T extends JsonValue | void>(opts: {
-    key: string;
-    fn: () => Promise<T> | T;
-  }): Promise<T>;
+  checkpoint<T extends JsonValue | void>(
+    opts: CheckpointContext<T>,
+  ): Promise<T>;
   output(
     name: keyof TActionOutput,
     value: TActionOutput[keyof TActionOutput],
   ): void;
-
   /**
    * Creates a temporary directory for use by the action, which is then cleaned up automatically.
    */
@@ -56,6 +54,13 @@ export type ActionContext<
    * Get the credentials for the current request
    */
   getInitiatorCredentials(): Promise<BackstageCredentials>;
+
+  /**
+   * Task information
+   */
+  task: {
+    id: string;
+  };
 
   templateInfo?: TemplateInfo;
 
@@ -94,6 +99,7 @@ export type ActionContext<
 export type TemplateAction<
   TActionInput extends JsonObject = JsonObject,
   TActionOutput extends JsonObject = JsonObject,
+  TSchemaType extends 'v2' = 'v2',
 > = {
   id: string;
   description?: string;
@@ -103,5 +109,7 @@ export type TemplateAction<
     input?: Schema;
     output?: Schema;
   };
-  handler: (ctx: ActionContext<TActionInput, TActionOutput>) => Promise<void>;
+  handler: (
+    ctx: ActionContext<TActionInput, TActionOutput, TSchemaType>,
+  ) => Promise<void>;
 };

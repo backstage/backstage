@@ -17,7 +17,6 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import Card from '@material-ui/core/Card';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { ItemCardGrid } from './ItemCardGrid';
 
 describe('<ItemCardGrid />', () => {

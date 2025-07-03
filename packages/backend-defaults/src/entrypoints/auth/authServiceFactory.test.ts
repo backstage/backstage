@@ -109,8 +109,9 @@ describe('authServiceFactory', () => {
   });
 
   it('should authenticate issued tokens with new auth', async () => {
+    const logger = mockServices.logger.mock();
     const tester = ServiceFactoryTester.from(authServiceFactory, {
-      dependencies: mockDeps,
+      dependencies: [...mockDeps, logger.factory],
     });
 
     const searchAuth = await tester.getSubject('search');
@@ -134,8 +135,13 @@ describe('authServiceFactory', () => {
       targetPluginId: 'catalog',
     });
 
+    expect(logger.warn).not.toHaveBeenCalled();
     await expect(searchAuth.authenticate(searchToken)).rejects.toThrow(
-      'Invalid plugin token',
+      'Failed plugin token verification',
+    );
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Failed to verify incoming plugin token',
+      expect.any(Error),
     );
     await expect(catalogAuth.authenticate(searchToken)).resolves.toEqual(
       expect.objectContaining({

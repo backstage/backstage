@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { compact, isEqual } from 'lodash';
 import qs from 'qs';
-import React, {
+import {
   createContext,
   PropsWithChildren,
   useCallback,
@@ -35,6 +35,7 @@ import {
   EntityKindFilter,
   EntityLifecycleFilter,
   EntityNamespaceFilter,
+  EntityOrderFilter,
   EntityOrphanFilter,
   EntityOwnerFilter,
   EntityTagFilter,
@@ -48,7 +49,7 @@ import {
   reduceBackendCatalogFilters,
   reduceCatalogFilters,
   reduceEntityFilters,
-} from '../utils';
+} from '../utils/filters';
 import { useApi } from '@backstage/core-plugin-api';
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
 
@@ -64,6 +65,7 @@ export type DefaultEntityFilters = {
   orphan?: EntityOrphanFilter;
   error?: EntityErrorFilter;
   namespace?: EntityNamespaceFilter;
+  order?: EntityOrderFilter;
 };
 
 /** @public */
@@ -173,7 +175,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       : 'none';
   };
 
-  const paginationMode: PaginationMode = getPaginationMode();
+  const paginationMode = getPaginationMode();
   const paginationLimit =
     typeof props.pagination === 'object' ? props.pagination.limit ?? 20 : 20;
 
@@ -227,7 +229,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
         appliedFilters: {} as EntityFilters,
         entities: [],
         backendEntities: [],
-        pageInfo: paginationMode === 'cursor' ? {} : undefined,
+        pageInfo: {},
         offset,
         limit,
       };
@@ -239,7 +241,13 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   // based on the requested filters changing.
   const [{ loading, error }, refresh] = useAsyncFn(
     async () => {
-      const compacted = compact(Object.values(requestedFilters));
+      const kindValue =
+        requestedFilters.kind?.value?.toLocaleLowerCase('en-US');
+      const adjustedFilters =
+        kindValue === 'user' || kindValue === 'group'
+          ? { ...requestedFilters, owners: undefined }
+          : requestedFilters;
+      const compacted = compact(Object.values(adjustedFilters));
 
       const queryParams = Object.keys(requestedFilters).reduce(
         (params, key) => {
@@ -279,14 +287,14 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           );
 
           if (
-            paginationMode === 'offset' ||
+            (paginationMode === 'offset' &&
+              (outputState.limit !== limit || outputState.offset !== offset)) ||
             !isEqual(previousBackendFilter, backendFilter)
           ) {
             const response = await catalogApi.queryEntities({
               ...backendFilter,
               limit,
               offset,
-              orderFields: [{ field: 'metadata.name', order: 'asc' }],
             });
             setOutputState({
               appliedFilters: requestedFilters,
@@ -378,14 +386,19 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       // TODO(vinzscam): this is currently causing issues at page reload
       // where the state is not kept. Unfortunately we need to rethink
       // the way filters work in order to fix this.
-      setCursor(undefined);
+      if (paginationMode === 'cursor') {
+        setCursor(undefined);
+      } else if (paginationMode === 'offset') {
+        // Same thing with offset
+        setOffset(0);
+      }
       setRequestedFilters(prevFilters => {
         const newFilters =
           typeof update === 'function' ? update(prevFilters) : update;
         return { ...prevFilters, ...newFilters };
       });
     },
-    [],
+    [paginationMode],
   );
 
   const pageInfo = useMemo(() => {

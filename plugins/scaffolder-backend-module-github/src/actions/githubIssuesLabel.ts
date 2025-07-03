@@ -24,7 +24,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { assertError, InputError } from '@backstage/errors';
 import { Octokit } from 'octokit';
-import { getOctokitOptions } from './helpers';
+import { getOctokitOptions } from '../util';
 import { examples } from './githubIssuesLabel.examples';
 
 /**
@@ -37,71 +37,68 @@ export function createGithubIssuesLabelAction(options: {
 }) {
   const { integrations, githubCredentialsProvider } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    number: number;
-    labels: string[];
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'github:issues:label',
     description: 'Adds labels to a pull request or issue on GitHub.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl', 'number', 'labels'],
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the repository name and 'owner' is an organization or username`,
-            type: 'string',
-          },
-          number: {
-            title: 'Pull Request or issue number',
+        repoUrl: z =>
+          z.string({
+            description:
+              'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the repository name and `owner` is an organization or username',
+          }),
+        number: z =>
+          z.number({
             description: 'The pull request or issue number to add labels to',
-            type: 'number',
-          },
-          labels: {
-            title: 'Labels',
+          }),
+        labels: z =>
+          z.array(z.string(), {
             description: 'The labels to add to the pull request or issue',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The GITHUB_TOKEN to use for authorization to GitHub',
-          },
-        },
+          }),
+        token: z =>
+          z
+            .string({
+              description:
+                'The `GITHUB_TOKEN` to use for authorization to GitHub',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {
       const { repoUrl, number, labels, token: providedToken } = ctx.input;
 
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
       ctx.logger.info(`Adding labels to ${number} issue on repo ${repo}`);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const client = new Octokit(
-        await getOctokitOptions({
-          integrations,
-          credentialsProvider: githubCredentialsProvider,
-          repoUrl: repoUrl,
-          token: providedToken,
-        }),
-      );
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        host,
+        owner,
+        repo,
+        token: providedToken,
+      });
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       try {
-        await client.rest.issues.addLabels({
-          owner,
-          repo,
-          issue_number: number,
-          labels,
+        await ctx.checkpoint({
+          key: `github.issues.add.label.${owner}.${repo}.${number}`,
+          fn: async () => {
+            await client.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: number,
+              labels,
+            });
+          },
         });
       } catch (e) {
         assertError(e);

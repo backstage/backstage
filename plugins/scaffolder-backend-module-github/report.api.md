@@ -4,11 +4,10 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { GithubCredentialsProvider } from '@backstage/integration';
-import { JsonObject } from '@backstage/types';
 import { Octokit } from 'octokit';
 import { OctokitOptions } from '@octokit/core/dist-types/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -24,14 +23,13 @@ export function createGithubActionsDispatchAction(options: {
     repoUrl: string;
     workflowId: string;
     branchOrTagName: string;
-    workflowInputs?:
-      | {
-          [key: string]: string;
-        }
-      | undefined;
+    workflowInputs?: Record<string, string> | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
@@ -46,7 +44,10 @@ export function createGithubAutolinksAction(options: {
     isAlphanumeric?: boolean | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
@@ -62,16 +63,16 @@ export function createGithubBranchProtectionAction(options: {
     dismissStaleReviews?: boolean | undefined;
     bypassPullRequestAllowances?:
       | {
-          users?: string[];
-          teams?: string[];
-          apps?: string[];
+          apps?: string[] | undefined;
+          teams?: string[] | undefined;
+          users?: string[] | undefined;
         }
       | undefined;
     restrictions?:
       | {
-          users: string[];
           teams: string[];
-          apps?: string[];
+          users: string[];
+          apps?: string[] | undefined;
         }
       | undefined;
     requiredStatusCheckContexts?: string[] | undefined;
@@ -79,9 +80,13 @@ export function createGithubBranchProtectionAction(options: {
     requiredConversationResolution?: boolean | undefined;
     requireLastPushApproval?: boolean | undefined;
     requiredCommitSigning?: boolean | undefined;
+    requiredLinearHistory?: boolean | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
@@ -96,13 +101,16 @@ export function createGithubDeployKeyAction(options: {
     privateKeySecretName?: string | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  {
+    privateKeySecretName: string;
+  },
+  'v2'
 >;
 
 // @public
 export function createGithubEnvironmentAction(options: {
   integrations: ScmIntegrationRegistry;
-  catalogClient?: CatalogApi;
+  catalog: CatalogService;
 }): TemplateAction<
   {
     repoUrl: string;
@@ -115,22 +123,17 @@ export function createGithubEnvironmentAction(options: {
       | undefined;
     customBranchPolicyNames?: string[] | undefined;
     customTagPolicyNames?: string[] | undefined;
-    environmentVariables?:
-      | {
-          [key: string]: string;
-        }
-      | undefined;
-    secrets?:
-      | {
-          [key: string]: string;
-        }
-      | undefined;
+    environmentVariables?: Record<string, string> | undefined;
+    secrets?: Record<string, string> | undefined;
     token?: string | undefined;
     waitTimer?: number | undefined;
     preventSelfReview?: boolean | undefined;
     reviewers?: string[] | undefined;
   },
-  JsonObject
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
@@ -144,7 +147,10 @@ export function createGithubIssuesLabelAction(options: {
     labels: string[];
     token?: string | undefined;
   },
-  JsonObject
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
@@ -159,7 +165,10 @@ export function createGithubPagesEnableAction(options: {
     sourcePath?: '/' | '/docs' | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
@@ -199,32 +208,19 @@ export function createGithubRepoCreateAction(options: {
     description?: string | undefined;
     homepage?: string | undefined;
     access?: string | undefined;
-    deleteBranchOnMerge?: boolean | undefined;
-    gitAuthorName?: string | undefined;
-    gitAuthorEmail?: string | undefined;
-    allowRebaseMerge?: boolean | undefined;
-    allowSquashMerge?: boolean | undefined;
-    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
-    squashMergeCommitMessage?:
-      | 'PR_BODY'
-      | 'COMMIT_MESSAGES'
-      | 'BLANK'
-      | undefined;
-    allowMergeCommit?: boolean | undefined;
-    allowAutoMerge?: boolean | undefined;
     requireCodeOwnerReviews?: boolean | undefined;
     bypassPullRequestAllowances?:
       | {
-          users?: string[] | undefined;
-          teams?: string[] | undefined;
           apps?: string[] | undefined;
+          teams?: string[] | undefined;
+          users?: string[] | undefined;
         }
       | undefined;
     requiredApprovingReviewCount?: number | undefined;
     restrictions?:
       | {
-          users: string[];
           teams: string[];
+          users: string[];
           apps?: string[] | undefined;
         }
       | undefined;
@@ -232,6 +228,18 @@ export function createGithubRepoCreateAction(options: {
     requireBranchesToBeUpToDate?: boolean | undefined;
     requiredConversationResolution?: boolean | undefined;
     repoVisibility?: 'internal' | 'private' | 'public' | undefined;
+    deleteBranchOnMerge?: boolean | undefined;
+    allowMergeCommit?: boolean | undefined;
+    allowSquashMerge?: boolean | undefined;
+    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
+    squashMergeCommitMessage?:
+      | 'PR_BODY'
+      | 'COMMIT_MESSAGES'
+      | 'BLANK'
+      | undefined;
+    allowRebaseMerge?: boolean | undefined;
+    allowAutoMerge?: boolean | undefined;
+    allowUpdateBranch?: boolean | undefined;
     collaborators?:
       | (
           | {
@@ -242,10 +250,6 @@ export function createGithubRepoCreateAction(options: {
               team: string;
               access: string;
             }
-          | {
-              username: string;
-              access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-            }
         )[]
       | undefined;
     hasProjects?: boolean | undefined;
@@ -253,30 +257,24 @@ export function createGithubRepoCreateAction(options: {
     hasIssues?: boolean | undefined;
     token?: string | undefined;
     topics?: string[] | undefined;
-    repoVariables?:
-      | {
-          [key: string]: string;
-        }
-      | undefined;
-    secrets?:
-      | {
-          [key: string]: string;
-        }
-      | undefined;
+    repoVariables?: Record<string, string> | undefined;
+    secrets?: Record<string, string> | undefined;
     oidcCustomization?:
       | {
           useDefault: boolean;
           includeClaimKeys?: string[] | undefined;
         }
       | undefined;
-    requireCommitSigning?: boolean | undefined;
-    customProperties?:
-      | {
-          [key: string]: string;
-        }
-      | undefined;
+    requiredCommitSigning?: boolean | undefined;
+    requiredLinearHistory?: boolean | undefined;
+    customProperties?: Record<string, string> | undefined;
+    subscribe?: boolean | undefined;
   },
-  JsonObject
+  {
+    remoteUrl: string;
+    repoContentsUrl: string;
+  },
+  'v2'
 >;
 
 // @public
@@ -287,39 +285,44 @@ export function createGithubRepoPushAction(options: {
 }): TemplateAction<
   {
     repoUrl: string;
-    description?: string | undefined;
+    requireCodeOwnerReviews?: boolean | undefined;
+    dismissStaleReviews?: boolean | undefined;
+    requiredStatusCheckContexts?: string[] | undefined;
+    bypassPullRequestAllowances?:
+      | {
+          apps?: string[] | undefined;
+          teams?: string[] | undefined;
+          users?: string[] | undefined;
+        }
+      | undefined;
+    requiredApprovingReviewCount?: number | undefined;
+    restrictions?:
+      | {
+          teams: string[];
+          users: string[];
+          apps?: string[] | undefined;
+        }
+      | undefined;
+    requireBranchesToBeUpToDate?: boolean | undefined;
+    requiredConversationResolution?: boolean | undefined;
+    requireLastPushApproval?: boolean | undefined;
     defaultBranch?: string | undefined;
     protectDefaultBranch?: boolean | undefined;
     protectEnforceAdmins?: boolean | undefined;
     gitCommitMessage?: string | undefined;
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
-    requireCodeOwnerReviews?: boolean | undefined;
-    dismissStaleReviews?: boolean | undefined;
-    bypassPullRequestAllowances?:
-      | {
-          users?: string[];
-          teams?: string[];
-          apps?: string[];
-        }
-      | undefined;
-    requiredApprovingReviewCount?: number | undefined;
-    restrictions?:
-      | {
-          users: string[];
-          teams: string[];
-          apps?: string[];
-        }
-      | undefined;
-    requiredStatusCheckContexts?: string[] | undefined;
-    requireBranchesToBeUpToDate?: boolean | undefined;
-    requiredConversationResolution?: boolean | undefined;
     sourcePath?: string | undefined;
     token?: string | undefined;
     requiredCommitSigning?: boolean | undefined;
-    requireLastPushApproval?: boolean | undefined;
+    requiredLinearHistory?: boolean | undefined;
   },
-  JsonObject
+  {
+    remoteUrl: string;
+    repoContentsUrl: string;
+    commitHash: string;
+  },
+  'v2'
 >;
 
 // @public
@@ -332,13 +335,16 @@ export function createGithubWebhookAction(options: {
     repoUrl: string;
     webhookUrl: string;
     webhookSecret?: string | undefined;
-    events?: string[] | undefined;
+    events?: string[] | '*'[] | undefined;
     active?: boolean | undefined;
     contentType?: 'form' | 'json' | undefined;
     insecureSsl?: boolean | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
@@ -352,37 +358,19 @@ export function createPublishGithubAction(options: {
     description?: string | undefined;
     homepage?: string | undefined;
     access?: string | undefined;
-    defaultBranch?: string | undefined;
-    protectDefaultBranch?: boolean | undefined;
-    protectEnforceAdmins?: boolean | undefined;
-    deleteBranchOnMerge?: boolean | undefined;
-    gitCommitMessage?: string | undefined;
-    gitAuthorName?: string | undefined;
-    gitAuthorEmail?: string | undefined;
-    allowRebaseMerge?: boolean | undefined;
-    allowSquashMerge?: boolean | undefined;
-    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
-    squashMergeCommitMessage?:
-      | 'PR_BODY'
-      | 'COMMIT_MESSAGES'
-      | 'BLANK'
-      | undefined;
-    allowMergeCommit?: boolean | undefined;
-    allowAutoMerge?: boolean | undefined;
-    sourcePath?: string | undefined;
     bypassPullRequestAllowances?:
       | {
-          users?: string[];
-          teams?: string[];
-          apps?: string[];
+          apps?: string[] | undefined;
+          teams?: string[] | undefined;
+          users?: string[] | undefined;
         }
       | undefined;
     requiredApprovingReviewCount?: number | undefined;
     restrictions?:
       | {
-          users: string[];
           teams: string[];
-          apps?: string[];
+          users: string[];
+          apps?: string[] | undefined;
         }
       | undefined;
     requireCodeOwnerReviews?: boolean | undefined;
@@ -392,6 +380,25 @@ export function createPublishGithubAction(options: {
     requiredConversationResolution?: boolean | undefined;
     requireLastPushApproval?: boolean | undefined;
     repoVisibility?: 'internal' | 'private' | 'public' | undefined;
+    defaultBranch?: string | undefined;
+    protectDefaultBranch?: boolean | undefined;
+    protectEnforceAdmins?: boolean | undefined;
+    deleteBranchOnMerge?: boolean | undefined;
+    gitCommitMessage?: string | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
+    allowMergeCommit?: boolean | undefined;
+    allowSquashMerge?: boolean | undefined;
+    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
+    squashMergeCommitMessage?:
+      | 'PR_BODY'
+      | 'COMMIT_MESSAGES'
+      | 'BLANK'
+      | undefined;
+    allowRebaseMerge?: boolean | undefined;
+    allowAutoMerge?: boolean | undefined;
+    allowUpdateBranch?: boolean | undefined;
+    sourcePath?: string | undefined;
     collaborators?:
       | (
           | {
@@ -402,10 +409,6 @@ export function createPublishGithubAction(options: {
               team: string;
               access: string;
             }
-          | {
-              username: string;
-              access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-            }
         )[]
       | undefined;
     hasProjects?: boolean | undefined;
@@ -413,16 +416,8 @@ export function createPublishGithubAction(options: {
     hasIssues?: boolean | undefined;
     token?: string | undefined;
     topics?: string[] | undefined;
-    repoVariables?:
-      | {
-          [key: string]: string;
-        }
-      | undefined;
-    secrets?:
-      | {
-          [key: string]: string;
-        }
-      | undefined;
+    repoVariables?: Record<string, string> | undefined;
+    secrets?: Record<string, string> | undefined;
     oidcCustomization?:
       | {
           useDefault: boolean;
@@ -430,13 +425,16 @@ export function createPublishGithubAction(options: {
         }
       | undefined;
     requiredCommitSigning?: boolean | undefined;
-    customProperties?:
-      | {
-          [key: string]: string;
-        }
-      | undefined;
+    requiredLinearHistory?: boolean | undefined;
+    customProperties?: Record<string, string> | undefined;
+    subscribe?: boolean | undefined;
   },
-  JsonObject
+  {
+    remoteUrl: string;
+    repoContentsUrl: string;
+    commitHash: string;
+  },
+  'v2'
 >;
 
 // @public
@@ -444,16 +442,18 @@ export const createPublishGithubPullRequestAction: (
   options: CreateGithubPullRequestActionOptions,
 ) => TemplateAction<
   {
-    title: string;
-    branchName: string;
-    targetBranchName?: string | undefined;
-    description: string;
     repoUrl: string;
+    branchName: string;
+    title: string;
+    description: string;
+    filesToDelete?: string[] | undefined;
+    targetBranchName?: string | undefined;
     draft?: boolean | undefined;
-    targetPath?: string | undefined;
     sourcePath?: string | undefined;
+    targetPath?: string | undefined;
     token?: string | undefined;
     reviewers?: string[] | undefined;
+    assignees?: string[] | undefined;
     teamReviewers?: string[] | undefined;
     commitMessage?: string | undefined;
     update?: boolean | undefined;
@@ -461,11 +461,27 @@ export const createPublishGithubPullRequestAction: (
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
     forceEmptyGitAuthor?: boolean | undefined;
+    createWhenEmpty?: boolean | undefined;
   },
-  JsonObject
+  {
+    targetBranchName: string;
+    remoteUrl: string;
+    pullRequestNumber: number;
+  },
+  'v2'
 >;
 
 // @public
+export function getOctokitOptions(options: {
+  integrations: ScmIntegrationRegistry;
+  credentialsProvider?: GithubCredentialsProvider;
+  token?: string;
+  host: string;
+  owner?: string;
+  repo?: string;
+}): Promise<OctokitOptions>;
+
+// @public @deprecated
 export function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, Theme } from '@material-ui/core/styles';
@@ -61,7 +59,11 @@ import {
 } from '@backstage/plugin-search-react';
 import { SearchResult } from '@backstage/plugin-search-common';
 import { searchApiRef } from '@backstage/plugin-search-react';
-import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
+import {
+  SearchResultListItemBlueprint,
+  SearchFilterResultTypeBlueprint,
+  SearchFilterBlueprint,
+} from '@backstage/plugin-search-react/alpha';
 
 import { rootRouteRef } from './plugin';
 import { SearchClient } from './apis';
@@ -106,6 +108,12 @@ export const searchPage = PageBlueprint.makeWithOverrides({
   },
   inputs: {
     items: createExtensionInput([SearchResultListItemBlueprint.dataRefs.item]),
+    resultTypes: createExtensionInput([
+      SearchFilterResultTypeBlueprint.dataRefs.resultType,
+    ]),
+    searchFilters: createExtensionInput([
+      SearchFilterBlueprint.dataRefs.searchFilters,
+    ]),
   },
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
@@ -123,6 +131,15 @@ export const searchPage = PageBlueprint.makeWithOverrides({
             DefaultResultListItem
           );
         };
+
+        const resultTypes = inputs.resultTypes.map(item =>
+          item.get(SearchFilterResultTypeBlueprint.dataRefs.resultType),
+        );
+
+        const additionalSearchFilters = inputs.searchFilters.map(
+          item =>
+            item.get(SearchFilterBlueprint.dataRefs.searchFilters).component,
+        );
 
         const Component = () => {
           const classes = useSearchPageStyles();
@@ -155,7 +172,7 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                             name: 'Documentation',
                             icon: <DocsIcon />,
                           },
-                        ]}
+                        ].concat(resultTypes)}
                       />
                       <Paper className={classes.filters}>
                         {types.includes('techdocs') && (
@@ -185,7 +202,17 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                           className={classes.filter}
                           label="Kind"
                           name="kind"
-                          values={['Component', 'Template']}
+                          values={[
+                            'API',
+                            'Component',
+                            'Domain',
+                            'Group',
+                            'Location',
+                            'Resource',
+                            'System',
+                            'Template',
+                            'User',
+                          ]}
                         />
                         <SearchFilter.Checkbox
                           className={classes.filter}
@@ -193,6 +220,9 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                           name="lifecycle"
                           values={['experimental', 'production']}
                         />
+                        {additionalSearchFilters.map(SearchFilterComponent => (
+                          <SearchFilterComponent className={classes.filter} />
+                        ))}
                       </Paper>
                     </Grid>
                   )}
@@ -248,9 +278,13 @@ export const searchNavItem = NavItemBlueprint.make({
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'search',
+  pluginId: 'search',
+  info: { packageJson: () => import('../package.json') },
   extensions: [searchApi, searchPage, searchNavItem],
   routes: convertLegacyRouteRefs({
     root: rootRouteRef,
   }),
 });
+
+/** @alpha */
+export { searchTranslationRef } from './translation';

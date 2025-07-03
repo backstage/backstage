@@ -15,10 +15,7 @@
  */
 
 import os from 'os';
-import {
-  DatabaseManager,
-  loggerToWinstonLogger,
-} from '@backstage/backend-common';
+import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker } from './StorageTaskBroker';
@@ -35,6 +32,7 @@ import { WorkflowRunner } from './types';
 import ObservableImpl from 'zen-observable';
 import waitForExpect from 'wait-for-expect';
 import { mockServices } from '@backstage/backend-test-utils';
+import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 
 jest.mock('./NunjucksWorkflowRunner');
 const MockedNunjucksWorkflowRunner =
@@ -51,7 +49,10 @@ async function createStore(): Promise<DatabaseTaskStore> {
         },
       },
     }),
-  ).forPlugin('scaffolder');
+  ).forPlugin('scaffolder', {
+    logger: mockServices.logger.mock(),
+    lifecycle: mockServices.lifecycle.mock(),
+  });
   return await DatabaseTaskStore.create({
     database: manager,
   });

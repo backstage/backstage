@@ -1,5 +1,104 @@
 # @backstage/catalog-client
 
+## 1.10.2-next.0
+
+### Patch Changes
+
+- 6fb4143: allow arrays in the InMemoryCatalogClient to filter entities
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5-next.0
+
+## 1.10.1
+
+### Patch Changes
+
+- 22fad0d: Fixed `CatalogClient` error responses for `refreshEntity` and `addLocation`.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+
+## 1.10.1-next.0
+
+### Patch Changes
+
+- 22fad0d: Fixed `CatalogClient` error responses for `refreshEntity` and `addLocation`.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+
+## 1.10.0
+
+### Minor Changes
+
+- 1a003ff: Add `getLocations` method to `CatalogApi` and `CatalogClient`. This method calls the [`GET /locations`](https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-locations) endpoint from the catalog backend.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+
+## 1.10.0-next.0
+
+### Minor Changes
+
+- 1a003ff: Add `getLocations` method to `CatalogApi` and `CatalogClient`. This method calls the [`GET /locations`](https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-locations) endpoint from the catalog backend.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+
+## 1.9.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+
+## 1.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/errors@1.2.7-next.0
+
+## 1.9.0
+
+### Minor Changes
+
+- 384e494: Internal updates to generated code.
+
+### Patch Changes
+
+- d7e7836: Fixed a bug in the `queryEntities` method where errors were not being handled properly.
+- Updated dependencies
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+
+## 1.9.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/catalog-model@1.7.2-next.0
+
+## 1.9.0-next.1
+
+### Minor Changes
+
+- 384e494: Internal updates to generated code.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+
 ## 1.8.1-next.0
 
 ### Patch Changes

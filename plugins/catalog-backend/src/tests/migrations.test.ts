@@ -521,4 +521,173 @@ describe('migrations', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    '20250401200503_update_refresh_state_columns.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      // Run migrations up to just before the target migration
+      await migrateUntilBefore(
+        knex,
+        '20250401200503_update_refresh_state_columns.js',
+      );
+
+      // Insert a row with data into the refresh_state table
+      await knex('refresh_state').insert({
+        entity_id: 'test-id',
+        entity_ref: 'k:ns/test',
+        unprocessed_entity: JSON.stringify({ key: 'value' }),
+        cache: JSON.stringify({ cacheKey: 'cacheValue' }),
+        errors: '[]',
+        next_update_at: knex.fn.now(),
+        last_discovery_at: knex.fn.now(),
+      });
+
+      // Verify the data before the migration
+      const preMigrationData = await knex('refresh_state')
+        .where({ entity_id: 'test-id' })
+        .first();
+      expect(preMigrationData).toEqual(
+        expect.objectContaining({
+          entity_id: 'test-id',
+          entity_ref: 'k:ns/test',
+          unprocessed_entity: JSON.stringify({ key: 'value' }),
+          cache: JSON.stringify({ cacheKey: 'cacheValue' }),
+        }),
+      );
+
+      // Run the migration
+      await migrateUpOnce(knex);
+
+      // Verify the schema after the migration
+      const columnInfo = await knex('refresh_state').columnInfo();
+      const expectedType = knex.client.config.client.includes('mysql')
+        ? 'longtext'
+        : 'text';
+      expect(columnInfo.unprocessed_entity.type).toBe(expectedType);
+      expect(columnInfo.cache.type).toBe(expectedType);
+
+      // Verify the data after the migration
+      const postMigrationData = await knex('refresh_state')
+        .where({ entity_id: 'test-id' })
+        .first();
+      expect(postMigrationData).toEqual(
+        expect.objectContaining({
+          entity_id: 'test-id',
+          entity_ref: 'k:ns/test',
+          unprocessed_entity: JSON.stringify({ key: 'value' }),
+          cache: JSON.stringify({ cacheKey: 'cacheValue' }),
+        }),
+      );
+
+      // Roll back the migration
+      await migrateDownOnce(knex);
+
+      // Verify the schema after rolling back
+      const revertedColumnInfo = await knex('refresh_state').columnInfo();
+      expect(revertedColumnInfo.unprocessed_entity.type).toBe('text');
+      expect(revertedColumnInfo.cache.type).toBe('text');
+
+      // Verify the data after rolling back
+      const postRollbackData = await knex('refresh_state')
+        .where({ entity_id: 'test-id' })
+        .first();
+      expect(postRollbackData).toEqual(
+        expect.objectContaining({
+          entity_id: 'test-id',
+          entity_ref: 'k:ns/test',
+          unprocessed_entity: JSON.stringify({ key: 'value' }),
+          cache: JSON.stringify({ cacheKey: 'cacheValue' }),
+        }),
+      );
+
+      await knex.destroy();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    '20250514000000_refresh_state_references_big_increments.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      const read = async () => {
+        return await knex('refresh_state_references')
+          .orderBy('id')
+          .then(rs => rs.map(r => ({ ...r, id: String(r.id) })));
+      };
+
+      // Run migrations up to just before the target migration
+      await migrateUntilBefore(
+        knex,
+        '20250514000000_refresh_state_references_big_increments.js',
+      );
+
+      await knex('refresh_state').insert({
+        entity_id: 'a',
+        entity_ref: 'k:ns/a',
+        unprocessed_entity: '{}',
+        cache: '{}',
+        errors: '[]',
+        next_update_at: knex.fn.now(),
+        last_discovery_at: knex.fn.now(),
+      });
+      await knex('refresh_state_references').insert({
+        source_key: 'before',
+        target_entity_ref: 'k:ns/a',
+      });
+
+      await migrateUpOnce(knex);
+
+      // can still insert with auto generated id in sequence
+      await knex('refresh_state_references').insert({
+        source_key: 'after1',
+        target_entity_ref: 'k:ns/a',
+      });
+      await expect(read()).resolves.toEqual([
+        {
+          id: '1',
+          source_key: 'before',
+          source_entity_ref: null,
+          target_entity_ref: 'k:ns/a',
+        },
+        {
+          id: '2',
+          source_key: 'after1',
+          source_entity_ref: null,
+          target_entity_ref: 'k:ns/a',
+        },
+      ]);
+
+      await migrateDownOnce(knex);
+
+      // can still insert with auto generated id in sequence
+      await knex('refresh_state_references').insert({
+        source_key: 'after2',
+        target_entity_ref: 'k:ns/a',
+      });
+      await expect(read()).resolves.toEqual([
+        {
+          id: '1',
+          source_key: 'before',
+          source_entity_ref: null,
+          target_entity_ref: 'k:ns/a',
+        },
+        {
+          id: '2',
+          source_key: 'after1',
+          source_entity_ref: null,
+          target_entity_ref: 'k:ns/a',
+        },
+        {
+          id: '3',
+          source_key: 'after2',
+          source_entity_ref: null,
+          target_entity_ref: 'k:ns/a',
+        },
+      ]);
+
+      await knex.destroy();
+    },
+  );
 });

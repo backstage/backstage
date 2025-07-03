@@ -24,11 +24,30 @@ import { kubernetesObjectsProviderExtensionPoint } from '@backstage/plugin-kuber
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 describe('resourcesRoutes', () => {
   let app: ExtendedHttpServer;
 
-  beforeAll(async () => {
+  const startPermissionDeniedTestServer = async () => {
+    const { server } = await startTestBackend({
+      features: [
+        mockServices.rootConfig.factory({
+          data: {
+            kubernetes: {
+              serviceLocatorMethod: { type: 'multiTenant' },
+              clusterLocatorMethods: [],
+            },
+          },
+        }),
+        mockServices.permissions.factory({ result: AuthorizeResult.DENY }),
+        import('@backstage/plugin-kubernetes-backend'),
+      ],
+    });
+    return server;
+  };
+
+  beforeEach(async () => {
     const objectsProviderMock = {
       getKubernetesObjectsByEntity: jest.fn().mockImplementation(args => {
         if (args.entity.metadata.name === 'inject500') {
@@ -109,6 +128,8 @@ describe('resourcesRoutes', () => {
           },
         }),
         import('@backstage/plugin-kubernetes-backend'),
+        import('@backstage/plugin-permission-backend'),
+        import('@backstage/plugin-permission-backend-module-allow-all-policy'),
         createBackendModule({
           pluginId: 'kubernetes',
           moduleId: 'test-objects-provider',
@@ -125,6 +146,10 @@ describe('resourcesRoutes', () => {
     });
 
     app = server;
+  });
+
+  afterEach(() => {
+    app.stop();
   });
 
   describe('POST /resources/workloads/query', () => {
@@ -169,7 +194,7 @@ describe('resourcesRoutes', () => {
           error: { name: 'InputError', message: 'entity is a required field' },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/workloads/query',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 400 },
         });
@@ -193,7 +218,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/workloads/query',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 400 },
         });
@@ -216,7 +241,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/workloads/query',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 400 },
         });
@@ -240,7 +265,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/workloads/query',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 401 },
         });
@@ -264,10 +289,17 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/workloads/query',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 401 },
         });
+    });
+    it('403 when permission blocks endpoint', async () => {
+      app = await startPermissionDeniedTestServer();
+      const response = await request(app).post(
+        '/api/kubernetes/resources/workloads/query',
+      );
+      expect(response.status).toEqual(403);
     });
     // eslint-disable-next-line jest/expect-expect
     it('500 handle gracefully', async () => {
@@ -287,7 +319,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/workloads/query',
+            url: '/resources/workloads/query',
           },
           response: { statusCode: 500 },
         });
@@ -346,7 +378,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -370,7 +402,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -394,7 +426,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -420,7 +452,7 @@ describe('resourcesRoutes', () => {
           error: { name: 'InputError', message: 'entity is a required field' },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -451,7 +483,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -481,7 +513,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 400 },
         });
@@ -512,7 +544,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 401 },
         });
@@ -543,10 +575,17 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 401 },
         });
+    });
+    it('403 when permission blocks endpoint', async () => {
+      app = await startPermissionDeniedTestServer();
+      const response = await request(app).post(
+        '/api/kubernetes/resources/custom/query',
+      );
+      expect(response.status).toEqual(403);
     });
     // eslint-disable-next-line jest/expect-expect
     it('500 handle gracefully', async () => {
@@ -573,7 +612,7 @@ describe('resourcesRoutes', () => {
           },
           request: {
             method: 'POST',
-            url: '/api/kubernetes/resources/custom/query',
+            url: '/resources/custom/query',
           },
           response: { statusCode: 500 },
         });

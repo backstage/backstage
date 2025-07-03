@@ -2,7 +2,6 @@
 id: services
 title: Backend Services
 sidebar_label: Services
-# prettier-ignore
 description: Services for backend plugins
 ---
 

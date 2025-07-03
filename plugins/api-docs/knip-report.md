@@ -8,9 +8,10 @@
 | graphql-config       | package.json | error    |
 | graphql-ws           | package.json | error    |
 
-## Unused devDependencies (1)
+## Unused devDependencies (2)
 
-| Name                 | Location     | Severity |
-| :------------------- | :----------- | :------- |
-| @testing-library/dom | package.json | error    |
+| Name                    | Location     | Severity |
+| :---------------------- | :----------- | :------- |
+| @backstage/core-app-api | package.json | error    |
+| @types/highlightjs      | package.json | error    |
 

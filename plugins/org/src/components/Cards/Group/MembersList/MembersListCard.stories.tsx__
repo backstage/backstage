@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import Grid from '@material-ui/core/Grid';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import {
   groupA,
   mockedCatalogApiSupportingGroups,

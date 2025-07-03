@@ -1,5 +1,575 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.8.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-scaffolder-node@0.9.1-next.1
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+
+## 0.8.1-next.0
+
+### Patch Changes
+
+- f36bcf9: Added support for file deletion to `publish:github:pull-request` action.
+
+  Example usage:
+
+  ```diff
+    - action: publish:github:pull-request
+      id: clean-up-pr
+      input:
+        description: This is the description
+  +     filesToDelete:
+  +       - outdated/changelog.md
+  +       - sample-file.txt
+        owner: owner
+        repo: repo
+        title: Title Goes Here
+
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.1-next.0
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.8.0
+
+### Minor Changes
+
+- 5863b04: **BREAKING CHANGES**
+
+  The `createGithubEnvironmentAction` action no longer requires an `AuthService`, and now accepts a `CatalogService` instead of `CatalogClient`.
+
+  Unless you're providing your own override action to the default, this should be a non-breaking change.
+
+  You can migrate using the following if you're getting typescript errors:
+
+  ```ts
+  import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+
+  export const myModule = createBackendModule({
+    pluginId: 'scaffolder',
+    moduleId: 'test',
+    register({ registerInit }) {
+      registerInit({
+        deps: {
+          scaffolder: scaffolderActionsExtensionPoint,
+          catalog: catalogServiceRef,
+        },
+        async init({ scaffolder, catalog }) {
+          scaffolder.addActions(
+            createGithubEnvironmentAction({
+              catalog,
+            }),
+          );
+        },
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- 575c76b: Migrate to using new actions
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+
+## 0.8.0-next.2
+
+### Minor Changes
+
+- 5863b04: **BREAKING CHANGES**
+
+  The `createGithubEnvironmentAction` action no longer requires an `AuthService`, and now accepts a `CatalogService` instead of `CatalogClient`.
+
+  Unless you're providing your own override action to the default, this should be a non-breaking change.
+
+  You can migrate using the following if you're getting typescript errors:
+
+  ```ts
+  import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+
+  export const myModule = createBackendModule({
+    pluginId: 'scaffolder',
+    moduleId: 'test',
+    register({ registerInit }) {
+      registerInit({
+        deps: {
+          scaffolder: scaffolderActionsExtensionPoint,
+          catalog: catalogServiceRef,
+        },
+        async init({ scaffolder, catalog }) {
+          scaffolder.addActions(
+            createGithubEnvironmentAction({
+              catalog,
+            }),
+          );
+        },
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- 575c76b: Migrate to using new actions
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+
+## 0.7.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-scaffolder-node@0.8.3-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+
+## 0.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.3-next.0
+  - @backstage/backend-plugin-api@1.4.0-next.0
+
+## 0.7.1
+
+### Patch Changes
+
+- 6579c2c: Use action context logger in Octokit client
+- 72d019d: Removed various typos
+- b2b654c: Added optional assignees parameter to `publish:github:pull-request` action
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-scaffolder-node@0.8.2
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.7.1-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/plugin-scaffolder-node@0.8.2-next.3
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.7.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/plugin-scaffolder-node@0.8.2-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.7.1-next.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/plugin-scaffolder-node@0.8.2-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- 6579c2c: Use action context logger in Octokit client
+- b2b654c: Added optional assignees parameter to `publish:github:pull-request` action
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/plugin-scaffolder-node@0.8.2-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.7.0
+
+### Minor Changes
+
+- c761cf5: **BREAKING** The `publish:github` scaffolder action now defaults to initializing with a branch named "main" instead of "master" when creating new repositories.
+
+  If you or your organization have relied on all new github repositories having a default branch name of "master" you **must** set the `defaultBranch: 'master'` in your existing templates that feature the `publish:github` scaffolder action.
+
+  To keep using the name "master" for your new github repos, these are the **required** changes:
+
+  ```diff
+      - id: publish
+        name: Publish
+        action: publish:github
+        input:
+          allowedHosts: ['github.com']
+          description: This is ${{ parameters.name }}
+          repoUrl: ${{ parameters.repoUrl }}
+  +       defaultBranch: 'master'
+  ```
+
+### Patch Changes
+
+- 1af427a: Made "github:autolinks:create" action idempotent
+- 79dc5ac: Made "github:deployKey:create" action idempotent
+- 411c879: Add support to github:repo:create to allow branch updates
+- 180ea6e: Made "github:branch-protection:create" action idempotent
+- 0be1a1e: Made "publish:github" action idempotent
+- a833f0f: Made "github:actions:dispatch" action idempotent
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/integration@1.16.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.6.2-next.2
+
+### Patch Changes
+
+- 411c879: Add support to github:repo:create to allow branch updates
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-node@0.8.1-next.1
+
+## 0.6.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/plugin-scaffolder-node@0.8.1-next.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- 1af427a: Made "github:autolinks:create" action idempotent
+- 180ea6e: Made "github:branch-protection:create" action idempotent
+- 0be1a1e: Made "publish:github" action idempotent
+- a833f0f: Made "github:actions:dispatch" action idempotent
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.2
+  - @backstage/types@1.2.1
+
+## 0.6.1
+
+### Patch Changes
+
+- 11bc3e6: Made "github:pages:enable" action idempotent
+- 3f45e0f: Made "github:environment:create" action idempotent
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- 8c38687: Made "github:issues:label" action idempotent
+- 89948b2: Made "github:repo:push" action idempotent
+- 9391f58: Pass `undefined` to some parameters for `createOrUpdateEnvironment` as these values are not always supported in different plans of GitHub
+- 8182a59: Made "github:webhook" action idempotent
+- 8f9c54c: Made "github:repo:create" action idempotent
+- 0ae0c77: Made "publish:github:pull-request" action idempotent
+- Updated dependencies
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-scaffolder-node@0.8.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.6.1-next.2
+
+### Patch Changes
+
+- 9391f58: Pass `undefined` to some parameters for `createOrUpdateEnvironment` as these values are not always supported in different plans of GitHub
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.0-next.2
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.6.1-next.1
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.7.1-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-scaffolder-node@0.7.1-next.0
+
+## 0.6.0
+
+### Minor Changes
+
+- bb8302b: **BREAKING**: The `remoteUrl` output is no longer required, it can be empty only when using the new `createWhenEmpty` boolean flag.
+
+### Patch Changes
+
+- 5c187f9: **DEPRECATION**: The `getOctokitOptions` function signature with `repoUrl` option has been deprecated in favour of a function signature with individual `host`, `owner`, and `repo` parameters:
+
+  ```diff
+    const octokitOptions = await getOctokitOptions({
+      integrations,
+      credentialsProvider,
+      token,
+  -   repoUrl,
+  +   host,
+  +   owner,
+  +   repo,
+    });
+  ```
+
+- b98d511: clean up github action schemas
+- 5d469c9: Added support for autocompletion of GitHub branches in scaffolder
+- 8e67e4a: Added support for autocompletion to GithubRepoPicker component
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-scaffolder-node@0.7.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.6.0-next.2
+
+### Minor Changes
+
+- bb8302b: **BREAKING**: The `remoteUrl` output is no longer required, it can be empty only when using the new `createWhenEmpty` boolean flag.
+
+### Patch Changes
+
+- 5c187f9: **DEPRECATION**: The `getOctokitOptions` function signature with `repoUrl` option has been deprecated in favour of a function signature with individual `host`, `owner`, and `repo` parameters:
+
+  ```diff
+    const octokitOptions = await getOctokitOptions({
+      integrations,
+      credentialsProvider,
+      token,
+  -   repoUrl,
+  +   host,
+  +   owner,
+  +   repo,
+    });
+  ```
+
+- 5d469c9: Added support for autocompletion of GitHub branches in scaffolder
+- 8e67e4a: Added support for autocompletion to GithubRepoPicker component
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.7.0-next.2
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.5.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-scaffolder-node@0.7.0-next.1
+
+## 0.5.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/plugin-scaffolder-node@0.7.0-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+
+## 0.5.5
+
+### Patch Changes
+
+- edaf925: Updates to allow users to subscribe to the newly created repository within GitHub to mimic similar functionality found within the GitHub UI.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.6.3
+  - @backstage/integration@1.16.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.5.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-scaffolder-node@0.6.3-next.1
+  - @backstage/catalog-client@1.9.1-next.0
+  - @backstage/integration@1.16.1-next.0
+
+## 0.5.5-next.1
+
+### Patch Changes
+
+- edaf925: Updates to allow users to subscribe to the newly created repository within GitHub to mimic similar functionality found within the GitHub UI.
+
+## 0.5.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.6.3-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/integration@1.16.0
+
+## 0.5.4
+
+### Patch Changes
+
+- 7df6179: adding requiredLinearHistory property for branch protection settings
+- b5e002b: Change `github:environment:create` action to request and use a token when resolving reviewer entity refs from the Backstage catalog.
+- e913fdf: Add github backend module to create-app and improve error messages
+- 973dd6f: Minor spell fix in action parameters
+- Updated dependencies
+  - @backstage/integration@1.16.0
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-scaffolder-node@0.6.2
+  - @backstage/catalog-client@1.9.0
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+
+## 0.5.4-next.2
+
+### Patch Changes
+
+- e913fdf: Add github backend module to create-app and improve error messages
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-scaffolder-node@0.6.2-next.2
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/integration@1.16.0-next.1
+
+## 0.5.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.9.0-next.1
+  - @backstage/plugin-scaffolder-node@0.6.2-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.16.0-next.0
+
 ## 0.5.3-next.0
 
 ### Patch Changes

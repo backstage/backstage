@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { FC } from 'react';
 import { useOutlet } from 'react-router-dom';
-import { TableColumn, TableProps } from '@backstage/core-components';
 import {
+  TableColumn,
+  TableProps,
+  TableOptions,
+} from '@backstage/core-components';
+import {
+  EntityListPagination,
   EntityOwnerPickerProps,
   UserListFilterKind,
 } from '@backstage/plugin-catalog-react';
@@ -34,6 +39,10 @@ export type TechDocsIndexPageProps = {
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  pagination?: EntityListPagination;
+  options?: TableOptions<DocsTableRow>;
+  PageWrapper?: FC;
+  CustomHeader?: FC;
 };
 
 export const TechDocsIndexPage = (props: TechDocsIndexPageProps) => {

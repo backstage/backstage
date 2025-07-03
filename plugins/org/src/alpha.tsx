@@ -19,7 +19,6 @@ import {
   convertLegacyRouteRefs,
 } from '@backstage/core-compat-api';
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
-import React from 'react';
 import { catalogIndexRouteRef } from './routes';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
@@ -60,20 +59,35 @@ const EntityOwnershipCard = EntityCardBlueprint.make({
 });
 
 /** @alpha */
-const EntityUserProfileCard = EntityCardBlueprint.make({
+const EntityUserProfileCard = EntityCardBlueprint.makeWithOverrides({
   name: 'user-profile',
-  params: {
-    filter: 'kind:user',
-    loader: async () =>
-      import('./components/Cards/User/UserProfileCard/UserProfileCard').then(
-        m => compatWrapper(<m.UserProfileCard />),
-      ),
+  config: {
+    schema: {
+      maxRelations: z => z.number().optional(),
+      hideIcons: z => z.boolean().default(false),
+    },
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      filter: 'kind:user',
+      loader: async () =>
+        import('./components/Cards/User/UserProfileCard/UserProfileCard').then(
+          m =>
+            compatWrapper(
+              <m.UserProfileCard
+                maxRelations={config.maxRelations}
+                hideIcons={config.hideIcons}
+              />,
+            ),
+        ),
+    });
   },
 });
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'org',
+  pluginId: 'org',
+  info: { packageJson: () => import('../package.json') },
   extensions: [
     EntityGroupProfileCard,
     EntityMembersListCard,
@@ -84,3 +98,5 @@ export default createFrontendPlugin({
     catalogIndex: catalogIndexRouteRef,
   }),
 });
+
+export { orgTranslationRef } from './translation';

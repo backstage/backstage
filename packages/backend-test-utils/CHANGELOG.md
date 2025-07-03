@@ -1,5 +1,514 @@
 # @backstage/backend-test-utils
 
+## 1.7.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/backend-defaults@0.11.1-next.1
+  - @backstage/backend-app-api@1.2.5-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-auth-node@0.6.5-next.0
+  - @backstage/plugin-events-node@0.4.13-next.0
+
+## 1.7.0-next.0
+
+### Minor Changes
+
+- ead925a: Add a standard `toString` on credentials objects
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.1-next.0
+  - @backstage/backend-app-api@1.2.4
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.0
+
+## 1.6.0
+
+### Minor Changes
+
+- 6dfb7be: Added `mockServices.permissions()` that can return actual results.
+- c999c25: Added an `actionsRegistryServiceMock` and `actionsServiceMock` to `/alpha` export for the experimental services.
+
+  This allows you to write tests for your actions by doing something similar to the following:
+
+  ```ts
+  import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+
+  const mockActionsRegistry = actionsRegistryServiceMock();
+  const mockCatalog = catalogServiceMock({
+    entities: [
+     ...
+    ],
+  });
+
+  createGetCatalogEntityAction({
+    catalog: mockCatalog,
+    actionsRegistry: mockActionsRegistry,
+  });
+
+  await expect(
+    mockActionsRegistry.invoke({
+      id: 'test:get-catalog-entity',
+      input: { name: 'test' },
+    }),
+  ).resolves.toEqual(...)
+  ```
+
+### Patch Changes
+
+- 12c1fd4: Make the `user` credentials mock behave more like production
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.0
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/backend-app-api@1.2.4
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.12
+  - @backstage/plugin-permission-common@0.9.0
+
+## 1.6.0-next.2
+
+### Patch Changes
+
+- 12c1fd4: Make the `user` credentials mock behave more like production
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.0-next.2
+  - @backstage/backend-app-api@1.2.4-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+
+## 1.6.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/backend-app-api@1.2.4-next.1
+  - @backstage/backend-defaults@0.10.1-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.12-next.1
+
+## 1.6.0-next.0
+
+### Minor Changes
+
+- c999c25: Added mock implementations for `ActionsService` and `ActionsRegistryService`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/backend-defaults@0.10.1-next.0
+  - @backstage/backend-app-api@1.2.4-next.0
+  - @backstage/plugin-auth-node@0.6.4-next.0
+  - @backstage/plugin-events-node@0.4.12-next.0
+
+## 1.5.0
+
+### Minor Changes
+
+- b3832d1: Add a functional `mockServices.events()`
+- c6bc67d: Added Valkey support alongside Redis in backend-defaults cache clients, using the new Keyv Valkey package. Also extended backend-test-utils to support Valkey in tests.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0
+  - @backstage/backend-app-api@1.2.3
+  - @backstage/plugin-auth-node@0.6.3
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.11
+
+## 1.5.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0-next.3
+  - @backstage/plugin-auth-node@0.6.3-next.2
+  - @backstage/backend-app-api@1.2.3-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.11-next.2
+
+## 1.5.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/backend-app-api@1.2.3-next.1
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+
+## 1.5.0-next.1
+
+### Minor Changes
+
+- c6bc67d: Added Valkey support alongside Redis in backend-defaults cache clients, using the new Keyv Valkey package. Also extended backend-test-utils to support Valkey in tests.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0-next.1
+  - @backstage/backend-app-api@1.2.3-next.1
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.11-next.1
+
+## 1.5.0-next.0
+
+### Minor Changes
+
+- b3832d1: Add a functional `mockServices.events()`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.1-next.0
+  - @backstage/backend-app-api@1.2.3-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.6.3-next.0
+  - @backstage/plugin-events-node@0.4.11-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.4.0
+
+### Minor Changes
+
+- cf4eb13: Added `actor` property to `BackstageUserPrincipal` containing the subject of the last service (if any) who performed authentication on behalf of the user.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/backend-app-api@1.2.2
+  - @backstage/plugin-auth-node@0.6.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.10
+
+## 1.3.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0-next.2
+  - @backstage/backend-app-api@1.2.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-events-node@0.4.9
+
+## 1.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0-next.1
+  - @backstage/backend-app-api@1.2.1
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.9
+
+## 1.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0-next.0
+  - @backstage/backend-app-api@1.2.1
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.9
+
+## 1.3.1
+
+### Patch Changes
+
+- c3a91d5: Added support for PostgreSQL version 17
+- 37c6510: Moved `@types/jest` to `devDependencies`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.2
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-events-node@0.4.9
+  - @backstage/backend-app-api@1.2.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.3.1-next.2
+
+### Patch Changes
+
+- 37c6510: Moved `@types/jest` to `devDependencies`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.2-next.2
+  - @backstage/plugin-events-node@0.4.9-next.2
+  - @backstage/backend-app-api@1.2.1-next.2
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.6.1-next.1
+
+## 1.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1-next.1
+  - @backstage/backend-app-api@1.2.1-next.1
+  - @backstage/backend-defaults@0.8.2-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.9-next.1
+
+## 1.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.2-next.0
+  - @backstage/backend-app-api@1.2.1-next.0
+  - @backstage/plugin-auth-node@0.6.1-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-events-node@0.4.9-next.0
+
+## 1.3.0
+
+### Minor Changes
+
+- dd05a97: Added mocks for the new `PermissionsRegistryService`.
+- a4aa244: This change introduces mocks for the `auditor` service.
+
+### Patch Changes
+
+- f866b86: Internal refactor to use explicit `require` for lazy-loading dependency.
+- fb051f2: Sync feature installation compatibility logic with `@backstage/backend-app-api`.
+- 72cddf2: Added the new `getPermissionRuleset` method to `mockServices.permissionsRegistry`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.0
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-auth-node@0.6.0
+  - @backstage/backend-app-api@1.2.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.8
+
+## 1.3.0-next.3
+
+### Patch Changes
+
+- 72cddf2: Added the new `getPermissionRuleset` method to `mockServices.permissionsRegistry`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.0-next.3
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/backend-app-api@1.2.0-next.3
+  - @backstage/plugin-auth-node@0.6.0-next.2
+  - @backstage/plugin-events-node@0.4.8-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.3.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/plugin-auth-node@0.6.0-next.1
+  - @backstage/backend-defaults@0.8.0-next.2
+  - @backstage/backend-app-api@1.2.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-events-node@0.4.8-next.1
+
+## 1.3.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@1.1.2-next.1
+  - @backstage/backend-defaults@0.8.0-next.1
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-events-node@0.4.8-next.0
+
+## 1.3.0-next.0
+
+### Minor Changes
+
+- dd05a97: Added mocks for the new `PermissionsRegistryService`.
+- a4aa244: This change introduces mocks for the `auditor` service.
+
+### Patch Changes
+
+- f866b86: Internal refactor to use explicit `require` for lazy-loading dependency.
+- fb051f2: Sync feature installation compatibility logic with `@backstage/backend-app-api`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.8.0-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/backend-app-api@1.1.2-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-events-node@0.4.8-next.0
+
+## 1.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.7.0
+  - @backstage/backend-app-api@1.1.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.6
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-events-node@0.4.7
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-app-api@1.1.1-next.1
+  - @backstage/backend-defaults@0.7.0-next.1
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.1
+  - @backstage/plugin-events-node@0.4.7-next.1
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.7.0-next.0
+  - @backstage/backend-app-api@1.1.1-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+  - @backstage/plugin-events-node@0.4.7-next.0
+
+## 1.2.0
+
+### Minor Changes
+
+- de6f280: **BREAKING** Upgraded @keyv/redis and keyv packages to resolve a bug related to incorrect resolution of cache keys.
+
+  This is a breaking change for clients using the `redis` store for cache with `useRedisSets` option set to false since cache keys will be calculated differently (without the sets:namespace: prefix). For clients with default configuration (or useRedisSets set to false) the cache keys will stay the same, but since @keyv/redis library no longer supports redis sets they won't be utilised anymore.
+
+  If you were using `useRedisSets` option in configuration make sure to remove it from `app-config.yaml`:
+
+  ```diff
+  backend:
+    cache:
+      store: redis
+      connection: redis://user:pass@cache.example.com:6379
+  -   useRedisSets: false
+  ```
+
+### Patch Changes
+
+- 0e9c9fa: Mock the new `RootLifecycleService.addBeforeShutdownHook` method.
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/backend-app-api@1.1.0
+  - @backstage/plugin-events-node@0.4.6
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+
+## 1.2.0-next.2
+
+### Patch Changes
+
+- 0e9c9fa: Mock the new `RootLifecycleService.addBeforeShutdownHook` method.
+- Updated dependencies
+  - @backstage/backend-defaults@0.6.0-next.2
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/backend-app-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.2
+  - @backstage/plugin-events-node@0.4.6-next.2
+  - @backstage/config@1.3.1-next.0
+  - @backstage/types@1.2.0
+
+## 1.2.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5-next.1
+  - @backstage/backend-defaults@0.6.0-next.1
+  - @backstage/backend-app-api@1.1.0-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-events-node@0.4.6-next.1
+
 ## 1.2.0-next.0
 
 ### Minor Changes

@@ -1,5 +1,266 @@
 # @backstage/plugin-permission-node
 
+## 0.10.2-next.0
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-auth-node@0.6.5-next.0
+
+## 0.10.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.9.0
+
+## 0.10.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.9.0
+
+## 0.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-auth-node@0.6.4-next.0
+
+## 0.10.0
+
+### Minor Changes
+
+- 4da2965: Fixed an issue causing the `PermissionClient` to exhaust the request body size limit too quickly when making many requests.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.3
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.10.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.3-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.9.0-next.0
+
+## 0.10.0-next.1
+
+### Minor Changes
+
+- 4da2965: Fixed an issue causing the `PermissionClient` to exhaust the request body size limit too quickly when making many requests.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 0.9.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.6.3-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.9.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/plugin-auth-node@0.6.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.9.0
+
+### Minor Changes
+
+- 22ace13: **BREAKING** The `ServerPermissionClient` can no longer be instantiated with a `tokenManager` and must instead be instantiated with an `auth` service. If you are still on the legacy backend system, use `createLegacyAuthAdapters()` from `@backstage/backend-common` to create a compatible `auth` service.
+
+### Patch Changes
+
+- 728e3e1: Improved type inference when passing a `PermissionResourceRef` to `createPermissionRule`.
+- 876f2e1: Deprecated `createPermissionIntegrationRouter` and related types, which has been replaced by `PermissionRegistryService`. For more information, including how to migrate existing plugins, see the [service docs](https://backstage.io/docs/backend-system/core-services/permissions-registry).
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.8.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.8.9-next.0
+
+### Patch Changes
+
+- 728e3e1: Improved type inference when passing a `PermissionResourceRef` to `createPermissionRule`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.0
+
+## 0.8.8
+
+### Patch Changes
+
+- 049d5d4: The returned router from `createPermissionIntegrationRouter` is now mutable, allowing for permissions and resources to be added after creation of the router.
+- b71f634: Added a new `PermissionRuleset` type that encapsulates a lookup function for permission rules, which can be created by the new `PermissionsRegistryService` via the `getPermissionRuleset` method. The `createConditionTransformer` and `createConditionAuthorizer` functions have been adapted to receive these accessors as arguments, with their older counterparts being deprecated.
+- a9621de: Added a new `createPermissionResourceRef` utility that encapsulates the constants and types related to a permission resource types. The `createConditionExports` and `createPermissionRule` functions have also been adapted to accept these references as arguments, deprecating their older counterparts.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-auth-node@0.6.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.8.8-next.2
+
+### Patch Changes
+
+- b71f634: Added a new `PermissionRuleset` type that encapsulates a lookup function for permission rules, which can be created by the new `PermissionsRegistryService` via the `getPermissionRuleset` method. The `createConditionTransformer` and `createConditionAuthorizer` functions have been adapted to receive these accessors as arguments, with their older counterparts being deprecated.
+- a9621de: Added a new `createPermissionResourceRef` utility that encapsulates the constants and types related to a permission resource types. The `createConditionExports` and `createPermissionRule` functions have also been adapted to accept these references as arguments, deprecating their older counterparts.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/plugin-auth-node@0.6.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.8.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/plugin-auth-node@0.6.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.8.8-next.0
+
+### Patch Changes
+
+- 049d5d4: The returned router from `createPermissionIntegrationRouter` is now mutable, allowing for permissions and resources to be added after creation of the router.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.8.7
+
+### Patch Changes
+
+- d9d62ef: Remove some internal usages of the backend-common package
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.6
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.8.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.1
+  - @backstage/plugin-permission-common@0.8.4-next.0
+
+## 0.8.7-next.0
+
+### Patch Changes
+
+- d9d62ef: Remove some internal usages of the backend-common package
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.6-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/plugin-permission-common@0.8.3
+
+## 0.8.6
+
+### Patch Changes
+
+- b149e2a: The `createPermissionIntegrationRouter` function now detects and prevents the exposure of duplicate permissions.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+  - @backstage/plugin-permission-common@0.8.3
+
+## 0.8.6-next.2
+
+### Patch Changes
+
+- b149e2a: The `createPermissionIntegrationRouter` function now detects and prevents the exposure of duplicate permissions.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.2
+  - @backstage/config@1.3.1-next.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+
+## 0.8.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/plugin-permission-common@0.8.2
+
 ## 0.8.6-next.0
 
 ### Patch Changes

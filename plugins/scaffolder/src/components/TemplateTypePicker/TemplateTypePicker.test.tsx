@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { fireEvent } from '@testing-library/react';
 import { capitalize } from 'lodash';
 import { Entity } from '@backstage/catalog-model';
@@ -90,7 +89,7 @@ describe('<TemplateTypePicker/>', () => {
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
-            filters: { kind: new EntityKindFilter('template') },
+            filters: { kind: new EntityKindFilter('template', 'Template') },
             backendEntities: entities,
           }}
         >
@@ -113,7 +112,7 @@ describe('<TemplateTypePicker/>', () => {
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
-            filters: { kind: new EntityKindFilter('template') },
+            filters: { kind: new EntityKindFilter('template', 'Template') },
             backendEntities: entities,
           }}
         >

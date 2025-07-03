@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import { RELATION_HAS_PART } from '@backstage/catalog-model';
-import { InfoCardVariants, TableOptions } from '@backstage/core-components';
-import React from 'react';
+import { DomainEntity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import {
-  asComponentEntities,
-  componentEntityColumns,
+  InfoCardVariants,
+  TableColumn,
+  TableOptions,
+} from '@backstage/core-components';
+import {
+  asDomainEntities,
+  domainEntityColumns,
+  domainEntityHelpLink,
   RelatedEntitiesCard,
 } from '../RelatedEntitiesCard';
 import { catalogTranslationRef } from '../../alpha/translation';
@@ -29,6 +33,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 export interface HasSubdomainsCardProps {
   variant?: InfoCardVariants;
   tableOptions?: TableOptions;
+  columns?: TableColumn<DomainEntity>[];
   title?: string;
 }
 
@@ -36,8 +41,9 @@ export function HasSubdomainsCard(props: HasSubdomainsCardProps) {
   const { t } = useTranslationRef(catalogTranslationRef);
   const {
     variant = 'gridItem',
-    tableOptions = {},
     title = t('hasSubdomainsCard.title'),
+    columns = domainEntityColumns,
+    tableOptions = {},
   } = props;
   return (
     <RelatedEntitiesCard
@@ -45,10 +51,10 @@ export function HasSubdomainsCard(props: HasSubdomainsCardProps) {
       title={title}
       entityKind="Domain"
       relationType={RELATION_HAS_PART}
-      columns={componentEntityColumns}
-      asRenderableEntities={asComponentEntities}
+      columns={columns}
+      asRenderableEntities={asDomainEntities}
       emptyMessage={t('hasSubdomainsCard.emptyMessage')}
-      emptyHelpLink="https://backstage.io/docs/features/software-catalog/descriptor-format/#specsubdomainof-optional"
+      emptyHelpLink={domainEntityHelpLink}
       tableOptions={tableOptions}
     />
   );

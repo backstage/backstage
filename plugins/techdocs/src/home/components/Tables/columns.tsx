@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Link, SubvalueCell, TableColumn } from '@backstage/core-components';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
@@ -85,3 +84,11 @@ export const columnFactories = {
     };
   },
 };
+
+export const defaultColumns: TableColumn<DocsTableRow>[] = [
+  columnFactories.createTitleColumn({ hidden: true }),
+  columnFactories.createNameColumn(),
+  columnFactories.createOwnerColumn(),
+  columnFactories.createKindColumn(),
+  columnFactories.createTypeColumn(),
+];

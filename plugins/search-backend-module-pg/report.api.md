@@ -164,6 +164,8 @@ export interface PgSearchQuery {
   // (undocumented)
   limit: number;
   // (undocumented)
+  normalization?: number;
+  // (undocumented)
   offset: number;
   // (undocumented)
   options: PgSearchHighlightOptions;
@@ -182,6 +184,7 @@ export type PgSearchQueryTranslator = (
 // @public
 export type PgSearchQueryTranslatorOptions = {
   highlightOptions: PgSearchHighlightOptions;
+  normalization?: number;
 };
 
 // @public (undocumented)

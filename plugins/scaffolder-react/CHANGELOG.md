@@ -1,5 +1,585 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.17.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/plugin-permission-react@0.4.36-next.0
+  - @backstage/plugin-scaffolder-common@1.5.12-next.0
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
+## 1.17.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/catalog-client@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.35
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 1.17.0
+
+### Minor Changes
+
+- 6c972fe: Added information about the `entityRef` and `taskId` to the analytics events whenever is possible.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/catalog-client@1.10.1
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.35
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 1.16.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 1.16.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 1.16.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.0
+
+## 1.16.0
+
+### Minor Changes
+
+- 4235e87: add templating extensions page
+
+### Patch Changes
+
+- 36ae651: Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/theme@0.6.6
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/catalog-client@1.10.0
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 1.16.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.3
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.34-next.1
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 1.16.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/plugin-catalog-react@1.18.0-next.2
+  - @backstage/plugin-permission-react@0.4.34-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 1.16.0-next.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.34-next.0
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 1.16.0-next.0
+
+### Minor Changes
+
+- 4235e87: add templating extensions page
+
+### Patch Changes
+
+- 36ae651: Fixing a bug where the name for `templatingExtensions` was incorrectly set to `templateExtensions`
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/theme@0.6.5
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.33
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.15.0
+
+### Minor Changes
+
+- 5890016: add api to retrieve template extensions info from scaffolder-backend
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 6ed42b7: Scaffolding - Template card - button to show template entity detail
+- 7ae9996: Fixes the detail icon in light theme to be visible in proper color (same as favorite star).
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.17.0
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/plugin-permission-react@0.4.33
+  - @backstage/theme@0.6.5
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.15.0-next.2
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/plugin-permission-react@0.4.33-next.0
+  - @backstage/plugin-catalog-react@1.17.0-next.2
+  - @backstage/theme@0.6.5-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.15.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/plugin-catalog-react@1.16.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.15.0-next.0
+
+### Minor Changes
+
+- 5890016: add api to retrieve template extensions info from scaffolder-backend
+
+### Patch Changes
+
+- 6ed42b7: Scaffolding - Template card - button to show template entity detail
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.16.1-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 1.14.6
+
+### Patch Changes
+
+- 4d26652: Fix field extension validation not working when field is in dependencies in an array field
+- b3b7c9c: Deprecated the alpha `ScaffolderFormFieldsApi` and `formFieldsApiRef` as these are being replaced with a different solution.
+- 48aab13: Add i18n support for scaffolder-react plugin
+- 3db64ba: Disable the submit button on creating
+- 34ea3f5: Updated dependency `flatted` to `3.3.3`.
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-catalog-react@1.16.0
+  - @backstage/plugin-scaffolder-common@1.5.10
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.14.6-next.2
+
+### Patch Changes
+
+- 48aab13: Add i18n support for scaffolder-react plugin
+- 3db64ba: Disable the submit button on creating
+- 34ea3f5: Updated dependency `flatted` to `3.3.3`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/plugin-catalog-react@1.16.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.31
+  - @backstage/plugin-scaffolder-common@1.5.10-next.0
+
+## 1.14.6-next.1
+
+### Patch Changes
+
+- 4d26652: Fix field extension validation not working when field is in dependencies in an array field
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/plugin-scaffolder-common@1.5.10-next.0
+  - @backstage/plugin-catalog-react@1.16.0-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.31
+
+## 1.14.6-next.0
+
+### Patch Changes
+
+- b3b7c9c: Deprecated the alpha `ScaffolderFormFieldsApi` and `formFieldsApiRef` as these are being replaced with a different solution.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.16.0-next.0
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+
+## 1.14.5
+
+### Patch Changes
+
+- 656f67b: Reverted the validation in dependencies in scaffolder
+- 2003fc2: Hide text output button if only one is present
+- a35118f: build(deps): bump `immer` from 8.0.4 to 9.0.6
+- 1283f06: Added missing `ajv` and `immer` dependencies to `@backstage/plugin-scaffolder-react`
+- 3edf7e7: Add schema output return type to the `makeFieldSchema` function return
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/plugin-catalog-react@1.15.2
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-permission-react@0.4.31
+  - @backstage/version-bridge@1.0.11
+  - @backstage/theme@0.6.4
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 1.14.5-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/plugin-catalog-react@1.15.2-next.3
+  - @backstage/plugin-permission-react@0.4.31-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 1.14.5-next.2
+
+### Patch Changes
+
+- 656f67b: Reverted the validation in dependencies in scaffolder
+- 2003fc2: Hide text output button if only one is present
+- a35118f: build(deps): bump `immer` from 8.0.4 to 9.0.6
+- 1283f06: Added missing `ajv` and `immer` dependencies to `@backstage/plugin-scaffolder-react`
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/plugin-catalog-react@1.15.2-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/plugin-permission-react@0.4.31-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 1.14.4-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/plugin-permission-react@0.4.31-next.0
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/plugin-catalog-react@1.15.2-next.1
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 1.14.4-next.0
+
+### Patch Changes
+
+- 3edf7e7: Add schema output return type to the `makeFieldSchema` function return
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/theme@0.6.3
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-react@1.15.2-next.0
+  - @backstage/plugin-permission-react@0.4.30
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 1.14.3
+
+### Patch Changes
+
+- 91bb99a: Fix field extension validation not working when field is in dependencies in an array field
+- d8f9079: Updated dependency `@rjsf/utils` to `5.23.2`.
+  Updated dependency `@rjsf/core` to `5.23.2`.
+  Updated dependency `@rjsf/material-ui` to `5.23.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.23.2`.
+- 37421bc: Fixed scaffolder form fields not resolving correctly in the `useCustomFieldExtensions` hook.
+- 4756287: Added support for `FormDecoratorBlueprint` to create form decorators in the Scaffolder plugin
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/core-components@0.16.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/theme@0.6.3
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-permission-react@0.4.30
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 1.14.3-next.2
+
+### Patch Changes
+
+- 91bb99a: Fix field extension validation not working when field is in dependencies in an array field
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4-next.0
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/types@1.2.1-next.0
+  - @backstage/plugin-catalog-react@1.15.1-next.1
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/plugin-permission-react@0.4.30-next.0
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9-next.0
+  - @backstage/catalog-client@1.9.1-next.0
+  - @backstage/theme@0.6.3
+  - @backstage/version-bridge@1.0.10
+
+## 1.14.3-next.1
+
+### Patch Changes
+
+- d8f9079: Updated dependency `@rjsf/utils` to `5.23.2`.
+  Updated dependency `@rjsf/core` to `5.23.2`.
+  Updated dependency `@rjsf/material-ui` to `5.23.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.23.2`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1-next.0
+
+## 1.14.3-next.0
+
+### Patch Changes
+
+- 37421bc: Fixed scaffolder form fields not resolving correctly in the `useCustomFieldExtensions` hook.
+- Updated dependencies
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/core-components@0.16.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/theme@0.6.3
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-catalog-react@1.15.0
+  - @backstage/plugin-permission-react@0.4.29
+  - @backstage/plugin-scaffolder-common@1.5.8
+
+## 1.14.2
+
+### Patch Changes
+
+- 3c62a50: Experimental support for `formDecorators` to enable secret collection and mutations to the parameters for scaffolder tasks
+- c4ffd13: Added the autocomplete feature to GitlabRepoUrlPicker
+- 28e286f: Added test coverage selectors to TemplateCard and its sub-components
+- c846d76: Updated dependency `flatted` to `3.3.2`.
+- 9951ba4: Updated dependency `@rjsf/utils` to `5.23.1`.
+  Updated dependency `@rjsf/core` to `5.23.1`.
+  Updated dependency `@rjsf/material-ui` to `5.23.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.23.1`.
+- 97a13ad: Improve performance of typing into scaffolder secret widget
+- 184161f: Scaffolder field extensions registered with `FormFieldBlueprint` are now collected in the `useCustomFieldExtensions` hook, enabling them for use in the scaffolder.
+- b21a5ae: Open links in the scaffolder entity and step descriptions in a new tab, to ensure consistency and improve user experience
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.0
+  - @backstage/plugin-scaffolder-common@1.5.8
+  - @backstage/catalog-client@1.9.0
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/theme@0.6.3
+  - @backstage/core-components@0.16.2
+  - @backstage/catalog-model@1.7.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-permission-react@0.4.29
+
+## 1.14.2-next.2
+
+### Patch Changes
+
+- 184161f: Scaffolder field extensions registered with `FormFieldBlueprint` are now collected in the `useCustomFieldExtensions` hook, enabling them for use in the scaffolder.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.2
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-permission-react@0.4.29-next.0
+  - @backstage/plugin-scaffolder-common@1.5.8-next.1
+
+## 1.14.2-next.1
+
+### Patch Changes
+
+- c846d76: Updated dependency `flatted` to `3.3.2`.
+- b21a5ae: Open links in the scaffolder entity and step descriptions in a new tab, to ensure consistency and improve user experience
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.1
+  - @backstage/catalog-client@1.9.0-next.1
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/frontend-plugin-api@0.9.3-next.1
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+  - @backstage/plugin-permission-react@0.4.28
+  - @backstage/plugin-scaffolder-common@1.5.8-next.0
+
 ## 1.14.2-next.0
 
 ### Patch Changes

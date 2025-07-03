@@ -48,12 +48,14 @@ help [command]                   display help for command
 The `repo` command category, `yarn backstage-cli repo --help`:
 
 ```text
-build [options]              Build packages in the project, excluding bundled app and backend packages.
-lint [options]               Lint all packages in the project
-clean                        Delete cache and output directories
-list-deprecations [options]  List deprecations
-test [options]               Run tests, forwarding args to Jest, defaulting to watch mode
-help [command]               display help for command
+start [options] [packageName...]  Starts packages in the repo for local development
+build [options]                   Build packages in the project, excluding bundled app and backend packages.
+test [options]                    Run tests, forwarding args to Jest, defaulting to watch mode
+lint [options]                    Lint all packages in the project
+fix [options]                     Automatically fix packages in the project
+clean                             Delete cache and output directories
+list-deprecations [options]       List deprecations
+help [command]                    display help for command
 ```
 
 The `migrate` command category, `yarn backstage-cli migrate --help`:
@@ -65,6 +67,31 @@ package-exports       Synchronize package subpath export definitions
 package-lint-configs  Migrates all packages to use @backstage/cli/config/eslint-factory
 react-router-deps     Migrates the react-router dependencies for all packages to be peer dependencies
 help [command]        display help for command
+```
+
+## repo start
+
+Start a set of packages in the project for local development. If no explicit packages are listed via arguments or options, packages will instead be selected based on their [package role](./02-build-system.md#package-roles). If a single set of frontend and/or backend packages are found, they will be started. If there are multiple matches the directories 'packages/app' and 'packages/backend' will be preferred. If no matches are found the command will fall back to expecting a single plugin frontend and/or backend package to start instead.
+
+Any `--config` options in the `start` script in `package.json` of the selected packages will be picked up and used, unless a `--config` option is provided to this command, in which case it will be used instead.
+
+Any `--require` option in the `start` script in `package.json` of the selected backend package will be picked up and used.
+
+```text
+Usage: backstage-cli repo start [options] [packageNameOrPath...]
+
+Starts packages in the repo for local development
+
+Arguments:
+  packageNameOrPath     Run the specified packages instead of the defaults.
+
+Options:
+  --plugin <pluginId>   Start the dev entry-point for any matching plugin package in the repo (default: [])
+  --config <path>       Config files to load instead of app-config.yaml (default: [])
+  --inspect [host]      Enable debugger in Node.js environments. Applies to backend package only
+  --inspect-brk [host]  Enable debugger in Node.js environments, breaking before code starts. Applies to backend package only
+  --require <path...>   Add a --require argument to the node process. Applies to backend package only
+  --link <path>         Link an external workspace for module resolution
 ```
 
 ## repo build
@@ -189,7 +216,7 @@ Lint a package
 Options:
   --format <format>        Lint report output format (default: "eslint-formatter-friendly")
   --fix                    Attempt to automatically fix violations
-  --max-warnings <number>  Fail if more than this number of warnings. -1 allows warnings. (default: 0)
+  --max-warnings <number>  Fail if more than this number of warnings. -1 allows warnings. (default: -1)
 ```
 
 ## package test
@@ -258,30 +285,28 @@ it is possible to pre-select what you want to create using the `--select` flag,
 and provide options using `--option`, for example:
 
 ```bash
-backstage-cli new --select plugin --option id=foo
+backstage-cli new --select plugin --option pluginId=foo
 ```
 
 This command is typically added as script in the root `package.json` to be
-executed with `yarn new`, using options that are appropriate for the organization
-that owns the app repo. For example you may have it set up like this:
+executed with `yarn new`. For example you may have it set up like this:
 
 ```json
 {
   "scripts": {
-    "new": "backstage-cli new --scope internal --no-private --npm-registry https://acme.org/npm"
+    "new": "backstage-cli new"
   }
 }
 ```
 
+The `new` command comes with a default collection of plugins/packages, however,
+you can customize this list and even create your own CLI templates. For more
+information see [CLI Templates](./04-templates.md).
+
 ```text
-Usage: backstage-cli create [options]
+Usage: backstage-cli new
 
 Options:
-  --select <name>          Select the thing you want to be creating upfront
-  --option <name>=<value>  Pre-fill options for the creation process (default: [])
-  --scope <scope>          The scope to use for new packages
-  --npm-registry <URL>     The package registry to use for new packages
-  --no-private             Do not mark new packages as private
   -h, --help               display help for command
 ```
 

@@ -1,5 +1,254 @@
 # @backstage/plugin-notifications-node
 
+## 0.2.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-notifications-common@0.0.10-next.0
+  - @backstage/plugin-signals-node@0.1.22-next.0
+
+## 0.2.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1
+  - @backstage/plugin-notifications-common@0.0.9
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-signals-node@0.1.21
+
+## 0.2.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-notifications-common@0.0.9-next.0
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-signals-node@0.1.21-next.1
+
+## 0.2.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-signals-node@0.1.21-next.0
+
+## 0.2.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/catalog-client@1.10.0
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-node@0.1.20
+
+## 0.2.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-node@0.1.20-next.2
+
+## 0.2.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/plugin-signals-node@0.1.20-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-notifications-common@0.0.8
+
+## 0.2.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-node@0.1.20-next.0
+
+## 0.2.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-node@0.1.19
+
+## 0.2.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-node@0.1.18
+
+## 0.2.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-node@0.1.18-next.2
+
+## 0.2.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-node@0.1.18-next.1
+
+## 0.2.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-signals-node@0.1.18-next.0
+
+## 0.2.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-node@0.1.17
+
+## 0.2.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-node@0.1.17-next.2
+
+## 0.2.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-node@0.1.17-next.1
+
+## 0.2.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-node@0.1.17-next.0
+
+## 0.2.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-signals-node@0.1.16
+
+## 0.2.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/plugin-signals-node@0.1.16-next.1
+  - @backstage/catalog-client@1.9.1-next.0
+  - @backstage/plugin-notifications-common@0.0.8-next.0
+
+## 0.2.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/plugin-notifications-common@0.0.7
+  - @backstage/plugin-signals-node@0.1.16-next.0
+
+## 0.2.10
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/plugin-notifications-common@0.0.7
+  - @backstage/plugin-signals-node@0.1.15
+
+## 0.2.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/plugin-signals-node@0.1.15-next.2
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/plugin-notifications-common@0.0.7-next.0
+
+## 0.2.10-next.1
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/catalog-client@1.9.0-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/plugin-signals-node@0.1.15-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/plugin-notifications-common@0.0.6
+
 ## 0.2.10-next.0
 
 ### Patch Changes

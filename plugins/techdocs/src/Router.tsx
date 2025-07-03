@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import { ReactElement, PropsWithChildren } from 'react';
 import { Route, Routes, useRoutes } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
@@ -56,17 +56,40 @@ export const Router = () => {
   );
 };
 
+export const TechDocsReaderRouter = (props: PropsWithChildren) => {
+  const { children } = props;
+
+  // Using objects instead of <Route> elements, otherwise "outlet" will be null on sub-pages and add-ons won't render
+  const element = useRoutes([
+    {
+      path: '*',
+      element: <TechDocsReaderPage />,
+      children: [
+        {
+          path: '*',
+          element: children,
+        },
+      ],
+    },
+  ]);
+
+  return element;
+};
+
 export const EmbeddedDocsRouter = (
-  props: PropsWithChildren<{ emptyState?: React.ReactElement }>,
+  props: PropsWithChildren<{
+    emptyState?: ReactElement;
+    withSearch?: boolean;
+  }>,
 ) => {
-  const { children, emptyState } = props;
+  const { children, emptyState, withSearch = true } = props;
   const { entity } = useEntity();
 
   // Using objects instead of <Route> elements, otherwise "outlet" will be null on sub-pages and add-ons won't render
   const element = useRoutes([
     {
       path: '/*',
-      element: <EntityPageDocs entity={entity} />,
+      element: <EntityPageDocs entity={entity} withSearch={withSearch} />,
       children: [
         {
           path: '*',
@@ -87,7 +110,6 @@ export const EmbeddedDocsRouter = (
       )
     );
   }
-
   return element;
 };
 
@@ -96,8 +118,11 @@ export const EmbeddedDocsRouter = (
  *
  * @public
  */
-export const LegacyEmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
+export const LegacyEmbeddedDocsRouter = ({
+  children,
+  withSearch = true,
+}: PropsWithChildren<{ withSearch?: boolean }>) => {
   // Wrap the Router to avoid exposing the emptyState prop in the non-alpha
   // public API and make it easier for us to change later.
-  return <EmbeddedDocsRouter children={props.children} />;
+  return <EmbeddedDocsRouter children={children} withSearch={withSearch} />;
 };

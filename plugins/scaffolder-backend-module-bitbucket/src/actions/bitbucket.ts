@@ -21,8 +21,8 @@ import {
 } from '@backstage/integration';
 import {
   createTemplateAction,
-  initRepoAndPush,
   getRepoSourceDirectory,
+  initRepoAndPush,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
@@ -209,95 +209,99 @@ export function createPublishBitbucketAction(options: {
 }) {
   const { integrations, config } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    description?: string;
-    defaultBranch?: string;
-    repoVisibility?: 'private' | 'public';
-    sourcePath?: string;
-    enableLFS?: boolean;
-    token?: string;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-  }>({
+  return createTemplateAction({
     id: 'publish:bitbucket',
     description:
       'Initializes a git repository of the content in the workspace, and publishes it to Bitbucket.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl'],
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            type: 'string',
-          },
-          description: {
-            title: 'Repository Description',
-            type: 'string',
-          },
-          repoVisibility: {
-            title: 'Repository Visibility',
-            type: 'string',
-            enum: ['private', 'public'],
-          },
-          defaultBranch: {
-            title: 'Default Branch',
-            type: 'string',
-            description: `Sets the default branch on the repository. The default value is 'master'`,
-          },
-          sourcePath: {
-            title: 'Source Path',
-            description:
-              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
-            type: 'string',
-          },
-          enableLFS: {
-            title: 'Enable LFS?',
-            description:
-              'Enable LFS for the repository. Only available for hosted Bitbucket.',
-            type: 'boolean',
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to BitBucket',
-          },
-          gitCommitMessage: {
-            title: 'Git Commit Message',
-            type: 'string',
-            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
-          },
-          gitAuthorName: {
-            title: 'Default Author Name',
-            type: 'string',
-            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
-          },
-          gitAuthorEmail: {
-            title: 'Default Author Email',
-            type: 'string',
-            description: `Sets the default author email for the commit.`,
-          },
-        },
+        repoUrl: z =>
+          z.string({
+            description: 'Repository Location',
+          }),
+        description: z =>
+          z
+            .string({
+              description: 'Repository Description',
+            })
+            .optional(),
+        repoVisibility: z =>
+          z
+            .enum(['private', 'public'], {
+              description: 'Repository Visibility',
+            })
+            .optional(),
+        defaultBranch: z =>
+          z
+            .string({
+              description: `Sets the default branch on the repository. The default value is 'master'`,
+            })
+            .optional(),
+        sourcePath: z =>
+          z
+            .string({
+              description:
+                'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
+            })
+            .optional(),
+        enableLFS: z =>
+          z
+            .boolean({
+              description:
+                'Enable LFS for the repository. Only available for hosted Bitbucket.',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to BitBucket',
+            })
+            .optional(),
+        gitCommitMessage: z =>
+          z
+            .string({
+              description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+            })
+            .optional(),
+        gitAuthorName: z =>
+          z
+            .string({
+              description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+            })
+            .optional(),
+        gitAuthorEmail: z =>
+          z
+            .string({
+              description: `Sets the default author email for the commit.`,
+            })
+            .optional(),
+        signCommit: z =>
+          z
+            .boolean({
+              description: 'Sign commit with configured PGP private key',
+            })
+            .optional(),
       },
       output: {
-        type: 'object',
-        properties: {
-          remoteUrl: {
-            title: 'A URL to the repository with the provider',
-            type: 'string',
-          },
-          repoContentsUrl: {
-            title: 'A URL to the root of the repository',
-            type: 'string',
-          },
-          commitHash: {
-            title: 'The git commit hash of the initial commit',
-            type: 'string',
-          },
-        },
+        remoteUrl: z =>
+          z
+            .string({
+              description: 'A URL to the repository with the provider',
+            })
+            .optional(),
+        repoContentsUrl: z =>
+          z
+            .string({
+              description: 'A URL to the root of the repository',
+            })
+            .optional(),
+        commitHash: z =>
+          z
+            .string({
+              description: 'The git commit hash of the initial commit',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {
@@ -313,6 +317,7 @@ export function createPublishBitbucketAction(options: {
         gitCommitMessage = 'initial commit',
         gitAuthorName,
         gitAuthorEmail,
+        signCommit,
       } = ctx.input;
 
       const { workspace, project, repo, host } = parseRepoUrl(
@@ -361,15 +366,19 @@ export function createPublishBitbucketAction(options: {
           ? createBitbucketCloudRepository
           : createBitbucketServerRepository;
 
-      const { remoteUrl, repoContentsUrl } = await createMethod({
-        authorization,
-        workspace: workspace || '',
-        project,
-        repo,
-        repoVisibility,
-        mainBranch: defaultBranch,
-        description,
-        apiBaseUrl,
+      const { remoteUrl, repoContentsUrl } = await ctx.checkpoint({
+        key: `create.repo.${host}.${repo}`,
+        fn: async () =>
+          createMethod({
+            authorization,
+            workspace: workspace || '',
+            project,
+            repo,
+            repoVisibility,
+            mainBranch: defaultBranch,
+            description,
+            apiBaseUrl,
+          }),
       });
 
       const gitAuthorInfo = {
@@ -380,6 +389,14 @@ export function createPublishBitbucketAction(options: {
           ? gitAuthorEmail
           : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
+      const signingKey =
+        integrationConfig.config.commitSigningKey ??
+        config.getOptionalString('scaffolder.defaultCommitSigningKey');
+      if (signCommit && !signingKey) {
+        throw new Error(
+          'Signing commits is enabled but no signing key is provided in the configuration',
+        );
+      }
 
       let auth;
 
@@ -399,23 +416,33 @@ export function createPublishBitbucketAction(options: {
         };
       }
 
-      const commitResult = await initRepoAndPush({
-        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
-        remoteUrl,
-        auth,
-        defaultBranch,
-        logger: ctx.logger,
-        commitMessage: gitCommitMessage
-          ? gitCommitMessage
-          : config.getOptionalString('scaffolder.defaultCommitMessage'),
-        gitAuthorInfo,
+      const commitHash = await ctx.checkpoint({
+        key: `init.repo.and.push${host}.${repo}`,
+        fn: async () => {
+          const commitResult = await initRepoAndPush({
+            dir: getRepoSourceDirectory(
+              ctx.workspacePath,
+              ctx.input.sourcePath,
+            ),
+            remoteUrl,
+            auth,
+            defaultBranch,
+            logger: ctx.logger,
+            commitMessage: gitCommitMessage
+              ? gitCommitMessage
+              : config.getOptionalString('scaffolder.defaultCommitMessage'),
+            gitAuthorInfo,
+            signingKey: signCommit ? signingKey : undefined,
+          });
+          return commitResult?.commitHash;
+        },
       });
 
       if (enableLFS && host !== 'bitbucket.org') {
         await performEnableLFS({ authorization, host, project, repo });
       }
 
-      ctx.output('commitHash', commitResult?.commitHash);
+      ctx.output('commitHash', commitHash);
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },

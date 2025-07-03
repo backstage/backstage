@@ -1,5 +1,189 @@
 # @backstage/plugin-app-node
 
+## 0.1.35-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.2-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+
+## 0.1.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config-loader@1.10.1
+
+## 0.1.34-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config-loader@1.10.1
+
+## 0.1.34-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/config-loader@1.10.1
+
+## 0.1.33
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/config-loader@1.10.1
+
+## 0.1.33-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/config-loader@1.10.1-next.0
+
+## 0.1.33-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/config-loader@1.10.1-next.0
+
+## 0.1.33-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/config-loader@1.10.0
+
+## 0.1.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/config-loader@1.10.0
+
+## 0.1.31
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.0
+  - @backstage/backend-plugin-api@1.2.1
+
+## 0.1.31-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.0-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.1
+
+## 0.1.31-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/config-loader@1.9.6
+
+## 0.1.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/config-loader@1.9.6
+
+## 0.1.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.9.6
+  - @backstage/backend-plugin-api@1.2.0
+
+## 0.1.30-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/config-loader@1.9.6-next.0
+
+## 0.1.30-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/config-loader@1.9.6-next.0
+
+## 0.1.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+
+## 0.1.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.9.5
+  - @backstage/backend-plugin-api@1.1.1
+
+## 0.1.29-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/config-loader@1.9.5-next.1
+
+## 0.1.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.9.5-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+
+## 0.1.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/config-loader@1.9.3
+
+## 0.1.28-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/config-loader@1.9.3-next.1
+
+## 0.1.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.9.3-next.0
+  - @backstage/backend-plugin-api@1.1.0-next.1
+
 ## 0.1.28-next.0
 
 ### Patch Changes

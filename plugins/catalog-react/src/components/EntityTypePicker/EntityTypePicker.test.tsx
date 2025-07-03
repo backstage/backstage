@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { fireEvent, waitFor, screen, within } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityTypePicker } from './EntityTypePicker';
@@ -86,7 +85,9 @@ describe('<EntityTypePicker/>', () => {
     await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
-          value={{ filters: { kind: new EntityKindFilter('component') } }}
+          value={{
+            filters: { kind: new EntityKindFilter('component', 'Component') },
+          }}
         >
           <EntityTypePicker />
         </MockEntityListContextProvider>
@@ -110,7 +111,7 @@ describe('<EntityTypePicker/>', () => {
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
           value={{
-            filters: { kind: new EntityKindFilter('component') },
+            filters: { kind: new EntityKindFilter('component', 'Component') },
             updateFilters,
           }}
         >

@@ -1,5 +1,225 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.46-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-search-backend-node@1.3.13-next.0
+  - @backstage/plugin-search-common@1.2.19-next.0
+
+## 0.5.45
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-backend-node@1.3.12
+  - @backstage/plugin-search-common@1.2.18
+
+## 0.5.45-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-backend-node@1.3.12-next.1
+  - @backstage/plugin-search-common@1.2.18
+
+## 0.5.45-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-search-backend-node@1.3.12-next.0
+
+## 0.5.44
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-backend-node@1.3.11
+  - @backstage/plugin-search-common@1.2.18
+
+## 0.5.44-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-backend-node@1.3.11-next.2
+  - @backstage/plugin-search-common@1.2.18-next.0
+
+## 0.5.44-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/plugin-search-backend-node@1.3.11-next.1
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-common@1.2.18-next.0
+
+## 0.5.44-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-search-backend-node@1.3.11-next.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.5.43
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/plugin-search-backend-node@1.3.10
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.5.42
+
+### Patch Changes
+
+- 8155b04: Enable normalization in postgres query to change the behavior of the search.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-backend-node@1.3.9
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.5.42-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-backend-node@1.3.9-next.1
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.5.42-next.0
+
+### Patch Changes
+
+- 8155b04: Enable normalization in postgres query to change the behavior of the search.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.0
+
+## 0.5.41
+
+### Patch Changes
+
+- 8699b79: Removed unused dependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-search-backend-node@1.3.8
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.5.41-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/plugin-search-backend-node@1.3.8-next.2
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.5.41-next.1
+
+### Patch Changes
+
+- 8699b79: Removed unused dependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/plugin-search-backend-node@1.3.8-next.1
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.5.41-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-backend-node@1.3.8-next.0
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.5.40
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/config@1.3.2
+  - @backstage/plugin-search-backend-node@1.3.7
+  - @backstage/plugin-search-common@1.2.17
+
+## 0.5.40-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/config@1.3.2-next.0
+  - @backstage/plugin-search-common@1.2.17-next.0
+  - @backstage/plugin-search-backend-node@1.3.7-next.1
+
+## 0.5.40-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/config@1.3.1
+  - @backstage/plugin-search-backend-node@1.3.7-next.0
+  - @backstage/plugin-search-common@1.2.16
+
+## 0.5.39
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-search-backend-node@1.3.6
+  - @backstage/config@1.3.1
+  - @backstage/plugin-search-common@1.2.16
+
+## 0.5.39-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/plugin-search-backend-node@1.3.6-next.2
+  - @backstage/config@1.3.1-next.0
+  - @backstage/plugin-search-common@1.2.16-next.0
+
+## 0.5.39-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.3.6-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/config@1.3.0
+  - @backstage/plugin-search-common@1.2.15
+
 ## 0.5.39-next.0
 
 ### Patch Changes

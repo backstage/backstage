@@ -2,7 +2,6 @@
 id: naming-patterns
 title: Frontend System Naming Patterns
 sidebar_label: Naming Patterns
-# prettier-ignore
 description: Naming patterns in the frontend system
 ---
 
@@ -24,7 +23,7 @@ Example:
 ```ts
 // This declaration is only for internal usage in tests. This could also be a direct default export.
 export const userSettingsPlugin = createFrontendPlugin({
-  id: 'user-settings',
+  pluginId: 'user-settings',
   ...
 })
 
@@ -68,7 +67,7 @@ const catalogSearchResultListItem = SearchResultListItemBlueprint.make({
 
 // Note that the extensions themselves are not exported, only the plugin instance
 export const catalogPlugin = createFrontendPlugin({
-  id: 'catalog',
+  pluginId: 'catalog',
   extensions: [catalogEntityPage, catalogSearchResultListItem /* ... */],
 });
 ```

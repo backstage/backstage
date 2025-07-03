@@ -1,5 +1,481 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.19.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/plugin-kubernetes-node@0.3.2-next.0
+  - @backstage/plugin-permission-node@0.10.2-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/integration-aws-node@0.1.17-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-auth-node@0.6.5-next.0
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+  - @backstage/plugin-kubernetes-common@0.9.6-next.0
+
+## 0.19.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.16
+  - @backstage/types@1.2.1
+  - @backstage/plugin-kubernetes-common@0.9.5
+  - @backstage/plugin-kubernetes-node@0.3.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1
+
+## 0.19.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.16
+  - @backstage/types@1.2.1
+  - @backstage/plugin-kubernetes-common@0.9.5
+  - @backstage/plugin-kubernetes-node@0.3.1-next.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1-next.1
+
+## 0.19.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-auth-node@0.6.4-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.0
+  - @backstage/plugin-kubernetes-node@0.3.1-next.0
+  - @backstage/plugin-permission-node@0.10.1-next.0
+
+## 0.19.6
+
+### Patch Changes
+
+- f6f692c: Changed logging of cluster details to debug to minimise log clutter.
+- 216c6b2: Updated dependency `@kubernetes/client-node` to `1.1.2`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/plugin-kubernetes-node@0.3.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/plugin-auth-node@0.6.3
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.0
+  - @backstage/plugin-kubernetes-common@0.9.5
+  - @backstage/integration-aws-node@0.1.16
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.19.6-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.3-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.16-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.17.0-next.2
+  - @backstage/plugin-kubernetes-common@0.9.5-next.0
+  - @backstage/plugin-kubernetes-node@0.3.0-next.2
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.2
+
+## 0.19.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-aws-node@0.1.16-next.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/plugin-kubernetes-node@0.3.0-next.1
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/plugin-kubernetes-common@0.9.5-next.0
+  - @backstage/plugin-permission-common@0.9.0-next.0
+
+## 0.19.6-next.1
+
+### Patch Changes
+
+- f6f692c: Changed logging of cluster details to debug to minimise log clutter.
+- 216c6b2: Updated dependency `@kubernetes/client-node` to `1.1.2`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/plugin-kubernetes-node@0.3.0-next.1
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/plugin-kubernetes-common@0.9.5-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+
+## 0.19.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.6.3-next.0
+  - @backstage/plugin-kubernetes-node@0.2.6-next.0
+  - @backstage/plugin-permission-node@0.9.2-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-kubernetes-common@0.9.4
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.19.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/plugin-auth-node@0.6.2
+  - @backstage/plugin-kubernetes-node@0.2.5
+  - @backstage/plugin-permission-node@0.9.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-kubernetes-common@0.9.4
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.19.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/plugin-kubernetes-common@0.9.4
+  - @backstage/plugin-kubernetes-node@0.2.4
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.9.0
+
+## 0.19.4
+
+### Patch Changes
+
+- d517d13: refactor: use `KUBERNETES_ANNOTATION` and `KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION` annotations from `kubernetes-common`
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.4
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-kubernetes-node@0.2.4
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.19.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1-next.1
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.16.1-next.1
+  - @backstage/plugin-kubernetes-common@0.9.4-next.0
+  - @backstage/plugin-kubernetes-node@0.2.4-next.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.9-next.1
+
+## 0.19.4-next.0
+
+### Patch Changes
+
+- d517d13: refactor: use `KUBERNETES_ANNOTATION` and `KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION` annotations from `kubernetes-common`
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.4-next.0
+  - @backstage/plugin-permission-node@0.8.9-next.0
+  - @backstage/plugin-auth-node@0.6.1-next.0
+  - @backstage/plugin-kubernetes-node@0.2.4-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-catalog-node@1.16.1-next.0
+
+## 0.19.3
+
+### Patch Changes
+
+- ac0e1ac: Fixed the lack of `secrets` to fetch from the kubernetes api by adding option to specify additional Objects which are not part of Default Objects
+- ca3da29: The `/clusters` endpoint is now protected by the `kubernetes.clusters.read` permission.
+  The `/services/:serviceId` endpoint is now protected by the `kubernetes.resources.read` permission.
+  The `/resources` endpoints are now protected by the `kubernetes.resources.read` permission.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.8
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-catalog-node@1.16.0
+  - @backstage/plugin-kubernetes-common@0.9.3
+  - @backstage/plugin-kubernetes-node@0.2.3
+  - @backstage/plugin-auth-node@0.6.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.19.3-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.0-next.3
+  - @backstage/plugin-permission-node@0.8.8-next.2
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/plugin-auth-node@0.6.0-next.2
+  - @backstage/plugin-kubernetes-node@0.2.3-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-kubernetes-common@0.9.3-next.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.19.3-next.2
+
+### Patch Changes
+
+- ca3da29: The `/clusters` endpoint is now protected by the `kubernetes.clusters.read` permission.
+  The `/services/:serviceId` endpoint is now protected by the `kubernetes.resources.read` permission.
+  The `/resources` endpoints are now protected by the `kubernetes.resources.read` permission.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/plugin-auth-node@0.6.0-next.1
+  - @backstage/plugin-kubernetes-common@0.9.3-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.16.0-next.2
+  - @backstage/plugin-kubernetes-node@0.2.3-next.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.8-next.1
+
+## 0.19.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.0-next.1
+  - @backstage/plugin-kubernetes-node@0.2.3-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-kubernetes-common@0.9.3-next.0
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.8-next.0
+
+## 0.19.3-next.0
+
+### Patch Changes
+
+- ac0e1ac: Fixed the lack of `secrets` to fetch from the kubernetes api by adding option to specify additional Objects which are not part of Default Objects
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.8-next.0
+  - @backstage/plugin-kubernetes-common@0.9.3-next.0
+  - @backstage/plugin-kubernetes-node@0.2.3-next.0
+  - @backstage/plugin-catalog-node@1.15.2-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.19.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-node@0.8.7
+  - @backstage/plugin-auth-node@0.5.6
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/plugin-catalog-node@1.15.1
+  - @backstage/plugin-kubernetes-common@0.9.2
+  - @backstage/plugin-kubernetes-node@0.2.2
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.19.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.1
+  - @backstage/plugin-catalog-node@1.15.1-next.1
+  - @backstage/plugin-kubernetes-common@0.9.2-next.0
+  - @backstage/plugin-kubernetes-node@0.2.2-next.1
+  - @backstage/plugin-permission-common@0.8.4-next.0
+  - @backstage/integration-aws-node@0.1.15-next.0
+  - @backstage/plugin-permission-node@0.8.7-next.1
+  - @backstage/catalog-client@1.9.1-next.0
+
+## 0.19.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/integration-aws-node@0.1.14
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-node@1.15.1-next.0
+  - @backstage/plugin-kubernetes-common@0.9.1
+  - @backstage/plugin-kubernetes-node@0.2.2-next.0
+  - @backstage/plugin-permission-common@0.8.3
+
+## 0.19.1
+
+### Patch Changes
+
+- cbfc69e: Create a `dev/index.ts` entrypoint for `yarn start`
+- 928db6a: Support fetch pod metrics with custom resources
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-catalog-node@1.15.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/plugin-permission-node@0.8.6
+  - @backstage/errors@1.2.6
+  - @backstage/plugin-kubernetes-node@0.2.1
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/integration-aws-node@0.1.14
+  - @backstage/types@1.2.0
+  - @backstage/plugin-kubernetes-common@0.9.1
+  - @backstage/plugin-permission-common@0.8.3
+
+## 0.19.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/plugin-permission-node@0.8.6-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-kubernetes-node@0.2.1-next.2
+  - @backstage/plugin-auth-node@0.5.5-next.2
+  - @backstage/plugin-catalog-node@1.15.0-next.2
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/integration-aws-node@0.1.14-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-kubernetes-common@0.9.1-next.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+
+## 0.19.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5-next.1
+  - @backstage/plugin-catalog-node@1.15.0-next.1
+  - @backstage/catalog-client@1.9.0-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/plugin-permission-node@0.8.6-next.1
+  - @backstage/plugin-kubernetes-node@0.2.1-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration-aws-node@0.1.13
+  - @backstage/types@1.2.0
+  - @backstage/plugin-kubernetes-common@0.9.0
+  - @backstage/plugin-permission-common@0.8.2
+
 ## 0.19.1-next.0
 
 ### Patch Changes

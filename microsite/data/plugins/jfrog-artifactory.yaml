@@ -4,7 +4,7 @@ author: Red Hat
 authorUrl: https://redhat.com
 category: Image
 description: View container image details from JFrog Artifactory in Backstage.
-documentation: https://janus-idp.io/plugins/jfrog-artifactory
-iconUrl: https://janus-idp.io/images/plugins/jfrog-artifactory.svg
-npmPackageName: '@janus-idp/backstage-plugin-jfrog-artifactory'
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/jfrog-artifactory/plugins/jfrog-artifactory/README.md
+iconUrl: /img/jfrog-artifactory.svg
+npmPackageName: '@backstage-community/plugin-jfrog-artifactory'
 addedDate: '2023-05-15'

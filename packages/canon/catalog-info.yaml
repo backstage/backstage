@@ -6,4 +6,4 @@ metadata:
 spec:
   lifecycle: experimental
   type: backstage-web-library
-  owner: maintainers
+  owner: design-system-maintainers

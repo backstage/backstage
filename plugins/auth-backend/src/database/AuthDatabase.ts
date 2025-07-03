@@ -15,11 +15,9 @@
  */
 
 import {
-  DatabaseManager,
-  PluginDatabaseManager,
-} from '@backstage/backend-common';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
-import { ConfigReader } from '@backstage/config';
+  DatabaseService,
+  resolvePackagePath,
+} from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 
 const migrationsDir = resolvePackagePath(
@@ -32,25 +30,10 @@ const migrationsDir = resolvePackagePath(
  * asked for, and runs migrations.
  */
 export class AuthDatabase {
-  readonly #database: PluginDatabaseManager;
+  readonly #database: DatabaseService;
   #promise: Promise<Knex> | undefined;
 
-  static create(database: PluginDatabaseManager): AuthDatabase {
-    return new AuthDatabase(database);
-  }
-
-  /** @internal */
-  static forTesting(): AuthDatabase {
-    const config = new ConfigReader({
-      backend: {
-        database: {
-          client: 'better-sqlite3',
-          connection: ':memory:',
-          useNullAsDefault: true,
-        },
-      },
-    });
-    const database = DatabaseManager.fromConfig(config).forPlugin('auth');
+  static create(database: DatabaseService): AuthDatabase {
     return new AuthDatabase(database);
   }
 
@@ -60,7 +43,7 @@ export class AuthDatabase {
     });
   }
 
-  private constructor(database: PluginDatabaseManager) {
+  private constructor(database: DatabaseService) {
     this.#database = database;
   }
 

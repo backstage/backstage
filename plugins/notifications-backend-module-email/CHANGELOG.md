@@ -1,5 +1,404 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/integration-aws-node@0.1.17-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-notifications-common@0.0.10-next.0
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+  - @backstage/plugin-notifications-node@0.2.17-next.0
+
+## 0.3.10
+
+### Patch Changes
+
+- 8a150bf: Internal changes to switch to the non-alpha `catalogServiceRef`
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1
+  - @backstage/plugin-notifications-common@0.0.9
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-notifications-node@0.2.16
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.16
+  - @backstage/types@1.2.1
+
+## 0.3.10-next.2
+
+### Patch Changes
+
+- 8a150bf: Internal changes to switch to the non-alpha `catalogServiceRef`
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.16
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-notifications-common@0.0.9-next.0
+  - @backstage/plugin-notifications-node@0.2.16-next.1
+
+## 0.3.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-notifications-common@0.0.9-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-notifications-node@0.2.16-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.16
+  - @backstage/types@1.2.1
+
+## 0.3.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.0
+  - @backstage/plugin-notifications-node@0.2.16-next.0
+
+## 0.3.9
+
+### Patch Changes
+
+- aa3a63a: Enable the ability to configure the endpoint for the SES connection used in the notifications email module. This enables the configuration of alternate endpoints as required, for example for local testing or alternative stacks.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/integration-aws-node@0.1.16
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-notifications-node@0.2.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+
+## 0.3.9-next.3
+
+### Patch Changes
+
+- aa3a63a: Enable the ability to configure the endpoint for the SES connection used in the notifications email module. This enables the configuration of alternate endpoints as required, for example for local testing or alternative stacks.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.16-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.17.0-next.2
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.15-next.2
+
+## 0.3.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-aws-node@0.1.16-next.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-notifications-node@0.2.15-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/plugin-notifications-common@0.0.8
+
+## 0.3.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.15-next.1
+
+## 0.3.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-notifications-node@0.2.15-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+
+## 0.3.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.14
+
+## 0.3.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.13
+
+## 0.3.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.13
+
+## 0.3.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.16.1-next.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.13-next.2
+
+## 0.3.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.16.1-next.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.13-next.1
+
+## 0.3.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-catalog-node@1.16.1-next.0
+  - @backstage/plugin-notifications-node@0.2.13-next.0
+
+## 0.3.6
+
+### Patch Changes
+
+- 6259aa9: Add transport for Azure Communication Service
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-catalog-node@1.16.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.12
+
+## 0.3.6-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.0-next.3
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/plugin-notifications-node@0.2.12-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+
+## 0.3.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-node@1.16.0-next.2
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.12-next.1
+
+## 0.3.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.0-next.1
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.12-next.0
+
+## 0.3.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.15.2-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/types@1.2.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.12-next.0
+
+## 0.3.5
+
+### Patch Changes
+
+- bed5f35: Added more examples of the plugin configuration
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/integration-aws-node@0.1.15
+  - @backstage/plugin-catalog-node@1.15.1
+  - @backstage/plugin-notifications-common@0.0.8
+  - @backstage/plugin-notifications-node@0.2.11
+
+## 0.3.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/plugin-catalog-node@1.15.1-next.1
+  - @backstage/integration-aws-node@0.1.15-next.0
+  - @backstage/plugin-notifications-node@0.2.11-next.1
+  - @backstage/catalog-client@1.9.1-next.0
+  - @backstage/plugin-notifications-common@0.0.8-next.0
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- bed5f35: Added more examples of the plugin configuration
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/integration-aws-node@0.1.14
+  - @backstage/types@1.2.0
+  - @backstage/plugin-catalog-node@1.15.1-next.0
+  - @backstage/plugin-notifications-common@0.0.7
+  - @backstage/plugin-notifications-node@0.2.11-next.0
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-catalog-node@1.15.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/plugin-notifications-node@0.2.10
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/integration-aws-node@0.1.14
+  - @backstage/types@1.2.0
+  - @backstage/plugin-notifications-common@0.0.7
+
+## 0.3.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/plugin-catalog-node@1.15.0-next.2
+  - @backstage/plugin-notifications-node@0.2.10-next.2
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/integration-aws-node@0.1.14-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-notifications-common@0.0.7-next.0
+
+## 0.3.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.15.0-next.1
+  - @backstage/catalog-client@1.9.0-next.1
+  - @backstage/plugin-notifications-node@0.2.10-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/integration-aws-node@0.1.13
+  - @backstage/types@1.2.0
+  - @backstage/plugin-notifications-common@0.0.6
+
 ## 0.3.4-next.0
 
 ### Patch Changes

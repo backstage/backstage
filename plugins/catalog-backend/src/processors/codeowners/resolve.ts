@@ -30,7 +30,9 @@ export function resolveCodeOwner(
   const { filepath } = parseGitUrl(catalogInfoFileUrl);
   const match = codeowners.matchFile(filepath, codeOwnerEntries);
 
-  return match ? normalizeCodeOwner(match.owners[0]) : undefined;
+  return match?.owners?.length
+    ? normalizeCodeOwner(match.owners[0])
+    : undefined;
 }
 
 export function normalizeCodeOwner(owner: string) {

@@ -4,11 +4,36 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { ContainerRunner } from '@backstage/backend-common';
-import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { Writable } from 'stream';
+
+// @public
+export interface ContainerRunner {
+  runContainer(opts: {
+    imageName: string;
+    command?: string | string[];
+    args: string[];
+    logStream?: Writable;
+    mountDirs?: Record<string, string>;
+    workingDir?: string;
+    envVars?: Record<string, string>;
+    pullImage?: boolean;
+    defaultUser?: boolean;
+    pullOptions?: {
+      authconfig?: {
+        username?: string;
+        password?: string;
+        auth?: string;
+        email?: string;
+        serveraddress?: string;
+        [key: string]: unknown;
+      };
+      [key: string]: unknown;
+    };
+  }): Promise<void>;
+}
 
 // @public
 export function createFetchRailsAction(options: {
@@ -19,11 +44,51 @@ export function createFetchRailsAction(options: {
 }): TemplateAction<
   {
     url: string;
+    values: {
+      railsArguments?:
+        | {
+            template?: string | undefined;
+            database?:
+              | 'sqlite3'
+              | 'mysql'
+              | 'postgresql'
+              | 'oracle'
+              | 'sqlserver'
+              | 'jdbcmysql'
+              | 'jdbcsqlite3'
+              | 'jdbcpostgresql'
+              | 'jdbc'
+              | undefined;
+            api?: boolean | undefined;
+            force?: boolean | undefined;
+            minimal?: boolean | undefined;
+            railsVersion?: 'edge' | 'master' | 'dev' | 'fromImage' | undefined;
+            skipActionCable?: boolean | undefined;
+            skipActionMailbox?: boolean | undefined;
+            skipActionMailer?: boolean | undefined;
+            skipActionText?: boolean | undefined;
+            skipActiveStorage?: boolean | undefined;
+            skipBundle?: boolean | undefined;
+            skipTest?: boolean | undefined;
+            skipWebpackInstall?: boolean | undefined;
+            skipActiveRecord?: boolean | undefined;
+            webpacker?:
+              | 'react'
+              | 'angular'
+              | 'vue'
+              | 'elm'
+              | 'stimulus'
+              | undefined;
+          }
+        | undefined;
+    };
     targetPath?: string | undefined;
-    values: JsonObject;
     imageName?: string | undefined;
   },
-  JsonObject
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public

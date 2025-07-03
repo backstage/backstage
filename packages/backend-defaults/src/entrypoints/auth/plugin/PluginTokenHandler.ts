@@ -120,7 +120,8 @@ export class DefaultPluginTokenHandler implements PluginTokenHandler {
         requiredClaims: ['iat', 'exp', 'sub', 'aud'],
       },
     ).catch(e => {
-      throw new AuthenticationError('Invalid plugin token', e);
+      this.logger.warn('Failed to verify incoming plugin token', e);
+      throw new AuthenticationError('Failed plugin token verification');
     });
 
     return { subject: `plugin:${payload.sub}`, limitedUserToken: payload.obo };

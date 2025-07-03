@@ -15,30 +15,38 @@
  */
 
 import { CommandGraph } from './CommandGraph';
-import { CliFeature, InternalCliFeature, InternalCliPlugin } from './types';
+import { CliFeature, OpaqueCliPlugin } from './types';
 import { CommandRegistry } from './CommandRegistry';
-import { program } from 'commander';
+import { Command } from 'commander';
 import { version } from '../lib/version';
 import chalk from 'chalk';
 import { exitWithError } from '../lib/errors';
 import { assertError } from '@backstage/errors';
+import { isPromise } from 'util/types';
 
-type UninitializedFeature = CliFeature | Promise<CliFeature>;
+type UninitializedFeature = CliFeature | Promise<{ default: CliFeature }>;
 
 export class CliInitializer {
   private graph = new CommandGraph();
   private commandRegistry = new CommandRegistry(this.graph);
   #uninitiazedFeatures: Promise<CliFeature>[] = [];
 
-  add(module: UninitializedFeature) {
-    this.#uninitiazedFeatures.push(Promise.resolve(module));
+  add(feature: UninitializedFeature) {
+    if (isPromise(feature)) {
+      this.#uninitiazedFeatures.push(
+        feature.then(f => unwrapFeature(f.default)),
+      );
+    } else {
+      this.#uninitiazedFeatures.push(Promise.resolve(feature));
+    }
   }
 
   async #register(feature: CliFeature) {
-    if (isCliPlugin(feature)) {
-      await feature.init(this.commandRegistry);
+    if (OpaqueCliPlugin.isType(feature)) {
+      const internal = OpaqueCliPlugin.toInternal(feature);
+      await internal.init(this.commandRegistry);
     } else {
-      throw new Error(`Unsupported feature type: ${feature.$$type}`);
+      throw new Error(`Unsupported feature type: ${(feature as any).$$type}`);
     }
   }
 
@@ -54,8 +62,12 @@ export class CliInitializer {
    */
   async run() {
     await this.#doInit();
+
+    const programName = 'backstage-cli';
+
+    const program = new Command();
     program
-      .name('backstage-cli')
+      .name(programName)
       .version(version)
       .allowUnknownOption(true)
       .allowExcessArguments(true);
@@ -79,15 +91,39 @@ export class CliInitializer {
         );
       } else {
         argParser
-          .command(node.name)
+          .command(node.name, { hidden: !!node.command.deprecated })
           .description(node.command.description)
           .helpOption(false)
           .allowUnknownOption(true)
           .allowExcessArguments(true)
           .action(async () => {
             try {
+              const args = program.parseOptions(process.argv);
+
+              const nonProcessArgs = args.operands.slice(2);
+              const positionalArgs = [];
+              let index = 0;
+              for (
+                let argIndex = 0;
+                argIndex < nonProcessArgs.length;
+                argIndex++
+              ) {
+                // Skip the command name
+                if (
+                  argIndex === index &&
+                  node.command.path[argIndex] === nonProcessArgs[argIndex]
+                ) {
+                  index += 1;
+                  continue;
+                }
+                positionalArgs.push(nonProcessArgs[argIndex]);
+              }
               await node.command.execute({
-                args: program.parseOptions(process.argv).unknown,
+                args: [...positionalArgs, ...args.unknown],
+                info: {
+                  usage: [programName, ...node.command.path].join(' '),
+                  description: node.command.description,
+                },
               });
               process.exit(0);
             } catch (error) {
@@ -117,22 +153,21 @@ export class CliInitializer {
   }
 }
 
-function toInternalCliFeature(feature: CliFeature): InternalCliFeature {
-  if (feature.$$type !== '@backstage/CliFeature') {
-    throw new Error(`Invalid CliFeature, bad type '${feature.$$type}'`);
+/** @internal */
+export function unwrapFeature(
+  feature: CliFeature | { default: CliFeature },
+): CliFeature {
+  if ('$$type' in feature) {
+    return feature;
   }
-  const internal = feature as InternalCliFeature;
-  if (internal.version !== 'v1') {
-    throw new Error(`Invalid CliFeature, bad version '${internal.version}'`);
-  }
-  return internal;
-}
 
-function isCliPlugin(feature: CliFeature): feature is InternalCliPlugin {
-  const internal = toInternalCliFeature(feature);
-  if (internal.featureType === 'plugin') {
-    return true;
+  // This is a workaround where default exports get transpiled to `exports['default'] = ...`
+  // in CommonJS modules, which in turn results in a double `{ default: { default: ... } }` nesting
+  // when importing using a dynamic import.
+  // TODO: This is a broader issue than just this piece of code, and should move away from CommonJS.
+  if ('default' in feature) {
+    return feature.default;
   }
-  // Backwards compatibility for v1 registrations that use duck typing
-  return 'plugin' in internal;
+
+  return feature;
 }

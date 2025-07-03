@@ -19,7 +19,15 @@ import type {
   PermissionRuleParams,
 } from '@backstage/plugin-permission-common';
 import { z } from 'zod';
-import { NoInfer } from './integration/util';
+
+/**
+ * Prevent use of type parameter from contributing to type inference.
+ *
+ * https://github.com/Microsoft/TypeScript/issues/14829#issuecomment-980401795
+ *
+ * @ignore
+ */
+export type NoInfer<T> = T extends infer S ? S : never;
 
 /**
  * A conditional rule that can be provided in an
@@ -65,4 +73,28 @@ export type PermissionRule<
    * applied.
    */
   toQuery(params: NoInfer<TParams>): PermissionCriteria<TQuery>;
+};
+
+/**
+ * A set of registered rules for a particular resource type.
+ *
+ * @remarks
+ *
+ * Accessed via {@link @backstage/backend-plugin-api#PermissionsRegistryService.getPermissionRuleset}.
+ *
+ * @public
+ */
+export type PermissionRuleset<
+  TResource = unknown,
+  TQuery = unknown,
+  TResourceType extends string = string,
+> = {
+  /**
+   * Returns a resource permission rule by name.
+   *
+   * @remarks
+   *
+   * Will throw an error if a rule with the provided name does not exist.
+   */
+  getRuleByName(name: string): PermissionRule<TResource, TQuery, TResourceType>;
 };

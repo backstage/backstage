@@ -22,14 +22,15 @@ import {
 } from '@backstage/catalog-model';
 import { AlphaEntity } from '@backstage/catalog-model/alpha';
 import { EntityFilter, UserListFilterKind } from './types';
-import { getEntityRelations } from './utils';
+import { getEntityRelations } from './utils/getEntityRelations';
+import { EntityOrderQuery } from '@backstage/catalog-client';
 
 /**
  * Filter entities based on Kind.
  * @public
  */
 export class EntityKindFilter implements EntityFilter {
-  constructor(readonly value: string) {}
+  constructor(readonly value: string, readonly label: string) {}
 
   getCatalogFilters(): Record<string, string | string[]> {
     return { kind: this.value };
@@ -329,5 +330,21 @@ export class EntityErrorFilter implements EntityFilter {
     const error =
       ((entity as AlphaEntity)?.status?.items?.length as number) > 0;
     return error !== undefined && this.value === error;
+  }
+}
+
+/**
+ * Sort entities by a given field/column.
+ * @public
+ */
+export class EntityOrderFilter implements EntityFilter {
+  constructor(readonly values: [string, 'asc' | 'desc'][]) {}
+
+  getOrderFilters(): EntityOrderQuery {
+    return this.values.map(([field, order]) => ({ field, order }));
+  }
+
+  toQueryValue(): string[] {
+    return this.values.flat();
   }
 }

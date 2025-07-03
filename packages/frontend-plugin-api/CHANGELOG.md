@@ -1,5 +1,347 @@
 # @backstage/frontend-plugin-api
 
+## 0.10.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 0.10.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.3
+
+### Patch Changes
+
+- 0169b23: Internal tweak to avoid circular dependencies
+- 9e3868f: Added a new optional `info` option to `createFrontendPlugin` that lets you provide a loaders for different sources of metadata information about the plugin.
+
+  There are two available loaders. The first one is `info.packageJson`, which can be used to point to a `package.json` file for the plugin. This is recommended for any plugin that is defined within its own package, especially all plugins that are published to a package registry. Typical usage looks like this:
+
+  ```ts
+  export default createFrontendPlugin({
+    pluginId: '...',
+    info: {
+      packageJson: () => import('../package.json'),
+    },
+  });
+  ```
+
+  The second loader is `info.manifest`, which can be used to point to an opaque plugin manifest. This **MUST ONLY** be used by plugins that are intended for use within a single organization. Plugins that are published to an open package registry should **NOT** use this loader. The loader is useful for adding additional internal metadata associated with the plugin, and it is up to the Backstage app to decide how these manifests are parsed and used. The default manifest parser in an app created with `createApp` from `@backstage/frontend-defaults` is able to parse the default `catalog-info.yaml` format and built-in fields such as `spec.owner`.
+
+  Typical usage looks like this:
+
+  ```ts
+  export default createFrontendPlugin({
+    pluginId: '...',
+    info: {
+      manifest: () => import('../catalog-info.yaml'),
+    },
+  });
+  ```
+
+- 6f48f71: Added a new `useAppNode` hook, which can be used to get a reference to the `AppNode` from by the closest `ExtensionBoundary`.
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.3-next.0
+
+### Patch Changes
+
+- 9e3868f: Added a new optional `info` option to `createFrontendPlugin` that lets you provide a loaders for different sources of metadata information about the plugin.
+
+  There are two available loaders. The first one is `info.packageJson`, which can be used to point to a `package.json` file for the plugin. This is recommended for any plugin that is defined within its own package, especially all plugins that are published to a package registry. Typical usage looks like this:
+
+  ```ts
+  export default createFrontendPlugin({
+    pluginId: '...',
+    info: {
+      packageJson: () => import('../package.json'),
+    },
+  });
+  ```
+
+  The second loader is `info.manifest`, which can be used to point to an opaque plugin manifest. This **MUST ONLY** be used by plugins that are intended for use within a single organization. Plugins that are published to an open package registry should **NOT** use this loader. The loader is useful for adding additional internal metadata associated with the plugin, and it is up to the Backstage app to decide how these manifests are parsed and used. The default manifest parser in an app created with `createApp` from `@backstage/frontend-defaults` is able to parse the default `catalog-info.yaml` format and built-in fields such as `spec.owner`.
+
+  Typical usage looks like this:
+
+  ```ts
+  export default createFrontendPlugin({
+    pluginId: '...',
+    info: {
+      manifest: () => import('../catalog-info.yaml'),
+    },
+  });
+  ```
+
+- 6f48f71: Added a new `useAppNode` hook, which can be used to get a reference to the `AppNode` from by the closest `ExtensionBoundary`.
+
+## 0.10.2
+
+### Patch Changes
+
+- 173db8f: The `source` property of `AppNodeSpec` has been renamed to `plugin`. The old property has been deprecated and will be removed in a future release.
+- fb58f20: The `id` option of `createFrontendPlugin` has been renamed to `pluginId` in order to better align with similar APIs in the frontend and backend systems.
+
+  The old `id` option is deprecated and will be removed in a future release.
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.2-next.0
+
+### Patch Changes
+
+- fb58f20: The `id` option of `createFrontendPlugin` has been renamed to `pluginId` in order to better align with similar APIs in the frontend and backend systems.
+
+  The old `id` option is deprecated and will be removed in a future release.
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.1-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.0
+
+### Minor Changes
+
+- 4823831: Introduced a `createFrontendFeatureLoader()` function, as well as a `FrontendFeatureLoader` interface, to gather several frontend plugins, modules or feature loaders in a single exported entrypoint and load them, possibly asynchronously. This new feature, very similar to the `createBackendFeatureLoader()` already available on the backend, supersedes the previous `CreateAppFeatureLoader` type which has been deprecated.
+- 8250ffe: **BREAKING**: Removed the deprecated `ExtensionOverrides` and `FrontendFeature` types.
+- 0d1a397: **BREAKING**: Removed deprecated variant of `createExtensionDataRef` where the ID is passed directly.
+
+### Patch Changes
+
+- 5aa7f2c: Added a new Utility API, `DialogApi`, which can be used to show dialogs in the React tree that can collect input from the user.
+- e23f5e0: Added new `ExtensionMiddlewareFactory` type.
+- a6cb67d: The extensions map for plugins created with `createFrontendPlugin` is now sorted alphabetically by ID in the TypeScript type.
+- de72253: Added a new `ExtensionBoundary.lazyComponent` helper in addition to the existing `ExtensionBoundary.lazy` helper.
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.0-next.2
+
+### Minor Changes
+
+- 8250ffe: **BREAKING**: Removed the deprecated `ExtensionOverrides` and `FrontendFeature` types.
+- 0d1a397: **BREAKING**: Removed deprecated variant of `createExtensionDataRef` where the ID is passed directly.
+
+### Patch Changes
+
+- 5aa7f2c: Added a new Utility API, `DialogApi`, which can be used to show dialogs in the React tree that can collect input from the user.
+- e23f5e0: Added new `ExtensionMiddlewareFactory` type.
+- a6cb67d: The extensions map for plugins created with `createFrontendPlugin` is now sorted alphabetically by ID in the TypeScript type.
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.9.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.9.6-next.0
+
+### Patch Changes
+
+- de72253: Added a new `ExtensionBoundary.lazyComponent` helper in addition to the existing `ExtensionBoundary.lazy` helper.
+
+## 0.9.5
+
+### Patch Changes
+
+- 3e21b8d: Added `getNodesByRoutePath` method to the `AppTreeApi`.
+- f1efb47: Add support for defining multiple attachment points for extensions and blueprints.
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- 9ff3322: Allow route references to be installed in multiple app instances as long as their name is the same.
+- Updated dependencies
+  - @backstage/core-components@0.16.4
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/version-bridge@1.0.11
+  - @backstage/types@1.2.1
+
+## 0.9.5-next.3
+
+### Patch Changes
+
+- f1efb47: Add support for defining multiple attachment points for extensions and blueprints.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+
+## 0.9.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11-next.0
+
+## 0.9.5-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- 9ff3322: Allow route references to be installed in multiple app instances as long as their name is the same.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/version-bridge@1.0.11-next.0
+  - @backstage/types@1.2.1
+
+## 0.9.5-next.0
+
+### Patch Changes
+
+- 3e21b8d: Added `getNodesByRoutePath` method to the `AppTreeApi`.
+- Updated dependencies
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.4
+
+### Patch Changes
+
+- b40eb41: Move `Expand` and `ExpandRecursive` to `@backstage/types`
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+  - @backstage/core-components@0.16.3
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.4-next.0
+
+### Patch Changes
+
+- b40eb41: Move `Expand` and `ExpandRecursive` to `@backstage/types`
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/types@1.2.1-next.0
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.3
+
+### Patch Changes
+
+- 5f04976: Fixed a bug that caused missing code in published packages.
+- Updated dependencies
+  - @backstage/core-components@0.16.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
+## 0.9.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/types@1.2.0
+  - @backstage/version-bridge@1.0.10
+
 ## 0.9.3-next.0
 
 ### Patch Changes

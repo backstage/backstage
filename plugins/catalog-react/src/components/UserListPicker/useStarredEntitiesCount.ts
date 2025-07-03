@@ -23,7 +23,7 @@ import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityUserFilter } from '../../filters';
 import { useEntityList, useStarredEntities } from '../../hooks';
-import { reduceCatalogFilters } from '../../utils';
+import { reduceCatalogFilters } from '../../utils/filters';
 
 export function useStarredEntitiesCount() {
   const catalogApi = useApi(catalogApiRef);
@@ -34,7 +34,7 @@ export function useStarredEntitiesCount() {
   const request = useMemo(() => {
     const { user, ...allFilters } = filters;
     const compacted = compact(Object.values(allFilters));
-    const catalogFilters = reduceCatalogFilters(compacted);
+    const { orderFields, ...catalogFilters } = reduceCatalogFilters(compacted);
 
     const facet = 'metadata.name';
 

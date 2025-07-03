@@ -5,7 +5,7 @@ description: Explains how to add a basic permission check to a Backstage plugin
 ---
 
 :::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./02-adding-a-basic-permission-check--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/permissions/plugin-authors/02-adding-a-basic-permission-check--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
 :::
 
 If the outcome of a permission check doesn't need to change for different [resources](../../references/glossary.md#resource-permission-plugin), you can use a _basic permission check_. For this kind of check, we simply need to define a permission, and call `authorize` with it.
@@ -67,8 +67,6 @@ import { LoggerService, HttpAuthService } from '@backstage/backend-plugin-api';
 import { InputError, NotAllowedError } from '@backstage/errors';
 import { LoggerService, HttpAuthService, PermissionsService } from '@backstage/backend-plugin-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
-import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 /* highlight-add-end */
 
 export interface RouterOptions {
@@ -86,12 +84,6 @@ export async function createRouter(
   /* highlight-add-next-line */
   const { logger, httpAuth, permissions } = options;
 
-  /* highlight-add-start */
-  const permissionIntegrationRouter = createPermissionIntegrationRouter({
-    permissions: [todoListCreatePermission],
-  });
-  /* highlight-add-end */
-
   const router = Router();
   router.use(express.json());
 
@@ -99,9 +91,6 @@ export async function createRouter(
     logger.info('PONG!');
     response.json({ status: 'ok' });
   });
-
-  /* highlight-add-next-line */
-  router.use(permissionIntegrationRouter);
 
   router.get('/todos', async (_req, res) => {
     res.json(getAll());
@@ -137,11 +126,13 @@ export async function createRouter(
   // ...
 ```
 
-Pass the `permissions` object to the plugin in `plugins/todo-list-backend/src/plugin.ts`:
+Pass the `permissions` service and register the new permission to the plugin in `plugins/todo-list-backend/src/plugin.ts`:
 
 ```ts title="plugins/todo-list-backend/src/plugin.ts"
 import { coreServices, createBackendPlugin } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
+/* highlight-add-next-line */
+import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 
 export const exampleTodoListPlugin = createBackendPlugin({
   pluginId: 'todolist',
@@ -153,11 +144,16 @@ export const exampleTodoListPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         /* highlight-add-next-line */
         permissions: coreServices.permissions,
+        /* highlight-add-next-line */
+        permissionsRegistry: coreServices.permissionsRegistry,
       },
       /* highlight-remove-next-line */
       async init({ logger, httpAuth, httpRouter }) {
       /* highlight-add-next-line */
-      async init({ logger, httpAuth, httpRouter, permissions }) {
+      async init({ httpAuth, logger, httpRouter, permissions, permissionsRegistry }) {
+        /* highlight-add-next-line */
+        permissionsRegistry.addPermissions([todoListCreatePermission]);
+
         httpRouter.use(
           await createRouter({
             logger,

@@ -51,7 +51,7 @@ export async function command(opts: OptionValues) {
       );
     }
     if (opts.server) {
-      promises.push(generateServer(options));
+      promises.push(generateServer(options, opts.serverAdditionalProperties));
     }
     await Promise.all(promises);
   };
@@ -95,6 +95,7 @@ export async function command(opts: OptionValues) {
     try {
       await sharedCommand();
     } catch (err) {
+      console.error(chalk.red('Error: ', err));
       process.exit(1);
     }
   }

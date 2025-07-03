@@ -26,8 +26,8 @@ import {
   discoveryApiRef,
   fetchApiRef,
   identityApiRef,
+  createExtensionInput,
 } from '@backstage/frontend-plugin-api';
-import React from 'react';
 import { rootRouteRef } from '../routes';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import { FormFieldBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
@@ -35,12 +35,26 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderClient } from '../api';
 
-export const scaffolderPage = PageBlueprint.make({
-  params: {
-    routeRef: convertLegacyRouteRef(rootRouteRef),
-    defaultPath: '/create',
-    loader: () =>
-      import('../components/Router').then(m => compatWrapper(<m.Router />)),
+export const scaffolderPage = PageBlueprint.makeWithOverrides({
+  inputs: {
+    formFields: createExtensionInput([
+      FormFieldBlueprint.dataRefs.formFieldLoader,
+    ]),
+  },
+  factory(originalFactory, { inputs }) {
+    const formFieldLoaders = inputs.formFields.map(i =>
+      i.get(FormFieldBlueprint.dataRefs.formFieldLoader),
+    );
+    return originalFactory({
+      routeRef: convertLegacyRouteRef(rootRouteRef),
+      defaultPath: '/create',
+      loader: () =>
+        import('../components/Router/Router').then(m =>
+          compatWrapper(
+            <m.InternalRouter formFieldLoaders={formFieldLoaders} />,
+          ),
+        ),
+    });
   },
 });
 

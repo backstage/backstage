@@ -35,12 +35,14 @@ import {
   oauthRequestDialogAppRootElement,
   alertDisplayAppRootElement,
   DefaultSignInPage,
+  dialogDisplayAppRootElement,
 } from './extensions';
 import { apis } from './defaultApis';
 
 /** @public */
 export const appPlugin = createFrontendPlugin({
-  id: 'app',
+  pluginId: 'app',
+  info: { packageJson: () => import('../package.json') },
   extensions: [
     ...apis,
     App,
@@ -62,5 +64,6 @@ export const appPlugin = createFrontendPlugin({
     DefaultSignInPage,
     oauthRequestDialogAppRootElement,
     alertDisplayAppRootElement,
+    dialogDisplayAppRootElement,
   ],
 });

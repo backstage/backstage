@@ -43,6 +43,7 @@ type BranchProtectionOptions = {
   enforceAdmins?: boolean;
   dismissStaleReviews?: boolean;
   requiredCommitSigning?: boolean;
+  requiredLinearHistory?: boolean;
 };
 
 export const enableBranchProtectionOnDefaultRepoBranch = async ({
@@ -62,6 +63,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   enforceAdmins = true,
   dismissStaleReviews = false,
   requiredCommitSigning = false,
+  requiredLinearHistory = false,
 }: BranchProtectionOptions): Promise<void> => {
   const tryOnce = async () => {
     try {
@@ -93,6 +95,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
           require_last_push_approval: requireLastPushApproval,
         },
         required_conversation_resolution: requiredConversationResolution,
+        required_linear_history: requiredLinearHistory,
       });
 
       if (requiredCommitSigning) {

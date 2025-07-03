@@ -1,5 +1,935 @@
 # @backstage/plugin-techdocs
 
+## 1.13.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/integration-react@1.2.9-next.1
+  - @backstage/plugin-techdocs-react@1.3.1-next.1
+  - @backstage/plugin-search-common@1.2.19-next.0
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/plugin-search-react@1.9.2-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+  - @backstage/plugin-auth-react@0.1.17-next.1
+
+## 1.13.2-next.0
+
+### Patch Changes
+
+- 1debf7f: Fixed an issue causing TechDocs to not properly handle initial redirect.
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/integration-react@1.2.9-next.0
+  - @backstage/theme@0.6.7-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/plugin-search-react@1.9.2-next.0
+  - @backstage/plugin-techdocs-react@1.3.1-next.0
+  - @backstage/catalog-client@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/core-compat-api@0.4.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/plugin-auth-react@0.1.17-next.0
+  - @backstage/plugin-search-common@1.2.18
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 1.13.0
+
+### Minor Changes
+
+- 3c59ece: **New Frontend System Only:**
+  The `TechDocs` plugin is now responsible for providing an entity icon link extension to read documentation from the catalog entity page.
+- ec7b35d: Introduced `backstage.io/techdocs-entity-path` annotation which allows deep linking into another entities TechDocs in conjunction with `backstage.io/techdocs-entity`.
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- 9dde3ba: Improved Keyboard accessibility in techdocs.
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/catalog-client@1.10.1
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/plugin-techdocs-react@1.3.0
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-search-react@1.9.1
+  - @backstage/integration-react@1.2.8
+  - @backstage/plugin-auth-react@0.1.16
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/core-compat-api@0.4.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/theme@0.6.6
+  - @backstage/plugin-search-common@1.2.18
+
+## 1.13.0-next.2
+
+### Minor Changes
+
+- 3c59ece: **New Frontend System Only:**
+  The `TechDocs` plugin is now responsible for providing an entity icon link extension to read documentation from the catalog entity page.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/plugin-search-react@1.9.1-next.1
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/integration-react@1.2.7
+  - @backstage/plugin-auth-react@0.1.16-next.0
+  - @backstage/plugin-techdocs-react@1.3.0-next.1
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/theme@0.6.6
+  - @backstage/plugin-search-common@1.2.18
+  - @backstage/plugin-techdocs-common@0.1.1-next.0
+
+## 1.13.0-next.1
+
+### Patch Changes
+
+- 9dde3ba: Improved Keyboard accessibility in techdocs.
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/core-compat-api@0.4.3-next.1
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/integration@1.17.0
+  - @backstage/integration-react@1.2.7
+  - @backstage/theme@0.6.6
+  - @backstage/plugin-auth-react@0.1.15
+  - @backstage/plugin-search-common@1.2.18
+  - @backstage/plugin-search-react@1.9.1-next.0
+  - @backstage/plugin-techdocs-common@0.1.1-next.0
+  - @backstage/plugin-techdocs-react@1.3.0-next.0
+
+## 1.13.0-next.0
+
+### Minor Changes
+
+- ec7b35d: Introduced `backstage.io/techdocs-entity-path` annotation which allows deep linking into another entities TechDocs in conjunction with `backstage.io/techdocs-entity`.
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/plugin-techdocs-react@1.3.0-next.0
+  - @backstage/plugin-techdocs-common@0.1.1-next.0
+  - @backstage/core-compat-api@0.4.3-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.0
+  - @backstage/plugin-search-react@1.9.1-next.0
+  - @backstage/integration-react@1.2.7
+
+## 1.12.6
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 7d445da: Update keyboard focus on when clicking hash links. This fixes the issue where the "skip to content" link rendered by Material MkDocs isn't focused when used.
+- 72d019d: Removed various typos
+- 2ffd273: Add hover and focus styling to the "copy to clipboard" button within codeblocks in techdocs. Also added an aria-label to the button for accessibility.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/theme@0.6.6
+  - @backstage/integration@1.17.0
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/plugin-search-react@1.9.0
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/plugin-techdocs-react@1.2.17
+  - @backstage/plugin-auth-react@0.1.15
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+  - @backstage/integration-react@1.2.7
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-search-common@1.2.18
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.12.6-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/plugin-search-react@1.9.0-next.2
+  - @backstage/core-compat-api@0.4.2-next.3
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.3
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/integration-react@1.2.7-next.3
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/plugin-auth-react@0.1.15-next.1
+  - @backstage/plugin-search-common@1.2.18-next.0
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.17-next.1
+
+## 1.12.6-next.2
+
+### Patch Changes
+
+- 7d445da: Update keyboard focus on when clicking hash links. This fixes the issue where the "skip to content" link rendered by Material MkDocs isn't focused when used.
+- 2ffd273: Add hover and focus styling to the "copy to clipboard" button within codeblocks in techdocs. Also added an aria-label to the button for accessibility.
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/core-compat-api@0.4.2-next.2
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/integration-react@1.2.7-next.2
+  - @backstage/plugin-auth-react@0.1.15-next.1
+  - @backstage/plugin-catalog-react@1.18.0-next.2
+  - @backstage/plugin-search-react@1.9.0-next.1
+  - @backstage/plugin-techdocs-react@1.2.17-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/plugin-search-common@1.2.18-next.0
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.12.6-next.1
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/core-compat-api@0.4.2-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/plugin-search-react@1.9.0-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.1
+  - @backstage/plugin-techdocs-react@1.2.17-next.0
+  - @backstage/plugin-auth-react@0.1.15-next.0
+  - @backstage/integration-react@1.2.7-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-search-common@1.2.18-next.0
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.12.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/integration-react@1.2.7-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/theme@0.6.5
+  - @backstage/plugin-auth-react@0.1.14
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-search-react@1.8.8
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.16
+
+## 1.12.5
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-react@1.2.16
+  - @backstage/plugin-catalog-react@1.17.0
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/integration-react@1.2.6
+  - @backstage/core-compat-api@0.4.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/plugin-search-react@1.8.8
+  - @backstage/plugin-auth-react@0.1.14
+  - @backstage/theme@0.6.5
+  - @backstage/integration@1.16.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.12.5-next.2
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/integration-react@1.2.6-next.1
+  - @backstage/core-compat-api@0.4.1-next.2
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/plugin-techdocs-react@1.2.16-next.1
+  - @backstage/plugin-catalog-react@1.17.0-next.2
+  - @backstage/plugin-search-react@1.8.8-next.1
+  - @backstage/plugin-auth-react@0.1.14-next.1
+  - @backstage/theme@0.6.5-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.12.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-react@1.2.16-next.0
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/integration-react@1.2.6-next.0
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/plugin-auth-react@0.1.14-next.0
+  - @backstage/plugin-catalog-react@1.16.1-next.1
+  - @backstage/plugin-search-react@1.8.8-next.0
+  - @backstage/core-compat-api@0.4.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.4
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.12.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.16.1-next.0
+  - @backstage/core-compat-api@0.4.1-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/integration@1.16.2
+  - @backstage/integration-react@1.2.5
+  - @backstage/theme@0.6.4
+  - @backstage/plugin-auth-react@0.1.13
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-search-react@1.8.7
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.15
+
+## 1.12.4
+
+### Patch Changes
+
+- fffe3c0: Fixed double scrollbar issue that would appear on the Entity TechDocs view page that would stop the page from full scrolling to the top when navigating to a new page
+- 065e6b9: Excludes SVG styling from sanitization
+- b5a8208: Added `TechDocsAddonsBlueprint` extension to allow adding of techdocs addons.
+- ed1cb3e: Adds the page name of techdocs to the document's title.
+- fe4abb8: Updates logic to check for SVG sources when inlining them.
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-search-react@1.8.7
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-catalog-react@1.16.0
+  - @backstage/core-compat-api@0.4.0
+  - @backstage/plugin-techdocs-react@1.2.15
+  - @backstage/integration-react@1.2.5
+  - @backstage/plugin-auth-react@0.1.13
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.4
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.12.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/plugin-catalog-react@1.16.0-next.2
+  - @backstage/core-compat-api@0.4.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/plugin-search-react@1.8.7-next.2
+  - @backstage/plugin-techdocs-react@1.2.15-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.5-next.0
+  - @backstage/theme@0.6.4
+  - @backstage/plugin-auth-react@0.1.13-next.1
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.12.4-next.1
+
+### Patch Changes
+
+- fffe3c0: Fixed double scrollbar issue that would appear on the Entity TechDocs view page that would stop the page from full scrolling to the top when navigating to a new page
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/plugin-catalog-react@1.16.0-next.1
+  - @backstage/core-compat-api@0.3.7-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/integration@1.16.1
+  - @backstage/integration-react@1.2.4
+  - @backstage/theme@0.6.4
+  - @backstage/plugin-auth-react@0.1.13-next.0
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-search-react@1.8.7-next.1
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.15-next.1
+
+## 1.12.4-next.0
+
+### Patch Changes
+
+- 065e6b9: Excludes svg styling from sanitization
+- b5a8208: Added `TechDocsAddonsBlueprint` extension to allow adding of techdocs addons.
+- ed1cb3e: Adds the page name of techdoc to the document's title.
+- fe4abb8: Updates logic to check for SVG sources when inlining svgs.
+- Updated dependencies
+  - @backstage/plugin-search-react@1.8.7-next.0
+  - @backstage/plugin-catalog-react@1.16.0-next.0
+  - @backstage/plugin-techdocs-react@1.2.15-next.0
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+  - @backstage/core-compat-api@0.3.7-next.0
+  - @backstage/integration-react@1.2.4
+
+## 1.12.3
+
+### Patch Changes
+
+- eb3d91a: Use the custom error page if provided for displaying errors instead of the default error page
+- 524f0af: Add missing route ref to the `/alpha` entity content extension.
+- f4be934: Changed the base URL in addLinkClickListener from window.location.origin to app.baseUrl for improved path handling. This fixes an issue where Backstage, when running on a subpath, was unable to handle non-Backstage URLs of the same origin correctly.
+- 1f40e6b: Add optional props to `TechDocCustomHome` to allow for more flexibility:
+
+  ```tsx
+  import { TechDocsCustomHome } from '@backstage/plugin-techdocs';
+  //...
+
+  const options = { emptyRowsWhenPaging: false };
+  const linkDestination = (entity: Entity): string | undefined => {
+    return entity.metadata.annotations?.['external-docs'];
+  };
+  const techDocsTabsConfig = [
+    {
+      label: 'Recommended Documentation',
+      panels: [
+        {
+          title: 'Golden Path',
+          description: 'Documentation about standards to follow',
+          panelType: 'DocsCardGrid',
+          panelProps: { CustomHeader: () => <ContentHeader title='Golden Path'/> },
+          filterPredicate: entity =>
+            entity?.metadata?.tags?.includes('golden-path') ?? false,
+        },
+        {
+          title: 'Recommended',
+          description: 'Useful documentation',
+          panelType: 'InfoCardGrid',
+          panelProps: {
+            CustomHeader: () => <ContentHeader title='Recommended' />
+            linkDestination: linkDestination,
+          },
+          filterPredicate: entity =>
+            entity?.metadata?.tags?.includes('recommended') ?? false,
+        },
+      ],
+    },
+    {
+      label: 'Browse All',
+      panels: [
+        {
+          description: 'Browse all docs',
+          filterPredicate: filterEntity,
+          panelType: 'TechDocsIndexPage',
+          title: 'All',
+          panelProps: { PageWrapper: React.Fragment, CustomHeader: React.Fragment, options: options },
+        },
+      ],
+    },
+  ];
+
+  const AppRoutes = () => {
+    <FlatRoutes>
+      <Route
+        path="/docs"
+        element={
+          <TechDocsCustomHome
+            tabsConfig={techDocsTabsConfig}
+            filter={{
+              kind: ['Location', 'Resource', 'Component'],
+              'metadata.annotations.featured-docs': CATALOG_FILTER_EXISTS,
+            }}
+            CustomPageWrapper={({ children }: React.PropsWithChildren<{}>) => (<PageWithHeader title="Docs" themeId="documentation">{children}</PageWithHeader>)}
+          />
+        }
+      />
+    </FlatRoutes>;
+  };
+  ```
+
+  Add new Grid option called `InfoCardGrid` which is a more customizable card option for the Docs grid.
+
+  ```tsx
+  <InfoCardGrid
+    entities={entities}
+    linkContent="Learn more"
+    linkDestination={entity => entity.metadata['external-docs']}
+  />
+  ```
+
+  Expose existing `CustomDocsPanel` so that it can be used independently if desired.
+
+  ```tsx
+  const panels: PanelConfig[] = [
+    {
+      description: '',
+      filterPredicate: entity => {},
+      panelType: 'InfoCardGrid',
+      title: 'Standards',
+      panelProps: {
+            CustomHeader: () => <ContentHeader title='Recommended' />
+            linkDestination: linkDestination,
+          },
+    },
+    {
+      description: '',
+      filterPredicate: entity => {},
+      panelType: 'DocsCardGrid',
+      title: 'Contribute',
+    },
+  ];
+  {
+    panels.map((config, index) => (
+      <CustomDocsPanel
+        key={index}
+        config={config}
+        entities={!!entities ? entities : []}
+        index={index}
+      />
+    ));
+  }
+  ```
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/plugin-search-react@1.8.6
+  - @backstage/core-components@0.16.4
+  - @backstage/plugin-catalog-react@1.15.2
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/integration-react@1.2.4
+  - @backstage/core-compat-api@0.3.6
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-techdocs-react@1.2.14
+  - @backstage/plugin-auth-react@0.1.12
+  - @backstage/theme@0.6.4
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.12.3-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+  - @backstage/core-compat-api@0.3.6-next.3
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/plugin-auth-react@0.1.12-next.1
+  - @backstage/plugin-catalog-react@1.15.2-next.3
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-search-react@1.8.6-next.3
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.14-next.1
+
+## 1.12.3-next.2
+
+### Patch Changes
+
+- eb3d91a: Use the custom error page if provided for displaying errors instead of the default error page
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/plugin-catalog-react@1.15.2-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-compat-api@0.3.6-next.2
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/integration@1.16.1
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/plugin-auth-react@0.1.12-next.1
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-search-react@1.8.6-next.2
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.14-next.1
+
+## 1.12.2-next.1
+
+### Patch Changes
+
+- 524f0af: Add missing route ref to the `/alpha` entity content extension.
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.1
+  - @backstage/integration-react@1.2.4-next.0
+  - @backstage/core-compat-api@0.3.6-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/plugin-techdocs-react@1.2.14-next.0
+  - @backstage/plugin-catalog-react@1.15.2-next.1
+  - @backstage/plugin-search-react@1.8.6-next.1
+  - @backstage/plugin-auth-react@0.1.12-next.0
+  - @backstage/theme@0.6.4-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.12.2-next.0
+
+### Patch Changes
+
+- f4be934: Changed the base URL in addLinkClickListener from window.location.origin to app.baseUrl for improved path handling. This fixes an issue where Backstage, when running on a subpath, was unable to handle non-Backstage URLs of the same origin correctly.
+- 1f40e6b: Add optional props to `TechDocCustomHome` to allow for more flexibility:
+
+  ```tsx
+  import { TechDocsCustomHome } from '@backstage/plugin-techdocs';
+  //...
+
+  const options = { emptyRowsWhenPaging: false };
+  const linkDestination = (entity: Entity): string | undefined => {
+    return entity.metadata.annotations?.['external-docs'];
+  };
+  const techDocsTabsConfig = [
+    {
+      label: 'Recommended Documentation',
+      panels: [
+        {
+          title: 'Golden Path',
+          description: 'Documentation about standards to follow',
+          panelType: 'DocsCardGrid',
+          panelProps: { CustomHeader: () => <ContentHeader title='Golden Path'/> },
+          filterPredicate: entity =>
+            entity?.metadata?.tags?.includes('golden-path') ?? false,
+        },
+        {
+          title: 'Recommended',
+          description: 'Useful documentation',
+          panelType: 'InfoCardGrid',
+          panelProps: {
+            CustomHeader: () => <ContentHeader title='Recommended' />
+            linkDestination: linkDestination,
+          },
+          filterPredicate: entity =>
+            entity?.metadata?.tags?.includes('recommended') ?? false,
+        },
+      ],
+    },
+    {
+      label: 'Browse All',
+      panels: [
+        {
+          description: 'Browse all docs',
+          filterPredicate: filterEntity,
+          panelType: 'TechDocsIndexPage',
+          title: 'All',
+          panelProps: { PageWrapper: React.Fragment, CustomHeader: React.Fragment, options: options },
+        },
+      ],
+    },
+  ];
+
+  const AppRoutes = () => {
+    <FlatRoutes>
+      <Route
+        path="/docs"
+        element={
+          <TechDocsCustomHome
+            tabsConfig={techDocsTabsConfig}
+            filter={{
+              kind: ['Location', 'Resource', 'Component'],
+              'metadata.annotations.featured-docs': CATALOG_FILTER_EXISTS,
+            }}
+            CustomPageWrapper={({ children }: React.PropsWithChildren<{}>) => (<PageWithHeader title="Docs" themeId="documentation">{children}</PageWithHeader>)}
+          />
+        }
+      />
+    </FlatRoutes>;
+  };
+  ```
+
+  Add new Grid option called `InfoCardGrid` which is a more customizable card option for the Docs grid.
+
+  ```tsx
+  <InfoCardGrid
+    entities={entities}
+    linkContent="Learn more"
+    linkDestination={entity => entity.metadata['external-docs']}
+  />
+  ```
+
+  Expose existing `CustomDocsPanel` so that it can be used independently if desired.
+
+  ```tsx
+  const panels: PanelConfig[] = [
+    {
+      description: '',
+      filterPredicate: entity => {},
+      panelType: 'InfoCardGrid',
+      title: 'Standards',
+      panelProps: {
+            CustomHeader: () => <ContentHeader title='Recommended' />
+            linkDestination: linkDestination,
+          },
+    },
+    {
+      description: '',
+      filterPredicate: entity => {},
+      panelType: 'DocsCardGrid',
+      title: 'Contribute',
+    },
+  ];
+  {
+    panels.map((config, index) => (
+      <CustomDocsPanel
+        key={index}
+        config={config}
+        entities={!!entities ? entities : []}
+        index={index}
+      />
+    ));
+  }
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.8.6-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-compat-api@0.3.6-next.0
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/integration-react@1.2.3
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-auth-react@0.1.11
+  - @backstage/plugin-catalog-react@1.15.2-next.0
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.13
+
+## 1.12.1
+
+### Patch Changes
+
+- 3710b35: Allow passing down `withSearch` prop to `EntityTechdocsContent` component since it was `true` by default, now user can use the `EntityTechdocsContent` component _without_ showing the search field on top of the content.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/core-components@0.16.3
+  - @backstage/integration@1.16.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/core-compat-api@0.3.5
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.3
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-auth-react@0.1.11
+  - @backstage/plugin-search-common@1.2.17
+  - @backstage/plugin-search-react@1.8.5
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.13
+
+## 1.12.1-next.1
+
+### Patch Changes
+
+- 3710b35: Allow passing down `withSearch` prop to `EntityTechdocsContent` component since it was `true` by default, now user can use the `EntityTechdocsContent` component _without_ showing the search field on top of the content.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4-next.0
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/core-compat-api@0.3.5-next.0
+  - @backstage/plugin-catalog-react@1.15.1-next.1
+  - @backstage/plugin-search-react@1.8.5-next.0
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/integration-react@1.2.3-next.0
+  - @backstage/plugin-auth-react@0.1.11-next.0
+  - @backstage/plugin-techdocs-react@1.2.13-next.0
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-search-common@1.2.17-next.0
+  - @backstage/integration@1.16.1-next.0
+  - @backstage/theme@0.6.3
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.12.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1-next.0
+  - @backstage/integration-react@1.2.2
+  - @backstage/core-compat-api@0.3.4
+
+## 1.12.0
+
+### Minor Changes
+
+- e153ca6: Add pagination support to TechDocs Index Page and make it the default
+
+### Patch Changes
+
+- 7d8777d: Added support for the Search bar in docs residing in the entity page tab, and not only the global "/docs" page.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.0
+  - @backstage/integration@1.16.0
+  - @backstage/plugin-search-react@1.8.4
+  - @backstage/core-compat-api@0.3.4
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/theme@0.6.3
+  - @backstage/core-components@0.16.2
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/integration-react@1.2.2
+  - @backstage/plugin-auth-react@0.1.10
+  - @backstage/plugin-search-common@1.2.16
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.12
+
+## 1.11.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.3.4-next.2
+  - @backstage/plugin-catalog-react@1.14.3-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/integration-react@1.2.2-next.1
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/plugin-auth-react@0.1.10-next.2
+  - @backstage/plugin-search-common@1.2.16-next.0
+  - @backstage/plugin-search-react@1.8.4-next.2
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.12-next.2
+
+## 1.11.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.1
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/core-compat-api@0.3.4-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/errors@1.2.5
+  - @backstage/frontend-plugin-api@0.9.3-next.1
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/integration-react@1.2.2-next.0
+  - @backstage/theme@0.6.3-next.0
+  - @backstage/plugin-auth-react@0.1.10-next.1
+  - @backstage/plugin-search-common@1.2.15
+  - @backstage/plugin-search-react@1.8.4-next.1
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-react@1.2.12-next.1
+
 ## 1.11.3-next.0
 
 ### Patch Changes

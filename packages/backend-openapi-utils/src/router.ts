@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 import { Router } from 'express';
-import { DocRequestMatcher, RequiredDoc } from './types';
+import {
+  DocRequestMatcher,
+  EndpointMap,
+  EndpointMapRequestMatcher,
+  RequiredDoc,
+} from './types';
 
 /**
  * Typed Express router based on an OpenAPI 3.1 spec.
@@ -36,4 +41,15 @@ export interface ApiRouter<Doc extends RequiredDoc> extends Router {
   options: DocRequestMatcher<Doc, this, 'options'>;
 
   head: DocRequestMatcher<Doc, this, 'head'>;
+}
+
+/**
+ * @public
+ */
+export interface TypedRouter<GeneratedEndpointMap extends EndpointMap>
+  extends Router {
+  get: EndpointMapRequestMatcher<GeneratedEndpointMap, this, 'get'>;
+  post: EndpointMapRequestMatcher<GeneratedEndpointMap, this, 'post'>;
+  put: EndpointMapRequestMatcher<GeneratedEndpointMap, this, 'put'>;
+  delete: EndpointMapRequestMatcher<GeneratedEndpointMap, this, '_delete'>;
 }

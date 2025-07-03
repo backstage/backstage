@@ -71,6 +71,7 @@ import {
   editorRouteRef,
   customFieldsRouteRef,
   templateFormRouteRef,
+  templatingExtensionsRouteRef,
 } from './routes';
 import {
   MyGroupsPicker,
@@ -80,6 +81,7 @@ import { RepoBranchPicker } from './components/fields/RepoBranchPicker/RepoBranc
 import { RepoBranchPickerSchema } from './components/fields/RepoBranchPicker/schema';
 import { formDecoratorsApiRef } from './alpha/api/ref';
 import { DefaultScaffolderFormDecoratorsApi } from './alpha/api/FormDecoratorsApi';
+import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
 
 /**
  * The main plugin export for the scaffolder.
@@ -109,6 +111,11 @@ export const scaffolderPlugin = createPlugin({
       deps: {},
       factory: () => DefaultScaffolderFormDecoratorsApi.create(),
     }),
+    createApiFactory({
+      api: formFieldsApiRef,
+      deps: {},
+      factory: () => ({ getFormFields: async () => [] }),
+    }),
   ],
   routes: {
     root: rootRouteRef,
@@ -120,6 +127,7 @@ export const scaffolderPlugin = createPlugin({
     editor: editorRouteRef,
     customFields: customFieldsRouteRef,
     templateForm: templateFormRouteRef,
+    templatingExtensions: templatingExtensionsRouteRef,
   },
   externalRoutes: {
     registerComponent: registerComponentRouteRef,

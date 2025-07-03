@@ -24,6 +24,9 @@ import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createGithubActionsDispatchAction } from './githubActionsDispatch';
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
   rest: {
     actions: {
@@ -32,11 +35,7 @@ const mockOctokit = {
   },
 };
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 describe('github:actions:dispatch', () => {
@@ -51,7 +50,7 @@ describe('github:actions:dispatch', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext({
     input: {
@@ -63,12 +62,21 @@ describe('github:actions:dispatch', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    octokitMock.mockImplementation(() => mockOctokit);
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubActionsDispatchAction({
       integrations,
       githubCredentialsProvider,
     });
+  });
+
+  it('should pass context logger to Octokit client', async () => {
+    await action.handler(mockContext);
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
   });
 
   it('should call the githubApis for creating WorkflowDispatch without an input object', async () => {

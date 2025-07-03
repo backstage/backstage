@@ -1,5 +1,110 @@
 # @backstage/plugin-signals-react
 
+## 0.0.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 0.0.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/types@1.2.1
+
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/types@1.2.1
+
+## 0.0.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/types@1.2.1
+
+## 0.0.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/types@1.2.1
+
+## 0.0.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/types@1.2.1
+
+## 0.0.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/types@1.2.1
+
+## 0.0.10
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/types@1.2.1
+
+## 0.0.10-next.0
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/types@1.2.1
+
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/types@1.2.1
+
+## 0.0.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/types@1.2.1-next.0
+
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/types@1.2.0
+
+## 0.0.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/types@1.2.0
+
 ## 0.0.7
 
 ### Patch Changes

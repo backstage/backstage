@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { CursorPaginatedCatalogTable } from './CursorPaginatedCatalogTable';
 import { CatalogTableRow } from './types';
@@ -62,6 +62,22 @@ describe('CursorPaginatedCatalogTable', () => {
       </MockEntityListContextProvider>
     );
   };
+
+  it('should display the title and subtitle when passed in', async () => {
+    await renderInTestApp(
+      wrapInContext(
+        <CursorPaginatedCatalogTable
+          data={data}
+          columns={columns}
+          title="My Title"
+          subtitle="My Subtitle"
+        />,
+      ),
+    );
+
+    expect(screen.queryByText('My Title')).toBeInTheDocument();
+    expect(screen.queryByText('My Subtitle')).toBeInTheDocument();
+  });
 
   it('should display all the items', async () => {
     await renderInTestApp(
@@ -146,7 +162,7 @@ describe('CursorPaginatedCatalogTable', () => {
           entities: data.map(e => e.entity),
           totalItems: data.length,
           filters: {
-            kind: new EntityKindFilter('component'),
+            kind: new EntityKindFilter('component', 'Component'),
           },
         }}
       >

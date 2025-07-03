@@ -25,7 +25,8 @@ import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import { getOctokitOptions, initRepoPushAndProtect } from './helpers';
+import { initRepoPushAndProtect } from './helpers';
+import { getOctokitOptions } from '../util';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
 import { examples } from './githubRepoPush.examples';
@@ -43,84 +44,45 @@ export function createGithubRepoPushAction(options: {
 }) {
   const { integrations, config, githubCredentialsProvider } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    description?: string;
-    defaultBranch?: string;
-    protectDefaultBranch?: boolean;
-    protectEnforceAdmins?: boolean;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    requireCodeOwnerReviews?: boolean;
-    dismissStaleReviews?: boolean;
-    bypassPullRequestAllowances?:
-      | {
-          users?: string[];
-          teams?: string[];
-          apps?: string[];
-        }
-      | undefined;
-    requiredApprovingReviewCount?: number;
-    restrictions?:
-      | {
-          users: string[];
-          teams: string[];
-          apps?: string[];
-        }
-      | undefined;
-    requiredStatusCheckContexts?: string[];
-    requireBranchesToBeUpToDate?: boolean;
-    requiredConversationResolution?: boolean;
-    sourcePath?: string;
-    token?: string;
-    requiredCommitSigning?: boolean;
-    requireLastPushApproval?: boolean;
-  }>({
+  return createTemplateAction({
     id: 'github:repo:push',
     description:
       'Initializes a git repository of contents in workspace and publishes it to GitHub.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl'],
-        properties: {
-          repoUrl: inputProps.repoUrl,
-          requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
-          dismissStaleReviews: inputProps.dismissStaleReviews,
-          requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
-          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
-          requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
-          restrictions: inputProps.restrictions,
-          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
-          requiredConversationResolution:
-            inputProps.requiredConversationResolution,
-          requireLastPushApproval: inputProps.requireLastPushApproval,
-          defaultBranch: inputProps.defaultBranch,
-          protectDefaultBranch: inputProps.protectDefaultBranch,
-          protectEnforceAdmins: inputProps.protectEnforceAdmins,
-          gitCommitMessage: inputProps.gitCommitMessage,
-          gitAuthorName: inputProps.gitAuthorName,
-          gitAuthorEmail: inputProps.gitAuthorEmail,
-          sourcePath: inputProps.sourcePath,
-          token: inputProps.token,
-          requiredCommitSigning: inputProps.requiredCommitSigning,
-        },
+        repoUrl: inputProps.repoUrl,
+        requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
+        dismissStaleReviews: inputProps.dismissStaleReviews,
+        requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
+        bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
+        requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
+        restrictions: inputProps.restrictions,
+        requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
+        requiredConversationResolution:
+          inputProps.requiredConversationResolution,
+        requireLastPushApproval: inputProps.requireLastPushApproval,
+        defaultBranch: inputProps.defaultBranch,
+        protectDefaultBranch: inputProps.protectDefaultBranch,
+        protectEnforceAdmins: inputProps.protectEnforceAdmins,
+        gitCommitMessage: inputProps.gitCommitMessage,
+        gitAuthorName: inputProps.gitAuthorName,
+        gitAuthorEmail: inputProps.gitAuthorEmail,
+        sourcePath: inputProps.sourcePath,
+        token: inputProps.token,
+        requiredCommitSigning: inputProps.requiredCommitSigning,
+        requiredLinearHistory: inputProps.requiredLinearHistory,
       },
       output: {
-        type: 'object',
-        properties: {
-          remoteUrl: outputProps.remoteUrl,
-          repoContentsUrl: outputProps.repoContentsUrl,
-          commitHash: outputProps.commitHash,
-        },
+        remoteUrl: outputProps.remoteUrl,
+        repoContentsUrl: outputProps.repoContentsUrl,
+        commitHash: outputProps.commitHash,
       },
     },
     async handler(ctx) {
       const {
         repoUrl,
-        defaultBranch = 'master',
+        defaultBranch = 'main',
         protectDefaultBranch = true,
         protectEnforceAdmins = true,
         gitCommitMessage = 'initial commit',
@@ -137,9 +99,10 @@ export function createGithubRepoPushAction(options: {
         requireLastPushApproval = false,
         token: providedToken,
         requiredCommitSigning = false,
+        requiredLinearHistory = false,
       } = ctx.input;
 
-      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+      const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
@@ -149,43 +112,55 @@ export function createGithubRepoPushAction(options: {
         integrations,
         credentialsProvider: githubCredentialsProvider,
         token: providedToken,
-        repoUrl,
+        host,
+        owner,
+        repo,
       });
 
-      const client = new Octokit(octokitOptions);
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
       const targetRepo = await client.rest.repos.get({ owner, repo });
 
       const remoteUrl = targetRepo.data.clone_url;
       const repoContentsUrl = `${targetRepo.data.html_url}/blob/${defaultBranch}`;
 
-      const { commitHash } = await initRepoPushAndProtect(
-        remoteUrl,
-        octokitOptions.auth,
-        ctx.workspacePath,
-        ctx.input.sourcePath,
-        defaultBranch,
-        protectDefaultBranch,
-        protectEnforceAdmins,
-        owner,
-        client,
-        repo,
-        requireCodeOwnerReviews,
-        bypassPullRequestAllowances,
-        requiredApprovingReviewCount,
-        restrictions,
-        requiredStatusCheckContexts,
-        requireBranchesToBeUpToDate,
-        requiredConversationResolution,
-        requireLastPushApproval,
-        config,
-        ctx.logger,
-        gitCommitMessage,
-        gitAuthorName,
-        gitAuthorEmail,
-        dismissStaleReviews,
-        requiredCommitSigning,
-      );
+      const commitHash = await ctx.checkpoint({
+        key: `init.repo.publish.${owner}.${client}.${repo}`,
+        fn: async () => {
+          const { commitHash: hash } = await initRepoPushAndProtect(
+            remoteUrl,
+            octokitOptions.auth,
+            ctx.workspacePath,
+            ctx.input.sourcePath,
+            defaultBranch,
+            protectDefaultBranch,
+            protectEnforceAdmins,
+            owner,
+            client,
+            repo,
+            requireCodeOwnerReviews,
+            bypassPullRequestAllowances,
+            requiredApprovingReviewCount,
+            restrictions,
+            requiredStatusCheckContexts,
+            requireBranchesToBeUpToDate,
+            requiredConversationResolution,
+            requireLastPushApproval,
+            config,
+            ctx.logger,
+            gitCommitMessage,
+            gitAuthorName,
+            gitAuthorEmail,
+            dismissStaleReviews,
+            requiredCommitSigning,
+            requiredLinearHistory,
+          );
+          return hash;
+        },
+      });
 
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);

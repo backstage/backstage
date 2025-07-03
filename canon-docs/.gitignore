@@ -1,0 +1,9 @@
+# next.js
+/.next/
+/dist/
+next-env.d.ts
+
+# css
+/public/core.css
+/public/components.css
+/public/backstage.css

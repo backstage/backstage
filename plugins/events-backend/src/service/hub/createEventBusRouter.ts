@@ -22,7 +22,7 @@ import {
   SchedulerService,
 } from '@backstage/backend-plugin-api';
 import { Handler } from 'express';
-import { createOpenApiRouter } from '../../schema/openapi.generated';
+import { createOpenApiRouter } from '../../schema/openapi';
 import { MemoryEventBusStore } from './MemoryEventBusStore';
 import { DatabaseEventBusStore } from './DatabaseEventBusStore';
 import { EventBusStore } from './types';

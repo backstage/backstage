@@ -5,7 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
@@ -14,13 +13,20 @@ export const createGitlabGroupEnsureExistsAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    path: string[];
     repoUrl: string;
+    path: (
+      | string
+      | {
+          name: string;
+          slug: string;
+        }
+    )[];
     token?: string | undefined;
   },
   {
     groupId?: number | undefined;
-  }
+  },
+  'v2'
 >;
 
 // @public
@@ -28,28 +34,29 @@ export const createGitlabIssueAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    title: string;
     repoUrl: string;
     projectId: number;
-    labels?: string | undefined;
-    description?: string | undefined;
-    weight?: number | undefined;
+    title: string;
     token?: string | undefined;
     assignees?: number[] | undefined;
-    createdAt?: string | undefined;
     confidential?: boolean | undefined;
-    milestoneId?: number | undefined;
-    epicId?: number | undefined;
+    description?: string | undefined;
+    createdAt?: string | undefined;
     dueDate?: string | undefined;
     discussionToResolve?: string | undefined;
+    epicId?: number | undefined;
+    labels?: string | undefined;
     issueType?: IssueType | undefined;
     mergeRequestToResolveDiscussionsOf?: number | undefined;
+    milestoneId?: number | undefined;
+    weight?: number | undefined;
   },
   {
     issueUrl: string;
     issueId: number;
     issueIid: number;
-  }
+  },
+  'v2'
 >;
 
 // @public
@@ -57,17 +64,18 @@ export const createGitlabProjectAccessTokenAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    repoUrl: string;
     projectId: string | number;
-    name?: string | undefined;
+    repoUrl: string;
     token?: string | undefined;
+    name?: string | undefined;
+    accessLevel?: number | undefined;
     scopes?: string[] | undefined;
     expiresAt?: string | undefined;
-    accessLevel?: number | undefined;
   },
   {
     access_token: string;
-  }
+  },
+  'v2'
 >;
 
 // @public
@@ -75,17 +83,18 @@ export const createGitlabProjectDeployTokenAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    name: string;
-    scopes: string[];
     repoUrl: string;
     projectId: string | number;
-    username?: string | undefined;
+    name: string;
+    scopes: string[];
     token?: string | undefined;
+    username?: string | undefined;
   },
   {
-    user: string;
     deploy_token: string;
-  }
+    user: string;
+  },
+  'v2'
 >;
 
 // @public
@@ -93,18 +102,21 @@ export const createGitlabProjectVariableAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    key: string;
-    value: string;
     repoUrl: string;
     projectId: string | number;
+    key: string;
+    value: string;
     variableType: string;
-    raw?: boolean | undefined;
     token?: string | undefined;
-    masked?: boolean | undefined;
-    environmentScope?: string | undefined;
     variableProtected?: boolean | undefined;
+    masked?: boolean | undefined;
+    raw?: boolean | undefined;
+    environmentScope?: string | undefined;
   },
-  JsonObject
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public
@@ -120,7 +132,12 @@ export const createGitlabRepoPushAction: (options: {
     token?: string | undefined;
     commitAction?: 'update' | 'delete' | 'create' | undefined;
   },
-  JsonObject
+  {
+    projectid: string;
+    projectPath: string;
+    commitHash: string;
+  },
+  'v2'
 >;
 
 // @public
@@ -130,59 +147,68 @@ export function createPublishGitlabAction(options: {
 }): TemplateAction<
   {
     repoUrl: string;
-    defaultBranch?: string | undefined;
     repoVisibility?: 'internal' | 'private' | 'public' | undefined;
-    sourcePath?: string | undefined;
-    token?: string | undefined;
+    defaultBranch?: string | undefined;
     gitCommitMessage?: string | undefined;
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
+    signCommit?: boolean | undefined;
+    sourcePath?: string | boolean | undefined;
+    skipExisting?: boolean | undefined;
+    token?: string | undefined;
     setUserAsOwner?: boolean | undefined;
     topics?: string[] | undefined;
     settings?:
       | {
+          visibility?: 'internal' | 'private' | 'public' | undefined;
           path?: string | undefined;
-          auto_devops_enabled?: boolean | undefined;
-          ci_config_path?: string | undefined;
           description?: string | undefined;
-          merge_method?: 'merge' | 'ff' | 'rebase_merge' | undefined;
+          merge_method?: 'merge' | 'rebase_merge' | 'ff' | undefined;
+          topics?: string[] | undefined;
+          auto_devops_enabled?: boolean | undefined;
+          only_allow_merge_if_pipeline_succeeds?: boolean | undefined;
+          allow_merge_on_skipped_pipeline?: boolean | undefined;
+          only_allow_merge_if_all_discussions_are_resolved?:
+            | boolean
+            | undefined;
           squash_option?:
             | 'always'
             | 'never'
             | 'default_on'
             | 'default_off'
             | undefined;
-          topics?: string[] | undefined;
-          visibility?: 'internal' | 'private' | 'public' | undefined;
-          only_allow_merge_if_all_discussions_are_resolved?:
-            | boolean
-            | undefined;
-          only_allow_merge_if_pipeline_succeeds?: boolean | undefined;
-          allow_merge_on_skipped_pipeline?: boolean | undefined;
+          ci_config_path?: string | undefined;
         }
       | undefined;
     branches?:
       | {
           name: string;
-          protect?: boolean | undefined;
-          create?: boolean | undefined;
           ref?: string | undefined;
+          create?: boolean | undefined;
+          protect?: boolean | undefined;
         }[]
       | undefined;
     projectVariables?:
       | {
           key: string;
           value: string;
-          description?: string | undefined;
-          variable_type?: string | undefined;
-          protected?: boolean | undefined;
-          masked?: boolean | undefined;
           raw?: boolean | undefined;
+          description?: string | undefined;
+          protected?: boolean | undefined;
+          variable_type?: 'file' | 'env_var' | undefined;
+          masked?: boolean | undefined;
           environment_scope?: string | undefined;
         }[]
       | undefined;
   },
-  JsonObject
+  {
+    remoteUrl: string;
+    repoContentsUrl: string;
+    projectId: number;
+    commitHash: string;
+    created: boolean;
+  },
+  'v2'
 >;
 
 // @public
@@ -202,8 +228,17 @@ export const createPublishGitlabMergeRequestAction: (options: {
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
+    reviewers?: string[] | undefined;
+    assignReviewersFromApprovalRules?: boolean | undefined;
+    labels?: string | string[] | undefined;
   },
-  JsonObject
+  {
+    targetBranchName: string;
+    projectid: string;
+    projectPath: string;
+    mergeRequestUrl: string;
+  },
+  'v2'
 >;
 
 // @public
@@ -211,16 +246,17 @@ export const createTriggerGitlabPipelineAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    branch: string;
     repoUrl: string;
     projectId: number;
     tokenDescription: string;
+    branch: string;
     token?: string | undefined;
     variables?: Record<string, string> | undefined;
   },
   {
     pipelineUrl: string;
-  }
+  },
+  'v2'
 >;
 
 // @public
@@ -231,32 +267,33 @@ export const editGitlabIssueAction: (options: {
     repoUrl: string;
     projectId: number;
     issueIid: number;
-    title?: string | undefined;
-    labels?: string | undefined;
-    description?: string | undefined;
-    weight?: number | undefined;
     token?: string | undefined;
-    assignees?: number[] | undefined;
     addLabels?: string | undefined;
+    assignees?: number[] | undefined;
     confidential?: boolean | undefined;
+    description?: string | undefined;
+    discussionLocked?: boolean | undefined;
+    dueDate?: string | undefined;
+    epicId?: number | undefined;
+    issueType?: IssueType | undefined;
+    labels?: string | undefined;
     milestoneId?: number | undefined;
     removeLabels?: string | undefined;
     stateEvent?: IssueStateEvent | undefined;
-    discussionLocked?: boolean | undefined;
-    epicId?: number | undefined;
-    dueDate?: string | undefined;
+    title?: string | undefined;
     updatedAt?: string | undefined;
-    issueType?: IssueType | undefined;
+    weight?: number | undefined;
   },
   {
-    state: string;
-    title: string;
-    projectId: number;
-    updatedAt: string;
     issueUrl: string;
+    projectId: number;
     issueId: number;
     issueIid: number;
-  }
+    state: string;
+    title: string;
+    updatedAt: string;
+  },
+  'v2'
 >;
 
 // @public

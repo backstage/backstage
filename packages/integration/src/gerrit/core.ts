@@ -41,8 +41,9 @@ const GERRIT_BODY_PREFIX = ")]}'";
  *
  * @param url - An URL pointing to a file stored in git.
  * @public
+ * @deprecated `parseGerritGitilesUrl` is deprecated. Use
+ *  {@link parseGitilesUrlRef} instead.
  */
-
 export function parseGerritGitilesUrl(
   config: GerritIntegrationConfig,
   url: string,
@@ -208,6 +209,29 @@ export function buildGerritGitilesUrl(
 }
 
 /**
+ * Build a Gerrit Gitiles url that targets a specific path.
+ *
+ * @param config - A Gerrit provider config.
+ * @param project - The name of the git project
+ * @param branch - The branch we will target.
+ * @param filePath - The absolute file path.
+ * @public
+ */
+export function buildGerritEditUrl(
+  config: GerritIntegrationConfig,
+  project: string,
+  branch: string,
+  filePath: string,
+): string {
+  return `${
+    config.baseUrl
+  }/admin/repos/edit/repo/${project}/branch/refs/heads/${branch}/file/${trimStart(
+    filePath,
+    '/',
+  )}`;
+}
+
+/**
  * Build a Gerrit Gitiles archive url that targets a specific branch and path
  *
  * @param config - A Gerrit provider config.
@@ -215,6 +239,8 @@ export function buildGerritGitilesUrl(
  * @param branch - The branch we will target.
  * @param filePath - The absolute file path.
  * @public
+ * @deprecated `buildGerritGitilesArchiveUrl` is deprecated. Use
+ *  {@link buildGerritGitilesArchiveUrlFromLocation} instead.
  */
 export function buildGerritGitilesArchiveUrl(
   config: GerritIntegrationConfig,
@@ -227,6 +253,38 @@ export function buildGerritGitilesArchiveUrl(
   return `${getGitilesAuthenticationUrl(
     config,
   )}/${project}/+archive/refs/heads/${branch}${archiveName}`;
+}
+
+/**
+ * Build a Gerrit Gitiles archive url from a Gitiles url.
+ *
+ * @param config - A Gerrit provider config.
+ * @param url - The gitiles url
+ * @public
+ */
+export function buildGerritGitilesArchiveUrlFromLocation(
+  config: GerritIntegrationConfig,
+  url: string,
+): string {
+  const {
+    path: filePath,
+    ref,
+    project,
+    refType,
+  } = parseGitilesUrlRef(config, url);
+  const archiveName =
+    filePath === '/' || filePath === '' ? '.tar.gz' : `/${filePath}.tar.gz`;
+  if (refType === 'branch') {
+    return `${getGitilesAuthenticationUrl(
+      config,
+    )}/${project}/+archive/refs/heads/${ref}${archiveName}`;
+  }
+  if (refType === 'sha') {
+    return `${getGitilesAuthenticationUrl(
+      config,
+    )}/${project}/+archive/${ref}${archiveName}`;
+  }
+  throw new Error(`Unsupported gitiles ref type: ${refType}`);
 }
 
 /**
@@ -257,6 +315,7 @@ export function getAuthenticationPrefix(
  * be used.
  *
  * @param config - A Gerrit provider config.
+ * @public
  */
 export function getGitilesAuthenticationUrl(
   config: GerritIntegrationConfig,
@@ -324,13 +383,25 @@ export function getGerritFileContentsApiUrl(
   config: GerritIntegrationConfig,
   url: string,
 ) {
-  const { branch, filePath, project } = parseGerritGitilesUrl(config, url);
+  const { ref, refType, path, project } = parseGitilesUrlRef(config, url);
 
-  return `${config.baseUrl}${getAuthenticationPrefix(
-    config,
-  )}projects/${encodeURIComponent(
-    project,
-  )}/branches/${branch}/files/${encodeURIComponent(filePath)}/content`;
+  // https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-content
+  if (refType === 'branch') {
+    return `${config.baseUrl}${getAuthenticationPrefix(
+      config,
+    )}projects/${encodeURIComponent(
+      project,
+    )}/branches/${ref}/files/${encodeURIComponent(path)}/content`;
+  }
+  // https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-content-from-commit
+  if (refType === 'sha') {
+    return `${config.baseUrl}${getAuthenticationPrefix(
+      config,
+    )}projects/${encodeURIComponent(
+      project,
+    )}/commits/${ref}/files/${encodeURIComponent(path)}/content`;
+  }
+  throw new Error(`Unsupported gitiles ref type: ${refType}`);
 }
 
 /**

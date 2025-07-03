@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 import { Entity, isGroupEntity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
@@ -47,6 +50,7 @@ import {
 } from '../lib/defaultTransformers';
 import {
   createAddEntitiesOperation,
+  createGraphqlClient,
   createRemoveEntitiesOperation,
   createReplaceEntitiesOperation,
   DeferredEntitiesBuilder,
@@ -56,11 +60,10 @@ import {
   getOrganizationUsers,
   GithubTeam,
 } from '../lib/github';
+import { areGroupEntities, areUserEntities } from '../lib/guards';
 import { assignGroupsToUsers, buildOrgHierarchy } from '../lib/org';
 import { parseGithubOrgUrl } from '../lib/util';
 import { withLocations } from '../lib/withLocations';
-import { areGroupEntities, areUserEntities } from '../lib/guards';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 const EVENT_TOPICS = [
   'github.membership',
@@ -188,12 +191,12 @@ export class GithubOrgEntityProvider implements EntityProvider {
       SingleInstanceGithubCredentialsProvider.create(this.options.gitHubConfig);
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName() {
     return `GithubOrgEntityProvider:${this.options.id}`;
   }
 
-  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
+  /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection) {
     this.connection = connection;
     await this.options.events?.subscribe({
@@ -220,9 +223,11 @@ export class GithubOrgEntityProvider implements EntityProvider {
       await this.credentialsProvider.getCredentials({
         url: this.options.orgUrl,
       });
-    const client = graphql.defaults({
-      baseUrl: this.options.gitHubConfig.apiBaseUrl,
+
+    const client = createGraphqlClient({
       headers,
+      baseUrl: this.options.gitHubConfig.apiBaseUrl!,
+      logger,
     });
 
     const { org } = parseGithubOrgUrl(this.options.orgUrl);

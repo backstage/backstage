@@ -32,79 +32,69 @@ jest.mock('@octokit/rest', () => {
   return { Octokit };
 });
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { GithubLocationAnalyzer } from './GithubLocationAnalyzer';
 import {
   registerMswTestHooks,
   mockServices,
 } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
-import { http, HttpResponse } from 'msw';
-import { ConfigReader } from '@backstage/config';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 const server = setupServer();
 
 describe('GithubLocationAnalyzer', () => {
-  const mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery> = {
-    getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
-    getExternalBaseUrl: jest.fn(),
-  };
-  const mockAuthService = mockServices.auth.mock({
+  const auth = mockServices.auth.mock({
     getPluginRequestToken: async () => ({ token: 'abc123' }),
   });
-  const config = new ConfigReader({
-    integrations: {
-      github: [
+  const config = mockServices.rootConfig({
+    data: {
+      integrations: {
+        github: [{ host: 'h.com', token: 't' }],
+      },
+    },
+  });
+  const catalog = catalogServiceMock.mock({
+    addLocation: jest.fn(async location => ({
+      location: {
+        id: 'test',
+        target: location.target,
+        type: location.type ?? 'url',
+      },
+      exists: false,
+      entities: [
         {
-          host: 'h.com',
-          token: 't',
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            name: 'test-entity',
+          },
+          spec: {
+            type: 'url',
+            target: 'whatever',
+          },
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            title: 'Test Entity',
+            name: 'test-entity-2',
+            description: 'The expected description 2',
+          },
+          spec: {
+            type: 'some-type',
+            lifecycle: 'experimental',
+            owner: 'someone',
+          },
         },
       ],
-    },
+    })),
   });
 
   registerMswTestHooks(server);
 
   beforeEach(() => {
-    server.use(
-      http.post('http://localhost:7007/locations', () =>
-        HttpResponse.json(
-          {
-            location: 'test',
-            exists: false,
-            entities: [
-              {
-                apiVersion: 'backstage.io/v1alpha1',
-                kind: 'Location',
-                metadata: {
-                  name: 'test-entity',
-                },
-                spec: {
-                  type: 'url',
-                  target: 'whatever',
-                },
-              },
-              {
-                apiVersion: 'backstage.io/v1alpha1',
-                kind: 'Component',
-                metadata: {
-                  title: 'Test Entity',
-                  name: 'test-entity-2',
-                  description: 'The expected description 2',
-                },
-                spec: {
-                  type: 'some-type',
-                  lifecycle: 'experimental',
-                  owner: 'someone',
-                },
-              },
-            ],
-          },
-          { status: 201 },
-        ),
-      ),
-    );
-
+    jest.clearAllMocks();
     octokit.repos.get.mockResolvedValue({
       data: { default_branch: 'my_default_branch' },
     });
@@ -120,11 +110,8 @@ describe('GithubLocationAnalyzer', () => {
       return Promise.reject();
     });
 
-    const analyzer = new GithubLocationAnalyzer({
-      discovery: mockDiscoveryApi,
-      auth: mockAuthService,
-      config,
-    });
+    const analyzer = new GithubLocationAnalyzer({ catalog, auth, config });
+
     const result = await analyzer.analyze({
       url: 'https://github.com/foo/bar',
     });
@@ -147,11 +134,8 @@ describe('GithubLocationAnalyzer', () => {
       return Promise.reject();
     });
 
-    const analyzer = new GithubLocationAnalyzer({
-      discovery: mockDiscoveryApi,
-      auth: mockAuthService,
-      config,
-    });
+    const analyzer = new GithubLocationAnalyzer({ catalog, auth, config });
+
     const result = await analyzer.analyze({
       url: 'https://github.com/foo/bar',
       catalogFilename: 'anvil.yaml',
@@ -173,11 +157,8 @@ describe('GithubLocationAnalyzer', () => {
       return Promise.reject();
     });
 
-    const analyzer = new GithubLocationAnalyzer({
-      discovery: mockDiscoveryApi,
-      auth: mockAuthService,
-      config,
-    });
+    const analyzer = new GithubLocationAnalyzer({ catalog, auth, config });
+
     const result = await analyzer.analyze({
       url: 'https://github.com/foo/bar',
       catalogFilename: '.gitignore',

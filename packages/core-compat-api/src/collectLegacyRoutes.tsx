@@ -18,6 +18,7 @@ import {
   AnyRouteRefParams,
   BackstagePlugin as LegacyBackstagePlugin,
   RouteRef,
+  createPlugin,
   getComponentData,
 } from '@backstage/core-plugin-api';
 import {
@@ -29,14 +30,18 @@ import {
   createFrontendPlugin,
   ApiBlueprint,
   PageBlueprint,
+  FrontendModule,
+  createFrontendModule,
 } from '@backstage/frontend-plugin-api';
-import React, { Children, ReactNode, isValidElement } from 'react';
+import { Children, ReactNode, isValidElement } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import {
   convertLegacyRouteRef,
   convertLegacyRouteRefs,
 } from './convertLegacyRouteRef';
 import { compatWrapper } from './compatWrapper';
+import { collectEntityPageContents } from './collectEntityPageContents';
+import { normalizeRoutePath } from './normalizeRoutePath';
 
 /*
 
@@ -101,7 +106,7 @@ function makeRoutingShimExtension(options: {
   });
 }
 
-function visitRouteChildren(options: {
+export function visitRouteChildren(options: {
   children: ReactNode;
   parentExtensionId: string;
   context: {
@@ -156,7 +161,10 @@ function visitRouteChildren(options: {
 /** @internal */
 export function collectLegacyRoutes(
   flatRoutesElement: JSX.Element,
-): FrontendPlugin[] {
+  entityPage?: JSX.Element,
+): (FrontendPlugin | FrontendModule)[] {
+  const output = new Array<FrontendPlugin | FrontendModule>();
+
   const pluginExtensions = new Map<
     LegacyBackstagePlugin,
     ExtensionDefinition[]
@@ -167,6 +175,9 @@ export function collectLegacyRoutes(
     return () => String(currentIndex++);
   })();
 
+  // Placeholder plugin for any routes that don't belong to a plugin
+  const orphanRoutesPlugin = createPlugin({ id: 'converted-orphan-routes' });
+
   const getPluginExtensions = (plugin: LegacyBackstagePlugin) => {
     let extensions = pluginExtensions.get(plugin);
     if (!extensions) {
@@ -176,106 +187,138 @@ export function collectLegacyRoutes(
     return extensions;
   };
 
-  React.Children.forEach(
-    flatRoutesElement.props.children,
-    (route: ReactNode) => {
-      // TODO(freben): Handle feature flag and permissions framework wrapper elements
-      if (!React.isValidElement(route)) {
-        throw new Error(
-          `Invalid element inside FlatRoutes, expected Route but found element of type ${typeof route}.`,
-        );
-      }
-      if (route.type !== Route) {
-        throw new Error(
-          `Invalid element inside FlatRoutes, expected Route but found ${route.type}.`,
-        );
-      }
-      const routeElement = route.props.element;
-      const path: string | undefined = route.props.path;
-      const plugin = getComponentData<LegacyBackstagePlugin>(
-        routeElement,
-        'core.plugin',
+  Children.forEach(flatRoutesElement.props.children, (route: ReactNode) => {
+    if (route === null) {
+      return;
+    }
+    // TODO(freben): Handle feature flag and permissions framework wrapper elements
+    if (!isValidElement(route)) {
+      throw new Error(
+        `Invalid element inside FlatRoutes, expected Route but found element of type ${typeof route}.`,
       );
-      const routeRef = getComponentData<RouteRef>(
-        routeElement,
-        'core.mountPoint',
+    }
+    if (route.type !== Route) {
+      throw new Error(
+        `Invalid element inside FlatRoutes, expected Route but found ${route.type}.`,
       );
-      if (!plugin) {
-        throw new Error(
-          // TODO(vinzscam): add See <link-to-app-migration-docs> for more info
-          `Route with path ${path} has en element that can not be converted as it does not belong to a plugin. Make sure that the top-level React element of the element prop is an extension from a Backstage plugin, or remove the Route completely.`,
-        );
-      }
-      if (path === undefined) {
-        throw new Error(
-          `Route element inside FlatRoutes had no path prop value given`,
-        );
-      }
-
-      const extensions = getPluginExtensions(plugin);
-      const pageExtensionName = extensions.length ? getUniqueName() : undefined;
-      const pageExtensionId = `page:${plugin.getId()}${
-        pageExtensionName ? `/${pageExtensionName}` : pageExtensionName
-      }`;
-
-      extensions.push(
-        PageBlueprint.makeWithOverrides({
-          name: pageExtensionName,
-          inputs: {
-            childRoutingShims: createExtensionInput([
-              coreExtensionData.routePath.optional(),
-              coreExtensionData.routeRef.optional(),
-            ]),
-          },
-          factory(originalFactory, { inputs: _inputs }) {
-            // todo(blam): why do we not use the inputs here?
-            return originalFactory({
-              defaultPath: path[0] === '/' ? path.slice(1) : path,
-              routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
-              loader: async () =>
-                compatWrapper(
-                  route.props.children ? (
-                    <Routes>
-                      <Route path="*" element={routeElement}>
-                        <Route path="*" element={route.props.children} />
-                      </Route>
-                    </Routes>
-                  ) : (
-                    routeElement
-                  ),
-                ),
-            });
-          },
-        }),
+    }
+    const routeElement = route.props.element;
+    const path: string | undefined = route.props.path;
+    const plugin =
+      getComponentData<LegacyBackstagePlugin>(routeElement, 'core.plugin') ??
+      orphanRoutesPlugin;
+    const routeRef = getComponentData<RouteRef>(
+      routeElement,
+      'core.mountPoint',
+    );
+    if (path === undefined) {
+      throw new Error(
+        `Route element inside FlatRoutes had no path prop value given`,
       );
+    }
 
-      visitRouteChildren({
-        children: route.props.children,
-        parentExtensionId: pageExtensionId,
-        context: {
-          pluginId: plugin.getId(),
-          extensions,
-          getUniqueName,
-          discoverPlugin: getPluginExtensions,
+    const extensions = getPluginExtensions(plugin);
+    const pageExtensionName = extensions.length ? getUniqueName() : undefined;
+    const pageExtensionId = `page:${plugin.getId()}${
+      pageExtensionName ? `/${pageExtensionName}` : pageExtensionName
+    }`;
+
+    extensions.push(
+      PageBlueprint.makeWithOverrides({
+        name: pageExtensionName,
+        inputs: {
+          childRoutingShims: createExtensionInput([
+            coreExtensionData.routePath.optional(),
+            coreExtensionData.routeRef.optional(),
+          ]),
         },
-      });
-    },
-  );
+        factory(originalFactory, { inputs: _inputs }) {
+          // todo(blam): why do we not use the inputs here?
+          return originalFactory({
+            defaultPath: normalizeRoutePath(path),
+            routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
+            loader: async () =>
+              compatWrapper(
+                route.props.children ? (
+                  <Routes>
+                    <Route path="*" element={routeElement}>
+                      <Route path="*" element={route.props.children} />
+                    </Route>
+                  </Routes>
+                ) : (
+                  routeElement
+                ),
+              ),
+          });
+        },
+      }),
+    );
 
-  return Array.from(pluginExtensions).map(([plugin, extensions]) =>
-    createFrontendPlugin({
-      id: plugin.getId(),
-      extensions: [
-        ...extensions,
-        ...Array.from(plugin.getApis()).map(factory =>
-          ApiBlueprint.make({
-            name: factory.api.id,
-            params: { factory },
-          }),
-        ),
-      ],
-      routes: convertLegacyRouteRefs(plugin.routes ?? {}),
-      externalRoutes: convertLegacyRouteRefs(plugin.externalRoutes ?? {}),
-    }),
-  );
+    visitRouteChildren({
+      children: route.props.children,
+      parentExtensionId: pageExtensionId,
+      context: {
+        pluginId: plugin.getId(),
+        extensions,
+        getUniqueName,
+        discoverPlugin: getPluginExtensions,
+      },
+    });
+  });
+
+  if (entityPage) {
+    collectEntityPageContents(entityPage, {
+      discoverExtension(extension, plugin) {
+        if (!plugin || plugin.getId() === 'catalog') {
+          getPluginExtensions(orphanRoutesPlugin).push(extension);
+        } else {
+          getPluginExtensions(plugin).push(extension);
+        }
+      },
+    });
+
+    const extensions = new Array<ExtensionDefinition>();
+    visitRouteChildren({
+      children: entityPage,
+      parentExtensionId: `page:catalog/entity`,
+      context: {
+        pluginId: 'catalog',
+        extensions,
+        getUniqueName,
+        discoverPlugin(plugin) {
+          if (plugin.getId() !== 'catalog') {
+            getPluginExtensions(plugin);
+          }
+        },
+      },
+    });
+
+    output.push(
+      createFrontendModule({
+        pluginId: 'catalog',
+        extensions,
+      }),
+    );
+  }
+
+  for (const [plugin, extensions] of pluginExtensions) {
+    output.push(
+      createFrontendPlugin({
+        pluginId: plugin.getId(),
+        extensions: [
+          ...extensions,
+          ...Array.from(plugin.getApis()).map(factory =>
+            ApiBlueprint.make({
+              name: factory.api.id,
+              params: { factory },
+            }),
+          ),
+        ],
+        routes: convertLegacyRouteRefs(plugin.routes ?? {}),
+        externalRoutes: convertLegacyRouteRefs(plugin.externalRoutes ?? {}),
+      }),
+    );
+  }
+
+  return output;
 }

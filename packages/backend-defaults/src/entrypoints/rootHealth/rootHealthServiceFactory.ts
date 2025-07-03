@@ -23,14 +23,14 @@ import {
 
 /** @internal */
 export class DefaultRootHealthService implements RootHealthService {
-  #isRunning = false;
+  #state: 'init' | 'up' | 'down' = 'init';
 
   constructor(readonly options: { lifecycle: RootLifecycleService }) {
     options.lifecycle.addStartupHook(() => {
-      this.#isRunning = true;
+      this.#state = 'up';
     });
-    options.lifecycle.addShutdownHook(() => {
-      this.#isRunning = false;
+    options.lifecycle.addBeforeShutdownHook(() => {
+      this.#state = 'down';
     });
   }
 
@@ -39,10 +39,16 @@ export class DefaultRootHealthService implements RootHealthService {
   }
 
   async getReadiness(): Promise<{ status: number; payload?: any }> {
-    if (!this.#isRunning) {
+    if (this.#state === 'init') {
       return {
         status: 503,
         payload: { message: 'Backend has not started yet', status: 'error' },
+      };
+    }
+    if (this.#state === 'down') {
+      return {
+        status: 503,
+        payload: { message: 'Backend is shuttting down', status: 'error' },
       };
     }
 

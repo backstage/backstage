@@ -30,6 +30,7 @@ import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
 import { BitbucketServerUrlReader } from './BitbucketServerUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
+import { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
 
 createMockDirectory({ mockOsTmpDir: true });
 
@@ -276,6 +277,24 @@ describe('BitbucketServerUrlReader', () => {
           { etag: '12ab34cd56ef' },
         ),
       ).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should work for exact URLs by using readUrl directly', async () => {
+      reader.readUrl = jest.fn().mockResolvedValue({
+        buffer: async () => Buffer.from('content'),
+        etag: 'etag',
+      } as UrlReaderServiceReadUrlResponse);
+
+      const result = await reader.search(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/template.yml',
+      );
+      expect(reader.readUrl).toHaveBeenCalledTimes(1);
+      expect(result.etag).toBe('etag');
+      expect(result.files.length).toBe(1);
+      expect(result.files[0].url).toBe(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/template.yml',
+      );
+      expect((await result.files[0].content()).toString()).toEqual('content');
     });
   });
 });

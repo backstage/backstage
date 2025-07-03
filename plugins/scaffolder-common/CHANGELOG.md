@@ -1,5 +1,89 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.5.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+
+## 1.5.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/types@1.2.1
+
+## 1.5.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+
+## 1.5.10
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- 321b93e: Add optional `lifecycle` property to the spec field of Template entities.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.5.10-next.0
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.5.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.5.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/plugin-permission-common@0.8.4-next.0
+
+## 1.5.8
+
+### Patch Changes
+
+- 3c62a50: Experimental support for `formDecorators` to enable secret collection and mutations to the parameters for scaffolder tasks
+- Updated dependencies
+  - @backstage/catalog-model@1.7.2
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.3
+
+## 1.5.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+
 ## 1.5.8-next.0
 
 ### Patch Changes

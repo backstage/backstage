@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { JSX } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {
   LinkButton,
@@ -25,7 +25,6 @@ import {
 } from '@backstage/core-components';
 import {
   catalogApiRef,
-  CatalogApi,
   EntityDisplayName,
 } from '@backstage/plugin-catalog-react';
 import { useApi } from '@backstage/core-plugin-api';
@@ -34,6 +33,8 @@ import { EntityFilterQuery } from '@backstage/catalog-client';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homeTranslationRef } from '../../translation';
 
 /**
  * Props customizing the <FeaturedDocsCard/> component.
@@ -44,7 +45,7 @@ export type FeaturedDocsCardProps = {
   /** The entity filter used to display only the intended item/s */
   filter: EntityFilterQuery;
   /** An optional ReactNode for empty states */
-  emptyState?: React.JSX.Element;
+  emptyState?: JSX.Element;
   /** An optional linkDestination to set for the Featured Doc  */
   linkDestination?: string;
   /** An optional limit to set for link destination  */
@@ -89,9 +90,10 @@ const useStyles = makeStyles(
 export const Content = (props: FeaturedDocsCardProps): JSX.Element => {
   const { emptyState, filter, linkDestination, responseLimit, subLinkText } =
     props;
-  const linkText = subLinkText || 'LEARN MORE';
+  const { t } = useTranslationRef(homeTranslationRef);
+  const linkText = subLinkText || t('featuredDocsCard.learnMoreTitle');
   const styles = useStyles();
-  const catalogApi: CatalogApi = useApi(catalogApiRef);
+  const catalogApi = useApi(catalogApiRef);
   const {
     value: entities,
     loading,
@@ -154,14 +156,14 @@ export const Content = (props: FeaturedDocsCardProps): JSX.Element => {
     emptyState || (
       <EmptyState
         missing="data"
-        title="No documents to show"
-        description="Create your own document. Check out our Getting Started Information"
+        title={t('featuredDocsCard.empty.title')}
+        description={t('featuredDocsCard.empty.description')}
         action={
           <LinkButton
             to="https://backstage.io/docs/features/techdocs/getting-started"
             variant="contained"
           >
-            DOCS
+            {t('featuredDocsCard.empty.learnMoreLinkTitle')}
           </LinkButton>
         }
       />

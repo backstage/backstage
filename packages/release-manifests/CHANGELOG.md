@@ -1,5 +1,38 @@
 # @backstage/release-manifests
 
+## 0.0.13
+
+### Patch Changes
+
+- 163f3da: This expands the configurability of `release-manifests` to pave the road for more configuration options in the `cli`.
+
+  Specifically it allows the specification of mirrored, proxied, or air-gapped hosts when upgrading across releases when
+  working in restricted or heavily governed development environments (common in large enterprises and government
+  entities).
+
+## 0.0.13-next.0
+
+### Patch Changes
+
+- 163f3da: This expands the configurability of `release-manifests` to pave the road for more configuration options in the `cli`.
+
+  Specifically it allows the specification of mirrored, proxied, or air-gapped hosts when upgrading across releases when
+  working in restricted or heavily governed development environments (common in large enterprises and government
+  entities).
+
+## 0.0.12
+
+### Patch Changes
+
+- 2e140dc: Switch to native fetch for loading release manifests
+- b29eaea: Allow overriding the fetch function used inside getManifestByVersion
+
+## 0.0.12-next.1
+
+### Patch Changes
+
+- b29eaea: Allow overriding the fetch function used inside getManifestByVersion
+
 ## 0.0.12-next.0
 
 ### Patch Changes

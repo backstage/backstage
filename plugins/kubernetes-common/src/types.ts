@@ -15,7 +15,7 @@
  */
 
 import type { JsonObject, JsonValue } from '@backstage/types';
-import {
+import type {
   PodStatus,
   V1ConfigMap,
   V1CronJob,
@@ -30,6 +30,7 @@ import {
   V1ResourceQuota,
   V1Service,
   V1StatefulSet,
+  V1Secret,
 } from '@kubernetes/client-node';
 import { Entity } from '@backstage/catalog-model';
 
@@ -71,7 +72,7 @@ export interface ClusterAttributes {
    */
   name: string;
   /**
-   * Human-readable name for the cluster, to be dispayed in UIs.
+   * Human-readable name for the cluster, to be displayed in UIs.
    */
   title?: string;
   /**
@@ -139,7 +140,8 @@ export type FetchResponse =
   | CustomResourceFetchResponse
   | StatefulSetsFetchResponse
   | DaemonSetsFetchResponse
-  | PodStatusFetchResponse;
+  | PodStatusFetchResponse
+  | SecretsFetchResponse;
 
 /** @public */
 export interface PodFetchResponse {
@@ -229,6 +231,12 @@ export interface DaemonSetsFetchResponse {
 export interface PodStatusFetchResponse {
   type: 'podstatus';
   resources: Array<PodStatus>;
+}
+
+/** @public */
+export interface SecretsFetchResponse {
+  type: 'secrets';
+  resources: Array<V1Secret>;
 }
 
 /** @public */

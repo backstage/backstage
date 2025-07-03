@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, {
+import {
+  ReactNode,
+  createContext,
   Children,
   isValidElement,
   useState,
@@ -32,7 +34,8 @@ type InternalState = {
 };
 
 const noop = () => {};
-export const VerticalStepperContext = React.createContext<InternalState>({
+
+export const VerticalStepperContext = createContext<InternalState>({
   stepperLength: 0,
   stepIndex: 0,
   setStepIndex: noop,
@@ -50,13 +53,23 @@ export interface StepperProps {
 export function SimpleStepper(props: PropsWithChildren<StepperProps>) {
   const { children, elevated, onStepChange, activeStep = 0 } = props;
   const [stepIndex, setStepIndex] = useState<number>(activeStep);
-  const [stepHistory, setStepHistory] = useState<number[]>([0]);
+  /*
+  Recreates the stepHistory array based on the activeStep
+  to make sure the handleBack function of the Footer works when activeStep is higher than 0
+  */
+  const inOrderRecreatedStepHistory = Array.from(
+    { length: activeStep + 1 },
+    (_, i) => i,
+  );
+  const [stepHistory, setStepHistory] = useState<number[]>(
+    inOrderRecreatedStepHistory,
+  );
 
   useEffect(() => {
     setStepIndex(activeStep);
   }, [activeStep]);
 
-  const steps: React.ReactNode[] = [];
+  const steps: ReactNode[] = [];
   let endStep;
   Children.forEach(children, child => {
     if (isValidElement(child)) {

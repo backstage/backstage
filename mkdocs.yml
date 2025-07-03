@@ -71,6 +71,7 @@ nav:
           - Builtin Actions: 'features/software-templates/builtin-actions.md'
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
           - Writing Custom Step Layouts: 'features/software-templates/writing-custom-step-layouts.md'
+          - Templating Extensions: 'features/software-templates/templating-extensions.md'
           - Migrating from v1beta2 to v1beta3 templates: 'features/software-templates/migrating-from-v1beta2-to-v1beta3.md'
           - Dry Run Testing: 'features/software-templates/dry-run-testing.md'
       - Backstage Search:
@@ -125,6 +126,9 @@ nav:
       - GitLab:
           - Locations: 'integrations/gitlab/locations.md'
           - Discovery: 'integrations/gitlab/discovery.md'
+      - Gitea:
+          - Locations: 'integrations/gitea/locations.md'
+          - Discovery: 'integrations/gitea/discovery.md'
       - Google GCS:
           - Locations: 'integrations/google-cloud-storage/locations.md'
       - LDAP:
@@ -158,6 +162,10 @@ nav:
       - Reading Backstage Configuration: 'conf/reading.md'
       - Writing Backstage Configuration: 'conf/writing.md'
       - Defining Configuration for your Plugin: 'conf/defining.md'
+  - Notifications:
+      - Getting Started: 'notifications/index.md'
+      - Usage: 'notifications/usage.md'
+      - Processors: 'notifications/processors.md'
   - Authentication and identity:
       - Adding Authentication: 'auth/index.md'
       - Included providers:
@@ -207,6 +215,7 @@ nav:
       - Package Role Migration: 'tutorials/package-role-migration.md'
       - Migrating away from @backstage/core: 'tutorials/migrating-away-from-core.md'
       - Adding Custom Plugin to Existing Monorepo App: 'tutorials/quickstart-app-plugin.md'
+      - Manual Rollback using Knex: 'tutorials/manual-knex-rollback.md'
       - Switching Backstage from SQLite to PostgreSQL: 'tutorials/switching-sqlite-postgres.md'
       - Using the Backstage Proxy from Within a Plugin: 'tutorials/using-backstage-proxy-within-plugin.md'
       - Migration to Yarn 3: 'tutorials/yarn-migration.md'

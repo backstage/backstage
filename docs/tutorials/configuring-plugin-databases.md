@@ -1,7 +1,6 @@
 ---
 id: configuring-plugin-databases
 title: Configuring Plugin Databases
-# prettier-ignore
 description: Guide on how to configure Backstage databases.
 ---
 
@@ -181,3 +180,11 @@ GRANT SHOW DATABASES ON *.* TO some_user;
 
 The mechanisms in this guide should help you tackle different database
 deployment situations. Good luck!
+
+## Further Reading
+
+If you want to read more about the database configuration, here are some helpful links:
+
+- [Manual Knex Rollback](./manual-knex-rollback.md)
+- [Read more about Knex](http://knexjs.org/), the database wrapper that we use.
+- [Install `pgAdmin` 4](https://www.pgadmin.org/), a helpful tool for querying your database.

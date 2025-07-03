@@ -1,5 +1,122 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+
+## 0.9.5
+
+### Patch Changes
+
+- 216c6b2: Updated dependency `@kubernetes/client-node` to `1.1.2`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/types@1.2.1
+
+## 0.9.5-next.0
+
+### Patch Changes
+
+- 216c6b2: Updated dependency `@kubernetes/client-node` to `1.1.2`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+
+## 0.9.4
+
+### Patch Changes
+
+- d517d13: Export `backstage.io/kubernetes-id` and `backstage.io/kubernetes-label-selector` annotations as constants
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.9.4-next.0
+
+### Patch Changes
+
+- d517d13: Export `backstage.io/kubernetes-id` and `backstage.io/kubernetes-label-selector` annotations as constants
+
+## 0.9.3
+
+### Patch Changes
+
+- ac0e1ac: Fixed the lack of `secrets` to fetch from the kubernetes api by adding option to specify additional Objects which are not part of Default Objects
+- ca3da29: The `/clusters` endpoint is now protected by the `kubernetes.clusters.read` permission.
+  The `/services/:serviceId` endpoint is now protected by the `kubernetes.resources.read` permission.
+  The `/resources` endpoints are now protected by the `kubernetes.resources.read` permission.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.9.3-next.1
+
+### Patch Changes
+
+- ca3da29: The `/clusters` endpoint is now protected by the `kubernetes.clusters.read` permission.
+  The `/services/:serviceId` endpoint is now protected by the `kubernetes.resources.read` permission.
+  The `/resources` endpoints are now protected by the `kubernetes.resources.read` permission.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.9.3-next.0
+
+### Patch Changes
+
+- ac0e1ac: Fixed the lack of `secrets` to fetch from the kubernetes api by adding option to specify additional Objects which are not part of Default Objects
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.9.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-permission-common@0.8.4
+
+## 0.9.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/plugin-permission-common@0.8.4-next.0
+
+## 0.9.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.2
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.3
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+
 ## 0.9.0
 
 ### Minor Changes

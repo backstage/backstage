@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   auth?: {
     providers?: {
@@ -34,14 +36,22 @@ export interface Config {
           includeBasicAuth?: boolean;
           signIn?: {
             resolvers: Array<
-              | { resolver: 'usernameMatchingUserEntityName' }
+              | {
+                  resolver: 'usernameMatchingUserEntityName';
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+                }
               | {
                   resolver: 'emailLocalPartMatchingUserEntityName';
                   allowedDomains?: string[];
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
                 }
-              | { resolver: 'emailMatchingUserEntityProfileEmail' }
+              | {
+                  resolver: 'emailMatchingUserEntityProfileEmail';
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+                }
             >;
           };
+          sessionDuration?: HumanDuration | string;
         };
       };
     };

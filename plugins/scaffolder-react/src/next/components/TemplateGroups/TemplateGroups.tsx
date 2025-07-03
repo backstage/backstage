@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback } from 'react';
-
+import { Link, Progress } from '@backstage/core-components';
+import { errorApiRef, IconComponent, useApi } from '@backstage/core-plugin-api';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import {
   isTemplateEntityV1beta3,
   TemplateEntityV1beta3,
 } from '@backstage/plugin-scaffolder-common';
-import { Progress, Link } from '@backstage/core-components';
-import Typography from '@material-ui/core/Typography';
-import { errorApiRef, IconComponent, useApi } from '@backstage/core-plugin-api';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
+import Typography from '@material-ui/core/Typography';
+import { ComponentType, useCallback, useEffect } from 'react';
+
 import { TemplateGroup } from '../TemplateGroup/TemplateGroup';
 
 /**
@@ -32,7 +32,7 @@ import { TemplateGroup } from '../TemplateGroup/TemplateGroup';
 export interface TemplateGroupsProps {
   groups: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
-  TemplateCardComponent?: React.ComponentType<{
+  TemplateCardComponent?: ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
   onTemplateSelected?: (template: TemplateEntityV1beta3) => void;
@@ -58,12 +58,17 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
     [onTemplateSelected],
   );
 
+  useEffect(() => {
+    if (error) {
+      errorApi.post(error);
+    }
+  }, [error, errorApi]);
+
   if (loading) {
     return <Progress />;
   }
 
   if (error) {
-    errorApi.post(error);
     return null;
   }
 

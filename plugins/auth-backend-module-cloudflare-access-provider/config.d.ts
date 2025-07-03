@@ -34,8 +34,12 @@ export interface Config {
             | {
                 resolver: 'emailLocalPartMatchingUserEntityName';
                 allowedDomains?: string[];
+                dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
               }
-            | { resolver: 'emailMatchingUserEntityProfileEmail' }
+            | {
+                resolver: 'emailMatchingUserEntityProfileEmail';
+                dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+              }
           >;
         };
       };
@@ -43,6 +47,7 @@ export interface Config {
        * The backstage token expiration.
        */
       backstageTokenExpiration?: HumanDuration | string;
+      sessionDuration?: HumanDuration | string;
     };
   };
 }

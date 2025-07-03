@@ -77,7 +77,7 @@ describe('credentials', () => {
 
     const backend = await startTestBackend({
       features: [
-        import('../alpha'),
+        import('..'),
         mockServices.rootConfig.factory({ data: config }),
         authServiceFactory,
         httpAuthServiceFactory,

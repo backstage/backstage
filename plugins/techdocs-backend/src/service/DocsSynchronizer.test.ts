@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -31,7 +30,6 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
@@ -59,10 +57,7 @@ describe('DocsSynchronizer', () => {
     hasDocsBeenGenerated: jest.fn(),
     publish: jest.fn(),
   };
-  const discovery: jest.Mocked<DiscoveryService> = {
-    getBaseUrl: jest.fn(),
-    getExternalBaseUrl: jest.fn(),
-  };
+  const discovery = mockServices.discovery.mock();
   const cache: jest.Mocked<TechDocsCache> = {
     get: jest.fn(),
     set: jest.fn(),
@@ -91,7 +86,7 @@ describe('DocsSynchronizer', () => {
     docsSynchronizer = new DocsSynchronizer({
       publisher,
       config: new ConfigReader({}),
-      logger: loggerToWinstonLogger(mockServices.logger.mock()),
+      logger: mockServices.logger.mock(),
       buildLogTransport: mockBuildLogTransport,
       scmIntegrations: ScmIntegrations.fromConfig(new ConfigReader({})),
       cache,
@@ -347,7 +342,7 @@ describe('DocsSynchronizer', () => {
         config: new ConfigReader({
           techdocs: { legacyUseCaseSensitiveTripletPaths: true },
         }),
-        logger: loggerToWinstonLogger(mockServices.logger.mock()),
+        logger: mockServices.logger.mock(),
         buildLogTransport: new winston.transports.Stream({
           stream: new PassThrough(),
         }),

@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
+export * from './FormDecoratorBlueprint';
 export * from './FormFieldBlueprint';
 export * from './types';

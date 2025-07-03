@@ -16,22 +16,20 @@
 
 import Box from '@material-ui/core/Box';
 import { TextFieldProps } from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useEffect, useMemo, useState, ReactNode } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityAutocompletePickerOption } from './EntityAutocompletePickerOption';
-import { EntityAutocompletePickerInput } from './EntityAutocompletePickerInput';
 import {
   DefaultEntityFilters,
   useEntityList,
 } from '../../hooks/useEntityListProvider';
 import { EntityFilter } from '../../types';
-import { reduceBackendCatalogFilters } from '../../utils';
+import { reduceBackendCatalogFilters } from '../../utils/filters';
+import { CatalogAutocomplete } from '../CatalogAutocomplete';
+import { isEqual } from 'lodash';
 
 /** @public */
 export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
@@ -55,6 +53,7 @@ export type EntityAutocompletePickerProps<
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
   filtersForAvailableValues?: Array<keyof T>;
+  hidden?: boolean;
 };
 
 /** @public */
@@ -85,8 +84,8 @@ export function EntityAutocompletePicker<
     InputProps,
     initialSelectedOptions = [],
     filtersForAvailableValues = ['kind'],
+    hidden,
   } = props;
-
   const classes = useStyles();
 
   const {
@@ -118,11 +117,13 @@ export function EntityAutocompletePicker<
     [queryParameter],
   );
 
+  const filteredOptions = (filters[name] as unknown as { values: string[] })
+    ?.values;
+
   const [selectedOptions, setSelectedOptions] = useState(
     queryParameters.length
       ? queryParameters
-      : (filters[name] as unknown as { values: string[] })?.values ??
-          initialSelectedOptions,
+      : filteredOptions ?? initialSelectedOptions,
   );
 
   // Set selected options on query parameter updates; this happens at initial page load and from
@@ -136,11 +137,25 @@ export function EntityAutocompletePicker<
   const availableOptions = Object.keys(availableValues ?? {});
   const shouldAddFilter = selectedOptions.length && availableOptions.length;
 
+  // Update filter value when selectedOptions change
   useEffect(() => {
     updateFilters({
       [name]: shouldAddFilter ? new Filter(selectedOptions) : undefined,
     } as Partial<T>);
   }, [name, shouldAddFilter, selectedOptions, Filter, updateFilters]);
+
+  // Update selected options when filter value changes
+  useEffect(() => {
+    if (!shouldAddFilter) return;
+
+    const newSelectedOptions = filteredOptions ?? [];
+
+    // Check value is actually different (not just a different reference) to prevent selectedOptions <> filters loop
+    if (!isEqual(newSelectedOptions, selectedOptions)) {
+      setSelectedOptions(newSelectedOptions);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Don't re-set filter value when selectedOptions changes
+  }, [filteredOptions]);
 
   const filter = filters[name];
   if (
@@ -150,38 +165,28 @@ export function EntityAutocompletePicker<
     return null;
   }
 
-  return (
+  return hidden ? null : (
     <Box className={classes.root} pb={1} pt={1}>
-      <Typography className={classes.label} variant="button" component="label">
-        {label}
-        <Autocomplete<string, true>
-          PopperComponent={popperProps => (
-            <div {...popperProps}>{popperProps.children as ReactNode}</div>
-          )}
-          multiple
-          disableCloseOnSelect
-          options={availableOptions}
-          value={selectedOptions}
-          onChange={(_event: object, options: string[]) =>
-            setSelectedOptions(options)
-          }
-          renderOption={(option, { selected }) => (
-            <EntityAutocompletePickerOption
-              selected={selected}
-              value={option}
-              availableOptions={availableValues}
-              showCounts={!!showCounts}
-            />
-          )}
-          size="small"
-          popupIcon={
-            <ExpandMoreIcon data-testid={`${String(name)}-picker-expand`} />
-          }
-          renderInput={params => (
-            <EntityAutocompletePickerInput {...params} {...InputProps} />
-          )}
-        />
-      </Typography>
+      <CatalogAutocomplete<string, true>
+        multiple
+        disableCloseOnSelect
+        label={label}
+        name={`${String(name)}-picker`}
+        options={availableOptions}
+        value={selectedOptions}
+        TextFieldProps={InputProps}
+        onChange={(_event: object, options: string[]) =>
+          setSelectedOptions(options)
+        }
+        renderOption={(option, { selected }) => (
+          <EntityAutocompletePickerOption
+            selected={selected}
+            value={option}
+            availableOptions={availableValues}
+            showCounts={!!showCounts}
+          />
+        )}
+      />
     </Box>
   );
 }

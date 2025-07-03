@@ -28,6 +28,42 @@ export interface Config {
      */
     baseUrl: string;
 
+    lifecycle?: {
+      /**
+       * The maximum time that paused requests will wait for the service to start, before returning an error.
+       * Defaults to 5 seconds
+       * Supported formats:
+       * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms`
+       *   library.
+       * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+       * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
+       */
+      startupRequestPauseTimeout?: string | HumanDuration;
+      /**
+       * The minimum time that the HTTP server will delay the shutdown of the backend. During this delay health checks will be set to failing, allowing traffic to drain.
+       * Defaults to 0 seconds.
+       * Supported formats:
+       * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms`
+       *   library.
+       * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+       * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
+       */
+      serverShutdownDelay?: string | HumanDuration;
+    };
+
+    /**
+     * Corresponds to the Express `trust proxy` setting.
+     *
+     * @see https://expressjs.com/en/guide/behind-proxies.html
+     * @remarks
+     *
+     * This setting is used to determine whether the backend should trust the
+     * `X-Forwarded-*` headers that are set by proxies. This is important for
+     * determining the original client IP address and protocol (HTTP/HTTPS) when
+     * the backend is behind a reverse proxy or load balancer.
+     */
+    trustProxy?: boolean | number | string | string[];
+
     /** Address that the backend should listen to. */
     listen?:
       | string
@@ -60,9 +96,58 @@ export interface Config {
         };
 
     /**
+     * Options used by the default auditor service.
+     */
+    auditor?: {
+      /**
+       * Defines how audit event severity levels are mapped to log levels.
+       * This allows you to control the verbosity of audit logs based on the
+       * severity of the event. For example, you might want to log 'low' severity
+       * events as 'debug' messages, while logging 'critical' events as 'error'
+       * messages. Each severity level ('low', 'medium', 'high', 'critical')
+       * can be mapped to one of the standard log levels ('debug', 'info', 'warn', 'error').
+       *
+       * By default, audit events are mapped to log levels as follows:
+       * - `low`: `debug`
+       * - `medium`: `info`
+       * - `high`: `info`
+       * - `critical`: `info`
+       */
+      severityLogLevelMappings?: {
+        low?: 'debug' | 'info' | 'warn' | 'error';
+        medium?: 'debug' | 'info' | 'warn' | 'error';
+        high?: 'debug' | 'info' | 'warn' | 'error';
+        critical?: 'debug' | 'info' | 'warn' | 'error';
+      };
+    };
+
+    /**
+     * Options used by the default actions service.
+     */
+    actions?: {
+      /**
+       * List of plugin sources to load actions from.
+       */
+      pluginSources?: string[];
+    };
+
+    /**
      * Options used by the default auth, httpAuth and userInfo services.
      */
     auth?: {
+      /**
+       * Keys shared by all backends for signing and validating backend tokens.
+       * @deprecated this will be removed when the backwards compatibility is no longer needed with backend-common
+       */
+      keys?: {
+        /**
+         * Secret for generating tokens. Should be a base64 string, recommended
+         * length is 24 bytes.
+         *
+         * @visibility secret
+         */
+        secret: string;
+      }[];
       /**
        * This disables the otherwise default auth policy, which requires all
        * requests to be authenticated with either user or service credentials.
@@ -393,6 +478,10 @@ export interface Config {
              * The instance connection name for the cloudsql instance, e.g. `project:region:instance`
              */
             instance: string;
+            /**
+             * The ip address type to use for the connection. Defaults to 'PUBLIC'
+             */
+            ipAddressType?: 'PUBLIC' | 'PRIVATE' | 'PSC';
           }
         | {
             /**
@@ -519,6 +608,138 @@ export interface Config {
           connection: string;
           /** An optional default TTL (in milliseconds, if given as a number). */
           defaultTtl?: number | HumanDuration | string;
+          redis?: {
+            /**
+             * An optional Redis client configuration.  These options are passed to the `@keyv/redis` client.
+             */
+            client?: {
+              /**
+               * Namespace for the current instance.
+               */
+              namespace?: string;
+              /**
+               * Separator to use between namespace and key.
+               */
+              keyPrefixSeparator?: string;
+              /**
+               * Number of keys to delete in a single batch.
+               */
+              clearBatchSize?: number;
+              /**
+               * Enable Unlink instead of using Del for clearing keys. This is more performant but may not be supported by all Redis versions.
+               */
+              useUnlink?: boolean;
+              /**
+               * Whether to allow clearing all keys when no namespace is set.
+               * If set to true and no namespace is set, iterate() will return all keys.
+               * Defaults to `false`.
+               */
+              noNamespaceAffectsAll?: boolean;
+            };
+            /**
+             * An optional Redis cluster configuration.
+             */
+            cluster?: {
+              /**
+               * Cluster configuration options to be passed to the `@keyv/redis` client (and node-redis under the hood)
+               * https://github.com/redis/node-redis/blob/master/docs/clustering.md
+               *
+               * @visibility secret
+               */
+              rootNodes: Array<object>;
+              /**
+               * Cluster node default configuration options to be passed to the `@keyv/redis` client (and node-redis under the hood)
+               * https://github.com/redis/node-redis/blob/master/docs/clustering.md
+               *
+               * @visibility secret
+               */
+              defaults?: Partial<object>;
+              /**
+               * When `true`, `.connect()` will only discover the cluster topology, without actually connecting to all the nodes.
+               * Useful for short-term or PubSub-only connections.
+               */
+              minimizeConnections?: boolean;
+              /**
+               * When `true`, distribute load by executing readonly commands (such as `GET`, `GEOSEARCH`, etc.) across all cluster nodes. When `false`, only use master nodes.
+               */
+              useReplicas?: boolean;
+              /**
+               * The maximum number of times a command will be redirected due to `MOVED` or `ASK` errors.
+               */
+              maxCommandRedirections?: number;
+            };
+          };
+        }
+      | {
+          store: 'valkey';
+          /**
+           * A valkey connection string in the form `redis://user:pass@host:port`.
+           * @visibility secret
+           */
+          connection: string;
+          /** An optional default TTL (in milliseconds, if given as a number). */
+          defaultTtl?: number | HumanDuration | string;
+          valkey?: {
+            /**
+             * An optional Valkey client configuration.  These options are passed to the `@keyv/valkey` client.
+             */
+            client?: {
+              /**
+               * Namespace for the current instance.
+               */
+              namespace?: string;
+              /**
+               * Separator to use between namespace and key.
+               */
+              keyPrefixSeparator?: string;
+              /**
+               * Number of keys to delete in a single batch.
+               */
+              clearBatchSize?: number;
+              /**
+               * Enable Unlink instead of using Del for clearing keys. This is more performant but may not be supported by all Redis versions.
+               */
+              useUnlink?: boolean;
+              /**
+               * Whether to allow clearing all keys when no namespace is set.
+               * If set to true and no namespace is set, iterate() will return all keys.
+               * Defaults to `false`.
+               */
+              noNamespaceAffectsAll?: boolean;
+            };
+            /**
+             * An optional Valkey cluster (redis cluster under the hood) configuration.
+             */
+            cluster?: {
+              /**
+               * Cluster configuration options to be passed to the `@keyv/valkey` client (and node-redis under the hood)
+               * https://github.com/redis/node-redis/blob/master/docs/clustering.md
+               *
+               * @visibility secret
+               */
+              rootNodes: Array<object>;
+              /**
+               * Cluster node default configuration options to be passed to the `@keyv/redis` client (and node-redis under the hood)
+               * https://github.com/redis/node-redis/blob/master/docs/clustering.md
+               *
+               * @visibility secret
+               */
+              defaults?: Partial<object>;
+              /**
+               * When `true`, `.connect()` will only discover the cluster topology, without actually connecting to all the nodes.
+               * Useful for short-term or PubSub-only connections.
+               */
+              minimizeConnections?: boolean;
+              /**
+               * When `true`, distribute load by executing readonly commands (such as `GET`, `GEOSEARCH`, etc.) across all cluster nodes. When `false`, only use master nodes.
+               */
+              useReplicas?: boolean;
+              /**
+               * The maximum number of times a command will be redirected due to `MOVED` or `ASK` errors.
+               */
+              maxCommandRedirections?: number;
+            };
+          };
         }
       | {
           store: 'memcache';
@@ -551,6 +772,109 @@ export interface Config {
      * remove the default value that Backstage puts in place for that policy.
      */
     csp?: { [policyId: string]: string[] | false };
+
+    /**
+     * Options for the health check service and endpoint.
+     */
+    health?: {
+      /**
+       * Additional headers to always include in the health check response.
+       *
+       * It can be a good idea to set a header that uniquely identifies your service
+       * in a multi-service environment. This ensures that the health check that is
+       * configured for your service is actually hitting your service and not another.
+       *
+       * For example, if using Envoy you can use the `service_name_matcher` configuration
+       * and set the `x-envoy-upstream-healthchecked-cluster` header to a matching value.
+       */
+      headers?: { [name: string]: string };
+    };
+
+    /**
+     * Rate limiting options. Defining this as `true` will enable rate limiting with default values.
+     */
+    rateLimit?:
+      | true
+      | {
+          store?:
+            | {
+                type: 'redis';
+                connection: string;
+              }
+            | {
+                type: 'memory';
+              };
+          /**
+           * Enable/disable global rate limiting. If this is disabled, plugin specific rate limiting must be
+           * used.
+           */
+          global?: boolean;
+          /**
+           * Time frame in milliseconds or as human duration for which requests are checked/remembered.
+           * Defaults to one minute.
+           */
+          window?: string | HumanDuration;
+          /**
+           * The maximum number of connections to allow during the `window` before rate limiting the client.
+           * Defaults to 5.
+           */
+          incomingRequestLimit?: number;
+          /**
+           * Whether to pass requests in case of store failure.
+           * Defaults to false.
+           */
+          passOnStoreError?: boolean;
+          /**
+           * List of allowed IP addresses that are not rate limited.
+           * Defaults to [127.0.0.1, 0:0:0:0:0:0:0:1, ::1].
+           */
+          ipAllowList?: string[];
+          /**
+           * Skip rate limiting for requests that have been successful.
+           * Defaults to false.
+           */
+          skipSuccessfulRequests?: boolean;
+          /**
+           * Skip rate limiting for requests that have failed.
+           * Defaults to false.
+           */
+          skipFailedRequests?: boolean;
+          /** Plugin specific rate limiting configuration */
+          plugin?: {
+            [pluginId: string]: {
+              /**
+               * Time frame in milliseconds or as human duration for which requests are checked/remembered.
+               * Defaults to one minute.
+               */
+              window?: string | HumanDuration;
+              /**
+               * The maximum number of connections to allow during the `window` before rate limiting the client.
+               * Defaults to 5.
+               */
+              incomingRequestLimit?: number;
+              /**
+               * Whether to pass requests in case of store failure.
+               * Defaults to false.
+               */
+              passOnStoreError?: boolean;
+              /**
+               * List of allowed IP addresses that are not rate limited.
+               * Defaults to [127.0.0.1, 0:0:0:0:0:0:0:1, ::1].
+               */
+              ipAllowList?: string[];
+              /**
+               * Skip rate limiting for requests that have been successful.
+               * Defaults to false.
+               */
+              skipSuccessfulRequests?: boolean;
+              /**
+               * Skip rate limiting for requests that have failed.
+               * Defaults to false.
+               */
+              skipFailedRequests?: boolean;
+            };
+          };
+        };
 
     /**
      * Configuration related to URL reading, used for example for reading catalog info
@@ -586,18 +910,62 @@ export interface Config {
    */
   discovery?: {
     /**
-     * A list of target baseUrls and the associated plugins.
+     * A list of target base URLs and their associated plugins.
+     *
+     * @example
+     *
+     * ```yaml
+     * discovery:
+     *   endpoints:
+     *     - target: https://internal.example.com/internal-catalog
+     *       plugins: [catalog]
+     *     - target: https://internal.example.com/secure/api/{{pluginId}}
+     *       plugins: [auth, permission]
+     *     - target:
+     *         internal: http+srv://backstage-plugin-{{pluginId}}.http.${SERVICE_DOMAIN}/search
+     *         external: https://example.com/search
+     *       plugins: [search]
+     * ```
      */
     endpoints: Array<{
       /**
-       * The target base URL to use for the plugin.
+       * The target base URL to use for the given set of plugins. Note that this
+       * needs to be a full URL including the protocol and path parts that fully
+       * address the root of a plugin's API endpoints.
        *
-       * Can be either a string or an object with internal and external keys.
-       * Targets with `{{pluginId}}` or `{{ pluginId }} in the URL will be replaced with the plugin ID.
+       * @remarks
+       *
+       * Can be either a single URL or an object where you can explicitly give a
+       * dedicated URL for internal (as seen from the backend) and/or external (as
+       * seen from the frontend) lookups.
+       *
+       * The default behavior is to use the backend base URL for external lookups,
+       * and a URL formed from the `.listen` and `.https` configs for internal
+       * lookups. Adding discovery endpoints as described here overrides one or both
+       * of those behaviors for a given set of plugins.
+       *
+       * URLs can be in the form of a regular HTTP or HTTPS URL if you are using
+       * A/AAAA/CNAME records or IP addresses. Specifically for internal URLs, if
+       * you add `+src` to the protocol part then the hostname is treated as an SRV
+       * record name and resolved. For example, if you pass in
+       * `http+srv://<srv-record>/path` then the record part is resolved into an
+       * actual host and port (with random weighted choice as usual when there is
+       * more than one match).
+       *
+       * Any strings with `{{pluginId}}` or `{{ pluginId }}` placeholders in them
+       * will have them replaced with the plugin ID.
+       *
+       * Example URLs:
+       *
+       * - `https://internal.example.com/secure/api/{{pluginId}}`
+       * - `http+srv://backstage-plugin-{{pluginId}}.http.${SERVICE_DOMAIN}/api/{{pluginId}}`
+       *   (can only be used in the `internal` key)
        */
-      target: string | { internal: string; external: string };
+      target: string | { internal?: string; external?: string };
       /**
-       * Array of plugins which use the target base URL.
+       * Array of plugins which use that target base URL.
+       *
+       * The special value `*` can be used to match all plugins.
        */
       plugins: string[];
     }>;

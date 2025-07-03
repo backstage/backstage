@@ -25,7 +25,6 @@ export interface RepoUrlPickerState {
   organization?: string;
   workspace?: string;
   project?: string;
-  id?: string;
   availableRepos?: AvailableRepositories[];
 }
 
@@ -33,4 +32,5 @@ export type BaseRepoUrlPickerProps<T extends {} = {}> = T & {
   onChange: (state: RepoUrlPickerState) => void;
   state: RepoUrlPickerState;
   rawErrors: string[];
+  isDisabled?: boolean;
 };

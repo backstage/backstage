@@ -20,12 +20,12 @@ import {
   createExtensionPoint,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { WrapperProviders } from './WrapperProviders';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import {
   IncrementalEntityProvider,
   IncrementalEntityProviderOptions,
-} from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
-import { WrapperProviders } from './WrapperProviders';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
+} from '../types';
 
 /**
  * @public
@@ -133,7 +133,7 @@ export const catalogModuleIncrementalIngestionEntityProvider =
             catalog.addEntityProvider(wrapped);
           }
 
-          httpRouter.use(await providers.adminRouter());
+          httpRouter.use(providers.adminRouter());
         },
       });
     },

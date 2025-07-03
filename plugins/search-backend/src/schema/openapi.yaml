@@ -72,6 +72,8 @@ paths:
     get:
       operationId: Query
       description: Query documents with a given filter.
+      tags:
+        - Search
       responses:
         '200':
           description: Ok
@@ -175,4 +177,4 @@ paths:
           allowReserved: true
           schema:
             type: object
-            additionalProperties: true
+            additionalProperties: {}

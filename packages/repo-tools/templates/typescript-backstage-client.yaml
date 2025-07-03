@@ -1,10 +1,6 @@
 templateDir: templates/typescript-backstage-client
 
 files:
-  api.mustache:
-    templateType: API
-    # For some reason, they check for destinationFilename differences. We have to change the ending to override the file.
-    destinationFilename: .client.ts
   model.mustache:
     templateType: Model
     destinationFilename: .model.ts
@@ -32,6 +28,9 @@ files:
   apis/index.mustache:
     templateType: SupportingFiles
     destinationFilename: apis/index.ts
+  apis/api-all.mustache:
+    templateType: SupportingFiles
+    destinationFilename: apis/Api.client.ts
   pluginId.mustache:
     templateType: SupportingFiles
     destinationFilename: pluginId.ts

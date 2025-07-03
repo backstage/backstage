@@ -40,14 +40,14 @@ import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize } from 'lodash';
 import pluralize from 'pluralize';
-import React, { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
 import { OffsetPaginatedCatalogTable } from './OffsetPaginatedCatalogTable';
 import { CursorPaginatedCatalogTable } from './CursorPaginatedCatalogTable';
 import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { catalogTranslationRef } from '../../alpha/translation';
+import { catalogTranslationRef } from '../../alpha';
 import { FavoriteToggleIcon } from '@backstage/core-components';
 
 /**
@@ -60,6 +60,11 @@ export interface CatalogTableProps {
   actions?: TableProps<CatalogTableRow>['actions'];
   tableOptions?: TableProps<CatalogTableRow>['options'];
   emptyContent?: ReactNode;
+  /**
+   * A static title to use for the table. If not provided, a title will be
+   * generated based on the current Kind and Type filters and total number of items.
+   */
+  title?: string;
   subtitle?: string;
 }
 
@@ -73,7 +78,16 @@ const refCompare = (a: Entity, b: Entity) => {
   return toRef(a).localeCompare(toRef(b));
 };
 
-/** @public */
+/**
+ * CatalogTable is a wrapper around the Table component that is pre-configured
+ * to display catalog entities.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/features/software-catalog/catalog-customization}
+ *
+ * @public
+ */
 export const CatalogTable = (props: CatalogTableProps) => {
   const {
     columns = defaultCatalogTableColumnsFunc,
@@ -168,22 +182,19 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
   ];
 
-  const currentKind = filters.kind?.value || '';
+  const currentKind = filters.kind?.label || '';
   const currentType = filters.type?.value || '';
   const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
   const titlePreamble = capitalize(filters.user?.value ?? 'all');
-  const title = [
-    titlePreamble,
-    currentType,
-    pluralize(currentKind),
-    currentCount,
-  ]
-    .filter(s => s)
-    .join(' ');
+  const title =
+    props.title ||
+    [titlePreamble, currentType, pluralize(currentKind), currentCount]
+      .filter(s => s)
+      .join(' ');
 
   const actions = props.actions || defaultActions;
-  const options = {
+  const options: TableProps['options'] = {
     actionsColumnIndex: -1,
     loadingType: 'linear' as const,
     showEmptyDataSourceMessage: !loading,

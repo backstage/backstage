@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { ReactNode } from 'react';
 import { waitFor } from '@testing-library/react';
 
-import { CompoundEntityRef } from '@backstage/catalog-model';
+import {
+  CompoundEntityRef,
+  getCompoundEntityRef,
+} from '@backstage/catalog-model';
 import {
   techdocsApiRef,
   TechDocsReaderPageProvider,
@@ -82,7 +85,7 @@ const Wrapper = ({
   children,
 }: {
   entityRef?: CompoundEntityRef;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => (
   <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
     <TechDocsReaderPageProvider entityRef={entityRef}>
@@ -121,25 +124,51 @@ describe('<TechDocsReaderPageContent />', () => {
     });
   });
 
-  it('should not render techdocs content if entity metadata is missing', async () => {
-    getEntityMetadata.mockResolvedValue(undefined);
+  it('should render techdocs page content with default path', async () => {
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
     useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
     useReaderState.mockReturnValue({ state: 'cached' });
 
+    const defaultPath = '/some/path';
+
     const rendered = await renderInTestApp(
       <Wrapper>
-        <TechDocsReaderPageContent withSearch={false} />
+        <TechDocsReaderPageContent
+          withSearch={false}
+          defaultPath={defaultPath}
+        />
       </Wrapper>,
     );
 
     await waitFor(() => {
       expect(
-        rendered.queryByTestId('techdocs-native-shadowroot'),
-      ).not.toBeInTheDocument();
-      expect(
-        rendered.getByText('ERROR 404: PAGE NOT FOUND'),
+        rendered.getByTestId('techdocs-native-shadowroot'),
       ).toBeInTheDocument();
     });
+
+    const entityRef = getCompoundEntityRef(mockEntityMetadata);
+    expect(useTechDocsReaderDom).toHaveBeenCalledWith(entityRef, defaultPath);
+  });
+
+  it('should not render techdocs content if entity metadata is missing', async () => {
+    getEntityMetadata.mockResolvedValue(undefined);
+    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
+    useReaderState.mockReturnValue({ state: 'cached' });
+
+    await expect(
+      renderInTestApp(
+        <Wrapper>
+          <TechDocsReaderPageContent withSearch={false} />
+        </Wrapper>,
+      ),
+    ).rejects.toThrow('Reached NotFound Page');
+
+    // Check the global document for the absence of the shadow root
+    const shadowRoot = document.querySelector(
+      '[data-testid="techdocs-native-shadowroot"]',
+    );
+    expect(shadowRoot).not.toBeInTheDocument();
   });
 
   it('should render 404 if there is no dom and reader state is not found', async () => {

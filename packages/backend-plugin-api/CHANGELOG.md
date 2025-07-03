@@ -1,5 +1,350 @@
 # @backstage/backend-plugin-api
 
+## 1.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/plugin-permission-node@0.10.2-next.0
+  - @backstage/plugin-auth-node@0.6.5-next.0
+
+## 1.4.0
+
+### Minor Changes
+
+- 664c07a: Added `actionsRegistry` and `actions` experimental services to `/alpha` to allow registration of distributed actions from plugins, and the ability to invoke these actions. You can use these services by including them like the following:
+
+  ```ts
+  import {
+    actionsRegistryServiceRef,
+    actionsServiceRef,
+  } from '@backstage/backend-plugin-api/alpha';
+
+  createBackendPlugin({
+    pluginId: 'test-plugin',
+    register({ registerInit }) {
+      registerInit({
+        deps: {
+          actions: actionsServiceRef,
+          actionsRegistry: actionsRegistryServiceRef,
+        },
+        async init({ actions, actionsRegistry }) {
+          actionsRegistry.register({
+            ...,
+          });
+
+          await actions.invoke(...);
+        },
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1
+
+## 1.4.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.4-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.1-next.1
+
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 664c07a: Added `coreServices.actionsRegistry` and `coreServices.actions` to allow registration of distributed actions from plugins, and the ability to invoke these actions
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.4-next.0
+  - @backstage/plugin-permission-node@0.10.1-next.0
+
+## 1.3.1
+
+### Patch Changes
+
+- acea1d4: update documentation
+- 72d019d: Removed various typos
+- d385854: Minor doc comment update
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.3
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-node@0.10.0
+  - @backstage/config@1.3.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.3.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.3-next.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.2
+
+## 1.3.1-next.1
+
+### Patch Changes
+
+- acea1d4: update documentation
+- 72d019d: Removed various typos
+- d385854: Minor doc comment update
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.3-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.10.0-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 1.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.3-next.0
+  - @backstage/plugin-permission-node@0.9.2-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.3.0
+
+### Minor Changes
+
+- cf4eb13: Added `actor` property to `BackstageUserPrincipal` containing the subject of the last service (if any) who performed authentication on behalf of the user.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.2
+  - @backstage/plugin-permission-node@0.9.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.9.0
+  - @backstage/plugin-auth-node@0.6.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.1-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.9-next.1
+
+## 1.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.9-next.0
+  - @backstage/plugin-auth-node@0.6.1-next.0
+
+## 1.2.0
+
+### Minor Changes
+
+- 92a56f6: **BREAKING ALPHA**: Removed the deprecated `featureDiscoveryServiceRef` and `FeatureDiscoveryService`.
+- a4aa244: This change introduces the `auditor` service definition.
+
+### Patch Changes
+
+- 9ddfd94: Added new `PermissionsRegistryService` that is used by plugins to register permissions, resource types, and rules into the permission system. This replaces the existing `createPermissionIntegrationRouter` from `@backstage/plugin-permission-node`.
+- 72cddf2: Updated `PermissionsRegistryService` to use `PermissionResourceRef`s and added the `getPermissionRuleset` method.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.8
+  - @backstage/plugin-auth-node@0.6.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.2.0-next.2
+
+### Patch Changes
+
+- 72cddf2: Updated `PermissionsRegistryService` to use `PermissionResourceRef`s and added the `getPermissionRuleset` method.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.8-next.2
+  - @backstage/plugin-auth-node@0.6.0-next.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.2.0-next.1
+
+### Minor Changes
+
+- 92a56f6: **BREAKING ALPHA**: Removed the deprecated `featureDiscoveryServiceRef` and `FeatureDiscoveryService`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.0-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-permission-node@0.8.8-next.1
+
+## 1.2.0-next.0
+
+### Minor Changes
+
+- a4aa244: This change introduces the `auditor` service definition.
+
+### Patch Changes
+
+- 9ddfd94: Added new `PermissionsRegistryService` that is used by plugins to register permissions, resource types, and rules into the permission system. This replaces the existing `createPermissionIntegrationRouter` from `@backstage/plugin-permission-node`.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.8.8-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.7-next.0
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/plugin-auth-node@0.5.6
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-auth-node@0.5.6-next.1
+  - @backstage/plugin-permission-common@0.8.4-next.0
+  - @backstage/cli-common@0.1.15
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.6-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.3
+
+## 1.1.0
+
+### Minor Changes
+
+- 12eac85: **EXPERIMENTAL**: Adds a new `instanceMetadataService` to hold information about a specific backend instance.
+
+### Patch Changes
+
+- eef3ef1: Removed unused `express` dependencies.
+- 0e9c9fa: The `RootLifecycleService` now has a new `addBeforeShutdownHook` method, and hooks added through this method will run immediately when a termination event is received.
+
+  The backend will not proceed with the shutdown and run the `Shutdown` hooks until all `BeforeShutdown` hooks have completed.
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5
+  - @backstage/errors@1.2.6
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.3
+
+## 1.1.0-next.2
+
+### Patch Changes
+
+- 0e9c9fa: The `RootLifecycleService` now has a new `addBeforeShutdownHook` method, and hooks added through this method will run immediately when a termination event is received.
+
+  The backend will not proceed with the shutdown and run the `Shutdown` hooks until all `BeforeShutdown` hooks have completed.
+
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-auth-node@0.5.5-next.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.1-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+
+## 1.1.0-next.1
+
+### Minor Changes
+
+- 12eac85: **EXPERIMENTAL**: Adds a new `instanceMetadataService` to hold information about a specific backend instance.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.5.5-next.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/types@1.2.0
+  - @backstage/plugin-permission-common@0.8.2
+
 ## 1.0.3-next.0
 
 ### Patch Changes

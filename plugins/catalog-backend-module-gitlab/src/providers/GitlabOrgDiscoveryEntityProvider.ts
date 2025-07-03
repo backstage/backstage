@@ -359,20 +359,23 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     }
 
     let groups;
-    let users;
+    const allUsers = [];
 
     // Self-hosted: Fetch the users either from the defined group (restrictUsersToGroup) or fetch all users from the GitLab instance
     // SaaS: Fetch the users from the defined group (restrictUsersToGroup) or fetch all users from the root group.
     if (this.gitLabClient.isSelfManaged() && this.config.restrictUsersToGroup) {
       groups = (await this.gitLabClient.listDescendantGroups(this.config.group))
         .items;
-      users = paginated<GitLabUser>(
-        options =>
-          this.gitLabClient.listGroupMembers(this.config.group, options), // calls /groups/<groupId>/members
-        {
-          page: 1,
-          per_page: 100,
-        },
+      groups.push(await this.gitLabClient.getGroupByPath(this.config.group)); // adds the parent group for #26554
+      allUsers.push(
+        paginated<GitLabUser>(
+          options =>
+            this.gitLabClient.listGroupMembers(this.config.group, options), // calls /groups/<groupId>/members
+          {
+            page: 1,
+            per_page: 100,
+          },
+        ),
       );
     } else if (
       this.gitLabClient.isSelfManaged() &&
@@ -386,31 +389,46 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
           all_available: true,
         },
       );
-      users = paginated<GitLabUser>(
-        options => this.gitLabClient.listUsers(options), // calls /users?
-        { page: 1, per_page: 100, active: true },
+      allUsers.push(
+        paginated<GitLabUser>(
+          options => this.gitLabClient.listUsers(options), // calls /users?
+          { page: 1, per_page: 100, active: true },
+        ),
       );
     }
     // SaaS: Fetch the users from the defined group (restrictUsersToGroup) or fetch all users from the root group.
     else {
-      groups = (await this.gitLabClient.listDescendantGroups(this.config.group))
-        .items;
+      const descendantGroups = (
+        await this.gitLabClient.listDescendantGroups(this.config.group)
+      ).items;
+      groups = descendantGroups;
+
+      groups.push(await this.gitLabClient.getGroupByPath(this.config.group)); // adds the parent group for #26554
+
       const rootGroupSplit = this.config.group.split('/');
-      const rootGroup = this.config.restrictUsersToGroup
-        ? rootGroupSplit[rootGroupSplit.length - 1]
-        : rootGroupSplit[0];
-      users = paginated<GitLabUser>(
-        options =>
-          this.gitLabClient.listSaaSUsers(
-            rootGroup,
-            options,
-            this.config.includeUsersWithoutSeat,
+
+      const groupPaths = this.config.restrictUsersToGroup
+        ? [this.config.group]
+        : [rootGroupSplit[0], ...descendantGroups.map(g => `${g.id}`)];
+
+      // Fetch users group and descendant groups
+      for (const group of groupPaths) {
+        logger.debug(`Fetching users for group: ${group}`);
+        allUsers.push(
+          paginated<GitLabUser>(
+            options =>
+              this.gitLabClient.listSaaSUsers(
+                group,
+                options,
+                this.config.includeUsersWithoutSeat,
+              ),
+            {
+              page: 1,
+              per_page: 100,
+            },
           ),
-        {
-          page: 1,
-          per_page: 100,
-        },
-      );
+        );
+      }
     }
 
     const idMappedUser: { [userId: number]: GitLabUser } = {};
@@ -425,16 +443,23 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       matches: [],
     };
 
-    for await (const user of users) {
-      userRes.scanned++;
+    for (const users of allUsers) {
+      // Iterate through paginated users
+      for await (const user of users) {
+        // Skip if user already processed and do not count it as scanned
+        if (user.id in idMappedUser) {
+          continue; // Skip if user already processed
+        }
+        userRes.scanned++;
 
-      if (!this.shouldProcessUser(user)) {
-        logger.debug(`Skipped user: ${user.username}`);
-        continue;
+        if (!this.shouldProcessUser(user)) {
+          logger.debug(`Skipped user: ${user.username}`);
+          continue;
+        }
+
+        idMappedUser[user.id] = user;
+        userRes.matches.push(user);
       }
-
-      idMappedUser[user.id] = user;
-      userRes.matches.push(user);
     }
 
     for await (const group of groups) {
@@ -775,7 +800,8 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     return (
       this.config.groupPattern.test(group.full_path) &&
       (!this.config.group ||
-        group.full_path.startsWith(`${this.config.group}/`))
+        group.full_path.startsWith(`${this.config.group}/`) ||
+        group.full_path === this.config.group)
     );
   }
 

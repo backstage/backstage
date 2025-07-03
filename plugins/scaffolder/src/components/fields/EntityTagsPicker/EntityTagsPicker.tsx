@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import useEffectOnce from 'react-use/esm/useEffectOnce';
 import { GetEntityFacetsRequest } from '@backstage/catalog-client';
 import { makeValidator } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import FormControl from '@material-ui/core/FormControl';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { EntityTagsPickerProps } from './schema';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
 
 export { EntityTagsPickerSchema } from './schema';
 
@@ -36,7 +36,19 @@ export { EntityTagsPickerSchema } from './schema';
  * @public
  */
 export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
-  const { formData, onChange, uiSchema } = props;
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+  const {
+    formData,
+    onChange,
+    schema: {
+      title = t('fields.entityTagsPicker.title'),
+      description = t('fields.entityTagsPicker.description'),
+    },
+    uiSchema,
+    rawErrors,
+    required,
+    errors,
+  } = props;
   const catalogApi = useApi(catalogApiRef);
   const [tagOptions, setTagOptions] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -45,7 +57,7 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
   const kinds = uiSchema['ui:options']?.kinds;
   const showCounts = uiSchema['ui:options']?.showCounts;
   const helperText = uiSchema['ui:options']?.helperText;
-  const { t } = useTranslationRef(scaffolderTranslationRef);
+  const isDisabled = uiSchema?.['ui:disabled'] ?? false;
 
   const { loading, value: existingTags } = useAsync(async () => {
     const facet = 'metadata.tags';
@@ -69,7 +81,7 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
     return tagFacets;
   });
 
-  const setTags = (_: React.ChangeEvent<{}>, values: string[] | null) => {
+  const setTags = (_: ChangeEvent<{}>, values: string[] | null) => {
     // Reset error state in case all tags were removed
     let hasError = false;
     let addDuplicate = false;
@@ -95,12 +107,19 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
   useEffectOnce(() => onChange(formData || []));
 
   return (
-    <FormControl margin="normal">
+    <ScaffolderField
+      rawErrors={rawErrors}
+      rawDescription={helperText ?? uiSchema['ui:description'] ?? description}
+      required={required}
+      disabled={isDisabled}
+      errors={errors}
+    >
       <Autocomplete
         multiple
         freeSolo
         filterSelectedOptions
         onChange={setTags}
+        disabled={isDisabled}
         value={formData || []}
         inputValue={inputValue}
         loading={loading}
@@ -112,14 +131,14 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
         renderInput={params => (
           <TextField
             {...params}
-            label={t('fields.entityTagsPicker.title')}
+            label={title}
+            disabled={isDisabled}
             onChange={e => setInputValue(e.target.value)}
             error={inputError}
-            helperText={helperText ?? t('fields.entityTagsPicker.description')}
             FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
           />
         )}
       />
-    </FormControl>
+    </ScaffolderField>
   );
 };

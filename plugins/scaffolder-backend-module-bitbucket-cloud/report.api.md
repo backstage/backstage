@@ -5,7 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
@@ -20,10 +19,56 @@ export const createBitbucketPipelinesRunAction: (options: {
   {
     workspace: string;
     repo_slug: string;
-    body?: object | undefined;
+    body?:
+      | {
+          target?:
+            | {
+                type?: string | undefined;
+                source?: string | undefined;
+                selector?:
+                  | {
+                      type: string;
+                      pattern: string;
+                    }
+                  | undefined;
+                pull_request?:
+                  | {
+                      id: string;
+                    }
+                  | undefined;
+                commit?:
+                  | {
+                      type: string;
+                      hash: string;
+                    }
+                  | undefined;
+                destination?: string | undefined;
+                ref_name?: string | undefined;
+                ref_type?: string | undefined;
+                destination_commit?:
+                  | {
+                      hash: string;
+                    }
+                  | undefined;
+              }
+            | undefined;
+          variables?:
+            | {
+                key: string;
+                value: string;
+                secured: boolean;
+              }[]
+            | undefined;
+        }
+      | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  {
+    buildNumber?: number | undefined;
+    repoUrl?: string | undefined;
+    pipelinesUrl?: string | undefined;
+  },
+  'v2'
 >;
 
 // @public
@@ -39,8 +84,14 @@ export function createPublishBitbucketCloudAction(options: {
     gitCommitMessage?: string | undefined;
     sourcePath?: string | undefined;
     token?: string | undefined;
+    signCommit?: boolean | undefined;
   },
-  JsonObject
+  {
+    remoteUrl?: string | undefined;
+    repoContentsUrl?: string | undefined;
+    commitHash?: string | undefined;
+  },
+  'v2'
 >;
 
 // @public
@@ -51,13 +102,16 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
   {
     repoUrl: string;
     title: string;
+    sourceBranch: string;
     description?: string | undefined;
     targetBranch?: string | undefined;
-    sourceBranch: string;
     token?: string | undefined;
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
-  JsonObject
+  {
+    pullRequestUrl: string;
+  },
+  'v2'
 >;
 ```

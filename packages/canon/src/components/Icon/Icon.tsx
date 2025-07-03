@@ -14,20 +14,34 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useTheme } from '../../theme/context';
-import type { IconNames } from './types';
+import { ComponentType } from 'react';
+import { useIcons } from './context';
+import type { IconProps } from './types';
+import clsx from 'clsx';
+import { useStyles } from '../../hooks/useStyles';
 
 /** @public */
-export const Icon = ({ name }: { name: IconNames }) => {
-  const { icons } = useTheme();
+export const Icon = (props: IconProps) => {
+  const { name, size, className, style, ...restProps } = props;
+  const { icons } = useIcons();
 
-  const RemixIcon = icons[name];
+  const CanonIcon = icons[name] as ComponentType<Omit<IconProps, 'name'>>;
 
-  if (!RemixIcon) {
-    console.error(`Icon "${name}" not found.`);
-    return <svg />; // Return default icon perhaps?
+  if (!CanonIcon) {
+    console.error(`Icon "${name}" not found or is not a valid component.`);
+    return null;
   }
 
-  return <RemixIcon />;
+  const { classNames } = useStyles('Icon');
+
+  return (
+    <CanonIcon
+      className={clsx(classNames.root, className)}
+      style={{
+        ...(size ? { width: size, height: size } : {}),
+        ...style,
+      }}
+      {...restProps}
+    />
+  );
 };

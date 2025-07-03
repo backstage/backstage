@@ -202,6 +202,20 @@ describe('createExtension', () => {
     });
   });
 
+  it('should create an extension with multiple attachment points', () => {
+    const extension = createExtension({
+      attachTo: [
+        { id: 'root', input: 'default' },
+        { id: 'other', input: 'default' },
+      ],
+      output: [stringDataRef, numberDataRef.optional()],
+      factory: () => [stringDataRef('bar')],
+    });
+    expect(String(extension)).toBe(
+      'ExtensionDefinition{attachTo=root@default+other@default}',
+    );
+  });
+
   it('should create an extension with input', () => {
     const extension = createExtension({
       attachTo: { id: 'root', input: 'default' },
@@ -655,7 +669,7 @@ describe('createExtension', () => {
         },
       });
 
-      const overriden = testExtension.override({
+      const overridden = testExtension.override({
         config: {
           schema: {
             bar: z => z.string().default('hello'),
@@ -670,12 +684,12 @@ describe('createExtension', () => {
         },
       });
 
-      expect(createExtensionTester(overriden).get(stringDataRef)).toBe(
+      expect(createExtensionTester(overridden).get(stringDataRef)).toBe(
         'foo-boom-override-hello',
       );
 
       expect(
-        createExtensionTester(overriden, {
+        createExtensionTester(overridden, {
           config: { foo: 'hello', bar: 'world' },
         }).get(stringDataRef),
       ).toBe('foo-hello-override-world');

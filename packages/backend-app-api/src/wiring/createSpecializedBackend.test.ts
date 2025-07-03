@@ -36,6 +36,7 @@ describe('createSpecializedBackend', () => {
             deps: {},
             factory: async () => ({
               addStartupHook: () => {},
+              addBeforeShutdownHook: () => {},
               addShutdownHook: () => {},
             }),
           }),
@@ -44,6 +45,7 @@ describe('createSpecializedBackend', () => {
             deps: {},
             factory: async () => ({
               addStartupHook: () => {},
+              addBeforeShutdownHook: () => {},
               addShutdownHook: () => {},
             }),
           }),

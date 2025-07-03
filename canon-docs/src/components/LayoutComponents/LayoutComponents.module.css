@@ -1,0 +1,48 @@
+.layoutComponents {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+
+  & svg rect {
+    transition: fill 0.2s ease-in-out;
+  }
+
+  & .box {
+    display: flex;
+    flex-direction: column;
+    width: calc(50% - 0.5rem);
+    margin-bottom: 1rem;
+    align-items: flex-start;
+  }
+
+  & .content {
+    flex: none;
+    background-color: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    width: 100%;
+    height: 180px;
+    transition: all 0.2s ease-in-out;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      transform: translateY(-4px);
+    }
+  }
+
+  & .title {
+    font-size: 16px;
+    transition: color 0.2s ease-in-out;
+    margin-bottom: 0.25rem;
+  }
+
+  & .description {
+    font-size: 16px;
+    color: var(--secondary);
+  }
+}

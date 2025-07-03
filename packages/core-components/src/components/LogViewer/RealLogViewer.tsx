@@ -18,12 +18,12 @@ import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import classnames from 'classnames';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { FixedSizeList } from 'react-window';
+import { VariableSizeList, FixedSizeList } from 'react-window';
 
-import { AnsiProcessor } from './AnsiProcessor';
+import { AnsiLine, AnsiProcessor } from './AnsiProcessor';
 import { LogLine } from './LogLine';
 import { LogViewerControls } from './LogViewerControls';
 import { HEADER_SIZE, useStyles } from './styles';
@@ -32,12 +32,17 @@ import { useLogViewerSelection } from './useLogViewerSelection';
 
 export interface RealLogViewerProps {
   text: string;
+  textWrap?: boolean;
   classes?: { root?: string };
 }
 
 export function RealLogViewer(props: RealLogViewerProps) {
   const classes = useStyles({ classes: props.classes });
-  const listRef = useRef<FixedSizeList | null>(null);
+  const [listInstance, setListInstance] = useState<
+    VariableSizeList<AnsiLine[]> | FixedSizeList<AnsiLine[]> | null
+  >(null);
+  const shouldTextWrap = props.textWrap ?? false;
+  const heights = useRef<{ [key: number]: number }>({});
 
   // The processor keeps state that optimizes appending to the text
   const processor = useMemo(() => new AnsiProcessor(), []);
@@ -48,10 +53,21 @@ export function RealLogViewer(props: RealLogViewerProps) {
   const location = useLocation();
 
   useEffect(() => {
-    if (search.resultLine !== undefined && listRef.current) {
-      listRef.current.scrollToItem(search.resultLine - 1, 'center');
+    if (listInstance) {
+      listInstance.scrollToItem(lines.length - 1, 'end');
     }
-  }, [search.resultLine]);
+  }, [listInstance, lines]);
+
+  useEffect(() => {
+    if (!listInstance) {
+      return;
+    }
+    if (search.resultLine) {
+      listInstance.scrollToItem(search.resultLine - 1, 'center');
+    } else {
+      listInstance.scrollToItem(lines.length - 1, 'end');
+    }
+  }, [listInstance, search.resultLine, lines]);
 
   useEffect(() => {
     if (location.hash) {
@@ -68,68 +84,103 @@ export function RealLogViewer(props: RealLogViewerProps) {
     selection.setSelection(line, event.shiftKey);
   };
 
+  function setRowHeight(index: number, size: number) {
+    if (shouldTextWrap && listInstance) {
+      (listInstance as VariableSizeList<AnsiLine[]>).resetAfterIndex(0);
+      // lineNumber is 1-based but index is 0-based
+      heights.current[index - 1] = size;
+    }
+  }
+
+  function getRowHeight(index: number) {
+    return heights.current[index] || 20;
+  }
+
   return (
     <AutoSizer>
-      {({ height, width }: { height?: number; width?: number }) => (
-        <Box style={{ width, height }} className={classes.root}>
-          <Box className={classes.header}>
-            <LogViewerControls {...search} />
-          </Box>
-          <FixedSizeList
-            ref={listRef}
-            className={classes.log}
-            height={(height || 480) - HEADER_SIZE}
-            width={width || 640}
-            itemData={search.lines}
-            itemSize={20}
-            itemCount={search.lines.length}
-          >
-            {({ index, style, data }) => {
-              const line = data[index];
-              const { lineNumber } = line;
-              return (
-                <Box
-                  style={{ ...style }}
-                  className={classnames(classes.line, {
-                    [classes.lineSelected]: selection.isSelected(lineNumber),
-                  })}
+      {({ height, width }: { height?: number; width?: number }) => {
+        const commonProps = {
+          ref: setListInstance,
+          className: classes.log,
+          height: (height || 480) - HEADER_SIZE,
+          width: width || 640,
+          itemData: search.lines,
+          itemCount: search.lines.length,
+        };
+
+        const renderItem = ({
+          index,
+          style,
+          data,
+        }: {
+          index: number;
+          style: React.CSSProperties;
+          data: AnsiLine[];
+        }) => {
+          const line = data[index];
+          const { lineNumber } = line;
+          return (
+            <Box
+              style={{ ...style }}
+              className={classnames(classes.line, {
+                [classes.lineSelected]: selection.isSelected(lineNumber),
+              })}
+            >
+              {selection.shouldShowButton(lineNumber) && (
+                <IconButton
+                  data-testid="copy-button"
+                  size="small"
+                  className={classes.lineCopyButton}
+                  onClick={() => selection.copySelection()}
                 >
-                  {selection.shouldShowButton(lineNumber) && (
-                    <IconButton
-                      data-testid="copy-button"
-                      size="small"
-                      className={classes.lineCopyButton}
-                      onClick={() => selection.copySelection()}
-                    >
-                      <CopyIcon fontSize="inherit" />
-                    </IconButton>
-                  )}
-                  <a
-                    role="row"
-                    target="_self"
-                    href={`#line-${lineNumber}`}
-                    className={classes.lineNumber}
-                    onClick={event => handleSelectLine(lineNumber, event)}
-                    onKeyPress={event => handleSelectLine(lineNumber, event)}
-                  >
-                    {lineNumber}
-                  </a>
-                  <LogLine
-                    line={line}
-                    classes={classes}
-                    searchText={search.searchText}
-                    highlightResultIndex={
-                      search.resultLine === lineNumber
-                        ? search.resultLineIndex
-                        : undefined
-                    }
-                  />
-                </Box>
-              );
-            }}
-          </FixedSizeList>
-        </Box>
-      )}
+                  <CopyIcon fontSize="inherit" />
+                </IconButton>
+              )}
+              <a
+                role="row"
+                target="_self"
+                href={`#line-${lineNumber}`}
+                className={classes.lineNumber}
+                onClick={event => handleSelectLine(lineNumber, event)}
+                onKeyPress={event => handleSelectLine(lineNumber, event)}
+              >
+                {lineNumber}
+              </a>
+              <LogLine
+                setRowHeight={shouldTextWrap ? setRowHeight : undefined}
+                line={line}
+                classes={classes}
+                searchText={search.searchText}
+                highlightResultIndex={
+                  search.resultLine === lineNumber
+                    ? search.resultLineIndex
+                    : undefined
+                }
+              />
+            </Box>
+          );
+        };
+
+        return (
+          <Box style={{ width, height }} className={classes.root}>
+            <Box className={classes.header}>
+              <LogViewerControls {...search} />
+            </Box>
+            {shouldTextWrap ? (
+              <VariableSizeList<AnsiLine[]>
+                {...commonProps}
+                itemSize={getRowHeight}
+              >
+                {renderItem}
+              </VariableSizeList>
+            ) : (
+              <FixedSizeList<AnsiLine[]> {...commonProps} itemSize={20}>
+                {renderItem}
+              </FixedSizeList>
+            )}
+          </Box>
+        );
+      }}
     </AutoSizer>
   );
 }

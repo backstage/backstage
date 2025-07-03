@@ -162,13 +162,11 @@ export class DefaultProviderDatabase implements ProviderDatabase {
               logger: this.options.logger,
             });
           }
-
-          await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-            .where('target_entity_ref', entityRef)
-            .andWhere({ source_key: options.sourceKey })
-            .delete();
-
           if (ok) {
+            await tx<DbRefreshStateReferencesRow>('refresh_state_references')
+              .where('target_entity_ref', entityRef)
+              .delete();
+
             await tx<DbRefreshStateReferencesRow>(
               'refresh_state_references',
             ).insert({
@@ -176,6 +174,11 @@ export class DefaultProviderDatabase implements ProviderDatabase {
               target_entity_ref: entityRef,
             });
           } else {
+            await tx<DbRefreshStateReferencesRow>('refresh_state_references')
+              .where('target_entity_ref', entityRef)
+              .andWhere({ source_key: options.sourceKey })
+              .delete();
+
             const conflictingKey = await checkLocationKeyConflict({
               tx,
               entityRef,
@@ -194,6 +197,20 @@ export class DefaultProviderDatabase implements ProviderDatabase {
         }
       }
     }
+  }
+
+  async listReferenceSourceKeys(txOpaque: Transaction): Promise<string[]> {
+    const tx = txOpaque as Knex | Knex.Transaction;
+
+    const rows = await tx<DbRefreshStateReferencesRow>(
+      'refresh_state_references',
+    )
+      .distinct('source_key')
+      .whereNotNull('source_key');
+
+    return rows
+      .map(row => row.source_key)
+      .filter((key): key is string => !!key);
   }
 
   async refreshByRefreshKeys(

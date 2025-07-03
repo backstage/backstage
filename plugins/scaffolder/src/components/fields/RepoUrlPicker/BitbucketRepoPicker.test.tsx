@@ -21,7 +21,6 @@ import {
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { BitbucketRepoPicker } from './BitbucketRepoPicker';
 
@@ -201,7 +200,7 @@ describe('BitbucketRepoPicker', () => {
         </TestApiProvider>,
       );
 
-      // Open the Autcomplete dropdown
+      // Open the Autocomplete dropdown
       const workspaceInput = getAllByRole('textbox')[0];
       await userEvent.click(workspaceInput);
 
@@ -231,7 +230,7 @@ describe('BitbucketRepoPicker', () => {
         </TestApiProvider>,
       );
 
-      // Open the Autcomplete dropdown
+      // Open the Autocomplete dropdown
       const projectInput = getAllByRole('textbox')[1];
       await userEvent.click(projectInput);
 
@@ -269,6 +268,52 @@ describe('BitbucketRepoPicker', () => {
           availableRepos: [{ name: 'repositories_example' }],
         }),
       );
+    });
+  });
+
+  describe('BitbucketRepoPicker - isDisabled', () => {
+    it('disables workspace and project inputs when isDisabled is true', async () => {
+      const { getAllByRole } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <BitbucketRepoPicker
+            onChange={jest.fn()}
+            rawErrors={[]}
+            state={{
+              host: 'bitbucket.org',
+              workspace: 'testWorkspace',
+              project: 'testProject',
+            }}
+            isDisabled
+          />
+        </TestApiProvider>,
+      );
+
+      const inputs = getAllByRole('textbox');
+      expect(inputs).toHaveLength(2);
+      expect(inputs[0]).toBeDisabled();
+      expect(inputs[1]).toBeDisabled();
+    });
+
+    it('does not disable workspace and project inputs when isDisabled is false', async () => {
+      const { getAllByRole } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <BitbucketRepoPicker
+            onChange={jest.fn()}
+            rawErrors={[]}
+            state={{
+              host: 'bitbucket.org',
+              workspace: 'testWorkspace',
+              project: 'testProject',
+            }}
+            isDisabled={false}
+          />
+        </TestApiProvider>,
+      );
+
+      const inputs = getAllByRole('textbox');
+      expect(inputs).toHaveLength(2);
+      expect(inputs[0]).not.toBeDisabled();
+      expect(inputs[1]).not.toBeDisabled();
     });
   });
 });

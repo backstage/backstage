@@ -1,7 +1,6 @@
 ---
 id: cli
 title: TechDocs CLI
-# prettier-ignore
 description: TechDocs CLI - a utility command line interface for managing TechDocs sites in Backstage.
 ---
 
@@ -197,6 +196,7 @@ Options:
   --awsS3sse <AWS SSE>                                          Optional AWS S3 Server Side Encryption.
   --awsS3ForcePathStyle                                         Optional AWS S3 option to force path style.
   --awsBucketRootPath <AWS BUCKET ROOT PATH>                    Optional sub-directory to store files in Amazon S3
+  --awsMaxAttempts <AWS MAX ATTEMPTS>                           Optional maximum number of retries for AWS S3 operations. If not specified, default value of 3 is used.
   --osCredentialId <OPENSTACK SWIFT APPLICATION CREDENTIAL ID>  (Required for OpenStack) specify when --publisher-type openStackSwift
   --osSecret <OPENSTACK SWIFT APPLICATION CREDENTIAL SECRET>    (Required for OpenStack) specify when --publisher-type openStackSwift
   --osAuthUrl <OPENSTACK SWIFT AUTHURL>                         (Required for OpenStack) specify when --publisher-type openStackSwift

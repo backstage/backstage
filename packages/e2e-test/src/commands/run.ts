@@ -40,7 +40,7 @@ import { OptionValues } from 'commander';
 const paths = findPaths(__dirname);
 
 const templatePackagePaths = [
-  'packages/cli/templates/default-plugin/package.json.hbs',
+  'packages/cli/templates/frontend-plugin/package.json.hbs',
   'packages/create-app/templates/default-app/package.json.hbs',
   'packages/create-app/templates/default-app/packages/app/package.json.hbs',
   'packages/create-app/templates/default-app/packages/backend/package.json.hbs',
@@ -434,7 +434,6 @@ async function switchToReact17(appDir: string) {
   await fs.writeFile(
     resolvePath(appDir, 'packages/app/src/index.tsx'),
     `import '@backstage/cli/asset-types';
-import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 

@@ -1,0 +1,115 @@
+name: '💡 Suggest a change'
+description: 'Suggest an idea for a new feature or change to Backstage'
+labels:
+  - type:suggestion
+  - needs:triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This template helps you propose new features, enhancements, or other ideas for Backstage. You can keep your proposal lightweight, but please provide enough detail for reviewers to understand and respond effectively.
+
+        For complex additions, consider creating a [Backstage Enhancement Proposal](https://github.com/backstage/backstage/blob/master/beps/README.md) (BEP) instead, as this process streamlines discussions and iteration. Don't worry - you can always convert this issue to a BEP later.
+  # This field is managed by .common.yaml
+  - id: issue-labels
+    type: checkboxes
+    attributes:
+      label: '📜 Issue Labels'
+      options:
+        - label: 'Please familiarize yourself with the issue labels used in this project: [LABELS.md](https://github.com/backstage/backstage/blob/master/LABELS.md)'
+          required: true
+  # This field is managed by .common.yaml
+  - id: search-terms
+    type: textarea
+    attributes:
+      label: '🔎 Search Terms'
+      render: plain
+      description: |
+        What search terms did you use when trying to find similar issues?
+      placeholder: |
+        List of keywords you searched for before creating this issue. Write them down here so that others can find this issue more easily and help provide feedback.
+
+        e.g. "catalog github rate limited", "http root service configurer", "scaffolder template include", "entity card title"
+    validations:
+      required: true
+  # This field is managed by .common.yaml
+  - id: project-area
+    type: dropdown
+    attributes:
+      label: '🗃️ Project Area'
+      description: Which project area is this issue most closely related to? This will help find an owner for the issue faster.
+      options:
+        - Unknown
+        - Auditor
+        - Auth
+        - Catalog
+        - CLI Tooling
+        - Core Framework
+        - Design System
+        - Documentation
+        - Events System
+        - Home
+        - Kubernetes Plugin
+        - Management of this repository
+        - Microsite
+        - Notifications
+        - OpenAPI Tooling
+        - Permission Framework
+        - Search
+        - Software Templates
+        - TechDocs
+    validations:
+      required: true
+  - type: textarea
+    id: need
+    validations:
+      required: true
+    attributes:
+      label: '🔖 Need'
+      description: What is the rationale for this change, and who will benefit from it?
+      placeholder: |
+        Explain why this change is important and who will benefit from it. Provide context for the change, such as highlighting relevant past work in this area or specific use cases.
+  - type: textarea
+    id: proposal
+    validations:
+      required: true
+    attributes:
+      label: '📝 Proposal'
+      description: Describe the change that you are suggesting.
+      placeholder: |
+        Provide sufficient detail for reviewers to give concrete feedback.
+
+        Including a proposed implementation is optional, but if you do, consider adding design details such as TypeScript examples, database schema, or sequence diagrams.
+
+        If the change requires particular care when being rolled out, it can be helpful to include a plan for a phased release.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: '🔄 Alternatives'
+      description: Did you consider any other approaches?
+      placeholder: |
+        Did you consider any other approaches, and if so, why did you rule them out?
+
+        These do not need to be as detailed as the main proposal, but should include enough information to understand the idea and why it wasn't suitable.
+  # This field is managed by .common.yaml
+  - id: read-code-of-conduct
+    type: checkboxes
+    attributes:
+      label: 'Have you read the Code of Conduct?'
+      options:
+        - label: 'I have read the [Code of Conduct](https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md)'
+          required: true
+  # This field is managed by .common.yaml
+  - id: willing-to-submit-pr
+    type: dropdown
+    attributes:
+      label: Are you willing to submit a PR?
+      description: This is absolutely not required, but we are happy to guide you in the contribution process.
+      options:
+        - Undecided
+        - Yes, and I have enough information to get started
+        - Yes, but I would like some more guidance
+        - No, but I'm happy to collaborate on a PR with someone else
+        - No, I don't have time to work on this right now
+    validations:
+      required: true

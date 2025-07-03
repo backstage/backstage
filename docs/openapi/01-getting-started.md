@@ -97,7 +97,7 @@ For more information, see [the docs](./generate-client.md).
 Add the following lines to your `createRouter.test.ts` or `router.test.ts` file,
 
 ```diff
-+ import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
++ import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils/testUtils';
 + import { Server } from 'http';
 
 ...

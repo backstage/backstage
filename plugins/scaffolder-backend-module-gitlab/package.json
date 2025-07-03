@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-gitlab",
-  "version": "0.7.0-next.0",
+  "version": "0.9.3-next.1",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "scaffolder",
@@ -45,7 +45,6 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
@@ -60,7 +59,6 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@backstage/core-app-api": "workspace:^",
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
   }
 }

@@ -18,6 +18,7 @@ import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { InputError } from '@backstage/errors';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import fs from 'fs-extra';
+import globby from 'globby';
 import { examples } from './delete.examples';
 
 /**
@@ -25,24 +26,16 @@ import { examples } from './delete.examples';
  * @public
  */
 export const createFilesystemDeleteAction = () => {
-  return createTemplateAction<{ files: string[] }>({
+  return createTemplateAction({
     id: 'fs:delete',
     description: 'Deletes files and directories from the workspace',
     examples,
     schema: {
       input: {
-        required: ['files'],
-        type: 'object',
-        properties: {
-          files: {
-            title: 'Files',
+        files: z =>
+          z.array(z.string(), {
             description: 'A list of files and directories that will be deleted',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-        },
+          }),
       },
     },
     supportsDryRun: true,
@@ -52,14 +45,25 @@ export const createFilesystemDeleteAction = () => {
       }
 
       for (const file of ctx.input.files) {
-        const filepath = resolveSafeChildPath(ctx.workspacePath, file);
+        // globby cannot handle backslash file separators
+        const safeFilepath = resolveSafeChildPath(
+          ctx.workspacePath,
+          file,
+        ).replace(/\\/g, '/');
+        const resolvedPaths = await globby(safeFilepath, {
+          cwd: ctx.workspacePath,
+          absolute: true,
+          dot: true,
+        });
 
-        try {
-          await fs.remove(filepath);
-          ctx.logger.info(`File ${filepath} deleted successfully`);
-        } catch (err) {
-          ctx.logger.error(`Failed to delete file ${filepath}:`, err);
-          throw err;
+        for (const filepath of resolvedPaths) {
+          try {
+            await fs.remove(filepath);
+            ctx.logger.info(`File ${filepath} deleted successfully`);
+          } catch (err) {
+            ctx.logger.error(`Failed to delete file ${filepath}:`, err);
+            throw err;
+          }
         }
       }
     },

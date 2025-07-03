@@ -100,7 +100,7 @@ describe('resolveAppNodeSpecs', () => {
   it('should override attachment points', () => {
     const b = makeExt('b');
     const pluginA = createFrontendPlugin({
-      id: 'test',
+      pluginId: 'test',
       extensions: [makeExtDef('a')],
     });
     expect(
@@ -126,6 +126,7 @@ describe('resolveAppNodeSpecs', () => {
         extension: makeExt('test/a'),
         attachTo: { id: 'root', input: 'default' },
         source: pluginA,
+        plugin: pluginA,
         disabled: false,
       },
     ]);
@@ -135,7 +136,7 @@ describe('resolveAppNodeSpecs', () => {
     const a = makeExt('test/a');
     const b = makeExt('test/b');
     const plugin = createFrontendPlugin({
-      id: 'test',
+      pluginId: 'test',
       extensions: [makeExtDef('a'), makeExtDef('b')],
     });
     expect(
@@ -162,6 +163,7 @@ describe('resolveAppNodeSpecs', () => {
         id: 'test/a',
         extension: a,
         attachTo: { id: 'root', input: 'default' },
+        plugin,
         source: plugin,
         config: { foo: { bar: 1 } },
         disabled: false,
@@ -170,6 +172,7 @@ describe('resolveAppNodeSpecs', () => {
         id: 'test/b',
         extension: b,
         attachTo: { id: 'root', input: 'default' },
+        plugin,
         source: plugin,
         config: { foo: { qux: 3 } },
         disabled: false,
@@ -182,7 +185,7 @@ describe('resolveAppNodeSpecs', () => {
     const b = makeExt('b', 'disabled');
     expect(
       resolveAppNodeSpecs({
-        features: [createFrontendPlugin({ id: 'empty', extensions: [] })],
+        features: [createFrontendPlugin({ pluginId: 'empty', extensions: [] })],
         builtinExtensions: [a, b],
         parameters: [
           {
@@ -221,7 +224,7 @@ describe('resolveAppNodeSpecs', () => {
     const g = makeExt('g', 'disabled');
     expect(
       resolveAppNodeSpecs({
-        features: [createFrontendPlugin({ id: 'empty', extensions: [] })],
+        features: [createFrontendPlugin({ pluginId: 'empty', extensions: [] })],
         builtinExtensions: [a, b, c, d, e, f, g],
         parameters: [
           { id: 'e', disabled: false },
@@ -277,7 +280,7 @@ describe('resolveAppNodeSpecs', () => {
 
   it('should apply module overrides', () => {
     const plugin = createFrontendPlugin({
-      id: 'test',
+      pluginId: 'test',
       extensions: [makeExtDef('a'), makeExtDef('b')],
     });
     const aOverride = makeExt('test/a', 'enabled', 'other');
@@ -305,6 +308,7 @@ describe('resolveAppNodeSpecs', () => {
         id: 'test/a',
         extension: expect.objectContaining(aOverride),
         attachTo: { id: 'other', input: 'default' },
+        plugin,
         source: plugin,
         disabled: false,
       },
@@ -312,6 +316,7 @@ describe('resolveAppNodeSpecs', () => {
         id: 'test/b',
         extension: expect.objectContaining(bOverride),
         attachTo: { id: 'other', input: 'default' },
+        plugin,
         source: plugin,
         disabled: true,
       },
@@ -319,6 +324,7 @@ describe('resolveAppNodeSpecs', () => {
         id: 'test/c',
         extension: expect.objectContaining(cOverride),
         attachTo: { id: 'root', input: 'default' },
+        plugin,
         source: plugin,
         disabled: false,
       },
@@ -329,7 +335,7 @@ describe('resolveAppNodeSpecs', () => {
     const result = resolveAppNodeSpecs({
       features: [
         createFrontendPlugin({
-          id: 'test',
+          pluginId: 'test',
           extensions: [
             makeExtDef('a', 'disabled'),
             makeExtDef('b', 'disabled'),
@@ -364,7 +370,7 @@ describe('resolveAppNodeSpecs', () => {
       resolveAppNodeSpecs({
         features: [
           createFrontendPlugin({
-            id: 'test',
+            pluginId: 'test',
             extensions: [makeExtDef('forbidden')],
           }),
         ],
@@ -382,7 +388,7 @@ describe('resolveAppNodeSpecs', () => {
       resolveAppNodeSpecs({
         features: [
           createFrontendPlugin({
-            id: 'forbidden',
+            pluginId: 'forbidden',
             extensions: [],
           }),
           createFrontendModule({

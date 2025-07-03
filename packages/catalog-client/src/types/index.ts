@@ -31,6 +31,7 @@ export type {
   GetEntityAncestorsResponse,
   GetEntityFacetsRequest,
   GetEntityFacetsResponse,
+  GetLocationsResponse,
   Location,
   ValidateEntityResponse,
   QueryEntitiesCursorRequest,

@@ -17,7 +17,10 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+import {
+  scaffolderActionsExtensionPoint,
+  scaffolderAutocompleteExtensionPoint,
+} from '@backstage/plugin-scaffolder-node/alpha';
 import {
   createGithubActionsDispatchAction,
   createGithubAutolinksAction,
@@ -36,7 +39,8 @@ import {
   DefaultGithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { CatalogClient } from '@backstage/catalog-client';
+import { createHandleAutocompleteRequest } from './autocomplete/autocomplete';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 
 /**
  * @public
@@ -50,15 +54,13 @@ export const githubModule = createBackendModule({
       deps: {
         scaffolder: scaffolderActionsExtensionPoint,
         config: coreServices.rootConfig,
-        discovery: coreServices.discovery,
+        catalog: catalogServiceRef,
+        autocomplete: scaffolderAutocompleteExtensionPoint,
       },
-      async init({ scaffolder, config, discovery }) {
+      async init({ scaffolder, config, autocomplete, catalog }) {
         const integrations = ScmIntegrations.fromConfig(config);
         const githubCredentialsProvider =
           DefaultGithubCredentialsProvider.fromIntegrations(integrations);
-        const catalogClient = new CatalogClient({
-          discoveryApi: discovery,
-        });
 
         scaffolder.addActions(
           createGithubActionsDispatchAction({
@@ -74,7 +76,7 @@ export const githubModule = createBackendModule({
           }),
           createGithubEnvironmentAction({
             integrations,
-            catalogClient,
+            catalog,
           }),
           createGithubIssuesLabelAction({
             integrations,
@@ -107,6 +109,11 @@ export const githubModule = createBackendModule({
             integrations,
           }),
         );
+
+        autocomplete.addAutocompleteProvider({
+          id: 'github',
+          handler: createHandleAutocompleteRequest({ integrations }),
+        });
       },
     });
   },

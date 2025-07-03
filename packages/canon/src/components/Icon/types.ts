@@ -14,16 +14,86 @@
  * limitations under the License.
  */
 
-/** @public */
-export type IconNames =
-  | 'arrowDown'
-  | 'arrowLeft'
-  | 'arrowRight'
-  | 'arrowUp'
-  | 'cloud'
-  | 'heart'
-  | 'plus'
-  | 'trash';
+import { ReactNode } from 'react';
+import type { RemixiconComponentType } from '@remixicon/react';
 
 /** @public */
-export type IconMap = Partial<Record<IconNames, React.ComponentType>>;
+export type IconNames =
+  | 'account-circle'
+  | 'alert'
+  | 'arrow-down'
+  | 'arrow-down-circle'
+  | 'caret-down'
+  | 'caret-left'
+  | 'caret-right'
+  | 'caret-up'
+  | 'arrow-left'
+  | 'arrow-left-circle'
+  | 'arrow-left-down'
+  | 'arrow-left-up'
+  | 'arrow-right'
+  | 'arrow-right-circle'
+  | 'arrow-right-down'
+  | 'arrow-right-up'
+  | 'arrow-up'
+  | 'arrow-up-circle'
+  | 'braces'
+  | 'brackets'
+  | 'bug'
+  | 'check'
+  | 'check-double'
+  | 'chevron-down'
+  | 'chevron-left'
+  | 'chevron-right'
+  | 'chevron-up'
+  | 'close'
+  | 'cloud'
+  | 'code'
+  | 'discord'
+  | 'download'
+  | 'external-link'
+  | 'eye'
+  | 'eye-off'
+  | 'filter'
+  | 'flower'
+  | 'github'
+  | 'git-repository'
+  | 'group'
+  | 'heart'
+  | 'moon'
+  | 'plus'
+  | 'search'
+  | 'sidebar-fold'
+  | 'sidebar-unfold'
+  | 'sparkling'
+  | 'star'
+  | 'sun'
+  | 'terminal'
+  | 'trash'
+  | 'upload'
+  | 'user'
+  | 'youtube'
+  | 'zoom-in'
+  | 'zoom-out';
+
+/** @public */
+export type IconMap = Partial<Record<IconNames, RemixiconComponentType>>;
+
+/** @public */
+export type IconProps = {
+  name: IconNames;
+  size?: number;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+/** @public */
+export interface IconContextProps {
+  icons: IconMap;
+}
+
+/** @public */
+export interface IconProviderProps {
+  children?: ReactNode;
+  overrides?: Partial<Record<IconNames, RemixiconComponentType>>;
+}

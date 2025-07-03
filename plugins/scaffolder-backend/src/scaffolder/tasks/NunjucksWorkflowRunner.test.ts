@@ -23,11 +23,9 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
   createTemplateAction,
   TaskSecrets,
-  TemplateAction,
   TaskContext,
 } from '@backstage/plugin-scaffolder-node';
 import { UserEntity } from '@backstage/catalog-model';
-import { z } from 'zod';
 import {
   AuthorizeResult,
   PermissionEvaluator,
@@ -38,17 +36,15 @@ import {
   mockCredentials,
   mockServices,
 } from '@backstage/backend-test-utils';
-import stripAnsi from 'strip-ansi';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 describe('NunjucksWorkflowRunner', () => {
-  let logger: LoggerService;
-  let actionRegistry = new TemplateActionRegistry();
+  let actionRegistry: TemplateActionRegistry;
   let runner: NunjucksWorkflowRunner;
   let fakeActionHandler: jest.Mock;
   let fakeTaskLog: jest.Mock;
+  let stripAnsi: typeof import('strip-ansi').default;
 
+  const logger = mockServices.logger.mock();
   const mockDir = createMockDirectory();
 
   const mockedPermissionApi: jest.Mocked<PermissionEvaluator> = {
@@ -71,11 +67,21 @@ describe('NunjucksWorkflowRunner', () => {
   });
 
   const createMockTaskWithSpec = (
-    spec: TaskSpec,
+    {
+      apiVersion = 'scaffolder.backstage.io/v1beta3',
+      output = {},
+      parameters = {},
+      ...spec
+    }: Partial<TaskSpec>,
     secrets?: TaskSecrets,
     isDryRun?: boolean,
   ): TaskContext => ({
-    spec,
+    spec: {
+      apiVersion,
+      output,
+      parameters,
+      ...spec,
+    } as TaskSpec,
     secrets,
     isDryRun,
     complete: async () => {},
@@ -92,99 +98,115 @@ describe('NunjucksWorkflowRunner', () => {
     );
   }
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockDir.clear();
 
-    jest.resetAllMocks();
-    logger = mockServices.logger.mock();
+    // This one is ESM-only
+    stripAnsi = await import('strip-ansi').then(m => m.default);
+
     actionRegistry = new TemplateActionRegistry();
     fakeActionHandler = jest.fn();
     fakeTaskLog = jest.fn();
 
-    actionRegistry.register({
-      id: 'jest-mock-action',
-      description: 'Mock action for testing',
-      handler: fakeActionHandler,
-    });
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'jest-mock-action',
+        description: 'Mock action for testing',
+        handler: fakeActionHandler,
+      }),
+    );
 
-    actionRegistry.register({
-      id: 'jest-validated-action',
-      description: 'Mock action for testing',
-      supportsDryRun: true,
-      handler: fakeActionHandler,
-      schema: {
-        input: {
-          type: 'object',
-          required: ['foo'],
-          properties: {
-            foo: {
-              type: 'number',
-            },
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'jest-validated-action',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: fakeActionHandler,
+        schema: {
+          input: {
+            foo: z => z.number(),
           },
         },
-      },
-    });
+      }),
+    );
 
     actionRegistry.register(
       createTemplateAction({
         id: 'jest-zod-validated-action',
-        description: 'Mock action for testing',
-        handler: fakeActionHandler,
+        description: 'Mock ac',
         supportsDryRun: true,
         schema: {
-          input: z.object({
-            foo: z.number(),
-          }),
+          input: {
+            foo: zod => zod.number(),
+          },
+          output: {
+            test: zod => zod.string(),
+          },
         },
-      }) as TemplateAction,
+        handler: fakeActionHandler,
+      }),
     );
 
-    actionRegistry.register({
-      id: 'output-action',
-      description: 'Mock action for testing',
-      handler: async ctx => {
-        ctx.output('mock', 'backstage');
-        ctx.output('shouldRun', true);
-      },
-    });
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'output-action',
+        description: 'Mock action for testing',
+        handler: async ctx => {
+          ctx.output('mock', 'backstage');
+          ctx.output('shouldRun', true);
+        },
+      }),
+    );
 
-    actionRegistry.register({
-      id: 'checkpoints-action',
-      description: 'Mock action with checkpoints',
-      handler: async ctx => {
-        const key1 = await ctx.checkpoint({
-          key: 'key1',
-          fn: async () => 'updated',
-        });
-        const key2 = await ctx.checkpoint({
-          key: 'key2',
-          fn: async () => 'updated',
-        });
-        const key3 = await ctx.checkpoint({
-          key: 'key3',
-          fn: async () => 'updated',
-        });
+    actionRegistry.register(
+      createTemplateAction({
+        id: 'checkpoints-action',
+        description: 'Mock action with checkpoints',
+        schema: {
+          output: z =>
+            z.object({
+              key1: z.string(),
+              key2: z.string(),
+              key3: z.string(),
+              key4: z.string(),
+              key5: z.string(),
+            }),
+        },
+        handler: async ctx => {
+          const key1 = await ctx.checkpoint({
+            key: 'key1',
+            fn: async () => 'updated',
+          });
+          const key2 = await ctx.checkpoint({
+            key: 'key2',
+            fn: async () => 'updated',
+          });
+          const key3 = await ctx.checkpoint({
+            key: 'key3',
+            fn: async () => 'updated',
+          });
 
-        const key4 = await ctx.checkpoint({
-          key: 'key4',
-          fn: () => {},
-        });
+          const key4 = await ctx.checkpoint({
+            key: 'key4',
+            fn: () => {},
+          });
 
-        const key5 = await ctx.checkpoint({
-          key: 'key5',
-          fn: async () => {},
-        });
+          const key5 = await ctx.checkpoint({
+            key: 'key5',
+            fn: async () => {},
+          });
 
-        ctx.output('key1', key1);
-        ctx.output('key2', key2);
-        ctx.output('key3', key3);
+          ctx.output('key1', key1);
+          ctx.output('key2', key2);
+          ctx.output('key3', key3);
 
-        // @ts-expect-error - this is void return
-        ctx.output('key4', key4);
-        // @ts-expect-error - this is void return
-        ctx.output('key5', key5);
-      },
-    });
+          // @ts-expect-error - not valid output type
+          ctx.output('key4', key4);
+          // @ts-expect-error - not valid output type
+          ctx.output('key5', key5);
+        },
+      }),
+    );
 
     mockedPermissionApi.authorizeConditional.mockResolvedValue([
       { result: AuthorizeResult.ALLOW },
@@ -194,30 +216,30 @@ describe('NunjucksWorkflowRunner', () => {
       actionRegistry,
       integrations,
       workingDirectory: mockDir.path,
-      logger: loggerToWinstonLogger(logger),
+      logger,
       permissions: mockedPermissionApi,
     });
   });
 
+  afterEach(() => {
+    mockDir.clear();
+
+    jest.resetAllMocks();
+  });
+
   it('should throw an error if the action does not exist', async () => {
     const task = createMockTaskWithSpec({
-      apiVersion: 'scaffolder.backstage.io/v1beta3',
-      parameters: {},
-      output: {},
       steps: [{ id: 'test', name: 'name', action: 'does-not-exist' }],
     });
 
     await expect(runner.execute(task)).rejects.toThrow(
-      "Template action with ID 'does-not-exist' is not registered.",
+      /Template action with ID 'does-not-exist' is not registered/,
     );
   });
 
   describe('validation', () => {
     it('should throw an error if the action has a schema and the input does not match', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        parameters: {},
-        output: {},
         steps: [{ id: 'test', name: 'name', action: 'jest-validated-action' }],
       });
 
@@ -228,9 +250,6 @@ describe('NunjucksWorkflowRunner', () => {
 
     it('should throw an error if the action has a zod schema and the input does not match', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        parameters: {},
-        output: {},
         steps: [
           { id: 'test', name: 'name', action: 'jest-zod-validated-action' },
         ],
@@ -243,9 +262,6 @@ describe('NunjucksWorkflowRunner', () => {
 
     it('should run the action when the zod validation passes', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        parameters: {},
-        output: {},
         steps: [
           {
             id: 'test',
@@ -263,9 +279,6 @@ describe('NunjucksWorkflowRunner', () => {
 
     it('should run the action when the validation passes', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        parameters: {},
-        output: {},
         steps: [
           {
             id: 'test',
@@ -299,9 +312,6 @@ describe('NunjucksWorkflowRunner', () => {
       };
 
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        parameters: {},
-        output: {},
         steps: [
           {
             id: 'test',
@@ -330,9 +340,6 @@ describe('NunjucksWorkflowRunner', () => {
     it('should pass token through', async () => {
       const task = createMockTaskWithSpec(
         {
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
-          parameters: {},
-          output: {},
           steps: [
             {
               id: 'test',
@@ -359,7 +366,6 @@ describe('NunjucksWorkflowRunner', () => {
   describe('conditionals', () => {
     it('should execute steps conditionally', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           { id: 'test', name: 'test', action: 'output-action' },
           {
@@ -372,7 +378,6 @@ describe('NunjucksWorkflowRunner', () => {
         output: {
           result: '${{ steps.conditional.output.mock }}',
         },
-        parameters: {},
       });
 
       const { output } = await runner.execute(task);
@@ -382,7 +387,6 @@ describe('NunjucksWorkflowRunner', () => {
 
     it('should skips steps conditionally', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           { id: 'test', name: 'test', action: 'output-action' },
           {
@@ -395,7 +399,6 @@ describe('NunjucksWorkflowRunner', () => {
         output: {
           result: '${{ steps.conditional.output.mock }}',
         },
-        parameters: {},
       });
 
       const { output } = await runner.execute(task);
@@ -405,7 +408,6 @@ describe('NunjucksWorkflowRunner', () => {
 
     it('should skips steps using the negating equals operator', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           { id: 'test', name: 'test', action: 'output-action' },
           {
@@ -418,7 +420,6 @@ describe('NunjucksWorkflowRunner', () => {
         output: {
           result: '${{ steps.conditional.output.mock }}',
         },
-        parameters: {},
       });
 
       const { output } = await runner.execute(task);
@@ -428,7 +429,6 @@ describe('NunjucksWorkflowRunner', () => {
     describe('should apply boolean step conditions', () => {
       it('executes when true', async () => {
         const task = createMockTaskWithSpec({
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
           steps: [
             {
               id: 'conditional',
@@ -440,7 +440,6 @@ describe('NunjucksWorkflowRunner', () => {
           output: {
             result: '${{ steps.conditional.output.mock }}',
           },
-          parameters: {},
         });
 
         const { output } = await runner.execute(task);
@@ -448,7 +447,6 @@ describe('NunjucksWorkflowRunner', () => {
       });
       it('skips when false', async () => {
         const task = createMockTaskWithSpec({
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
           steps: [
             {
               id: 'conditional',
@@ -460,7 +458,6 @@ describe('NunjucksWorkflowRunner', () => {
           output: {
             result: '${{ steps.conditional.output.mock }}',
           },
-          parameters: {},
         });
 
         const { output } = await runner.execute(task);
@@ -472,7 +469,6 @@ describe('NunjucksWorkflowRunner', () => {
   describe('templating', () => {
     it('should template the input to an action', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -483,7 +479,6 @@ describe('NunjucksWorkflowRunner', () => {
             },
           },
         ],
-        output: {},
         parameters: {
           input: 'BACKSTAGE',
         },
@@ -499,7 +494,6 @@ describe('NunjucksWorkflowRunner', () => {
     it('should not try and parse something that is not parsable', async () => {
       jest.spyOn(logger, 'error');
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -510,7 +504,6 @@ describe('NunjucksWorkflowRunner', () => {
             },
           },
         ],
-        output: {},
         parameters: {
           input: 'BACKSTAGE',
         },
@@ -523,7 +516,6 @@ describe('NunjucksWorkflowRunner', () => {
 
     it('should keep the original types for the input and not parse things that are not meant to be parsed', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -535,7 +527,6 @@ describe('NunjucksWorkflowRunner', () => {
             },
           },
         ],
-        output: {},
         parameters: {
           number: 0,
           string: '1',
@@ -551,7 +542,6 @@ describe('NunjucksWorkflowRunner', () => {
 
     it('should template complex values into the action', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -562,7 +552,6 @@ describe('NunjucksWorkflowRunner', () => {
             },
           },
         ],
-        output: {},
         parameters: {
           complex: { bar: 'BACKSTAGE' },
         },
@@ -577,7 +566,6 @@ describe('NunjucksWorkflowRunner', () => {
 
     it('supports really complex structures', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -588,7 +576,6 @@ describe('NunjucksWorkflowRunner', () => {
             },
           },
         ],
-        output: {},
         parameters: {
           complex: {
             bar: 'BACKSTAGE',
@@ -606,7 +593,6 @@ describe('NunjucksWorkflowRunner', () => {
 
     it('supports numbers as first class too', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -617,7 +603,6 @@ describe('NunjucksWorkflowRunner', () => {
             },
           },
         ],
-        output: {},
         parameters: {
           complex: {
             bar: 'BACKSTAGE',
@@ -636,8 +621,6 @@ describe('NunjucksWorkflowRunner', () => {
     it('should deal with checkpoints', async () => {
       const task = {
         ...createMockTaskWithSpec({
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
-          parameters: {},
           steps: [
             {
               id: 'test',
@@ -688,7 +671,6 @@ describe('NunjucksWorkflowRunner', () => {
 
     it('should template the output from simple actions', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -700,12 +682,36 @@ describe('NunjucksWorkflowRunner', () => {
         output: {
           foo: '${{steps.test.output.mock | upper}}',
         },
-        parameters: {},
       });
 
       const { output } = await runner.execute(task);
 
       expect(output.foo).toEqual('BACKSTAGE');
+    });
+
+    it('should include task ID in the templated context', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-mock-action',
+            input: {
+              values: {
+                taskId: '${{context.task.id}}',
+              },
+            },
+          },
+        ],
+      });
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: { values: { taskId: 'test-workspace' } },
+        }),
+      );
     });
   });
 
@@ -734,9 +740,6 @@ describe('NunjucksWorkflowRunner', () => {
 
       const task = createMockTaskWithSpec(
         {
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
-          parameters: {},
-          output: {},
           steps: [
             {
               id: 'test',
@@ -780,9 +783,6 @@ describe('NunjucksWorkflowRunner', () => {
 
       const task = createMockTaskWithSpec(
         {
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
-          parameters: {},
-          output: {},
           steps: [
             {
               id: 'test',
@@ -807,7 +807,6 @@ describe('NunjucksWorkflowRunner', () => {
     it('should run a step repeatedly - flat values', async () => {
       const colors = ['blue', 'green', 'red'];
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -817,7 +816,6 @@ describe('NunjucksWorkflowRunner', () => {
             input: { color: '${{each.value}}' },
           },
         ],
-        output: {},
         parameters: {
           colors,
         },
@@ -834,9 +832,44 @@ describe('NunjucksWorkflowRunner', () => {
       });
     });
 
+    it('should run a step repeatedly - flat values with secrets', async () => {
+      const secrets = {
+        s1: 'secret-value1',
+        s2: 'secret-value2',
+        s3: 'secret-value3',
+      };
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              each: [
+                '${{ secrets.s1 }}',
+                '${{ secrets.s2 }}',
+                '${{ secrets.s3 }}',
+              ],
+              action: 'jest-mock-action',
+              input: { secret: '${{each.value}}' },
+            },
+          ],
+        },
+        secrets,
+      );
+      await runner.execute(task);
+
+      Object.values(secrets).forEach((secret, idx) => {
+        expectTaskLog(
+          `info: Running step each: {"key":"${idx}","value":"***"}`,
+        );
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({ input: { secret } }),
+        );
+      });
+    });
+
     it('should run a step repeatedly - object list', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -849,7 +882,6 @@ describe('NunjucksWorkflowRunner', () => {
             },
           },
         ],
-        output: {},
         parameters: {
           settings: [{ color: 'blue' }],
         },
@@ -866,13 +898,52 @@ describe('NunjucksWorkflowRunner', () => {
       );
     });
 
+    it('should run a step repeatedly - object list with secrets', async () => {
+      const secrets = {
+        s1: 'secret-value1',
+        s2: 'secret-value2',
+      };
+      const names = ['Service1', 'Service2'];
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              each: [
+                { name: names[0], token: '${{ secrets.s1 }}' },
+                { name: names[1], token: '${{ secrets.s2 }}' },
+              ],
+              action: 'jest-mock-action',
+              input: {
+                name: '${{each.value.name}}',
+                token: '${{each.value.token}}',
+              },
+            },
+          ],
+        },
+        secrets,
+      );
+      await runner.execute(task);
+
+      Object.values(secrets).forEach((secret, idx) => {
+        expectTaskLog(
+          `info: Running step each: {"key":"${idx}","value":"[object Object]"}`,
+        );
+        expect(fakeActionHandler).toHaveBeenCalledWith(
+          expect.objectContaining({
+            input: { name: names[idx], token: secret },
+          }),
+        );
+      });
+    });
+
     it('should run a step repeatedly - object', async () => {
       const settings = {
         color: 'blue',
         transparent: 'yes',
       };
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -882,7 +953,6 @@ describe('NunjucksWorkflowRunner', () => {
             input: { key: '${{each.key}}', value: '${{each.value}}' },
           },
         ],
-        output: {},
         parameters: {
           settings,
         },
@@ -904,7 +974,6 @@ describe('NunjucksWorkflowRunner', () => {
     it('should run a step repeatedly with validation of single-expression value', async () => {
       const numbers = [5, 7, 9];
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -914,7 +983,6 @@ describe('NunjucksWorkflowRunner', () => {
             input: { foo: '${{each.value}}' },
           },
         ],
-        output: {},
         parameters: {
           numbers,
         },
@@ -935,7 +1003,6 @@ describe('NunjucksWorkflowRunner', () => {
 
     it('should validate each action iteration', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -945,7 +1012,6 @@ describe('NunjucksWorkflowRunner', () => {
             input: { foo: '${{each.value.foo}}' },
           },
         ],
-        output: {},
         parameters: {
           data: [
             {
@@ -960,13 +1026,30 @@ describe('NunjucksWorkflowRunner', () => {
       );
       expect(fakeActionHandler).not.toHaveBeenCalled();
     });
+
+    it('should validate each parameter renders to a valid value', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: '${{parameters.data}}',
+            action: 'jest-validated-action',
+            input: { foo: '${{each.value}}' },
+          },
+        ],
+      });
+      await expect(runner.execute(task)).rejects.toThrow(
+        'Invalid value on action jest-validated-action.each parameter, "${{parameters.data}}" cannot be resolved to a value',
+      );
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
   });
 
   describe('secrets', () => {
     it('should pass through the secrets to the context', async () => {
       const task = createMockTaskWithSpec(
         {
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
           steps: [
             {
               id: 'test',
@@ -975,8 +1058,6 @@ describe('NunjucksWorkflowRunner', () => {
               input: {},
             },
           ],
-          output: {},
-          parameters: {},
         },
         { foo: 'bar' },
       );
@@ -991,7 +1072,6 @@ describe('NunjucksWorkflowRunner', () => {
     it('should be able to template secrets into the input of an action', async () => {
       const task = createMockTaskWithSpec(
         {
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
           steps: [
             {
               id: 'test',
@@ -1002,8 +1082,6 @@ describe('NunjucksWorkflowRunner', () => {
               },
             },
           ],
-          output: {},
-          parameters: {},
         },
         { foo: 'bar' },
       );
@@ -1018,7 +1096,6 @@ describe('NunjucksWorkflowRunner', () => {
     it('does not allow templating of secrets as an output', async () => {
       const task = createMockTaskWithSpec(
         {
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
           steps: [
             {
               id: 'test',
@@ -1032,7 +1109,6 @@ describe('NunjucksWorkflowRunner', () => {
           output: {
             b: '${{ secrets.foo }}',
           },
-          parameters: {},
         },
         { foo: 'bar' },
       );
@@ -1046,7 +1122,6 @@ describe('NunjucksWorkflowRunner', () => {
   describe('user', () => {
     it('allows access to the user entity at the templating level', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -1076,7 +1151,6 @@ describe('NunjucksWorkflowRunner', () => {
   describe('filters', () => {
     it('provides the parseRepoUrl filter', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -1105,7 +1179,6 @@ describe('NunjucksWorkflowRunner', () => {
     describe('parseEntityRef', () => {
       it('parses entity ref', async () => {
         const task = createMockTaskWithSpec({
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
           steps: [
             {
               id: 'test',
@@ -1133,7 +1206,6 @@ describe('NunjucksWorkflowRunner', () => {
 
       it('provides default kind for parsing entity ref', async () => {
         const task = createMockTaskWithSpec({
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
           steps: [
             {
               id: 'test',
@@ -1161,7 +1233,6 @@ describe('NunjucksWorkflowRunner', () => {
 
       it('provides default namespace for parsing entity ref', async () => {
         const task = createMockTaskWithSpec({
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
           steps: [
             {
               id: 'test',
@@ -1189,7 +1260,6 @@ describe('NunjucksWorkflowRunner', () => {
 
       it('provides default kind and namespace for parsing entity ref', async () => {
         const task = createMockTaskWithSpec({
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
           steps: [
             {
               id: 'test',
@@ -1219,7 +1289,6 @@ describe('NunjucksWorkflowRunner', () => {
         'ignores invalid context "%s" for parsing entity refF',
         async kind => {
           const task = createMockTaskWithSpec({
-            apiVersion: 'scaffolder.backstage.io/v1beta3',
             steps: [
               {
                 id: 'test',
@@ -1248,7 +1317,6 @@ describe('NunjucksWorkflowRunner', () => {
 
       it('fails when unable to parse entity ref', async () => {
         const task = createMockTaskWithSpec({
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
           steps: [
             {
               id: 'test',
@@ -1275,7 +1343,6 @@ describe('NunjucksWorkflowRunner', () => {
 
     it('provides the pick filter', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -1299,7 +1366,6 @@ describe('NunjucksWorkflowRunner', () => {
 
     it('should allow deep nesting of picked objects', async () => {
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [
           {
             id: 'test',
@@ -1332,9 +1398,6 @@ describe('NunjucksWorkflowRunner', () => {
     it('sets isDryRun flag correctly', async () => {
       const task = createMockTaskWithSpec(
         {
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
-          parameters: {},
-          output: {},
           steps: [
             {
               id: 'test',
@@ -1358,13 +1421,10 @@ describe('NunjucksWorkflowRunner', () => {
     it('should have metadata in action context during dry run', async () => {
       const task = createMockTaskWithSpec(
         {
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
           templateInfo: {
             entityRef: 'dryRun-Entity',
             entity: { metadata: { name: 'test-template' } },
           },
-          parameters: {},
-          output: {},
           steps: [
             {
               id: 'test',
@@ -1396,9 +1456,6 @@ describe('NunjucksWorkflowRunner', () => {
       ]);
 
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        parameters: {},
-        output: {},
         steps: [
           {
             id: 'test',
@@ -1437,9 +1494,6 @@ describe('NunjucksWorkflowRunner', () => {
       ]);
 
       const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        parameters: {},
-        output: {},
         steps: [
           {
             id: 'test1',

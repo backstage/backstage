@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.0.33-next.0",
+  "version": "0.0.40-next.1",
   "backstage": {
     "role": "backend"
   },
@@ -45,7 +45,9 @@
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^",
     "@backstage/plugin-devtools-backend": "workspace:^",
     "@backstage/plugin-events-backend": "workspace:^",
+    "@backstage/plugin-events-backend-module-google-pubsub": "workspace:^",
     "@backstage/plugin-kubernetes-backend": "workspace:^",
+    "@backstage/plugin-mcp-actions-backend": "workspace:^",
     "@backstage/plugin-notifications-backend": "workspace:^",
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^",
@@ -62,7 +64,7 @@
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-signals-backend": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
-    "@opentelemetry/auto-instrumentations-node": "^0.52.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.54.0",
     "@opentelemetry/exporter-prometheus": "^0.54.0",
     "@opentelemetry/sdk-node": "^0.54.0",
     "example-app": "link:../app"

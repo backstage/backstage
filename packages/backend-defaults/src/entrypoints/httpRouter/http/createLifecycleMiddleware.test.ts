@@ -20,10 +20,14 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { ServiceUnavailableError } from '@backstage/errors';
 
 describe('createLifecycleMiddleware', () => {
+  const config = mockServices.rootConfig.mock();
   it('should pause requests when plugin is not ready', async () => {
     const lifecycle = new BackendLifecycleImpl(mockServices.rootLogger());
 
-    const middleware = createLifecycleMiddleware({ lifecycle });
+    const middleware = createLifecycleMiddleware({
+      config,
+      lifecycle,
+    });
 
     const next = jest.fn();
     middleware({} as any, {} as any, next);
@@ -41,7 +45,7 @@ describe('createLifecycleMiddleware', () => {
 
   it('should throw ServiceUnavailableError after shutdown', async () => {
     const lifecycle = new BackendLifecycleImpl(mockServices.rootLogger());
-    const middleware = createLifecycleMiddleware({ lifecycle });
+    const middleware = createLifecycleMiddleware({ config, lifecycle });
 
     const next = jest.fn();
     middleware({} as any, {} as any, next);
@@ -65,7 +69,15 @@ describe('createLifecycleMiddleware', () => {
     const lifecycle = new BackendLifecycleImpl(mockServices.rootLogger());
     const middleware = createLifecycleMiddleware({
       lifecycle,
-      startupRequestPauseTimeout: { milliseconds: 1 },
+      config: mockServices.rootConfig({
+        data: {
+          backend: {
+            lifecycle: {
+              startupRequestPauseTimeout: { milliseconds: 1 },
+            },
+          },
+        },
+      }),
     });
 
     const next = jest.fn();

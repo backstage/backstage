@@ -32,7 +32,7 @@ import {
   EntityOwnerPickerProps,
   UserListFilterKind,
 } from '@backstage/plugin-catalog-react';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { catalogTranslationRef } from '../../alpha/translation';

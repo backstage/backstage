@@ -2,7 +2,6 @@
 id: org
 title: LDAP Organizational Data
 sidebar_label: Org Data
-# prettier-ignore
 description: Setting up ingestion of organizational data from LDAP
 ---
 
@@ -86,13 +85,14 @@ catalog:
 
 These config blocks have a lot of options in them, so we will describe each "root" key within the block separately.
 
-> NOTE:
->
-> If you want to import users and groups from different LDAP servers, you can define multiple providers with different names.
-> If they should come from the same server, you can define multiple users and groups blocks within the same provider using an array of users / groups.
-> Entries coming from the same block will be able to detect group memberships based on the `memberOf` attribute.
->
-> If you want only to import users or groups, you can omit the groups or users block.
+:::note Note
+
+If you want to import users and groups from different LDAP servers, you can define multiple providers with different names.
+If they should come from the same server, you can define multiple users and groups blocks within the same provider using an array of users / groups.
+Entries coming from the same block will be able to detect group memberships based on the `memberOf` attribute.
+If you want only to import users or groups, you can omit the groups or users block.
+
+:::
 
 ### target
 

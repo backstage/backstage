@@ -20,10 +20,10 @@ import {
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import {
-  initRepoAndPush,
-  getRepoSourceDirectory,
-  parseRepoUrl,
   createTemplateAction,
+  getRepoSourceDirectory,
+  initRepoAndPush,
+  parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {
@@ -45,86 +45,92 @@ export function createPublishAzureAction(options: {
 }) {
   const { integrations, config } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    description?: string;
-    defaultBranch?: string;
-    sourcePath?: string;
-    token?: string;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-  }>({
+  return createTemplateAction({
     id: 'publish:azure',
     examples,
     description:
       'Initializes a git repository of the content in the workspace, and publishes it to Azure.',
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl'],
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            type: 'string',
-          },
-          description: {
-            title: 'Repository Description',
-            type: 'string',
-          },
-          defaultBranch: {
-            title: 'Default Branch',
-            type: 'string',
-            description: `Sets the default branch on the repository. The default value is 'master'`,
-          },
-          gitCommitMessage: {
-            title: 'Git Commit Message',
-            type: 'string',
-            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
-          },
-          gitAuthorName: {
-            title: 'Default Author Name',
-            type: 'string',
-            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
-          },
-          gitAuthorEmail: {
-            title: 'Default Author Email',
-            type: 'string',
-            description: `Sets the default author email for the commit.`,
-          },
-          sourcePath: {
-            title: 'Source Path',
-            description:
-              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
-            type: 'string',
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to Azure',
-          },
-        },
+        repoUrl: z =>
+          z.string({
+            description: 'Repository Location',
+          }),
+        description: z =>
+          z
+            .string({
+              description: 'Repository Description',
+            })
+            .optional(),
+        defaultBranch: z =>
+          z
+            .string({
+              description: `Sets the default branch on the repository. The default value is 'master'`,
+            })
+            .optional(),
+        sourcePath: z =>
+          z
+            .string({
+              description:
+                'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to Azure',
+            })
+            .optional(),
+        gitCommitMessage: z =>
+          z
+            .string({
+              description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+            })
+            .optional(),
+        gitAuthorName: z =>
+          z
+            .string({
+              description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+            })
+            .optional(),
+        gitAuthorEmail: z =>
+          z
+            .string({
+              description: `Sets the default author email for the commit.`,
+            })
+            .optional(),
+        signCommit: z =>
+          z
+            .boolean({
+              description: 'Sign commit with configured PGP private key',
+            })
+            .optional(),
       },
       output: {
-        type: 'object',
-        properties: {
-          remoteUrl: {
-            title: 'A URL to the repository with the provider',
-            type: 'string',
-          },
-          repoContentsUrl: {
-            title: 'A URL to the root of the repository',
-            type: 'string',
-          },
-          repositoryId: {
-            title: 'The Id of the created repository',
-            type: 'string',
-          },
-          commitHash: {
-            title: 'The git commit hash of the initial commit',
-            type: 'string',
-          },
-        },
+        remoteUrl: z =>
+          z
+            .string({
+              description: 'A URL to the repository with the provider',
+            })
+            .optional(),
+        repoContentsUrl: z =>
+          z
+            .string({
+              description: 'A URL to the root of the repository',
+            })
+            .optional(),
+        repositoryId: z =>
+          z
+            .string({
+              description: 'The Id of the created repository',
+            })
+            .optional(),
+        commitHash: z =>
+          z
+            .string({
+              description: 'The git commit hash of the initial commit',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {
@@ -134,6 +140,7 @@ export function createPublishAzureAction(options: {
         gitCommitMessage = 'initial commit',
         gitAuthorName,
         gitAuthorEmail,
+        signCommit,
       } = ctx.input;
 
       const { project, repo, host, organization } = parseRepoUrl(
@@ -151,6 +158,7 @@ export function createPublishAzureAction(options: {
       const credentialProvider =
         DefaultAzureDevOpsCredentialsProvider.fromIntegrations(integrations);
       const credentials = await credentialProvider.getCredentials({ url: url });
+      const integrationConfig = integrations.azure.byHost(host);
 
       if (credentials === undefined && ctx.input.token === undefined) {
         throw new InputError(
@@ -166,37 +174,49 @@ export function createPublishAzureAction(options: {
       const webApi = new WebApi(url, authHandler);
       const client = await webApi.getGitApi();
       const createOptions: GitRepositoryCreateOptions = { name: repo };
-      const returnedRepo = await client.createRepository(
-        createOptions,
-        project,
-      );
 
-      if (!returnedRepo) {
-        throw new InputError(
-          `Unable to create the repository with Organization ${organization}, Project ${project} and Repo ${repo}.
+      const { remoteUrl, repositoryId, repoContentsUrl } = await ctx.checkpoint(
+        {
+          key: `create.repo.${repo}`,
+          fn: async () => {
+            const returnedRepo = await client.createRepository(
+              createOptions,
+              project,
+            );
+
+            if (!returnedRepo) {
+              throw new InputError(
+                `Unable to create the repository with Organization ${organization}, Project ${project} and Repo ${repo}.
           Please make sure that both the Org and Project are typed corrected and exist.`,
-        );
-      }
-      const remoteUrl = returnedRepo.remoteUrl;
+              );
+            }
 
-      if (!remoteUrl) {
-        throw new InputError(
-          'No remote URL returned from create repository for Azure',
-        );
-      }
-      const repositoryId = returnedRepo.id;
+            if (!returnedRepo.remoteUrl) {
+              throw new InputError(
+                'No remote URL returned from create repository for Azure',
+              );
+            }
 
-      if (!repositoryId) {
-        throw new InputError('No Id returned from create repository for Azure');
-      }
+            if (!returnedRepo.id) {
+              throw new InputError(
+                'No Id returned from create repository for Azure',
+              );
+            }
 
-      const repoContentsUrl = returnedRepo.webUrl;
+            if (!returnedRepo.webUrl) {
+              throw new InputError(
+                'No web URL returned from create repository for Azure',
+              );
+            }
 
-      if (!repoContentsUrl) {
-        throw new InputError(
-          'No web URL returned from create repository for Azure',
-        );
-      }
+            return {
+              remoteUrl: returnedRepo.remoteUrl,
+              repositoryId: returnedRepo.id,
+              repoContentsUrl: returnedRepo.webUrl,
+            };
+          },
+        },
+      );
 
       const gitAuthorInfo = {
         name: gitAuthorName
@@ -212,19 +232,39 @@ export function createPublishAzureAction(options: {
         password: ctx.input.token ?? credentials!.token,
       };
 
-      const commitResult = await initRepoAndPush({
-        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
-        remoteUrl,
-        defaultBranch,
-        auth: auth,
-        logger: ctx.logger,
-        commitMessage: gitCommitMessage
-          ? gitCommitMessage
-          : config.getOptionalString('scaffolder.defaultCommitMessage'),
-        gitAuthorInfo,
+      const signingKey =
+        integrationConfig?.config.commitSigningKey ??
+        config.getOptionalString('scaffolder.defaultCommitSigningKey');
+      if (signCommit && !signingKey) {
+        throw new Error(
+          'Signing commits is enabled but no signing key is provided in the configuration',
+        );
+      }
+
+      const commitHash = await ctx.checkpoint({
+        key: `init.repo.and.push.${remoteUrl}`,
+        fn: async () => {
+          const commitResult = await initRepoAndPush({
+            dir: getRepoSourceDirectory(
+              ctx.workspacePath,
+              ctx.input.sourcePath,
+            ),
+            remoteUrl,
+            defaultBranch,
+            auth: auth,
+            logger: ctx.logger,
+            commitMessage: gitCommitMessage
+              ? gitCommitMessage
+              : config.getOptionalString('scaffolder.defaultCommitMessage'),
+            gitAuthorInfo,
+            signingKey: signCommit ? signingKey : undefined,
+          });
+
+          return commitResult?.commitHash;
+        },
       });
 
-      ctx.output('commitHash', commitResult?.commitHash);
+      ctx.output('commitHash', commitHash);
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
       ctx.output('repositoryId', repositoryId);

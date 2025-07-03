@@ -18,8 +18,8 @@ import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   createTemplateAction,
-  initRepoAndPush,
   getRepoSourceDirectory,
+  initRepoAndPush,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 
@@ -105,77 +105,81 @@ export function createPublishBitbucketCloudAction(options: {
 }) {
   const { integrations, config } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    description?: string;
-    defaultBranch?: string;
-    repoVisibility?: 'private' | 'public';
-    gitCommitMessage?: string;
-    sourcePath?: string;
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'publish:bitbucketCloud',
     examples,
     description:
       'Initializes a git repository of the content in the workspace, and publishes it to Bitbucket Cloud.',
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl'],
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            type: 'string',
-          },
-          description: {
-            title: 'Repository Description',
-            type: 'string',
-          },
-          repoVisibility: {
-            title: 'Repository Visibility',
-            type: 'string',
-            enum: ['private', 'public'],
-          },
-          defaultBranch: {
-            title: 'Default Branch',
-            type: 'string',
-            description: `Sets the default branch on the repository. The default value is 'master'`,
-          },
-          gitCommitMessage: {
-            title: 'Git Commit Message',
-            type: 'string',
-            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
-          },
-          sourcePath: {
-            title: 'Source Path',
-            description:
-              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
-            type: 'string',
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description:
-              'The token to use for authorization to BitBucket Cloud',
-          },
-        },
+        repoUrl: z =>
+          z.string({
+            description: 'Repository Location',
+          }),
+        description: z =>
+          z
+            .string({
+              description: 'Repository Description',
+            })
+            .optional(),
+        defaultBranch: z =>
+          z
+            .string({
+              description: `Sets the default branch on the repository. The default value is 'master'`,
+            })
+            .optional(),
+        repoVisibility: z =>
+          z
+            .enum(['private', 'public'], {
+              description: 'Repository Visibility',
+            })
+            .optional(),
+        gitCommitMessage: z =>
+          z
+            .string({
+              description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+            })
+            .optional(),
+        sourcePath: z =>
+          z
+            .string({
+              description:
+                'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description:
+                'The token to use for authorization to BitBucket Cloud',
+            })
+            .optional(),
+        signCommit: z =>
+          z
+            .boolean({
+              description: 'Sign commit with configured PGP private key',
+            })
+            .optional(),
       },
       output: {
-        type: 'object',
-        properties: {
-          remoteUrl: {
-            title: 'A URL to the repository with the provider',
-            type: 'string',
-          },
-          repoContentsUrl: {
-            title: 'A URL to the root of the repository',
-            type: 'string',
-          },
-          commitHash: {
-            title: 'The git commit hash of the initial commit',
-            type: 'string',
-          },
-        },
+        remoteUrl: z =>
+          z
+            .string({
+              description: 'A URL to the repository with the provider',
+            })
+            .optional(),
+        repoContentsUrl: z =>
+          z
+            .string({
+              description: 'A URL to the root of the repository',
+            })
+            .optional(),
+        commitHash: z =>
+          z
+            .string({
+              description: 'The git commit hash of the initial commit',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {
@@ -185,6 +189,7 @@ export function createPublishBitbucketCloudAction(options: {
         defaultBranch = 'master',
         gitCommitMessage,
         repoVisibility = 'private',
+        signCommit,
       } = ctx.input;
 
       const { workspace, project, repo, host } = parseRepoUrl(
@@ -217,15 +222,19 @@ export function createPublishBitbucketCloudAction(options: {
 
       const apiBaseUrl = integrationConfig.config.apiBaseUrl;
 
-      const { remoteUrl, repoContentsUrl } = await createRepository({
-        authorization,
-        workspace: workspace || '',
-        project,
-        repo,
-        repoVisibility,
-        mainBranch: defaultBranch,
-        description,
-        apiBaseUrl,
+      const { remoteUrl, repoContentsUrl } = await ctx.checkpoint({
+        key: `create.repo.${host}.${repo}`,
+        fn: async () =>
+          await createRepository({
+            authorization,
+            workspace: workspace || '',
+            project,
+            repo,
+            repoVisibility,
+            mainBranch: defaultBranch,
+            description,
+            apiBaseUrl,
+          }),
       });
 
       const gitAuthorInfo = {
@@ -256,19 +265,38 @@ export function createPublishBitbucketCloudAction(options: {
         };
       }
 
-      const commitResult = await initRepoAndPush({
-        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
-        remoteUrl,
-        auth,
-        defaultBranch,
-        logger: ctx.logger,
-        commitMessage:
-          gitCommitMessage ||
-          config.getOptionalString('scaffolder.defaultCommitMessage'),
-        gitAuthorInfo,
+      const signingKey =
+        integrationConfig.config.commitSigningKey ??
+        config.getOptionalString('scaffolder.defaultCommitSigningKey');
+      if (signCommit && !signingKey) {
+        throw new Error(
+          'Signing commits is enabled but no signing key is provided in the configuration',
+        );
+      }
+
+      const commitHash = await ctx.checkpoint({
+        key: `init.repo.and.push${host}.${repo}`,
+        fn: async () => {
+          const commitResult = await initRepoAndPush({
+            dir: getRepoSourceDirectory(
+              ctx.workspacePath,
+              ctx.input.sourcePath,
+            ),
+            remoteUrl,
+            auth,
+            defaultBranch,
+            logger: ctx.logger,
+            commitMessage:
+              gitCommitMessage ||
+              config.getOptionalString('scaffolder.defaultCommitMessage'),
+            gitAuthorInfo,
+            signingKey: signCommit ? signingKey : undefined,
+          });
+          return commitResult?.commitHash;
+        },
       });
 
-      ctx.output('commitHash', commitResult?.commitHash);
+      ctx.output('commitHash', commitHash);
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },

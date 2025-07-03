@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  PluginCacheManager,
-  loggerToWinstonLogger,
-} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   DocsBuildStrategy,
@@ -32,7 +28,6 @@ import { CachedEntityLoader } from './CachedEntityLoader';
 import { createEventStream, createRouter, RouterOptions } from './router';
 import { TechDocsCache } from '../cache';
 import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 jest.mock('@backstage/catalog-client');
 jest.mock('@backstage/config');
@@ -111,13 +106,8 @@ describe('createRouter', () => {
     hasDocsBeenGenerated: jest.fn(),
     publish: jest.fn(),
   };
-  const discovery: jest.Mocked<DiscoveryService> = {
-    getBaseUrl: jest.fn(),
-    getExternalBaseUrl: jest.fn(),
-  };
-  const cache: jest.Mocked<PluginCacheManager> = {
-    getClient: jest.fn(),
-  };
+  const discovery = mockServices.discovery.mock();
+
   const docsBuildStrategy: jest.Mocked<DocsBuildStrategy> = {
     shouldBuild: jest.fn(),
   };
@@ -126,18 +116,22 @@ describe('createRouter', () => {
     generators,
     publisher,
     config: new ConfigReader({}),
-    logger: loggerToWinstonLogger(mockServices.logger.mock()),
+    logger: mockServices.logger.mock(),
     discovery,
-    cache,
+    cache: mockServices.cache.mock(),
     docsBuildStrategy,
+    auth: mockServices.auth(),
+    httpAuth: mockServices.httpAuth(),
   };
   const recommendedOptions = {
     publisher,
     config: new ConfigReader({}),
-    logger: loggerToWinstonLogger(mockServices.logger.mock()),
+    logger: mockServices.logger.mock(),
     discovery,
-    cache,
+    cache: mockServices.cache.mock(),
     docsBuildStrategy,
+    auth: mockServices.auth(),
+    httpAuth: mockServices.httpAuth(),
   };
 
   beforeEach(() => {

@@ -2,7 +2,6 @@
 id: migrating
 title: Migrating Apps
 sidebar_label: Migration Guide
-# prettier-ignore
 description: How to migrate existing apps to the new frontend system
 ---
 
@@ -12,7 +11,13 @@ This section describes how to migrate an existing Backstage app package to use t
 
 ## Switching out `createApp`
 
-The first step in migrating an app is to switch out the `createApp` function for the new one from `@backstage/frontend-api-app`:
+To start we'll need to add the new `@backstage/frontend-defaults` package:
+
+```bash
+yarn --cwd packages/app add @backstage/frontend-defaults
+```
+
+The next step in migrating an app is to switch out the `createApp` function for the new one from `@backstage/frontend-defaults`:
 
 ```tsx title="in packages/app/src/App.tsx"
 // highlight-remove-next-line
@@ -27,7 +32,7 @@ Let's start by addressing the change to `app.createRoot(...)`, which no longer a
 
 Given that the app element tree is most of what builds up the app, it's likely also going to be the majority of the migration effort. In order to make the migration as smooth as possible we have provided a helper that lets you convert an existing app element tree into plugins that you can install in a new app. This in turn allows for a gradual migration of individual plugins, rather than needing to migrate the entire app structure at once.
 
-The helper is called `convertLegacyApp` and is exported from the `@backstage/core-compat-api` package, which you will need to add as a dependency to your app package:
+The helper is called `convertLegacyApp` and is exported from the `@backstage/core-compat-api` package. We will also be using the `convertLegacyAppOptions` helper that lets us re-use the existing app options, also exported from the same package. You will need to add it as a dependency to your app package:
 
 ```bash
 yarn --cwd packages/app add @backstage/core-compat-api
@@ -54,9 +59,14 @@ export default app.createRoot(
 Migrate it to the following:
 
 ```tsx title="in packages/app/src/App.tsx"
+import {
+  convertLegacyApp,
+  convertLegacyAppOptions,
+} from '@backstage/core-compat-api';
+
 const legacyFeatures = convertLegacyApp(
   <>
-    <AlertDisplay transientTimeoutMs={2500} />
+    <AlertDisplay />
     <OAuthRequestDialog />
     <AppRouter>
       <Root>{routes}</Root>
@@ -64,9 +74,12 @@ const legacyFeatures = convertLegacyApp(
   </>,
 );
 
+const optionsModule = convertLegacyAppOptions({
+  /* other options such as apis, plugins, components, and themes */
+});
+
 const app = createApp({
-  /* other options */
-  features: [...legacyFeatures],
+  features: [optionsModule, ...legacyFeatures],
 });
 
 export default app.createRoot();
@@ -78,7 +91,6 @@ There is one more detail that we need to deal with before moving on. The `app.cr
 
 ```tsx title="in packages/app/src/index.tsx"
 import '@backstage/cli/asset-types';
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 // highlight-remove-next-line
 import App from './App';
@@ -91,6 +103,44 @@ ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
 ReactDOM.createRoot(document.getElementById('root')!).render(app);
 ```
 
+You'll also need to make similar changes to your `App.test.tsx` file as well:
+
+```tsx
+import { render, waitFor } from '@testing-library/react';
+// highlight-remove-next-line
+import App from './App';
+// highlight-add-next-line
+import app from './App';
+
+describe('App', () => {
+  it('should render', async () => {
+    process.env = {
+      NODE_ENV: 'test',
+      APP_CONFIG: [
+        {
+          data: {
+            app: { title: 'Test' },
+            backend: { baseUrl: 'http://localhost:7007' },
+          },
+          context: 'test',
+        },
+      ] as any,
+    };
+
+    // highlight-remove-next-line
+    const rendered = render(<App />);
+    // highlight-add-next-line
+    const rendered = render(app);
+
+    await waitFor(() => {
+      expect(rendered.baseElement).toBeInTheDocument();
+    });
+  });
+});
+```
+
+Then you'll want to follow the section on [migrating `bindRoutes`](#bindroutes).
+
 At this point the contents of your app should be past the initial migration stage, and we can move on to migrating any remaining options that you may have passed to `createApp`.
 
 ## Migrating `createApp` Options
@@ -99,7 +149,17 @@ Many of the `createApp` options have been migrated to use extensions instead. Ea
 
 For example, assuming you have a `lightTheme` extension that you want to add to your app, you can use the following:
 
+First we add the `@backstage/frontend-plugin-api` package
+
+```bash
+yarn --cwd packages/app add @backstage/frontend-plugin-api
+```
+
+Then we can use it like this:
+
 ```ts
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+
 const app = createApp({
   features: [
     // highlight-add-start
@@ -135,6 +195,8 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```ts
+import { ApiBlueprint } from '@backstage/frontend-plugin-api';
+
 const scmIntegrationsApi = ApiBlueprint.make({
   name: 'scm-integrations',
   params: {
@@ -147,9 +209,7 @@ const scmIntegrationsApi = ApiBlueprint.make({
 });
 ```
 
-### `icons`
-
-Icons are currently installed through the usual options to `createApp`, but will be switched to use extensions in the future.
+You would then add `scmIntegrationsApi` as an `extension` like you did with `lightTheme` in the [Migrating `createApp` Options](#migrating-createapp-options) section.
 
 ### `plugins`
 
@@ -185,7 +245,8 @@ Plugins don't even have to be imported manually after installing their package i
 ```yaml title="in app-config.yaml"
 app:
   # Enabling plugin and override features discovery
-  experimental: 'all'
+  experimental:
+    packages: all # ✨
 ```
 
 ### `featureFlags`
@@ -211,13 +272,17 @@ createApp({
 Can be converted to the following plugin configuration:
 
 ```tsx
+import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+
 createFrontendPlugin({
-  id: 'tech-radar',
+  pluginId: 'tech-radar',
   // ...
   featureFlags: [{ name: 'tech-radar' }],
   // ...
 });
 ```
+
+This would get added to the `features` array as part of your `createApp` options.
 
 ### `components`
 
@@ -250,6 +315,8 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
+import { SignInPageBlueprint } from '@backstage/frontend-plugin-api';
+
 const signInPage = SignInPageBlueprint.make({
   params: {
     loader: async () => props =>
@@ -268,6 +335,8 @@ const signInPage = SignInPageBlueprint.make({
 });
 ```
 
+You would then add `signInPage` as an `extension` like you did with `lightTheme` in the [Migrating `createApp` Options](#migrating-createapp-options) section.
+
 ### `themes`
 
 Themes are now installed as extensions, created using `ThemeBlueprint`.
@@ -278,7 +347,7 @@ For example, the following theme configuration:
 const app = createApp({
   themes: [
     {
-      id: 'light',
+      id: 'custom-light',
       title: 'Light',
       variant: 'light',
       Provider: ({ children }) => (
@@ -294,27 +363,33 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
-const lightTheme = ThemeBlueprint.make({
-  name: 'light',
+import { ThemeBlueprint } from '@backstage/frontend-plugin-api';
+
+const customLightThemeExtension = ThemeBlueprint.make({
+  name: 'custom-light',
   params: {
     theme: {
-      id: 'light',
+      id: 'custom-light',
       title: 'Light Theme',
       variant: 'light',
       icon: <LightIcon />,
       Provider: ({ children }) => (
-        <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
+        <UnifiedThemeProvider theme={customLightTheme} children={children} />
       ),
     },
   },
 });
 ```
 
+You would then add `customLightThemeExtension` as an `extension` like you did with `lightTheme` in the [Migrating `createApp` Options](#migrating-createapp-options) section.
+
 ### `configLoader`
 
 The config loader API has been slightly changed. Rather than returning a promise for an array of `AppConfig` objects, it should now return the `ConfigApi` directly.
 
 ```ts
+import { ConfigReader } from '@backstage/core-app-api';
+
 const app = createApp({
   async configLoader() {
     const appConfigs = await loadAppConfigs();
@@ -396,7 +471,13 @@ createApp({
 Can be converted to the following extension:
 
 ```tsx
-TranslationBlueprint.make({
+import { catalogTranslationRef } from '@backstage/plugin-catalog/alpha';
+import {
+  createTranslationMessages,
+  TranslationBlueprint,
+} from '@backstage/frontend-plugin-api';
+
+const catalogTranslations = TranslationBlueprint.make({
   name: 'catalog-overrides',
   params: {
     resource: createTranslationMessages({
@@ -406,6 +487,8 @@ TranslationBlueprint.make({
   },
 });
 ```
+
+You would then add `catalogTranslations` as an `extension` like you did with `lightTheme` in the [Migrating `createApp` Options](#migrating-createapp-options) section.
 
 ## Gradual Migration
 
@@ -418,7 +501,7 @@ First off we'll want to trim away any top-level elements in the app so that only
 ```tsx title="in packages/app/src/App.tsx"
 const legacyFeatures = convertLegacyApp(
   <>
-    <AlertDisplay transientTimeoutMs={2500} />
+    <AlertDisplay />
     <OAuthRequestDialog />
     <AppRouter>
       <Root>{routes}</Root>
@@ -492,7 +575,84 @@ Continue this process for each of your legacy routes until you have migrated all
 
 ### Entity Pages
 
-The entity pages are typically defined in `packages/app/src/components/catalog` and rendered as a child of the `/catalog/:namespace/:kind/:name` route. The entity pages are typically quite large and bringing in content from quite a lot of different plugins. At the moment we do not provide a way to gradually migrate entity pages to the new system, although that is planned as a future improvement. This means that the entire entity page and all of its plugins need to be migrated at once, including any other usages of those plugins.
+The entity pages are typically defined in `packages/app/src/components/catalog` and rendered as a child of the `/catalog/:namespace/:kind/:name` route. The entity pages are typically quite large and bringing in content from quite a lot of different plugins. To help gradually migrate entity pages we provide the `entityPage` option in the `convertLegacyApp` helper. This option lets you pass in an entity page app element tree that will be converted to extensions that are added to the features returned from `convertLegacyApp`.
+
+To start the gradual migration of entity pages, add your `entityPages` to the `convertLegacyApp` call:
+
+```tsx title="in packages/app/src/App.tsx"
+/* highlight-remove-next-line */
+const legacyFeatures = convertLegacyApp(routes);
+/* highlight-add-next-line */
+const legacyFeatures = convertLegacyApp(routes, { entityPage });
+```
+
+Next, you will need to fully migrate the catalog plugin itself. This is because only a single version of a plugin can be installed in the app at a time, so in order to start using the new version of the catalog plugin you need to remove all usage of the old one. This includes both the routes and entity pages. You will need to keep the structural helpers for the entity pages, such as `EntityLayout` and `EntitySwitch`, but remove any extensions like the `<CatalogIndexPage/>` and entity cards and content like `<EntityAboutCard/>` and `<EntityOrphanWarning/>`.
+
+Remove the following routes:
+
+```tsx title="in packages/app/src/App.tsx"
+const routes = (
+  <FlatRoutes>
+    ...
+    {/* highlight-remove-start */}
+    <Route path="/catalog" element={<CatalogIndexPage />} />
+    <Route
+      path="/catalog/:namespace/:kind/:name"
+      element={<CatalogEntityPage />}
+    >
+      {entityPage}
+    </Route>
+    {/* highlight-remove-end */}
+    ...
+  </FlatRoutes>
+);
+```
+
+And explicitly install the catalog plugin before the converted legacy features:
+
+```tsx title="in packages/app/src/App.tsx"
+/* highlight-add-next-line */
+import { default as catalogPlugin } from '@backstage/plugin-catalog/alpha';
+
+const app = createApp({
+  /* highlight-remove-next-line */
+  features: [optionsModule, ...legacyFeatures],
+  /* highlight-add-next-line */
+  features: [catalogPlugin, optionsModule, ...legacyFeatures],
+});
+```
+
+If you are not using the default `<CatalogIndexPage />` you can install your custom catalog page as an override for now instead, and fully migrate it to the new system later.
+
+```tsx title="in packages/app/src/App.tsx"
+/* highlight-remove-start */
+const catalogPluginOverride = catalogPlugin.withOverrides({
+  extensions: [
+    catalogPlugin.getExtension('page:catalog').override({
+      params: {
+        loader: async () => (
+          <CatalogIndexPage
+            pagination={{ mode: 'offset', limit: 20 }}
+            filters={<>{/* ... */}</>}
+          />
+        ),
+      },
+    }),
+  ],
+});
+/* highlight-remove-end */
+
+const app = createApp({
+  /* highlight-remove-next-line */
+  features: [catalogPlugin, optionsModule, ...legacyFeatures],
+  /* highlight-add-next-line */
+  features: [catalogPluginOverride, optionsModule, ...legacyFeatures],
+});
+```
+
+At this point you should be able to run the app and see that you're not using the new version of the catalog plugin. If you navigate to the entity pages you will likely see a lot of duplicate content at the bottom of the page. These are the duplicates of the entity cards provided by the catalog plugin itself that we mentioned earlier that you need to remove. Clean up the entity pages by removing cards and content from the catalog plugin such as `<EntityAboutCard/>` and `<EntityOrphanWarning/>`.
+
+Once the cleanup is complete you should be left with clean entity pages that are built using a mix of the old and new frontend system. From this point you can continue to gradually migrate plugins that provide content for the entity pages, until all plugins have been fully moved to the new system and the `entityPage` option can be removed.
 
 ### Sidebar
 

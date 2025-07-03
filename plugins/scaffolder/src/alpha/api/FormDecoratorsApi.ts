@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
+import {
+  ApiBlueprint,
+  createApiFactory,
+  createExtensionInput,
+} from '@backstage/frontend-plugin-api';
 import { ScaffolderFormDecoratorsApi } from './types';
 import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
+import { formDecoratorsApiRef } from './ref';
+import { FormDecoratorBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
 
 /** @alpha */
 export class DefaultScaffolderFormDecoratorsApi
@@ -37,3 +44,29 @@ export class DefaultScaffolderFormDecoratorsApi
     return this.options.decorators;
   }
 }
+
+/** @alpha */
+export const formDecoratorsApi = ApiBlueprint.makeWithOverrides({
+  name: 'form-decorators',
+  inputs: {
+    formDecorators: createExtensionInput([
+      FormDecoratorBlueprint.dataRefs.formDecoratorLoader,
+    ]),
+  },
+  factory(originalFactory, { inputs }) {
+    const formDecorators = inputs.formDecorators.map(e =>
+      e.get(FormDecoratorBlueprint.dataRefs.formDecoratorLoader),
+    );
+
+    return originalFactory({
+      factory: createApiFactory({
+        api: formDecoratorsApiRef,
+        deps: {},
+        factory: () =>
+          DefaultScaffolderFormDecoratorsApi.create({
+            decorators: formDecorators,
+          }),
+      }),
+    });
+  },
+});

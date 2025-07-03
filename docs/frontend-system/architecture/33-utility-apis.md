@@ -2,11 +2,12 @@
 id: utility-apis
 title: Utility APIs
 sidebar_label: Utility APIs
-# prettier-ignore
 description: Utility APIs
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
+:::note Note
+The new frontend system is in alpha and is only supported by a small number of plugins.
+:::
 
 ## Overview
 

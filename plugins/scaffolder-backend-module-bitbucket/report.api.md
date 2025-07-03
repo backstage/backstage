@@ -7,7 +7,6 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
 import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 import { Config } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
@@ -22,10 +21,56 @@ export const createBitbucketPipelinesRunAction: (options: {
   {
     workspace: string;
     repo_slug: string;
-    body?: object | undefined;
+    body?:
+      | {
+          target?:
+            | {
+                type?: string | undefined;
+                source?: string | undefined;
+                selector?:
+                  | {
+                      type: string;
+                      pattern: string;
+                    }
+                  | undefined;
+                pull_request?:
+                  | {
+                      id: string;
+                    }
+                  | undefined;
+                commit?:
+                  | {
+                      type: string;
+                      hash: string;
+                    }
+                  | undefined;
+                destination?: string | undefined;
+                ref_name?: string | undefined;
+                ref_type?: string | undefined;
+                destination_commit?:
+                  | {
+                      hash: string;
+                    }
+                  | undefined;
+              }
+            | undefined;
+          variables?:
+            | {
+                key: string;
+                value: string;
+                secured: boolean;
+              }[]
+            | undefined;
+        }
+      | undefined;
     token?: string | undefined;
   },
-  JsonObject
+  {
+    buildNumber?: number | undefined;
+    repoUrl?: string | undefined;
+    pipelinesUrl?: string | undefined;
+  },
+  'v2'
 >;
 
 // @public @deprecated
@@ -36,16 +81,22 @@ export function createPublishBitbucketAction(options: {
   {
     repoUrl: string;
     description?: string | undefined;
-    defaultBranch?: string | undefined;
     repoVisibility?: 'private' | 'public' | undefined;
+    defaultBranch?: string | undefined;
     sourcePath?: string | undefined;
     enableLFS?: boolean | undefined;
     token?: string | undefined;
     gitCommitMessage?: string | undefined;
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
+    signCommit?: boolean | undefined;
   },
-  JsonObject
+  {
+    remoteUrl?: string | undefined;
+    repoContentsUrl?: string | undefined;
+    commitHash?: string | undefined;
+  },
+  'v2'
 >;
 
 // @public @deprecated (undocumented)

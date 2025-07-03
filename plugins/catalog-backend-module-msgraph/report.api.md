@@ -11,18 +11,14 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { GroupEntity } from '@backstage/catalog-model';
-import { GroupTransformer as GroupTransformer_2 } from '@backstage/plugin-catalog-backend-module-msgraph';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
-import { OrganizationTransformer as OrganizationTransformer_2 } from '@backstage/plugin-catalog-backend-module-msgraph';
-import { ProviderConfigTransformer as ProviderConfigTransformer_2 } from '@backstage/plugin-catalog-backend-module-msgraph';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { TokenCredential } from '@azure/identity';
 import { UserEntity } from '@backstage/catalog-model';
-import { UserTransformer as UserTransformer_2 } from '@backstage/plugin-catalog-backend-module-msgraph';
 
 // @public
 const catalogModuleMicrosoftGraphOrgEntityProvider: BackendFeature;
@@ -92,6 +88,7 @@ export class MicrosoftGraphClient {
   getGroups(
     query?: ODataQuery,
     queryMode?: 'basic' | 'advanced',
+    path?: string,
   ): AsyncIterable<MicrosoftGraph.Group>;
   getGroupUserMembers(
     groupId: string,
@@ -108,6 +105,7 @@ export class MicrosoftGraphClient {
   getUsers(
     query?: ODataQuery,
     queryMode?: 'basic' | 'advanced',
+    path?: string,
   ): AsyncIterable<MicrosoftGraph.User>;
   requestApi(
     path: string,
@@ -182,20 +180,20 @@ export const microsoftGraphOrgEntityProviderTransformExtensionPoint: ExtensionPo
 // @public
 export interface MicrosoftGraphOrgEntityProviderTransformsExtensionPoint {
   setGroupTransformer(
-    transformer: GroupTransformer_2 | Record<string, GroupTransformer_2>,
+    transformer: GroupTransformer | Record<string, GroupTransformer>,
   ): void;
   setOrganizationTransformer(
     transformer:
-      | OrganizationTransformer_2
-      | Record<string, OrganizationTransformer_2>,
+      | OrganizationTransformer
+      | Record<string, OrganizationTransformer>,
   ): void;
   setProviderConfigTransformer(
     transformer:
-      | ProviderConfigTransformer_2
-      | Record<string, ProviderConfigTransformer_2>,
+      | ProviderConfigTransformer
+      | Record<string, ProviderConfigTransformer>,
   ): void;
   setUserTransformer(
-    transformer: UserTransformer_2 | Record<string, UserTransformer_2>,
+    transformer: UserTransformer | Record<string, UserTransformer>,
   ): void;
 }
 
@@ -239,12 +237,15 @@ export type MicrosoftGraphProviderConfig = {
   userFilter?: string;
   userSelect?: string[];
   userExpand?: string;
+  userPath?: string;
   userGroupMemberFilter?: string;
   userGroupMemberSearch?: string;
+  userGroupMemberPath?: string;
   groupExpand?: string;
   groupFilter?: string;
   groupSearch?: string;
   groupSelect?: string[];
+  groupPath?: string;
   groupIncludeSubGroups?: boolean;
   queryMode?: 'basic' | 'advanced';
   loadUserPhotos?: boolean;
@@ -287,13 +288,16 @@ export function readMicrosoftGraphOrg(
     userExpand?: string;
     userFilter?: string;
     userSelect?: string[];
+    userPath?: string;
     loadUserPhotos?: boolean;
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
+    userGroupMemberPath?: string;
     groupExpand?: string;
     groupSearch?: string;
     groupFilter?: string;
     groupSelect?: string[];
+    groupPath?: string;
     groupIncludeSubGroups?: boolean;
     queryMode?: 'basic' | 'advanced';
     userTransformer?: UserTransformer;

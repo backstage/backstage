@@ -1,7 +1,6 @@
 ---
 id: call-existing-api
 title: Call Existing API
-# prettier-ignore
 description: Describes the various options that Backstage frontend plugins have, in communicating with service APIs that already exist
 ---
 
@@ -20,11 +19,18 @@ such as `axios`.
 
 Example:
 
-```ts
-// Inside your component
-fetch('https://api.frobsco.com/v1/list')
-  .then(response => response.json())
-  .then(payload => setFrobs(payload as Frob[]));
+```ts title="plugins/my-awesome-plugin/src/components/AwesomeUsersTable.tsx"
+import useAsync from 'react-use/esm/useAsync';
+
+function AwesomeUsersTable() {
+  const { value, loading, error } = useAsync(async () => {
+    const response = await fetch('https://api.frobsco.com/v1/list');
+    return response.json();
+  }, []);
+
+
+  ...
+}
 ```
 
 Internally at Spotify, this has not been a very common choice. Third party APIs
@@ -76,12 +82,26 @@ proxy:
   '/frobs': http://api.frobsco.com/v1
 ```
 
-```ts
-// Inside your component
-const backendUrl = config.getString('backend.baseUrl');
-fetch(`${backendUrl}/api/proxy/frobs/list`)
-  .then(response => response.json())
-  .then(payload => setFrobs(payload as Frob[]));
+```tsx title="plugins/frobs-aggregator/src/components/FrobsAggregator.tsx"
+import {
+  useApi,
+  discoveryApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
+import useAsync from 'react-use/esm/useAsync';
+
+function FrobsAggregator() {
+  const fetchApi = useApi(fetchApiRef);
+  const discoveryApi = useApi(discoveryApiRef);
+
+  const { value, loading, error } = useAsync(async () => {
+    const baseUrl = await discoveryApi.getBaseUrl('proxy');
+    const response = await fetchApi.fetch(`${baseUrl}/frobs`);
+    return response.json();
+  }, [fetchApi, discoveryApi]);
+
+  // ...
+}
 ```
 
 The proxy is powered by the `http-proxy-middleware` package. See
@@ -112,28 +132,55 @@ system. The above mentioned proxy is actually one such plugin. If you were in
 need of a more involved integration than just direct access to the FrobsCo API,
 or if you needed to hold state, you may want to make such a plugin.
 
-Example:
+For example, assuming you have created a new backend plugin called
+`frobs-aggregator`, you can add a new route like this:
 
-```ts
-// Inside your component
-const backendUrl = config.getString('backend.baseUrl');
-fetch(`${backendUrl}/frobs-aggregator/summary`)
-  .then(response => response.json())
-  .then(payload => setSummary(payload as FrobSummary));
+```tsx title="plugins/frobs-aggregator-backend/src/router.ts"
+import Router from 'express-promise-router';
+
+export async function createRouter() {
+  const router = Router();
+  router.use(express.json());
+
+  /* highlight-add-start */
+  router.get('/summary', async (req, res) => {
+    const agg = await Promise.all([
+      fetch('https://api.frobsco.com/v1/list'),
+      fetch('http://flerps.partnercompany.com:8080/flerp-batch'),
+      database.currentThunk(),
+    ]).then(async ([frobs, flerps, thunk]) => {
+      return computeAggregate(await frobs.json(), await flerps.json(), thunk);
+    });
+    res.status(200).json(agg);
+  });
+  /* highlight-add-end */
+}
 ```
 
-```ts
-// Inside a new frobs-aggregator backend plugin
-router.use('/summary', async (req, res) => {
-  const agg = await Promise.all([
-    fetch('https://api.frobsco.com/v1/list'),
-    fetch('http://flerps.partnercompany.com:8080/flerp-batch'),
-    database.currentThunk(),
-  ]).then(async ([frobs, flerps, thunk]) => {
-    return computeAggregate(await frobs.json(), await flerps.json(), thunk);
-  });
-  res.status(200).json(agg);
-});
+Then you can fetch the data from your frontend plugin like this:
+
+```tsx title="plugins/frobs-aggregator/src/components/FrobsAggregator.tsx"
+import {
+  useApi,
+  discoveryApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
+import useAsync from 'react-use/esm/useAsync';
+
+function FrobsAggregator() {
+  const fetchApi = useApi(fetchApiRef);
+  const discoveryApi = useApi(discoveryApiRef);
+
+  const { value, loading, error } = useAsync(async () => {
+    // highlight-next-line
+    const baseUrl = await discoveryApi.getBaseUrl('frobs-aggregator');
+    // highlight-next-line
+    const response = await fetchApi.fetch(`${baseUrl}/summary`);
+    return response.json();
+  }, [fetchApi, discoveryApi]);
+
+  // ...
+}
 ```
 
 For a more detailed example, see
@@ -166,8 +213,3 @@ There is a balance to strike regarding when to make an entirely separate backend
 for a purpose, and when to make a Backstage backend plugin that adapts something
 that already exists. General advice is not easy to give, but contact us on
 Discord if you have any questions, and we may be able to offer guidance.
-
-## Extending the GraphQL Model
-
-The extensible GraphQL backend layer is not built yet. This section will be
-expanded when that happens. Stay tuned!

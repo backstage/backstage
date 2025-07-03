@@ -28,7 +28,7 @@ import { Knex } from 'knex';
 import { MysqlConnector } from './connectors/mysql';
 import { PgConnector } from './connectors/postgres';
 import { Sqlite3Connector } from './connectors/sqlite3';
-import { Connector, PluginDatabaseManager } from './types';
+import { Connector } from './types';
 
 /**
  * Provides a config lookup path for a plugin's config block.
@@ -72,7 +72,7 @@ export class DatabaseManagerImpl {
   }
 
   /**
-   * Generates a PluginDatabaseManager for consumption by plugins.
+   * Generates a DatabaseService for consumption by plugins.
    *
    * @param pluginId - The plugin that the database manager should be created for. Plugin names
    * should be unique as they are used to look up database config overrides under
@@ -84,7 +84,7 @@ export class DatabaseManagerImpl {
       logger: LoggerService;
       lifecycle: LifecycleService;
     },
-  ): PluginDatabaseManager {
+  ): DatabaseService {
     const client = this.getClientType(pluginId).client;
     const connector = this.connectors[client];
     if (!connector) {
@@ -265,7 +265,7 @@ export class DatabaseManager {
   private constructor(private readonly impl: DatabaseManagerImpl) {}
 
   /**
-   * Generates a PluginDatabaseManager for consumption by plugins.
+   * Generates a DatabaseService for consumption by plugins.
    *
    * @param pluginId - The plugin that the database manager should be created for. Plugin names
    * should be unique as they are used to look up database config overrides under
@@ -277,7 +277,7 @@ export class DatabaseManager {
       logger: LoggerService;
       lifecycle: LifecycleService;
     },
-  ): PluginDatabaseManager {
+  ): DatabaseService {
     return this.impl.forPlugin(pluginId, deps);
   }
 }

@@ -193,6 +193,55 @@ describe('CookieScopeManager', () => {
     );
   });
 
+  it('should signal whether persisted scopes have already been granted when refreshing', async () => {
+    const getGrantedScopes = jest.fn();
+    const manager = CookieScopeManager.create({
+      authenticator: {
+        scopes: {
+          persist: true,
+        } as OAuthAuthenticatorScopeOptions,
+      } as OAuthAuthenticator<any, any>,
+      cookieManager: {
+        getGrantedScopes,
+      } as unknown as OAuthCookieManager,
+    });
+
+    getGrantedScopes.mockReturnValue('x y');
+    await expect(manager.refresh(makeReq('x,y'))).resolves.toEqual({
+      scope: 'x y',
+      scopeAlreadyGranted: true,
+      commit: expect.any(Function),
+    });
+
+    getGrantedScopes.mockReturnValueOnce('x y');
+    await expect(manager.refresh(makeReq('x'))).resolves.toEqual({
+      scope: 'x y',
+      scopeAlreadyGranted: true,
+      commit: expect.any(Function),
+    });
+
+    getGrantedScopes.mockReturnValueOnce('x y');
+    await expect(manager.refresh(makeReq('x,y,z'))).resolves.toEqual({
+      scope: 'x y z',
+      scopeAlreadyGranted: false,
+      commit: expect.any(Function),
+    });
+
+    getGrantedScopes.mockReturnValueOnce('');
+    await expect(manager.refresh(makeReq('x,y'))).resolves.toEqual({
+      scope: 'x y',
+      scopeAlreadyGranted: false,
+      commit: expect.any(Function),
+    });
+
+    getGrantedScopes.mockReturnValueOnce(undefined);
+    await expect(manager.refresh(makeReq('x,y'))).resolves.toEqual({
+      scope: 'x y',
+      scopeAlreadyGranted: false,
+      commit: expect.any(Function),
+    });
+  });
+
   it('should use custom scope transform', async () => {
     const manager = CookieScopeManager.create({
       additionalScopes: ['b'],

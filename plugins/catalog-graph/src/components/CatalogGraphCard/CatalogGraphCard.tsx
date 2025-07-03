@@ -28,7 +28,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import qs from 'qs';
-import React, { MouseEvent, ReactNode, useCallback } from 'react';
+import { MouseEvent, ReactNode, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { catalogGraphRouteRef } from '../../routes';
 import {
@@ -36,8 +36,10 @@ import {
   Direction,
   EntityNode,
   EntityRelationsGraph,
+  EntityRelationsGraphProps,
 } from '../EntityRelationsGraph';
-import { EntityRelationsGraphProps } from '../EntityRelationsGraph';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { catalogGraphTranslationRef } from '../../translation';
 
 /** @public */
 export type CatalogGraphCardClassKey = 'card' | 'graph';
@@ -66,6 +68,7 @@ export const CatalogGraphCard = (
     action?: ReactNode;
   },
 ) => {
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
   const {
     variant = 'gridItem',
     relationPairs = ALL_RELATION_PAIRS,
@@ -81,12 +84,12 @@ export const CatalogGraphCard = (
     action,
     rootEntityNames,
     onNodeClick,
-    title = 'Relations',
+    title = t('catalogGraphCard.title'),
     zoom = 'enable-on-click',
   } = props;
 
   const { entity } = useEntity();
-  const entityName = getCompoundEntityRef(entity);
+  const entityName = useMemo(() => getCompoundEntityRef(entity), [entity]);
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const catalogGraphRoute = useRouteRef(catalogGraphRouteRef);
   const navigate = useNavigate();
@@ -133,7 +136,7 @@ export const CatalogGraphCard = (
       variant={variant}
       noPadding
       deepLink={{
-        title: 'View graph',
+        title: t('catalogGraphCard.deepLinkTitle'),
         link: catalogGraphUrl,
       }}
     >

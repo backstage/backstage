@@ -30,7 +30,7 @@ title: Adding Custom Plugin to Existing Monorepo App
 # The Skeleton Plugin
 
 1. Start by using the built-in creator. From the terminal and root of your
-   project run: `yarn new --select plugin`
+   project run: `yarn new` and select `frontend-plugin`.
 1. Enter a plugin ID. I used `github-playground`
 1. When the process finishes, let's start the backend:
    `yarn --cwd packages/backend start`
@@ -134,7 +134,6 @@ changes, let's start by wiping this component clean.
 1. Replace everything in the file with the following:
 
 ```tsx
-import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import Alert from '@material-ui/lab/Alert';
 import { Table, TableColumn, Progress } from '@backstage/core-components';

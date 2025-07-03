@@ -18,7 +18,6 @@ import { renderHook } from '@testing-library/react';
 import { useAnalytics } from './useAnalytics';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
-import React from 'react';
 
 describe('useAnalytics', () => {
   it('returns tracker with no implementation defined', () => {

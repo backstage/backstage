@@ -1,5 +1,462 @@
 # @backstage/plugin-kubernetes
 
+## 0.12.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/plugin-permission-react@0.4.36-next.0
+  - @backstage/plugin-kubernetes-common@0.9.6-next.0
+  - @backstage/plugin-kubernetes-react@0.5.9-next.1
+  - @backstage/core-compat-api@0.4.4-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
+## 0.12.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/plugin-kubernetes-common@0.9.5
+  - @backstage/plugin-kubernetes-react@0.5.9-next.0
+  - @backstage/plugin-permission-react@0.4.35
+
+## 0.12.8
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- 3ea5d1b: chore(deps): Update deprecated xterm to new package under @xterm
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/plugin-kubernetes-react@0.5.8
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3
+  - @backstage/plugin-kubernetes-common@0.9.5
+  - @backstage/plugin-permission-react@0.4.35
+
+## 0.12.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/plugin-kubernetes-react@0.5.8-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3-next.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/plugin-kubernetes-common@0.9.5
+  - @backstage/plugin-permission-react@0.4.34
+
+## 0.12.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.1-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.3-next.1
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/plugin-kubernetes-common@0.9.5
+  - @backstage/plugin-kubernetes-react@0.5.7
+  - @backstage/plugin-permission-react@0.4.34
+
+## 0.12.8-next.0
+
+### Patch Changes
+
+- 18c64e9: Added the `info.packageJson` option to the plugin instance for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/core-compat-api@0.4.3-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.0
+
+## 0.12.7
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 216c6b2: Updated dependency `@kubernetes/client-node` to `1.1.2`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/plugin-kubernetes-react@0.5.7
+  - @backstage/core-components@0.17.2
+  - @backstage/catalog-model@1.7.4
+  - @backstage/core-compat-api@0.4.2
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/plugin-kubernetes-common@0.9.5
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/plugin-permission-react@0.4.34
+
+## 0.12.7-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.3
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.3
+  - @backstage/plugin-kubernetes-react@0.5.7-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/plugin-kubernetes-common@0.9.5-next.0
+  - @backstage/plugin-permission-react@0.4.34-next.1
+
+## 0.12.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/core-compat-api@0.4.2-next.2
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/plugin-catalog-react@1.18.0-next.2
+  - @backstage/plugin-kubernetes-react@0.5.7-next.1
+  - @backstage/plugin-permission-react@0.4.34-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-kubernetes-common@0.9.5-next.0
+
+## 0.12.7-next.1
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 216c6b2: Updated dependency `@kubernetes/client-node` to `1.1.2`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/plugin-kubernetes-react@0.5.7-next.0
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/core-compat-api@0.4.2-next.1
+  - @backstage/plugin-catalog-react@1.18.0-next.1
+  - @backstage/plugin-kubernetes-common@0.9.5-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/plugin-permission-react@0.4.34-next.0
+
+## 0.12.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.4.2-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/plugin-kubernetes-common@0.9.4
+  - @backstage/plugin-kubernetes-react@0.5.6
+  - @backstage/plugin-permission-react@0.4.33
+
+## 0.12.6
+
+### Patch Changes
+
+- b877e46: Added New Frontend System filter for the Kubernetes tab to use `isKubernetesAvailable` to control its visibility
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.17.0
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/core-compat-api@0.4.1
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/plugin-kubernetes-react@0.5.6
+  - @backstage/plugin-permission-react@0.4.33
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-kubernetes-common@0.9.4
+
+## 0.12.6-next.2
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/core-compat-api@0.4.1-next.2
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/plugin-kubernetes-react@0.5.6-next.1
+  - @backstage/plugin-permission-react@0.4.33-next.0
+  - @backstage/plugin-catalog-react@1.17.0-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-kubernetes-common@0.9.4
+
+## 0.12.6-next.1
+
+### Patch Changes
+
+- b877e46: Added New Frontend System filter for the Kubernetes tab to use `isKubernetesAvailable` to control its visibility
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/plugin-catalog-react@1.16.1-next.1
+  - @backstage/plugin-kubernetes-react@0.5.6-next.0
+  - @backstage/core-compat-api@0.4.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/plugin-kubernetes-common@0.9.4
+  - @backstage/plugin-permission-react@0.4.32
+
+## 0.12.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.16.1-next.0
+  - @backstage/core-compat-api@0.4.1-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-kubernetes-common@0.9.4
+  - @backstage/plugin-kubernetes-react@0.5.5
+  - @backstage/plugin-permission-react@0.4.32
+
+## 0.12.5
+
+### Patch Changes
+
+- d517d13: refactor: use `KUBERNETES_ANNOTATION` and `KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION` annotations from `kubernetes-common`
+- ba9649a: Set deployment as the default group of Kubernetes entity content. It is just an example and shouldn't cause any visual difference since entity page tabs with just one entity content appear as normal tabs.
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-kubernetes-common@0.9.4
+  - @backstage/plugin-catalog-react@1.16.0
+  - @backstage/core-compat-api@0.4.0
+  - @backstage/plugin-kubernetes-react@0.5.5
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/catalog-model@1.7.3
+
+## 0.12.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.0-next.2
+  - @backstage/plugin-catalog-react@1.16.0-next.2
+  - @backstage/core-compat-api@0.4.0-next.2
+  - @backstage/core-components@0.16.5-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-kubernetes-common@0.9.4-next.0
+  - @backstage/plugin-kubernetes-react@0.5.5-next.2
+  - @backstage/plugin-permission-react@0.4.31
+
+## 0.12.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.16.5-next.0
+  - @backstage/plugin-catalog-react@1.16.0-next.1
+  - @backstage/core-compat-api@0.3.7-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/frontend-plugin-api@0.9.6-next.1
+  - @backstage/plugin-kubernetes-common@0.9.4-next.0
+  - @backstage/plugin-kubernetes-react@0.5.5-next.1
+  - @backstage/plugin-permission-react@0.4.31
+
+## 0.12.5-next.0
+
+### Patch Changes
+
+- d517d13: refactor: use `KUBERNETES_ANNOTATION` and `KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION` annotations from `kubernetes-common`
+- ba9649a: Set deployment as the default group of Kubernetes entity content. It is just an example and shouldn't cause any visual difference since entity page tabs with just one entity content appear as normal tabs.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.4-next.0
+  - @backstage/plugin-catalog-react@1.16.0-next.0
+  - @backstage/frontend-plugin-api@0.9.6-next.0
+  - @backstage/plugin-kubernetes-react@0.5.5-next.0
+  - @backstage/core-compat-api@0.3.7-next.0
+
+## 0.12.4
+
+### Patch Changes
+
+- ca3da29: The `/clusters` endpoint is now protected by the `kubernetes.clusters.read` permission.
+  The `/services/:serviceId` endpoint is now protected by the `kubernetes.resources.read` permission.
+  The `/resources` endpoints are now protected by the `kubernetes.resources.read` permission.
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-react@0.5.4
+  - @backstage/core-components@0.16.4
+  - @backstage/plugin-kubernetes-common@0.9.3
+  - @backstage/plugin-catalog-react@1.15.2
+  - @backstage/frontend-plugin-api@0.9.5
+  - @backstage/core-compat-api@0.3.6
+  - @backstage/core-plugin-api@1.10.4
+  - @backstage/plugin-permission-react@0.4.31
+  - @backstage/catalog-model@1.7.3
+
+## 0.12.4-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.5-next.3
+  - @backstage/core-compat-api@0.3.6-next.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/plugin-catalog-react@1.15.2-next.3
+  - @backstage/plugin-kubernetes-common@0.9.3-next.1
+  - @backstage/plugin-kubernetes-react@0.5.4-next.2
+  - @backstage/plugin-permission-react@0.4.31-next.0
+
+## 0.12.4-next.2
+
+### Patch Changes
+
+- ca3da29: The `/clusters` endpoint is now protected by the `kubernetes.clusters.read` permission.
+  The `/services/:serviceId` endpoint is now protected by the `kubernetes.resources.read` permission.
+  The `/resources` endpoints are now protected by the `kubernetes.resources.read` permission.
+- Updated dependencies
+  - @backstage/core-components@0.16.4-next.1
+  - @backstage/plugin-kubernetes-common@0.9.3-next.1
+  - @backstage/plugin-catalog-react@1.15.2-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.6-next.2
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.2
+  - @backstage/plugin-kubernetes-react@0.5.4-next.2
+  - @backstage/plugin-permission-react@0.4.31-next.0
+
+## 0.12.4-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-react@0.5.4-next.1
+  - @backstage/core-components@0.16.4-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.1
+  - @backstage/core-compat-api@0.3.6-next.1
+  - @backstage/core-plugin-api@1.10.4-next.0
+  - @backstage/plugin-catalog-react@1.15.2-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-kubernetes-common@0.9.3-next.0
+
+## 0.12.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-react@0.5.4-next.0
+  - @backstage/plugin-kubernetes-common@0.9.3-next.0
+  - @backstage/frontend-plugin-api@0.9.5-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.6-next.0
+  - @backstage/core-components@0.16.3
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/plugin-catalog-react@1.15.2-next.0
+
+## 0.12.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1
+  - @backstage/frontend-plugin-api@0.9.4
+  - @backstage/core-plugin-api@1.10.3
+  - @backstage/core-components@0.16.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/core-compat-api@0.3.5
+  - @backstage/plugin-kubernetes-common@0.9.2
+  - @backstage/plugin-kubernetes-react@0.5.3
+
+## 0.12.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.9.4-next.0
+  - @backstage/core-plugin-api@1.10.3-next.0
+  - @backstage/core-compat-api@0.3.5-next.0
+  - @backstage/plugin-catalog-react@1.15.1-next.1
+  - @backstage/core-components@0.16.3-next.0
+  - @backstage/plugin-kubernetes-react@0.5.3-next.0
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/plugin-kubernetes-common@0.9.2-next.0
+
+## 0.12.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.1-next.0
+  - @backstage/core-compat-api@0.3.4
+
+## 0.12.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.15.0
+  - @backstage/core-compat-api@0.3.4
+  - @backstage/frontend-plugin-api@0.9.3
+  - @backstage/core-components@0.16.2
+  - @backstage/catalog-model@1.7.2
+  - @backstage/core-plugin-api@1.10.2
+  - @backstage/plugin-kubernetes-common@0.9.1
+  - @backstage/plugin-kubernetes-react@0.5.2
+
+## 0.12.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.3.4-next.2
+  - @backstage/plugin-catalog-react@1.14.3-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/core-components@0.16.2-next.2
+  - @backstage/core-plugin-api@1.10.2-next.0
+  - @backstage/frontend-plugin-api@0.9.3-next.2
+  - @backstage/plugin-kubernetes-common@0.9.1-next.0
+  - @backstage/plugin-kubernetes-react@0.5.2-next.2
+
+## 0.12.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.14.3-next.1
+  - @backstage/core-components@0.16.2-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/core-compat-api@0.3.4-next.1
+  - @backstage/core-plugin-api@1.10.1
+  - @backstage/frontend-plugin-api@0.9.3-next.1
+  - @backstage/plugin-kubernetes-common@0.9.0
+  - @backstage/plugin-kubernetes-react@0.5.2-next.1
+
 ## 0.12.2-next.0
 
 ### Patch Changes

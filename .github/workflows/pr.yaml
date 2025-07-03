@@ -18,12 +18,12 @@ jobs:
     if: github.repository == 'backstage/backstage' && ( github.event.pull_request || github.event.issue.pull_request )
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
         with:
           egress-policy: audit
 
       - name: PR sync
-        uses: backstage/actions/pr-sync@25145dd4117d50e1da9330e9ed2893bc6b75373e # v0.6.15
+        uses: backstage/actions/pr-sync@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN  }}
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}

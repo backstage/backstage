@@ -24,5 +24,6 @@ export * from './cache';
 export * from './database';
 export * from './msw';
 export * from './filesystem';
-export * from './next';
+export * from './services';
+export * from './wiring';
 export { mockErrorHandler } from './util';

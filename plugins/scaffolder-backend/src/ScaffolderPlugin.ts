@@ -18,17 +18,17 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
-import {
-  TaskBroker,
-  TemplateAction,
-  TemplateFilter,
-  TemplateGlobal,
-} from '@backstage/plugin-scaffolder-node';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { TaskBroker, TemplateAction } from '@backstage/plugin-scaffolder-node';
 import {
   AutocompleteHandler,
+  CreatedTemplateFilter,
+  CreatedTemplateGlobal,
+  createTemplateFilter,
+  createTemplateGlobalFunction,
+  createTemplateGlobalValue,
   scaffolderActionsExtensionPoint,
   scaffolderAutocompleteExtensionPoint,
   scaffolderTaskBrokerExtensionPoint,
@@ -46,12 +46,16 @@ import {
   createFetchTemplateAction,
   createFetchTemplateFileAction,
   createFilesystemDeleteAction,
-  createFilesystemRenameAction,
   createFilesystemReadDirAction,
+  createFilesystemRenameAction,
   createWaitAction,
 } from './scaffolder';
 import { createRouter } from './service/router';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { loggerToWinstonLogger } from './util/loggerToWinstonLogger';
+import {
+  convertFiltersToRecord,
+  convertGlobalsToRecord,
+} from './util/templating';
 
 /**
  * Scaffolder plugin
@@ -78,14 +82,32 @@ export const scaffolderPlugin = createBackendPlugin({
       },
     });
 
-    const additionalTemplateFilters: Record<string, TemplateFilter> = {};
-    const additionalTemplateGlobals: Record<string, TemplateGlobal> = {};
+    const additionalTemplateFilters: CreatedTemplateFilter<any, any>[] = [];
+    const additionalTemplateGlobals: CreatedTemplateGlobal[] = [];
+
     env.registerExtensionPoint(scaffolderTemplatingExtensionPoint, {
       addTemplateFilters(newFilters) {
-        Object.assign(additionalTemplateFilters, newFilters);
+        additionalTemplateFilters.push(
+          ...(Array.isArray(newFilters)
+            ? newFilters
+            : Object.entries(newFilters).map(([id, filter]) =>
+                createTemplateFilter({
+                  id,
+                  filter,
+                }),
+              )),
+        );
       },
       addTemplateGlobals(newGlobals) {
-        Object.assign(additionalTemplateGlobals, newGlobals);
+        additionalTemplateGlobals.push(
+          ...(Array.isArray(newGlobals)
+            ? newGlobals
+            : Object.entries(newGlobals).map(([id, global]) =>
+                typeof global === 'function'
+                  ? createTemplateGlobalFunction({ id, fn: global })
+                  : createTemplateGlobalValue({ id, value: global }),
+              )),
+        );
       },
     });
 
@@ -112,10 +134,10 @@ export const scaffolderPlugin = createBackendPlugin({
         permissions: coreServices.permissions,
         database: coreServices.database,
         auth: coreServices.auth,
-        discovery: coreServices.discovery,
         httpRouter: coreServices.httpRouter,
         httpAuth: coreServices.httpAuth,
-        catalogClient: catalogServiceRef,
+        auditor: coreServices.auditor,
+        catalog: catalogServiceRef,
         events: eventsServiceRef,
       },
       async init({
@@ -125,16 +147,24 @@ export const scaffolderPlugin = createBackendPlugin({
         reader,
         database,
         auth,
-        discovery,
         httpRouter,
         httpAuth,
-        catalogClient,
+        catalog,
         permissions,
         events,
+        auditor,
       }) {
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
 
+        const templateExtensions = {
+          additionalTemplateFilters: convertFiltersToRecord(
+            additionalTemplateFilters,
+          ),
+          additionalTemplateGlobals: convertGlobalsToRecord(
+            additionalTemplateGlobals,
+          ),
+        };
         const actions = [
           // actions provided from other modules
           ...addedActions,
@@ -151,20 +181,18 @@ export const scaffolderPlugin = createBackendPlugin({
           createFetchTemplateAction({
             integrations,
             reader,
-            additionalTemplateFilters,
-            additionalTemplateGlobals,
+            ...templateExtensions,
           }),
           createFetchTemplateFileAction({
             integrations,
             reader,
-            additionalTemplateFilters,
-            additionalTemplateGlobals,
+            ...templateExtensions,
           }),
           createDebugLogAction(),
           createWaitAction(),
           // todo(blam): maybe these should be a -catalog module?
-          createCatalogRegisterAction({ catalogClient, integrations, auth }),
-          createFetchCatalogEntityAction({ catalogClient, auth }),
+          createCatalogRegisterAction({ catalog, integrations }),
+          createFetchCatalogEntityAction({ catalog }),
           createCatalogWriteAction(),
           createFilesystemDeleteAction(),
           createFilesystemRenameAction(),
@@ -178,11 +206,10 @@ export const scaffolderPlugin = createBackendPlugin({
         );
 
         const router = await createRouter({
-          logger: log,
+          logger,
           config,
           database,
-          catalogClient,
-          reader,
+          catalog,
           lifecycle,
           actions,
           taskBroker,
@@ -190,11 +217,11 @@ export const scaffolderPlugin = createBackendPlugin({
           additionalTemplateGlobals,
           auth,
           httpAuth,
-          discovery,
           permissions,
           autocompleteHandlers,
           additionalWorkspaceProviders,
           events,
+          auditor,
         });
         httpRouter.use(router);
       },

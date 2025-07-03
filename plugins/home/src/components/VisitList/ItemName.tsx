@@ -14,20 +14,31 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { Visit } from '../../api/VisitsApi';
 import { Link } from '@backstage/core-components';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
-const useStyles = makeStyles(_theme => ({
+const useStyles = makeStyles(theme => ({
   name: {
     marginLeft: '0.8rem',
     marginRight: '0.8rem',
+    fontSize: theme.typography.body1.fontSize,
   },
 }));
 export const ItemName = ({ visit }: { visit: Visit }) => {
   const classes = useStyles();
+
+  if (visit.entityRef)
+    return (
+      <EntityRefLink
+        entityRef={visit.entityRef}
+        className={classes.name}
+        hideIcon
+        disableTooltip
+      />
+    );
 
   return (
     <Typography

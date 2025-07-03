@@ -1,5 +1,626 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.9.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-scaffolder-common@1.5.12-next.0
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- dbde180: An internal refactor which adds additional types to experimental checkpoints
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 0.9.0
+
+### Minor Changes
+
+- 5863b04: **BREAKING CHANGES**
+
+  The legacy methods to define `createTemplateActions` have been replaced with the new native `zod` approaches for defining input and output schemas.
+
+  You can migrate actions that look like the following with the below examples:
+
+  ```ts
+  // really old legacy json schema
+  createTemplateAction<{ repoUrl: string }, { repoOutput: string }>({
+    id: 'test',
+    schema: {
+      input: {
+        type: 'object'
+        required: ['repoUrl']
+        properties: {
+          repoUrl: {
+            type: 'string',
+            description: 'repository url description'
+          }
+        }
+      }
+    }
+  });
+
+  // old zod method
+  createTemplateAction({
+    id: 'test'
+    schema: {
+      input: {
+        repoUrl: z.string({ description: 'repository url description' })
+      }
+    }
+  })
+
+  // new method:
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: {
+        repoUrl: z => z.string({ description: 'repository url description' })
+      }
+    }
+  })
+
+  // or for more complex zod types like unions
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: z => z.object({
+        repoUrl: z.string({ description: 'repository url description' })
+      })
+    }
+  })
+  ```
+
+  This breaking change also means that `logStream` has been removed entirely from `ActionsContext`, and that the `logger` is now just a `LoggerService` implementation instead. There is no replacement for the `logStream`, if you wish to still keep using a `logStream` we recommend that you create your own stream that writes to `ctx.logger` instead.
+
+### Patch Changes
+
+- e89d7b6: Use `LoggerService` instead of `Logger`. This is a non-breaking change, as the `LoggerService` is a subset of the `Logger` interface.
+- 9c8ff0c: Update pull request creation filter to include .gitignore files in the created pull request
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 0.9.0-next.2
+
+### Minor Changes
+
+- 5863b04: **BREAKING CHANGES**
+
+  The legacy methods to define `createTemplateActions` have been replaced with the new native `zod` approaches for defining input and output schemas.
+
+  You can migrate actions that look like the following with the below examples:
+
+  ```ts
+  // really old legacy json schema
+  createTemplateAction<{ repoUrl: string }, { repoOutput: string }>({
+    id: 'test',
+    schema: {
+      input: {
+        type: 'object'
+        required: ['repoUrl']
+        properties: {
+          repoUrl: {
+            type: 'string',
+            description: 'repository url description'
+          }
+        }
+      }
+    }
+  });
+
+  // old zod method
+  createTemplateAction({
+    id: 'test'
+    schema: {
+      input: {
+        repoUrl: z.string({ description: 'repository url description' })
+      }
+    }
+  })
+
+  // new method:
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: {
+        repoUrl: z => z.string({ description: 'repository url description' })
+      }
+    }
+  })
+
+  // or for more complex zod types like unions
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: z => z.object({
+        repoUrl: z.string({ description: 'repository url description' })
+      })
+    }
+  })
+  ```
+
+  This breaking change also means that `logStream` has been removed entirely from `ActionsContext`, and that the `logger` is now just a `LoggerService` implementation instead. There is no replacement for the `logStream`, if you wish to still keep using a `logStream` we recommend that you create your own stream that writes to `ctx.logger` instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 0.8.3-next.1
+
+### Patch Changes
+
+- e89d7b6: Use `LoggerService` instead of `Logger`. This is a non-breaking change, as the `LoggerService` is a subset of the `Logger` interface.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 0.8.3-next.0
+
+### Patch Changes
+
+- 9c8ff0c: Update pull request creation filter to include .gitignore files in the created pull request
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+
+## 0.8.2
+
+### Patch Changes
+
+- 16e2e9c: trim leading and trailing slashes from parseRepoUrl query parameters
+- 72d019d: Removed various typos
+- ec42f8e: Generating new tokens on each Scaffolder Task Retry
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 0.8.2-next.3
+
+### Patch Changes
+
+- 16e2e9c: trim leading and trailing slashes from parseRepoUrl query parameters
+- ec42f8e: Generating new tokens on each Scaffolder Task Retry
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 0.8.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 0.8.2-next.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 0.8.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 0.8.1
+
+### Patch Changes
+
+- 497d47a: Document the internal built-in filters, and ensure that the types are validated when using `createTemplateFilter` and `createTemplateGlobalFunction` from the `zod` schema.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/integration@1.16.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 0.8.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 0.8.1-next.0
+
+### Patch Changes
+
+- 497d47a: Document the internal built-in filters, and ensure that the types are validated when using `createTemplateFilter` and `createTemplateGlobalFunction` from the `zod` schema.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 0.8.0
+
+### Minor Changes
+
+- 1a58846: **DEPRECATION**: We've deprecated the old way of defining actions using `createTemplateAction` with raw `JSONSchema` and type parameters, as well as using `zod` through an import. You can now use the new format to define `createTemplateActions` with `zod` provided by the framework. This change also removes support for `logStream` in the `context` as well as moving the `logger` to an instance of `LoggerService`.
+
+  Before:
+
+  ```ts
+  createTemplateAction<{ repoUrl: string }, { test: string }>({
+    id: 'test',
+    schema: {
+      input: {
+        type: 'object',
+        required: ['repoUrl'],
+        properties: {
+          repoUrl: { type: 'string' },
+        },
+      },
+      output: {
+        type: 'object',
+        required: ['test'],
+        properties: {
+          test: { type: 'string' },
+        },
+      },
+    },
+    handler: async ctx => {
+      ctx.logStream.write('blob');
+    },
+  });
+
+  // or
+
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: z.object({
+        repoUrl: z.string(),
+      }),
+      output: z.object({
+        test: z.string(),
+      }),
+    },
+    handler: async ctx => {
+      ctx.logStream.write('something');
+    },
+  });
+  ```
+
+  After:
+
+  ```ts
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: {
+        repoUrl: d => d.string(),
+      },
+      output: {
+        test: d => d.string(),
+      },
+    },
+    handler: async ctx => {
+      // you can just use ctx.logger.log('...'), or if you really need a log stream you can do this:
+      const logStream = new PassThrough();
+      logStream.on('data', chunk => {
+        ctx.logger.info(chunk.toString());
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- Updated dependencies
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-scaffolder-common@1.5.10
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
+## 0.8.0-next.2
+
+### Minor Changes
+
+- 1a58846: **DEPRECATION**: We've deprecated the old way of defining actions using `createTemplateAction` with raw `JSONSchema` and type parameters, as well as using `zod` through an import. You can now use the new format to define `createTemplateActions` with `zod` provided by the framework. This change also removes support for `logStream` in the `context` as well as moving the `logger` to an instance of `LoggerService`.
+
+  Before:
+
+  ```ts
+  createTemplateAction<{ repoUrl: string }, { test: string }>({
+    id: 'test',
+    schema: {
+      input: {
+        type: 'object',
+        required: ['repoUrl'],
+        properties: {
+          repoUrl: { type: 'string' },
+        },
+      },
+      output: {
+        type: 'object',
+        required: ['test'],
+        properties: {
+          test: { type: 'string' },
+        },
+      },
+    },
+    handler: async ctx => {
+      ctx.logStream.write('blob');
+    },
+  });
+
+  // or
+
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: z.object({
+        repoUrl: z.string(),
+      }),
+      output: z.object({
+        test: z.string(),
+      }),
+    },
+    handler: async ctx => {
+      ctx.logStream.write('something');
+    },
+  });
+  ```
+
+  After:
+
+  ```ts
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: {
+        repoUrl: d => d.string(),
+      },
+      output: {
+        test: d => d.string(),
+      },
+    },
+    handler: async ctx => {
+      // you can just use ctx.logger.log('...'), or if you really need a log stream you can do this:
+      const logStream = new PassThrough();
+      logStream.on('data', chunk => {
+        ctx.logger.info(chunk.toString());
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- Updated dependencies
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.10-next.0
+
+## 0.7.1-next.1
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.5.10-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+
+## 0.7.0
+
+### Minor Changes
+
+- dc8dd4b: Added new `createTemplateFilter`, `createTemplateGlobalFunction`, `createTemplateGlobalValue` for template extensions.
+- a4aa244: This change introduces an optional `taskId` property to `TaskContext`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 0.7.0-next.2
+
+### Minor Changes
+
+- dc8dd4b: Added new `createTemplateFilter`, `createTemplateGlobalFunction`, `createTemplateGlobalValue` for template extensions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 0.7.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 0.7.0-next.0
+
+### Minor Changes
+
+- a4aa244: This change introduces an optional `taskId` property to `TaskContext`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 0.6.3
+
+### Patch Changes
+
+- 5d9e5c8: Added the ability to use `${{ context.task.id }}` in nunjucks templating, as well as `ctx.task.id` in actions to get the current task ID.
+- 7dd0013: Deprecate the `logStream` option in `executeShellCommand`, replacing it with a logger instance.
+- Updated dependencies
+  - @backstage/types@1.2.1
+  - @backstage/integration@1.16.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-scaffolder-common@1.5.9
+
+## 0.6.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.1-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-scaffolder-common@1.5.9-next.0
+  - @backstage/integration@1.16.1-next.0
+
+## 0.6.3-next.0
+
+### Patch Changes
+
+- 5d9e5c8: Added the ability to use `${{ context.task.id }}` in nunjucks templating, as well as `ctx.task.id` in actions to get the current task ID.
+- 7dd0013: Deprecate the `logStream` option in `executeShellCommand`, replacing it with a logger instance.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/errors@1.2.6
+  - @backstage/integration@1.16.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-scaffolder-common@1.5.8
+
+## 0.6.2
+
+### Patch Changes
+
+- c4ffd13: Added the autocomplete feature to GitlabRepoUrlPicker
+- 1a23421: Make sure that isomorphic git push commands are not proxied.
+- Updated dependencies
+  - @backstage/integration@1.16.0
+  - @backstage/plugin-scaffolder-common@1.5.8
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/types@1.2.0
+
+## 0.6.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/types@1.2.0
+  - @backstage/plugin-scaffolder-common@1.5.8-next.1
+
+## 0.6.2-next.1
+
+### Patch Changes
+
+- 1a23421: Make sure that isomorphic git push commands are not proxied.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/types@1.2.0
+  - @backstage/plugin-scaffolder-common@1.5.8-next.0
+
 ## 0.6.1-next.0
 
 ### Patch Changes

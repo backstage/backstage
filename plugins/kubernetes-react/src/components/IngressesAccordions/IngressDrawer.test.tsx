@@ -20,7 +20,6 @@ import {
   textContentMatcher,
 } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { IngressDrawer } from './IngressDrawer';
 import * as ingresses from './__fixtures__/2-ingresses.json';
 import { kubernetesClusterLinkFormatterApiRef } from '../../api';
@@ -37,13 +36,13 @@ describe('IngressDrawer', () => {
     expect(screen.getByText('YAML')).toBeInTheDocument();
     expect(screen.getByText('Rules')).toBeInTheDocument();
     expect(
-      screen.getByText(textContentMatcher('Host: api.awesome-host.io')),
+      screen.getByText(textContentMatcher('host: api.awesome-host.io')),
     ).toBeInTheDocument();
     expect(
-      screen.getAllByText(textContentMatcher('Service Port: 80')),
+      screen.getAllByText(textContentMatcher('servicePort: 80')),
     ).toHaveLength(2);
     expect(
-      screen.getAllByText(textContentMatcher('Service Name: awesome-service')),
+      screen.getAllByText(textContentMatcher('serviceName: awesome-service')),
     ).toHaveLength(2);
   });
 });

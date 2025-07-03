@@ -1,0 +1,9 @@
+---
+title: NPM
+author: Christoph Jerolimov
+authorUrl: https://github.com/christoph-jerolimov
+category: Artifacts
+description: A plugin that shows meta info and latest versions from a npm registry.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/npm/plugins/npm/README.md
+npmPackageName: '@backstage-community/plugin-npm'
+addedDate: '2024-11-29'

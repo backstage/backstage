@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { createRouteRef } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
 import {
@@ -98,7 +97,7 @@ describe('PageBlueprint', () => {
 
     const tester = createExtensionTester(myPage);
 
-    // TODO(blam): test for the routePath output doesn't work, due to the the way the test harness works
+    // TODO(blam): test for the routePath output doesn't work, due to the way the test harness works
     // expect(tester.data(coreExtensionData.routePath)).toBe('/test');
 
     expect(tester.get(coreExtensionData.routeRef)).toBe(mockRouteRef);

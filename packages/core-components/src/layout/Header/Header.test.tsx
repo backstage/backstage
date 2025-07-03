@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { Header } from './Header';
 import { ConfigReader } from '@backstage/core-app-api';
@@ -29,42 +28,46 @@ jest.mock('react-helmet', () => {
 describe('<Header/>', () => {
   it('should render with title', async () => {
     const rendered = await renderInTestApp(<Header title="Title" />);
-    rendered.getByText('Title');
+    expect(rendered.getByText('Title')).toBeInTheDocument();
   });
 
   it('should set document title', async () => {
     const rendered = await renderInTestApp(<Header title="Title1" />);
-    rendered.getByText('Title1');
-    rendered.getByText('defaultTitle: Title1 | Backstage');
+    expect(rendered.getByText('Title1')).toBeInTheDocument();
+    expect(
+      rendered.getByText('defaultTitle: Title1 | Backstage'),
+    ).toBeInTheDocument();
   });
 
   it('should override document title', async () => {
     const rendered = await renderInTestApp(
       <Header title="Title1" pageTitleOverride="Title2" />,
     );
-    rendered.getByText('Title1');
-    rendered.getByText('defaultTitle: Title2 | Backstage');
+    expect(rendered.getByText('Title1')).toBeInTheDocument();
+    expect(
+      rendered.getByText('defaultTitle: Title2 | Backstage'),
+    ).toBeInTheDocument();
   });
 
   it('should have subtitle', async () => {
     const rendered = await renderInTestApp(
       <Header title="Title" subtitle="Subtitle" />,
     );
-    rendered.getByText('Subtitle');
+    expect(rendered.getByText('Subtitle')).toBeInTheDocument();
   });
 
   it('should have type rendered', async () => {
     const rendered = await renderInTestApp(
       <Header title="Title" type="tool" />,
     );
-    rendered.getByText('tool');
+    expect(rendered.getByText('tool')).toBeInTheDocument();
   });
 
   it('should have breadcrumb rendered', async () => {
     const rendered = await renderInTestApp(
       <Header title="Title" type="tool" typeLink="/tool" />,
     );
-    rendered.getAllByText('Title');
+    expect(rendered.getAllByText('Title')).toBeTruthy();
   });
 
   it('should use app.title', async () => {
@@ -75,6 +78,6 @@ describe('<Header/>', () => {
         <Header title="Title" type="tool" typeLink="/tool" />,
       </TestApiProvider>,
     );
-    rendered.getAllByText(/Title | Blah/);
+    expect(rendered.getAllByText(/Title | Blah/)).toBeTruthy();
   });
 });

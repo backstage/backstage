@@ -1,5 +1,209 @@
 # @backstage/integration
 
+## 1.17.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+
+## 1.17.1-next.0
+
+### Patch Changes
+
+- e0189b8: UrlReader: Fix handling of access tokens for GitLab readURL requests
+- d1e4a6d: Fixed bug where the GitLab user token and GitLab integration token were being merged together
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.17.0
+
+### Minor Changes
+
+- d945206: Added support for federated credentials using managed identities in the Azure DevOps integration. Federated credentials are only available for Azure DevOps organizations that have been configured to use Entra ID for authentication.
+
+  ```diff
+  integrations:
+    azure:
+      - host: dev.azure.com
+        credentials:
+  +       - clientId: ${APP_REGISTRATION_CLIENT_ID}
+  +         managedIdentityClientId: system-assigned
+  +         tenantId: ${AZURE_TENANT_ID}
+  ```
+
+  This also adds support for automatically using the system-assigned managed identity of an Azure resource by specifying `system-assigned` as the client ID of the managed identity.
+
+  ```diff
+  integrations:
+    azure:
+      - host: dev.azure.com
+        credentials:
+  -       - clientId: ${AZURE_CLIENT_ID}
+  +       - clientId: system-assigned
+  ```
+
+- f134cea: Implement Edit URL feature for Gerrit 3.9+.
+
+  It's possible to disable the edit url by adding the `disableEditUrl: true` config in the Gerrit integration.
+
+### Patch Changes
+
+- f3381d3: Added missing `organizations` property to `azure` section in `config.d.ts` file
+- acea1d4: update documentation
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.17.0-next.3
+
+### Minor Changes
+
+- d945206: Added support for federated credentials using managed identities in the Azure DevOps integration. Federated credentials are only available for Azure DevOps organizations that have been configured to use Entra ID for authentication.
+
+  ```diff
+  integrations:
+    azure:
+      - host: dev.azure.com
+        credentials:
+  +       - clientId: ${APP_REGISTRATION_CLIENT_ID}
+  +         managedIdentityClientId: system-assigned
+  +         tenantId: ${AZURE_TENANT_ID}
+  ```
+
+  This also adds support for automatically using the system-assigned managed identity of an Azure resource by specifying `system-assigned` as the client ID of the managed identity.
+
+  ```diff
+  integrations:
+    azure:
+      - host: dev.azure.com
+        credentials:
+  -       - clientId: ${AZURE_CLIENT_ID}
+  +       - clientId: system-assigned
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.17.0-next.2
+
+### Minor Changes
+
+- f134cea: Implement Edit URL feature for Gerrit 3.9+.
+
+  It's possible to disable the edit url by adding the `disableEditUrl: true` config in the Gerrit integration.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.4-next.1
+
+### Patch Changes
+
+- acea1d4: update documentation
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.4-next.0
+
+### Patch Changes
+
+- f3381d3: Added missing `organizations` property to `azure` section in `config.d.ts` file
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.3
+
+### Patch Changes
+
+- 9768992: Mark GitHub `webhookSecret` config property as optional. A `webhookSecret` is not required when creating a GitHub App.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.3-next.0
+
+### Patch Changes
+
+- 9768992: Mark GitHub `webhookSecret` config property as optional. A `webhookSecret` is not required when creating a GitHub App.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.2
+
+### Patch Changes
+
+- 89db8b8: Gerrit integration now exports `getGitilesAuthenticationUrl`. This enables its usage by the `GerritUrlReader`.
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.2-next.0
+
+### Patch Changes
+
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.1
+
+### Patch Changes
+
+- d2b16db: A new Gerrit helper function (`buildGerritGitilesArchiveUrlFromLocation`) has been added. This
+  constructs a Gitiles URL to download an archive. It is similar to the existing
+  `buildGerritGitilesArchiveUrl` but also support content referenced by a full commit `SHA`.
+
+  **DEPRECATIONS**: The function `buildGerritGitilesArchiveUrl` is deprecated, use the
+  `buildGerritGitilesArchiveUrlFromLocation` function instead.
+
+  **DEPRECATIONS**: The function `parseGerritGitilesUrl` is deprecated, use the
+  `parseGitilesUrlRef` function instead.
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.16.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+
+## 1.16.0
+
+### Minor Changes
+
+- 277092a: Add the integration for Azure blob storage to read the credentials to access the storage account and provide the default credential provider.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.6
+  - @backstage/config@1.3.1
+
+## 1.16.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/config@1.3.1-next.0
+
 ## 1.16.0-next.0
 
 ### Minor Changes

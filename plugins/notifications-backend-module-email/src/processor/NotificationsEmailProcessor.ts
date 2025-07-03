@@ -25,19 +25,21 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { durationToMilliseconds } from '@backstage/types';
-import { CATALOG_FILTER_EXISTS, CatalogApi } from '@backstage/catalog-client';
+import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import {
   getProcessorFiltersFromConfig,
   Notification,
   NotificationProcessorFilters,
 } from '@backstage/plugin-notifications-common';
 import {
+  createAzureTransport,
   createSendmailTransport,
   createSesTransport,
   createSmtpTransport,
   createStreamTransport,
 } from './transports';
 import { UserEntity } from '@backstage/catalog-model';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import { compact } from 'lodash';
 import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
 import { NotificationTemplateRenderer } from '../extensions';
@@ -61,7 +63,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   constructor(
     private readonly logger: LoggerService,
     private readonly config: Config,
-    private readonly catalog: CatalogApi,
+    private readonly catalog: CatalogService,
     private readonly auth: AuthService,
     private readonly cache?: CacheService,
     private readonly templateRenderer?: NotificationTemplateRenderer,
@@ -117,6 +119,8 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       this.transporter = createSendmailTransport(this.transportConfig);
     } else if (transport === 'stream') {
       this.transporter = createStreamTransport();
+    } else if (transport === 'azure') {
+      this.transporter = createAzureTransport(this.transportConfig);
     } else {
       throw new Error(`Unsupported transport: ${transport}`);
     }
@@ -149,10 +153,6 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
         return cached;
       }
 
-      const { token } = await this.auth.getPluginRequestToken({
-        onBehalfOf: await this.auth.getOwnServiceCredentials(),
-        targetPluginId: 'catalog',
-      });
       const entities = await this.catalog.getEntities(
         {
           filter: [
@@ -160,7 +160,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
           ],
           fields: ['spec.profile.email'],
         },
-        { token },
+        { credentials: await this.auth.getOwnServiceCredentials() },
       );
       const ret = compact([
         ...new Set(
@@ -185,11 +185,9 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       return cached;
     }
 
-    const { token } = await this.auth.getPluginRequestToken({
-      onBehalfOf: await this.auth.getOwnServiceCredentials(),
-      targetPluginId: 'catalog',
+    const entity = await this.catalog.getEntityByRef(entityRef, {
+      credentials: await this.auth.getOwnServiceCredentials(),
     });
-    const entity = await this.catalog.getEntityByRef(entityRef, { token });
     const ret: string[] = [];
     if (entity) {
       const userEntity = entity as UserEntity;

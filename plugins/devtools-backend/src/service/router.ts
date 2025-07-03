@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   devToolsConfigReadPermission,
   devToolsExternalDependenciesReadPermission,
   devToolsInfoReadPermission,
-  devToolsPermissions,
 } from '@backstage/plugin-devtools-common';
-
 import { DevToolsBackendApi } from '../api';
 import { NotAllowedError } from '@backstage/errors';
 import Router from 'express-promise-router';
 import express from 'express';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import {
   DiscoveryService,
   HttpAuthService,
@@ -33,7 +31,6 @@ import {
   PermissionsService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 
 /**
  * @internal
@@ -60,11 +57,6 @@ export async function createRouter(
 
   const router = Router();
   router.use(express.json());
-  router.use(
-    createPermissionIntegrationRouter({
-      permissions: devToolsPermissions,
-    }),
-  );
 
   router.get('/health', (_req, res) => {
     res.status(200).json({ status: 'ok' });
@@ -121,8 +113,5 @@ export async function createRouter(
     response.status(200).json(health);
   });
 
-  const middleware = MiddlewareFactory.create({ logger, config });
-
-  router.use(middleware.error());
   return router;
 }

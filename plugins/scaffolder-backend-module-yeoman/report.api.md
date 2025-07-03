@@ -4,7 +4,6 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { JsonObject } from '@backstage/types';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public
@@ -12,9 +11,12 @@ export function createRunYeomanAction(): TemplateAction<
   {
     namespace: string;
     args?: string[] | undefined;
-    options?: JsonObject | undefined;
+    options?: Record<string, any> | undefined;
   },
-  JsonObject
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public

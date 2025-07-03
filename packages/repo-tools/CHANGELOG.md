@@ -1,5 +1,372 @@
 # @backstage/repo-tools
 
+## 0.15.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.2-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+
+## 0.15.0-next.0
+
+### Minor Changes
+
+- 1e7082e: Clear output directory before running `package-docs` and skip all internal packages.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.14.0
+
+### Minor Changes
+
+- bf9a173: Add support for caching the per-package output from the `package-docs` command.
+
+### Patch Changes
+
+- 4bff5d0: Fixed a bug where linting would fail with the generated clients when defining top-level `enum` schema values.
+- 2d20024: Fix an issue where errors were not printed to console when running `backstage-repo-tools schema openapi generate` without the `--watch` flag.
+- e643ee4: Add missing highlight language for the `package-docs` command.
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- a372bf1: Updated dependency `@electric-sql/pglite` to `^0.3.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+  - @backstage/errors@1.2.7
+
+## 0.14.0-next.2
+
+### Patch Changes
+
+- 4bff5d0: Fixed a bug where linting would fail with the generated clients when defining top-level `enum` schema values.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+  - @backstage/errors@1.2.7
+
+## 0.14.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+  - @backstage/errors@1.2.7
+
+## 0.14.0-next.0
+
+### Minor Changes
+
+- bf9a173: Add support for caching the per-package output from the `package-docs` command.
+
+### Patch Changes
+
+- 2d20024: Fix an issue where errors were not printed to console when running `backstage-repo-tools schema openapi generate` without the `--watch` flag.
+- e643ee4: Add missing highlight language for the `package-docs` command.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+
+## 0.13.3
+
+### Patch Changes
+
+- b229476: Support passing additional properties to OpenAPI server generator
+- 659f2ce: Updated dependency `typedoc` to `^0.28.0`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/config-loader@1.10.1
+  - @backstage/cli-node@0.2.13
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.13.3-next.3
+
+### Patch Changes
+
+- 659f2ce: Updated dependency `typedoc` to `^0.28.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/errors@1.2.7
+
+## 0.13.3-next.2
+
+### Patch Changes
+
+- b229476: Support passing additional properties to OpenAPI server generator
+- Updated dependencies
+  - @backstage/cli-node@0.2.13
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/errors@1.2.7
+
+## 0.13.3-next.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/errors@1.2.7
+
+## 0.13.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.13.2
+
+### Patch Changes
+
+- 18ce51c: Checking up the files where `createRouter` has been declared and check if `@deprecated` tag exists. If it does not exist then only the message will appear.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.0
+  - @backstage/errors@1.2.7
+
+## 0.13.1
+
+### Patch Changes
+
+- c7a58b2: Fix issue where generate-patch incorrectly encodes the locator not aligning with result of yarn patch
+- Updated dependencies
+  - @backstage/config-loader@1.10.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/errors@1.2.7
+
+## 0.13.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.0-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/errors@1.2.7
+
+## 0.13.1-next.1
+
+### Patch Changes
+
+- c7a58b2: Fix issue where generate-patch incorrectly encodes the locator not aligning with result of yarn patch
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.9.6
+  - @backstage/errors@1.2.7
+
+## 0.13.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.9.6
+
+## 0.13.0
+
+### Minor Changes
+
+- b78b2b0: Adds a new experimental hidden command `package-docs` for generating API documentation. This is currently only intended for use in the Backstage main repository.
+
+### Patch Changes
+
+- 474b748: Improve knip reports by using a single workspace-based config
+- 98ddf05: The `api-reports` command is now also able to generate SQL reports, enabled by the `--sql-reports` flag.
+- cb76663: Internal refactor to support native ESM.
+- ecd01a9: Internal refactor of API report generation.
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.9.6
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.12.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/cli-node@0.2.13-next.1
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.12.2-next.2
+
+### Patch Changes
+
+- 474b748: Improve knip reports by using a single workspace-based config
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/cli-node@0.2.13-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/errors@1.2.7
+
+## 0.12.2-next.1
+
+### Patch Changes
+
+- 58ec9e7: Removed older versions of React packages as a preparatory step for upgrading to React 19. This commit does not introduce any functional changes, but removes dependencies on previous React versions, allowing for a cleaner upgrade path in subsequent commits.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13-next.0
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/errors@1.2.7
+
+## 0.12.2-next.0
+
+### Patch Changes
+
+- 98ddf05: The `api-reports` command is now also able to generate SQL reports, enabled by the `--sql-reports` flag.
+- cb76663: Internal refactor to support native ESM.
+- ecd01a9: Internal refactor of API report generation.
+- Updated dependencies
+  - @backstage/cli-node@0.2.13-next.0
+  - @backstage/config-loader@1.9.6-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.12.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.9.5
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.12
+  - @backstage/errors@1.2.7
+
+## 0.12.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/cli-node@0.2.12-next.0
+  - @backstage/config-loader@1.9.5-next.1
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/cli-common@0.1.15
+
+## 0.12.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.9.5-next.0
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.11
+  - @backstage/errors@1.2.6
+
+## 0.12.0
+
+### Minor Changes
+
+- c1eccd6: Fix invalid path and malformed flags bugs in api-reports.ts
+
+### Patch Changes
+
+- 860e3b5: Generated OpenAPI clients now support paths with tags.
+- 5f04976: Fixed a bug that caused missing code in published packages.
+- 00058d0: The `generate-patch` command will now add a single resolution entry for all versions of the patched package, rather than separate entries for each version query.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/cli-node@0.2.11
+  - @backstage/config-loader@1.9.3
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/cli-common@0.1.15
+
+## 0.12.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/cli-node@0.2.11-next.1
+  - @backstage/config-loader@1.9.3-next.1
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/cli-common@0.1.15
+
+## 0.12.0-next.1
+
+### Patch Changes
+
+- 860e3b5: Generated OpenAPI clients now support paths with tags.
+- 00058d0: The `generate-patch` command will now add a single resolution entry for all versions of the patched package, rather than separate entries for each version query.
+- Updated dependencies
+  - @backstage/config-loader@1.9.3-next.0
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.11-next.0
+  - @backstage/errors@1.2.5
+
 ## 0.12.0-next.0
 
 ### Minor Changes

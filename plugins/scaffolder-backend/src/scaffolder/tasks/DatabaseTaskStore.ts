@@ -15,8 +15,10 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import {
+  DatabaseService,
+  resolvePackagePath,
+} from '@backstage/backend-plugin-api';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
@@ -74,23 +76,21 @@ export type RawDbTaskEventRow = {
 
 /**
  * DatabaseTaskStore
- *
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  * @public
  */
 export type DatabaseTaskStoreOptions = {
-  database: PluginDatabaseManager | Knex;
+  database: DatabaseService | Knex;
   events?: EventsService;
 };
 
 /**
- * Type guard to help DatabaseTaskStore understand when database is PluginDatabaseManager vs. when database is a Knex instance.
- *
- * * @public
- */
-function isPluginDatabaseManager(
-  opt: PluginDatabaseManager | Knex,
-): opt is PluginDatabaseManager {
-  return (opt as PluginDatabaseManager).getClient !== undefined;
+ * Type guard to help DatabaseTaskStore understand when database is DatabaseService vs. when database is a Knex instance.
+ * */
+function isDatabaseService(
+  opt: DatabaseService | Knex,
+): opt is DatabaseService {
+  return (opt as DatabaseService).getClient !== undefined;
 }
 
 const parseSqlDateToIsoString = <T>(input: T): T | string => {
@@ -109,7 +109,7 @@ const parseSqlDateToIsoString = <T>(input: T): T | string => {
 
 /**
  * DatabaseTaskStore
- *
+ * @deprecated this type is deprecated, and there will be a new way to create Workers in the next major version.
  * @public
  */
 export class DatabaseTaskStore implements TaskStore {
@@ -152,9 +152,9 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   private static async getClient(
-    database: PluginDatabaseManager | Knex,
+    database: DatabaseService | Knex,
   ): Promise<Knex> {
-    if (isPluginDatabaseManager(database)) {
+    if (isDatabaseService(database)) {
       return database.getClient();
     }
 
@@ -162,10 +162,10 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   private static async runMigrations(
-    database: PluginDatabaseManager | Knex,
+    database: DatabaseService | Knex,
     client: Knex,
   ): Promise<void> {
-    if (!isPluginDatabaseManager(database)) {
+    if (!isDatabaseService(database)) {
       await client.migrate.latest({
         directory: migrationsDir,
       });
@@ -652,12 +652,18 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async retryTask?(options: { taskId: string }): Promise<void> {
+  async retryTask?(options: {
+    secrets?: TaskSecrets;
+    taskId: string;
+  }): Promise<void> {
+    const { secrets, taskId } = options;
+
     await this.db.transaction(async tx => {
       const result = await tx<RawDbTaskRow>('tasks')
-        .where('id', options.taskId)
+        .where('id', taskId)
         .update(
           {
+            ...(secrets && { secrets: JSON.stringify(secrets) }),
             status: 'open',
             last_heartbeat_at: this.db.fn.now(),
           },

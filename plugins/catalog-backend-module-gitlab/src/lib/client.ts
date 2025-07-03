@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// NOTE(freben): Intentionally uses node-fetch because of https://github.com/backstage/backstage/issues/28190
+import fetch from 'node-fetch';
+
 import {
   getGitLabRequestOptions,
   GitLabIntegrationConfig,
@@ -38,6 +41,8 @@ export type CommonListOptions = {
 interface ListProjectOptions extends CommonListOptions {
   archived?: boolean;
   group?: string;
+  membership?: boolean;
+  topics?: string;
 }
 
 interface UserListOptions extends CommonListOptions {
@@ -165,6 +170,18 @@ export class GitLabClient {
     return this.pagedRequest(`/groups`, options);
   }
 
+  // https://docs.gitlab.com/ee/api/groups.html#list-group-details
+  // id can either be group id or encoded full path
+  async getGroupByPath(
+    groupPath: string,
+    options?: CommonListOptions,
+  ): Promise<GitLabGroup> {
+    return this.nonPagedRequest(
+      `/groups/${encodeURIComponent(groupPath)}`,
+      options,
+    );
+  }
+
   async listDescendantGroups(
     groupPath: string,
   ): Promise<PagedResponse<GitLabGroup>> {
@@ -173,9 +190,8 @@ export class GitLabClient {
     let endCursor: string | null = null;
 
     do {
-      const response: GitLabDescendantGroupsResponse = await fetch(
-        `${this.config.baseUrl}/api/graphql`,
-        {
+      const response: GitLabDescendantGroupsResponse =
+        await this.fetchWithRetry(`${this.config.baseUrl}/api/graphql`, {
           method: 'POST',
           headers: {
             ...getGitLabRequestOptions(this.config).headers,
@@ -206,8 +222,7 @@ export class GitLabClient {
               }
             `,
           }),
-        },
-      ).then(r => r.json());
+        }).then(r => r.json());
       if (response.errors) {
         throw new Error(`GraphQL errors: ${JSON.stringify(response.errors)}`);
       }
@@ -249,7 +264,7 @@ export class GitLabClient {
     let hasNextPage: boolean = false;
     let endCursor: string | null = null;
     do {
-      const response: GitLabGroupMembersResponse = await fetch(
+      const response: GitLabGroupMembersResponse = await this.fetchWithRetry(
         `${this.config.baseUrl}/api/graphql`,
         {
           method: 'POST',
@@ -342,7 +357,7 @@ export class GitLabClient {
     const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
     request.searchParams.append('ref', branch);
 
-    const response = await fetch(request.toString(), {
+    const response = await this.fetchWithRetry(request.toString(), {
       headers: getGitLabRequestOptions(this.config).headers,
       method: 'HEAD',
     });
@@ -389,7 +404,7 @@ export class GitLabClient {
     }
 
     this.logger.debug(`Fetching: ${request.toString()}`);
-    const response = await fetch(
+    const response = await this.fetchWithRetry(
       request.toString(),
       getGitLabRequestOptions(this.config),
     );
@@ -427,7 +442,7 @@ export class GitLabClient {
       }
     }
 
-    const response = await fetch(
+    const response = await this.fetchWithRetry(
       request.toString(),
       getGitLabRequestOptions(this.config),
     );
@@ -441,6 +456,48 @@ export class GitLabClient {
     }
 
     return response.json();
+  }
+
+  /**
+   * Performs a fetch request with retry logic for rate limiting (429 errors)
+   * @param url - The URL to fetch
+   * @param options - Fetch options
+   * @param retries - Maximum number of retries
+   * @param initialBackoff - Initial backoff time in ms
+   */
+  async fetchWithRetry(
+    url: string,
+    options: fetch.RequestInit,
+    retries = 5,
+    initialBackoff = 100,
+  ): Promise<fetch.Response> {
+    let currentRetry = 0;
+    let backoff = initialBackoff;
+
+    for (;;) {
+      const response = await fetch(url, options);
+
+      if (response.status !== 429 || currentRetry >= retries) {
+        return response;
+      }
+
+      // Get retry-after header if available, or use exponential backoff
+      const retryAfter = response.headers.get('Retry-After');
+      const waitTime = retryAfter ? parseInt(retryAfter, 10) * 1000 : backoff;
+
+      this.logger.warn(
+        `GitLab API rate limit exceeded, retrying in ${waitTime}ms (retry ${
+          currentRetry + 1
+        }/${retries})`,
+      );
+
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+
+      // Exponential backoff with jitter
+      backoff = backoff * 2 * (0.8 + Math.random() * 0.4);
+      currentRetry++;
+    }
   }
 }
 

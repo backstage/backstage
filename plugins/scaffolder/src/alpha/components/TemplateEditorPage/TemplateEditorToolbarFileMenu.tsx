@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { MouseEvent, useCallback, useState } from 'react';
+import { MouseEvent, useCallback, useState } from 'react';
 
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';

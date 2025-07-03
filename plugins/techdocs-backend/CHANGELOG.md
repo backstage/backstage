@@ -1,5 +1,564 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.0.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/catalog-client@1.10.2-next.0
+  - @backstage/backend-defaults@0.11.1-next.1
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.4-next.1
+  - @backstage/plugin-techdocs-node@1.13.5-next.1
+  - @backstage/plugin-catalog-common@1.1.5-next.0
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+
+## 2.0.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.1-next.0
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/plugin-search-backend-module-techdocs@0.4.4-next.0
+  - @backstage/plugin-techdocs-node@1.13.5-next.0
+  - @backstage/catalog-client@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-techdocs-common@0.1.1
+
+## 2.0.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1
+  - @backstage/backend-defaults@0.11.0
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/plugin-search-backend-module-techdocs@0.4.3
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-techdocs-node@1.13.4
+
+## 2.0.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.11.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.3-next.1
+  - @backstage/plugin-techdocs-common@0.1.1-next.0
+  - @backstage/plugin-techdocs-node@1.13.4-next.1
+
+## 2.0.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.10.1-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.3-next.1
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/backend-defaults@0.10.1-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-techdocs-common@0.1.1-next.0
+  - @backstage/plugin-techdocs-node@1.13.4-next.1
+
+## 2.0.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-common@0.1.1-next.0
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/backend-defaults@0.10.1-next.0
+  - @backstage/plugin-techdocs-node@1.13.4-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.3-next.0
+
+## 2.0.2
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/backend-defaults@0.10.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-techdocs-node@1.13.3
+  - @backstage/catalog-client@1.10.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.4
+  - @backstage/plugin-search-backend-module-techdocs@0.4.2
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 2.0.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0-next.3
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.2
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.2-next.3
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-node@1.13.3-next.3
+
+## 2.0.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/backend-defaults@0.10.0-next.2
+  - @backstage/config@1.3.2
+  - @backstage/plugin-techdocs-node@1.13.3-next.2
+  - @backstage/plugin-search-backend-module-techdocs@0.4.2-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 2.0.2-next.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-defaults@0.10.0-next.1
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-techdocs-node@1.13.3-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.4.2-next.1
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 2.0.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/catalog-client@1.10.0-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.0
+  - @backstage/backend-defaults@0.9.1-next.0
+  - @backstage/plugin-techdocs-node@1.13.3-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.2-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0
+  - @backstage/plugin-catalog-node@1.16.3
+  - @backstage/plugin-techdocs-node@1.13.2
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/integration@1.16.3
+  - @backstage/plugin-search-backend-module-techdocs@0.4.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 2.0.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3-next.0
+  - @backstage/backend-defaults@0.9.0-next.2
+  - @backstage/plugin-techdocs-node@1.13.2-next.2
+  - @backstage/plugin-search-backend-module-techdocs@0.4.1-next.2
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 2.0.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/backend-defaults@0.9.0-next.1
+  - @backstage/plugin-techdocs-node@1.13.2-next.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-module-techdocs@0.4.1-next.1
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 2.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.9.0-next.0
+  - @backstage/plugin-techdocs-node@1.13.2-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.1-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 2.0.0
+
+### Major Changes
+
+- d5c4a9d: **BREAKING** Removed support for the legacy backend, please migrate to the new backend system. Also removed deprecated `DefaultTechDocsCollatorFactory`. Use the `@backstage/plugin-search-backend-module-techdocs` for this instead. Finally, deprecated `DocsBuildStrategy` and `TechDocsDocument` were removed, use the versions in `@backstage/plugin-techdocs-node` instead.
+
+### Patch Changes
+
+- 7828186: Minor type fix
+- 8f03776: Properly clean up temporary files on build failures
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-techdocs@0.4.0
+  - @backstage/integration@1.16.2
+  - @backstage/backend-defaults@0.8.2
+  - @backstage/plugin-techdocs-node@1.13.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.11.7-next.2
+
+### Patch Changes
+
+- 7828186: Minor type fix
+- 8f03776: Properly clean up temporary files on build failures
+- Updated dependencies
+  - @backstage/integration@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1-next.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-module-techdocs@0.3.7-next.2
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-node@1.13.1-next.2
+
+## 1.11.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1-next.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-module-techdocs@0.3.7-next.1
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-node@1.13.1-next.1
+
+## 1.11.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.13.1-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.3.7-next.0
+  - @backstage/backend-plugin-api@1.2.1-next.0
+  - @backstage/plugin-catalog-node@1.16.1-next.0
+
+## 1.11.6
+
+### Patch Changes
+
+- b78e3fd: Fixed issue `syncEntityDocs` that would cause the `/sync` endpoint to be continuously called if the request fails
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0
+  - @backstage/plugin-catalog-node@1.16.0
+  - @backstage/plugin-techdocs-node@1.13.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-module-techdocs@0.3.6
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.11.6-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.0-next.3
+  - @backstage/backend-plugin-api@1.2.0-next.2
+  - @backstage/plugin-search-backend-module-techdocs@0.3.6-next.3
+  - @backstage/plugin-techdocs-node@1.13.0-next.2
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.11.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.0-next.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.0-next.2
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-module-techdocs@0.3.6-next.2
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-node@1.13.0-next.1
+
+## 1.11.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.0-next.1
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-module-techdocs@0.3.6-next.1
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-node@1.13.0-next.0
+
+## 1.11.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.15.2-next.0
+  - @backstage/plugin-techdocs-node@1.13.0-next.0
+  - @backstage/backend-plugin-api@1.2.0-next.0
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-module-techdocs@0.3.6-next.0
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.11.5
+
+### Patch Changes
+
+- 29a4aa8: fix(config): add missing parameters in config schema
+- Updated dependencies
+  - @backstage/integration@1.16.1
+  - @backstage/backend-plugin-api@1.1.1
+  - @backstage/catalog-client@1.9.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.15.1
+  - @backstage/plugin-permission-common@0.8.4
+  - @backstage/plugin-search-backend-module-techdocs@0.3.5
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-node@1.12.16
+
+## 1.11.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.1
+  - @backstage/catalog-model@1.7.3-next.0
+  - @backstage/config@1.3.2-next.0
+  - @backstage/errors@1.2.7-next.0
+  - @backstage/plugin-catalog-node@1.15.1-next.1
+  - @backstage/plugin-permission-common@0.8.4-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.3.5-next.1
+  - @backstage/plugin-techdocs-node@1.12.16-next.1
+  - @backstage/catalog-client@1.9.1-next.0
+  - @backstage/plugin-catalog-common@1.1.3-next.0
+  - @backstage/integration@1.16.1-next.0
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.11.5-next.1
+
+### Patch Changes
+
+- 29a4aa8: fix(config): add missing parameters in config schema
+
+## 1.11.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.1-next.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/errors@1.2.6
+  - @backstage/integration@1.16.0
+  - @backstage/plugin-catalog-common@1.1.2
+  - @backstage/plugin-catalog-node@1.15.1-next.0
+  - @backstage/plugin-permission-common@0.8.3
+  - @backstage/plugin-search-backend-module-techdocs@0.3.5-next.0
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-node@1.12.16-next.0
+
+## 1.11.4
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/integration@1.16.0
+  - @backstage/backend-plugin-api@1.1.0
+  - @backstage/plugin-search-backend-module-techdocs@0.3.4
+  - @backstage/plugin-catalog-node@1.15.0
+  - @backstage/catalog-client@1.9.0
+  - @backstage/plugin-techdocs-node@1.12.15
+  - @backstage/errors@1.2.6
+  - @backstage/catalog-model@1.7.2
+  - @backstage/config@1.3.1
+  - @backstage/plugin-catalog-common@1.1.2
+  - @backstage/plugin-permission-common@0.8.3
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.11.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.1.0-next.2
+  - @backstage/errors@1.2.6-next.0
+  - @backstage/plugin-catalog-node@1.15.0-next.2
+  - @backstage/plugin-search-backend-module-techdocs@0.3.4-next.2
+  - @backstage/plugin-techdocs-node@1.12.15-next.2
+  - @backstage/catalog-client@1.9.0-next.2
+  - @backstage/catalog-model@1.7.2-next.0
+  - @backstage/config@1.3.1-next.0
+  - @backstage/integration@1.16.0-next.1
+  - @backstage/plugin-catalog-common@1.1.2-next.0
+  - @backstage/plugin-permission-common@0.8.3-next.0
+  - @backstage/plugin-techdocs-common@0.1.0
+
+## 1.11.4-next.1
+
+### Patch Changes
+
+- 5c9cc05: Use native fetch instead of node-fetch
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.15.0-next.1
+  - @backstage/catalog-client@1.9.0-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.3.4-next.1
+  - @backstage/backend-plugin-api@1.1.0-next.1
+  - @backstage/catalog-model@1.7.1
+  - @backstage/config@1.3.0
+  - @backstage/errors@1.2.5
+  - @backstage/integration@1.16.0-next.0
+  - @backstage/plugin-catalog-common@1.1.1
+  - @backstage/plugin-permission-common@0.8.2
+  - @backstage/plugin-techdocs-common@0.1.0
+  - @backstage/plugin-techdocs-node@1.12.15-next.1
+
 ## 1.11.4-next.0
 
 ### Patch Changes

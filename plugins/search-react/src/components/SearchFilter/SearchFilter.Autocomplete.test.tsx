@@ -17,7 +17,6 @@
 import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { screen, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
 import { searchApiRef } from '../../api';
 import { SearchContextProvider, useSearch } from '../../context';
@@ -417,6 +416,35 @@ describe('SearchFilter.Autocomplete', () => {
       // There should be no content in the filter context.
       await waitFor(() => {
         expect(screen.getByTestId(`${name}-filter-spy`)).toHaveTextContent('');
+      });
+    });
+
+    it('allows typing a value and shows suggestions', async () => {
+      render(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [configApiRef, configApiMock],
+          ]}
+        >
+          <SearchContextProvider>
+            <SearchFilter.Autocomplete multiple name={name} values={values} />
+          </SearchContextProvider>
+        </TestApiProvider>,
+      );
+
+      const input = screen.getByRole('textbox');
+      await userEvent.type(input, 'value');
+
+      await waitFor(() => {
+        expect(input).toHaveValue('value');
+        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(
+          screen.getByRole('option', { name: values[0] }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('option', { name: values[1] }),
+        ).toBeInTheDocument();
       });
     });
   });

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
 import { Git } from '../scm';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * @public
@@ -27,10 +27,11 @@ export async function initRepoAndPush(input: {
   // it has to be provided as password together with a username
   // which may be a fixed value defined by the provider.
   auth: { username: string; password: string } | { token: string };
-  logger: Logger;
+  logger: LoggerService;
   defaultBranch?: string;
   commitMessage?: string;
   gitAuthorInfo?: { name?: string; email?: string };
+  signingKey?: string;
 }): Promise<{ commitHash: string }> {
   const {
     dir,
@@ -40,6 +41,7 @@ export async function initRepoAndPush(input: {
     defaultBranch = 'master',
     commitMessage = 'Initial commit',
     gitAuthorInfo,
+    signingKey,
   } = input;
   const git = Git.fromAuth({
     ...auth,
@@ -64,6 +66,7 @@ export async function initRepoAndPush(input: {
     message: commitMessage,
     author: authorInfo,
     committer: authorInfo,
+    signingKey,
   });
 
   await git.push({
@@ -84,11 +87,12 @@ export async function commitAndPushRepo(input: {
   // it has to be provided as password together with a username
   // which may be a fixed value defined by the provider.
   auth: { username: string; password: string } | { token: string };
-  logger: Logger;
+  logger: LoggerService;
   commitMessage: string;
   gitAuthorInfo?: { name?: string; email?: string };
   branch?: string;
   remoteRef?: string;
+  signingKey?: string;
 }): Promise<{ commitHash: string }> {
   const {
     dir,
@@ -98,6 +102,7 @@ export async function commitAndPushRepo(input: {
     gitAuthorInfo,
     branch = 'master',
     remoteRef,
+    signingKey,
   } = input;
 
   const git = Git.fromAuth({
@@ -120,6 +125,7 @@ export async function commitAndPushRepo(input: {
     message: commitMessage,
     author: authorInfo,
     committer: authorInfo,
+    signingKey,
   });
 
   await git.push({
@@ -141,7 +147,7 @@ export async function cloneRepo(options: {
   // it has to be provided as password together with a username
   // which may be a fixed value defined by the provider.
   auth: { username: string; password: string } | { token: string };
-  logger?: Logger | undefined;
+  logger?: LoggerService | undefined;
   ref?: string | undefined;
   depth?: number | undefined;
   noCheckout?: boolean | undefined;
@@ -166,7 +172,7 @@ export async function createBranch(options: {
   // it has to be provided as password together with a username
   // which may be a fixed value defined by the provider.
   auth: { username: string; password: string } | { token: string };
-  logger?: Logger | undefined;
+  logger?: LoggerService | undefined;
 }): Promise<void> {
   const { dir, ref, auth, logger } = options;
   const git = Git.fromAuth({
@@ -187,7 +193,7 @@ export async function addFiles(options: {
   // it has to be provided as password together with a username
   // which may be a fixed value defined by the provider.
   auth: { username: string; password: string } | { token: string };
-  logger?: Logger | undefined;
+  logger?: LoggerService | undefined;
 }): Promise<void> {
   const { dir, filepath, auth, logger } = options;
   const git = Git.fromAuth({
@@ -207,12 +213,13 @@ export async function commitAndPushBranch(options: {
   // it has to be provided as password together with a username
   // which may be a fixed value defined by the provider.
   auth: { username: string; password: string } | { token: string };
-  logger?: Logger | undefined;
+  logger?: LoggerService | undefined;
   commitMessage: string;
   gitAuthorInfo?: { name?: string; email?: string };
   branch?: string;
   remoteRef?: string;
   remote?: string;
+  signingKey?: string;
 }): Promise<{ commitHash: string }> {
   const {
     dir,
@@ -223,6 +230,7 @@ export async function commitAndPushBranch(options: {
     branch = 'master',
     remoteRef,
     remote = 'origin',
+    signingKey,
   } = options;
   const git = Git.fromAuth({
     ...auth,
@@ -240,6 +248,7 @@ export async function commitAndPushBranch(options: {
     message: commitMessage,
     author: authorInfo,
     committer: authorInfo,
+    signingKey,
   });
 
   await git.push({
