@@ -508,6 +508,26 @@ export const componentDefinitions: {
       readonly disabled: readonly [true, false];
     };
   };
+  readonly Header: {
+    readonly classNames: {
+      readonly toolbar: 'canon-HeaderToolbar';
+      readonly toolbarWrapper: 'canon-HeaderToolbarWrapper';
+      readonly toolbarContent: 'canon-HeaderToolbarContent';
+      readonly toolbarOptions: 'canon-HeaderToolbarOptions';
+      readonly toolbarIcon: 'canon-HeaderToolbarIcon';
+      readonly toolbarName: 'canon-HeaderToolbarName';
+      readonly breadcrumbs: 'canon-HeaderBreadcrumbs';
+      readonly breadcrumb: 'canon-HeaderBreadcrumb';
+      readonly breadcrumbLink: 'canon-HeaderBreadcrumbLink';
+      readonly breadcrumbSeparator: 'canon-HeaderBreadcrumbSeparator';
+      readonly tabs: 'canon-HeaderTabs';
+      readonly tabList: 'canon-HeaderTabList';
+      readonly tab: 'canon-HeaderTab';
+      readonly tabActive: 'canon-HeaderTabActive';
+      readonly tabHovered: 'canon-HeaderTabHovered';
+      readonly subNav: 'canon-HeaderSubNav';
+    };
+  };
   readonly Tooltip: {
     readonly classNames: {
       readonly trigger: 'canon-TooltipTrigger';
@@ -914,6 +934,82 @@ export interface GridProps extends SpaceProps {
   gap?: GapProps['gap'];
   // (undocumented)
   style?: React.CSSProperties;
+}
+
+// @public
+export const Header: (props: HeaderProps) => JSX_2.Element;
+
+// @public
+export interface HeaderBreadcrumb {
+  // (undocumented)
+  href: string;
+  // (undocumented)
+  label: string;
+}
+
+// @public
+export interface HeaderOption {
+  // (undocumented)
+  label: string;
+  // (undocumented)
+  onClick?: () => void;
+  // (undocumented)
+  value: string;
+}
+
+// @public
+export const HeaderPage: (props: HeaderPageProps) => JSX_2.Element;
+
+// @public
+export interface HeaderPageOption {
+  // (undocumented)
+  label: string;
+  // (undocumented)
+  onClick?: () => void;
+  // (undocumented)
+  value: string;
+}
+
+// @public
+export interface HeaderPageProps {
+  // (undocumented)
+  description?: string;
+  // (undocumented)
+  options?: HeaderPageOption[];
+  // (undocumented)
+  tabs?: HeaderPageTab[];
+  // (undocumented)
+  title?: string;
+}
+
+// @public
+export interface HeaderPageTab {
+  // (undocumented)
+  href?: string;
+  // (undocumented)
+  label: string;
+}
+
+// @public
+export interface HeaderProps {
+  // (undocumented)
+  breadcrumbs?: HeaderBreadcrumb[];
+  // (undocumented)
+  icon?: React.ReactNode;
+  // (undocumented)
+  options?: HeaderOption[];
+  // (undocumented)
+  tabs?: HeaderTab[];
+  // (undocumented)
+  title?: string;
+}
+
+// @public
+export interface HeaderTab {
+  // (undocumented)
+  href?: string;
+  // (undocumented)
+  label: string;
 }
 
 // @public (undocumented)

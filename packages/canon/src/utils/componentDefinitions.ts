@@ -235,6 +235,26 @@ export const componentDefinitions = {
       disabled: [true, false] as const,
     },
   },
+  Header: {
+    classNames: {
+      toolbar: 'canon-HeaderToolbar',
+      toolbarWrapper: 'canon-HeaderToolbarWrapper',
+      toolbarContent: 'canon-HeaderToolbarContent',
+      toolbarOptions: 'canon-HeaderToolbarOptions',
+      toolbarIcon: 'canon-HeaderToolbarIcon',
+      toolbarName: 'canon-HeaderToolbarName',
+      breadcrumbs: 'canon-HeaderBreadcrumbs',
+      breadcrumb: 'canon-HeaderBreadcrumb',
+      breadcrumbLink: 'canon-HeaderBreadcrumbLink',
+      breadcrumbSeparator: 'canon-HeaderBreadcrumbSeparator',
+      tabs: 'canon-HeaderTabs',
+      tabList: 'canon-HeaderTabList',
+      tab: 'canon-HeaderTab',
+      tabActive: 'canon-HeaderTabActive',
+      tabHovered: 'canon-HeaderTabHovered',
+      subNav: 'canon-HeaderSubNav',
+    },
+  },
   Tooltip: {
     classNames: {
       trigger: 'canon-TooltipTrigger',
