@@ -24,6 +24,8 @@ import {
 } from '@backstage/backend-plugin-api';
 
 /**
+ * Service for collecting metrics for plugins.
+ *
  * @alpha
  */
 export const metricsServiceFactory = createServiceFactory({
