@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { actionsRegistryServiceFactory } from './entrypoints/actionsRegistry';
-export { actionsServiceFactory } from './entrypoints/actions';
-export { metricsServiceFactory } from './entrypoints/metrics';
-export { rootMetricsServiceFactory } from './entrypoints/rootMetrics';
+import { MetricsService } from './MetricsService';
+
+/**
+ * @alpha
+ */
+export interface RootMetricsService extends MetricsService {
+  forPlugin(pluginId: string): MetricsService;
+}

@@ -54,3 +54,34 @@ export const actionsRegistryServiceRef = createServiceRef<
 >({
   id: 'alpha.core.actionsRegistry',
 });
+
+/**
+ * Service for collecting metrics.
+ *
+ * See {@link MetricsService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/metrics | the service docs}
+ * for more information.
+ *
+ * @alpha
+ */
+export const metricsServiceRef = createServiceRef<
+  import('./MetricsService').MetricsService
+>({
+  id: 'alpha.core.metrics',
+});
+
+/**
+ * Service for collecting metrics for root services
+ *
+ * See {@link RootMetricsService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/root-metrics | the service docs}
+ * for more information.
+ *
+ * @alpha
+ */
+export const rootMetricsServiceRef = createServiceRef<
+  import('./RootMetricsService').RootMetricsService
+>({
+  id: 'alpha.core.rootMetrics',
+  scope: 'root',
+});

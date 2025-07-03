@@ -5,11 +5,20 @@
 ```ts
 import { AnyZodObject } from 'zod';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { Counter } from '@opentelemetry/api';
+import { Gauge } from '@opentelemetry/api';
+import { Histogram } from '@opentelemetry/api';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { Meter } from '@opentelemetry/api';
+import { MetricOptions } from '@opentelemetry/api';
+import { ObservableCounter } from '@opentelemetry/api';
+import { ObservableGauge } from '@opentelemetry/api';
+import { ObservableUpDownCounter } from '@opentelemetry/api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
+import { UpDownCounter } from '@opentelemetry/api';
 import { z } from 'zod';
 
 // @alpha (undocumented)
@@ -125,6 +134,51 @@ export interface InstanceMetadataService {
 export const instanceMetadataServiceRef: ServiceRef<
   InstanceMetadataService,
   'plugin',
+  'singleton'
+>;
+
+// @alpha
+export interface MetricsService {
+  // (undocumented)
+  createCounter(name: string, options?: MetricOptions): Counter;
+  // (undocumented)
+  createGauge(name: string, options?: MetricOptions): Gauge;
+  // (undocumented)
+  createHistogram(name: string, options?: MetricOptions): Histogram;
+  // (undocumented)
+  createObservableCounter(
+    name: string,
+    options?: MetricOptions,
+  ): ObservableCounter;
+  // (undocumented)
+  createObservableGauge(name: string, options?: MetricOptions): ObservableGauge;
+  // (undocumented)
+  createObservableUpDownCounter(
+    name: string,
+    options?: MetricOptions,
+  ): ObservableUpDownCounter;
+  // (undocumented)
+  createUpDownCounter(name: string, options?: MetricOptions): UpDownCounter;
+  getMeter(): Meter;
+}
+
+// @alpha
+export const metricsServiceRef: ServiceRef<
+  MetricsService,
+  'plugin',
+  'singleton'
+>;
+
+// @alpha (undocumented)
+export interface RootMetricsService extends MetricsService {
+  // (undocumented)
+  forPlugin(pluginId: string): MetricsService;
+}
+
+// @alpha
+export const rootMetricsServiceRef: ServiceRef<
+  RootMetricsService,
+  'root',
   'singleton'
 >;
 

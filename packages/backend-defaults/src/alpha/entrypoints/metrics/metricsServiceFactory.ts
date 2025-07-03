@@ -14,27 +14,30 @@
  * limitations under the License.
  */
 
-export type {
-  BackendFeatureMeta,
-  InstanceMetadataService,
-} from './InstanceMetadataService';
-
-export type {
-  ActionsRegistryService,
-  ActionsRegistryActionOptions,
-  ActionsRegistryActionContext,
-} from './ActionsRegistryService';
-
-export type { ActionsService, ActionsServiceAction } from './ActionsService';
-
-export type { MetricsService } from './MetricsService';
-
-export type { RootMetricsService } from './RootMetricsService';
-
-export {
-  actionsRegistryServiceRef,
-  actionsServiceRef,
-  instanceMetadataServiceRef,
+import {
   metricsServiceRef,
   rootMetricsServiceRef,
-} from './refs';
+} from '@backstage/backend-plugin-api/alpha';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+
+/**
+ * @alpha
+ */
+export const metricsServiceFactory = createServiceFactory({
+  service: metricsServiceRef,
+  deps: {
+    rootConfig: coreServices.rootConfig,
+    rootMetricsService: rootMetricsServiceRef,
+    pluginMetadata: coreServices.pluginMetadata,
+  },
+  factory: ({ rootMetricsService, pluginMetadata }) => {
+    const rootId = 'backstage';
+    const pluginId = pluginMetadata.getId();
+    const id = `${rootId}.plugin.${pluginId}`;
+
+    return rootMetricsService.forPlugin(id);
+  },
+});
