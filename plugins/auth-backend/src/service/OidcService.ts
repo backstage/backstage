@@ -16,10 +16,11 @@
 import { AuthService } from '@backstage/backend-plugin-api';
 import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
-import { InputError } from '@backstage/errors';
+import { InputError, AuthenticationError } from '@backstage/errors';
 import { decodeJwt } from 'jose';
 import crypto from 'crypto';
 import { OidcDatabase } from '../database/OidcDatabase';
+import { DateTime } from 'luxon';
 
 export class OidcService {
   private constructor(
@@ -52,7 +53,7 @@ export class OidcService {
       token_endpoint: `${this.baseUrl}/v1/token`,
       userinfo_endpoint: `${this.baseUrl}/v1/userinfo`,
       jwks_uri: `${this.baseUrl}/.well-known/jwks.json`,
-      response_types_supported: ['id_token'],
+      response_types_supported: ['code', 'id_token'],
       subject_types_supported: ['public'],
       id_token_signing_alg_values_supported: [
         'RS256',
@@ -67,11 +68,15 @@ export class OidcService {
         'EdDSA',
       ],
       scopes_supported: ['openid'],
-      token_endpoint_auth_methods_supported: [],
+      token_endpoint_auth_methods_supported: [
+        'client_secret_basic',
+        'client_secret_post',
+      ],
       claims_supported: ['sub', 'ent'],
-      grant_types_supported: [],
+      grant_types_supported: ['authorization_code'],
       authorization_endpoint: `${this.baseUrl}/v1/authorize`,
       registration_endpoint: `${this.baseUrl}/v1/register`,
+      code_challenge_methods_supported: ['S256', 'plain'],
     };
   }
 
@@ -116,5 +121,192 @@ export class OidcService {
       grantTypes: opts.grantTypes ?? ['authorization_code'],
       scope: opts.scope,
     });
+  }
+
+  public async authorize(opts: {
+    clientId: string;
+    redirectUri: string;
+    responseType: string;
+    scope?: string;
+    state?: string;
+    nonce?: string;
+    codeChallenge?: string;
+    codeChallengeMethod?: string;
+    userEntityRef: string;
+  }) {
+    const {
+      clientId,
+      redirectUri,
+      responseType,
+      scope,
+      state,
+      nonce,
+      codeChallenge,
+      codeChallengeMethod,
+      userEntityRef,
+    } = opts;
+
+    if (responseType !== 'code') {
+      throw new InputError('Only authorization code flow is supported');
+    }
+
+    const client = await this.oidc.getClient({ clientId });
+    if (!client) {
+      throw new InputError('Invalid client_id');
+    }
+
+    if (!client.redirectUris.includes(redirectUri)) {
+      throw new InputError('Invalid redirect_uri');
+    }
+
+    if (codeChallenge) {
+      if (
+        !codeChallengeMethod ||
+        !['S256', 'plain'].includes(codeChallengeMethod)
+      ) {
+        throw new InputError('Invalid code_challenge_method');
+      }
+    }
+
+    const authorizationCode = crypto.randomBytes(32).toString('base64url');
+    const expiresAt = DateTime.now().plus({ minutes: 10 }).toISO();
+
+    await this.oidc.createAuthorizationCode({
+      code: authorizationCode,
+      clientId,
+      userEntityRef,
+      redirectUri,
+      scope,
+      codeChallenge,
+      codeChallengeMethod,
+      nonce,
+      expiresAt,
+    });
+
+    const redirectUrl = new URL(redirectUri);
+    redirectUrl.searchParams.append('code', authorizationCode);
+    if (state) {
+      redirectUrl.searchParams.append('state', state);
+    }
+
+    return {
+      redirectUrl: redirectUrl.toString(),
+    };
+  }
+
+  public async exchangeCodeForToken(params: {
+    code: string;
+    clientId: string;
+    clientSecret: string;
+    redirectUri: string;
+    codeVerifier?: string;
+    grantType: string;
+  }) {
+    const {
+      code,
+      clientId,
+      clientSecret,
+      redirectUri,
+      codeVerifier,
+      grantType,
+    } = params;
+
+    if (grantType !== 'authorization_code') {
+      throw new InputError('Unsupported grant type');
+    }
+
+    const client = await this.oidc.getClient({ clientId });
+    if (!client) {
+      throw new AuthenticationError('Invalid client');
+    }
+
+    if (client.clientSecret !== clientSecret) {
+      throw new AuthenticationError('Invalid client credentials');
+    }
+
+    const authCode = await this.oidc.getAuthorizationCode({ code });
+    if (!authCode) {
+      throw new AuthenticationError('Invalid authorization code');
+    }
+
+    if (DateTime.fromISO(authCode.expiresAt) < DateTime.now()) {
+      throw new AuthenticationError('Authorization code expired');
+    }
+
+    if (authCode.used) {
+      throw new AuthenticationError('Authorization code already used');
+    }
+
+    if (authCode.clientId !== clientId) {
+      throw new AuthenticationError('Client ID mismatch');
+    }
+
+    if (authCode.redirectUri !== redirectUri) {
+      throw new AuthenticationError('Redirect URI mismatch');
+    }
+
+    if (authCode.codeChallenge) {
+      if (!codeVerifier) {
+        throw new AuthenticationError('Code verifier required for PKCE');
+      }
+
+      if (
+        !this.verifyPkce(
+          authCode.codeChallenge,
+          codeVerifier,
+          authCode.codeChallengeMethod,
+        )
+      ) {
+        throw new AuthenticationError('Invalid code verifier');
+      }
+    }
+
+    await this.oidc.updateAuthorizationCode({
+      code,
+      used: true,
+    });
+
+    const accessTokenId = crypto.randomUUID();
+    const expiresAt = DateTime.now().plus({ hours: 1 }).toISO();
+
+    await this.oidc.createAccessToken({
+      tokenId: accessTokenId,
+      clientId,
+      userEntityRef: authCode.userEntityRef,
+      scope: authCode.scope,
+      expiresAt,
+    });
+
+    const { token } = await this.tokenIssuer.issueToken({
+      claims: {
+        sub: authCode.userEntityRef,
+      },
+    });
+
+    return {
+      access_token: token,
+      token_type: 'Bearer',
+      expires_in: 3600,
+      id_token: token,
+      scope: authCode.scope || 'openid',
+    };
+  }
+
+  private verifyPkce(
+    codeChallenge: string,
+    codeVerifier: string,
+    method?: string,
+  ): boolean {
+    if (!method || method === 'plain') {
+      return codeChallenge === codeVerifier;
+    }
+
+    if (method === 'S256') {
+      const hash = crypto.createHash('sha256').update(codeVerifier).digest();
+      const base64urlHash = hash.toString('base64url');
+      return codeChallenge === base64urlHash;
+    }
+
+    return false;
   }
 }
