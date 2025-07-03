@@ -39,7 +39,6 @@ import { TokenIssuer } from '../identity/types';
 import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
-import { OidcService } from './OidcService';
 import { OidcRouter } from './OidcRouter';
 
 interface RouterOptions {

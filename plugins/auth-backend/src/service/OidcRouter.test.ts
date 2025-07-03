@@ -23,7 +23,6 @@ import Router from 'express-promise-router';
 import request from 'supertest';
 import { OidcRouter } from './OidcRouter';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
-import { OidcService } from './OidcService';
 
 describe('OidcRouter', () => {
   describe('/v1/userinfo', () => {
