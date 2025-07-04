@@ -36,10 +36,10 @@
 .canon-Button[data-variant='primary'] {
   background-color: var(--canon-bg-solid);
   color: var(--canon-fg-solid);
-  transition: background-color 150ms ease, box-shadow 150ms ease;
 
   &:hover {
     background-color: var(--canon-bg-solid-hover);
+    transition: background-color 150ms ease;
   }
 
   &:active {
@@ -61,10 +61,10 @@
   background-color: var(--canon-bg-surface-1);
   box-shadow: inset 0 0 0 1px var(--canon-border);
   color: var(--canon-fg-primary);
-  transition: box-shadow 150ms ease;
 
   &:hover {
     box-shadow: inset 0 0 0 1px var(--canon-border-hover);
+    transition: box-shadow 150ms ease;
   }
 
   &:active {
