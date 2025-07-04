@@ -10,6 +10,7 @@ Airbrakes
 ajv
 Alaria
 Alef
+allowedHosts
 allowlisted
 Anddddd
 Apdex
@@ -103,6 +104,8 @@ deliverables
 denormalized
 dependabot
 deps
+dequeue
+dequeueing
 deserialization
 destructured
 destructuring
@@ -112,8 +115,6 @@ devcontainer
 devcontainers
 devops
 devs
-dequeue
-dequeueing
 dialogs
 disambiguator
 discoverability
@@ -151,8 +152,8 @@ FireHydrant
 Firekube
 Firestore
 Fiverr
-Flightcontrol
 flightcontrol
+Flightcontrol
 Francesco
 Frontside
 Gaurav
@@ -176,8 +177,8 @@ Hackathons
 haproxy
 hardcoded
 hardcoding
-Harness
 harness
+Harness
 Helidon
 Henneke
 Heroku
@@ -200,9 +201,10 @@ Indal
 indexable
 ingestors
 inlined
-inlining
 inlinehilite
+inlining
 integrator's
+intellij
 interop
 interoperate
 iterable
@@ -313,8 +315,8 @@ OpenSearch
 OpenShift
 openssl
 orgs
-Overridable
 overridable
+Overridable
 padding
 paddings
 pagerduty
@@ -381,10 +383,10 @@ retryable
 reusability
 Reusability
 roadmaps
-rollbar
-rollout
 Roboto
+rollbar
 Rollbar
+rollout
 Rollup
 routable
 Routable
@@ -400,9 +402,10 @@ sanitization
 scaffolded
 scaffolder
 Scaffolder
-scrollbar
 SCM
 SCMs
+scrollable
+scrollbar
 sdks
 seb
 semlas
@@ -410,14 +413,15 @@ semver
 sendmail
 serializable
 Serverless
+severities
 shoutout
 SIG
 signoff
 SIGs
 siloed
 Sinon
-snackbars
 snackbar
+snackbars
 Snyk
 Sonarqube
 sourcemaps
@@ -488,6 +492,7 @@ transpiled
 transpiler
 transpilers
 truthy
+tsconfig
 TSDoc
 typeahead
 ui
@@ -538,7 +543,3 @@ zod
 Zolotusky
 zoomable
 zsh
-scrollable
-severities
-intellij
-tsconfig

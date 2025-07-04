@@ -79,7 +79,6 @@ writing nice `yaml` files that just work.
 spec:
   steps:
       input:
-        allowedHosts: ['github.com']
         # highlight-remove-next-line
         description: 'This is {{ parameters.name }}'
         # highlight-add-next-line
