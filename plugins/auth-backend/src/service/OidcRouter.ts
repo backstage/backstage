@@ -257,15 +257,12 @@ export class OidcRouter {
           redirectUrl: redirectUrl.toString(),
         });
       } catch (error) {
-        this.logger.error(
-          `Failed to reject consent: ${
-            isError(error) ? error.message : 'Unknown error'
-          }`,
-          error,
-        );
+        const description = isError(error) ? error.message : 'Unknown error';
+        this.logger.error(`Failed to reject consent: ${description}`, error);
+
         return res.status(400).json({
           error: 'invalid_request',
-          error_description: isError(error) ? error.message : 'Unknown error',
+          error_description: description,
         });
       }
     });
@@ -335,7 +332,7 @@ export class OidcRouter {
 
         return res.status(500).json({
           error: 'server_error',
-          error_description: isError(error) ? error.message : 'Unknown error',
+          error_description: description,
         });
       }
     });
