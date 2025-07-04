@@ -146,7 +146,7 @@
 
 .canon-HeaderTab {
   font-size: var(--canon-font-size-3);
-  color: var(--canon-fg-primary);
+  color: var(--canon-fg-secondary);
   height: 36px;
   display: flex;
   align-items: center;
@@ -155,6 +155,10 @@
   position: relative;
   z-index: 2;
   padding-inline: var(--canon-space-2);
+
+  &[data-selected='true'] {
+    color: var(--canon-fg-primary);
+  }
 }
 
 /* Active tab indicator */

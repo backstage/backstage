@@ -17,7 +17,16 @@
   --sb-panel-bottom: 8px;
   --sb-panel-left: 8px;
   --sb-panel-right: 8px;
-  --sb-sidebar-border: 1px solid var(--canon-border);
-  --sb-options-border: 1px solid var(--canon-border);
+  --sb-sidebar-border: none;
+  --sb-sidebar-border-right: none;
+  --sb-options-border: none;
+  --sb-options-border-left: none;
   --sb-content-padding-inline: 266px;
+}
+
+[data-theme-name='spotify'][data-theme='light'] {
+  --sb-sidebar-border: 1px solid var(--canon-border);
+  --sb-sidebar-border-right: 1px solid var(--canon-border);
+  --sb-options-border: 1px solid var(--canon-border);
+  --sb-options-border-left: 1px solid var(--canon-border);
 }

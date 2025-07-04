@@ -207,12 +207,12 @@
 
   .canon-HeaderToolbarWrapper {
     border-radius: var(--canon-radius-3);
-    border: 1px solid var(--canon-border);
+    border: none;
   }
 
   .canon-HeaderTabs {
     border-radius: var(--canon-radius-3);
-    border: 1px solid var(--canon-border);
+    border: none;
     margin-top: var(--canon-space-2);
   }
 }
@@ -239,6 +239,14 @@
   --canon-border-success: #53db83;
 
   --canon-ring: rgba(0, 0, 0, 0.2);
+
+  .canon-HeaderToolbarWrapper {
+    border: 1px solid var(--canon-border);
+  }
+
+  .canon-HeaderTabs {
+    border: 1px solid var(--canon-border);
+  }
 }
 
 [data-theme='dark'][data-theme-name='spotify'] {

@@ -9670,7 +9670,7 @@
 
 .canon-HeaderTab {
   font-size: var(--canon-font-size-3);
-  color: var(--canon-fg-primary);
+  color: var(--canon-fg-secondary);
   cursor: pointer;
   z-index: 2;
   height: 36px;
@@ -9679,6 +9679,10 @@
   align-items: center;
   display: flex;
   position: relative;
+
+  &[data-selected="true"] {
+    color: var(--canon-fg-primary);
+  }
 }
 
 .canon-HeaderTabActive {
