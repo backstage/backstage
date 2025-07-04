@@ -87,7 +87,6 @@ export interface DefaultCatalogPageProps {
   filters?: ReactNode;
   initiallySelectedNamespaces?: string[];
   pagination?: EntityListPagination;
-  contentHeader?: ReactNode;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -102,7 +101,6 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     ownerPickerMode,
     filters,
     initiallySelectedNamespaces,
-    contentHeader,
   } = props;
 
   return (
@@ -126,7 +124,6 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
         />
       }
       pagination={pagination}
-      contentHeader={contentHeader}
     />
   );
 }

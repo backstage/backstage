@@ -16,11 +16,7 @@
 
 import { QueryEntitiesInitialRequest } from '@backstage/catalog-client';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
-import {
-  DismissableBanner,
-  TableColumn,
-  TableProps,
-} from '@backstage/core-components';
+import { TableColumn, TableProps } from '@backstage/core-components';
 import { identityApiRef, storageApiRef } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
@@ -369,24 +365,5 @@ describe('DefaultCatalogPage', () => {
     ).toBeInTheDocument();
     fireEvent.click(button);
     expect(screen.getByRole('presentation')).toBeVisible();
-  }, 20_000);
-
-  it('should render the custom content header passed as prop', async () => {
-    const customContentHeader = (
-      <DismissableBanner
-        id="repository_migration_notice"
-        variant="info"
-        message="We're currently migrating repositories to a new provider. Your entities might be temporarily missing from the catalog."
-      />
-    );
-    await renderWrapped(
-      <DefaultCatalogPage contentHeader={customContentHeader} />,
-    );
-
-    await expect(
-      screen.findByText(
-        "We're currently migrating repositories to a new provider. Your entities might be temporarily missing from the catalog.",
-      ),
-    ).resolves.toBeInTheDocument();
   }, 20_000);
 });
