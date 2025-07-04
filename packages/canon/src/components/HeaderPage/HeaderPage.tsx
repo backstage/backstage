@@ -34,7 +34,7 @@ export const HeaderPage = (props: HeaderPageProps) => {
     <Flex pl="4" pr="2" mt="6" justify="between">
       <Flex direction="column" gap="2">
         <Heading variant="title4">{title}</Heading>
-        <Text>{description}</Text>
+        <Text color="secondary">{description}</Text>
       </Flex>
       <div>
         {options && (
@@ -45,7 +45,7 @@ export const HeaderPage = (props: HeaderPageProps) => {
                   {...props}
                   size="small"
                   icon={<RiMore2Line />}
-                  variant="secondary"
+                  variant="tertiary"
                 />
               )}
             />

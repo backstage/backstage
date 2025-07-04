@@ -516,7 +516,7 @@ export const componentDefinitions: {
       readonly toolbar: 'canon-HeaderToolbar';
       readonly toolbarWrapper: 'canon-HeaderToolbarWrapper';
       readonly toolbarContent: 'canon-HeaderToolbarContent';
-      readonly toolbarOptions: 'canon-HeaderToolbarOptions';
+      readonly toolbarControls: 'canon-HeaderToolbarControls';
       readonly toolbarIcon: 'canon-HeaderToolbarIcon';
       readonly toolbarName: 'canon-HeaderToolbarName';
       readonly breadcrumbs: 'canon-HeaderBreadcrumbs';
@@ -998,9 +998,11 @@ export interface HeaderProps {
   // (undocumented)
   breadcrumbs?: HeaderBreadcrumb[];
   // (undocumented)
+  customActions?: React.ReactNode;
+  // (undocumented)
   icon?: React.ReactNode;
   // (undocumented)
-  options?: HeaderOption[];
+  menuItems?: HeaderOption[];
   // (undocumented)
   tabs?: HeaderTab[];
   // (undocumented)

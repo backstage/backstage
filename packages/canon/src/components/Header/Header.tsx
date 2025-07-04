@@ -24,15 +24,16 @@ import { HeaderTabs } from './HeaderTabs';
  * @public
  */
 export const Header = (props: HeaderProps) => {
-  const { tabs, icon, title, options, breadcrumbs } = props;
+  const { tabs, icon, title, menuItems, breadcrumbs, customActions } = props;
 
   return (
     <>
       <HeaderToolbar
         icon={icon}
         title={title}
-        options={options}
+        menuItems={menuItems}
         breadcrumbs={breadcrumbs}
+        customActions={customActions}
       />
       <HeaderTabs tabs={tabs} />
     </>

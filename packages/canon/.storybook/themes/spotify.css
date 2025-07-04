@@ -1,4 +1,97 @@
 @font-face {
+  font-family: CircularSpTitle;
+  font-weight: 900;
+  font-display: swap;
+  unicode-range: U+0000, U+000D, U+0020-007E, U+00A0-017E, U+018F, U+0192,
+    U+01A0-01A1, U+01AF-01B0, U+01B5-01B6, U+01C4-01C6, U+01F1-01F3, U+01FA-01FF,
+    U+0218-021B, U+0237, U+0259, U+02BB-02BC, U+02C6-02C7, U+02C9, U+02D8-02DD,
+    U+0300-0301, U+0303, U+0309, U+0323, U+0394, U+03A9, U+03BC, U+03C0,
+    U+1E80-1E85, U+1E8A-1E8B, U+1EA0-1EF9, U+1FD6, U+2007-2008, U+200B,
+    U+2010-2011, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026,
+    U+2030, U+2032-2033, U+2039-203A, U+2042, U+2044, U+2051, U+2070,
+    U+2074-2079, U+2080-2089, U+20AB-20AC, U+2113, U+2117, U+2122, U+2126,
+    U+2160-2169, U+216C-216F, U+2190-2193, U+2196-2199, U+21A9, U+21B0-21B5,
+    U+21C6, U+2202, U+2206, U+220F, U+2211-2212, U+2215, U+2219-221A, U+221E,
+    U+222B, U+2248, U+2260, U+2264-2265, U+22C5, U+24C5, U+25A0-25A1, U+25AF,
+    U+25B2-25B3, U+25CA-25CB, U+25CF, U+262E, U+2713, U+2715, U+2780-2788,
+    U+E000, U+E002, U+F6C3, U+FB00-FB04, U+FEFF, U+FF0C, U+FF0E, U+FF1A-FF1B,
+    U+FFFF;
+  src: url('https://encore.scdn.co/fonts/CircularSpTitle-Black-4588c99025b967475c31695b0743dd1a.woff2')
+      format('woff2'),
+    url('https://encore.scdn.co/fonts/CircularSpTitle-Black-506746f387a26f25aa3d023b3e501d34.woff')
+      format('woff');
+}
+@font-face {
+  font-family: CircularSpTitle;
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+0000, U+000D, U+0020-007E, U+00A0-017E, U+018F, U+0192,
+    U+01A0-01A1, U+01AF-01B0, U+01B5-01B6, U+01C4-01C6, U+01F1-01F3, U+01FA-01FF,
+    U+0218-021B, U+0237, U+0259, U+02BB-02BC, U+02C6-02C7, U+02C9, U+02D8-02DD,
+    U+0300-0301, U+0303, U+0309, U+0323, U+0394, U+03A9, U+03BC, U+03C0,
+    U+1E80-1E85, U+1E8A-1E8B, U+1EA0-1EF9, U+1FD6, U+2007-2008, U+200B,
+    U+2010-2011, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026,
+    U+2030, U+2032-2033, U+2039-203A, U+2042, U+2044, U+2051, U+2070,
+    U+2074-2079, U+2080-2089, U+20AB-20AC, U+2113, U+2117, U+2122, U+2126,
+    U+2160-2169, U+216C-216F, U+2190-2193, U+2196-2199, U+21A9, U+21B0-21B5,
+    U+21C6, U+2202, U+2206, U+220F, U+2211-2212, U+2215, U+2219-221A, U+221E,
+    U+222B, U+2248, U+2260, U+2264-2265, U+22C5, U+24C5, U+25A0-25A1, U+25AF,
+    U+25B2-25B3, U+25CA-25CB, U+25CF, U+262E, U+2713, U+2715, U+2780-2788,
+    U+E000, U+E002, U+F6C3, U+FB00-FB04, U+FEFF, U+FF0C, U+FF0E, U+FF1A-FF1B,
+    U+FFFF;
+  src: url('https://encore.scdn.co/fonts/CircularSpTitle-Bold-b2586b06a2e1522e9d879d84c2792a58.woff2')
+      format('woff2'),
+    url('https://encore.scdn.co/fonts/CircularSpTitle-Bold-1624fb2df28c20d7203d7fb86ce8b481.woff')
+      format('woff');
+}
+@font-face {
+  font-family: CircularSp;
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+0000, U+000D, U+0020-007E, U+00A0-017E, U+018F, U+0192,
+    U+01A0-01A1, U+01AF-01B0, U+01B5-01B6, U+01C4-01C6, U+01F1-01F3, U+01FA-01FF,
+    U+0218-021B, U+0237, U+0259, U+02BB-02BC, U+02C6-02C7, U+02C9, U+02D8-02DD,
+    U+0300-0301, U+0303, U+0309, U+0323, U+0394, U+03A9, U+03BC, U+03C0,
+    U+1E80-1E85, U+1E8A-1E8B, U+1EA0-1EF9, U+1FD6, U+2007-2008, U+200B,
+    U+2010-2011, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026,
+    U+2030, U+2032-2033, U+2039-203A, U+2042, U+2044, U+2051, U+2070,
+    U+2074-2079, U+2080-2089, U+20AB-20AC, U+2113, U+2117, U+2122, U+2126,
+    U+2160-2169, U+216C-216F, U+2190-2193, U+2196-2199, U+21A9, U+21B0-21B5,
+    U+21C6, U+2202, U+2206, U+220F, U+2211-2212, U+2215, U+2219-221A, U+221E,
+    U+222B, U+2248, U+2260, U+2264-2265, U+22C5, U+24C5, U+25A0-25A1, U+25AF,
+    U+25B2-25B3, U+25CA-25CB, U+25CF, U+262E, U+2713, U+2715, U+2780-2788,
+    U+E000, U+E002, U+F6C3, U+FB00-FB04, U+FEFF, U+FF0C, U+FF0E, U+FF1A-FF1B,
+    U+FFFF;
+  src: url('https://encore.scdn.co/fonts/CircularSp-Bold-602e7aefc706aa36c6ec1324b9bbc461.woff2')
+      format('woff2'),
+    url('https://encore.scdn.co/fonts/CircularSp-Bold-856afe2da4ba4e61239b129e2c16d633.woff')
+      format('woff');
+}
+@font-face {
+  font-family: CircularSp;
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0000, U+000D, U+0020-007E, U+00A0-017E, U+018F, U+0192,
+    U+01A0-01A1, U+01AF-01B0, U+01B5-01B6, U+01C4-01C6, U+01F1-01F3, U+01FA-01FF,
+    U+0218-021B, U+0237, U+0259, U+02BB-02BC, U+02C6-02C7, U+02C9, U+02D8-02DD,
+    U+0300-0301, U+0303, U+0309, U+0323, U+0394, U+03A9, U+03BC, U+03C0,
+    U+1E80-1E85, U+1E8A-1E8B, U+1EA0-1EF9, U+1FD6, U+2007-2008, U+200B,
+    U+2010-2011, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022, U+2026,
+    U+2030, U+2032-2033, U+2039-203A, U+2042, U+2044, U+2051, U+2070,
+    U+2074-2079, U+2080-2089, U+20AB-20AC, U+2113, U+2117, U+2122, U+2126,
+    U+2160-2169, U+216C-216F, U+2190-2193, U+2196-2199, U+21A9, U+21B0-21B5,
+    U+21C6, U+2202, U+2206, U+220F, U+2211-2212, U+2215, U+2219-221A, U+221E,
+    U+222B, U+2248, U+2260, U+2264-2265, U+22C5, U+24C5, U+25A0-25A1, U+25AF,
+    U+25B2-25B3, U+25CA-25CB, U+25CF, U+262E, U+2713, U+2715, U+2780-2788,
+    U+E000, U+E002, U+F6C3, U+FB00-FB04, U+FEFF, U+FF0C, U+FF0E, U+FF1A-FF1B,
+    U+FFFF;
+  src: url('https://encore.scdn.co/fonts/CircularSp-Book-a00e99ef9996a3a157fb6b746856d04f.woff2')
+      format('woff2'),
+    url('https://encore.scdn.co/fonts/CircularSp-Book-3f73da7d35bd81c706bce7bbb84964de.woff')
+      format('woff');
+}
+
+@font-face {
   font-family: CircularSp;
   font-weight: 700;
   font-display: swap;
@@ -37,11 +130,6 @@
 
   .canon-ButtonIcon {
     padding: 0;
-  }
-
-  .canon-MenuTrigger {
-    all: unset;
-    display: inline-flex;
   }
 
   .canon-MenuPopup {
@@ -112,6 +200,21 @@
       transparent 95%
     );
   }
+
+  .canon-HeaderToolbar {
+    padding-top: var(--canon-space-2);
+  }
+
+  .canon-HeaderToolbarWrapper {
+    border-radius: var(--canon-radius-3);
+    border: none;
+  }
+
+  .canon-HeaderTabs {
+    border-radius: var(--canon-radius-3);
+    border: none;
+    margin-top: var(--canon-space-2);
+  }
 }
 
 [data-theme='light'][data-theme-name='spotify'] {
@@ -136,6 +239,14 @@
   --canon-border-success: #53db83;
 
   --canon-ring: rgba(0, 0, 0, 0.2);
+
+  .canon-HeaderToolbarWrapper {
+    border: 1px solid var(--canon-border);
+  }
+
+  .canon-HeaderTabs {
+    border: 1px solid var(--canon-border);
+  }
 }
 
 [data-theme='dark'][data-theme-name='spotify'] {

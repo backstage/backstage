@@ -17,6 +17,8 @@
 import type { Meta, StoryObj, StoryFn } from '@storybook/react';
 import { Header } from './Header';
 import { HeaderBreadcrumb, HeaderOption, HeaderTab } from './types';
+import { Button } from '../Button';
+import { HeaderPage } from '../HeaderPage';
 
 const meta = {
   title: 'Components/Header',
@@ -59,7 +61,7 @@ const breadcrumbs: HeaderBreadcrumb[] = [
   },
 ];
 
-const options: HeaderOption[] = [
+const menuItems: HeaderOption[] = [
   {
     label: 'Settings',
     value: 'settings',
@@ -78,18 +80,19 @@ const layoutDecorator = [
         style={{
           width: '250px',
           position: 'fixed',
-          left: 8,
-          top: 8,
-          bottom: 8,
-          backgroundColor: 'var(--canon-bg-surface-1',
-          borderRadius: 'var(--canon-radius-2)',
-          border: '1px solid var(--canon-border)',
+          left: 'var(--sb-panel-left)',
+          top: 'var(--sb-panel-top)',
+          bottom: 'var(--sb-panel-bottom)',
+          backgroundColor: 'var(--canon-bg-surface-1)',
+          borderRadius: 'var(--sb-panel-radius)',
+          border: 'var(--sb-sidebar-border)',
+          borderRight: 'var(--sb-sidebar-border-right)',
           zIndex: 1,
         }}
       />
       <div
         style={{
-          paddingInline: '266px',
+          paddingInline: 'var(--sb-content-padding-inline)',
           minHeight: '200vh',
         }}
       >
@@ -99,12 +102,13 @@ const layoutDecorator = [
         style={{
           width: '250px',
           position: 'fixed',
-          right: 8,
-          top: 8,
-          bottom: 8,
-          backgroundColor: 'var(--canon-bg-surface-1',
-          borderRadius: 'var(--canon-radius-2)',
-          border: '1px solid var(--canon-border)',
+          right: 'var(--sb-panel-right)',
+          top: 'var(--sb-panel-top)',
+          bottom: 'var(--sb-panel-bottom)',
+          backgroundColor: 'var(--canon-bg-surface-1)',
+          borderRadius: 'var(--sb-panel-radius)',
+          border: 'var(--sb-options-border)',
+          borderLeft: 'var(--sb-options-border-left)',
           zIndex: 1,
         }}
       />
@@ -124,7 +128,13 @@ export const WithTabs: Story = {
 
 export const WithOptions: Story = {
   args: {
-    options,
+    menuItems,
+  },
+};
+
+export const WithCustomActions: Story = {
+  args: {
+    customActions: <Button>Custom action</Button>,
   },
 };
 
@@ -136,7 +146,7 @@ export const WithBreadcrumbs: Story = {
 
 export const WithAllComponents: Story = {
   args: {
-    options,
+    menuItems,
     tabs,
     breadcrumbs,
   },
@@ -144,7 +154,7 @@ export const WithAllComponents: Story = {
 
 export const WithLayout: Story = {
   args: {
-    options,
+    menuItems,
     tabs,
     breadcrumbs,
   },
@@ -152,4 +162,26 @@ export const WithLayout: Story = {
   parameters: {
     layout: 'fullscreen',
   },
+};
+
+export const WithLayoutAndHeaderPage: Story = {
+  args: {
+    menuItems,
+    tabs,
+    breadcrumbs,
+  },
+  decorators: layoutDecorator,
+  parameters: {
+    layout: 'fullscreen',
+  },
+  render: args => (
+    <>
+      <Header {...args} />
+      <HeaderPage
+        title="Page title"
+        description="Page description"
+        options={args.menuItems}
+      />
+    </>
+  ),
 };
