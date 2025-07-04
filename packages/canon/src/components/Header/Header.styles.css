@@ -18,7 +18,6 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  padding-top: 8px;
 
   &::before {
     content: '';
@@ -41,8 +40,7 @@
   justify-content: space-between;
   background-color: var(--canon-bg-surface-1);
   padding-inline: var(--canon-space-3);
-  border-radius: var(--canon-radius-2);
-  border: 1px solid var(--canon-border);
+  border-bottom: 1px solid var(--canon-border);
   color: var(--canon-fg-primary);
   height: 52px;
 }
@@ -121,9 +119,7 @@
   background-color: var(--canon-bg-surface-1);
   position: relative;
   padding-inline: var(--canon-space-1);
-  border-radius: var(--canon-radius-2);
-  border: 1px solid var(--canon-border);
-  margin-top: 8px;
+  border-bottom: 1px solid var(--canon-border);
 
   /* Initialize CSS variables */
   --active-tab-left: 0px;

@@ -17,7 +17,7 @@
 import { Link } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
 import { useRef, useState, useEffect } from 'react';
-import { RiArrowRightSLine, RiMore2Line } from '@remixicon/react';
+import { RiArrowRightSLine, RiMore2Line, RiShapesLine } from '@remixicon/react';
 import type { HeaderProps } from './types';
 import { ButtonIcon } from '../ButtonIcon';
 import { Menu } from '../Menu';
@@ -91,7 +91,9 @@ export const HeaderToolbar = (props: HeaderProps) => {
       <div className={classNames.toolbarWrapper} ref={toolbarWrapperRef}>
         <div className={classNames.toolbarContent} ref={toolbarContentRef}>
           <div className={classNames.toolbarName}>
-            {icon && <div className={classNames.toolbarIcon}>{icon}</div>}
+            <div className={classNames.toolbarIcon}>
+              {icon || <RiShapesLine />}
+            </div>
             {title || 'Your plugin'}
           </div>
           {breadcrumbs && (

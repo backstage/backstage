@@ -200,6 +200,21 @@
       transparent 95%
     );
   }
+
+  .canon-HeaderToolbar {
+    padding-top: var(--canon-space-2);
+  }
+
+  .canon-HeaderToolbarWrapper {
+    border-radius: var(--canon-radius-3);
+    border: 1px solid var(--canon-border);
+  }
+
+  .canon-HeaderTabs {
+    border-radius: var(--canon-radius-3);
+    border: 1px solid var(--canon-border);
+    margin-top: var(--canon-space-2);
+  }
 }
 
 [data-theme='light'][data-theme-name='spotify'] {
