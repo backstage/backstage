@@ -47,6 +47,7 @@ export const Variants: Story = {
     <Flex align="center" gap="2">
       <ButtonIcon icon={<Icon name="cloud" />} variant="primary" />
       <ButtonIcon icon={<Icon name="cloud" />} variant="secondary" />
+      <ButtonIcon icon={<Icon name="cloud" />} variant="tertiary" />
     </Flex>
   ),
 };
@@ -65,6 +66,7 @@ export const Disabled: Story = {
     <Flex direction="row" gap="2">
       <ButtonIcon isDisabled icon={<Icon name="cloud" />} variant="primary" />
       <ButtonIcon isDisabled icon={<Icon name="cloud" />} variant="secondary" />
+      <ButtonIcon isDisabled icon={<Icon name="cloud" />} variant="tertiary" />
     </Flex>
   ),
 };

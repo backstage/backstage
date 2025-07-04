@@ -175,7 +175,8 @@ export interface ButtonIconProps extends ButtonProps_2 {
   variant?:
     | 'primary'
     | 'secondary'
-    | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
+    | 'tertiary'
+    | Partial<Record<Breakpoint_2, 'primary' | 'secondary' | 'tertiary'>>;
 }
 
 // @public (undocumented)
@@ -197,7 +198,8 @@ export interface ButtonLinkProps extends LinkProps_2 {
   variant?:
     | 'primary'
     | 'secondary'
-    | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
+    | 'tertiary'
+    | Partial<Record<Breakpoint_2, 'primary' | 'secondary' | 'tertiary'>>;
 }
 
 // @public
@@ -214,7 +216,8 @@ export interface ButtonProps extends ButtonProps_2 {
   variant?:
     | 'primary'
     | 'secondary'
-    | Partial<Record<Breakpoint_2, 'primary' | 'secondary'>>;
+    | 'tertiary'
+    | Partial<Record<Breakpoint_2, 'primary' | 'secondary' | 'tertiary'>>;
 }
 
 // @public (undocumented)
