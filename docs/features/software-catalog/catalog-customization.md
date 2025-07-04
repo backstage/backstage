@@ -416,29 +416,6 @@ const routes = (
 
 The same method can be used to customize the _default_ filters with a different interface - for such usage, the generic argument isn't needed since the filter shape remains the same as the default.
 
-## Customize Content Header
-
-The `CatalogIndexPage` comes with a default content header, but you may want to customize it:
-
-```tsx title="packages/app/src/App.tsx"
-import { DismissableBanner } from '@backstage/core-components';
-
-<Route
-  path="/catalog"
-  element={
-    <CatalogIndexPage
-      contentHeader={
-        <DismissableBanner
-          id="repository_migration_notice"
-          variant="info"
-          message="We're currently migrating repositories to a new provider. Your entities might be temporarily missing from the catalog."
-        />
-      }
-    />
-  }
-/>;
-```
-
 ## Advanced Customization
 
 For those where none of the above fits their needs you can take the option of creating a fully custom `CatalogIndexPage`.
@@ -720,4 +697,34 @@ filter:
       type: ownedBy
       target:
         $in: [group:default/admins, group:default/viewers]
+```
+
+### Catalog Content Header
+
+The catalog page comes with a default content header, but you may want to customize it.
+
+You can do so by creating a new extension for the `catalog` plugin and attaching it to the `contentHeader` input of the `page:catalog` page:
+
+```tsx title="packages/app/src/App.tsx"
+const helloBanner = (
+  <DismissableBanner
+    variant="info"
+    message="Hello from the New Frontend System 👋"
+    id="hello"
+  />
+);
+
+const customCatalogModule = createFrontendModule({
+  pluginId: 'catalog',
+  extensions: [
+    createExtension({
+      name: 'my-catalog-page',
+      attachTo: { id: 'page:catalog', input: 'contentHeader' },
+      output: [coreExtensionData.reactElement],
+      factory() {
+        return [coreExtensionData.reactElement(helloBanner)];
+      },
+    }),
+  ],
+});
 ```
