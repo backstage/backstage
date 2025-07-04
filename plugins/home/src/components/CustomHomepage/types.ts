@@ -176,3 +176,18 @@ export const CustomHomepageGridStateV1Schema = z.object({
 export type CustomHomepageGridStateV1 = z.infer<
   typeof CustomHomepageGridStateV1Schema
 >;
+
+export const CustomHomepageGridStateV2Schema = z.object({
+  version: z.literal(2),
+  pages: z.record(
+    z.string(),
+    z.object({
+      current: z.array(GridWidgetSchema),
+      backup: z.array(GridWidgetSchema).optional(),
+    }),
+  ),
+});
+
+export type CustomHomepageGridStateV2 = z.infer<
+  typeof CustomHomepageGridStateV2Schema
+>;

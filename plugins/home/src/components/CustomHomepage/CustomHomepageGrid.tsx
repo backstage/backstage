@@ -44,6 +44,8 @@ import {
   CustomHomepageGridProps,
   CustomHomepageGridStateV1,
   CustomHomepageGridStateV1Schema,
+  CustomHomepageGridStateV2,
+  CustomHomepageGridStateV2Schema,
   GridWidget,
   LayoutConfiguration,
   LayoutConfigurationSchema,
@@ -92,38 +94,69 @@ const useStyles = makeStyles((theme: Theme) =>
 function useHomeStorage(
   defaultWidgets: GridWidget[],
   key: string,
-): [GridWidget[], (value: GridWidget[]) => void] {
+): [
+  GridWidget[],
+  (value: GridWidget[], persist?: boolean) => void,
+  GridWidget[] | null,
+] {
   const storageApi = useApi(storageApiRef).forBucket('home.customHomepage');
-  // TODO: Support multiple home pages
-  const setWidgets = useCallback(
-    (value: GridWidget[]) => {
-      const grid: CustomHomepageGridStateV1 = {
-        version: 1,
-        pages: {
-          default: value,
-        },
-      };
-      storageApi.set(key, JSON.stringify(grid));
-    },
-    [key, storageApi],
-  );
+
   const homeSnapshot = useObservable(
     storageApi.observe$<string>(key),
     storageApi.snapshot(key),
   );
-  const widgets: GridWidget[] = useMemo(() => {
+
+  const { widgets, backup } = useMemo(() => {
     if (homeSnapshot.presence === 'absent') {
-      return defaultWidgets;
+      return { widgets: defaultWidgets, backup: null };
     }
     try {
-      const grid: CustomHomepageGridStateV1 = JSON.parse(homeSnapshot.value!);
-      return CustomHomepageGridStateV1Schema.parse(grid).pages.default;
-    } catch (e) {
-      return defaultWidgets;
-    }
-  }, [homeSnapshot, defaultWidgets]);
+      const parsed = JSON.parse(homeSnapshot.value!);
 
-  return [widgets, setWidgets];
+      const gridV2: CustomHomepageGridStateV2 =
+        CustomHomepageGridStateV2Schema.parse(parsed);
+      if (!gridV2.pages.default.backup) {
+        const upgradedGrid: CustomHomepageGridStateV2 = {
+          version: 2,
+          pages: {
+            default: {
+              current: gridV2.pages.default.current,
+              backup: gridV2.pages.default.current, // Set current data as backup
+            },
+          },
+        };
+        storageApi.set(key, JSON.stringify(upgradedGrid));
+        return {
+          widgets: gridV2.pages.default.current,
+          backup: gridV2.pages.default.current,
+        };
+      }
+      return {
+        widgets: gridV2.pages.default.current,
+        backup: gridV2.pages.default.backup,
+      };
+    } catch (e) {
+      return { widgets: defaultWidgets, backup: null };
+    }
+  }, [homeSnapshot, defaultWidgets, key, storageApi]);
+
+  const setWidgets = useCallback(
+    (value: GridWidget[], persist: boolean = false) => {
+      const grid: CustomHomepageGridStateV2 = {
+        version: 2,
+        pages: {
+          default: {
+            current: value,
+            backup: persist ? value : backup || value,
+          },
+        },
+      };
+      storageApi.set(key, JSON.stringify(grid));
+    },
+    [backup, key, storageApi],
+  );
+
+  return [widgets, setWidgets, backup];
 }
 
 const convertConfigToDefaultWidgets = (
@@ -214,11 +247,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
       ? convertConfigToDefaultWidgets(props.config, availableWidgets)
       : [];
   }, [props.config, availableWidgets]);
-  const [widgets, setWidgets] = useHomeStorage(defaultLayout, 'home');
-  const [lastStoredWidgets, setLastStoredWidgets] = useHomeStorage(
-    defaultLayout,
-    'lastStoredWidgets',
-  );
+  const [widgets, setWidgets, backup] = useHomeStorage(defaultLayout, 'home');
   const [addWidgetDialogOpen, setAddWidgetDialogOpen] = useState(false);
   const [cancelConfirmDialogOpen, setCancelConfirmDialogOpen] = useState(false);
   const editModeOn = widgets.find(w => w.layout.isResizable) !== undefined;
@@ -286,9 +315,6 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
 
   const changeEditMode = (mode: boolean) => {
     setEditMode(mode);
-    if (mode) {
-      setLastStoredWidgets(widgets);
-    }
     setWidgets(
       widgets.map(w => {
         const resizable = w.resizable === false ? false : mode;
@@ -298,6 +324,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           layout: { ...w.layout, isDraggable: movable, isResizable: resizable },
         };
       }),
+      !mode,
     );
   };
 
@@ -306,9 +333,19 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   };
 
   const handleConfirmDiscard = () => {
-    setWidgets(lastStoredWidgets);
+    if (backup) {
+      setWidgets(
+        backup.map(w => ({
+          ...w,
+          layout: {
+            ...w.layout,
+            isDraggable: false,
+            isResizable: false,
+          },
+        })),
+      );
+    }
     setEditMode(false);
-    setLastStoredWidgets([]);
     setCancelConfirmDialogOpen(false);
   };
 
