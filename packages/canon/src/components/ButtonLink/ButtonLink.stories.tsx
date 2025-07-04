@@ -63,6 +63,14 @@ export const Variants: Story = {
       >
         Button
       </ButtonLink>
+      <ButtonLink
+        iconStart={<Icon name="cloud" />}
+        variant="tertiary"
+        href="https://canon.backstage.io"
+        target="_blank"
+      >
+        Button
+      </ButtonLink>
     </Flex>
   ),
 };
@@ -125,6 +133,9 @@ export const Disabled: Story = {
       </ButtonLink>
       <ButtonLink variant="secondary" isDisabled>
         Secondary
+      </ButtonLink>
+      <ButtonLink variant="tertiary" isDisabled>
+        Tertiary
       </ButtonLink>
     </Flex>
   ),

@@ -28,7 +28,8 @@ export interface ButtonProps extends RAButtonProps {
   variant?:
     | 'primary'
     | 'secondary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+    | 'tertiary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
   iconStart?: ReactElement;
   iconEnd?: ReactElement;
   children?: ReactNode;
