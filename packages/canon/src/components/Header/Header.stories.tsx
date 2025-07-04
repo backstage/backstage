@@ -17,6 +17,7 @@
 import type { Meta, StoryObj, StoryFn } from '@storybook/react';
 import { Header } from './Header';
 import { HeaderBreadcrumb, HeaderOption, HeaderTab } from './types';
+import { Button } from '../Button';
 
 const meta = {
   title: 'Components/Header',
@@ -59,7 +60,7 @@ const breadcrumbs: HeaderBreadcrumb[] = [
   },
 ];
 
-const options: HeaderOption[] = [
+const menuItems: HeaderOption[] = [
   {
     label: 'Settings',
     value: 'settings',
@@ -124,7 +125,13 @@ export const WithTabs: Story = {
 
 export const WithOptions: Story = {
   args: {
-    options,
+    menuItems,
+  },
+};
+
+export const WithCustomActions: Story = {
+  args: {
+    customActions: <Button>Custom action</Button>,
   },
 };
 
@@ -136,7 +143,7 @@ export const WithBreadcrumbs: Story = {
 
 export const WithAllComponents: Story = {
   args: {
-    options,
+    menuItems,
     tabs,
     breadcrumbs,
   },
@@ -144,7 +151,7 @@ export const WithAllComponents: Story = {
 
 export const WithLayout: Story = {
   args: {
-    options,
+    menuItems,
     tabs,
     breadcrumbs,
   },

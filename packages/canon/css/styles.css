@@ -9601,7 +9601,7 @@
   }
 }
 
-.canon-HeaderToolbarOptions {
+.canon-HeaderToolbarControls {
   right: var(--canon-space-2);
   position: absolute;
   top: 50%;

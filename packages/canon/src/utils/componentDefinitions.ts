@@ -240,7 +240,7 @@ export const componentDefinitions = {
       toolbar: 'canon-HeaderToolbar',
       toolbarWrapper: 'canon-HeaderToolbarWrapper',
       toolbarContent: 'canon-HeaderToolbarContent',
-      toolbarOptions: 'canon-HeaderToolbarOptions',
+      toolbarControls: 'canon-HeaderToolbarControls',
       toolbarIcon: 'canon-HeaderToolbarIcon',
       toolbarName: 'canon-HeaderToolbarName',
       breadcrumbs: 'canon-HeaderBreadcrumbs',

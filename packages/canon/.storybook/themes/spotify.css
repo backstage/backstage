@@ -119,11 +119,6 @@
   padding-inline: var(--canon-space-3);
 }
 
-.canon-MenuTrigger {
-  all: unset;
-  display: inline-flex;
-}
-
 .canon-MenuPopup {
   box-sizing: border-box;
   max-width: 21.25rem;
