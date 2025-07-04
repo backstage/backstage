@@ -9543,7 +9543,6 @@
 
 .canon-HeaderToolbar {
   z-index: 10;
-  padding-top: 8px;
   position: sticky;
   top: 0;
 
@@ -9563,8 +9562,7 @@
   z-index: 1;
   background-color: var(--canon-bg-surface-1);
   padding-inline: var(--canon-space-3);
-  border-radius: var(--canon-radius-2);
-  border: 1px solid var(--canon-border);
+  border-bottom: 1px solid var(--canon-border);
   color: var(--canon-fg-primary);
   flex-direction: row;
   justify-content: space-between;
@@ -9644,8 +9642,7 @@
 .canon-HeaderTabs {
   background-color: var(--canon-bg-surface-1);
   padding-inline: var(--canon-space-1);
-  border-radius: var(--canon-radius-2);
-  border: 1px solid var(--canon-border);
+  border-bottom: 1px solid var(--canon-border);
   --active-tab-left: 0px;
   --active-tab-right: 0px;
   --active-tab-top: 0px;
@@ -9662,7 +9659,6 @@
   --hovered-transition-duration: 0s;
   flex-direction: row;
   align-items: center;
-  margin-top: 8px;
   display: flex;
   position: relative;
 }
