@@ -137,7 +137,7 @@ export const HeaderToolbar = (props: HeaderProps) => {
                   <ButtonIcon
                     size="small"
                     icon={<RiMore2Line />}
-                    variant="secondary"
+                    variant="tertiary"
                     {...props}
                   />
                 )}

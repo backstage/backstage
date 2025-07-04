@@ -45,7 +45,7 @@ export const HeaderPage = (props: HeaderPageProps) => {
                   {...props}
                   size="small"
                   icon={<RiMore2Line />}
-                  variant="secondary"
+                  variant="tertiary"
                 />
               )}
             />
