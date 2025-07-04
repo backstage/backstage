@@ -19,6 +19,21 @@ const _default: FrontendPlugin<
   },
   {},
   {
+    'app-root-element:home/visit-listener': ExtensionDefinition<{
+      kind: 'app-root-element';
+      name: 'visit-listener';
+      config: {};
+      configInput: {};
+      output: ConfigurableExtensionDataRef<
+        JSX_2.Element,
+        'core.reactElement',
+        {}
+      >;
+      inputs: {};
+      params: {
+        element: JSX.Element | (() => JSX.Element);
+      };
+    }>;
     'page:home': ExtensionDefinition<{
       config: {
         path: string | undefined;
