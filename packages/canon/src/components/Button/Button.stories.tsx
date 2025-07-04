@@ -63,6 +63,9 @@ export const Variants: Story = {
       <Button iconStart={<Icon name="cloud" />} variant="secondary">
         Button
       </Button>
+      <Button iconStart={<Icon name="cloud" />} variant="tertiary">
+        Button
+      </Button>
     </Flex>
   ),
 };
@@ -125,6 +128,9 @@ export const Disabled: Story = {
       </Button>
       <Button variant="secondary" isDisabled>
         Secondary
+      </Button>
+      <Button variant="tertiary" isDisabled>
+        Tertiary
       </Button>
     </Flex>
   ),

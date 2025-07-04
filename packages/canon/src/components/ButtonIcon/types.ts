@@ -28,6 +28,7 @@ export interface ButtonIconProps extends RAButtonProps {
   variant?:
     | 'primary'
     | 'secondary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+    | 'tertiary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
   icon?: ReactElement;
 }

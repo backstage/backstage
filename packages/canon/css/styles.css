@@ -9292,7 +9292,7 @@
   padding: 0;
   display: inline-flex;
 
-  &:disabled {
+  &[data-disabled="true"] {
     cursor: not-allowed;
   }
 }
@@ -9315,7 +9315,7 @@
     outline-offset: 2px;
   }
 
-  &:disabled {
+  &[data-disabled="true"] {
     background-color: var(--canon-bg-solid-disabled);
     color: var(--canon-fg-solid-disabled);
   }
@@ -9341,9 +9341,34 @@
     transition: none;
   }
 
-  &:disabled {
+  &[data-disabled="true"] {
     box-shadow: inset 0 0 0 1px var(--canon-border-disabled);
     color: var(--canon-fg-disabled);
+  }
+}
+
+.canon-Button[data-variant="tertiary"] {
+  color: var(--canon-fg-primary);
+  background-color: #0000;
+
+  &:hover {
+    background-color: var(--canon-bg-surface-1);
+    transition: background-color .2s;
+  }
+
+  &:active {
+    background-color: var(--canon-bg-surface-2);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--canon-ring);
+    outline: none;
+    transition: none;
+  }
+
+  &[data-disabled="true"] {
+    color: var(--canon-fg-disabled);
+    background-color: #0000;
   }
 }
 
