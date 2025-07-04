@@ -183,7 +183,7 @@ export const CustomHomepageGridStateV2Schema = z.object({
     z.string(),
     z.object({
       current: z.array(GridWidgetSchema),
-      backup: z.array(GridWidgetSchema).optional(),
+      backup: z.array(GridWidgetSchema),
     }),
   ),
 });

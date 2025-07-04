@@ -113,32 +113,25 @@ function useHomeStorage(
     try {
       const parsed = JSON.parse(homeSnapshot.value!);
 
-      const gridV2: CustomHomepageGridStateV2 =
-        CustomHomepageGridStateV2Schema.parse(parsed);
-      if (!gridV2.pages.default.backup) {
-        const upgradedGrid: CustomHomepageGridStateV2 = {
-          version: 2,
-          pages: {
-            default: {
-              current: gridV2.pages.default.current,
-              backup: gridV2.pages.default.current, // Set current data as backup
-            },
-          },
-        };
-        storageApi.set(key, JSON.stringify(upgradedGrid));
+      // Try V2 parse first
+      try {
+        const gridV2 = CustomHomepageGridStateV2Schema.parse(parsed);
         return {
           widgets: gridV2.pages.default.current,
-          backup: gridV2.pages.default.current,
+          backup: gridV2.pages.default.backup,
+        };
+      } catch {
+        // Handle V1 → V2 migration
+        const gridV1 = CustomHomepageGridStateV1Schema.parse(parsed);
+        return {
+          widgets: gridV1.pages.default,
+          backup: gridV1.pages.default,
         };
       }
-      return {
-        widgets: gridV2.pages.default.current,
-        backup: gridV2.pages.default.backup,
-      };
     } catch (e) {
       return { widgets: defaultWidgets, backup: null };
     }
-  }, [homeSnapshot, defaultWidgets, key, storageApi]);
+  }, [homeSnapshot, defaultWidgets]);
 
   const setWidgets = useCallback(
     (value: GridWidget[], persist: boolean = false) => {
