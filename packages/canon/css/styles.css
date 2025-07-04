@@ -9288,6 +9288,7 @@
   align-items: center;
   gap: var(--canon-space-1_5);
   border: none;
+  flex-shrink: 0;
   padding: 0;
   display: inline-flex;
 

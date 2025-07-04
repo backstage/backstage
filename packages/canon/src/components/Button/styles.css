@@ -26,6 +26,7 @@
   cursor: pointer;
   border-radius: var(--canon-radius-2);
   gap: var(--canon-space-1_5);
+  flex-shrink: 0;
 
   &:disabled {
     cursor: not-allowed;
