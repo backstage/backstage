@@ -221,7 +221,7 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   useEffect(() => {
     const main = document.querySelector('main');
-    if (main) {
+    if (main && typeof main.scrollTo === 'function') {
       main.scrollTo({ top: 0, behavior: 'auto' });
     }
   }, [activeStep]);
