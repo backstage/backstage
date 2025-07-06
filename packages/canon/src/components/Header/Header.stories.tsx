@@ -185,3 +185,24 @@ export const WithLayoutAndHeaderPage: Story = {
     </>
   ),
 };
+
+export const WithLayoutAndHeaderPageNoTabs: Story = {
+  args: {
+    menuItems,
+    breadcrumbs,
+  },
+  decorators: layoutDecorator,
+  parameters: {
+    layout: 'fullscreen',
+  },
+  render: args => (
+    <>
+      <Header {...args} />
+      <HeaderPage
+        title="Page title"
+        description="Page description"
+        options={args.menuItems}
+      />
+    </>
+  ),
+};

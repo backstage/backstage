@@ -18,6 +18,7 @@
   position: sticky;
   top: 0;
   z-index: 10;
+  margin-bottom: var(--canon-space-6);
 
   &::before {
     content: '';
@@ -28,6 +29,10 @@
     height: 16px;
     background-color: var(--canon-bg);
     z-index: 0;
+  }
+
+  &[data-has-tabs='true'] {
+    margin-bottom: 0;
   }
 }
 
@@ -75,7 +80,7 @@
 
 .canon-HeaderToolbarControls {
   position: absolute;
-  right: var(--canon-space-2);
+  right: var(--canon-space-3);
   top: 50%;
   transform: translateY(-50%);
 }
@@ -161,7 +166,6 @@
   }
 }
 
-/* Active tab indicator */
 .canon-HeaderTabActive {
   content: '';
   position: absolute;
@@ -175,7 +179,6 @@
   opacity: 1;
 }
 
-/* Hovered tab indicator */
 .canon-HeaderTabHovered {
   content: '';
   position: absolute;
