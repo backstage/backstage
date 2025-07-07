@@ -21,6 +21,7 @@ import {
   AuthService,
   DatabaseService,
   DiscoveryService,
+  HttpAuthService,
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
@@ -52,6 +53,7 @@ interface RouterOptions {
   providerFactories?: ProviderFactories;
   catalog: CatalogService;
   ownershipResolver?: AuthOwnershipResolver;
+  httpAuth: HttpAuthService;
 }
 
 export async function createRouter(
@@ -64,6 +66,7 @@ export async function createRouter(
     database: db,
     tokenFactoryAlgorithm,
     providerFactories = {},
+    httpAuth,
   } = options;
 
   const router = Router();
@@ -158,6 +161,7 @@ export async function createRouter(
     userInfo,
     oidc,
     logger,
+    httpAuth,
   });
 
   router.use(oidcRouter.getRouter());

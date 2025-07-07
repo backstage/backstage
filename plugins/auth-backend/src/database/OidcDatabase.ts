@@ -20,7 +20,6 @@ type OidcClientRow = {
   client_id: string;
   client_secret: string;
   client_name: string;
-  expires_at: string | null;
   response_types: string;
   grant_types: string;
   redirect_uris: string;
@@ -43,23 +42,11 @@ type OAuthAuthorizationSessionRow = {
   expires_at: string;
 };
 
-type OidcConsentRequestRow = {
-  id: string;
-  session_id: string;
-  expires_at: string;
-};
-
 type OidcAuthorizationCodeRow = {
   code: string;
   session_id: string;
   expires_at: string;
   used: boolean;
-};
-
-type OidcAccessTokenRow = {
-  token_id: string;
-  session_id: string;
-  expires_at: string;
 };
 
 export type Client = {
@@ -70,7 +57,6 @@ export type Client = {
   responseTypes: string[];
   grantTypes: string[];
   scope?: string;
-  expiresAt?: string;
   metadata?: Record<string, unknown>;
 };
 
@@ -125,7 +111,6 @@ export class OidcDatabase {
       client_id: client.clientId,
       client_secret: client.clientSecret,
       client_name: client.clientName,
-      expires_at: client.expiresAt,
       response_types: JSON.stringify(client.responseTypes),
       grant_types: JSON.stringify(client.grantTypes),
       redirect_uris: JSON.stringify(client.redirectUris),
@@ -192,30 +177,6 @@ export class OidcDatabase {
     return this.rowToAuthorizationSession(updated) as AuthorizationSession;
   }
 
-  async createConsentRequest(consentRequest: ConsentRequest) {
-    await this.db<OidcConsentRequestRow>('oidc_consent_requests').insert({
-      id: consentRequest.id,
-      session_id: consentRequest.sessionId,
-      expires_at: consentRequest.expiresAt,
-    });
-
-    return consentRequest;
-  }
-
-  async getConsentRequest({ id }: { id: string }) {
-    const consentRequest = await this.db<OidcConsentRequestRow>(
-      'oidc_consent_requests',
-    )
-      .where('id', id)
-      .first();
-
-    if (!consentRequest) {
-      return null;
-    }
-
-    return this.rowToConsentRequest(consentRequest) as ConsentRequest;
-  }
-
   async getAuthorizationSession({ id }: { id: string }) {
     const session = await this.db<OAuthAuthorizationSessionRow>(
       'oauth_authorization_sessions',
@@ -228,12 +189,6 @@ export class OidcDatabase {
     }
 
     return this.rowToAuthorizationSession(session) as AuthorizationSession;
-  }
-
-  async deleteConsentRequest({ id }: { id: string }) {
-    await this.db<OidcConsentRequestRow>('oidc_consent_requests')
-      .where('id', id)
-      .delete();
   }
 
   async createAuthorizationCode(
@@ -284,16 +239,6 @@ export class OidcDatabase {
     return this.rowToAuthorizationCode(updated) as AuthorizationCode;
   }
 
-  async createAccessToken(accessToken: AccessToken) {
-    await this.db<OidcAccessTokenRow>('oidc_access_tokens').insert({
-      token_id: accessToken.tokenId,
-      session_id: accessToken.sessionId,
-      expires_at: accessToken.expiresAt,
-    });
-
-    return accessToken;
-  }
-
   private rowToClient(row: Partial<OidcClientRow>): Partial<Client> {
     return {
       clientId: row.client_id,
@@ -307,7 +252,6 @@ export class OidcDatabase {
         : undefined,
       grantTypes: row.grant_types ? JSON.parse(row.grant_types) : undefined,
       scope: row.scope ?? undefined,
-      expiresAt: row.expires_at ?? undefined,
       metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
     };
   }
@@ -346,16 +290,6 @@ export class OidcDatabase {
       codeChallengeMethod: row.code_challenge_method ?? undefined,
       nonce: row.nonce ?? undefined,
       status: row.status,
-      expiresAt: row.expires_at,
-    };
-  }
-
-  private rowToConsentRequest(
-    row: Partial<OidcConsentRequestRow>,
-  ): Partial<ConsentRequest> {
-    return {
-      id: row.id,
-      sessionId: row.session_id,
       expiresAt: row.expires_at,
     };
   }

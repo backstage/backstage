@@ -126,7 +126,7 @@ export class OidcService {
     });
   }
 
-  public async createConsentRequest(opts: {
+  public async createAuthorizationSession(opts: {
     clientId: string;
     redirectUri: string;
     responseType: string;
@@ -185,43 +185,24 @@ export class OidcService {
       expiresAt: sessionExpiresAt,
     });
 
-    const consentRequestId = crypto.randomUUID();
-    const consentExpiresAt = DateTime.now().plus({ minutes: 30 }).toISO();
-
-    await this.oidc.createConsentRequest({
-      id: consentRequestId,
-      sessionId,
-      expiresAt: consentExpiresAt,
-    });
-
     return {
-      consentRequestId,
+      id: sessionId,
       clientName: client.clientName,
       scope,
       redirectUri,
     };
   }
 
-  public async approveConsentRequest(opts: {
-    consentRequestId: string;
+  public async approveAuthorizationSession(opts: {
+    sessionId: string;
     userEntityRef: string;
   }) {
-    const { consentRequestId, userEntityRef } = opts;
-
-    const consentRequest = await this.oidc.getConsentRequest({
-      id: consentRequestId,
-    });
-    if (!consentRequest) {
-      throw new InputError('Invalid consent request');
-    }
-
-    if (DateTime.fromISO(consentRequest.expiresAt) < DateTime.now()) {
-      throw new InputError('Consent request expired');
-    }
+    const { sessionId, userEntityRef } = opts;
 
     const session = await this.oidc.getAuthorizationSession({
-      id: consentRequest.sessionId,
+      id: sessionId,
     });
+
     if (!session) {
       throw new InputError('Invalid authorization session');
     }
@@ -245,9 +226,8 @@ export class OidcService {
       expiresAt: codeExpiresAt,
     });
 
-    await this.oidc.deleteConsentRequest({ id: consentRequestId });
-
     const redirectUrl = new URL(session.redirectUri);
+
     redirectUrl.searchParams.append('code', authorizationCode);
     if (session.state) {
       redirectUrl.searchParams.append('state', session.state);
@@ -258,24 +238,17 @@ export class OidcService {
     };
   }
 
-  public async getConsentRequest(opts: { consentRequestId: string }) {
-    const consentRequest = await this.oidc.getConsentRequest({
-      id: opts.consentRequestId,
-    });
-    if (!consentRequest) {
-      throw new InputError('Invalid consent request');
-    }
-
-    if (DateTime.fromISO(consentRequest.expiresAt) < DateTime.now()) {
-      throw new InputError('Consent request expired');
-    }
-
+  public async getAuthorizationSession(opts: { sessionId: string }) {
     const session = await this.oidc.getAuthorizationSession({
-      id: consentRequest.sessionId,
+      id: opts.sessionId,
     });
 
     if (!session) {
       throw new InputError('Invalid authorization session');
+    }
+
+    if (DateTime.fromISO(session.expiresAt) < DateTime.now()) {
+      throw new InputError('Authorization session expired');
     }
 
     const client = await this.oidc.getClient({ clientId: session.clientId });
@@ -284,7 +257,7 @@ export class OidcService {
     }
 
     return {
-      id: consentRequest.id,
+      id: session.id,
       clientId: session.clientId,
       clientName: client.clientName,
       redirectUri: session.redirectUri,
@@ -294,24 +267,28 @@ export class OidcService {
       codeChallenge: session.codeChallenge,
       codeChallengeMethod: session.codeChallengeMethod,
       nonce: session.nonce,
-      expiresAt: consentRequest.expiresAt,
+      expiresAt: session.expiresAt,
+      status: session.status,
     };
   }
 
-  public async deleteConsentRequest(opts: { consentRequestId: string }) {
-    const consentRequest = await this.oidc.getConsentRequest({
-      id: opts.consentRequestId,
+  public async rejectAuthorizationSession(opts: { sessionId: string }) {
+    const session = await this.oidc.getAuthorizationSession({
+      id: opts.sessionId,
     });
-    if (!consentRequest) {
-      return;
+
+    if (!session) {
+      throw new InputError('Invalid authorization session');
+    }
+
+    if (DateTime.fromISO(session.expiresAt) < DateTime.now()) {
+      throw new InputError('Authorization session expired');
     }
 
     await this.oidc.updateAuthorizationSession({
-      id: consentRequest.sessionId,
+      id: session.id,
       status: 'rejected',
     });
-
-    await this.oidc.deleteConsentRequest({ id: opts.consentRequestId });
   }
 
   public async authorize(opts: {
@@ -485,15 +462,6 @@ export class OidcService {
     await this.oidc.updateAuthorizationCode({
       code,
       used: true,
-    });
-
-    const accessTokenId = crypto.randomUUID();
-    const expiresAt = DateTime.now().plus({ hours: 1 }).toISO();
-
-    await this.oidc.createAccessToken({
-      tokenId: accessTokenId,
-      sessionId: session.id,
-      expiresAt,
     });
 
     const { token } = await this.tokenIssuer.issueToken({

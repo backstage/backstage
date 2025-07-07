@@ -24,6 +24,7 @@ import {
   startTestBackend,
   TestDatabases,
   TestDatabaseId,
+  mockCredentials,
 } from '@backstage/backend-test-utils';
 import request from 'supertest';
 import crypto from 'crypto';
@@ -35,6 +36,8 @@ import { OidcService } from '../service/OidcService';
 import { TokenIssuer } from '../identity/types';
 
 describe('OidcRouter', () => {
+  const MOCK_USER_TOKEN = 'mock-user-token';
+  const MOCK_USER_ENTITY_REF = 'user:default/test-user';
   const databases = TestDatabases.create();
 
   async function createRouter(databaseId: TestDatabaseId) {
@@ -82,6 +85,9 @@ describe('OidcRouter', () => {
       logger: mockServices.logger.mock(),
       userInfo: userInfoDatabase,
       oidc: oidcDatabase,
+      httpAuth: mockServices.httpAuth({
+        defaultCredentials: mockCredentials.user(),
+      }),
     });
 
     return {
@@ -209,7 +215,7 @@ describe('OidcRouter', () => {
       });
     });
 
-    describe('consent flow', () => {
+    describe('auth flow', () => {
       it('should register a client', async () => {
         const { router } = await createRouter(databaseId);
 
@@ -251,7 +257,7 @@ describe('OidcRouter', () => {
         });
       });
 
-      it('should create a consent request via authorization endpoint', async () => {
+      it('should create an authorization session via authorization endpoint', async () => {
         const {
           mocks: { service },
           router,
@@ -297,11 +303,11 @@ describe('OidcRouter', () => {
           .expect(302);
 
         expect(response.header.location).toMatch(
-          /^http:\/\/localhost:3000\/auth\/consent\/[a-f0-9-]+$/,
+          /^http:\/\/localhost:3000\/auth\/sessions\/[a-f0-9-]+$/,
         );
       });
 
-      it('should get consent request details', async () => {
+      it('should get auth session details', async () => {
         const {
           mocks: { service },
           router,
@@ -315,7 +321,7 @@ describe('OidcRouter', () => {
           scope: 'openid',
         });
 
-        const consentRequest = await service.createConsentRequest({
+        const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -344,11 +350,11 @@ describe('OidcRouter', () => {
         });
 
         const response = await request(server)
-          .get(`/api/auth/v1/consent/${consentRequest.consentRequestId}`)
+          .get(`/api/auth/v1/sessions/${authSession.id}`)
           .expect(200);
 
         expect(response.body).toEqual({
-          id: consentRequest.consentRequestId,
+          id: authSession.id,
           clientName: 'Test Client',
           scope: 'openid',
           redirectUri: 'https://example.com/callback',
@@ -369,7 +375,7 @@ describe('OidcRouter', () => {
           scope: 'openid',
         });
 
-        const consentRequest = await service.createConsentRequest({
+        const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -397,21 +403,11 @@ describe('OidcRouter', () => {
           ],
         });
 
-        auth.authenticate.mockResolvedValueOnce({
-          principal: {
-            type: 'user',
-            userEntityRef: 'user:default/test-user',
-          },
-          $$type: '@backstage/BackstageCredentials',
-        });
-
         auth.isPrincipal.mockReturnValueOnce(true);
 
         const response = await request(server)
-          .post(
-            `/api/auth/v1/consent/${consentRequest.consentRequestId}/approve`,
-          )
-          .set('Authorization', 'Bearer test-token')
+          .post(`/api/auth/v1/sessions/${authSession.id}/approve`)
+          .set('Authorization', `Bearer ${MOCK_USER_TOKEN}`)
           .expect(200);
 
         expect(response.body).toEqual({
@@ -421,7 +417,7 @@ describe('OidcRouter', () => {
         });
       });
 
-      it('should reject consent request', async () => {
+      it('should reject auth session', async () => {
         const {
           mocks: { service },
           router,
@@ -435,7 +431,7 @@ describe('OidcRouter', () => {
           scope: 'openid',
         });
 
-        const consentRequest = await service.createConsentRequest({
+        const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -464,9 +460,7 @@ describe('OidcRouter', () => {
         });
 
         const response = await request(server)
-          .post(
-            `/api/auth/v1/consent/${consentRequest.consentRequestId}/reject`,
-          )
+          .post(`/api/auth/v1/sessions/${authSession.id}/reject`)
           .expect(200);
 
         expect(response.body).toEqual({
@@ -505,7 +499,7 @@ describe('OidcRouter', () => {
           scope: 'openid',
         });
 
-        const consentRequest = await service.createConsentRequest({
+        const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -534,10 +528,8 @@ describe('OidcRouter', () => {
         });
 
         const approvalResponse = await request(server)
-          .post(
-            `/api/auth/v1/consent/${consentRequest.consentRequestId}/approve`,
-          )
-          .set('Authorization', 'Bearer test-token')
+          .post(`/api/auth/v1/sessions/${authSession.id}/approve`)
+          .set('Authorization', `Bearer ${MOCK_USER_TOKEN}`)
           .expect(200);
 
         const redirectUrl = new URL(approvalResponse.body.redirectUrl);
@@ -566,7 +558,7 @@ describe('OidcRouter', () => {
 
         expect(tokenIssuer.issueToken).toHaveBeenCalledWith({
           claims: {
-            sub: 'user:default/test-user',
+            sub: MOCK_USER_ENTITY_REF,
           },
         });
       });
@@ -602,7 +594,7 @@ describe('OidcRouter', () => {
           'test-code-verifier-123456789012345678901234567890123456789012345';
         const codeChallenge = codeVerifier;
 
-        const consentRequest = await service.createConsentRequest({
+        const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -633,10 +625,8 @@ describe('OidcRouter', () => {
         });
 
         const approvalResponse = await request(server)
-          .post(
-            `/api/auth/v1/consent/${consentRequest.consentRequestId}/approve`,
-          )
-          .set('Authorization', 'Bearer test-token')
+          .post(`/api/auth/v1/sessions/${authSession.id}/approve`)
+          .set('Authorization', `Bearer ${MOCK_USER_TOKEN}`)
           .expect(200);
 
         const redirectUrl = new URL(approvalResponse.body.redirectUrl);
@@ -666,7 +656,7 @@ describe('OidcRouter', () => {
 
         expect(tokenIssuer.issueToken).toHaveBeenCalledWith({
           claims: {
-            sub: 'user:default/test-user-pkce',
+            sub: MOCK_USER_ENTITY_REF,
           },
         });
       });
@@ -694,7 +684,7 @@ describe('OidcRouter', () => {
           scope: 'openid',
         });
 
-        const consentRequest = await service.createConsentRequest({
+        const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -722,10 +712,8 @@ describe('OidcRouter', () => {
         });
 
         const approvalResponse = await request(server)
-          .post(
-            `/api/auth/v1/consent/${consentRequest.consentRequestId}/approve`,
-          )
-          .set('Authorization', 'Bearer test-token')
+          .post(`/api/auth/v1/sessions/${authSession.id}/approve`)
+          .set('Authorization', `Bearer ${MOCK_USER_TOKEN}`)
           .expect(200);
 
         const redirectUrl = new URL(approvalResponse.body.redirectUrl);
@@ -833,7 +821,7 @@ describe('OidcRouter', () => {
           .update(codeVerifier)
           .digest('base64url');
 
-        const consentRequest = await service.createConsentRequest({
+        const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -864,10 +852,8 @@ describe('OidcRouter', () => {
         });
 
         const approvalResponse = await request(server)
-          .post(
-            `/api/auth/v1/consent/${consentRequest.consentRequestId}/approve`,
-          )
-          .set('Authorization', 'Bearer test-token')
+          .post(`/api/auth/v1/sessions/${authSession.id}/approve`)
+          .set('Authorization', `Bearer ${MOCK_USER_TOKEN}`)
           .expect(200);
 
         const redirectUrl = new URL(approvalResponse.body.redirectUrl);

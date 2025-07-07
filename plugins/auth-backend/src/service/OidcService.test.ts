@@ -233,8 +233,8 @@ describe('OidcService', () => {
       });
     });
 
-    describe('createConsentRequest', () => {
-      it('should create a consent request for valid client', async () => {
+    describe('createAuthorizationSession', () => {
+      it('should create a authorization session for valid client', async () => {
         const { service } = await createOidcService(databaseId);
 
         const client = await service.registerClient({
@@ -242,7 +242,7 @@ describe('OidcService', () => {
           redirectUris: ['https://example.com/callback'],
         });
 
-        const consent = await service.createConsentRequest({
+        const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -250,8 +250,8 @@ describe('OidcService', () => {
           state: 'test-state',
         });
 
-        expect(consent).toEqual({
-          consentRequestId: expect.any(String),
+        expect(authSession).toEqual({
+          id: expect.any(String),
           clientName: 'Test Client',
           scope: 'openid',
           redirectUri: 'https://example.com/callback',
@@ -262,7 +262,7 @@ describe('OidcService', () => {
         const { service } = await createOidcService(databaseId);
 
         await expect(
-          service.createConsentRequest({
+          service.createAuthorizationSession({
             clientId: 'invalid-client',
             redirectUri: 'https://example.com/callback',
             responseType: 'code',
@@ -279,7 +279,7 @@ describe('OidcService', () => {
         });
 
         await expect(
-          service.createConsentRequest({
+          service.createAuthorizationSession({
             clientId: client.clientId,
             redirectUri: 'https://invalid.com/callback',
             responseType: 'code',
@@ -296,7 +296,7 @@ describe('OidcService', () => {
         });
 
         await expect(
-          service.createConsentRequest({
+          service.createAuthorizationSession({
             clientId: client.clientId,
             redirectUri: 'https://example.com/callback',
             responseType: 'token',
@@ -312,7 +312,7 @@ describe('OidcService', () => {
           redirectUris: ['https://example.com/callback'],
         });
 
-        const consent = await service.createConsentRequest({
+        const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -320,7 +320,7 @@ describe('OidcService', () => {
           codeChallengeMethod: 'S256',
         });
 
-        expect(consent.consentRequestId).toBeDefined();
+        expect(authSession.id).toBeDefined();
       });
 
       it('should throw error for invalid PKCE method', async () => {
@@ -332,7 +332,7 @@ describe('OidcService', () => {
         });
 
         await expect(
-          service.createConsentRequest({
+          service.createAuthorizationSession({
             clientId: client.clientId,
             redirectUri: 'https://example.com/callback',
             responseType: 'code',
@@ -343,8 +343,8 @@ describe('OidcService', () => {
       });
     });
 
-    describe('approveConsentRequest', () => {
-      it('should approve a valid consent request', async () => {
+    describe('approveAuthorizationSession', () => {
+      it('should approve a valid authorization session', async () => {
         const { service } = await createOidcService(databaseId);
 
         const client = await service.registerClient({
@@ -352,15 +352,15 @@ describe('OidcService', () => {
           redirectUris: ['https://example.com/callback'],
         });
 
-        const consent = await service.createConsentRequest({
+        const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
           state: 'test-state',
         });
 
-        const result = await service.approveConsentRequest({
-          consentRequestId: consent.consentRequestId,
+        const result = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
           userEntityRef: 'user:default/test',
         });
 
@@ -369,20 +369,20 @@ describe('OidcService', () => {
         );
       });
 
-      it('should throw error for invalid consent request', async () => {
+      it('should throw error for invalid authorization session', async () => {
         const { service } = await createOidcService(databaseId);
 
         await expect(
-          service.approveConsentRequest({
-            consentRequestId: 'invalid-consent',
+          service.approveAuthorizationSession({
+            sessionId: 'invalid-session',
             userEntityRef: 'user:default/test',
           }),
-        ).rejects.toThrow('Invalid consent request');
+        ).rejects.toThrow('Invalid authorization session');
       });
     });
 
-    describe('getConsentRequest', () => {
-      it('should return consent request details', async () => {
+    describe('getAuthorizationSession', () => {
+      it('should return authorization session details', async () => {
         const { service } = await createOidcService(databaseId);
 
         const client = await service.registerClient({
@@ -390,7 +390,7 @@ describe('OidcService', () => {
           redirectUris: ['https://example.com/callback'],
         });
 
-        const consent = await service.createConsentRequest({
+        const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -398,13 +398,13 @@ describe('OidcService', () => {
           state: 'test-state',
         });
 
-        const details = await service.getConsentRequest({
-          consentRequestId: consent.consentRequestId,
+        const details = await service.getAuthorizationSession({
+          sessionId: authSession.id,
         });
 
         expect(details).toEqual(
           expect.objectContaining({
-            id: consent.consentRequestId,
+            id: authSession.id,
             clientId: client.clientId,
             clientName: 'Test Client',
             redirectUri: 'https://example.com/callback',
@@ -416,8 +416,8 @@ describe('OidcService', () => {
       });
     });
 
-    describe('deleteConsentRequest', () => {
-      it('should delete a consent request', async () => {
+    describe('rejectAuthorizationSession', () => {
+      it('should delete a authorization session', async () => {
         const { service } = await createOidcService(databaseId);
 
         const client = await service.registerClient({
@@ -425,31 +425,35 @@ describe('OidcService', () => {
           redirectUris: ['https://example.com/callback'],
         });
 
-        const consent = await service.createConsentRequest({
+        const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
         });
 
-        await service.deleteConsentRequest({
-          consentRequestId: consent.consentRequestId,
+        await service.rejectAuthorizationSession({
+          sessionId: authSession.id,
         });
 
         await expect(
-          service.getConsentRequest({
-            consentRequestId: consent.consentRequestId,
+          service.getAuthorizationSession({
+            sessionId: authSession.id,
           }),
-        ).rejects.toThrow('Invalid consent request');
+        ).resolves.toEqual(
+          expect.objectContaining({
+            status: 'rejected',
+          }),
+        );
       });
 
-      it('should handle deleting non-existent consent request', async () => {
+      it('should throw error for invalid authorization session', async () => {
         const { service } = await createOidcService(databaseId);
 
         await expect(
-          service.deleteConsentRequest({
-            consentRequestId: 'non-existent',
+          service.rejectAuthorizationSession({
+            sessionId: 'invalid-session',
           }),
-        ).resolves.not.toThrow();
+        ).rejects.toThrow('Invalid authorization session');
       });
     });
 
