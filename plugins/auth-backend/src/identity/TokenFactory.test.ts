@@ -24,7 +24,7 @@ import {
 import { omit } from 'lodash';
 import { MemoryKeyStore } from './MemoryKeyStore';
 import { TokenFactory } from './TokenFactory';
-import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
+import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 import { mockServices } from '@backstage/backend-test-utils';
 
@@ -47,7 +47,7 @@ const entityRef = stringifyEntityRef({
 describe('TokenFactory', () => {
   const mockUserInfoDatabaseHandler = {
     addUserInfo: jest.fn().mockResolvedValue(undefined),
-  } as unknown as UserInfoDatabaseHandler;
+  } as unknown as UserInfoDatabase;
 
   it('should issue valid tokens signed by a listed key', async () => {
     const keyDurationSeconds = 5;
@@ -56,7 +56,7 @@ describe('TokenFactory', () => {
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds,
       logger,
-      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
+      userInfo: mockUserInfoDatabaseHandler,
     });
 
     await expect(factory.listPublicKeys()).resolves.toEqual({ keys: [] });
@@ -139,7 +139,7 @@ describe('TokenFactory', () => {
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds: 5,
       logger,
-      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
+      userInfo: mockUserInfoDatabaseHandler,
     });
 
     const { token: token1 } = await factory.issueToken({
@@ -185,7 +185,7 @@ describe('TokenFactory', () => {
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds,
       logger,
-      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
+      userInfo: mockUserInfoDatabaseHandler,
     });
 
     await expect(() => {
@@ -203,7 +203,7 @@ describe('TokenFactory', () => {
       keyDurationSeconds,
       logger,
       algorithm: '',
-      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
+      userInfo: mockUserInfoDatabaseHandler,
     });
 
     await expect(() => {
@@ -219,7 +219,7 @@ describe('TokenFactory', () => {
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds: 5,
       logger,
-      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
+      userInfo: mockUserInfoDatabaseHandler,
     });
 
     await expect(() => {
@@ -238,7 +238,7 @@ describe('TokenFactory', () => {
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds,
       logger,
-      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
+      userInfo: mockUserInfoDatabaseHandler,
     });
 
     const { token } = await factory.issueToken({

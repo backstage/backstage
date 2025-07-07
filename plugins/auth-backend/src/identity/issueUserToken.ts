@@ -22,7 +22,7 @@ import {
   tokenTypes,
 } from '@backstage/plugin-auth-node';
 import { omit } from 'lodash';
-import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
+import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { GeneralSign, importJWK, JWK, KeyLike, SignJWT } from 'jose';
 import { BackstageTokenPayload } from './TokenFactory';
@@ -37,7 +37,7 @@ export async function issueUserToken({
   logger,
   omitClaimsFromToken,
   params,
-  userInfoDatabaseHandler,
+  userInfo,
 }: {
   issuer: string;
   key: JWK;
@@ -45,7 +45,7 @@ export async function issueUserToken({
   logger: LoggerService;
   omitClaimsFromToken?: string[];
   params: TokenParams;
-  userInfoDatabaseHandler: UserInfoDatabaseHandler;
+  userInfo: UserInfoDatabase;
 }): Promise<BackstageSignInResult> {
   const { sub, ent = [sub], ...additionalClaims } = params.claims;
   const aud = tokenTypes.user.audClaim;
@@ -111,7 +111,7 @@ export async function issueUserToken({
 
   // Store the user info in the database upon successful token
   // issuance so that it can be retrieved later by limited user tokens
-  await userInfoDatabaseHandler.addUserInfo({
+  await userInfo.addUserInfo({
     claims: omit(claims, ['aud', 'iat', 'iss', 'uip']),
   });
 
