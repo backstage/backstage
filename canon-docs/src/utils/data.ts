@@ -156,6 +156,11 @@ export const components: Page[] = [
     slug: 'text-field',
     status: 'alpha',
   },
+  {
+    title: 'Tooltip',
+    slug: 'tooltip',
+    status: 'alpha',
+  },
 ];
 
 export type ScreenSize = {

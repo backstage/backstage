@@ -13,7 +13,6 @@ import type { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
 import type { CSSProperties } from 'react';
 import type { ElementType } from 'react';
-import { FC } from 'react';
 import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import { HTMLAttributes } from 'react';
@@ -34,7 +33,8 @@ import { Tabs as Tabs_2 } from '@base-ui-components/react/tabs';
 import { TdHTMLAttributes } from 'react';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import { ThHTMLAttributes } from 'react';
-import { Tooltip as Tooltip_2 } from '@base-ui-components/react/tooltip';
+import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
+import { TooltipTriggerComponentProps } from 'react-aria-components';
 import type { useRender } from '@base-ui-components/react/use-render';
 
 // @public (undocumented)
@@ -533,9 +533,7 @@ export const componentDefinitions: {
   };
   readonly Tooltip: {
     readonly classNames: {
-      readonly trigger: 'canon-TooltipTrigger';
-      readonly positioner: 'canon-TooltipPositioner';
-      readonly popup: 'canon-TooltipPopup';
+      readonly tooltip: 'canon-Tooltip';
       readonly arrow: 'canon-TooltipArrow';
     };
   };
@@ -1736,27 +1734,20 @@ export type TextProps<T extends ElementType = 'p'> = TextOwnProps &
   Omit<ComponentPropsWithRef<T>, keyof TextOwnProps>;
 
 // @public (undocumented)
-export const Tooltip: {
-  Provider: FC<Tooltip_2.Provider.Props>;
-  Root: FC<Tooltip_2.Root.Props>;
-  Trigger: ForwardRefExoticComponent<
-    Omit<Tooltip_2.Trigger.Props & RefAttributes<any>, 'ref'> &
-      RefAttributes<any>
-  >;
-  Portal: typeof Tooltip_2.Portal;
-  Positioner: ForwardRefExoticComponent<
-    Omit<Tooltip_2.Positioner.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-  Popup: ForwardRefExoticComponent<
-    Omit<Tooltip_2.Popup.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-  Arrow: ForwardRefExoticComponent<
-    Omit<Tooltip_2.Arrow.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-};
+export const Tooltip: ForwardRefExoticComponent<
+  TooltipProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export interface TooltipProps extends Omit<TooltipProps_2, 'children'> {
+  // (undocumented)
+  children: React.ReactNode;
+}
+
+// @public (undocumented)
+export const TooltipTrigger: (
+  props: TooltipTriggerComponentProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
 export const useBreakpoint: () => {

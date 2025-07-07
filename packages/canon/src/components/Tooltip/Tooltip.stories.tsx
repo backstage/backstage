@@ -15,66 +15,110 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import { Tooltip } from './Tooltip';
+import { TooltipTrigger, Tooltip } from './Tooltip';
 import { Button } from '../Button/Button';
 
 const meta = {
   title: 'Components/Tooltip',
-  component: Tooltip.Root,
-} satisfies Meta<typeof Tooltip.Root>;
+  component: TooltipTrigger,
+} satisfies Meta<typeof TooltipTrigger>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    children: (
-      <>
-        <Tooltip.Trigger
-          render={props => (
-            <Button {...props} size="small">
-              Button
-            </Button>
-          )}
-        />
-        <Tooltip.Portal>
-          <Tooltip.Positioner sideOffset={10}>
-            <Tooltip.Popup>Nice!</Tooltip.Popup>
-          </Tooltip.Positioner>
-        </Tooltip.Portal>
-      </>
-    ),
-  },
+  args: { children: '' },
+  render: () => (
+    <TooltipTrigger>
+      <Button>Button</Button>
+      <Tooltip>I am a tooltip</Tooltip>
+    </TooltipTrigger>
+  ),
 };
 
-export const Open: Story = {
+export const IsOpen: Story = {
   args: {
     ...Default.args,
-    open: true,
   },
+  render: () => (
+    <TooltipTrigger isOpen>
+      <Button>Button</Button>
+      <Tooltip>I am a tooltip</Tooltip>
+    </TooltipTrigger>
+  ),
 };
 
-export const WithArrow: Story = {
+export const IsDisabled: Story = {
   args: {
-    open: true,
-    children: (
-      <>
-        <Tooltip.Trigger
-          render={props => (
-            <Button {...props} size="small">
-              Button
-            </Button>
-          )}
-        />
-        <Tooltip.Portal>
-          <Tooltip.Positioner sideOffset={10}>
-            <Tooltip.Popup>
-              <Tooltip.Arrow />
-              Nice!
-            </Tooltip.Popup>
-          </Tooltip.Positioner>
-        </Tooltip.Portal>
-      </>
-    ),
+    ...Default.args,
   },
+  render: () => (
+    <TooltipTrigger isDisabled>
+      <Button>Button</Button>
+      <Tooltip>I am a tooltip</Tooltip>
+    </TooltipTrigger>
+  ),
+};
+
+export const PlacementTop: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <TooltipTrigger>
+      <Button>Button</Button>
+      <Tooltip placement="top">I am a tooltip</Tooltip>
+    </TooltipTrigger>
+  ),
+};
+
+export const PlacementRight: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <TooltipTrigger>
+      <Button>Button</Button>
+      <Tooltip placement="right">I am a tooltip</Tooltip>
+    </TooltipTrigger>
+  ),
+};
+
+export const PlacementLeft: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <TooltipTrigger>
+      <Button>Button</Button>
+      <Tooltip placement="left">I am a tooltip</Tooltip>
+    </TooltipTrigger>
+  ),
+};
+
+export const PlacementBottom: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <TooltipTrigger>
+      <Button>Button</Button>
+      <Tooltip placement="bottom">I am a tooltip</Tooltip>
+    </TooltipTrigger>
+  ),
+};
+
+export const WithLongText: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <TooltipTrigger isOpen>
+      <Button>Button</Button>
+      <Tooltip placement="bottom">
+        I am a tooltip with a very long text. I am a tooltip with a very long
+        text.
+      </Tooltip>
+    </TooltipTrigger>
+  ),
 };
