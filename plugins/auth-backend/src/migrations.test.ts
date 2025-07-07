@@ -107,4 +107,37 @@ describe('migrations', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    '20250707164600_user_created_at.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      await migrateUntilBefore(knex, '20250707164600_user_created_at.js');
+
+      const user_info = JSON.stringify({
+        claims: {
+          ent: ['group:default/group1', 'group:default/group2'],
+        },
+      });
+
+      await knex
+        .insert({
+          user_entity_ref: 'user:default/backstage-user',
+          user_info,
+          exp: knex.fn.now(),
+        })
+        .into('user_info');
+
+      const { exp } = await knex('user_info').first();
+
+      await migrateUpOnce(knex);
+
+      const { created_at, updated_at } = await knex('user_info').first();
+
+      expect(updated_at).toBe(exp);
+
+      expect(created_at).toBeDefined();
+    },
+  );
 });

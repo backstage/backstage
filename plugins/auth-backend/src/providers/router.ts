@@ -27,6 +27,7 @@ import Router from 'express-promise-router';
 import { Minimatch } from 'minimatch';
 import { CatalogAuthResolverContext } from '../lib/resolvers/CatalogAuthResolverContext';
 import { TokenIssuer } from '../identity/types';
+import { UserInfoDatabase } from '../database/UserInfoDatabase';
 
 export type ProviderFactories = { [s: string]: AuthProviderFactory };
 
@@ -40,6 +41,7 @@ export function bindProviderRouters(
     logger: LoggerService;
     auth: AuthService;
     tokenIssuer: TokenIssuer;
+    userInfo: UserInfoDatabase;
     ownershipResolver?: AuthOwnershipResolver;
     catalog: CatalogService;
   },
@@ -54,6 +56,7 @@ export function bindProviderRouters(
     tokenIssuer,
     catalog,
     ownershipResolver,
+    userInfo,
   } = options;
 
   const providersConfig = config.getOptionalConfig('auth.providers');
@@ -82,6 +85,7 @@ export function bindProviderRouters(
             tokenIssuer,
             auth,
             ownershipResolver,
+            userInfo,
           }),
         });
 
