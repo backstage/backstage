@@ -72,6 +72,15 @@ export interface HeaderTabProps {
   setHoveredKey: (key: string | null) => void;
 }
 
+export interface HeaderToolbarProps {
+  icon?: HeaderProps['icon'];
+  title?: HeaderProps['title'];
+  breadcrumbs?: HeaderProps['breadcrumbs'];
+  customActions?: HeaderProps['customActions'];
+  menuItems?: HeaderProps['menuItems'];
+  hasTabs?: boolean;
+}
+
 export interface HeaderIndicatorsProps {
   tabRefs: MutableRefObject<Map<string, HTMLDivElement>>;
   tabsRef: MutableRefObject<HTMLDivElement | null>;

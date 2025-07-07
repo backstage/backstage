@@ -26,6 +26,8 @@ import { HeaderTabs } from './HeaderTabs';
 export const Header = (props: HeaderProps) => {
   const { tabs, icon, title, menuItems, breadcrumbs, customActions } = props;
 
+  const hasTabs = tabs && tabs.length > 0;
+
   return (
     <>
       <HeaderToolbar
@@ -34,6 +36,7 @@ export const Header = (props: HeaderProps) => {
         menuItems={menuItems}
         breadcrumbs={breadcrumbs}
         customActions={customActions}
+        hasTabs={hasTabs}
       />
       <HeaderTabs tabs={tabs} />
     </>
