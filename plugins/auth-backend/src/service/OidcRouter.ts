@@ -211,7 +211,6 @@ export class OidcRouter {
           redirectUrl: result.redirectUrl,
         });
       } catch (error) {
-        console.log(error);
         this.logger.error(
           `Failed to approve authorization session: ${
             isError(error) ? error.message : 'Unknown error'

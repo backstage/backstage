@@ -28,7 +28,6 @@ import {
 import { AuthDatabase } from '../database/AuthDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
-import { InputError, AuthenticationError } from '@backstage/errors';
 import crypto from 'crypto';
 import { AnyJWK, TokenIssuer } from '../identity/types';
 
