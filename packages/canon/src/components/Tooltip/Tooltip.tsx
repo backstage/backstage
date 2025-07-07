@@ -25,6 +25,7 @@ import clsx from 'clsx';
 import { TooltipProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 
+/** @public */
 export const TooltipTrigger = (props: TooltipTriggerComponentProps) => {
   const { delay = 600 } = props;
 
