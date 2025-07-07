@@ -24,7 +24,6 @@ import {
   startTestBackend,
   TestDatabases,
   TestDatabaseId,
-  mockCredentials,
 } from '@backstage/backend-test-utils';
 import request from 'supertest';
 import crypto from 'crypto';
@@ -68,6 +67,7 @@ describe('OidcRouter', () => {
     } as unknown as jest.Mocked<TokenIssuer>;
 
     const mockAuth = mockServices.auth.mock();
+    const mockHttpAuth = mockServices.httpAuth.mock();
 
     const oidcService = OidcService.create({
       auth: mockAuth,
@@ -85,14 +85,13 @@ describe('OidcRouter', () => {
       logger: mockServices.logger.mock(),
       userInfo: userInfoDatabase,
       oidc: oidcDatabase,
-      httpAuth: mockServices.httpAuth({
-        defaultCredentials: mockCredentials.user(),
-      }),
+      httpAuth: mockHttpAuth,
     });
 
     return {
       router: oidcRouter,
       mocks: {
+        httpAuth: mockHttpAuth,
         auth: mockAuth,
         oidc: oidcDatabase,
         userInfo: userInfoDatabase,
@@ -138,7 +137,6 @@ describe('OidcRouter', () => {
           ],
         });
 
-        auth.authenticate.mockResolvedValueOnce({} as any);
         auth.isPrincipal.mockReturnValueOnce(true);
 
         const response = await request(server)
@@ -194,7 +192,6 @@ describe('OidcRouter', () => {
           ],
         });
 
-        auth.authenticate.mockResolvedValueOnce({} as any);
         auth.isPrincipal.mockReturnValueOnce(true);
 
         const response = await request(server)
@@ -361,9 +358,9 @@ describe('OidcRouter', () => {
         });
       });
 
-      it('should approve consent request', async () => {
+      it('should approve authorization session', async () => {
         const {
-          mocks: { auth, service },
+          mocks: { auth, service, httpAuth },
           router,
         } = await createRouter(databaseId);
 
@@ -401,6 +398,14 @@ describe('OidcRouter', () => {
               },
             }),
           ],
+        });
+
+        httpAuth.credentials.mockResolvedValueOnce({
+          principal: {
+            type: 'user',
+            userEntityRef: 'user:default/test-user',
+          },
+          $$type: '@backstage/BackstageCredentials',
         });
 
         auth.isPrincipal.mockReturnValueOnce(true);
@@ -474,17 +479,18 @@ describe('OidcRouter', () => {
     describe('token exchange', () => {
       it('should exchange authorization code for tokens', async () => {
         const {
-          mocks: { auth, service, tokenIssuer },
+          mocks: { auth, service, tokenIssuer, httpAuth },
           router,
         } = await createRouter(databaseId);
 
-        auth.authenticate.mockResolvedValueOnce({
+        httpAuth.credentials.mockResolvedValueOnce({
           principal: {
             type: 'user',
             userEntityRef: 'user:default/test-user',
           },
           $$type: '@backstage/BackstageCredentials',
         });
+
         auth.isPrincipal.mockReturnValueOnce(true);
 
         tokenIssuer.issueToken.mockResolvedValue({
@@ -565,7 +571,7 @@ describe('OidcRouter', () => {
 
       it('should exchange authorization code for tokens with PKCE', async () => {
         const {
-          mocks: { auth, service, tokenIssuer },
+          mocks: { auth, service, tokenIssuer, httpAuth },
           router,
         } = await createRouter(databaseId);
 
@@ -573,13 +579,14 @@ describe('OidcRouter', () => {
           token: 'mock-access-token-pkce',
         });
 
-        auth.authenticate.mockResolvedValueOnce({
+        httpAuth.credentials.mockResolvedValueOnce({
           principal: {
             type: 'user',
             userEntityRef: 'user:default/test-user-pkce',
           },
           $$type: '@backstage/BackstageCredentials',
         });
+
         auth.isPrincipal.mockReturnValueOnce(true);
 
         const client = await service.registerClient({
@@ -656,24 +663,25 @@ describe('OidcRouter', () => {
 
         expect(tokenIssuer.issueToken).toHaveBeenCalledWith({
           claims: {
-            sub: MOCK_USER_ENTITY_REF,
+            sub: 'user:default/test-user-pkce',
           },
         });
       });
 
       it('should reject token exchange with invalid client credentials', async () => {
         const {
-          mocks: { auth, service },
+          mocks: { auth, service, httpAuth },
           router,
         } = await createRouter(databaseId);
 
-        auth.authenticate.mockResolvedValueOnce({
+        httpAuth.credentials.mockResolvedValueOnce({
           principal: {
             type: 'user',
             userEntityRef: 'user:default/test-user',
           },
           $$type: '@backstage/BackstageCredentials',
         });
+
         auth.isPrincipal.mockReturnValueOnce(true);
 
         const client = await service.registerClient({
@@ -789,7 +797,7 @@ describe('OidcRouter', () => {
 
       it('should exchange authorization code for tokens with PKCE S256', async () => {
         const {
-          mocks: { auth, service, tokenIssuer },
+          mocks: { auth, service, tokenIssuer, httpAuth },
           router,
         } = await createRouter(databaseId);
 
@@ -797,13 +805,14 @@ describe('OidcRouter', () => {
           token: 'mock-access-token-s256',
         });
 
-        auth.authenticate.mockResolvedValueOnce({
+        httpAuth.credentials.mockResolvedValueOnce({
           principal: {
             type: 'user',
             userEntityRef: 'user:default/test-user-s256',
           },
           $$type: '@backstage/BackstageCredentials',
         });
+
         auth.isPrincipal.mockReturnValueOnce(true);
 
         const client = await service.registerClient({
