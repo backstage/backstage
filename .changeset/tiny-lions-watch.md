@@ -1,6 +1,6 @@
 ---
-'@backstage/core-components': minor
-'@backstage/plugin-user-settings': minor
+'@backstage/core-components': patch
+'@backstage/plugin-user-settings': patch
 ---
 
-Added `signIn` and `signOut` analytic events to the core-components of signin and signout. used `userEntityRef` for determining the user
+Added `signIn` and `signOut` analytic events to the `@backstage/core-components` of sign in and sign out.
