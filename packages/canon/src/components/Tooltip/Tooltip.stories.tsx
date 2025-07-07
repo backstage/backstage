@@ -27,62 +27,83 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    children: (
-      <>
-        <Button>Button</Button>
-        <Tooltip>I am a tooltip</Tooltip>
-      </>
-    ),
-  },
+  args: { children: '' },
+  render: () => (
+    <TooltipTrigger>
+      <Button>Button</Button>
+      <Tooltip>I am a tooltip</Tooltip>
+    </TooltipTrigger>
+  ),
 };
 
 export const IsOpen: Story = {
   args: {
     ...Default.args,
-    isOpen: true,
   },
+  render: () => (
+    <TooltipTrigger isOpen>
+      <Button>Button</Button>
+      <Tooltip>I am a tooltip</Tooltip>
+    </TooltipTrigger>
+  ),
 };
 
 export const IsDisabled: Story = {
   args: {
     ...Default.args,
-    isDisabled: true,
   },
+  render: () => (
+    <TooltipTrigger isDisabled>
+      <Button>Button</Button>
+      <Tooltip>I am a tooltip</Tooltip>
+    </TooltipTrigger>
+  ),
 };
 
 export const PlacementTop: Story = {
   args: {
     ...Default.args,
-    children: (
-      <>
-        <Button>Tooltip on top</Button>
-        <Tooltip placement="top">I'm a tooltip</Tooltip>
-      </>
-    ),
   },
+  render: () => (
+    <TooltipTrigger>
+      <Button>Button</Button>
+      <Tooltip placement="top">I am a tooltip</Tooltip>
+    </TooltipTrigger>
+  ),
 };
 
 export const PlacementRight: Story = {
   args: {
     ...Default.args,
-    children: (
-      <>
-        <Button>Tooltip on top</Button>
-        <Tooltip placement="right">I'm a tooltip</Tooltip>
-      </>
-    ),
   },
+  render: () => (
+    <TooltipTrigger>
+      <Button>Button</Button>
+      <Tooltip placement="right">I am a tooltip</Tooltip>
+    </TooltipTrigger>
+  ),
 };
 
 export const PlacementLeft: Story = {
   args: {
     ...Default.args,
-    children: (
-      <>
-        <Button>Tooltip on top</Button>
-        <Tooltip placement="left">I'm a tooltip</Tooltip>
-      </>
-    ),
   },
+  render: () => (
+    <TooltipTrigger>
+      <Button>Button</Button>
+      <Tooltip placement="left">I am a tooltip</Tooltip>
+    </TooltipTrigger>
+  ),
+};
+
+export const PlacementBottom: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <TooltipTrigger>
+      <Button>Button</Button>
+      <Tooltip placement="bottom">I am a tooltip</Tooltip>
+    </TooltipTrigger>
+  ),
 };
