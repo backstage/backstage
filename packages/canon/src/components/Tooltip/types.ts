@@ -14,5 +14,9 @@
  * limitations under the License.
  */
 
-export { TooltipTrigger, Tooltip } from './Tooltip';
-export type { TooltipProps } from './types';
+import { TooltipProps as AriaTooltipProps } from 'react-aria-components';
+
+/** @public */
+export interface TooltipProps extends Omit<AriaTooltipProps, 'children'> {
+  children: React.ReactNode;
+}

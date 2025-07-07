@@ -257,9 +257,7 @@ export const componentDefinitions = {
   },
   Tooltip: {
     classNames: {
-      trigger: 'canon-TooltipTrigger',
-      positioner: 'canon-TooltipPositioner',
-      popup: 'canon-TooltipPopup',
+      tooltip: 'canon-Tooltip',
       arrow: 'canon-TooltipArrow',
     },
   },
