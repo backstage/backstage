@@ -81,8 +81,6 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
   ) {}
 
   async issueToken(params: TokenParams) {
-    // todo(blam): ideally, we would update the token issuer to require the ent claim
-    // instead of doing the destructuring in two places. But that would be a breaking change.
     const { sub, ent = [sub], ...additionalClaims } = params.claims;
     const claims = {
       sub,
