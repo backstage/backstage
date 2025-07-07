@@ -184,9 +184,9 @@ export const getAndWriteAttachments = async (
 };
 
 export const createConfluenceVariables = (url: string) => {
-  let spacekey;
-  let title;
-  let titleWithSpaces = '';
+  let spacekey: string | undefined = undefined;
+  let title: string | undefined = undefined;
+  let titleWithSpaces: string | undefined = '';
   const params = new URL(url);
   const pathParts = params.pathname.split('/').filter(Boolean);
 
