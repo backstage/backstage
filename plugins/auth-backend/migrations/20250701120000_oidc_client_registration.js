@@ -44,11 +44,6 @@ exports.up = async function up(knex) {
       .comment('The name of the client, should be human readable');
 
     table
-      .timestamp('expires_at', { useTz: false, precision: 0 })
-      .nullable()
-      .comment('Client registration expiration timestamp');
-
-    table
       .text('response_types')
       .notNullable()
       .comment('JSON array of supported response types');
@@ -110,39 +105,13 @@ exports.up = async function up(knex) {
       .comment('Authorization session status');
 
     table
-      .timestamp('expires_at', { useTz: false, precision: 0 })
+      .timestamp('expires_at', { useTz: true, precision: 0 })
       .notNullable()
       .comment('Session expiration timestamp');
 
     table.foreign('client_id').references('client_id').inTable('oidc_clients');
     table.index(['client_id', 'user_entity_ref']);
     table.index(['status', 'expires_at']);
-  });
-
-  await knex.schema.createTable('oidc_consent_requests', table => {
-    table.comment('User consent requests for OAuth authorization');
-
-    table
-      .string('id')
-      .primary()
-      .notNullable()
-      .comment('Unique consent request identifier');
-
-    table
-      .string('session_id')
-      .notNullable()
-      .comment('Authorization session identifier');
-
-    table
-      .timestamp('expires_at', { useTz: false, precision: 0 })
-      .notNullable()
-      .comment('Consent request expiration timestamp');
-
-    table
-      .foreign('session_id')
-      .references('id')
-      .inTable('oauth_authorization_sessions')
-      .onDelete('CASCADE');
   });
 
   await knex.schema.createTable('oidc_authorization_codes', table => {
@@ -160,7 +129,7 @@ exports.up = async function up(knex) {
       .comment('Authorization session identifier');
 
     table
-      .timestamp('expires_at', { useTz: false, precision: 0 })
+      .timestamp('expires_at', { useTz: true, precision: 0 })
       .notNullable()
       .comment('Authorization code expiration timestamp');
 
@@ -175,41 +144,13 @@ exports.up = async function up(knex) {
       .inTable('oauth_authorization_sessions')
       .onDelete('CASCADE');
   });
-
-  await knex.schema.createTable('oidc_access_tokens', table => {
-    table.comment('OAuth access tokens for API access');
-
-    table
-      .string('token_id')
-      .primary()
-      .notNullable()
-      .comment('Unique access token identifier');
-
-    table
-      .string('session_id')
-      .notNullable()
-      .comment('Authorization session identifier');
-
-    table
-      .timestamp('expires_at', { useTz: false, precision: 0 })
-      .notNullable()
-      .comment('Access token expiration timestamp');
-
-    table
-      .foreign('session_id')
-      .references('id')
-      .inTable('oauth_authorization_sessions')
-      .onDelete('CASCADE');
-  });
 };
 
 /**
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
-  await knex.schema.dropTable('oidc_access_tokens');
   await knex.schema.dropTable('oidc_authorization_codes');
-  await knex.schema.dropTable('oidc_consent_requests');
   await knex.schema.dropTable('oauth_authorization_sessions');
   await knex.schema.dropTable('oidc_clients');
 };

@@ -16,7 +16,11 @@
 import Router from 'express-promise-router';
 import { OidcService } from './OidcService';
 import { AuthenticationError, isError } from '@backstage/errors';
-import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
@@ -28,6 +32,7 @@ export class OidcRouter {
     private readonly logger: LoggerService,
     private readonly auth: AuthService,
     private readonly appUrl: string,
+    private readonly httpAuth: HttpAuthService,
   ) {}
 
   static create(options: {
@@ -38,12 +43,14 @@ export class OidcRouter {
     logger: LoggerService;
     userInfo: UserInfoDatabase;
     oidc: OidcDatabase;
+    httpAuth: HttpAuthService;
   }) {
     return new OidcRouter(
       OidcService.create(options),
       options.logger,
       options.auth,
       options.appUrl,
+      options.httpAuth,
     );
   }
 
@@ -70,7 +77,7 @@ export class OidcRouter {
     // Authorization endpoint
     // https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
     // Handles the initial authorization request from the client, validates parameters,
-    // and redirects to the consent page for user approval
+    // and redirects to the Authorization Session page for user approval
     router.get('/v1/authorize', async (req, res) => {
       // todo(blam): maybe add zod types for validating input
       const {
@@ -94,7 +101,7 @@ export class OidcRouter {
       }
 
       try {
-        const result = await this.oidc.createConsentRequest({
+        const result = await this.oidc.createAuthorizationSession({
           clientId: clientId as string,
           redirectUri: redirectUri as string,
           responseType: responseType as string,
@@ -107,12 +114,13 @@ export class OidcRouter {
 
         // todo(blam): maybe this URL could be overridable by config if
         // the plugin is mounted somewhere else?
-        const consentUrl = new URL(
-          `/auth/consent/${result.consentRequestId}`,
+        // support slashes in baseUrl?
+        const authSessionRedirectUrl = new URL(
+          `/auth/sessions/${result.id}`,
           this.appUrl,
         );
 
-        return res.redirect(consentUrl.toString());
+        return res.redirect(authSessionRedirectUrl.toString());
       } catch (error) {
         const errorParams = new URLSearchParams();
         errorParams.append(
@@ -133,77 +141,69 @@ export class OidcRouter {
       }
     });
 
-    // Consent request details endpoint
-    // Returns consent request details for the frontend consent page
-    router.get('/v1/consent/:consentId', async (req, res) => {
-      const { consentId } = req.params;
+    // Authorization Session request details endpoint
+    // Returns Authorization Session request details for the frontned
+    router.get('/v1/sessions/:sessionId', async (req, res) => {
+      const { sessionId } = req.params;
 
-      if (!consentId) {
+      if (!sessionId) {
         return res.status(400).json({
           error: 'invalid_request',
-          error_description: 'Missing consent ID',
+          error_description: 'Missing Authorization Session ID',
         });
       }
 
       try {
-        const consentRequest = await this.oidc.getConsentRequest({
-          consentRequestId: consentId,
+        const session = await this.oidc.getAuthorizationSession({
+          sessionId,
         });
 
         return res.json({
-          id: consentRequest.id,
-          clientName: consentRequest.clientName,
-          scope: consentRequest.scope,
-          redirectUri: consentRequest.redirectUri,
+          id: session.id,
+          clientName: session.clientName,
+          scope: session.scope,
+          redirectUri: session.redirectUri,
         });
       } catch (error) {
         this.logger.error(
-          `Failed to get consent request: ${
+          `Failed to get authorization session: ${
             isError(error) ? error.message : 'Unknown error'
           }`,
           error,
         );
         return res.status(404).json({
           error: 'not_found',
-          error_description: 'Consent request not found or expired',
+          error_description: 'Authorization session not found or expired',
         });
       }
     });
 
-    // Consent approval endpoint
-    // Handles user approval of consent requests and generates authorization codes
-    router.post('/v1/consent/:consentId/approve', async (req, res) => {
-      const { consentId } = req.params;
+    // Authorization Session approval endpoint
+    // Handles user approval of Authorization Session requests and generates authorization codes
+    router.post('/v1/sessions/:sessionId/approve', async (req, res) => {
+      const { sessionId } = req.params;
 
-      if (!consentId) {
+      if (!sessionId) {
         return res.status(400).json({
           error: 'invalid_request',
-          error_description: 'Missing consent ID',
+          error_description: 'Missing authorization session ID',
         });
       }
 
       try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader?.startsWith('Bearer ')) {
-          return res.status(401).json({
-            error: 'unauthorized',
-            error_description: 'Bearer token required',
-          });
-        }
+        const httpCredentials = await this.httpAuth.credentials(req);
 
-        const token = authHeader.substring(7);
-        const credentials = await this.auth.authenticate(token);
-        if (!this.auth.isPrincipal(credentials, 'user')) {
+        if (!this.auth.isPrincipal(httpCredentials, 'user')) {
           return res.status(401).json({
             error: 'unauthorized',
             error_description: 'Authentication required',
           });
         }
 
-        const userEntityRef = credentials.principal.userEntityRef;
+        const userEntityRef = httpCredentials.principal.userEntityRef;
 
-        const result = await this.oidc.approveConsentRequest({
-          consentRequestId: consentId,
+        const result = await this.oidc.approveAuthorizationSession({
+          sessionId,
           userEntityRef,
         });
 
@@ -211,8 +211,9 @@ export class OidcRouter {
           redirectUrl: result.redirectUrl,
         });
       } catch (error) {
+        console.log(error);
         this.logger.error(
-          `Failed to approve consent: ${
+          `Failed to approve authorization session: ${
             isError(error) ? error.message : 'Unknown error'
           }`,
           error,
@@ -224,33 +225,33 @@ export class OidcRouter {
       }
     });
 
-    // Consent rejection endpoint
-    // Handles user rejection of consent requests and redirects with error
-    router.post('/v1/consent/:consentId/reject', async (req, res) => {
-      const { consentId } = req.params;
+    // Authorization Session rejection endpoint
+    // Handles user rejection of Authorization Session requests and redirects with error
+    router.post('/v1/sessions/:sessionId/reject', async (req, res) => {
+      const { sessionId } = req.params;
 
-      if (!consentId) {
+      if (!sessionId) {
         return res.status(400).json({
           error: 'invalid_request',
-          error_description: 'Missing consent ID',
+          error_description: 'Missing authorization session ID',
         });
       }
 
       try {
-        const consentRequest = await this.oidc.getConsentRequest({
-          consentRequestId: consentId,
+        const session = await this.oidc.getAuthorizationSession({
+          sessionId,
         });
 
-        await this.oidc.deleteConsentRequest({ consentRequestId: consentId });
+        await this.oidc.rejectAuthorizationSession({ sessionId });
 
         const errorParams = new URLSearchParams();
         errorParams.append('error', 'access_denied');
         errorParams.append('error_description', 'User denied the request');
-        if (consentRequest.state) {
-          errorParams.append('state', consentRequest.state);
+        if (session.state) {
+          errorParams.append('state', session.state);
         }
 
-        const redirectUrl = new URL(consentRequest.redirectUri);
+        const redirectUrl = new URL(session.redirectUri);
         redirectUrl.search = errorParams.toString();
 
         return res.json({
@@ -258,7 +259,10 @@ export class OidcRouter {
         });
       } catch (error) {
         const description = isError(error) ? error.message : 'Unknown error';
-        this.logger.error(`Failed to reject consent: ${description}`, error);
+        this.logger.error(
+          `Failed to reject authorization session: ${description}`,
+          error,
+        );
 
         return res.status(400).json({
           error: 'invalid_request',
