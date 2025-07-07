@@ -17,15 +17,17 @@
 .canon-Tooltip {
   box-shadow: 0 8px 20px rgba(0 0 0 / 0.1);
   border-radius: 4px;
-  background: var(--canon-bg-surface-1);
-  color: var(--canon-fg-primary);
+  background: var(--canon-bg-surface-2);
   forced-color-adjust: none;
   outline: none;
-  padding: var(--canon-space-1_5) var(--canon-space-2);
-  max-width: 150px;
+  padding: var(--canon-space-2) var(--canon-space-3);
+  max-width: 240px;
   /* fixes FF gap */
   transform: translate3d(0, 0, 0);
   transition: transform 200ms, opacity 200ms;
+  font-size: var(--canon-font-size-3);
+  font-family: var(--canon-font-regular);
+  color: var(--canon-fg-primary);
 
   &[data-entering],
   &[data-exiting] {
@@ -34,12 +36,12 @@
   }
 
   &[data-placement='top'] {
-    margin-bottom: 8px;
+    margin-bottom: var(--canon-space-2);
     --origin: translateY(4px);
   }
 
   &[data-placement='bottom'] {
-    margin-top: 8px;
+    margin-top: var(--canon-space-2);
     --origin: translateY(-4px);
 
     & .canon-TooltipArrow svg {
@@ -48,7 +50,7 @@
   }
 
   &[data-placement='right'] {
-    margin-left: 8px;
+    margin-left: var(--canon-space-2);
     --origin: translateX(-4px);
 
     & .canon-TooltipArrow svg {
@@ -57,7 +59,7 @@
   }
 
   &[data-placement='left'] {
-    margin-right: 8px;
+    margin-right: var(--canon-space-2);
     --origin: translateX(4px);
 
     & .canon-TooltipArrow svg {

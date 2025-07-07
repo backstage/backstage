@@ -107,3 +107,18 @@ export const PlacementBottom: Story = {
     </TooltipTrigger>
   ),
 };
+
+export const WithLongText: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: () => (
+    <TooltipTrigger isOpen>
+      <Button>Button</Button>
+      <Tooltip placement="bottom">
+        I am a tooltip with a very long text. I am a tooltip with a very long
+        text.
+      </Tooltip>
+    </TooltipTrigger>
+  ),
+};

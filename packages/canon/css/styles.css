@@ -10461,13 +10461,15 @@
 }
 
 .canon-Tooltip {
-  background: var(--canon-bg-surface-1);
-  color: var(--canon-fg-primary);
+  background: var(--canon-bg-surface-2);
   forced-color-adjust: none;
-  padding: var(--canon-space-1_5) var(--canon-space-2);
+  padding: var(--canon-space-2) var(--canon-space-3);
+  max-width: 240px;
+  font-size: var(--canon-font-size-3);
+  font-family: var(--canon-font-regular);
+  color: var(--canon-fg-primary);
   border-radius: 4px;
   outline: none;
-  max-width: 150px;
   transition: transform .2s, opacity .2s;
   transform: translate3d(0, 0, 0);
   box-shadow: 0 8px 20px #0000001a;
@@ -10478,13 +10480,13 @@
   }
 
   &[data-placement="top"] {
+    margin-bottom: var(--canon-space-2);
     --origin: translateY(4px);
-    margin-bottom: 8px;
   }
 
   &[data-placement="bottom"] {
+    margin-top: var(--canon-space-2);
     --origin: translateY(-4px);
-    margin-top: 8px;
 
     & .canon-TooltipArrow svg {
       transform: rotate(180deg);
@@ -10492,8 +10494,8 @@
   }
 
   &[data-placement="right"] {
+    margin-left: var(--canon-space-2);
     --origin: translateX(-4px);
-    margin-left: 8px;
 
     & .canon-TooltipArrow svg {
       transform: rotate(90deg);
@@ -10501,8 +10503,8 @@
   }
 
   &[data-placement="left"] {
+    margin-right: var(--canon-space-2);
     --origin: translateX(4px);
-    margin-right: 8px;
 
     & .canon-TooltipArrow svg {
       transform: rotate(-90deg);
