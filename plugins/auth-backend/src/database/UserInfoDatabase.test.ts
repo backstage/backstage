@@ -17,7 +17,8 @@
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
-import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
+import { UserInfoDatabase } from './UserInfoDatabase';
+import { AuthDatabase } from './AuthDatabase';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-auth-backend',
@@ -26,7 +27,7 @@ const migrationsDir = resolvePackagePath(
 
 jest.setTimeout(60_000);
 
-describe('UserInfoDatabaseHandler', () => {
+describe('UserInfoDatabase', () => {
   const databases = TestDatabases.create();
 
   async function createDatabaseHandler(databaseId: TestDatabaseId) {
@@ -38,7 +39,11 @@ describe('UserInfoDatabaseHandler', () => {
 
     return {
       knex,
-      dbHandler: new UserInfoDatabaseHandler(knex),
+      dbHandler: await UserInfoDatabase.create({
+        database: AuthDatabase.create({
+          getClient: async () => knex,
+        }),
+      }),
     };
   }
 
@@ -46,7 +51,7 @@ describe('UserInfoDatabaseHandler', () => {
     'should support database %p',
     databaseId => {
       let knex: Knex;
-      let dbHandler: UserInfoDatabaseHandler;
+      let dbHandler: UserInfoDatabase;
 
       beforeEach(async () => {
         ({ knex, dbHandler } = await createDatabaseHandler(databaseId));

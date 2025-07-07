@@ -7,12 +7,6 @@
 
 @media (min-width: 640px) {
   .canon-Container {
-    padding-inline: var(--canon-space-8);
-  }
-}
-
-@media (min-width: 1024px) {
-  .canon-Container {
-    padding-inline: var(--canon-space-12);
+    padding-inline: var(--canon-space-5);
   }
 }

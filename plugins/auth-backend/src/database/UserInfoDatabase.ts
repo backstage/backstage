@@ -17,7 +17,8 @@
 import { DateTime } from 'luxon';
 import { Knex } from 'knex';
 
-import { BackstageTokenPayload } from './TokenFactory';
+import { BackstageTokenPayload } from '../identity/TokenFactory';
+import { AuthDatabase } from './AuthDatabase';
 
 const TABLE = 'user_info';
 
@@ -31,8 +32,8 @@ type UserInfo = {
   claims: Omit<BackstageTokenPayload, 'aud' | 'iat' | 'iss' | 'uip'>;
 };
 
-export class UserInfoDatabaseHandler {
-  constructor(private readonly client: Knex) {}
+export class UserInfoDatabase {
+  private constructor(private readonly client: Knex) {}
 
   async addUserInfo(userInfo: UserInfo): Promise<void> {
     await this.client<Row>(TABLE)
@@ -58,5 +59,10 @@ export class UserInfoDatabaseHandler {
 
     const userInfo = JSON.parse(info.user_info);
     return userInfo;
+  }
+
+  static async create(options: { database: AuthDatabase }) {
+    const client = await options.database.get();
+    return new UserInfoDatabase(client);
   }
 }

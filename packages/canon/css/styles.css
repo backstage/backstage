@@ -9482,13 +9482,7 @@
 
 @media (width >= 640px) {
   .canon-Container {
-    padding-inline: var(--canon-space-8);
-  }
-}
-
-@media (width >= 1024px) {
-  .canon-Container {
-    padding-inline: var(--canon-space-12);
+    padding-inline: var(--canon-space-5);
   }
 }
 
@@ -9568,6 +9562,7 @@
 
 .canon-HeaderToolbar {
   z-index: 10;
+  margin-bottom: var(--canon-space-6);
   position: sticky;
   top: 0;
 
@@ -9580,6 +9575,10 @@
     top: 0;
     left: 0;
     right: 0;
+  }
+
+  &[data-has-tabs="true"] {
+    margin-bottom: 0;
   }
 }
 
@@ -9626,7 +9625,7 @@
 }
 
 .canon-HeaderToolbarControls {
-  right: var(--canon-space-2);
+  right: var(--canon-space-3);
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
