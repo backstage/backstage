@@ -235,11 +235,52 @@ export const MultiEntityPickerFieldExtension: FieldExtensionComponent_2<
 // @public
 export const MyGroupsPickerFieldExtension: FieldExtensionComponent_2<
   string,
-  any
+  {
+    catalogFilter?:
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
+      | undefined;
+  }
 >;
 
 // @public
-export const MyGroupsPickerFieldSchema: FieldSchema_2<string, any>;
+export const MyGroupsPickerFieldSchema: FieldSchema_2<
+  string,
+  {
+    catalogFilter?:
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >
+      | Record<
+          string,
+          | string
+          | string[]
+          | {
+              exists?: boolean | undefined;
+            }
+        >[]
+      | undefined;
+  }
+>;
 
 // @public
 export const MyGroupsPickerSchema: CustomFieldExtensionSchema_2;
