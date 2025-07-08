@@ -38,6 +38,7 @@ export function readHttpServerOptions(config?: Config): HttpServerOptions {
   return {
     listen: readHttpListenOptions(config),
     https: readHttpsOptions(config),
+    serverOptions: readServerOptions(config),
   };
 }
 
@@ -98,4 +99,33 @@ function readHttpsOptions(config?: Config): HttpServerOptions['https'] {
       key: cc.getString('certificate.key'),
     },
   };
+}
+
+function readServerOptions(
+  config?: Config,
+): HttpServerOptions['serverOptions'] {
+  const serverConfig = config?.getOptionalConfig('server');
+  if (!serverConfig) {
+    return undefined;
+  }
+
+  const serverOptions: HttpServerOptions['serverOptions'] = {};
+
+  const keys = [
+    'headersTimeout',
+    'requestTimeout',
+    'keepAliveTimeout',
+    'timeout',
+    'maxHeadersCount',
+    'maxRequestsPerSocket',
+  ] as const;
+
+  for (const key of keys) {
+    const value = serverConfig.getOptionalNumber(key);
+    if (value !== undefined) {
+      serverOptions[key] = value;
+    }
+  }
+
+  return Object.keys(serverOptions).length === 0 ? undefined : serverOptions;
 }
