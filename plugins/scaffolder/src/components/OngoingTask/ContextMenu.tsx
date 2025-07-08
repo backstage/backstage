@@ -46,6 +46,7 @@ type ContextMenuProps = {
   onStartOver?: () => void;
   onToggleLogs?: (state: boolean) => void;
   onToggleButtonBar?: (state: boolean) => void;
+  taskId?: string;
   isCancelButtonDisabled: boolean;
   onCancel: () => void;
 };
@@ -67,6 +68,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
     onStartOver,
     onToggleLogs,
     onToggleButtonBar,
+    taskId,
   } = props;
   const { getPageTheme } = useTheme();
   const pageTheme = getPageTheme({ themeId: 'website' });
@@ -76,6 +78,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
 
   const { allowed: canReadTask } = usePermission({
     permission: taskReadPermission,
+    resourceRef: taskId,
   });
 
   const { allowed: canCreateTask } = usePermission({
