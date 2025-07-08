@@ -23,6 +23,7 @@ import * as TabsStories from '../../../packages/canon/src/components/Tabs/Tabs.s
 import * as SwitchStories from '../../../packages/canon/src/components/Switch/Switch.stories';
 import * as SearchFieldStories from '../../../packages/canon/src/components/SearchField/SearchField.stories';
 import * as TooltipStories from '../../../packages/canon/src/components/Tooltip/Tooltip.stories';
+import * as SkeletonStories from '../../../packages/canon/src/components/Skeleton/Skeleton.stories';
 
 export const BoxSnippet = ({ story }: { story: keyof typeof BoxStories }) => {
   const stories = composeStories(BoxStories);
@@ -229,6 +230,17 @@ export const TooltipSnippet = ({
   story: keyof typeof TooltipStories;
 }) => {
   const stories = composeStories(TooltipStories);
+  const StoryComponent = stories[story as keyof typeof stories];
+
+  return StoryComponent ? <StoryComponent /> : null;
+};
+
+export const SkeletonSnippet = ({
+  story,
+}: {
+  story: keyof typeof SkeletonStories;
+}) => {
+  const stories = composeStories(SkeletonStories);
   const StoryComponent = stories[story as keyof typeof stories];
 
   return StoryComponent ? <StoryComponent /> : null;

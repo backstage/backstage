@@ -24,6 +24,12 @@
   text-decoration: none;
 }
 
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
 /* Light theme tokens */
 :root {
   /* Font families */
@@ -132,6 +138,8 @@
   --canon-ring: #1f5493;
   --canon-scrollbar: #a0a0a03b;
   --canon-scrollbar-thumb: #a0a0a0;
+
+  --canon-animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* Dark theme tokens */
