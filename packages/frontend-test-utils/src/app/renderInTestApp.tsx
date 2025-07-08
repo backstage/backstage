@@ -154,7 +154,7 @@ export function renderInTestApp(
       factory: () => {
         return [
           coreExtensionData.reactElement(element),
-          coreExtensionData.routePath('/'),
+          coreExtensionData.routePath(''),
         ];
       },
     }),

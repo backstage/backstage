@@ -1,0 +1,5 @@
+---
+'@backstage/frontend-test-utils': patch
+---
+
+Update route path for index route in `renderInTestApp` util to fix duplicate slash and ensure any nested routing behaves correctly.
