@@ -67,6 +67,26 @@ backend:
       - host: '*.mozilla.org'
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
+  instrumentation:
+    enabled: true
+
+    resource:
+      serviceName: backstage
+      serviceVersion: 1.40.2
+      # ... attributes
+
+    metrics:
+      enabled: true
+
+      collection:
+        timeoutMillis: 1000
+
+      exporters:
+        - type: console
+          enabled: true
+        - type: prometheus
+          enabled: true
+
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
   endpoints:
