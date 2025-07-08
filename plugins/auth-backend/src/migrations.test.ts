@@ -112,15 +112,15 @@ describe('migrations', () => {
     '20250707164600_user_created_at.js, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
+      await migrateUntilBefore(knex, '20250707164600_user_created_at.js');
 
       if (knex.client.config.client.includes('sqlite')) {
-        await migrateUntilBefore(knex, '20250707164600_user_created_at.js');
+        // Sqlite doesn't support adding a column with non-constant default when table has data
+        // so we just test that the migration runs without errors
         await migrateUpOnce(knex);
 
         return;
       }
-
-      await migrateUntilBefore(knex, '20250707164600_user_created_at.js');
 
       const user_info = JSON.stringify({
         claims: {
