@@ -1,5 +1,34 @@
 # example-app
 
+## 0.2.111-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-home@0.8.10-next.2
+  - @backstage/canon@0.6.0-next.1
+  - @backstage/cli@0.33.1-next.2
+  - @backstage/plugin-scaffolder-react@1.18.0-next.2
+  - @backstage/theme@0.6.7-next.1
+  - @backstage/core-app-api@1.18.0-next.1
+  - @backstage/core-components@0.17.4-next.2
+  - @backstage/plugin-user-settings@0.8.24-next.2
+  - @backstage/plugin-scaffolder@1.33.0-next.2
+  - @backstage/plugin-signals@0.0.21-next.2
+  - @backstage/app-defaults@1.6.4-next.2
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/frontend-app-api@0.11.4-next.2
+  - @backstage/plugin-api-docs@0.12.9-next.1
+  - @backstage/plugin-catalog@1.31.1-next.2
+  - @backstage/plugin-catalog-graph@0.4.21-next.1
+  - @backstage/plugin-catalog-import@0.13.3-next.1
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/plugin-notifications@0.5.7-next.1
+  - @backstage/plugin-org@0.6.41-next.1
+  - @backstage/plugin-search@1.4.28-next.1
+  - @backstage/plugin-search-react@1.9.2-next.1
+  - @backstage/plugin-techdocs@1.13.2-next.1
+
 ## 0.2.111-next.1
 
 ### Patch Changes

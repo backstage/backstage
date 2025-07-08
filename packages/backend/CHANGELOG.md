@@ -1,5 +1,16 @@
 # example-backend
 
+## 0.0.40-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.25.2-next.1
+  - @backstage/plugin-scaffolder-backend@2.1.0-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.8.1-next.2
+  - @backstage/plugin-scaffolder-backend-module-notifications@0.1.12-next.2
+
 ## 0.0.40-next.1
 
 ### Patch Changes
