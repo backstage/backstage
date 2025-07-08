@@ -50,6 +50,17 @@ describe('createConfluenceVariables', () => {
     expect(title).toEqual('Cloud+Page+Title');
     expect(titleWithSpaces).toEqual('Cloud Page Title');
   });
+
+  it('should return values for Confluence Url using spaces (non-cloud)', () => {
+    const url =
+      'https://confluence.example.com/spaces/SPACEKEY/pages/1234567/Confluence+Page+Title';
+
+    const { spacekey, title, titleWithSpaces } = createConfluenceVariables(url);
+
+    expect(spacekey).toEqual('SPACEKEY');
+    expect(title).toEqual('Confluence+Page+Title');
+    expect(titleWithSpaces).toEqual('Confluence Page Title');
+  });
 });
 
 describe('getConfluenceConfig', () => {
