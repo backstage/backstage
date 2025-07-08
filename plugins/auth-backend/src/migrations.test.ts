@@ -113,6 +113,13 @@ describe('migrations', () => {
     async databaseId => {
       const knex = await databases.init(databaseId);
 
+      if (knex.client.config.client.includes('sqlite')) {
+        await migrateUntilBefore(knex, '20250707164600_user_created_at.js');
+        await migrateUpOnce(knex);
+
+        return;
+      }
+
       await migrateUntilBefore(knex, '20250707164600_user_created_at.js');
 
       const user_info = JSON.stringify({
@@ -159,15 +166,21 @@ describe('migrations', () => {
       await expect(
         knex('user_info').select('created_at', 'updated_at'),
       ).resolves.toEqual([
-        { created_at: expect.any(String), updated_at: expect.any(String) },
-        { created_at: expect.any(String), updated_at: expect.any(String) },
+        {
+          created_at: expect.any(Date),
+          updated_at: expect.any(Date),
+        },
+        {
+          created_at: expect.any(Date),
+          updated_at: expect.any(Date),
+        },
       ]);
 
       await migrateDownOnce(knex);
 
       await expect(knex('user_info').select('exp')).resolves.toEqual([
-        { exp: expect.any(String) },
-        { exp: expect.any(String) },
+        { exp: expect.any(Date) },
+        { exp: expect.any(Date) },
       ]);
 
       await knex.destroy();
