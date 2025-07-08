@@ -9088,6 +9088,12 @@
   text-decoration: none;
 }
 
+@keyframes pulse {
+  50% {
+    opacity: .5;
+  }
+}
+
 :root {
   --canon-font-regular: system-ui;
   --canon-font-monospace: ui-monospace, "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
@@ -9173,6 +9179,7 @@
   --canon-ring: #1f5493;
   --canon-scrollbar: #a0a0a03b;
   --canon-scrollbar-thumb: #a0a0a0;
+  --canon-animate-pulse: pulse 2s cubic-bezier(.4, 0, .6, 1) infinite;
 }
 
 [data-theme="dark"] {
@@ -10458,6 +10465,16 @@
 .canon-InputClear svg {
   width: 1rem;
   height: 1rem;
+}
+
+.canon-Skeleton {
+  animation: var(--canon-animate-pulse);
+  background-color: var(--canon-bg-surface-2);
+  border-radius: var(--canon-radius-2);
+}
+
+.canon-Skeleton[data-rounded="true"] {
+  border-radius: var(--canon-radius-full);
 }
 
 .canon-Tooltip {

@@ -178,6 +178,11 @@ export const componentDefinitions = {
       size: ['small', 'medium'] as const,
     },
   },
+  Skeleton: {
+    classNames: {
+      root: 'canon-Skeleton',
+    },
+  },
   Switch: {
     classNames: {
       root: 'canon-Switch',

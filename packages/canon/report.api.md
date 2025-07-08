@@ -448,6 +448,11 @@ export const componentDefinitions: {
       readonly size: readonly ['small', 'medium'];
     };
   };
+  readonly Skeleton: {
+    readonly classNames: {
+      readonly root: 'canon-Skeleton';
+    };
+  };
   readonly Switch: {
     readonly classNames: {
       readonly root: 'canon-Switch';
