@@ -40,7 +40,7 @@ export class UserInfoDatabase {
       .insert({
         user_entity_ref: userInfo.claims.sub as string,
         user_info: JSON.stringify(userInfo),
-        updated_at: DateTime.now().toSQL({ includeOffset: false }),
+        updated_at: DateTime.utc().toSQL(),
       })
       .onConflict('user_entity_ref')
       .merge();

@@ -22,12 +22,25 @@
 exports.up = async function up(knex) {
   await knex.schema.alterTable('user_info', table => {
     table.renameColumn('exp', 'updated_at');
+  });
 
+  // Sqlite doesn't support adding a column with non-constant default when table has data
+  // so we need to add it as nullable first, then set the value to the updated_at value
+  await knex.schema.alterTable('user_info', table => {
+    table.timestamp('created_at').nullable();
+  });
+
+  await knex('user_info').update({
+    created_at: knex.ref('updated_at'),
+  });
+
+  // Then alter to non-nullable and set the default to now()
+  await knex.schema.alterTable('user_info', table => {
     table
       .timestamp('created_at')
       .notNullable()
       .defaultTo(knex.fn.now())
-      .comment('The creation time of the user info');
+      .alter();
   });
 };
 
@@ -36,7 +49,7 @@ exports.up = async function up(knex) {
  */
 exports.down = async function down(knex) {
   await knex.schema.alterTable('user_info', table => {
-    table.renameColumn('updated_at', 'exp');
     table.dropColumn('created_at');
+    table.renameColumn('updated_at', 'exp');
   });
 };

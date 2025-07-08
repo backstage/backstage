@@ -136,8 +136,41 @@ describe('migrations', () => {
       const { created_at, updated_at } = await knex('user_info').first();
 
       expect(updated_at).toBe(exp);
-
       expect(created_at).toBeDefined();
+
+      await knex
+        .insert({
+          user_entity_ref: 'user:default/backstage-user',
+          user_info,
+          updated_at: knex.fn.now(),
+        })
+        .into('user_info')
+        .onConflict(['user_entity_ref'])
+        .merge();
+
+      await knex
+        .insert({
+          user_entity_ref: 'user:default/backstage-user-2',
+          user_info,
+          updated_at: knex.fn.now(),
+        })
+        .into('user_info');
+
+      await expect(
+        knex('user_info').select('created_at', 'updated_at'),
+      ).resolves.toEqual([
+        { created_at: expect.any(String), updated_at: expect.any(String) },
+        { created_at: expect.any(String), updated_at: expect.any(String) },
+      ]);
+
+      await migrateDownOnce(knex);
+
+      await expect(knex('user_info').select('exp')).resolves.toEqual([
+        { exp: expect.any(String) },
+        { exp: expect.any(String) },
+      ]);
+
+      await knex.destroy();
     },
   );
 });
