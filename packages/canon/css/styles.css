@@ -9416,6 +9416,30 @@
   padding: 0;
 }
 
+.canon-Card {
+  gap: var(--canon-space-3);
+  background-color: var(--canon-bg-surface-1);
+  border-radius: var(--canon-radius-3);
+  padding-block: var(--canon-space-3);
+  color: var(--canon-fg-primary);
+  border: 1px solid var(--canon-border);
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.canon-CardBody {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.canon-CardHeader, .canon-CardFooter {
+  padding-inline: var(--canon-space-3);
+}
+
 .canon-CheckboxRoot {
   width: 1rem;
   height: 1rem;
@@ -10536,9 +10560,7 @@
 
 .canon-ScrollAreaRoot {
   box-sizing: border-box;
-  width: 24rem;
   max-width: calc(100vw - 8rem);
-  height: 8.5rem;
 }
 
 .canon-ScrollAreaViewport {

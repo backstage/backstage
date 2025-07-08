@@ -55,6 +55,14 @@ export const componentDefinitions = {
       root: 'canon-ButtonLink',
     },
   },
+  Card: {
+    classNames: {
+      root: 'canon-Card',
+      header: 'canon-CardHeader',
+      body: 'canon-CardBody',
+      footer: 'canon-CardFooter',
+    },
+  },
   Checkbox: {
     classNames: {
       root: 'canon-CheckboxRoot',

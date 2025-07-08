@@ -87,6 +87,11 @@ export const components: Page[] = [
     status: 'alpha',
   },
   {
+    title: 'Card',
+    slug: 'card',
+    status: 'alpha',
+  },
+  {
     title: 'Checkbox',
     slug: 'checkbox',
     status: 'alpha',
