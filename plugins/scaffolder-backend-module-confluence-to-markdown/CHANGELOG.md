@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
 
+## 0.3.11-next.2
+
+### Patch Changes
+
+- 642282d: Added support for new link format for on-prem Confluence
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.10.0-next.2
+
 ## 0.3.11-next.1
 
 ### Patch Changes

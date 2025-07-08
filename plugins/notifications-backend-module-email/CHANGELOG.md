@@ -1,5 +1,11 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.11-next.1
+
+### Patch Changes
+
+- f92c9fc: Add optional config for `ses` mail options with `sourceArn`, `fromArn`, `configurationSetName`
+
 ## 0.3.11-next.0
 
 ### Patch Changes
