@@ -19,6 +19,7 @@ import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import { UserInfoDatabase } from './UserInfoDatabase';
 import { AuthDatabase } from './AuthDatabase';
+import { DateTime } from 'luxon';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-auth-backend',
@@ -62,7 +63,6 @@ describe('UserInfoDatabase', () => {
           claims: {
             sub: 'user:default/foo',
             ent: ['group:default/foo-group', 'group:default/bar'],
-            exp: 1234567890,
           },
         };
 
@@ -71,10 +71,12 @@ describe('UserInfoDatabase', () => {
         const savedUserInfo = await knex('user_info')
           .where('user_entity_ref', 'user:default/foo')
           .first();
+
         expect(savedUserInfo).toEqual({
           user_entity_ref: 'user:default/foo',
           user_info: JSON.stringify(userInfo),
-          exp: expect.anything(),
+          updated_at: expect.anything(),
+          created_at: expect.anything(),
         });
 
         userInfo.claims.ent = ['group:default/group1', 'group:default/group2'];
@@ -83,10 +85,12 @@ describe('UserInfoDatabase', () => {
         const updatedUserInfo = await knex('user_info')
           .where('user_entity_ref', 'user:default/foo')
           .first();
+
         expect(updatedUserInfo).toEqual({
           user_entity_ref: 'user:default/foo',
           user_info: JSON.stringify(userInfo),
-          exp: expect.anything(),
+          updated_at: expect.anything(),
+          created_at: expect.anything(),
         });
       });
 
@@ -95,14 +99,13 @@ describe('UserInfoDatabase', () => {
           claims: {
             sub: 'user:default/backstage-user',
             ent: ['group:default/group1', 'group:default/group2'],
-            exp: 1234567890,
           },
         };
 
         await knex('user_info').insert({
           user_entity_ref: 'user:default/backstage-user',
           user_info: JSON.stringify(userInfo),
-          exp: knex.fn.now(),
+          updated_at: DateTime.now().toSQL({ includeOffset: false }),
         });
 
         const savedUserInfo = await dbHandler.getUserInfo(

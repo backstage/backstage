@@ -17,19 +17,19 @@
 import { DateTime } from 'luxon';
 import { Knex } from 'knex';
 
-import { BackstageTokenPayload } from '../identity/TokenFactory';
 import { AuthDatabase } from './AuthDatabase';
+import { JsonObject } from '@backstage/types';
 
 const TABLE = 'user_info';
 
 type Row = {
   user_entity_ref: string;
   user_info: string;
-  exp: string;
+  updated_at: string;
 };
 
 type UserInfo = {
-  claims: Omit<BackstageTokenPayload, 'aud' | 'iat' | 'iss' | 'uip'>;
+  claims: JsonObject;
 };
 
 export class UserInfoDatabase {
@@ -40,9 +40,7 @@ export class UserInfoDatabase {
       .insert({
         user_entity_ref: userInfo.claims.sub as string,
         user_info: JSON.stringify(userInfo),
-        exp: DateTime.fromSeconds(userInfo.claims.exp as number, {
-          zone: 'utc',
-        }).toSQL({ includeOffset: false }),
+        updated_at: DateTime.utc().toSQL({ includeOffset: false }),
       })
       .onConflict('user_entity_ref')
       .merge();

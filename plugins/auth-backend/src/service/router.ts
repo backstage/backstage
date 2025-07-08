@@ -94,7 +94,6 @@ export async function createRouter(
         logger: logger.child({ component: 'token-factory' }),
         issuer: authUrl,
         sessionExpirationSeconds: backstageTokenExpiration,
-        userInfo,
         omitClaimsFromToken,
       },
       keyStore as StaticKeyStore,
@@ -108,7 +107,6 @@ export async function createRouter(
       algorithm:
         tokenFactoryAlgorithm ??
         config.getOptionalString('auth.identityTokenAlgorithm'),
-      userInfo,
       omitClaimsFromToken,
     });
   }
@@ -146,6 +144,7 @@ export async function createRouter(
     tokenIssuer,
     ...options,
     auth: options.auth,
+    userInfo,
   });
 
   const oidcRouter = OidcRouter.create({
