@@ -89,7 +89,7 @@ export async function getOctokitOptions(options: {
 
   if (!owner || !repo) {
     throw new InputError(
-      `No owner and/or owner provided, which is required if a token is not provided`,
+      `No owner and/or repo provided, which is required if a token is not provided`,
     );
   }
 
