@@ -65,6 +65,14 @@ backend:
     # - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
     # - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
     serverShutdownDelay: { seconds: 20 }
+  server:
+    # (Optional) HTTP server configuration, Node.js defaults apply otherwise
+    headersTimeout: 60000
+    keepAliveTimeout: 5000
+    maxHeadersCount: 2000
+    maxRequestsPerSocket: 100
+    requestTimeout: 30000
+    timeout: 30000
 ```
 
 ### Via Code

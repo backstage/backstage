@@ -63,6 +63,59 @@ describe('readHttpServerOptions', () => {
 
   it.each([
     [
+      {
+        server: {
+          headersTimeout: 10000,
+          requestTimeout: 30000,
+          keepAliveTimeout: 5000,
+          timeout: 60000,
+          maxHeadersCount: 1000,
+          maxRequestsPerSocket: 100,
+        },
+      },
+      {
+        listen: { host: '', port: 7007 },
+        https: undefined,
+        serverOptions: {
+          headersTimeout: 10000,
+          requestTimeout: 30000,
+          keepAliveTimeout: 5000,
+          timeout: 60000,
+          maxHeadersCount: 1000,
+          maxRequestsPerSocket: 100,
+        },
+      },
+    ],
+    [
+      {
+        server: {
+          keepAliveTimeout: 8000,
+          timeout: 30000,
+        },
+      },
+      {
+        listen: { host: '', port: 7007 },
+        https: undefined,
+        serverOptions: {
+          keepAliveTimeout: 8000,
+          timeout: 30000,
+        },
+      },
+    ],
+    [
+      { server: {} },
+      {
+        listen: { host: '', port: 7007 },
+        https: undefined,
+        serverOptions: undefined,
+      },
+    ],
+  ])('should read server options %#', (input, output) => {
+    expect(readHttpServerOptions(new ConfigReader(input))).toEqual(output);
+  });
+
+  it.each([
+    [
       { listen: { port: 'not-a-number' } },
       "Unable to convert config value for key 'listen.port' in 'mock-config' to a number",
     ],
