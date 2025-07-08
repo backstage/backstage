@@ -325,6 +325,14 @@ export const componentDefinitions: {
       readonly root: 'canon-ButtonLink';
     };
   };
+  readonly Card: {
+    readonly classNames: {
+      readonly root: 'canon-Card';
+      readonly header: 'canon-CardHeader';
+      readonly body: 'canon-CardBody';
+      readonly footer: 'canon-CardFooter';
+    };
+  };
   readonly Checkbox: {
     readonly classNames: {
       readonly root: 'canon-CheckboxRoot';

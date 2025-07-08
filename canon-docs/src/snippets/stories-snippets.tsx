@@ -24,6 +24,7 @@ import * as SwitchStories from '../../../packages/canon/src/components/Switch/Sw
 import * as SearchFieldStories from '../../../packages/canon/src/components/SearchField/SearchField.stories';
 import * as TooltipStories from '../../../packages/canon/src/components/Tooltip/Tooltip.stories';
 import * as SkeletonStories from '../../../packages/canon/src/components/Skeleton/Skeleton.stories';
+import * as CardStories from '../../../packages/canon/src/components/Card/Card.stories';
 
 export const BoxSnippet = ({ story }: { story: keyof typeof BoxStories }) => {
   const stories = composeStories(BoxStories);
@@ -241,6 +242,13 @@ export const SkeletonSnippet = ({
   story: keyof typeof SkeletonStories;
 }) => {
   const stories = composeStories(SkeletonStories);
+  const StoryComponent = stories[story as keyof typeof stories];
+
+  return StoryComponent ? <StoryComponent /> : null;
+};
+
+export const CardSnippet = ({ story }: { story: keyof typeof CardStories }) => {
+  const stories = composeStories(CardStories);
   const StoryComponent = stories[story as keyof typeof stories];
 
   return StoryComponent ? <StoryComponent /> : null;

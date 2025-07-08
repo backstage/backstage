@@ -16,8 +16,6 @@
 
 .canon-ScrollAreaRoot {
   box-sizing: border-box;
-  width: 24rem;
-  height: 8.5rem;
   max-width: calc(100vw - 8rem);
 }
 
