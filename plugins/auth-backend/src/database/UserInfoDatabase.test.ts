@@ -75,8 +75,8 @@ describe('UserInfoDatabase', () => {
         expect(savedUserInfo).toEqual({
           user_entity_ref: 'user:default/foo',
           user_info: JSON.stringify(userInfo),
-          updated_at: expect.any(String),
-          created_at: expect.any(String),
+          updated_at: expect.anything(),
+          created_at: expect.anything(),
         });
 
         userInfo.claims.ent = ['group:default/group1', 'group:default/group2'];
@@ -89,8 +89,8 @@ describe('UserInfoDatabase', () => {
         expect(updatedUserInfo).toEqual({
           user_entity_ref: 'user:default/foo',
           user_info: JSON.stringify(userInfo),
-          updated_at: expect.any(String),
-          created_at: expect.any(String),
+          updated_at: expect.anything(),
+          created_at: expect.anything(),
         });
       });
 
