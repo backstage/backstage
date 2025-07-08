@@ -84,6 +84,8 @@ async function createServer(
   options: HttpServerOptions,
   deps: { logger: LoggerService },
 ): Promise<http.Server> {
+  let server: http.Server;
+
   if (options.https) {
     const { certificate } = options.https;
     if (certificate.type === 'generated') {
@@ -91,10 +93,31 @@ async function createServer(
         certificate.hostname,
         deps.logger,
       );
-      return https.createServer(credentials, listener);
+      server = https.createServer(credentials, listener);
+    } else {
+      server = https.createServer(certificate, listener);
     }
-    return https.createServer(certificate, listener);
+  } else {
+    server = http.createServer(listener);
   }
 
-  return http.createServer(listener);
+  // apply custom server options
+  if (options.serverOptions) {
+    const { serverOptions } = options;
+
+    if (serverOptions.headersTimeout !== undefined)
+      server.headersTimeout = serverOptions.headersTimeout;
+    if (serverOptions.requestTimeout !== undefined)
+      server.requestTimeout = serverOptions.requestTimeout;
+    if (serverOptions.keepAliveTimeout !== undefined)
+      server.keepAliveTimeout = serverOptions.keepAliveTimeout;
+    if (serverOptions.timeout !== undefined)
+      server.timeout = serverOptions.timeout;
+    if (serverOptions.maxHeadersCount !== undefined)
+      server.maxHeadersCount = serverOptions.maxHeadersCount;
+    if (serverOptions.maxRequestsPerSocket !== undefined)
+      server.maxRequestsPerSocket = serverOptions.maxRequestsPerSocket;
+  }
+
+  return server;
 }
