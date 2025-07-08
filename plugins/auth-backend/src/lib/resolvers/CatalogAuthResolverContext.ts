@@ -88,15 +88,17 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
       ...additionalClaims,
     };
 
+    const issuedToken = await this.tokenIssuer.issueToken({
+      claims,
+    });
+
     // Store the user info in the database upon successful token
     // issuance so that it can be retrieved later by limited user tokens
     await this.userInfo.addUserInfo({
       claims,
     });
 
-    return await this.tokenIssuer.issueToken({
-      claims,
-    });
+    return issuedToken;
   }
 
   async findCatalogUser(query: AuthResolverCatalogUserQuery) {
