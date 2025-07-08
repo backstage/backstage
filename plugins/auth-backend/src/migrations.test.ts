@@ -142,7 +142,7 @@ describe('migrations', () => {
 
       const { created_at, updated_at } = await knex('user_info').first();
 
-      expect(updated_at).toBe(exp);
+      expect(updated_at).toEqual(exp);
       expect(created_at).toBeDefined();
 
       await knex
