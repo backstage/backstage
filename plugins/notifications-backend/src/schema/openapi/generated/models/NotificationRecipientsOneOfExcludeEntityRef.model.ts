@@ -19,7 +19,7 @@
 // ******************************************************************
 
 /**
- * Optional entity reference(s) to filter out of the resolved recipients
+ * Optional entity reference(s) to filter out of the resolved recipients. This allows excluding specific users from receiving notifications.
  * @public
  */
 export type NotificationRecipientsOneOfExcludeEntityRef =

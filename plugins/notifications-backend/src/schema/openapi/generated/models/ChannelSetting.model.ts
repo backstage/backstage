@@ -24,11 +24,11 @@ import { OriginSetting } from '../models/OriginSetting.model';
  */
 export interface ChannelSetting {
   /**
-   * Channel ID
+   * Channel ID that uniquely identifies the notification channel.
    */
   id: string;
   /**
-   * Origin settings for this channel
+   * Origin settings for this channel. Allows users to configure which origins can send notifications through this channel.
    */
   origins: Array<OriginSetting>;
 }

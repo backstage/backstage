@@ -24,9 +24,9 @@ export const spec = {
   openapi: '3.0.3',
   info: {
     title: 'notifications',
-    version: '1.0.0',
+    version: '1',
     description:
-      'Backstage Notifications Backend API\n\nAll of the URL paths in this article are assumed to be on top of some base URL\npointing at your notifications installation. For example, if the path given in a\nsection below is `/notifications`, and the notifications is located at\n`http://localhost:7007/api/notifications` during local development, the full URL would\nbe `http://localhost:7007/api/notifications/notifications`. The actual URL may vary from\none organization to the other, especially in production, but is commonly your\n`backend.baseUrl` in your app config, plus `/api/notifications` at the end.\n\nSome or all of the endpoints may accept or require an `Authorization` header\nwith a `Bearer` token, which should then be the Backstage token returned by the\n[`identity API`](https://backstage.io/docs/reference/core-plugin-api.identityapiref).\n',
+      'The API surface consists of a few distinct groups of functionality. Each has a\ndedicated section below.\n\n> **Note:** This page only describes some of the most commonly used parts of the\n> API, and is a work in progress.\n\nAll of the URL paths in this article are assumed to be on top of some base URL\npointing at your notifications installation. For example, if the path given in a\nsection below is `/notifications`, and the notifications is located at\n`http://localhost:7007/api/notifications` during local development, the full URL would\nbe `http://localhost:7007/api/notifications/notifications`. The actual URL may vary from\none organization to the other, especially in production, but is commonly your\n`backend.baseUrl` in your app config, plus `/api/notifications` at the end.\n\nSome or all of the endpoints may accept or require an `Authorization` header\nwith a `Bearer` token, which should then be the Backstage token returned by the\n[`identity API`](https://backstage.io/docs/reference/core-plugin-api.identityapiref).\n',
     license: {
       name: 'Apache-2.0',
       url: 'http://www.apache.org/licenses/LICENSE-2.0.html',
@@ -38,101 +38,626 @@ export const spec = {
       url: '/',
     },
   ],
+  components: {
+    examples: {},
+    headers: {},
+    parameters: {
+      limit: {
+        name: 'limit',
+        in: 'query',
+        description:
+          'Maximum number of notifications to return in the response. This parameter\ncontrols pagination and helps manage response size for large datasets.\n',
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'integer',
+          minimum: 1,
+          maximum: 100,
+          default: 20,
+        },
+        examples: {
+          'Default limit': {
+            value: 20,
+          },
+          'Small batch': {
+            value: 10,
+          },
+          'Large batch': {
+            value: 50,
+          },
+        },
+      },
+      offset: {
+        name: 'offset',
+        in: 'query',
+        description:
+          'Number of notifications to skip in the query page. Used for pagination\nto retrieve subsequent pages of results.\n',
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'integer',
+          minimum: 0,
+          default: 0,
+        },
+        examples: {
+          'First page': {
+            value: 0,
+          },
+          'Second page': {
+            value: 20,
+          },
+          'Third page': {
+            value: 40,
+          },
+        },
+      },
+      read: {
+        name: 'read',
+        in: 'query',
+        description:
+          'Filter notifications by read status. When specified, returns only notifications\nthat match the given read state.\n',
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'boolean',
+        },
+        examples: {
+          'Unread only': {
+            value: false,
+          },
+          'Read only': {
+            value: true,
+          },
+        },
+      },
+      saved: {
+        name: 'saved',
+        in: 'query',
+        description:
+          'Filter notifications by saved status. When specified, returns only notifications\nthat match the given saved state.\n',
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'boolean',
+        },
+        examples: {
+          'Unsaved only': {
+            value: false,
+          },
+          'Saved only': {
+            value: true,
+          },
+        },
+      },
+      severity: {
+        name: 'severity',
+        in: 'query',
+        description:
+          'Filter notifications by severity level. Notifications can have different\npriority levels that affect their display and handling.\n',
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'string',
+          enum: ['critical', 'high', 'normal', 'low'],
+        },
+        examples: {
+          'Critical notifications': {
+            value: 'critical',
+          },
+          'High priority': {
+            value: 'high',
+          },
+          'Normal priority': {
+            value: 'normal',
+          },
+          'Low priority': {
+            value: 'low',
+          },
+        },
+      },
+      origin: {
+        name: 'origin',
+        in: 'query',
+        description:
+          'Filter notifications by origin. The origin identifies the source system\nor service that generated the notification.\n',
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'string',
+        },
+        examples: {
+          'From scaffolder': {
+            value: 'scaffolder',
+          },
+          'From catalog': {
+            value: 'catalog',
+          },
+          'From techdocs': {
+            value: 'techdocs',
+          },
+        },
+      },
+      topic: {
+        name: 'topic',
+        in: 'query',
+        description:
+          'Filter notifications by topic. Topics help categorize and group related\nnotifications together.\n',
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'string',
+        },
+        examples: {
+          'Security alerts': {
+            value: 'security',
+          },
+          'Deployment updates': {
+            value: 'deployment',
+          },
+          'System maintenance': {
+            value: 'maintenance',
+          },
+        },
+      },
+      orderBy: {
+        name: 'orderBy',
+        in: 'query',
+        description:
+          'Sort order for notifications. Determines which field is used to sort\nthe results.\n',
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'string',
+          enum: ['created', 'updated', 'read', 'saved'],
+          default: 'created',
+        },
+        examples: {
+          'Sort by creation time': {
+            value: 'created',
+          },
+          'Sort by last update': {
+            value: 'updated',
+          },
+          'Sort by read status': {
+            value: 'read',
+          },
+          'Sort by saved status': {
+            value: 'saved',
+          },
+        },
+      },
+      orderDirection: {
+        name: 'orderDirection',
+        in: 'query',
+        description:
+          'Sort direction for notifications. Controls whether results are returned\nin ascending or descending order.\n',
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'string',
+          enum: ['asc', 'desc'],
+          default: 'desc',
+        },
+        examples: {
+          'Newest first': {
+            value: 'desc',
+          },
+          'Oldest first': {
+            value: 'asc',
+          },
+        },
+      },
+      notificationId: {
+        name: 'id',
+        in: 'path',
+        description:
+          'Unique identifier for the notification. Used to retrieve, update, or\ndelete specific notifications.\n',
+        required: true,
+        allowReserved: true,
+        schema: {
+          type: 'string',
+          minLength: 1,
+        },
+        examples: {
+          'Sample notification ID': {
+            value: 'notif-12345-abcde',
+          },
+        },
+      },
+    },
+    requestBodies: {},
+    responses: {
+      ErrorResponse: {
+        description: 'An error response from the backend.',
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/Error',
+            },
+          },
+        },
+      },
+    },
+    schemas: {
+      Error: {
+        type: 'object',
+        properties: {
+          error: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+              },
+              message: {
+                type: 'string',
+              },
+              stack: {
+                type: 'string',
+              },
+              code: {
+                type: 'string',
+              },
+            },
+            required: ['name', 'message'],
+          },
+          request: {
+            type: 'object',
+            properties: {
+              method: {
+                type: 'string',
+              },
+              url: {
+                type: 'string',
+              },
+            },
+            required: ['method', 'url'],
+          },
+          response: {
+            type: 'object',
+            properties: {
+              statusCode: {
+                type: 'number',
+              },
+            },
+            required: ['statusCode'],
+          },
+        },
+        required: ['error', 'response'],
+        additionalProperties: {},
+      },
+      NotificationPayload: {
+        type: 'object',
+        required: ['title'],
+        properties: {
+          title: {
+            type: 'string',
+            description:
+              'The main title of the notification. This is the primary text that\nusers will see and should be concise but descriptive.\n',
+            example: 'Deployment completed successfully',
+          },
+          description: {
+            type: 'string',
+            description:
+              'Optional longer description for the notification. Provides additional\ncontext and details about the notification.\n',
+            example:
+              "The deployment of service 'user-service' to production has completed successfully at 2024-01-15T10:30:00Z",
+          },
+          link: {
+            type: 'string',
+            description:
+              'Optional link where the notification is pointing to. This can be\na URL to related documentation, logs, or action items.\n',
+            example:
+              'https://backstage.example.com/catalog/default/component/user-service',
+          },
+          severity: {
+            type: 'string',
+            enum: ['critical', 'high', 'normal', 'low'],
+            description:
+              'Notification severity levels that indicate the importance and urgency\nof the notification. Critical notifications typically require immediate\nattention, while low priority notifications are informational.\n',
+          },
+          topic: {
+            type: 'string',
+            description:
+              'Optional notification topic that helps categorize and group related\nnotifications together.\n',
+            example: 'deployment',
+          },
+          scope: {
+            type: 'string',
+            description:
+              'Notification scope, can be used to re-send same notifications in case\nthe scope and origin matches. This prevents duplicate notifications\nfor the same event.\n',
+            example: 'deployment:user-service:prod',
+          },
+          icon: {
+            type: 'string',
+            description:
+              'Optional notification icon that can be used for visual representation\nin the UI.\n',
+            example: 'check-circle',
+          },
+        },
+      },
+      Notification: {
+        type: 'object',
+        required: ['id', 'user', 'created', 'origin', 'payload'],
+        properties: {
+          id: {
+            type: 'string',
+            description:
+              'Unique identifier for the notification. This ID is used for all\noperations on the notification including updates and deletions.\n',
+            example: 'notif-12345-abcde',
+          },
+          user: {
+            type: 'string',
+            nullable: true,
+            description:
+              'The user entity reference that the notification is targeted to or null\nfor broadcast notifications. When null, the notification is sent to\nall users or a specific group.\n',
+            example: 'user:default/johndoe',
+          },
+          created: {
+            type: 'string',
+            format: 'date-time',
+            description:
+              'Notification creation date. This timestamp indicates when the\nnotification was first created and sent.\n',
+            example: '2024-01-15T10:30:00Z',
+          },
+          saved: {
+            type: 'string',
+            format: 'date-time',
+            nullable: true,
+            description:
+              'If user has saved the notification, the date when it was saved.\nThis allows users to bookmark important notifications for later reference.\n',
+            example: '2024-01-15T11:00:00Z',
+          },
+          read: {
+            type: 'string',
+            format: 'date-time',
+            nullable: true,
+            description:
+              'If user has read the notification, the date when it was read.\nThis helps track user engagement with notifications.\n',
+            example: '2024-01-15T10:35:00Z',
+          },
+          updated: {
+            type: 'string',
+            format: 'date-time',
+            nullable: true,
+            description:
+              'If the notification has been updated due to it being in the same scope\nand from same origin as previous notification, the date when it was updated.\nThis prevents duplicate notifications for the same event.\n',
+            example: '2024-01-15T10:32:00Z',
+          },
+          origin: {
+            type: 'string',
+            description:
+              'Origin of the notification as in the reference to sender. This identifies\nthe system or service that generated the notification.\n',
+            example: 'scaffolder',
+          },
+          payload: {
+            $ref: '#/components/schemas/NotificationPayload',
+          },
+        },
+      },
+      NotificationStatus: {
+        type: 'object',
+        required: ['unread', 'read'],
+        properties: {
+          unread: {
+            type: 'integer',
+            description:
+              'Total number of unread notifications for the user. This count is used\nto display notification badges and indicators in the UI.\n',
+            example: 5,
+          },
+          read: {
+            type: 'integer',
+            description:
+              'Total number of read notifications for the user. This helps track\nuser engagement and notification history.\n',
+            example: 42,
+          },
+        },
+      },
+      TopicSetting: {
+        type: 'object',
+        required: ['id', 'enabled'],
+        properties: {
+          id: {
+            type: 'string',
+            description:
+              'Topic ID that uniquely identifies the notification topic.\n',
+            example: 'deployment',
+          },
+          enabled: {
+            type: 'boolean',
+            description:
+              'Whether the topic is enabled for the user. Users can disable\nspecific topics to reduce notification noise.\n',
+            example: true,
+          },
+        },
+      },
+      OriginSetting: {
+        type: 'object',
+        required: ['id', 'enabled'],
+        properties: {
+          id: {
+            type: 'string',
+            description:
+              'Origin ID that uniquely identifies the notification source.\n',
+            example: 'scaffolder',
+          },
+          enabled: {
+            type: 'boolean',
+            description:
+              'Whether the origin is enabled for the user. Users can disable\nspecific origins to reduce notification noise.\n',
+            example: true,
+          },
+          topics: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/TopicSetting',
+            },
+            description:
+              'Topic settings for this origin. Allows fine-grained control over\nwhich topics from this origin are enabled.\n',
+          },
+        },
+      },
+      ChannelSetting: {
+        type: 'object',
+        required: ['id', 'origins'],
+        properties: {
+          id: {
+            type: 'string',
+            description:
+              'Channel ID that uniquely identifies the notification channel.\n',
+            example: 'email',
+          },
+          origins: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/OriginSetting',
+            },
+            description:
+              'Origin settings for this channel. Allows users to configure\nwhich origins can send notifications through this channel.\n',
+          },
+        },
+      },
+      NotificationSettings: {
+        type: 'object',
+        required: ['channels'],
+        properties: {
+          channels: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/ChannelSetting',
+            },
+            description:
+              'Channel settings that define how and where notifications are delivered\nto the user.\n',
+          },
+        },
+      },
+      NotificationRecipients: {
+        oneOf: [
+          {
+            type: 'object',
+            required: ['type', 'entityRef'],
+            properties: {
+              type: {
+                type: 'string',
+                enum: ['entity'],
+                description:
+                  'Type of recipients indicating that notifications should be sent\nto specific entity references.\n',
+              },
+              entityRef: {
+                oneOf: [
+                  {
+                    type: 'string',
+                    description: 'Single entity reference',
+                    example: 'user:default/johndoe',
+                  },
+                  {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                    },
+                    description: 'Multiple entity references',
+                    example: ['user:default/johndoe', 'user:default/janedoe'],
+                  },
+                ],
+                description:
+                  'Entity references to send the notifications to. Can be a single\nreference or an array of references.\n',
+              },
+              excludeEntityRef: {
+                oneOf: [
+                  {
+                    type: 'string',
+                    description: 'Single entity reference to exclude',
+                    example: 'user:default/admin',
+                  },
+                  {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                    },
+                    description: 'Multiple entity references to exclude',
+                    example: ['user:default/admin', 'user:default/system'],
+                  },
+                ],
+                description:
+                  'Optional entity reference(s) to filter out of the resolved recipients.\nThis allows excluding specific users from receiving notifications.\n',
+              },
+            },
+          },
+          {
+            type: 'object',
+            required: ['type'],
+            properties: {
+              type: {
+                type: 'string',
+                enum: ['broadcast'],
+                description:
+                  'Type of recipients indicating that notifications should be sent\nto all users (broadcast).\n',
+              },
+            },
+          },
+        ],
+      },
+      NotificationSendOptions: {
+        type: 'object',
+        required: ['recipients', 'payload'],
+        properties: {
+          recipients: {
+            $ref: '#/components/schemas/NotificationRecipients',
+          },
+          payload: {
+            $ref: '#/components/schemas/NotificationPayload',
+          },
+        },
+      },
+    },
+    securitySchemes: {
+      JWT: {
+        type: 'http',
+        scheme: 'bearer',
+        description: 'Bearer token authentication for users & services',
+        bearerFormat: 'JWT',
+      },
+    },
+  },
   paths: {
     '/': {
       get: {
-        operationId: 'listNotificationsDeprecated',
+        operationId: 'GetNotificationsDeprecated',
         deprecated: true,
         summary: 'List notifications (deprecated)',
         description:
-          'Get a list of notifications for the authenticated user (deprecated, use /notifications)',
+          'Get a list of notifications for the authenticated user. This endpoint is\ndeprecated and should not be used in new implementations. Use `/notifications`\ninstead.\n',
         security: [
           {
-            httpAuth: [],
+            JWT: [],
           },
         ],
         parameters: [
           {
-            name: 'limit',
-            in: 'query',
-            description: 'Maximum number of notifications to return',
-            schema: {
-              type: 'integer',
-              minimum: 1,
-              maximum: 100,
-              default: 20,
-            },
+            $ref: '#/components/parameters/limit',
           },
           {
-            name: 'offset',
-            in: 'query',
-            description: 'Number of notifications to skip',
-            schema: {
-              type: 'integer',
-              minimum: 0,
-              default: 0,
-            },
+            $ref: '#/components/parameters/offset',
           },
           {
-            name: 'read',
-            in: 'query',
-            description: 'Filter by read status',
-            schema: {
-              type: 'boolean',
-            },
+            $ref: '#/components/parameters/read',
           },
           {
-            name: 'saved',
-            in: 'query',
-            description: 'Filter by saved status',
-            schema: {
-              type: 'boolean',
-            },
+            $ref: '#/components/parameters/saved',
           },
           {
-            name: 'severity',
-            in: 'query',
-            description: 'Filter by severity',
-            schema: {
-              type: 'string',
-              enum: ['critical', 'high', 'normal', 'low'],
-            },
+            $ref: '#/components/parameters/severity',
           },
           {
-            name: 'origin',
-            in: 'query',
-            description: 'Filter by origin',
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/origin',
           },
           {
-            name: 'topic',
-            in: 'query',
-            description: 'Filter by topic',
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/topic',
           },
           {
-            name: 'orderBy',
-            in: 'query',
-            description: 'Sort order for notifications',
-            schema: {
-              type: 'string',
-              enum: ['created', 'updated', 'read', 'saved'],
-              default: 'created',
-            },
+            $ref: '#/components/parameters/orderBy',
           },
           {
-            name: 'orderDirection',
-            in: 'query',
-            description: 'Sort direction',
-            schema: {
-              type: 'string',
-              enum: ['asc', 'desc'],
-              default: 'desc',
-            },
+            $ref: '#/components/parameters/orderDirection',
           },
         ],
         responses: {
@@ -153,19 +678,19 @@ export const spec = {
             description: 'Unauthorized',
           },
           '500': {
-            description: 'Internal server error',
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
       },
       post: {
-        operationId: 'createNotifications',
+        operationId: 'CreateNotificationsDeprecated',
         deprecated: true,
         summary: 'Create notifications (deprecated)',
         description:
-          'Create and send notifications to recipients (deprecated, use /notifications)',
+          'Create and send notifications to recipients. This endpoint is deprecated\nand should not be used in new implementations. Use `/notifications` instead.\n',
         security: [
           {
-            serviceAuth: [],
+            JWT: [],
           },
         ],
         requestBody: {
@@ -199,103 +724,49 @@ export const spec = {
             description: 'Unauthorized',
           },
           '500': {
-            description: 'Internal server error',
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
       },
     },
     '/notifications': {
       get: {
-        operationId: 'listNotifications',
+        operationId: 'GetNotifications',
         summary: 'List notifications',
-        description: 'Get a list of notifications for the authenticated user',
+        description:
+          'Get a list of notifications for the authenticated user. Supports filtering,\npagination, and sorting to help users find relevant notifications quickly.\n',
         security: [
           {
-            httpAuth: [],
+            JWT: [],
           },
         ],
         parameters: [
           {
-            name: 'limit',
-            in: 'query',
-            description: 'Maximum number of notifications to return',
-            schema: {
-              type: 'integer',
-              minimum: 1,
-              maximum: 100,
-              default: 20,
-            },
+            $ref: '#/components/parameters/limit',
           },
           {
-            name: 'offset',
-            in: 'query',
-            description: 'Number of notifications to skip',
-            schema: {
-              type: 'integer',
-              minimum: 0,
-              default: 0,
-            },
+            $ref: '#/components/parameters/offset',
           },
           {
-            name: 'read',
-            in: 'query',
-            description: 'Filter by read status',
-            schema: {
-              type: 'boolean',
-            },
+            $ref: '#/components/parameters/read',
           },
           {
-            name: 'saved',
-            in: 'query',
-            description: 'Filter by saved status',
-            schema: {
-              type: 'boolean',
-            },
+            $ref: '#/components/parameters/saved',
           },
           {
-            name: 'severity',
-            in: 'query',
-            description: 'Filter by severity',
-            schema: {
-              type: 'string',
-              enum: ['critical', 'high', 'normal', 'low'],
-            },
+            $ref: '#/components/parameters/severity',
           },
           {
-            name: 'origin',
-            in: 'query',
-            description: 'Filter by origin',
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/origin',
           },
           {
-            name: 'topic',
-            in: 'query',
-            description: 'Filter by topic',
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/topic',
           },
           {
-            name: 'orderBy',
-            in: 'query',
-            description: 'Sort order for notifications',
-            schema: {
-              type: 'string',
-              enum: ['created', 'updated', 'read', 'saved'],
-              default: 'created',
-            },
+            $ref: '#/components/parameters/orderBy',
           },
           {
-            name: 'orderDirection',
-            in: 'query',
-            description: 'Sort direction',
-            schema: {
-              type: 'string',
-              enum: ['asc', 'desc'],
-              default: 'desc',
-            },
+            $ref: '#/components/parameters/orderDirection',
           },
         ],
         responses: {
@@ -316,18 +787,17 @@ export const spec = {
             description: 'Unauthorized',
           },
           '500': {
-            description: 'Internal server error',
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
       },
       post: {
-        operationId: 'createNotificationsDeprecated',
-        deprecated: true,
+        operationId: 'CreateNotifications',
         summary: 'Create notifications',
-        description: 'Create and send notifications to recipients',
+        description: 'Create and send notifications to recipients.\n',
         security: [
           {
-            serviceAuth: [],
+            JWT: [],
           },
         ],
         requestBody: {
@@ -361,32 +831,26 @@ export const spec = {
             description: 'Unauthorized',
           },
           '500': {
-            description: 'Internal server error',
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
       },
     },
     '/{id}': {
       get: {
-        operationId: 'getNotificationByIdDeprecated',
+        operationId: 'GetNotificationByIdDeprecated',
         deprecated: true,
         summary: 'Get notification by ID (deprecated)',
         description:
-          'Get a specific notification by its ID (deprecated, use /notifications/{id})',
+          'Get a specific notification by its ID. This endpoint is deprecated and\nshould not be used in new implementations. Use `/notifications/{id}` instead.\n',
         security: [
           {
-            httpAuth: [],
+            JWT: [],
           },
         ],
         parameters: [
           {
-            name: 'id',
-            in: 'path',
-            required: true,
-            description: 'Notification ID',
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/notificationId',
           },
         ],
         responses: {
@@ -407,31 +871,24 @@ export const spec = {
             description: 'Notification not found',
           },
           '500': {
-            description: 'Internal server error',
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
       },
     },
     '/notifications/{id}': {
       get: {
-        operationId: 'getNotificationById',
-        deprecated: true,
+        operationId: 'GetNotificationById',
         summary: 'Get notification by ID',
-        description: 'Get a specific notification by its ID',
+        description: 'Get a specific notification by its ID.\n',
         security: [
           {
-            httpAuth: [],
+            JWT: [],
           },
         ],
         parameters: [
           {
-            name: 'id',
-            in: 'path',
-            required: true,
-            description: 'Notification ID',
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/notificationId',
           },
         ],
         responses: {
@@ -452,21 +909,21 @@ export const spec = {
             description: 'Notification not found',
           },
           '500': {
-            description: 'Internal server error',
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
       },
     },
     '/update': {
       post: {
-        operationId: 'updateNotificationsDeprecated',
+        operationId: 'UpdateNotificationsDeprecated',
         deprecated: true,
         summary: 'Update notifications (deprecated)',
         description:
-          'Mark notifications as read/unread or saved/unsaved (deprecated, use /notifications/update)',
+          'Mark notifications as read/unread or saved/unsaved. This endpoint is\ndeprecated and should not be used in new implementations. Use\n`/notifications/update` instead.\n',
         security: [
           {
-            httpAuth: [],
+            JWT: [],
           },
         ],
         requestBody: {
@@ -483,14 +940,17 @@ export const spec = {
                       type: 'string',
                     },
                     description: 'Array of notification IDs to update',
+                    example: ['notif-12345-abcde', 'notif-67890-fghij'],
                   },
                   read: {
                     type: 'boolean',
                     description: 'Mark as read (true) or unread (false)',
+                    example: true,
                   },
                   saved: {
                     type: 'boolean',
                     description: 'Mark as saved (true) or unsaved (false)',
+                    example: false,
                   },
                 },
               },
@@ -518,20 +978,19 @@ export const spec = {
             description: 'Unauthorized',
           },
           '500': {
-            description: 'Internal server error',
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
       },
     },
     '/notifications/update': {
       post: {
-        operationId: 'updateNotifications',
-        deprecated: true,
+        operationId: 'UpdateNotifications',
         summary: 'Update notifications',
-        description: 'Mark notifications as read/unread or saved/unsaved',
+        description: 'Mark notifications as read/unread or saved/unsaved.\n',
         security: [
           {
-            httpAuth: [],
+            JWT: [],
           },
         ],
         requestBody: {
@@ -548,14 +1007,17 @@ export const spec = {
                       type: 'string',
                     },
                     description: 'Array of notification IDs to update',
+                    example: ['notif-12345-abcde', 'notif-67890-fghij'],
                   },
                   read: {
                     type: 'boolean',
                     description: 'Mark as read (true) or unread (false)',
+                    example: true,
                   },
                   saved: {
                     type: 'boolean',
                     description: 'Mark as saved (true) or unsaved (false)',
+                    example: false,
                   },
                 },
               },
@@ -583,21 +1045,20 @@ export const spec = {
             description: 'Unauthorized',
           },
           '500': {
-            description: 'Internal server error',
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
       },
     },
     '/status': {
       get: {
-        operationId: 'getNotificationStatus',
-        deprecated: true,
+        operationId: 'GetNotificationStatus',
         summary: 'Get notification status',
         description:
-          'Get notification status (read/unread counts) for the authenticated user',
+          'Get notification status (read/unread counts) for the authenticated user.\n',
         security: [
           {
-            httpAuth: [],
+            JWT: [],
           },
         ],
         responses: {
@@ -615,20 +1076,19 @@ export const spec = {
             description: 'Unauthorized',
           },
           '500': {
-            description: 'Internal server error',
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
       },
     },
     '/settings': {
       get: {
-        operationId: 'getNotificationSettings',
-        deprecated: true,
+        operationId: 'GetNotificationSettings',
         summary: 'Get notification settings',
-        description: 'Get notification settings for the authenticated user',
+        description: 'Get notification settings for the authenticated user.\n',
         security: [
           {
-            httpAuth: [],
+            JWT: [],
           },
         ],
         responses: {
@@ -646,18 +1106,18 @@ export const spec = {
             description: 'Unauthorized',
           },
           '500': {
-            description: 'Internal server error',
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
       },
       post: {
-        operationId: 'updateNotificationSettings',
-        deprecated: true,
+        operationId: 'UpdateNotificationSettings',
         summary: 'Update notification settings',
-        description: 'Update notification settings for the authenticated user',
+        description:
+          'Update notification settings for the authenticated user.\n',
         security: [
           {
-            httpAuth: [],
+            JWT: [],
           },
         ],
         requestBody: {
@@ -688,72 +1148,37 @@ export const spec = {
             description: 'Unauthorized',
           },
           '500': {
-            description: 'Internal server error',
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
       },
     },
     '/topics': {
       get: {
-        operationId: 'listNotificationTopics',
-        deprecated: true,
+        operationId: 'GetNotificationTopics',
         summary: 'List notification topics',
         description:
-          'Get a list of notification topics for the authenticated user',
+          'Get a list of notification topics for the authenticated user.\n',
         security: [
           {
-            httpAuth: [],
+            JWT: [],
           },
         ],
         parameters: [
           {
-            name: 'limit',
-            in: 'query',
-            description: 'Maximum number of topics to return',
-            schema: {
-              type: 'integer',
-              minimum: 1,
-              maximum: 100,
-              default: 20,
-            },
+            $ref: '#/components/parameters/limit',
           },
           {
-            name: 'offset',
-            in: 'query',
-            description: 'Number of topics to skip',
-            schema: {
-              type: 'integer',
-              minimum: 0,
-              default: 0,
-            },
+            $ref: '#/components/parameters/offset',
           },
           {
-            name: 'origin',
-            in: 'query',
-            description: 'Filter by origin',
-            schema: {
-              type: 'string',
-            },
+            $ref: '#/components/parameters/origin',
           },
           {
-            name: 'orderBy',
-            in: 'query',
-            description: 'Sort order for topics',
-            schema: {
-              type: 'string',
-              enum: ['topic', 'count'],
-              default: 'count',
-            },
+            $ref: '#/components/parameters/orderBy',
           },
           {
-            name: 'orderDirection',
-            in: 'query',
-            description: 'Sort direction',
-            schema: {
-              type: 'string',
-              enum: ['asc', 'desc'],
-              default: 'desc',
-            },
+            $ref: '#/components/parameters/orderDirection',
           },
         ],
         responses: {
@@ -769,14 +1194,17 @@ export const spec = {
                       topic: {
                         type: 'string',
                         description: 'Topic name',
+                        example: 'deployment',
                       },
                       count: {
                         type: 'integer',
                         description: 'Number of notifications in this topic',
+                        example: 15,
                       },
                       origin: {
                         type: 'string',
                         description: 'Origin of the topic',
+                        example: 'scaffolder',
                       },
                     },
                   },
@@ -788,261 +1216,7 @@ export const spec = {
             description: 'Unauthorized',
           },
           '500': {
-            description: 'Internal server error',
-          },
-        },
-      },
-    },
-  },
-  components: {
-    securitySchemes: {
-      httpAuth: {
-        type: 'http',
-        scheme: 'bearer',
-        description: 'Bearer token authentication for users',
-      },
-      serviceAuth: {
-        type: 'http',
-        scheme: 'bearer',
-        description: 'Bearer token authentication for services',
-      },
-    },
-    schemas: {
-      NotificationSeverity: {
-        type: 'string',
-      },
-      NotificationPayload: {
-        type: 'object',
-        required: ['title'],
-        properties: {
-          title: {
-            type: 'string',
-            description: 'Notification title',
-          },
-          description: {
-            type: 'string',
-            description: 'Optional longer description for the notification',
-          },
-          link: {
-            type: 'string',
-            description: 'Optional link where the notification is pointing to',
-          },
-          severity: {
-            type: 'string',
-            enum: ['critical', 'high', 'normal', 'low'],
-          },
-          topic: {
-            type: 'string',
-            description: 'Optional notification topic',
-          },
-          scope: {
-            type: 'string',
-            description:
-              'Notification scope, can be used to re-send same notifications in case the scope and origin matches',
-          },
-          icon: {
-            type: 'string',
-            description: 'Optional notification icon',
-          },
-        },
-      },
-      Notification: {
-        type: 'object',
-        required: ['id', 'user', 'created', 'origin', 'payload'],
-        properties: {
-          id: {
-            type: 'string',
-            description: 'Unique identifier for the notification',
-          },
-          user: {
-            type: 'string',
-            nullable: true,
-            description:
-              'The user entity reference that the notification is targeted to or null for broadcast notifications',
-          },
-          created: {
-            type: 'string',
-            format: 'date-time',
-            description: 'Notification creation date',
-          },
-          saved: {
-            type: 'string',
-            format: 'date-time',
-            nullable: true,
-            description:
-              'If user has saved the notification, the date when it was saved',
-          },
-          read: {
-            type: 'string',
-            format: 'date-time',
-            nullable: true,
-            description:
-              'If user has read the notification, the date when it was read',
-          },
-          updated: {
-            type: 'string',
-            format: 'date-time',
-            nullable: true,
-            description:
-              'If the notification has been updated due to it being in the same scope and from same origin as previous notification, the date when it was updated',
-          },
-          origin: {
-            type: 'string',
-            description:
-              'Origin of the notification as in the reference to sender',
-          },
-          payload: {
-            $ref: '#/components/schemas/NotificationPayload',
-          },
-        },
-      },
-      NotificationStatus: {
-        type: 'object',
-        required: ['unread', 'read'],
-        properties: {
-          unread: {
-            type: 'integer',
-            description: 'Total number of unread notifications for the user',
-          },
-          read: {
-            type: 'integer',
-            description: 'Total number of read notifications for the user',
-          },
-        },
-      },
-      TopicSetting: {
-        type: 'object',
-        required: ['id', 'enabled'],
-        properties: {
-          id: {
-            type: 'string',
-            description: 'Topic ID',
-          },
-          enabled: {
-            type: 'boolean',
-            description: 'Whether the topic is enabled',
-          },
-        },
-      },
-      OriginSetting: {
-        type: 'object',
-        required: ['id', 'enabled'],
-        properties: {
-          id: {
-            type: 'string',
-            description: 'Origin ID',
-          },
-          enabled: {
-            type: 'boolean',
-            description: 'Whether the origin is enabled',
-          },
-          topics: {
-            type: 'array',
-            items: {
-              $ref: '#/components/schemas/TopicSetting',
-            },
-            description: 'Topic settings for this origin',
-          },
-        },
-      },
-      ChannelSetting: {
-        type: 'object',
-        required: ['id', 'origins'],
-        properties: {
-          id: {
-            type: 'string',
-            description: 'Channel ID',
-          },
-          origins: {
-            type: 'array',
-            items: {
-              $ref: '#/components/schemas/OriginSetting',
-            },
-            description: 'Origin settings for this channel',
-          },
-        },
-      },
-      NotificationSettings: {
-        type: 'object',
-        required: ['channels'],
-        properties: {
-          channels: {
-            type: 'array',
-            items: {
-              $ref: '#/components/schemas/ChannelSetting',
-            },
-            description: 'Channel settings',
-          },
-        },
-      },
-      NotificationRecipients: {
-        oneOf: [
-          {
-            type: 'object',
-            required: ['type', 'entityRef'],
-            properties: {
-              type: {
-                type: 'string',
-                enum: ['entity'],
-                description: 'Type of recipients',
-              },
-              entityRef: {
-                oneOf: [
-                  {
-                    type: 'string',
-                    description: 'Single entity reference',
-                  },
-                  {
-                    type: 'array',
-                    items: {
-                      type: 'string',
-                    },
-                    description: 'Multiple entity references',
-                  },
-                ],
-                description: 'Entity references to send the notifications to',
-              },
-              excludeEntityRef: {
-                oneOf: [
-                  {
-                    type: 'string',
-                    description: 'Single entity reference to exclude',
-                  },
-                  {
-                    type: 'array',
-                    items: {
-                      type: 'string',
-                    },
-                    description: 'Multiple entity references to exclude',
-                  },
-                ],
-                description:
-                  'Optional entity reference(s) to filter out of the resolved recipients',
-              },
-            },
-          },
-          {
-            type: 'object',
-            required: ['type'],
-            properties: {
-              type: {
-                type: 'string',
-                enum: ['broadcast'],
-                description: 'Type of recipients',
-              },
-            },
-          },
-        ],
-      },
-      NotificationSendOptions: {
-        type: 'object',
-        required: ['recipients', 'payload'],
-        properties: {
-          recipients: {
-            $ref: '#/components/schemas/NotificationRecipients',
-          },
-          payload: {
-            $ref: '#/components/schemas/NotificationPayload',
+            $ref: '#/components/responses/ErrorResponse',
           },
         },
       },

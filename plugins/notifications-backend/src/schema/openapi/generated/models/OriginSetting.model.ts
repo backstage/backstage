@@ -24,15 +24,15 @@ import { TopicSetting } from '../models/TopicSetting.model';
  */
 export interface OriginSetting {
   /**
-   * Origin ID
+   * Origin ID that uniquely identifies the notification source.
    */
   id: string;
   /**
-   * Whether the origin is enabled
+   * Whether the origin is enabled for the user. Users can disable specific origins to reduce notification noise.
    */
   enabled: boolean;
   /**
-   * Topic settings for this origin
+   * Topic settings for this origin. Allows fine-grained control over which topics from this origin are enabled.
    */
   topics?: Array<TopicSetting>;
 }

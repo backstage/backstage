@@ -23,11 +23,11 @@
  */
 export interface TopicSetting {
   /**
-   * Topic ID
+   * Topic ID that uniquely identifies the notification topic.
    */
   id: string;
   /**
-   * Whether the topic is enabled
+   * Whether the topic is enabled for the user. Users can disable specific topics to reduce notification noise.
    */
   enabled: boolean;
 }

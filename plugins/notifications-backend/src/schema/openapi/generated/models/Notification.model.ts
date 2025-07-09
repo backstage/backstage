@@ -24,31 +24,31 @@ import { NotificationPayload } from '../models/NotificationPayload.model';
  */
 export interface Notification {
   /**
-   * Unique identifier for the notification
+   * Unique identifier for the notification. This ID is used for all operations on the notification including updates and deletions.
    */
   id: string;
   /**
-   * The user entity reference that the notification is targeted to or null for broadcast notifications
+   * The user entity reference that the notification is targeted to or null for broadcast notifications. When null, the notification is sent to all users or a specific group.
    */
   user: string | null;
   /**
-   * Notification creation date
+   * Notification creation date. This timestamp indicates when the notification was first created and sent.
    */
   created: Date;
   /**
-   * If user has saved the notification, the date when it was saved
+   * If user has saved the notification, the date when it was saved. This allows users to bookmark important notifications for later reference.
    */
   saved?: Date | null;
   /**
-   * If user has read the notification, the date when it was read
+   * If user has read the notification, the date when it was read. This helps track user engagement with notifications.
    */
   read?: Date | null;
   /**
-   * If the notification has been updated due to it being in the same scope and from same origin as previous notification, the date when it was updated
+   * If the notification has been updated due to it being in the same scope and from same origin as previous notification, the date when it was updated. This prevents duplicate notifications for the same event.
    */
   updated?: Date | null;
   /**
-   * Origin of the notification as in the reference to sender
+   * Origin of the notification as in the reference to sender. This identifies the system or service that generated the notification.
    */
   origin: string;
   payload: NotificationPayload;

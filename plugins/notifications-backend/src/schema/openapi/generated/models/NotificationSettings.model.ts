@@ -24,7 +24,7 @@ import { ChannelSetting } from '../models/ChannelSetting.model';
  */
 export interface NotificationSettings {
   /**
-   * Channel settings
+   * Channel settings that define how and where notifications are delivered to the user.
    */
   channels: Array<ChannelSetting>;
 }

@@ -21,17 +21,7 @@
 /**
  * @public
  */
-export interface ListNotificationTopics200ResponseInner {
-  /**
-   * Topic name
-   */
-  topic?: string;
-  /**
-   * Number of notifications in this topic
-   */
-  count?: number;
-  /**
-   * Origin of the topic
-   */
-  origin?: string;
+export interface ErrorRequest {
+  method: string;
+  url: string;
 }

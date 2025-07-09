@@ -23,11 +23,11 @@
  */
 export interface NotificationStatus {
   /**
-   * Total number of unread notifications for the user
+   * Total number of unread notifications for the user. This count is used to display notification badges and indicators in the UI.
    */
   unread: number;
   /**
-   * Total number of read notifications for the user
+   * Total number of read notifications for the user. This helps track user engagement and notification history.
    */
   read: number;
 }

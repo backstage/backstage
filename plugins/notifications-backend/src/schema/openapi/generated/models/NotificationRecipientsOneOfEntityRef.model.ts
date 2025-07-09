@@ -19,7 +19,7 @@
 // ******************************************************************
 
 /**
- * Entity references to send the notifications to
+ * Entity references to send the notifications to. Can be a single reference or an array of references.
  * @public
  */
 export type NotificationRecipientsOneOfEntityRef = Array<string> | string;

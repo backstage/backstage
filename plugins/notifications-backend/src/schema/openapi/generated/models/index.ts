@@ -15,7 +15,11 @@
  */
 
 export * from '../models/ChannelSetting.model';
-export * from '../models/ListNotificationTopics200ResponseInner.model';
+export * from '../models/ErrorError.model';
+export * from '../models/ErrorRequest.model';
+export * from '../models/ErrorResponse.model';
+export * from '../models/GetNotificationTopics200ResponseInner.model';
+export * from '../models/ModelError.model';
 export * from '../models/Notification.model';
 export * from '../models/NotificationPayload.model';
 export * from '../models/NotificationRecipients.model';

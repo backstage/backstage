@@ -23,28 +23,31 @@
  */
 export interface NotificationPayload {
   /**
-   * Notification title
+   * The main title of the notification. This is the primary text that users will see and should be concise but descriptive.
    */
   title: string;
   /**
-   * Optional longer description for the notification
+   * Optional longer description for the notification. Provides additional context and details about the notification.
    */
   description?: string;
   /**
-   * Optional link where the notification is pointing to
+   * Optional link where the notification is pointing to. This can be a URL to related documentation, logs, or action items.
    */
   link?: string;
+  /**
+   * Notification severity levels that indicate the importance and urgency of the notification. Critical notifications typically require immediate attention, while low priority notifications are informational.
+   */
   severity?: NotificationPayloadSeverityEnum;
   /**
-   * Optional notification topic
+   * Optional notification topic that helps categorize and group related notifications together.
    */
   topic?: string;
   /**
-   * Notification scope, can be used to re-send same notifications in case the scope and origin matches
+   * Notification scope, can be used to re-send same notifications in case the scope and origin matches. This prevents duplicate notifications for the same event.
    */
   scope?: string;
   /**
-   * Optional notification icon
+   * Optional notification icon that can be used for visual representation in the UI.
    */
   icon?: string;
 }

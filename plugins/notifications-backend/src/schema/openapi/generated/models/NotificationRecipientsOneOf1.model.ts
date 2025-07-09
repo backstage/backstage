@@ -23,7 +23,7 @@
  */
 export interface NotificationRecipientsOneOf1 {
   /**
-   * Type of recipients
+   * Type of recipients indicating that notifications should be sent to all users (broadcast).
    */
   type: NotificationRecipientsOneOf1TypeEnum;
 }
