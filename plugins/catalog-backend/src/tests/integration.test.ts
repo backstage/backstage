@@ -280,6 +280,7 @@ class TestHarness {
     const stitcher = DefaultStitcher.fromConfig(config, {
       knex: options.db,
       logger,
+      metrics: {} as MetricsService,
     });
     const catalog = new DefaultEntitiesCatalog({
       database: options.db,
@@ -304,6 +305,7 @@ class TestHarness {
         proxyProgressTracker.reportError(event.unprocessedEntity, event.errors);
       },
       tracker: proxyProgressTracker,
+      metrics: {} as MetricsService,
     });
 
     const refresh = new DefaultRefreshService({ database: catalogDatabase });

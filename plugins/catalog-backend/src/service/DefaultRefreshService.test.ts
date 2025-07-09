@@ -116,10 +116,12 @@ describe('DefaultRefreshService', () => {
     const stitcher = DefaultStitcher.fromConfig(new ConfigReader({}), {
       knex,
       logger: defaultLogger,
+      metrics: {} as MetricsService,
     });
     const engine = new DefaultCatalogProcessingEngine({
       config: new ConfigReader({}),
       logger: defaultLogger,
+      metrics: {} as MetricsService,
       processingDatabase: db,
       knex: knex,
       stitcher: stitcher,

@@ -23,6 +23,7 @@ import { CatalogProcessingOrchestrator } from './types';
 import { Stitcher } from '../stitching/types';
 import { ConfigReader } from '@backstage/config';
 import { mockServices } from '@backstage/backend-test-utils';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
 describe('DefaultCatalogProcessingEngine', () => {
   const db = {
@@ -70,6 +71,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       orchestrator: orchestrator,
       stitcher: stitcher,
       createHash: () => hash,
+      metrics: {} as MetricsService,
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -137,6 +139,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       orchestrator: orchestrator,
       stitcher: stitcher,
       createHash: () => hash,
+      metrics: {} as MetricsService,
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -220,6 +223,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       orchestrator: orchestrator,
       stitcher: stitcher,
       createHash: () => hash,
+      metrics: {} as MetricsService,
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -297,6 +301,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       orchestrator: orchestrator,
       stitcher: stitcher,
       createHash: () => hash,
+      metrics: {} as MetricsService,
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -357,6 +362,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       stitcher: stitcher,
       createHash: () => hash,
       pollingIntervalMs: 100,
+      metrics: {} as MetricsService,
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -472,6 +478,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       stitcher: stitcher,
       createHash: () => hash,
       pollingIntervalMs: 100,
+      metrics: {} as MetricsService,
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -577,6 +584,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       stitcher: stitcher,
       createHash: () => hash,
       pollingIntervalMs: 100,
+      metrics: {} as MetricsService,
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -660,6 +668,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       stitcher: stitcher,
       createHash: () => hash,
       pollingIntervalMs: 100,
+      metrics: {} as MetricsService,
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -748,6 +757,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       stitcher: stitcher,
       createHash: () => hash,
       pollingIntervalMs: 100,
+      metrics: {} as MetricsService,
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));

@@ -486,6 +486,7 @@ export class CatalogBuilder {
     const stitcher = DefaultStitcher.fromConfig(config, {
       knex: dbClient,
       logger,
+      metrics,
     });
 
     const processingDatabase = new DefaultProcessingDatabase({
@@ -594,6 +595,7 @@ export class CatalogBuilder {
         this.onProcessingError?.(event);
       },
       eventBroker: this.eventBroker,
+      metrics,
     });
 
     const locationAnalyzer =
