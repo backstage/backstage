@@ -2,7 +2,7 @@
 openapi: 3.0.3 # 3.1.0 is not yet supported
 info:
   title: notifications
-  version: "1"
+  version: '1'
   description: |
     The API surface consists of a few distinct groups of functionality. Each has a
     dedicated section below.
@@ -205,7 +205,7 @@ components:
         minLength: 1
       examples:
         Sample notification ID:
-          value: "notif-12345-abcde"
+          value: 'notif-12345-abcde'
   requestBodies: {}
   responses:
     ErrorResponse:
@@ -213,7 +213,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Error"
+            $ref: '#/components/schemas/Error'
   schemas:
     Error:
       type: object
@@ -263,7 +263,7 @@ components:
           description: |
             The main title of the notification. This is the primary text that
             users will see and should be concise but descriptive.
-          example: "Deployment completed successfully"
+          example: 'Deployment completed successfully'
         description:
           type: string
           description: |
@@ -275,7 +275,7 @@ components:
           description: |
             Optional link where the notification is pointing to. This can be
             a URL to related documentation, logs, or action items.
-          example: "https://backstage.example.com/catalog/default/component/user-service"
+          example: 'https://backstage.example.com/catalog/default/component/user-service'
         severity:
           type: string
           enum: [critical, high, normal, low]
@@ -289,20 +289,20 @@ components:
           description: |
             Optional notification topic that helps categorize and group related
             notifications together.
-          example: "deployment"
+          example: 'deployment'
         scope:
           type: string
           description: |
             Notification scope, can be used to re-send same notifications in case
             the scope and origin matches. This prevents duplicate notifications
             for the same event.
-          example: "deployment:user-service:prod"
+          example: 'deployment:user-service:prod'
         icon:
           type: string
           description: |
             Optional notification icon that can be used for visual representation
             in the UI.
-          example: "check-circle"
+          example: 'check-circle'
 
     Notification:
       type: object
@@ -318,7 +318,7 @@ components:
           description: |
             Unique identifier for the notification. This ID is used for all
             operations on the notification including updates and deletions.
-          example: "notif-12345-abcde"
+          example: 'notif-12345-abcde'
         user:
           type: string
           nullable: true
@@ -326,14 +326,14 @@ components:
             The user entity reference that the notification is targeted to or null
             for broadcast notifications. When null, the notification is sent to
             all users or a specific group.
-          example: "user:default/johndoe"
+          example: 'user:default/johndoe'
         created:
           type: string
           format: date-time
           description: |
             Notification creation date. This timestamp indicates when the
             notification was first created and sent.
-          example: "2024-01-15T10:30:00Z"
+          example: '2024-01-15T10:30:00Z'
         saved:
           type: string
           format: date-time
@@ -341,7 +341,7 @@ components:
           description: |
             If user has saved the notification, the date when it was saved.
             This allows users to bookmark important notifications for later reference.
-          example: "2024-01-15T11:00:00Z"
+          example: '2024-01-15T11:00:00Z'
         read:
           type: string
           format: date-time
@@ -349,7 +349,7 @@ components:
           description: |
             If user has read the notification, the date when it was read.
             This helps track user engagement with notifications.
-          example: "2024-01-15T10:35:00Z"
+          example: '2024-01-15T10:35:00Z'
         updated:
           type: string
           format: date-time
@@ -358,15 +358,15 @@ components:
             If the notification has been updated due to it being in the same scope
             and from same origin as previous notification, the date when it was updated.
             This prevents duplicate notifications for the same event.
-          example: "2024-01-15T10:32:00Z"
+          example: '2024-01-15T10:32:00Z'
         origin:
           type: string
           description: |
             Origin of the notification as in the reference to sender. This identifies
             the system or service that generated the notification.
-          example: "scaffolder"
+          example: 'scaffolder'
         payload:
-          $ref: "#/components/schemas/NotificationPayload"
+          $ref: '#/components/schemas/NotificationPayload'
 
     NotificationStatus:
       type: object
@@ -397,7 +397,7 @@ components:
           type: string
           description: |
             Topic ID that uniquely identifies the notification topic.
-          example: "deployment"
+          example: 'deployment'
         enabled:
           type: boolean
           description: |
@@ -415,7 +415,7 @@ components:
           type: string
           description: |
             Origin ID that uniquely identifies the notification source.
-          example: "scaffolder"
+          example: 'scaffolder'
         enabled:
           type: boolean
           description: |
@@ -425,7 +425,7 @@ components:
         topics:
           type: array
           items:
-            $ref: "#/components/schemas/TopicSetting"
+            $ref: '#/components/schemas/TopicSetting'
           description: |
             Topic settings for this origin. Allows fine-grained control over
             which topics from this origin are enabled.
@@ -440,11 +440,11 @@ components:
           type: string
           description: |
             Channel ID that uniquely identifies the notification channel.
-          example: "email"
+          example: 'email'
         origins:
           type: array
           items:
-            $ref: "#/components/schemas/OriginSetting"
+            $ref: '#/components/schemas/OriginSetting'
           description: |
             Origin settings for this channel. Allows users to configure
             which origins can send notifications through this channel.
@@ -457,7 +457,7 @@ components:
         channels:
           type: array
           items:
-            $ref: "#/components/schemas/ChannelSetting"
+            $ref: '#/components/schemas/ChannelSetting'
           description: |
             Channel settings that define how and where notifications are delivered
             to the user.
@@ -479,12 +479,12 @@ components:
               oneOf:
                 - type: string
                   description: Single entity reference
-                  example: "user:default/johndoe"
+                  example: 'user:default/johndoe'
                 - type: array
                   items:
                     type: string
                   description: Multiple entity references
-                  example: ["user:default/johndoe", "user:default/janedoe"]
+                  example: ['user:default/johndoe', 'user:default/janedoe']
               description: |
                 Entity references to send the notifications to. Can be a single
                 reference or an array of references.
@@ -492,12 +492,12 @@ components:
               oneOf:
                 - type: string
                   description: Single entity reference to exclude
-                  example: "user:default/admin"
+                  example: 'user:default/admin'
                 - type: array
                   items:
                     type: string
                   description: Multiple entity references to exclude
-                  example: ["user:default/admin", "user:default/system"]
+                  example: ['user:default/admin', 'user:default/system']
               description: |
                 Optional entity reference(s) to filter out of the resolved recipients.
                 This allows excluding specific users from receiving notifications.
@@ -519,9 +519,9 @@ components:
         - payload
       properties:
         recipients:
-          $ref: "#/components/schemas/NotificationRecipients"
+          $ref: '#/components/schemas/NotificationRecipients'
         payload:
-          $ref: "#/components/schemas/NotificationPayload"
+          $ref: '#/components/schemas/NotificationPayload'
 
   securitySchemes:
     JWT:
@@ -543,28 +543,28 @@ paths:
       security:
         - JWT: []
       parameters:
-        - $ref: "#/components/parameters/limit"
-        - $ref: "#/components/parameters/offset"
-        - $ref: "#/components/parameters/read"
-        - $ref: "#/components/parameters/saved"
-        - $ref: "#/components/parameters/severity"
-        - $ref: "#/components/parameters/origin"
-        - $ref: "#/components/parameters/topic"
-        - $ref: "#/components/parameters/orderBy"
-        - $ref: "#/components/parameters/orderDirection"
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/read'
+        - $ref: '#/components/parameters/saved'
+        - $ref: '#/components/parameters/severity'
+        - $ref: '#/components/parameters/origin'
+        - $ref: '#/components/parameters/topic'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/orderDirection'
       responses:
-        "200":
+        '200':
           description: List of notifications
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Notification"
-        "401":
+                  $ref: '#/components/schemas/Notification'
+        '401':
           description: Unauthorized
-        "500":
-          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
     post:
       operationId: CreateNotificationsDeprecated
       deprecated: true
@@ -579,22 +579,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NotificationSendOptions"
+              $ref: '#/components/schemas/NotificationSendOptions'
       responses:
-        "200":
+        '200':
           description: Created notifications
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Notification"
-        "400":
+                  $ref: '#/components/schemas/Notification'
+        '400':
           description: Bad request
-        "401":
+        '401':
           description: Unauthorized
-        "500":
-          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
 
   /notifications:
     get:
@@ -606,28 +606,28 @@ paths:
       security:
         - JWT: []
       parameters:
-        - $ref: "#/components/parameters/limit"
-        - $ref: "#/components/parameters/offset"
-        - $ref: "#/components/parameters/read"
-        - $ref: "#/components/parameters/saved"
-        - $ref: "#/components/parameters/severity"
-        - $ref: "#/components/parameters/origin"
-        - $ref: "#/components/parameters/topic"
-        - $ref: "#/components/parameters/orderBy"
-        - $ref: "#/components/parameters/orderDirection"
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/read'
+        - $ref: '#/components/parameters/saved'
+        - $ref: '#/components/parameters/severity'
+        - $ref: '#/components/parameters/origin'
+        - $ref: '#/components/parameters/topic'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/orderDirection'
       responses:
-        "200":
+        '200':
           description: List of notifications
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Notification"
-        "401":
+                  $ref: '#/components/schemas/Notification'
+        '401':
           description: Unauthorized
-        "500":
-          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
     post:
       operationId: CreateNotifications
       summary: Create notifications
@@ -640,22 +640,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NotificationSendOptions"
+              $ref: '#/components/schemas/NotificationSendOptions'
       responses:
-        "200":
+        '200':
           description: Created notifications
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Notification"
-        "400":
+                  $ref: '#/components/schemas/Notification'
+        '400':
           description: Bad request
-        "401":
+        '401':
           description: Unauthorized
-        "500":
-          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
 
   /{id}:
     get:
@@ -668,20 +668,20 @@ paths:
       security:
         - JWT: []
       parameters:
-        - $ref: "#/components/parameters/notificationId"
+        - $ref: '#/components/parameters/notificationId'
       responses:
-        "200":
+        '200':
           description: Notification details
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Notification"
-        "401":
+                $ref: '#/components/schemas/Notification'
+        '401':
           description: Unauthorized
-        "404":
+        '404':
           description: Notification not found
-        "500":
-          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
 
   /notifications/{id}:
     get:
@@ -692,20 +692,20 @@ paths:
       security:
         - JWT: []
       parameters:
-        - $ref: "#/components/parameters/notificationId"
+        - $ref: '#/components/parameters/notificationId'
       responses:
-        "200":
+        '200':
           description: Notification details
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Notification"
-        "401":
+                $ref: '#/components/schemas/Notification'
+        '401':
           description: Unauthorized
-        "404":
+        '404':
           description: Notification not found
-        "500":
-          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
 
   /update:
     post:
@@ -732,7 +732,7 @@ paths:
                   items:
                     type: string
                   description: Array of notification IDs to update
-                  example: ["notif-12345-abcde", "notif-67890-fghij"]
+                  example: ['notif-12345-abcde', 'notif-67890-fghij']
                 read:
                   type: boolean
                   description: Mark as read (true) or unread (false)
@@ -742,20 +742,20 @@ paths:
                   description: Mark as saved (true) or unsaved (false)
                   example: false
       responses:
-        "200":
+        '200':
           description: Updated notifications
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Notification"
-        "400":
+                  $ref: '#/components/schemas/Notification'
+        '400':
           description: Bad request
-        "401":
+        '401':
           description: Unauthorized
-        "500":
-          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
 
   /notifications/update:
     post:
@@ -779,7 +779,7 @@ paths:
                   items:
                     type: string
                   description: Array of notification IDs to update
-                  example: ["notif-12345-abcde", "notif-67890-fghij"]
+                  example: ['notif-12345-abcde', 'notif-67890-fghij']
                 read:
                   type: boolean
                   description: Mark as read (true) or unread (false)
@@ -789,20 +789,20 @@ paths:
                   description: Mark as saved (true) or unsaved (false)
                   example: false
       responses:
-        "200":
+        '200':
           description: Updated notifications
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Notification"
-        "400":
+                  $ref: '#/components/schemas/Notification'
+        '400':
           description: Bad request
-        "401":
+        '401':
           description: Unauthorized
-        "500":
-          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
 
   /status:
     get:
@@ -813,16 +813,16 @@ paths:
       security:
         - JWT: []
       responses:
-        "200":
+        '200':
           description: Notification status
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NotificationStatus"
-        "401":
+                $ref: '#/components/schemas/NotificationStatus'
+        '401':
           description: Unauthorized
-        "500":
-          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
 
   /settings:
     get:
@@ -833,16 +833,16 @@ paths:
       security:
         - JWT: []
       responses:
-        "200":
+        '200':
           description: Notification settings
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NotificationSettings"
-        "401":
+                $ref: '#/components/schemas/NotificationSettings'
+        '401':
           description: Unauthorized
-        "500":
-          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
     post:
       operationId: UpdateNotificationSettings
       summary: Update notification settings
@@ -855,20 +855,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NotificationSettings"
+              $ref: '#/components/schemas/NotificationSettings'
       responses:
-        "200":
+        '200':
           description: Updated notification settings
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NotificationSettings"
-        "400":
+                $ref: '#/components/schemas/NotificationSettings'
+        '400':
           description: Bad request
-        "401":
+        '401':
           description: Unauthorized
-        "500":
-          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
 
   /topics:
     get:
@@ -879,13 +879,13 @@ paths:
       security:
         - JWT: []
       parameters:
-        - $ref: "#/components/parameters/limit"
-        - $ref: "#/components/parameters/offset"
-        - $ref: "#/components/parameters/origin"
-        - $ref: "#/components/parameters/orderBy"
-        - $ref: "#/components/parameters/orderDirection"
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/origin'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/orderDirection'
       responses:
-        "200":
+        '200':
           description: List of notification topics
           content:
             application/json:
@@ -897,7 +897,7 @@ paths:
                     topic:
                       type: string
                       description: Topic name
-                      example: "deployment"
+                      example: 'deployment'
                     count:
                       type: integer
                       description: Number of notifications in this topic
@@ -905,8 +905,8 @@ paths:
                     origin:
                       type: string
                       description: Origin of the topic
-                      example: "scaffolder"
-        "401":
+                      example: 'scaffolder'
+        '401':
           description: Unauthorized
-        "500":
-          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
