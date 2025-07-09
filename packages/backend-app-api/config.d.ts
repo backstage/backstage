@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { BackstageInstrumentationConfig } from './src/instrumentation/types';
-
 export interface Config {
   backend?: {
     /** Used by the feature discovery service */
@@ -72,7 +70,5 @@ export interface Config {
         };
       };
     };
-
-    instrumentation?: BackstageInstrumentationConfig;
   };
 }

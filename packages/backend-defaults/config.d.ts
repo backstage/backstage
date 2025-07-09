@@ -970,4 +970,24 @@ export interface Config {
       plugins: string[];
     }>;
   };
+
+  /**
+   * Configuration for metrics collection.
+   *
+   * @example
+   * ```yaml
+   * metrics:
+   *   resource:
+   *     serviceName: backstage
+   *     serviceVersion: 0.1.0
+   * ```
+   *
+   * @alpha
+   */
+  metrics?: {
+    resource?: {
+      serviceName: string;
+      serviceVersion?: string;
+    };
+  };
 }

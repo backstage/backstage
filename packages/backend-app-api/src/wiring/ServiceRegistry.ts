@@ -94,7 +94,7 @@ export class ServiceRegistry {
   readonly #addedFactoryIds = new Set<string>();
   readonly #instantiatedFactories = new Set<string>();
 
-  private constructor(factories: Map<string, InternalServiceFactory[]>) {
+  private constructor (factories: Map<string, InternalServiceFactory[]>) {
     this.#providedFactories = factories;
     this.#loadedDefaultFactories = new Map();
     this.#implementations = new Map();
@@ -134,8 +134,7 @@ export class ServiceRegistry {
         factory => [factory],
         error => {
           throw new Error(
-            `Failed to instantiate service '${
-              ref.id
+            `Failed to instantiate service '${ref.id
             }' because the default factory loader threw an error, ${stringifyError(
               error,
             )}`,
@@ -258,8 +257,8 @@ export class ServiceRegistry {
     if (!resolvedFactory) {
       return ref.multiton
         ? (Promise.resolve([]) as
-            | Promise<TInstances extends 'multiton' ? T[] : T>
-            | undefined)
+          | Promise<TInstances extends 'multiton' ? T[] : T>
+          | undefined)
         : undefined;
     }
 

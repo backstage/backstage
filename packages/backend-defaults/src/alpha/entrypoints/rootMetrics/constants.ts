@@ -13,8 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { getBackstageAutoInstrumentationConfigMap } from './autoInstrumentation';
-export { InstrumentationInitializer } from './InstrumentationInitializer';
-
-export * from './types';
-export * from './constants';
+export const DEFAULT_SERVICE_NAME = 'backstage';

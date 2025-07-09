@@ -44,7 +44,7 @@ import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationLogger } from './createInitializationLogger';
 import { unwrapFeature } from './helpers';
-import { InstrumentationInitializer } from '../instrumentation';
+import { rootMetricsServiceFactory } from '@backstage/backend-defaults/alpha';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -163,11 +163,9 @@ export class BackendInitializer {
   #serviceRegistry: ServiceRegistry;
   #registeredFeatures = new Array<Promise<BackendFeature>>();
   #registeredFeatureLoaders = new Array<InternalBackendFeatureLoader>();
-  #instrumentationInitializer: InstrumentationInitializer;
 
-  constructor(defaultApiFactories: ServiceFactory[]) {
+  constructor (defaultApiFactories: ServiceFactory[]) {
     this.#serviceRegistry = ServiceRegistry.create([...defaultApiFactories]);
-    this.#instrumentationInitializer = new InstrumentationInitializer();
   }
 
   async #getInitDeps(
@@ -270,15 +268,12 @@ export class BackendInitializer {
       coreServices.rootLogger,
       'root',
     );
-    const instrumentationLogger = rootLogger?.child({
-      type: 'instrumentation',
-    });
 
-    // Initialize instrumentation with config access
-    await this.#instrumentationInitializer.initialize({
-      rootConfig,
-      logger: instrumentationLogger,
-    });
+    // Initialize root metrics to start the SDK before any other services are initialized
+    await this.#serviceRegistry.get(
+      rootMetricsServiceFactory.service,
+      'root',
+    );
 
     // Initialize all remaining root scoped services
     await this.#serviceRegistry.initializeEagerServicesWithScope('root');

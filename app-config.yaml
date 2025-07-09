@@ -83,7 +83,7 @@ backend:
 
       exporters:
         - type: console
-          enabled: true
+          enabled: false
         - type: prometheus
           enabled: true
 

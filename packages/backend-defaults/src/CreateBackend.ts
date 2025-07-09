@@ -38,6 +38,8 @@ import { eventsServiceFactory } from '@backstage/plugin-events-node';
 import {
   actionsRegistryServiceFactory,
   actionsServiceFactory,
+  metricsServiceFactory,
+  rootMetricsServiceFactory,
 } from '@backstage/backend-defaults/alpha';
 
 export const defaultServiceFactories = [
@@ -65,6 +67,8 @@ export const defaultServiceFactories = [
   // alpha services
   actionsRegistryServiceFactory,
   actionsServiceFactory,
+  metricsServiceFactory,
+  rootMetricsServiceFactory,
 ];
 
 /**

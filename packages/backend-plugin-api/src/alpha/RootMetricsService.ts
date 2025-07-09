@@ -13,4 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const OTEL_ROOT_METER_NAME = 'backstage';
+import { MetricsService } from './MetricsService';
+
+/**
+ * @alpha
+ */
+export interface RootMetricsService extends MetricsService {
+  /**
+   * Returns a metrics service for a specific plugin.
+   *
+   * @param pluginId - The ID of the plugin to create a metrics service for.
+   * @returns A plugin-scoped metrics service
+   */
+  forPlugin(pluginId: string): MetricsService;
+}
