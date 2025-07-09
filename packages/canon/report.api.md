@@ -4,7 +4,6 @@
 
 ```ts
 import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
-import { Breakpoint as Breakpoint_2 } from '@backstage/canon';
 import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
 import { ChangeEvent } from 'react';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
@@ -170,13 +169,13 @@ export interface ButtonIconProps extends ButtonProps_2 {
   // (undocumented)
   icon?: ReactElement;
   // (undocumented)
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
   variant?:
     | 'primary'
     | 'secondary'
     | 'tertiary'
-    | Partial<Record<Breakpoint_2, 'primary' | 'secondary' | 'tertiary'>>;
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
 }
 
 // @public (undocumented)
@@ -193,13 +192,13 @@ export interface ButtonLinkProps extends LinkProps_2 {
   // (undocumented)
   iconStart?: ReactElement;
   // (undocumented)
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
   variant?:
     | 'primary'
     | 'secondary'
     | 'tertiary'
-    | Partial<Record<Breakpoint_2, 'primary' | 'secondary' | 'tertiary'>>;
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
 }
 
 // @public
@@ -211,13 +210,13 @@ export interface ButtonProps extends ButtonProps_2 {
   // (undocumented)
   iconStart?: ReactElement;
   // (undocumented)
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
   variant?:
     | 'primary'
     | 'secondary'
     | 'tertiary'
-    | Partial<Record<Breakpoint_2, 'primary' | 'secondary' | 'tertiary'>>;
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
 }
 
 // @public (undocumented)
@@ -1512,7 +1511,7 @@ export interface SelectProps {
   }>;
   placeholder?: string;
   required?: boolean;
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   style?: React.CSSProperties;
   value?: string;
 }
