@@ -12,7 +12,7 @@ access to external resources.
 
 :::note Note
 
-Identity management and the Sign-In page in Backstage will only block external access when using the new backend system, without setting `backend.auth.dangerouslyDisableDefaultAuthPolicy` in configuration. Even so, the frontend bundle is not protected from external access, protecting it requires the use of the [experimental public entry point](https://backstage.io/docs/tutorials/enable-public-entry/). You can learn more about this in the [Threat Model](../overview/threat-model.md#operator-responsibilities).
+Identity management and the Sign-In page in Backstage will only block external access when using [the new backend system](../backend-system/index.md), without setting `backend.auth.dangerouslyDisableDefaultAuthPolicy` in configuration. Even so, the frontend bundle is not protected from external access, protecting it requires the use of the [experimental public entry point](https://backstage.io/docs/tutorials/enable-public-entry/). You can learn more about this in the [Threat Model](../overview/threat-model.md#operator-responsibilities).
 
 :::
 
