@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.canon-AvatarRoot {
+.bui-AvatarRoot {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -31,28 +31,28 @@
   width: 2rem;
 }
 
-.canon-AvatarRoot[data-size='small'] {
+.bui-AvatarRoot[data-size='small'] {
   height: 1.5rem;
   width: 1.5rem;
 }
 
-.canon-AvatarRoot[data-size='medium'] {
+.bui-AvatarRoot[data-size='medium'] {
   height: 2rem;
   width: 2rem;
 }
 
-.canon-AvatarRoot[data-size='large'] {
+.bui-AvatarRoot[data-size='large'] {
   height: 3rem;
   width: 3rem;
 }
 
-.canon-AvatarImage {
+.bui-AvatarImage {
   object-fit: cover;
   height: 100%;
   width: 100%;
 }
 
-.canon-AvatarFallback {
+.bui-AvatarFallback {
   align-items: center;
   display: flex;
   justify-content: center;

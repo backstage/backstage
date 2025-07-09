@@ -17,15 +17,15 @@
 import type { ComponentDefinition } from '../types';
 
 /**
- * Component definitions for the Canon library
+ * Component definitions for the Backstage UI library
  * @public
  */
 export const componentDefinitions = {
   Avatar: {
     classNames: {
-      root: 'canon-AvatarRoot',
-      image: 'canon-AvatarImage',
-      fallback: 'canon-AvatarFallback',
+      root: 'bui-AvatarRoot',
+      image: 'bui-AvatarImage',
+      fallback: 'bui-AvatarFallback',
     },
     dataAttributes: {
       size: ['small', 'medium', 'large'] as const,
@@ -33,12 +33,12 @@ export const componentDefinitions = {
   },
   Box: {
     classNames: {
-      root: 'canon-Box',
+      root: 'bui-Box',
     },
   },
   Button: {
     classNames: {
-      root: 'canon-Button',
+      root: 'bui-Button',
     },
     dataAttributes: {
       size: ['small', 'medium', 'large'] as const,
@@ -47,27 +47,27 @@ export const componentDefinitions = {
   },
   ButtonIcon: {
     classNames: {
-      root: 'canon-ButtonIcon',
+      root: 'bui-ButtonIcon',
     },
   },
   ButtonLink: {
     classNames: {
-      root: 'canon-ButtonLink',
+      root: 'bui-ButtonLink',
     },
   },
   Card: {
     classNames: {
-      root: 'canon-Card',
-      header: 'canon-CardHeader',
-      body: 'canon-CardBody',
-      footer: 'canon-CardFooter',
+      root: 'bui-Card',
+      header: 'bui-CardHeader',
+      body: 'bui-CardBody',
+      footer: 'bui-CardFooter',
     },
   },
   Checkbox: {
     classNames: {
-      root: 'canon-CheckboxRoot',
-      label: 'canon-CheckboxLabel',
-      indicator: 'canon-CheckboxIndicator',
+      root: 'bui-CheckboxRoot',
+      label: 'bui-CheckboxLabel',
+      indicator: 'bui-CheckboxIndicator',
     },
     dataAttributes: {
       checked: [true, false] as const,
@@ -75,38 +75,38 @@ export const componentDefinitions = {
   },
   Collapsible: {
     classNames: {
-      root: 'canon-CollapsibleRoot',
-      trigger: 'canon-CollapsibleTrigger',
-      panel: 'canon-CollapsiblePanel',
+      root: 'bui-CollapsibleRoot',
+      trigger: 'bui-CollapsibleTrigger',
+      panel: 'bui-CollapsiblePanel',
     },
   },
   Container: {
     classNames: {
-      root: 'canon-Container',
+      root: 'bui-Container',
     },
   },
   FieldLabel: {
     classNames: {
-      root: 'canon-FieldLabelWrapper',
-      label: 'canon-FieldLabel',
-      secondaryLabel: 'canon-FieldSecondaryLabel',
-      description: 'canon-FieldDescription',
+      root: 'bui-FieldLabelWrapper',
+      label: 'bui-FieldLabel',
+      secondaryLabel: 'bui-FieldSecondaryLabel',
+      description: 'bui-FieldDescription',
     },
   },
   Flex: {
     classNames: {
-      root: 'canon-Flex',
+      root: 'bui-Flex',
     },
   },
   Grid: {
     classNames: {
-      root: 'canon-Grid',
-      item: 'canon-GridItem',
+      root: 'bui-Grid',
+      item: 'bui-GridItem',
     },
   },
   Heading: {
     classNames: {
-      root: 'canon-Heading',
+      root: 'bui-Heading',
     },
     dataAttributes: {
       variant: ['title1', 'title2', 'title3', 'subtitle'] as const,
@@ -116,12 +116,12 @@ export const componentDefinitions = {
   },
   Icon: {
     classNames: {
-      root: 'canon-Icon',
+      root: 'bui-Icon',
     },
   },
   Link: {
     classNames: {
-      root: 'canon-Link',
+      root: 'bui-Link',
     },
     dataAttributes: {
       variant: ['subtitle', 'body', 'caption', 'label'] as const,
@@ -130,57 +130,57 @@ export const componentDefinitions = {
   },
   Menu: {
     classNames: {
-      trigger: 'canon-MenuTrigger',
-      backdrop: 'canon-MenuBackdrop',
-      positioner: 'canon-MenuPositioner',
-      popup: 'canon-MenuPopup',
-      arrow: 'canon-MenuArrow',
-      item: 'canon-MenuItem',
-      group: 'canon-MenuGroup',
-      groupLabel: 'canon-MenuGroupLabel',
-      radioGroup: 'canon-MenuRadioGroup',
-      radioItem: 'canon-MenuRadioItem',
-      radioItemIndicator: 'canon-MenuRadioItemIndicator',
-      checkboxItem: 'canon-MenuCheckboxItem',
-      checkboxItemIndicator: 'canon-MenuCheckboxItemIndicator',
-      submenuTrigger: 'canon-MenuSubmenuTrigger',
-      separator: 'canon-MenuSeparator',
+      trigger: 'bui-MenuTrigger',
+      backdrop: 'bui-MenuBackdrop',
+      positioner: 'bui-MenuPositioner',
+      popup: 'bui-MenuPopup',
+      arrow: 'bui-MenuArrow',
+      item: 'bui-MenuItem',
+      group: 'bui-MenuGroup',
+      groupLabel: 'bui-MenuGroupLabel',
+      radioGroup: 'bui-MenuRadioGroup',
+      radioItem: 'bui-MenuRadioItem',
+      radioItemIndicator: 'bui-MenuRadioItemIndicator',
+      checkboxItem: 'bui-MenuCheckboxItem',
+      checkboxItemIndicator: 'bui-MenuCheckboxItemIndicator',
+      submenuTrigger: 'bui-MenuSubmenuTrigger',
+      separator: 'bui-MenuSeparator',
     },
   },
   RadioGroup: {
     classNames: {
-      root: 'canon-RadioGroup',
-      content: 'canon-RadioGroupContent',
-      radio: 'canon-Radio',
+      root: 'bui-RadioGroup',
+      content: 'bui-RadioGroupContent',
+      radio: 'bui-Radio',
     },
   },
   ScrollArea: {
     classNames: {
-      root: 'canon-ScrollAreaRoot',
-      viewport: 'canon-ScrollAreaViewport',
-      scrollbar: 'canon-ScrollAreaScrollbar',
-      thumb: 'canon-ScrollAreaThumb',
+      root: 'bui-ScrollAreaRoot',
+      viewport: 'bui-ScrollAreaViewport',
+      scrollbar: 'bui-ScrollAreaScrollbar',
+      thumb: 'bui-ScrollAreaThumb',
     },
   },
   SearchField: {
     classNames: {
-      root: 'canon-SearchField',
-      clear: 'canon-InputClear',
+      root: 'bui-SearchField',
+      clear: 'bui-InputClear',
     },
   },
   Select: {
     classNames: {
-      root: 'canon-Select',
-      required: 'canon-SelectRequired',
-      trigger: 'canon-SelectTrigger',
-      value: 'canon-SelectValue',
-      icon: 'canon-SelectIcon',
-      popup: 'canon-SelectPopup',
-      item: 'canon-SelectItem',
-      itemIndicator: 'canon-SelectItemIndicator',
-      itemText: 'canon-SelectItemText',
-      description: 'canon-SelectDescription',
-      error: 'canon-SelectError',
+      root: 'bui-Select',
+      required: 'bui-SelectRequired',
+      trigger: 'bui-SelectTrigger',
+      value: 'bui-SelectValue',
+      icon: 'bui-SelectIcon',
+      popup: 'bui-SelectPopup',
+      item: 'bui-SelectItem',
+      itemIndicator: 'bui-SelectItemIndicator',
+      itemText: 'bui-SelectItemText',
+      description: 'bui-SelectDescription',
+      error: 'bui-SelectError',
     },
     dataAttributes: {
       size: ['small', 'medium'] as const,
@@ -188,46 +188,46 @@ export const componentDefinitions = {
   },
   Skeleton: {
     classNames: {
-      root: 'canon-Skeleton',
+      root: 'bui-Skeleton',
     },
   },
   Switch: {
     classNames: {
-      root: 'canon-Switch',
-      indicator: 'canon-SwitchIndicator',
+      root: 'bui-Switch',
+      indicator: 'bui-SwitchIndicator',
     },
   },
   Table: {
     classNames: {
-      root: 'canon-TableRoot',
-      header: 'canon-TableHeader',
-      body: 'canon-TableBody',
-      row: 'canon-TableRow',
-      head: 'canon-TableHead',
-      caption: 'canon-TableCaption',
-      cell: 'canon-TableCell',
-      cellText: 'canon-TableCellText',
-      cellLink: 'canon-TableCellLink',
-      cellProfile: 'canon-TableCellProfile',
-      cellProfileAvatar: 'canon-TableCellProfileAvatar',
-      cellProfileAvatarImage: 'canon-TableCellProfileAvatarImage',
-      cellProfileAvatarFallback: 'canon-TableCellProfileAvatarFallback',
-      cellProfileName: 'canon-TableCellProfileName',
-      cellProfileLink: 'canon-TableCellProfileLink',
+      root: 'bui-TableRoot',
+      header: 'bui-TableHeader',
+      body: 'bui-TableBody',
+      row: 'bui-TableRow',
+      head: 'bui-TableHead',
+      caption: 'bui-TableCaption',
+      cell: 'bui-TableCell',
+      cellText: 'bui-TableCellText',
+      cellLink: 'bui-TableCellLink',
+      cellProfile: 'bui-TableCellProfile',
+      cellProfileAvatar: 'bui-TableCellProfileAvatar',
+      cellProfileAvatarImage: 'bui-TableCellProfileAvatarImage',
+      cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback',
+      cellProfileName: 'bui-TableCellProfileName',
+      cellProfileLink: 'bui-TableCellProfileLink',
     },
   },
   Tabs: {
     classNames: {
-      root: 'canon-TabsRoot',
-      list: 'canon-TabsList',
-      indicator: 'canon-TabsIndicator',
-      tab: 'canon-TabsTab',
-      panel: 'canon-TabsPanel',
+      root: 'bui-TabsRoot',
+      list: 'bui-TabsList',
+      indicator: 'bui-TabsIndicator',
+      tab: 'bui-TabsTab',
+      panel: 'bui-TabsPanel',
     },
   },
   Text: {
     classNames: {
-      root: 'canon-Text',
+      root: 'bui-Text',
     },
     dataAttributes: {
       variant: ['subtitle', 'body', 'caption', 'label'] as const,
@@ -238,10 +238,10 @@ export const componentDefinitions = {
   },
   TextField: {
     classNames: {
-      root: 'canon-TextField',
-      inputWrapper: 'canon-InputWrapper',
-      input: 'canon-Input',
-      inputIcon: 'canon-InputIcon',
+      root: 'bui-TextField',
+      inputWrapper: 'bui-InputWrapper',
+      input: 'bui-Input',
+      inputIcon: 'bui-InputIcon',
     },
     dataAttributes: {
       invalid: [true, false] as const,
@@ -250,28 +250,28 @@ export const componentDefinitions = {
   },
   Header: {
     classNames: {
-      toolbar: 'canon-HeaderToolbar',
-      toolbarWrapper: 'canon-HeaderToolbarWrapper',
-      toolbarContent: 'canon-HeaderToolbarContent',
-      toolbarControls: 'canon-HeaderToolbarControls',
-      toolbarIcon: 'canon-HeaderToolbarIcon',
-      toolbarName: 'canon-HeaderToolbarName',
-      breadcrumbs: 'canon-HeaderBreadcrumbs',
-      breadcrumb: 'canon-HeaderBreadcrumb',
-      breadcrumbLink: 'canon-HeaderBreadcrumbLink',
-      breadcrumbSeparator: 'canon-HeaderBreadcrumbSeparator',
-      tabs: 'canon-HeaderTabs',
-      tabList: 'canon-HeaderTabList',
-      tab: 'canon-HeaderTab',
-      tabActive: 'canon-HeaderTabActive',
-      tabHovered: 'canon-HeaderTabHovered',
-      subNav: 'canon-HeaderSubNav',
+      toolbar: 'bui-HeaderToolbar',
+      toolbarWrapper: 'bui-HeaderToolbarWrapper',
+      toolbarContent: 'bui-HeaderToolbarContent',
+      toolbarControls: 'bui-HeaderToolbarControls',
+      toolbarIcon: 'bui-HeaderToolbarIcon',
+      toolbarName: 'bui-HeaderToolbarName',
+      breadcrumbs: 'bui-HeaderBreadcrumbs',
+      breadcrumb: 'bui-HeaderBreadcrumb',
+      breadcrumbLink: 'bui-HeaderBreadcrumbLink',
+      breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator',
+      tabs: 'bui-HeaderTabs',
+      tabList: 'bui-HeaderTabList',
+      tab: 'bui-HeaderTab',
+      tabActive: 'bui-HeaderTabActive',
+      tabHovered: 'bui-HeaderTabHovered',
+      subNav: 'bui-HeaderSubNav',
     },
   },
   Tooltip: {
     classNames: {
-      tooltip: 'canon-Tooltip',
-      arrow: 'canon-TooltipArrow',
+      tooltip: 'bui-Tooltip',
+      arrow: 'bui-TooltipArrow',
     },
   },
 } as const satisfies Record<string, ComponentDefinition>;

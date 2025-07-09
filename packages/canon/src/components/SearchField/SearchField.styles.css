@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-.canon-SearchField[data-empty] .canon-InputClear {
+.bui-SearchField[data-empty] .bui-InputClear {
   display: none;
 }
 
-.canon-InputClear {
+.bui-InputClear {
   position: absolute;
   right: 0;
   top: 0;
@@ -35,21 +35,21 @@
   transition: color 0.2s ease-in-out;
 }
 
-.canon-InputClear:hover {
+.bui-InputClear:hover {
   color: var(--bui-fg-primary);
 }
 
-.canon-InputClear[data-size='small'] {
+.bui-InputClear[data-size='small'] {
   width: 2rem;
   height: 2rem;
 }
 
-.canon-InputClear[data-size='medium'] {
+.bui-InputClear[data-size='medium'] {
   width: 2.5rem;
   height: 2.5rem;
 }
 
-.canon-InputClear svg {
+.bui-InputClear svg {
   width: 1rem;
   height: 1rem;
 }

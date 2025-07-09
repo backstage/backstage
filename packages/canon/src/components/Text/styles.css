@@ -14,61 +14,61 @@
  * limitations under the License.
  */
 
-.canon-Text {
+.bui-Text {
   font-family: var(--bui-font-regular);
   padding: 0;
   margin: 0;
 }
 
-.canon-Text[data-variant='body'] {
+.bui-Text[data-variant='body'] {
   font-size: var(--bui-font-size-3);
   line-height: 140%;
 }
 
-.canon-Text[data-variant='subtitle'] {
+.bui-Text[data-variant='subtitle'] {
   font-size: var(--bui-font-size-4);
   line-height: 140%;
 }
 
-.canon-Text[data-variant='caption'] {
+.bui-Text[data-variant='caption'] {
   font-size: var(--bui-font-size-2);
   line-height: 140%;
 }
 
-.canon-Text[data-variant='label'] {
+.bui-Text[data-variant='label'] {
   font-size: var(--bui-font-size-1);
   line-height: 140%;
 }
 
-.canon-Text[data-weight='regular'] {
+.bui-Text[data-weight='regular'] {
   font-weight: var(--bui-font-weight-regular);
 }
 
-.canon-Text[data-weight='bold'] {
+.bui-Text[data-weight='bold'] {
   font-weight: var(--bui-font-weight-bold);
 }
 
-.canon-Text[data-color='primary'] {
+.bui-Text[data-color='primary'] {
   color: var(--bui-fg-primary);
 }
 
-.canon-Text[data-color='secondary'] {
+.bui-Text[data-color='secondary'] {
   color: var(--bui-fg-secondary);
 }
 
-.canon-Text[data-color='danger'] {
+.bui-Text[data-color='danger'] {
   color: var(--bui-fg-danger);
 }
 
-.canon-Text[data-color='warning'] {
+.bui-Text[data-color='warning'] {
   color: var(--bui-fg-warning);
 }
 
-.canon-Text[data-color='success'] {
+.bui-Text[data-color='success'] {
   color: var(--bui-fg-success);
 }
 
-.canon-Text[data-truncate] {
+.bui-Text[data-truncate] {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

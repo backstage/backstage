@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-.canon-ScrollAreaRoot {
+.bui-ScrollAreaRoot {
   box-sizing: border-box;
   max-width: calc(100vw - 8rem);
 }
 
-.canon-ScrollAreaViewport {
+.bui-ScrollAreaViewport {
   height: 100%;
   overscroll-behavior: contain;
 }
 
-.canon-ScrollAreaContent {
+.bui-ScrollAreaContent {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -33,7 +33,7 @@
   padding-right: 1.5rem;
 }
 
-.canon-ScrollAreaScrollbar {
+.bui-ScrollAreaScrollbar {
   display: flex;
   justify-content: center;
   background-color: var(--bui-scrollbar);
@@ -58,7 +58,7 @@
   }
 }
 
-.canon-ScrollAreaThumb {
+.bui-ScrollAreaThumb {
   width: 100%;
   border-radius: inherit;
   background-color: var(--bui-scrollbar-thumb);

@@ -1,9 +1,9 @@
-.canon-MenuPositioner {
+.bui-MenuPositioner {
   outline: 0;
   z-index: 100;
 }
 
-.canon-MenuPopup {
+.bui-MenuPopup {
   display: flex;
   flex-direction: column;
   border-radius: 0.375rem;
@@ -26,7 +26,7 @@
   }
 }
 
-.canon-MenuItem {
+.bui-MenuItem {
   outline: 0;
   user-select: none;
   display: flex;
@@ -51,7 +51,7 @@
   }
 }
 
-.canon-MenuSubmenuTrigger {
+.bui-MenuSubmenuTrigger {
   outline: 0;
   user-select: none;
   display: flex;
@@ -68,7 +68,7 @@
   cursor: pointer;
   flex-shrink: 0;
 
-  & .canon-Icon {
+  & .bui-Icon {
     color: var(--bui-fg-secondary);
   }
 
@@ -80,19 +80,19 @@
   &[data-highlighted] {
     background-color: var(--bui-gray-3);
 
-    .canon-Icon {
+    .bui-Icon {
       color: var(--bui-fg-primary);
     }
   }
 }
 
-.canon-MenuSeparator {
+.bui-MenuSeparator {
   margin: 0.375rem 1rem;
   height: 1px;
   background-color: var(--color-gray-200);
 }
 
-.canon-SubmenuComboboxSearch {
+.bui-SubmenuComboboxSearch {
   padding-inline: var(--bui-space-3);
   width: 100%;
   height: 32px;
@@ -117,7 +117,7 @@
   }
 }
 
-.canon-SubmenuComboboxItems {
+.bui-SubmenuComboboxItems {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -125,7 +125,7 @@
   outline: none;
 }
 
-.canon-SubmenuComboboxNoResults {
+.bui-SubmenuComboboxNoResults {
   padding-inline: var(--bui-space-3);
   padding-top: var(--bui-space-2);
   padding-bottom: var(--bui-space-4);
@@ -133,7 +133,7 @@
   font-size: var(--bui-font-size-3);
 }
 
-.canon-SubmenuComboboxItem {
+.bui-SubmenuComboboxItem {
   outline: 0;
   user-select: none;
   display: flex;
@@ -161,7 +161,7 @@
   }
 }
 
-.canon-SubmenuComboboxItemCheckbox {
+.bui-SubmenuComboboxItemCheckbox {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -174,7 +174,7 @@
   background: var(--bui-bg-surface-1);
 }
 
-.canon-SubmenuComboboxItemLabel {
+.bui-SubmenuComboboxItemLabel {
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;

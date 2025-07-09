@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-.canon-TableCellProfile {
+.bui-TableCellProfile {
   display: flex;
   flex-direction: row;
   gap: var(--bui-space-2);
   align-items: center;
 }
 
-.canon-TableCellProfileAvatar {
+.bui-TableCellProfileAvatar {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -38,13 +38,13 @@
   width: 1.25rem;
 }
 
-.canon-TableCellProfileAvatarImage {
+.bui-TableCellProfileAvatarImage {
   object-fit: cover;
   height: 100%;
   width: 100%;
 }
 
-.canon-TableCellProfileAvatarFallback {
+.bui-TableCellProfileAvatarFallback {
   align-items: center;
   display: flex;
   justify-content: center;

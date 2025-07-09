@@ -1,11 +1,11 @@
-.canon-FieldLabelWrapper {
+.bui-FieldLabelWrapper {
   display: flex;
   flex-direction: column;
   margin-bottom: var(--bui-space-3);
   gap: var(--bui-space-1);
 }
 
-.canon-FieldLabel {
+.bui-FieldLabel {
   color: var(--bui-fg-primary);
   margin-right: auto;
   cursor: pointer;
@@ -13,13 +13,13 @@
   font-size: var(--bui-font-size-2);
 }
 
-.canon-FieldSecondaryLabel {
+.bui-FieldSecondaryLabel {
   color: var(--bui-fg-secondary);
   font-weight: var(--bui-font-weight-regular);
   margin-left: var(--bui-space-1);
 }
 
-.canon-FieldDescription {
+.bui-FieldDescription {
   font-weight: var(--bui-font-weight-regular);
   font-size: var(--bui-font-size-2);
   color: var(--bui-fg-secondary);

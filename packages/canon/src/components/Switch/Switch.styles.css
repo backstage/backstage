@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.canon-Switch {
+.bui-Switch {
   display: flex;
   /* This is needed so the HiddenInput is positioned correctly */
   position: relative;
@@ -24,14 +24,14 @@
   color: var(--bui-fg-primary);
   cursor: pointer;
 
-  &[data-pressed] .canon-SwitchIndicator {
+  &[data-pressed] .bui-SwitchIndicator {
     &:before {
       background: var(--bui-fg-solid);
     }
   }
 
   &[data-selected] {
-    .canon-SwitchIndicator {
+    .bui-SwitchIndicator {
       background: var(--bui-bg-solid);
 
       &:before {
@@ -47,13 +47,13 @@
     }
   }
 
-  &[data-focus-visible] .canon-SwitchIndicator {
+  &[data-focus-visible] .bui-SwitchIndicator {
     outline: 2px solid;
     outline-offset: 2px;
   }
 }
 
-.canon-SwitchIndicator {
+.bui-SwitchIndicator {
   width: 2rem;
   height: 1.143rem;
   border: 2px;

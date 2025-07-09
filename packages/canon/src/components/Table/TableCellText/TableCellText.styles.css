@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.canon-TableCellText {
+.bui-TableCellText {
   display: flex;
   flex-direction: column;
   gap: var(--bui-space-0_5);

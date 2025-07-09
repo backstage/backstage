@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.canon-Card {
+.bui-Card {
   display: flex;
   flex-direction: column;
   gap: var(--bui-space-3);
@@ -28,16 +28,16 @@
   width: 100%;
 }
 
-.canon-CardBody {
+.bui-CardBody {
   flex: 1;
   min-height: 0;
   overflow: auto;
 }
 
-.canon-CardHeader {
+.bui-CardHeader {
   padding-inline: var(--bui-space-3);
 }
 
-.canon-CardFooter {
+.bui-CardFooter {
   padding-inline: var(--bui-space-3);
 }

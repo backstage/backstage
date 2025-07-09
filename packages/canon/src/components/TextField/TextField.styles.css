@@ -14,34 +14,34 @@
  * limitations under the License.
  */
 
-.canon-TextField {
+.bui-TextField {
   display: flex;
   flex-direction: column;
   font-family: var(--bui-font-regular);
   width: 100%;
 }
 
-.canon-InputWrapper {
+.bui-InputWrapper {
   position: relative;
 
-  &[data-size='small'] .canon-Input {
+  &[data-size='small'] .bui-Input {
     height: 2rem;
   }
 
-  &[data-size='medium'] .canon-Input {
+  &[data-size='medium'] .bui-Input {
     height: 2.5rem;
   }
 
-  &[data-size='small'] .canon-Input[data-icon] {
+  &[data-size='small'] .bui-Input[data-icon] {
     padding-left: var(--bui-space-8);
   }
 
-  &[data-size='medium'] .canon-Input[data-icon] {
+  &[data-size='medium'] .bui-Input[data-icon] {
     padding-left: var(--bui-space-9);
   }
 }
 
-.canon-InputIcon {
+.bui-InputIcon {
   position: absolute;
   left: var(--bui-space-3);
   top: 50%;
@@ -63,7 +63,7 @@
   }
 }
 
-.canon-Input {
+.bui-Input {
   display: flex;
   align-items: center;
   padding: 0 var(--bui-space-3);

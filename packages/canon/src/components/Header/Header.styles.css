@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.canon-HeaderToolbar {
+.bui-HeaderToolbar {
   position: sticky;
   top: 0;
   z-index: 10;
@@ -36,7 +36,7 @@
   }
 }
 
-.canon-HeaderToolbarWrapper {
+.bui-HeaderToolbarWrapper {
   position: relative;
   z-index: 1;
   display: flex;
@@ -50,14 +50,14 @@
   height: 52px;
 }
 
-.canon-HeaderToolbarContent {
+.bui-HeaderToolbarContent {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: var(--bui-space-2);
 }
 
-.canon-HeaderToolbarName {
+.bui-HeaderToolbarName {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -67,7 +67,7 @@
   flex-shrink: 0;
 }
 
-.canon-HeaderToolbarIcon {
+.bui-HeaderToolbarIcon {
   width: 16px;
   height: 16px;
   color: var(--bui-fg-primary);
@@ -78,14 +78,14 @@
   }
 }
 
-.canon-HeaderToolbarControls {
+.bui-HeaderToolbarControls {
   position: absolute;
   right: var(--bui-space-3);
   top: 50%;
   transform: translateY(-50%);
 }
 
-.canon-HeaderBreadcrumbs {
+.bui-HeaderBreadcrumbs {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -94,14 +94,14 @@
   font-weight: var(--bui-font-weight-regular);
 }
 
-.canon-HeaderBreadcrumb {
+.bui-HeaderBreadcrumb {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: var(--bui-space-2);
 }
 
-.canon-HeaderBreadcrumbLink {
+.bui-HeaderBreadcrumbLink {
   color: var(--bui-fg-secondary);
   text-decoration: none;
   cursor: pointer;
@@ -111,13 +111,13 @@
   }
 }
 
-.canon-HeaderBreadcrumbSeparator {
+.bui-HeaderBreadcrumbSeparator {
   width: 16px;
   height: 16px;
   color: var(--bui-fg-secondary);
 }
 
-.canon-HeaderTabs {
+.bui-HeaderTabs {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -144,12 +144,12 @@
   --hovered-transition-duration: 0s;
 }
 
-.canon-HeaderTabList {
+.bui-HeaderTabList {
   display: flex;
   flex-direction: row;
 }
 
-.canon-HeaderTab {
+.bui-HeaderTab {
   font-size: var(--bui-font-size-3);
   color: var(--bui-fg-secondary);
   height: 36px;
@@ -166,7 +166,7 @@
   }
 }
 
-.canon-HeaderTabActive {
+.bui-HeaderTabActive {
   content: '';
   position: absolute;
   left: calc(var(--active-tab-left) + var(--bui-space-2));
@@ -179,7 +179,7 @@
   opacity: 1;
 }
 
-.canon-HeaderTabHovered {
+.bui-HeaderTabHovered {
   content: '';
   position: absolute;
   left: var(--hovered-tab-left);

@@ -1,4 +1,4 @@
-.canon-Container {
+.bui-Container {
   max-width: 120rem;
   padding-inline: var(--bui-space-4);
   margin-inline: auto;
@@ -6,7 +6,7 @@
 }
 
 @media (min-width: 640px) {
-  .canon-Container {
+  .bui-Container {
     padding-inline: var(--bui-space-5);
   }
 }

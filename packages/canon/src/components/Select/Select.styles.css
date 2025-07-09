@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-.canon-Select {
+.bui-Select {
   display: flex;
   flex-direction: column;
   font-family: var(--bui-font-regular);
   width: 100%;
 }
 
-.canon-SelectLabel {
+.bui-SelectLabel {
   font-size: var(--bui-font-size-2);
   font-weight: var(--bui-font-weight-regular);
   color: var(--bui-fg-primary);
   margin-bottom: var(--bui-space-1_5);
   cursor: pointer;
 }
-.canon-SelectLabel[data-disabled] {
+.bui-SelectLabel[data-disabled] {
   cursor: default;
 }
 
-.canon-SelectDescription {
+.bui-SelectDescription {
   font-size: var(--bui-font-size-2);
   font-weight: var(--bui-font-weight-regular);
   color: var(--bui-fg-secondary);
@@ -40,7 +40,7 @@
   padding-top: var(--bui-space-1_5);
 }
 
-.canon-SelectError {
+.bui-SelectError {
   font-size: var(--bui-font-size-2);
   font-weight: var(--bui-font-weight-regular);
   color: var(--bui-fg-danger);
@@ -48,7 +48,7 @@
   padding-top: var(--bui-space-1_5);
 }
 
-.canon-SelectTrigger {
+.bui-SelectTrigger {
   box-sizing: border-box;
   border-radius: var(--bui-radius-3);
   border: 1px solid var(--bui-border);
@@ -67,54 +67,54 @@
   gap: var(--bui-space-2);
 }
 
-.canon-SelectTrigger::placeholder {
+.bui-SelectTrigger::placeholder {
   color: var(--bui-fg-secondary);
 }
 
-.canon-SelectTrigger:hover {
+.bui-SelectTrigger:hover {
   border-color: var(--bui-border-hover);
 }
 
-.canon-SelectTrigger:focus-visible {
+.bui-SelectTrigger:focus-visible {
   border-color: var(--bui-border-pressed);
   outline: 0;
 }
 
-.canon-SelectTrigger[data-invalid] {
+.bui-SelectTrigger[data-invalid] {
   border-color: var(--bui-fg-danger);
 }
-.canon-SelectTrigger[data-invalid]:hover {
+.bui-SelectTrigger[data-invalid]:hover {
   border-width: 2px;
 }
 
-.canon-SelectTrigger[data-invalid]:focus-visible {
+.bui-SelectTrigger[data-invalid]:focus-visible {
   border-width: 2px;
 }
 
-.canon-SelectTrigger[data-disabled] {
+.bui-SelectTrigger[data-disabled] {
   cursor: not-allowed;
   border-color: var(--bui-border-disabled);
   color: var(--bui-fg-disabled);
 }
 
-.canon-SelectTrigger[data-size='small'] {
+.bui-SelectTrigger[data-size='small'] {
   height: 2rem;
 }
 
-.canon-SelectTrigger[data-size='medium'] {
+.bui-SelectTrigger[data-size='medium'] {
   height: 3rem;
 }
 
-.canon-SelectIcon {
+.bui-SelectIcon {
   margin-left: var(--bui-space-5);
   transition: transform 0.2s ease;
 }
 
-.canon-SelectTrigger[data-popup-open] .canon-SelectIcon {
+.bui-SelectTrigger[data-popup-open] .bui-SelectIcon {
   transform: rotate(180deg);
 }
 
-.canon-SelectPopup {
+.bui-SelectPopup {
   box-sizing: border-box;
   max-height: var(--available-height);
   overflow-y: auto;
@@ -129,13 +129,13 @@
   transition: transform 150ms, opacity 150ms;
 }
 
-.canon-SelectPopup[data-starting-style],
-.canon-SelectPopup[data-ending-style] {
+.bui-SelectPopup[data-starting-style],
+.bui-SelectPopup[data-ending-style] {
   opacity: 0;
   transform: scale(0.9);
 }
 
-.canon-SelectItem {
+.bui-SelectItem {
   position: relative;
   width: var(--anchor-width);
   display: grid;
@@ -153,13 +153,13 @@
   outline: none;
 }
 
-.canon-SelectItem[data-highlighted] {
+.bui-SelectItem[data-highlighted] {
   z-index: 0;
   position: relative;
   color: var(--bui-fg-primary);
 }
 
-.canon-SelectItem[data-highlighted]::before {
+.bui-SelectItem[data-highlighted]::before {
   content: '';
   z-index: -1;
   position: absolute;
@@ -169,37 +169,37 @@
   background-color: var(--bui-bg-tint-hover);
 }
 
-.canon-SelectItem[data-disabled] {
+.bui-SelectItem[data-disabled] {
   cursor: not-allowed;
   color: var(--bui-fg-disabled);
 }
 
-.canon-SelectItemIndicator {
+.bui-SelectItemIndicator {
   grid-area: icon;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.canon-SelectItemText {
+.bui-SelectItemText {
   flex: 1;
   grid-area: text;
 }
 
-.canon-SelectRequired {
+.bui-SelectRequired {
   color: var(--bui-fg-secondary);
   font-size: var(--bui-font-size-2);
   font-weight: var(--bui-font-weight-regular);
   margin-left: var(--bui-space-1);
 }
 
-.canon-SelectIcon {
+.bui-SelectIcon {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.canon-SelectValue {
+.bui-SelectValue {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
