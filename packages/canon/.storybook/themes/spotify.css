@@ -183,12 +183,6 @@
     font-weight: var(--bui-font-weight-regular);
   }
 
-  .canon-ScrollAreaRoot {
-    width: 100%;
-    /* TODO: Bring this as a fix in OS */
-    height: unset;
-  }
-
   .canon-TabsIndicator {
     background-color: var(--bui-bg-underline);
   }
