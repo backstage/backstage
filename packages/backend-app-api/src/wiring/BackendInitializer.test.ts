@@ -26,6 +26,7 @@ import {
 import { BackendInitializer } from './BackendInitializer';
 import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { mockServices } from '@backstage/backend-test-utils';
+import { CONFIG_KEY_PART_PATTERN } from '@backstage/config';
 
 const baseFactories = [
   mockServices.rootLifecycle.factory(),
@@ -1031,7 +1032,7 @@ describe('BackendInitializer', () => {
       }),
     );
     await expect(init.start()).rejects.toThrow(
-      "Invalid pluginId 'test:invalid&id', must match the pattern /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i (letters, digits, dashes, and underscores only, starting with a letter)",
+      `Invalid pluginId 'test:invalid&id', must match the pattern ${CONFIG_KEY_PART_PATTERN} (letters, digits, dashes, and underscores only, starting with a letter)`,
     );
   });
 
@@ -1061,7 +1062,7 @@ describe('BackendInitializer', () => {
       }),
     );
     await expect(init.start()).rejects.toThrow(
-      "Invalid moduleId 'invalid:module&id' for plugin 'test', must match the pattern /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i (letters, digits, dashes, and underscores only, starting with a letter)",
+      `Invalid moduleId 'invalid:module&id' for plugin 'test', must match the pattern ${CONFIG_KEY_PART_PATTERN} (letters, digits, dashes, and underscores only, starting with a letter)`,
     );
   });
 
