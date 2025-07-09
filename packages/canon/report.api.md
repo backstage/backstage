@@ -219,6 +219,35 @@ export interface ButtonProps extends ButtonProps_2 {
     | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
 }
 
+// @public
+export const Card: ForwardRefExoticComponent<
+  CardProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
+// @public
+export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
+// @public
+export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
+// @public
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
 // @public (undocumented)
 export const Checkbox: ForwardRefExoticComponent<
   CheckboxProps & RefAttributes<HTMLButtonElement>
@@ -1514,6 +1543,19 @@ export interface SelectProps {
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   style?: React.CSSProperties;
   value?: string;
+}
+
+// @public (undocumented)
+export const Skeleton: (props: SkeletonProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface SkeletonProps extends ComponentProps<'div'> {
+  // (undocumented)
+  height?: number | string;
+  // (undocumented)
+  rounded?: boolean;
+  // (undocumented)
+  width?: number | string;
 }
 
 // @public (undocumented)
