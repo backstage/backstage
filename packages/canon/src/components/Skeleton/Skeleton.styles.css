@@ -15,11 +15,11 @@
  */
 
 .canon-Skeleton {
-  animation: var(--canon-animate-pulse);
-  background-color: var(--canon-bg-surface-2);
-  border-radius: var(--canon-radius-2);
+  animation: var(--bui-animate-pulse);
+  background-color: var(--bui-bg-surface-2);
+  border-radius: var(--bui-radius-2);
 }
 
 .canon-Skeleton[data-rounded='true'] {
-  border-radius: var(--canon-radius-full);
+  border-radius: var(--bui-radius-full);
 }

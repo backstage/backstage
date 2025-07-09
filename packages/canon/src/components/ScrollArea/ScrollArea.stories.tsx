@@ -30,7 +30,7 @@ export const Default: Story = {
   render: () => (
     <ScrollArea.Root style={{ width: '24rem', height: '8.5rem' }}>
       <ScrollArea.Viewport
-        style={{ border: '1px solid var(--canon-border)', borderRadius: '4px' }}
+        style={{ border: '1px solid var(--bui-border)', borderRadius: '4px' }}
       >
         <div style={{ padding: '0.75rem', paddingRight: '1.5rem' }}>
           <Text style={{ paddingBottom: '1rem' }}>

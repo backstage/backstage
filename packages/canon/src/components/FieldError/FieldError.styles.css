@@ -1,6 +1,6 @@
 .canon-FieldError {
-  color: var(--canon-fg-danger);
-  font-size: var(--canon-font-size-2);
-  font-weight: var(--canon-font-weight-regular);
-  margin-top: var(--canon-space-2);
+  color: var(--bui-fg-danger);
+  font-size: var(--bui-font-size-2);
+  font-weight: var(--bui-font-weight-regular);
+  margin-top: var(--bui-space-2);
 }

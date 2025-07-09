@@ -116,16 +116,16 @@
 }
 
 [data-theme-name='spotify'] {
-  --canon-font-text: CircularSp, CircularSp-Arab, CircularSp-Hebr,
+  --bui-font-text: CircularSp, CircularSp-Arab, CircularSp-Hebr, CircularSp-Cyrl,
+    CircularSp-Grek, CircularSp-Deva;
+  --bui-font-title: CircularSpTitle, CircularSp-Arab, CircularSp-Hebr,
     CircularSp-Cyrl, CircularSp-Grek, CircularSp-Deva;
-  --canon-font-title: CircularSpTitle, CircularSp-Arab, CircularSp-Hebr,
-    CircularSp-Cyrl, CircularSp-Grek, CircularSp-Deva;
-  --canon-font-regular: CircularSp, CircularSp-Arab, CircularSp-Hebr,
+  --bui-font-regular: CircularSp, CircularSp-Arab, CircularSp-Hebr,
     CircularSp-Cyrl, CircularSp-Grek, CircularSp-Deva;
 
   .canon-Button {
-    border-radius: var(--canon-radius-3);
-    padding-inline: var(--canon-space-3);
+    border-radius: var(--bui-radius-3);
+    padding-inline: var(--bui-space-3);
   }
 
   .canon-ButtonIcon {
@@ -144,43 +144,43 @@
   }
 
   .canon-Text {
-    font-family: var(--canon-font-text);
+    font-family: var(--bui-font-text);
   }
 
   .canon-Heading {
-    font-family: var(--canon-font-title);
+    font-family: var(--bui-font-title);
   }
 
   .canon-TableRow {
     border: none;
-    border-radius: var(--canon-radius-4);
+    border-radius: var(--bui-radius-4);
   }
 
   .canon-TableRow:hover td:first-child {
-    border-top-left-radius: var(--canon-radius-2);
-    border-bottom-left-radius: var(--canon-radius-2);
+    border-top-left-radius: var(--bui-radius-2);
+    border-bottom-left-radius: var(--bui-radius-2);
   }
 
   .canon-TableRow:hover td:last-child {
-    border-top-right-radius: var(--canon-radius-2);
-    border-bottom-right-radius: var(--canon-radius-2);
+    border-top-right-radius: var(--bui-radius-2);
+    border-bottom-right-radius: var(--bui-radius-2);
   }
 
   .canon-TableBody:before,
   .canon-TableBody:after {
-    line-height: var(--canon-space-1);
+    line-height: var(--bui-space-1);
     content: '\200C';
     display: block;
   }
 
   .canon-TableHeader .canon-TableRow {
-    border-bottom: 1px solid var(--canon-border);
+    border-bottom: 1px solid var(--bui-border);
   }
 
   .canon-TableHead {
-    font-size: var(--canon-font-size-2);
-    color: var(--canon-fg-secondary);
-    font-weight: var(--canon-font-weight-regular);
+    font-size: var(--bui-font-size-2);
+    color: var(--bui-fg-secondary);
+    font-weight: var(--bui-font-weight-regular);
   }
 
   .canon-ScrollAreaRoot {
@@ -190,7 +190,7 @@
   }
 
   .canon-TabsIndicator {
-    background-color: var(--canon-bg-underline);
+    background-color: var(--bui-bg-underline);
   }
 
   .canon-TabsTab[data-selected] {
@@ -202,90 +202,90 @@
   }
 
   .canon-HeaderToolbar {
-    padding-top: var(--canon-space-2);
+    padding-top: var(--bui-space-2);
   }
 
   .canon-HeaderToolbarWrapper {
-    border-radius: var(--canon-radius-3);
+    border-radius: var(--bui-radius-3);
     border: none;
   }
 
   .canon-HeaderTabs {
-    border-radius: var(--canon-radius-3);
+    border-radius: var(--bui-radius-3);
     border: none;
-    margin-top: var(--canon-space-2);
+    margin-top: var(--bui-space-2);
   }
 }
 
 [data-theme='light'][data-theme-name='spotify'] {
-  --canon-bg: var(--canon-gray-1);
-  --canon-bg-surface-1: var(--canon-white);
-  --canon-bg-surface-2: var(--canon-gray-2);
-  --canon-bg-solid: #1ed760;
-  --canon-bg-solid-hover: #3be477;
-  --canon-bg-solid-pressed: #1abc54;
-  --canon-bg-solid-disabled: var(--canon-gray-2);
+  --bui-bg: var(--bui-gray-1);
+  --bui-bg-surface-1: var(--bui-white);
+  --bui-bg-surface-2: var(--bui-gray-2);
+  --bui-bg-solid: #1ed760;
+  --bui-bg-solid-hover: #3be477;
+  --bui-bg-solid-pressed: #1abc54;
+  --bui-bg-solid-disabled: var(--bui-gray-2);
 
-  --canon-fg-primary: var(--canon-black);
-  --canon-fg-secondary: var(--canon-gray-7);
-  --canon-fg-solid: var(--canon-black);
+  --bui-fg-primary: var(--bui-black);
+  --bui-fg-secondary: var(--bui-gray-7);
+  --bui-fg-solid: var(--bui-black);
 
-  --canon-border: var(--canon-gray-3);
-  --canon-border-hover: rgba(0, 0, 0, 0.3);
-  --canon-border-pressed: rgba(0, 0, 0, 0.5);
-  --canon-border-disabled: rgba(0, 0, 0, 0.1);
-  --canon-border-danger: #f87a7a;
-  --canon-border-warning: #e36d05;
-  --canon-border-success: #53db83;
+  --bui-border: var(--bui-gray-3);
+  --bui-border-hover: rgba(0, 0, 0, 0.3);
+  --bui-border-pressed: rgba(0, 0, 0, 0.5);
+  --bui-border-disabled: rgba(0, 0, 0, 0.1);
+  --bui-border-danger: #f87a7a;
+  --bui-border-warning: #e36d05;
+  --bui-border-success: #53db83;
 
-  --canon-ring: rgba(0, 0, 0, 0.2);
+  --bui-ring: rgba(0, 0, 0, 0.2);
 
   .canon-HeaderToolbarWrapper {
-    border: 1px solid var(--canon-border);
+    border: 1px solid var(--bui-border);
   }
 
   .canon-HeaderTabs {
-    border: 1px solid var(--canon-border);
+    border: 1px solid var(--bui-border);
   }
 }
 
 [data-theme='dark'][data-theme-name='spotify'] {
-  --canon-bg: var(--canon-black);
-  --canon-bg-surface-1: var(--canon-gray-1);
-  --canon-bg-surface-2: var(--canon-gray-2);
-  --canon-bg-solid: #1ed760;
-  --canon-bg-solid-hover: #3be477;
-  --canon-bg-solid-pressed: #1abc54;
-  --canon-bg-solid-disabled: #0f6c30;
-  --canon-bg-tint: #242424;
-  --canon-bg-tint-hover: #202020;
-  --canon-bg-tint-pressed: #292929;
-  --canon-bg-tint-disabled: rgba(255, 255, 255, 0.8);
-  --canon-bg-danger: #3b1219;
-  --canon-bg-warning: #302008;
-  --canon-bg-success: #132d21;
-  --canon-bg-underline: #d16ecb;
+  --bui-bg: var(--bui-black);
+  --bui-bg-surface-1: var(--bui-gray-1);
+  --bui-bg-surface-2: var(--bui-gray-2);
+  --bui-bg-solid: #1ed760;
+  --bui-bg-solid-hover: #3be477;
+  --bui-bg-solid-pressed: #1abc54;
+  --bui-bg-solid-disabled: #0f6c30;
+  --bui-bg-tint: #242424;
+  --bui-bg-tint-hover: #202020;
+  --bui-bg-tint-pressed: #292929;
+  --bui-bg-tint-disabled: rgba(255, 255, 255, 0.8);
+  --bui-bg-danger: #3b1219;
+  --bui-bg-warning: #302008;
+  --bui-bg-success: #132d21;
+  --bui-bg-underline: #d16ecb;
 
-  --canon-fg-primary: var(--canon-white);
-  --canon-fg-secondary: var(--canon-gray-7);
-  --canon-fg-link: var(--canon-white);
-  --canon-fg-link-hover: var(--canon-white);
-  --canon-fg-disabled: var(--canon-gray-5);
-  --canon-fg-solid: var(--canon-black);
-  --canon-fg-solid-disabled: #083618;
-  --canon-fg-tint: var(--canon-white);
-  --canon-fg-tint-disabled: var(--canon-gray-5);
-  --canon-fg-danger: #e22b2b;
-  --canon-fg-warning: #e36d05;
-  --canon-fg-success: #1db954;
+  --bui-fg-primary: var(--bui-white);
+  --bui-fg-secondary: var(--bui-gray-7);
+  --bui-fg-link: var(--bui-white);
+  --bui-fg-link-hover: var(--bui-white);
+  --bui-fg-disabled: var(--bui-gray-5);
+  --bui-fg-solid: var(--bui-black);
+  --bui-fg-solid-disabled: #083618;
+  --bui-fg-tint: var(--bui-white);
+  --bui-fg-tint-disabled: var(--bui-gray-5);
+  --bui-fg-danger: #e22b2b;
+  --bui-fg-warning: #e36d05;
+  --bui-fg-success: #1db954;
 
-  --canon-border: var(--canon-gray-3);
-  --canon-border-hover: rgba(255, 255, 255, 0.4);
-  --canon-border-pressed: rgba(255, 255, 255, 0.5);
-  --canon-border-disabled: rgba(255, 255, 255, 0.2);
-  --canon-border-danger: #f87a7a;
-  --canon-border-warning: #e36d05;
-  --canon-border-success: #53db83;
+  --bui-border: var(--bui-gray-3);
+  --bui-border-hover: rgba(255, 255, 255, 0.4);
+  --bui-border-pressed: rgba(255, 255, 255, 0.5);
+  --bui-border-disabled: rgba(255, 255, 255, 0.2);
+  --bui-border-danger: #f87a7a;
+  --bui-border-warning: #e36d05;
+  --bui-border-success: #53db83;
 
-  --canon-ring: rgba(255, 255, 255, 0.2);
+  --bui-ring: rgba(255, 255, 255, 0.2);
 }

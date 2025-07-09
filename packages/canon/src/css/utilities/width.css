@@ -1,86 +1,86 @@
-.cu-w {
+.bui-w {
   width: var(--width);
 }
 
-.cu-min-w {
+.bui-min-w {
   min-width: var(--min-width);
 }
 
-.cu-max-w {
+.bui-max-w {
   max-width: var(--max-width);
 }
 
 /* Breakpoint xs */
 @media (min-width: 640px) {
-  .xs\:cu-w {
+  .xs\:bui-w {
     width: var(--width);
   }
 
-  .xs\:cu-min-w {
+  .xs\:bui-min-w {
     min-width: var(--min-width);
   }
 
-  .xs\:cu-max-w {
+  .xs\:bui-max-w {
     max-width: var(--max-width);
   }
 }
 
 /* Breakpoint sm */
 @media (min-width: 768px) {
-  .sm\:cu-w {
+  .sm\:bui-w {
     width: var(--width);
   }
 
-  .sm\:cu-min-w {
+  .sm\:bui-min-w {
     min-width: var(--min-width);
   }
 
-  .sm\:cu-max-w {
+  .sm\:bui-max-w {
     max-width: var(--max-width);
   }
 }
 
 /* Breakpoint md */
 @media (min-width: 1024px) {
-  .md\:cu-w {
+  .md\:bui-w {
     width: var(--width);
   }
 
-  .md\:cu-min-w {
+  .md\:bui-min-w {
     min-width: var(--min-width);
   }
 
-  .md\:cu-max-w {
+  .md\:bui-max-w {
     max-width: var(--max-width);
   }
 }
 
 /* Breakpoint lg */
 @media (min-width: 1280px) {
-  .lg\:cu-w {
+  .lg\:bui-w {
     width: var(--width);
   }
 
-  .lg\:cu-min-w {
+  .lg\:bui-min-w {
     min-width: var(--min-width);
   }
 
-  .lg\:cu-max-w {
+  .lg\:bui-max-w {
     max-width: var(--max-width);
   }
 }
 
 /* Breakpoint xl */
 @media (min-width: 1536px) {
-  .xl\:cu-w {
+  .xl\:bui-w {
     width: var(--width);
   }
 
-  .xl\:cu-min-w {
+  .xl\:bui-min-w {
     min-width: var(--min-width);
   }
 
-  .xl\:cu-max-w {
+  .xl\:bui-max-w {
     max-width: var(--max-width);
   }
 }

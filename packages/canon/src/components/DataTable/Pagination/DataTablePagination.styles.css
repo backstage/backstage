@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: var(--canon-space-5);
+  padding-top: var(--bui-space-5);
 }
 
 .canon-DataTablePagination--left {
@@ -15,7 +15,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--canon-space-2);
+  gap: var(--bui-space-2);
 }
 
 .canon-DataTablePagination--select {

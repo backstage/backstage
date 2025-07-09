@@ -58,7 +58,7 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
       // Get dimensions
       const wrapperRect = wrapper.getBoundingClientRect();
       const wrapperWidth = wrapperRect.width;
-      const wrapperPadding = 24; // 12px on each side (var(--canon-space-3))
+      const wrapperPadding = 24; // 12px on each side (var(--bui-space-3))
       const availableWidth = wrapperWidth - wrapperPadding;
 
       // Calculate required width for content

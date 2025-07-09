@@ -17,5 +17,5 @@
 .canon-TableCellText {
   display: flex;
   flex-direction: column;
-  gap: var(--canon-space-0_5);
+  gap: var(--bui-space-0_5);
 }

@@ -15,57 +15,57 @@
  */
 
 .canon-Text {
-  font-family: var(--canon-font-regular);
+  font-family: var(--bui-font-regular);
   padding: 0;
   margin: 0;
 }
 
 .canon-Text[data-variant='body'] {
-  font-size: var(--canon-font-size-3);
+  font-size: var(--bui-font-size-3);
   line-height: 140%;
 }
 
 .canon-Text[data-variant='subtitle'] {
-  font-size: var(--canon-font-size-4);
+  font-size: var(--bui-font-size-4);
   line-height: 140%;
 }
 
 .canon-Text[data-variant='caption'] {
-  font-size: var(--canon-font-size-2);
+  font-size: var(--bui-font-size-2);
   line-height: 140%;
 }
 
 .canon-Text[data-variant='label'] {
-  font-size: var(--canon-font-size-1);
+  font-size: var(--bui-font-size-1);
   line-height: 140%;
 }
 
 .canon-Text[data-weight='regular'] {
-  font-weight: var(--canon-font-weight-regular);
+  font-weight: var(--bui-font-weight-regular);
 }
 
 .canon-Text[data-weight='bold'] {
-  font-weight: var(--canon-font-weight-bold);
+  font-weight: var(--bui-font-weight-bold);
 }
 
 .canon-Text[data-color='primary'] {
-  color: var(--canon-fg-primary);
+  color: var(--bui-fg-primary);
 }
 
 .canon-Text[data-color='secondary'] {
-  color: var(--canon-fg-secondary);
+  color: var(--bui-fg-secondary);
 }
 
 .canon-Text[data-color='danger'] {
-  color: var(--canon-fg-danger);
+  color: var(--bui-fg-danger);
 }
 
 .canon-Text[data-color='warning'] {
-  color: var(--canon-fg-warning);
+  color: var(--bui-fg-warning);
 }
 
 .canon-Text[data-color='success'] {
-  color: var(--canon-fg-success);
+  color: var(--bui-fg-success);
 }
 
 .canon-Text[data-truncate] {

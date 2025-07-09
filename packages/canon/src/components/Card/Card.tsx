@@ -71,7 +71,7 @@ export const CardBody = forwardRef<HTMLDivElement, CardBodyProps>(
         className={clsx(classNames.body, className)}
         {...rest}
       >
-        <ScrollArea.Viewport style={{ paddingInline: 'var(--canon-space-3)' }}>
+        <ScrollArea.Viewport style={{ paddingInline: 'var(--bui-space-3)' }}>
           {children}
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar

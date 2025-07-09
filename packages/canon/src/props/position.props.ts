@@ -28,7 +28,7 @@ const positionValues = [
 const positionPropDefs = {
   position: {
     type: 'enum',
-    className: 'cu-position',
+    className: 'bui-position',
     values: positionValues,
     responsive: true,
   },

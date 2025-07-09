@@ -31,12 +31,12 @@
   padding: 0;
   margin: 0;
   cursor: pointer;
-  color: var(--canon-fg-secondary);
+  color: var(--bui-fg-secondary);
   transition: color 0.2s ease-in-out;
 }
 
 .canon-InputClear:hover {
-  color: var(--canon-fg-primary);
+  color: var(--bui-fg-primary);
 }
 
 .canon-InputClear[data-size='small'] {

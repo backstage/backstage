@@ -17,7 +17,7 @@
 .canon-TextField {
   display: flex;
   flex-direction: column;
-  font-family: var(--canon-font-regular);
+  font-family: var(--bui-font-regular);
   width: 100%;
 }
 
@@ -33,21 +33,21 @@
   }
 
   &[data-size='small'] .canon-Input[data-icon] {
-    padding-left: var(--canon-space-8);
+    padding-left: var(--bui-space-8);
   }
 
   &[data-size='medium'] .canon-Input[data-icon] {
-    padding-left: var(--canon-space-9);
+    padding-left: var(--bui-space-9);
   }
 }
 
 .canon-InputIcon {
   position: absolute;
-  left: var(--canon-space-3);
+  left: var(--bui-space-3);
   top: 50%;
   transform: translateY(-50%);
-  margin-right: var(--canon-space-1);
-  color: var(--canon-fg-primary);
+  margin-right: var(--bui-space-1);
+  color: var(--bui-fg-primary);
   flex-shrink: 0;
 
   &[data-size='small'],
@@ -66,14 +66,14 @@
 .canon-Input {
   display: flex;
   align-items: center;
-  padding: 0 var(--canon-space-3);
-  border-radius: var(--canon-radius-3);
-  border: 1px solid var(--canon-border);
-  background-color: var(--canon-bg-surface-1);
-  font-size: var(--canon-font-size-3);
-  font-family: var(--canon-font-regular);
-  font-weight: var(--canon-font-weight-regular);
-  color: var(--canon-fg-primary);
+  padding: 0 var(--bui-space-3);
+  border-radius: var(--bui-radius-3);
+  border: 1px solid var(--bui-border);
+  background-color: var(--bui-bg-surface-1);
+  font-size: var(--bui-font-size-3);
+  font-family: var(--bui-font-regular);
+  font-weight: var(--bui-font-weight-regular);
+  color: var(--bui-fg-primary);
   transition: border-color 0.2s ease-in-out, outline-color 0.2s ease-in-out;
   width: 100%;
   height: 100%;
@@ -85,30 +85,30 @@
   }
 
   &::placeholder {
-    color: var(--canon-fg-secondary);
+    color: var(--bui-fg-secondary);
   }
 
   &[data-focused] {
-    outline-color: var(--canon-border-pressed);
+    outline-color: var(--bui-border-pressed);
     outline-width: 0px;
   }
 
   &[data-hovered] {
-    border-color: var(--canon-border-hover);
+    border-color: var(--bui-border-hover);
   }
 
   &[data-focused] {
-    border-color: var(--canon-border-pressed);
+    border-color: var(--bui-border-pressed);
     outline-width: 0px;
   }
 
   &[data-invalid] {
-    border-color: var(--canon-fg-danger);
+    border-color: var(--bui-fg-danger);
   }
 
   &[data-disabled] {
     opacity: 0.5;
     cursor: not-allowed;
-    border: 1px solid var(--canon-border-disabled);
+    border: 1px solid var(--bui-border-disabled);
   }
 }
