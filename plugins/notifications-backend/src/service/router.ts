@@ -51,8 +51,8 @@ import { getUsersForEntityRef } from './getUsersForEntityRef';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { durationToMilliseconds } from '@backstage/types';
 import pThrottle from 'p-throttle';
-import { createOpenApiRouter, ListNotificationTopics } from '../schema/openapi';
-import { ListNotificationTopics200ResponseInner } from '../schema/openapi/generated/models';
+import { createOpenApiRouter, GetNotificationTopics } from '../schema/openapi';
+import { GetNotificationTopics200ResponseInner } from '../schema/openapi/generated/models';
 
 /** @internal */
 export interface RouterOptions {
@@ -441,9 +441,9 @@ export async function createRouter(
   const listTopicsHandler = async (
     req: Request<
       any,
-      ListNotificationTopics200ResponseInner[],
+      GetNotificationTopics200ResponseInner[],
       any,
-      ListNotificationTopics['query'],
+      GetNotificationTopics['query'],
       any
     >,
     res: Response,
