@@ -774,7 +774,7 @@ describe('BackendInitializer', () => {
     const init = new BackendInitializer([]);
     init.add(
       createBackendPlugin({
-        pluginId: 'test-1',
+        pluginId: 'test-t1',
         register(reg) {
           reg.registerInit({
             deps: {},
@@ -787,7 +787,7 @@ describe('BackendInitializer', () => {
     );
     init.add(
       createBackendPlugin({
-        pluginId: 'test-2',
+        pluginId: 'test-t2',
         register(reg) {
           reg.registerInit({
             deps: {},
@@ -804,10 +804,10 @@ describe('BackendInitializer', () => {
     await expect(result).rejects.toMatchObject({
       errors: [
         expect.objectContaining({
-          message: "Plugin 'test-1' startup failed; caused by Error: NOPE A",
+          message: "Plugin 'test-t1' startup failed; caused by Error: NOPE A",
         }),
         expect.objectContaining({
-          message: "Plugin 'test-2' startup failed; caused by Error: NOPE B",
+          message: "Plugin 'test-t2' startup failed; caused by Error: NOPE B",
         }),
       ],
     });
@@ -1015,6 +1015,53 @@ describe('BackendInitializer', () => {
     );
     await expect(init.start()).rejects.toThrow(
       "Service or extension point dependencies of module 'test-mod' for plugin 'test' are missing for the following ref(s): serviceRef{a}",
+    );
+  });
+  it('should reject plugins with invalid pluginId', async () => {
+    const init = new BackendInitializer(baseFactories);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test:invalid&id',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Invalid pluginId 'test:invalid&id', must match the pattern /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i (letters, digits, dashes, and underscores only, starting with a letter)",
+    );
+  });
+
+  it('should reject modules with invalid moduleId', async () => {
+    const init = new BackendInitializer(baseFactories);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    );
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'invalid:module&id',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Invalid moduleId 'invalid:module&id' for plugin 'test', must match the pattern /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i (letters, digits, dashes, and underscores only, starting with a letter)",
     );
   });
 
