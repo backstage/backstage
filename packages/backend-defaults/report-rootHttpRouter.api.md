@@ -82,6 +82,14 @@ export type HttpServerOptions = {
   https?: {
     certificate: HttpServerCertificateOptions;
   };
+  serverOptions?: {
+    headersTimeout?: number;
+    requestTimeout?: number;
+    keepAliveTimeout?: number;
+    timeout?: number;
+    maxHeadersCount?: number;
+    maxRequestsPerSocket?: number;
+  };
 };
 
 // @public
