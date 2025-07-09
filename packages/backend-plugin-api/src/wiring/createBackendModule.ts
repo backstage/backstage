@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { CONFIG_KEY_PART_PATTERN } from '@backstage/config';
 import { BackendFeature } from '../types';
 import {
   BackendModuleRegistrationPoints,
@@ -55,6 +56,12 @@ export function createBackendModule(
   options: CreateBackendModuleOptions,
 ): BackendFeature {
   function getRegistrations() {
+    if (!CONFIG_KEY_PART_PATTERN.test(options.moduleId)) {
+      throw new Error(
+        `Invalid moduleId '${options.moduleId}' for plugin '${options.pluginId}', must match the pattern ${CONFIG_KEY_PART_PATTERN} (letters, digits, dashes, and underscores only, starting with a letter)`,
+      );
+    }
+
     const extensionPoints: InternalBackendPluginRegistration['extensionPoints'] =
       [];
     let init: InternalBackendModuleRegistration['init'] | undefined = undefined;
