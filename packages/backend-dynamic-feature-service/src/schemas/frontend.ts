@@ -31,7 +31,7 @@ import {
  */
 export const dynamicPluginsFrontendSchemas = createBackendModule({
   pluginId: 'app',
-  moduleId: 'core.dynamicplugins.frontendSchemas',
+  moduleId: 'core-dynamicplugins-frontendSchemas',
   register(reg) {
     reg.registerInit({
       deps: {
