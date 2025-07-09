@@ -193,6 +193,14 @@ export class TaskWorker {
   protected truncateParameters(parameters: JsonObject) {
     const auditMaxLength =
       this.config?.getOptionalNumber('scaffolder.auditor.maxLength') ?? 256;
+
+    if (auditMaxLength === -1) {
+      this.logger?.debug(
+        `scaffolder.auditor.maxLength manually disabled via configuration, no task parameter length limit set.`,
+      );
+      return parameters;
+    }
+
     const truncatedParameters: JsonObject = {};
 
     for (const key in parameters) {
