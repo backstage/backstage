@@ -48,32 +48,34 @@ export const HeaderTabs = (props: HeaderProps) => {
   if (!tabs) return null;
 
   return (
-    <Tabs
-      className={classNames.tabs}
-      ref={tabsRef}
-      keyboardActivation="manual"
-      selectedKey={selectedKey}
-    >
-      <TabList className={classNames.tabList} aria-label="Toolbar tabs">
-        {tabs.map((tab, index) => {
-          return (
-            <Tab
-              id={tab.id}
-              key={index}
-              tab={tab}
-              setTabRef={setTabRef}
-              setHoveredKey={setHoveredKey}
-            />
-          );
-        })}
-      </TabList>
-      <HeaderTabsIndicators
-        tabRefs={tabRefs}
-        tabsRef={tabsRef}
-        hoveredKey={hoveredKey}
-        prevHoveredKey={prevHoveredKey}
-      />
-    </Tabs>
+    <div className={classNames.tabsWrapper}>
+      <Tabs
+        className={classNames.tabs}
+        ref={tabsRef}
+        keyboardActivation="manual"
+        selectedKey={selectedKey}
+      >
+        <TabList className={classNames.tabList} aria-label="Toolbar tabs">
+          {tabs.map((tab, index) => {
+            return (
+              <Tab
+                id={tab.id}
+                key={index}
+                tab={tab}
+                setTabRef={setTabRef}
+                setHoveredKey={setHoveredKey}
+              />
+            );
+          })}
+        </TabList>
+        <HeaderTabsIndicators
+          tabRefs={tabRefs}
+          tabsRef={tabsRef}
+          hoveredKey={hoveredKey}
+          prevHoveredKey={prevHoveredKey}
+        />
+      </Tabs>
+    </div>
   );
 };
 

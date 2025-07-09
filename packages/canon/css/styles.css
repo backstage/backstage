@@ -9616,7 +9616,7 @@
 .bui-HeaderToolbarWrapper {
   z-index: 1;
   background-color: var(--bui-bg-surface-1);
-  padding-inline: var(--bui-space-3);
+  padding-inline: var(--bui-space-5);
   border-bottom: 1px solid var(--bui-border);
   color: var(--bui-fg-primary);
   flex-direction: row;
@@ -9694,9 +9694,13 @@
   color: var(--bui-fg-secondary);
 }
 
+.bui-HeaderTabsWrapper {
+  margin-bottom: var(--bui-space-4);
+}
+
 .bui-HeaderTabs {
   background-color: var(--bui-bg-surface-1);
-  padding-inline: var(--bui-space-1);
+  padding-inline: var(--bui-space-3);
   border-bottom: 1px solid var(--bui-border);
   --active-tab-left: 0px;
   --active-tab-right: 0px;
@@ -9704,6 +9708,7 @@
   --active-tab-bottom: 0px;
   --active-tab-width: 0px;
   --active-tab-height: 0px;
+  --active-transition-duration: 0s;
   --hovered-tab-left: 0px;
   --hovered-tab-right: 0px;
   --hovered-tab-top: 0px;
@@ -9745,10 +9750,10 @@
   left: calc(var(--active-tab-left)  + var(--bui-space-2));
   width: calc(var(--active-tab-width)  - var(--bui-space-4));
   background-color: var(--bui-fg-primary);
+  height: 1px;
+  transition: left var(--active-transition-duration) ease-out, opacity .15s ease-out;
   opacity: 1;
   border-radius: 4px;
-  height: 1px;
-  transition: all .25s ease-out;
   position: absolute;
   bottom: -1px;
 }

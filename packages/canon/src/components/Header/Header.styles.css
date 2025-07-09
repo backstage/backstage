@@ -44,7 +44,7 @@
   align-items: center;
   justify-content: space-between;
   background-color: var(--bui-bg-surface-1);
-  padding-inline: var(--bui-space-3);
+  padding-inline: var(--bui-space-5);
   border-bottom: 1px solid var(--bui-border);
   color: var(--bui-fg-primary);
   height: 52px;
@@ -117,13 +117,17 @@
   color: var(--bui-fg-secondary);
 }
 
+.bui-HeaderTabsWrapper {
+  margin-bottom: var(--bui-space-4);
+}
+
 .bui-HeaderTabs {
   display: flex;
   flex-direction: row;
   align-items: center;
   background-color: var(--bui-bg-surface-1);
   position: relative;
-  padding-inline: var(--bui-space-1);
+  padding-inline: var(--bui-space-3);
   border-bottom: 1px solid var(--bui-border);
 
   /* Initialize CSS variables */

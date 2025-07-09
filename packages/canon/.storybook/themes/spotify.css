@@ -197,17 +197,24 @@
 
   .bui-HeaderToolbar {
     padding-top: var(--bui-space-2);
+    padding-inline: var(--bui-space-2);
   }
 
   .bui-HeaderToolbarWrapper {
     border-radius: var(--bui-radius-3);
+    padding-inline: var(--bui-space-3);
     border: none;
+  }
+
+  .bui-HeaderTabsWrapper {
+    margin-top: var(--bui-space-2);
+    padding-inline: var(--bui-space-2);
   }
 
   .bui-HeaderTabs {
     border-radius: var(--bui-radius-3);
+    padding-inline: var(--bui-space-1);
     border: none;
-    margin-top: var(--bui-space-2);
   }
 }
 
