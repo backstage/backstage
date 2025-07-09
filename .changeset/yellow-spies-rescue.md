@@ -1,5 +1,5 @@
 ---
-'@backstage/frontend-test-utils': patch
+'@backstage/plugin-app': patch
 ---
 
-Update route path for index route in `renderInTestApp` to fix duplicate slash and ensure any nested routing behaves correctly.
+Remove trailing slashes in the `AppRoutes` extension to ensure any nested routing behaves correctly.
