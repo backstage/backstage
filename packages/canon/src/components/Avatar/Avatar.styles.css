@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.canon-AvatarRoot {
+.bui-AvatarRoot {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -22,8 +22,8 @@
   border-radius: 100%;
   user-select: none;
   font-weight: 500;
-  color: var(--canon-fg-primary);
-  background-color: var(--canon-bg-surface-2);
+  color: var(--bui-fg-primary);
+  background-color: var(--bui-bg-surface-2);
   font-size: 1rem;
   line-height: 1;
   overflow: hidden;
@@ -31,35 +31,35 @@
   width: 2rem;
 }
 
-.canon-AvatarRoot[data-size='small'] {
+.bui-AvatarRoot[data-size='small'] {
   height: 1.5rem;
   width: 1.5rem;
 }
 
-.canon-AvatarRoot[data-size='medium'] {
+.bui-AvatarRoot[data-size='medium'] {
   height: 2rem;
   width: 2rem;
 }
 
-.canon-AvatarRoot[data-size='large'] {
+.bui-AvatarRoot[data-size='large'] {
   height: 3rem;
   width: 3rem;
 }
 
-.canon-AvatarImage {
+.bui-AvatarImage {
   object-fit: cover;
   height: 100%;
   width: 100%;
 }
 
-.canon-AvatarFallback {
+.bui-AvatarFallback {
   align-items: center;
   display: flex;
   justify-content: center;
   height: 100%;
   width: 100%;
-  font-size: var(--canon-font-size-3);
-  font-weight: var(--canon-font-weight-regular);
-  box-shadow: inset 0 0 0 1px var(--canon-border);
-  border-radius: var(--canon-radius-full);
+  font-size: var(--bui-font-size-3);
+  font-weight: var(--bui-font-weight-regular);
+  box-shadow: inset 0 0 0 1px var(--bui-border);
+  border-radius: var(--bui-radius-full);
 }

@@ -66,9 +66,9 @@ const layoutDecorator = [
           left: 8,
           top: 8,
           bottom: 8,
-          backgroundColor: 'var(--canon-bg-surface-1',
-          borderRadius: 'var(--canon-radius-2)',
-          border: '1px solid var(--canon-border)',
+          backgroundColor: 'var(--bui-bg-surface-1',
+          borderRadius: 'var(--bui-radius-2)',
+          border: '1px solid var(--bui-border)',
           zIndex: 1,
         }}
       />
@@ -87,9 +87,9 @@ const layoutDecorator = [
           right: 8,
           top: 8,
           bottom: 8,
-          backgroundColor: 'var(--canon-bg-surface-1',
-          borderRadius: 'var(--canon-radius-2)',
-          border: '1px solid var(--canon-border)',
+          backgroundColor: 'var(--bui-bg-surface-1',
+          borderRadius: 'var(--bui-radius-2)',
+          border: '1px solid var(--bui-border)',
           zIndex: 1,
         }}
       />

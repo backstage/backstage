@@ -25,9 +25,9 @@ export const Icon = (props: IconProps) => {
   const { name, size, className, style, ...restProps } = props;
   const { icons } = useIcons();
 
-  const CanonIcon = icons[name] as ComponentType<Omit<IconProps, 'name'>>;
+  const BckstageIcon = icons[name] as ComponentType<Omit<IconProps, 'name'>>;
 
-  if (!CanonIcon) {
+  if (!BckstageIcon) {
     console.error(`Icon "${name}" not found or is not a valid component.`);
     return null;
   }
@@ -35,7 +35,7 @@ export const Icon = (props: IconProps) => {
   const { classNames } = useStyles('Icon');
 
   return (
-    <CanonIcon
+    <BckstageIcon
       className={clsx(classNames.root, className)}
       style={{
         ...(size ? { width: size, height: size } : {}),

@@ -26,8 +26,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const panelStyles = {
-  padding: 'var(--canon-space-3)',
-  fontSize: 'var(--canon-font-size-2)',
+  padding: 'var(--bui-space-3)',
+  fontSize: 'var(--bui-font-size-2)',
 };
 
 export const Default: Story = {

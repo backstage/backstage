@@ -19,19 +19,19 @@ import type { GetPropDefTypes, PropDef } from './prop-def';
 const widthPropDefs = {
   width: {
     type: 'string',
-    className: 'cu-w',
+    className: 'bui-w',
     customProperties: ['--width'],
     responsive: true,
   },
   minWidth: {
     type: 'string',
-    className: 'cu-min-w',
+    className: 'bui-min-w',
     customProperties: ['--min-width'],
     responsive: true,
   },
   maxWidth: {
     type: 'string',
-    className: 'cu-max-w',
+    className: 'bui-max-w',
     customProperties: ['--max-width'],
     responsive: true,
   },

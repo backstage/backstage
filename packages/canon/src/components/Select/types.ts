@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Breakpoint } from '@backstage/canon';
+import { Breakpoint } from '../../';
 import { ChangeEvent, FocusEvent } from 'react';
 
 /** @public */
