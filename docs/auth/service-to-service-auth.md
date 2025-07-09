@@ -444,11 +444,17 @@ const decoratedPluginTokenHandler = createServiceFactory({
 });
 ```
 
-### Custom ExternalTokenHandler
+### Adding custom ExternalTokenHandler
 
 The `externalTokenTypeHandlersRef` can be used to add custom external token handlers to the default implementation.
 
-The returned object from the factory function must have a `type` property which is used to identify the handler. The `factory` method is called with an array of `Config` objects, for the given type. The factory method can return a single handler or an array of handlers. The handlers are then used to handle the token for the given type.
+Your service factory must return an object with a `type` property that matches the token type in your configuration (e.g., 'custom', 'api-key'). When Backstage encounters tokens of this type, it calls your `factory` method with all the configuration entries that match this type. Your factory can return either a single token handler or an array of handlers to process and validate these tokens.
+
+:::note Note
+
+During token verification, all the token handlers are tested. Consider this when adding many token handlers, as it may impact performance.
+
+:::
 
 For example, if we want to add a custom external token handler for the `custom` type:
 
@@ -490,4 +496,16 @@ const customExternalTokenHandlers = createServiceFactory({
     };
   },
 });
+```
+
+The `CustomTokenHandler` only requires implementing an async `verifyToken` method that returns `undefined` when the token verification fails for the given token:
+
+```ts
+class CustomTokenHandler {
+  async verifyToken(token: string): Promise<{ subject: string } | undefined> {
+    // Your custom token validation logic here
+    // Return undefined if token is invalid
+    // Return { subject: 'your-subject', accessRestrictions: [...] } if token is valid
+  }
+}
 ```
