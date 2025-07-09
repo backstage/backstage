@@ -16,7 +16,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { Card, CardHeader, CardBody, CardFooter } from './Card';
-import { IconNames, Text } from '@backstage/canon';
+import { IconNames, Text } from '../../';
 
 export interface ListItem {
   id: string;
@@ -91,13 +91,13 @@ const ListRow = ({ children }: { children: React.ReactNode }) => {
       style={{
         height: 40,
         width: '100%',
-        backgroundColor: 'var(--canon-gray-3)',
+        backgroundColor: 'var(--bui-gray-3)',
         display: 'flex',
         alignItems: 'center',
-        paddingInline: 'var(--canon-space-3)',
-        borderRadius: 'var(--canon-radius-2)',
-        fontSize: 'var(--canon-font-size-3)',
-        marginBottom: 'var(--canon-space-1)',
+        paddingInline: 'var(--bui-space-3)',
+        borderRadius: 'var(--bui-radius-2)',
+        fontSize: 'var(--bui-font-size-3)',
+        marginBottom: 'var(--bui-space-1)',
       }}
     >
       {children}

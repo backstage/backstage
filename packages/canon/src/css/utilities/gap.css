@@ -1,422 +1,422 @@
-.cu-gap {
+.bui-gap {
   gap: var(--gap);
 }
 
-.cu-gap-0\.5 {
-  gap: var(--canon-space-0_5);
+.bui-gap-0\.5 {
+  gap: var(--bui-space-0_5);
 }
 
-.cu-gap-1 {
-  gap: var(--canon-space-1);
+.bui-gap-1 {
+  gap: var(--bui-space-1);
 }
 
-.cu-gap-1\.5 {
-  gap: var(--canon-space-1_5);
+.bui-gap-1\.5 {
+  gap: var(--bui-space-1_5);
 }
 
-.cu-gap-2 {
-  gap: var(--canon-space-2);
+.bui-gap-2 {
+  gap: var(--bui-space-2);
 }
 
-.cu-gap-3 {
-  gap: var(--canon-space-3);
+.bui-gap-3 {
+  gap: var(--bui-space-3);
 }
 
-.cu-gap-4 {
-  gap: var(--canon-space-4);
+.bui-gap-4 {
+  gap: var(--bui-space-4);
 }
 
-.cu-gap-5 {
-  gap: var(--canon-space-5);
+.bui-gap-5 {
+  gap: var(--bui-space-5);
 }
 
-.cu-gap-6 {
-  gap: var(--canon-space-6);
+.bui-gap-6 {
+  gap: var(--bui-space-6);
 }
 
-.cu-gap-7 {
-  gap: var(--canon-space-7);
+.bui-gap-7 {
+  gap: var(--bui-space-7);
 }
 
-.cu-gap-8 {
-  gap: var(--canon-space-8);
+.bui-gap-8 {
+  gap: var(--bui-space-8);
 }
 
-.cu-gap-9 {
-  gap: var(--canon-space-9);
+.bui-gap-9 {
+  gap: var(--bui-space-9);
 }
 
-.cu-gap-10 {
-  gap: var(--canon-space-10);
+.bui-gap-10 {
+  gap: var(--bui-space-10);
 }
 
-.cu-gap-11 {
-  gap: var(--canon-space-11);
+.bui-gap-11 {
+  gap: var(--bui-space-11);
 }
 
-.cu-gap-12 {
-  gap: var(--canon-space-12);
+.bui-gap-12 {
+  gap: var(--bui-space-12);
 }
 
-.cu-gap-13 {
-  gap: var(--canon-space-13);
+.bui-gap-13 {
+  gap: var(--bui-space-13);
 }
 
-.cu-gap-14 {
-  gap: var(--canon-space-14);
+.bui-gap-14 {
+  gap: var(--bui-space-14);
 }
 
 /* Breakpoint xs */
 @media (min-width: 640px) {
-  .xs\:cu-gap {
+  .xs\:bui-gap {
     gap: var(--gap-xs);
   }
 
-  .xs\:cu-gap-0\.5 {
-    gap: var(--canon-space-0_5);
+  .xs\:bui-gap-0\.5 {
+    gap: var(--bui-space-0_5);
   }
 
-  .xs\:cu-gap-1 {
-    gap: var(--canon-space-1);
+  .xs\:bui-gap-1 {
+    gap: var(--bui-space-1);
   }
 
-  .xs\:cu-gap-1\.5 {
-    gap: var(--canon-space-1_5);
+  .xs\:bui-gap-1\.5 {
+    gap: var(--bui-space-1_5);
   }
 
-  .xs\:cu-gap-2 {
-    gap: var(--canon-space-2);
+  .xs\:bui-gap-2 {
+    gap: var(--bui-space-2);
   }
 
-  .xs\:cu-gap-3 {
-    gap: var(--canon-space-3);
+  .xs\:bui-gap-3 {
+    gap: var(--bui-space-3);
   }
 
-  .xs\:cu-gap-4 {
-    gap: var(--canon-space-4);
+  .xs\:bui-gap-4 {
+    gap: var(--bui-space-4);
   }
 
-  .xs\:cu-gap-5 {
-    gap: var(--canon-space-5);
+  .xs\:bui-gap-5 {
+    gap: var(--bui-space-5);
   }
 
-  .xs\:cu-gap-6 {
-    gap: var(--canon-space-6);
+  .xs\:bui-gap-6 {
+    gap: var(--bui-space-6);
   }
 
-  .xs\:cu-gap-7 {
-    gap: var(--canon-space-7);
+  .xs\:bui-gap-7 {
+    gap: var(--bui-space-7);
   }
 
-  .xs\:cu-gap-8 {
-    gap: var(--canon-space-8);
+  .xs\:bui-gap-8 {
+    gap: var(--bui-space-8);
   }
 
-  .xs\:cu-gap-9 {
-    gap: var(--canon-space-9);
+  .xs\:bui-gap-9 {
+    gap: var(--bui-space-9);
   }
 
-  .xs\:cu-gap-10 {
-    gap: var(--canon-space-10);
+  .xs\:bui-gap-10 {
+    gap: var(--bui-space-10);
   }
 
-  .xs\:cu-gap-11 {
-    gap: var(--canon-space-11);
+  .xs\:bui-gap-11 {
+    gap: var(--bui-space-11);
   }
 
-  .xs\:cu-gap-12 {
-    gap: var(--canon-space-12);
+  .xs\:bui-gap-12 {
+    gap: var(--bui-space-12);
   }
 
-  .xs\:cu-gap-13 {
-    gap: var(--canon-space-13);
+  .xs\:bui-gap-13 {
+    gap: var(--bui-space-13);
   }
 
-  .xs\:cu-gap-14 {
-    gap: var(--canon-space-14);
+  .xs\:bui-gap-14 {
+    gap: var(--bui-space-14);
   }
 }
 
 /* Breakpoint sm */
 @media (min-width: 768px) {
-  .sm\:cu-gap {
+  .sm\:bui-gap {
     gap: var(--gap-sm);
   }
 
-  .sm\:cu-gap-0\.5 {
-    gap: var(--canon-space-0_5);
+  .sm\:bui-gap-0\.5 {
+    gap: var(--bui-space-0_5);
   }
 
-  .sm\:cu-gap-1 {
-    gap: var(--canon-space-1);
+  .sm\:bui-gap-1 {
+    gap: var(--bui-space-1);
   }
 
-  .sm\:cu-gap-1\.5 {
-    gap: var(--canon-space-1_5);
+  .sm\:bui-gap-1\.5 {
+    gap: var(--bui-space-1_5);
   }
 
-  .sm\:cu-gap-2 {
-    gap: var(--canon-space-2);
+  .sm\:bui-gap-2 {
+    gap: var(--bui-space-2);
   }
 
-  .sm\:cu-gap-3 {
-    gap: var(--canon-space-3);
+  .sm\:bui-gap-3 {
+    gap: var(--bui-space-3);
   }
 
-  .sm\:cu-gap-4 {
-    gap: var(--canon-space-4);
+  .sm\:bui-gap-4 {
+    gap: var(--bui-space-4);
   }
 
-  .sm\:cu-gap-5 {
-    gap: var(--canon-space-5);
+  .sm\:bui-gap-5 {
+    gap: var(--bui-space-5);
   }
 
-  .sm\:cu-gap-6 {
-    gap: var(--canon-space-6);
+  .sm\:bui-gap-6 {
+    gap: var(--bui-space-6);
   }
 
-  .sm\:cu-gap-7 {
-    gap: var(--canon-space-7);
+  .sm\:bui-gap-7 {
+    gap: var(--bui-space-7);
   }
 
-  .sm\:cu-gap-8 {
-    gap: var(--canon-space-8);
+  .sm\:bui-gap-8 {
+    gap: var(--bui-space-8);
   }
 
-  .sm\:cu-gap-9 {
-    gap: var(--canon-space-9);
+  .sm\:bui-gap-9 {
+    gap: var(--bui-space-9);
   }
 
-  .sm\:cu-gap-10 {
-    gap: var(--canon-space-10);
+  .sm\:bui-gap-10 {
+    gap: var(--bui-space-10);
   }
 
-  .sm\:cu-gap-11 {
-    gap: var(--canon-space-11);
+  .sm\:bui-gap-11 {
+    gap: var(--bui-space-11);
   }
 
-  .sm\:cu-gap-12 {
-    gap: var(--canon-space-12);
+  .sm\:bui-gap-12 {
+    gap: var(--bui-space-12);
   }
 
-  .sm\:cu-gap-13 {
-    gap: var(--canon-space-13);
+  .sm\:bui-gap-13 {
+    gap: var(--bui-space-13);
   }
 
-  .sm\:cu-gap-14 {
-    gap: var(--canon-space-14);
+  .sm\:bui-gap-14 {
+    gap: var(--bui-space-14);
   }
 }
 
 /* Breakpoint md */
 @media (min-width: 1024px) {
-  .md\:cu-gap {
+  .md\:bui-gap {
     gap: var(--gap-md);
   }
 
-  .md\:cu-gap-0\.5 {
-    gap: var(--canon-space-0_5);
+  .md\:bui-gap-0\.5 {
+    gap: var(--bui-space-0_5);
   }
 
-  .md\:cu-gap-1 {
-    gap: var(--canon-space-1);
+  .md\:bui-gap-1 {
+    gap: var(--bui-space-1);
   }
 
-  .md\:cu-gap-1\.5 {
-    gap: var(--canon-space-1_5);
+  .md\:bui-gap-1\.5 {
+    gap: var(--bui-space-1_5);
   }
 
-  .md\:cu-gap-2 {
-    gap: var(--canon-space-2);
+  .md\:bui-gap-2 {
+    gap: var(--bui-space-2);
   }
 
-  .md\:cu-gap-3 {
-    gap: var(--canon-space-3);
+  .md\:bui-gap-3 {
+    gap: var(--bui-space-3);
   }
 
-  .md\:cu-gap-4 {
-    gap: var(--canon-space-4);
+  .md\:bui-gap-4 {
+    gap: var(--bui-space-4);
   }
 
-  .md\:cu-gap-5 {
-    gap: var(--canon-space-5);
+  .md\:bui-gap-5 {
+    gap: var(--bui-space-5);
   }
 
-  .md\:cu-gap-6 {
-    gap: var(--canon-space-6);
+  .md\:bui-gap-6 {
+    gap: var(--bui-space-6);
   }
 
-  .md\:cu-gap-7 {
-    gap: var(--canon-space-7);
+  .md\:bui-gap-7 {
+    gap: var(--bui-space-7);
   }
 
-  .md\:cu-gap-8 {
-    gap: var(--canon-space-8);
+  .md\:bui-gap-8 {
+    gap: var(--bui-space-8);
   }
 
-  .md\:cu-gap-9 {
-    gap: var(--canon-space-9);
+  .md\:bui-gap-9 {
+    gap: var(--bui-space-9);
   }
 
-  .md\:cu-gap-10 {
-    gap: var(--canon-space-10);
+  .md\:bui-gap-10 {
+    gap: var(--bui-space-10);
   }
 
-  .md\:cu-gap-11 {
-    gap: var(--canon-space-11);
+  .md\:bui-gap-11 {
+    gap: var(--bui-space-11);
   }
 
-  .md\:cu-gap-12 {
-    gap: var(--canon-space-12);
+  .md\:bui-gap-12 {
+    gap: var(--bui-space-12);
   }
 
-  .md\:cu-gap-13 {
-    gap: var(--canon-space-13);
+  .md\:bui-gap-13 {
+    gap: var(--bui-space-13);
   }
 
-  .md\:cu-gap-14 {
-    gap: var(--canon-space-14);
+  .md\:bui-gap-14 {
+    gap: var(--bui-space-14);
   }
 }
 
 /* Breakpoint lg */
 @media (min-width: 1280px) {
-  .lg\:cu-gap {
+  .lg\:bui-gap {
     gap: var(--gap-lg);
   }
 
-  .lg\:cu-gap-0\.5 {
-    gap: var(--canon-space-0_5);
+  .lg\:bui-gap-0\.5 {
+    gap: var(--bui-space-0_5);
   }
 
-  .lg\:cu-gap-1 {
-    gap: var(--canon-space-1);
+  .lg\:bui-gap-1 {
+    gap: var(--bui-space-1);
   }
 
-  .lg\:cu-gap-1\.5 {
-    gap: var(--canon-space-1_5);
+  .lg\:bui-gap-1\.5 {
+    gap: var(--bui-space-1_5);
   }
 
-  .lg\:cu-gap-2 {
-    gap: var(--canon-space-2);
+  .lg\:bui-gap-2 {
+    gap: var(--bui-space-2);
   }
 
-  .lg\:cu-gap-3 {
-    gap: var(--canon-space-3);
+  .lg\:bui-gap-3 {
+    gap: var(--bui-space-3);
   }
 
-  .lg\:cu-gap-4 {
-    gap: var(--canon-space-4);
+  .lg\:bui-gap-4 {
+    gap: var(--bui-space-4);
   }
 
-  .lg\:cu-gap-5 {
-    gap: var(--canon-space-5);
+  .lg\:bui-gap-5 {
+    gap: var(--bui-space-5);
   }
 
-  .lg\:cu-gap-6 {
-    gap: var(--canon-space-6);
+  .lg\:bui-gap-6 {
+    gap: var(--bui-space-6);
   }
 
-  .lg\:cu-gap-7 {
-    gap: var(--canon-space-7);
+  .lg\:bui-gap-7 {
+    gap: var(--bui-space-7);
   }
 
-  .lg\:cu-gap-8 {
-    gap: var(--canon-space-8);
+  .lg\:bui-gap-8 {
+    gap: var(--bui-space-8);
   }
 
-  .lg\:cu-gap-9 {
-    gap: var(--canon-space-9);
+  .lg\:bui-gap-9 {
+    gap: var(--bui-space-9);
   }
 
-  .lg\:cu-gap-10 {
-    gap: var(--canon-space-10);
+  .lg\:bui-gap-10 {
+    gap: var(--bui-space-10);
   }
 
-  .lg\:cu-gap-11 {
-    gap: var(--canon-space-11);
+  .lg\:bui-gap-11 {
+    gap: var(--bui-space-11);
   }
 
-  .lg\:cu-gap-12 {
-    gap: var(--canon-space-12);
+  .lg\:bui-gap-12 {
+    gap: var(--bui-space-12);
   }
 
-  .lg\:cu-gap-13 {
-    gap: var(--canon-space-13);
+  .lg\:bui-gap-13 {
+    gap: var(--bui-space-13);
   }
 
-  .lg\:cu-gap-14 {
-    gap: var(--canon-space-14);
+  .lg\:bui-gap-14 {
+    gap: var(--bui-space-14);
   }
 }
 
 /* Breakpoint xl */
 @media (min-width: 1536px) {
-  .xl\:cu-gap {
+  .xl\:bui-gap {
     gap: var(--gap-xl);
   }
 
-  .xl\:cu-gap-0\.5 {
-    gap: var(--canon-space-0_5);
+  .xl\:bui-gap-0\.5 {
+    gap: var(--bui-space-0_5);
   }
 
-  .xl\:cu-gap-1 {
-    gap: var(--canon-space-1);
+  .xl\:bui-gap-1 {
+    gap: var(--bui-space-1);
   }
 
-  .xl\:cu-gap-1\.5 {
-    gap: var(--canon-space-1_5);
+  .xl\:bui-gap-1\.5 {
+    gap: var(--bui-space-1_5);
   }
 
-  .xl\:cu-gap-2 {
-    gap: var(--canon-space-2);
+  .xl\:bui-gap-2 {
+    gap: var(--bui-space-2);
   }
 
-  .xl\:cu-gap-3 {
-    gap: var(--canon-space-3);
+  .xl\:bui-gap-3 {
+    gap: var(--bui-space-3);
   }
 
-  .xl\:cu-gap-4 {
-    gap: var(--canon-space-4);
+  .xl\:bui-gap-4 {
+    gap: var(--bui-space-4);
   }
 
-  .xl\:cu-gap-5 {
-    gap: var(--canon-space-5);
+  .xl\:bui-gap-5 {
+    gap: var(--bui-space-5);
   }
 
-  .xl\:cu-gap-6 {
-    gap: var(--canon-space-6);
+  .xl\:bui-gap-6 {
+    gap: var(--bui-space-6);
   }
 
-  .xl\:cu-gap-7 {
-    gap: var(--canon-space-7);
+  .xl\:bui-gap-7 {
+    gap: var(--bui-space-7);
   }
 
-  .xl\:cu-gap-8 {
-    gap: var(--canon-space-8);
+  .xl\:bui-gap-8 {
+    gap: var(--bui-space-8);
   }
 
-  .xl\:cu-gap-9 {
-    gap: var(--canon-space-9);
+  .xl\:bui-gap-9 {
+    gap: var(--bui-space-9);
   }
 
-  .xl\:cu-gap-10 {
-    gap: var(--canon-space-10);
+  .xl\:bui-gap-10 {
+    gap: var(--bui-space-10);
   }
 
-  .xl\:cu-gap-11 {
-    gap: var(--canon-space-11);
+  .xl\:bui-gap-11 {
+    gap: var(--bui-space-11);
   }
 
-  .xl\:cu-gap-12 {
-    gap: var(--canon-space-12);
+  .xl\:bui-gap-12 {
+    gap: var(--bui-space-12);
   }
 
-  .xl\:cu-gap-13 {
-    gap: var(--canon-space-13);
+  .xl\:bui-gap-13 {
+    gap: var(--bui-space-13);
   }
 
-  .xl\:cu-gap-14 {
-    gap: var(--canon-space-14);
+  .xl\:bui-gap-14 {
+    gap: var(--bui-space-14);
   }
 }

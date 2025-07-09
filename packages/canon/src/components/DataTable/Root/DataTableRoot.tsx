@@ -38,11 +38,7 @@ const DataTableRoot = forwardRef(
 
     return (
       <DataTableContext.Provider value={{ table }}>
-        <div
-          ref={ref}
-          className={clsx('canon-DataTable', className)}
-          {...rest}
-        />
+        <div ref={ref} className={clsx('bui-DataTable', className)} {...rest} />
       </DataTableContext.Provider>
     );
   },

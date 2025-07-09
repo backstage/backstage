@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-.canon-Card {
+.bui-Card {
   display: flex;
   flex-direction: column;
-  gap: var(--canon-space-3);
-  background-color: var(--canon-bg-surface-1);
-  border-radius: var(--canon-radius-3);
-  padding-block: var(--canon-space-3);
-  color: var(--canon-fg-primary);
-  border: 1px solid var(--canon-border);
+  gap: var(--bui-space-3);
+  background-color: var(--bui-bg-surface-1);
+  border-radius: var(--bui-radius-3);
+  padding-block: var(--bui-space-3);
+  color: var(--bui-fg-primary);
+  border: 1px solid var(--bui-border);
   overflow: hidden;
   min-height: 0;
   width: 100%;
 }
 
-.canon-CardBody {
+.bui-CardBody {
   flex: 1;
   min-height: 0;
   overflow: auto;
 }
 
-.canon-CardHeader {
-  padding-inline: var(--canon-space-3);
+.bui-CardHeader {
+  padding-inline: var(--bui-space-3);
 }
 
-.canon-CardFooter {
-  padding-inline: var(--canon-space-3);
+.bui-CardFooter {
+  padding-inline: var(--bui-space-3);
 }

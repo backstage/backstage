@@ -4,7 +4,6 @@
 
 ```ts
 import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
-import { Breakpoint as Breakpoint_2 } from '@backstage/canon';
 import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
 import { ChangeEvent } from 'react';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
@@ -170,13 +169,13 @@ export interface ButtonIconProps extends ButtonProps_2 {
   // (undocumented)
   icon?: ReactElement;
   // (undocumented)
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
   variant?:
     | 'primary'
     | 'secondary'
     | 'tertiary'
-    | Partial<Record<Breakpoint_2, 'primary' | 'secondary' | 'tertiary'>>;
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
 }
 
 // @public (undocumented)
@@ -193,13 +192,13 @@ export interface ButtonLinkProps extends LinkProps_2 {
   // (undocumented)
   iconStart?: ReactElement;
   // (undocumented)
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
   variant?:
     | 'primary'
     | 'secondary'
     | 'tertiary'
-    | Partial<Record<Breakpoint_2, 'primary' | 'secondary' | 'tertiary'>>;
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
 }
 
 // @public
@@ -211,13 +210,13 @@ export interface ButtonProps extends ButtonProps_2 {
   // (undocumented)
   iconStart?: ReactElement;
   // (undocumented)
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
   variant?:
     | 'primary'
     | 'secondary'
     | 'tertiary'
-    | Partial<Record<Breakpoint_2, 'primary' | 'secondary' | 'tertiary'>>;
+    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
 }
 
 // @public (undocumented)
@@ -293,9 +292,9 @@ export type ComponentDefinitionName = keyof typeof componentDefinitions;
 export const componentDefinitions: {
   readonly Avatar: {
     readonly classNames: {
-      readonly root: 'canon-AvatarRoot';
-      readonly image: 'canon-AvatarImage';
-      readonly fallback: 'canon-AvatarFallback';
+      readonly root: 'bui-AvatarRoot';
+      readonly image: 'bui-AvatarImage';
+      readonly fallback: 'bui-AvatarFallback';
     };
     readonly dataAttributes: {
       readonly size: readonly ['small', 'medium', 'large'];
@@ -303,12 +302,12 @@ export const componentDefinitions: {
   };
   readonly Box: {
     readonly classNames: {
-      readonly root: 'canon-Box';
+      readonly root: 'bui-Box';
     };
   };
   readonly Button: {
     readonly classNames: {
-      readonly root: 'canon-Button';
+      readonly root: 'bui-Button';
     };
     readonly dataAttributes: {
       readonly size: readonly ['small', 'medium', 'large'];
@@ -317,27 +316,27 @@ export const componentDefinitions: {
   };
   readonly ButtonIcon: {
     readonly classNames: {
-      readonly root: 'canon-ButtonIcon';
+      readonly root: 'bui-ButtonIcon';
     };
   };
   readonly ButtonLink: {
     readonly classNames: {
-      readonly root: 'canon-ButtonLink';
+      readonly root: 'bui-ButtonLink';
     };
   };
   readonly Card: {
     readonly classNames: {
-      readonly root: 'canon-Card';
-      readonly header: 'canon-CardHeader';
-      readonly body: 'canon-CardBody';
-      readonly footer: 'canon-CardFooter';
+      readonly root: 'bui-Card';
+      readonly header: 'bui-CardHeader';
+      readonly body: 'bui-CardBody';
+      readonly footer: 'bui-CardFooter';
     };
   };
   readonly Checkbox: {
     readonly classNames: {
-      readonly root: 'canon-CheckboxRoot';
-      readonly label: 'canon-CheckboxLabel';
-      readonly indicator: 'canon-CheckboxIndicator';
+      readonly root: 'bui-CheckboxRoot';
+      readonly label: 'bui-CheckboxLabel';
+      readonly indicator: 'bui-CheckboxIndicator';
     };
     readonly dataAttributes: {
       readonly checked: readonly [true, false];
@@ -345,38 +344,38 @@ export const componentDefinitions: {
   };
   readonly Collapsible: {
     readonly classNames: {
-      readonly root: 'canon-CollapsibleRoot';
-      readonly trigger: 'canon-CollapsibleTrigger';
-      readonly panel: 'canon-CollapsiblePanel';
+      readonly root: 'bui-CollapsibleRoot';
+      readonly trigger: 'bui-CollapsibleTrigger';
+      readonly panel: 'bui-CollapsiblePanel';
     };
   };
   readonly Container: {
     readonly classNames: {
-      readonly root: 'canon-Container';
+      readonly root: 'bui-Container';
     };
   };
   readonly FieldLabel: {
     readonly classNames: {
-      readonly root: 'canon-FieldLabelWrapper';
-      readonly label: 'canon-FieldLabel';
-      readonly secondaryLabel: 'canon-FieldSecondaryLabel';
-      readonly description: 'canon-FieldDescription';
+      readonly root: 'bui-FieldLabelWrapper';
+      readonly label: 'bui-FieldLabel';
+      readonly secondaryLabel: 'bui-FieldSecondaryLabel';
+      readonly description: 'bui-FieldDescription';
     };
   };
   readonly Flex: {
     readonly classNames: {
-      readonly root: 'canon-Flex';
+      readonly root: 'bui-Flex';
     };
   };
   readonly Grid: {
     readonly classNames: {
-      readonly root: 'canon-Grid';
-      readonly item: 'canon-GridItem';
+      readonly root: 'bui-Grid';
+      readonly item: 'bui-GridItem';
     };
   };
   readonly Heading: {
     readonly classNames: {
-      readonly root: 'canon-Heading';
+      readonly root: 'bui-Heading';
     };
     readonly dataAttributes: {
       readonly variant: readonly ['title1', 'title2', 'title3', 'subtitle'];
@@ -386,12 +385,12 @@ export const componentDefinitions: {
   };
   readonly Icon: {
     readonly classNames: {
-      readonly root: 'canon-Icon';
+      readonly root: 'bui-Icon';
     };
   };
   readonly Link: {
     readonly classNames: {
-      readonly root: 'canon-Link';
+      readonly root: 'bui-Link';
     };
     readonly dataAttributes: {
       readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
@@ -400,57 +399,57 @@ export const componentDefinitions: {
   };
   readonly Menu: {
     readonly classNames: {
-      readonly trigger: 'canon-MenuTrigger';
-      readonly backdrop: 'canon-MenuBackdrop';
-      readonly positioner: 'canon-MenuPositioner';
-      readonly popup: 'canon-MenuPopup';
-      readonly arrow: 'canon-MenuArrow';
-      readonly item: 'canon-MenuItem';
-      readonly group: 'canon-MenuGroup';
-      readonly groupLabel: 'canon-MenuGroupLabel';
-      readonly radioGroup: 'canon-MenuRadioGroup';
-      readonly radioItem: 'canon-MenuRadioItem';
-      readonly radioItemIndicator: 'canon-MenuRadioItemIndicator';
-      readonly checkboxItem: 'canon-MenuCheckboxItem';
-      readonly checkboxItemIndicator: 'canon-MenuCheckboxItemIndicator';
-      readonly submenuTrigger: 'canon-MenuSubmenuTrigger';
-      readonly separator: 'canon-MenuSeparator';
+      readonly trigger: 'bui-MenuTrigger';
+      readonly backdrop: 'bui-MenuBackdrop';
+      readonly positioner: 'bui-MenuPositioner';
+      readonly popup: 'bui-MenuPopup';
+      readonly arrow: 'bui-MenuArrow';
+      readonly item: 'bui-MenuItem';
+      readonly group: 'bui-MenuGroup';
+      readonly groupLabel: 'bui-MenuGroupLabel';
+      readonly radioGroup: 'bui-MenuRadioGroup';
+      readonly radioItem: 'bui-MenuRadioItem';
+      readonly radioItemIndicator: 'bui-MenuRadioItemIndicator';
+      readonly checkboxItem: 'bui-MenuCheckboxItem';
+      readonly checkboxItemIndicator: 'bui-MenuCheckboxItemIndicator';
+      readonly submenuTrigger: 'bui-MenuSubmenuTrigger';
+      readonly separator: 'bui-MenuSeparator';
     };
   };
   readonly RadioGroup: {
     readonly classNames: {
-      readonly root: 'canon-RadioGroup';
-      readonly content: 'canon-RadioGroupContent';
-      readonly radio: 'canon-Radio';
+      readonly root: 'bui-RadioGroup';
+      readonly content: 'bui-RadioGroupContent';
+      readonly radio: 'bui-Radio';
     };
   };
   readonly ScrollArea: {
     readonly classNames: {
-      readonly root: 'canon-ScrollAreaRoot';
-      readonly viewport: 'canon-ScrollAreaViewport';
-      readonly scrollbar: 'canon-ScrollAreaScrollbar';
-      readonly thumb: 'canon-ScrollAreaThumb';
+      readonly root: 'bui-ScrollAreaRoot';
+      readonly viewport: 'bui-ScrollAreaViewport';
+      readonly scrollbar: 'bui-ScrollAreaScrollbar';
+      readonly thumb: 'bui-ScrollAreaThumb';
     };
   };
   readonly SearchField: {
     readonly classNames: {
-      readonly root: 'canon-SearchField';
-      readonly clear: 'canon-InputClear';
+      readonly root: 'bui-SearchField';
+      readonly clear: 'bui-InputClear';
     };
   };
   readonly Select: {
     readonly classNames: {
-      readonly root: 'canon-Select';
-      readonly required: 'canon-SelectRequired';
-      readonly trigger: 'canon-SelectTrigger';
-      readonly value: 'canon-SelectValue';
-      readonly icon: 'canon-SelectIcon';
-      readonly popup: 'canon-SelectPopup';
-      readonly item: 'canon-SelectItem';
-      readonly itemIndicator: 'canon-SelectItemIndicator';
-      readonly itemText: 'canon-SelectItemText';
-      readonly description: 'canon-SelectDescription';
-      readonly error: 'canon-SelectError';
+      readonly root: 'bui-Select';
+      readonly required: 'bui-SelectRequired';
+      readonly trigger: 'bui-SelectTrigger';
+      readonly value: 'bui-SelectValue';
+      readonly icon: 'bui-SelectIcon';
+      readonly popup: 'bui-SelectPopup';
+      readonly item: 'bui-SelectItem';
+      readonly itemIndicator: 'bui-SelectItemIndicator';
+      readonly itemText: 'bui-SelectItemText';
+      readonly description: 'bui-SelectDescription';
+      readonly error: 'bui-SelectError';
     };
     readonly dataAttributes: {
       readonly size: readonly ['small', 'medium'];
@@ -458,46 +457,46 @@ export const componentDefinitions: {
   };
   readonly Skeleton: {
     readonly classNames: {
-      readonly root: 'canon-Skeleton';
+      readonly root: 'bui-Skeleton';
     };
   };
   readonly Switch: {
     readonly classNames: {
-      readonly root: 'canon-Switch';
-      readonly indicator: 'canon-SwitchIndicator';
+      readonly root: 'bui-Switch';
+      readonly indicator: 'bui-SwitchIndicator';
     };
   };
   readonly Table: {
     readonly classNames: {
-      readonly root: 'canon-TableRoot';
-      readonly header: 'canon-TableHeader';
-      readonly body: 'canon-TableBody';
-      readonly row: 'canon-TableRow';
-      readonly head: 'canon-TableHead';
-      readonly caption: 'canon-TableCaption';
-      readonly cell: 'canon-TableCell';
-      readonly cellText: 'canon-TableCellText';
-      readonly cellLink: 'canon-TableCellLink';
-      readonly cellProfile: 'canon-TableCellProfile';
-      readonly cellProfileAvatar: 'canon-TableCellProfileAvatar';
-      readonly cellProfileAvatarImage: 'canon-TableCellProfileAvatarImage';
-      readonly cellProfileAvatarFallback: 'canon-TableCellProfileAvatarFallback';
-      readonly cellProfileName: 'canon-TableCellProfileName';
-      readonly cellProfileLink: 'canon-TableCellProfileLink';
+      readonly root: 'bui-TableRoot';
+      readonly header: 'bui-TableHeader';
+      readonly body: 'bui-TableBody';
+      readonly row: 'bui-TableRow';
+      readonly head: 'bui-TableHead';
+      readonly caption: 'bui-TableCaption';
+      readonly cell: 'bui-TableCell';
+      readonly cellText: 'bui-TableCellText';
+      readonly cellLink: 'bui-TableCellLink';
+      readonly cellProfile: 'bui-TableCellProfile';
+      readonly cellProfileAvatar: 'bui-TableCellProfileAvatar';
+      readonly cellProfileAvatarImage: 'bui-TableCellProfileAvatarImage';
+      readonly cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback';
+      readonly cellProfileName: 'bui-TableCellProfileName';
+      readonly cellProfileLink: 'bui-TableCellProfileLink';
     };
   };
   readonly Tabs: {
     readonly classNames: {
-      readonly root: 'canon-TabsRoot';
-      readonly list: 'canon-TabsList';
-      readonly indicator: 'canon-TabsIndicator';
-      readonly tab: 'canon-TabsTab';
-      readonly panel: 'canon-TabsPanel';
+      readonly root: 'bui-TabsRoot';
+      readonly list: 'bui-TabsList';
+      readonly indicator: 'bui-TabsIndicator';
+      readonly tab: 'bui-TabsTab';
+      readonly panel: 'bui-TabsPanel';
     };
   };
   readonly Text: {
     readonly classNames: {
-      readonly root: 'canon-Text';
+      readonly root: 'bui-Text';
     };
     readonly dataAttributes: {
       readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
@@ -514,10 +513,10 @@ export const componentDefinitions: {
   };
   readonly TextField: {
     readonly classNames: {
-      readonly root: 'canon-TextField';
-      readonly inputWrapper: 'canon-InputWrapper';
-      readonly input: 'canon-Input';
-      readonly inputIcon: 'canon-InputIcon';
+      readonly root: 'bui-TextField';
+      readonly inputWrapper: 'bui-InputWrapper';
+      readonly input: 'bui-Input';
+      readonly inputIcon: 'bui-InputIcon';
     };
     readonly dataAttributes: {
       readonly invalid: readonly [true, false];
@@ -526,28 +525,28 @@ export const componentDefinitions: {
   };
   readonly Header: {
     readonly classNames: {
-      readonly toolbar: 'canon-HeaderToolbar';
-      readonly toolbarWrapper: 'canon-HeaderToolbarWrapper';
-      readonly toolbarContent: 'canon-HeaderToolbarContent';
-      readonly toolbarControls: 'canon-HeaderToolbarControls';
-      readonly toolbarIcon: 'canon-HeaderToolbarIcon';
-      readonly toolbarName: 'canon-HeaderToolbarName';
-      readonly breadcrumbs: 'canon-HeaderBreadcrumbs';
-      readonly breadcrumb: 'canon-HeaderBreadcrumb';
-      readonly breadcrumbLink: 'canon-HeaderBreadcrumbLink';
-      readonly breadcrumbSeparator: 'canon-HeaderBreadcrumbSeparator';
-      readonly tabs: 'canon-HeaderTabs';
-      readonly tabList: 'canon-HeaderTabList';
-      readonly tab: 'canon-HeaderTab';
-      readonly tabActive: 'canon-HeaderTabActive';
-      readonly tabHovered: 'canon-HeaderTabHovered';
-      readonly subNav: 'canon-HeaderSubNav';
+      readonly toolbar: 'bui-HeaderToolbar';
+      readonly toolbarWrapper: 'bui-HeaderToolbarWrapper';
+      readonly toolbarContent: 'bui-HeaderToolbarContent';
+      readonly toolbarControls: 'bui-HeaderToolbarControls';
+      readonly toolbarIcon: 'bui-HeaderToolbarIcon';
+      readonly toolbarName: 'bui-HeaderToolbarName';
+      readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
+      readonly breadcrumb: 'bui-HeaderBreadcrumb';
+      readonly breadcrumbLink: 'bui-HeaderBreadcrumbLink';
+      readonly breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator';
+      readonly tabs: 'bui-HeaderTabs';
+      readonly tabList: 'bui-HeaderTabList';
+      readonly tab: 'bui-HeaderTab';
+      readonly tabActive: 'bui-HeaderTabActive';
+      readonly tabHovered: 'bui-HeaderTabHovered';
+      readonly subNav: 'bui-HeaderSubNav';
     };
   };
   readonly Tooltip: {
     readonly classNames: {
-      readonly tooltip: 'canon-Tooltip';
-      readonly arrow: 'canon-TooltipArrow';
+      readonly tooltip: 'bui-Tooltip';
+      readonly arrow: 'bui-TooltipArrow';
     };
   };
 };
@@ -1512,7 +1511,7 @@ export interface SelectProps {
   }>;
   placeholder?: string;
   required?: boolean;
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint_2, 'small' | 'medium'>>;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   style?: React.CSSProperties;
   value?: string;
 }
