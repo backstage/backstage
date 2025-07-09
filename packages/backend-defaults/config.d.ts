@@ -15,6 +15,9 @@
  */
 
 import { HumanDuration } from '@backstage/types';
+import * as OtelApi from '@opentelemetry/api';
+import { InstrumentationConfigMap } from '@opentelemetry/auto-instrumentations-node';
+import { MetricCollectOptions, ViewOptions } from '@opentelemetry/sdk-metrics';
 
 export interface Config {
   app: {
@@ -984,10 +987,21 @@ export interface Config {
    *
    * @alpha
    */
-  metrics?: {
+  instrumentation?: {
+    enabled?: boolean;
+
     resource?: {
-      serviceName: string;
+      serviceName?: string;
       serviceVersion?: string;
+      attributes?: OtelApi.Attributes;
+    };
+
+    metrics?: {
+      enabled?: boolean;
+      autoInstrumentations?: InstrumentationConfigMap;
+      collection?: MetricCollectOptions;
+      exporters?: Array<MetricsExporterConfig>;
+      views?: Array<ViewOptions>;
     };
   };
 }

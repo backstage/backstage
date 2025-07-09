@@ -83,9 +83,9 @@ backend:
 
       exporters:
         - type: console
-          enabled: false
-        - type: prometheus
           enabled: true
+        - type: prometheus
+          enabled: false
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:

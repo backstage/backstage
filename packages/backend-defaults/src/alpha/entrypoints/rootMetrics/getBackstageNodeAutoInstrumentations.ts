@@ -91,10 +91,12 @@ const coreServiceInstrumentations: InstrumentationConfigMap = {
     enabled: true,
     // Ignore health and metrics endpoints
     ignoreIncomingRequestHook: (incomingRequest: IncomingMessage) =>
-      Boolean(incomingRequest.url?.startsWith('/.backstage/health') ||
-        incomingRequest.url?.startsWith('/metrics')),
+      Boolean(
+        incomingRequest.url?.startsWith('/.backstage/health') ||
+          incomingRequest.url?.startsWith('/metrics'),
+      ),
   },
-}
+};
 
 /**
  * Returns the default instrumentation config for libraries used by Backstage core services.
@@ -109,4 +111,4 @@ export async function getBackstageNodeAutoInstrumentationConfigMap(): Promise<In
     ...disabledByDefault,
     ...coreServiceInstrumentations,
   };
-};
+}

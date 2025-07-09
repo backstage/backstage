@@ -48,7 +48,10 @@ import {
 import { getBackstageNodeAutoInstrumentationConfigMap } from './getBackstageNodeAutoInstrumentations';
 import { NoopRootMetricsService } from './NoopRootMetricsService';
 import { DEFAULT_SERVICE_NAME } from './constants';
-import { RootConfigService, RootLoggerService } from '@backstage/backend-plugin-api';
+import {
+  RootConfigService,
+  RootLoggerService,
+} from '@backstage/backend-plugin-api';
 
 export class DefaultRootMetricsService implements RootMetricsService {
   private readonly meter: Meter;
@@ -56,7 +59,15 @@ export class DefaultRootMetricsService implements RootMetricsService {
   private readonly serviceVersion?: string;
   private readonly logger: RootLoggerService;
 
-  private constructor ({ serviceName, serviceVersion, logger }: { serviceName: string, serviceVersion?: string, logger: RootLoggerService }) {
+  private constructor({
+    serviceName,
+    serviceVersion,
+    logger,
+  }: {
+    serviceName: string;
+    serviceVersion?: string;
+    logger: RootLoggerService;
+  }) {
     this.serviceName = serviceName;
     this.serviceVersion = serviceVersion;
     this.logger = logger;
@@ -64,29 +75,57 @@ export class DefaultRootMetricsService implements RootMetricsService {
     this.meter = metrics.getMeter(this.serviceName, this.serviceVersion);
   }
 
-  static async fromConfig({ config, logger }: { config: RootConfigService, logger: RootLoggerService }): Promise<RootMetricsService> {
-    const instrumentationConfig = config?.getOptionalConfig('backend.instrumentation');
-    const enabled = instrumentationConfig?.getOptionalBoolean('enabled') ?? false;
+  static async fromConfig({
+    config,
+    logger,
+  }: {
+    config: RootConfigService;
+    logger: RootLoggerService;
+  }): Promise<RootMetricsService> {
+    const instrumentationConfig = config?.getOptionalConfig(
+      'backend.instrumentation',
+    );
+    const enabled =
+      instrumentationConfig?.getOptionalBoolean('enabled') ?? false;
 
     if (!enabled) {
-      logger.warn('Metrics are disabled in the config - skipping metrics initialization');
+      logger.warn(
+        'Metrics are disabled in the config - skipping metrics initialization',
+      );
       return new NoopRootMetricsService();
     }
 
-    const metricsEnabled = instrumentationConfig?.getOptionalConfig('metrics')?.getOptionalBoolean('enabled') ?? false;
+    const metricsEnabled =
+      instrumentationConfig
+        ?.getOptionalConfig('metrics')
+        ?.getOptionalBoolean('enabled') ?? false;
 
     const resource = resourceFromAttributes({
-      [ATTR_SERVICE_NAME]: instrumentationConfig?.getOptionalConfig('resource')?.getOptionalString('serviceName') ?? DEFAULT_SERVICE_NAME,
-      [ATTR_SERVICE_VERSION]: instrumentationConfig?.getOptionalConfig('resource')?.getOptionalString('serviceVersion'),
+      [ATTR_SERVICE_NAME]:
+        instrumentationConfig
+          ?.getOptionalConfig('resource')
+          ?.getOptionalString('serviceName') ?? DEFAULT_SERVICE_NAME,
+      [ATTR_SERVICE_VERSION]: instrumentationConfig
+        ?.getOptionalConfig('resource')
+        ?.getOptionalString('serviceVersion'),
     });
 
-    const backstageInstrumentationConfigMap = await getBackstageNodeAutoInstrumentationConfigMap()
+    const backstageInstrumentationConfigMap =
+      await getBackstageNodeAutoInstrumentationConfigMap();
 
     const sdk = new NodeSDK({
       resource,
-      instrumentations: getNodeAutoInstrumentations(backstageInstrumentationConfigMap),
-      metricReader: metricsEnabled ? await DefaultRootMetricsService.createMetricReader(instrumentationConfig!) : undefined,
-      views: metricsEnabled ? await DefaultRootMetricsService.getMetricViews(instrumentationConfig!) : undefined,
+      instrumentations: getNodeAutoInstrumentations(
+        backstageInstrumentationConfigMap,
+      ),
+      metricReader: metricsEnabled
+        ? await DefaultRootMetricsService.createMetricReader(
+            instrumentationConfig!,
+          )
+        : undefined,
+      views: metricsEnabled
+        ? await DefaultRootMetricsService.getMetricViews(instrumentationConfig!)
+        : undefined,
     });
 
     sdk.start();
@@ -96,15 +135,19 @@ export class DefaultRootMetricsService implements RootMetricsService {
     return new DefaultRootMetricsService({
       serviceName: resource.attributes[ATTR_SERVICE_NAME] as string,
       serviceVersion: resource.attributes[ATTR_SERVICE_VERSION] as string,
-      logger
+      logger,
     });
   }
 
-  private static async createMetricReader(config: Config): Promise<MetricReader> {
+  private static async createMetricReader(
+    config: Config,
+  ): Promise<MetricReader> {
     const metricsConfig = config.getOptionalConfig('metrics');
     const exporters = metricsConfig?.getOptionalConfigArray('exporters');
 
-    const firstEnabledExporter = exporters?.find(exporterConfig => exporterConfig.getOptionalBoolean('enabled') ?? true);
+    const firstEnabledExporter = exporters?.find(
+      exporterConfig => exporterConfig.getOptionalBoolean('enabled') ?? true,
+    );
     const exporterType = firstEnabledExporter?.getOptionalString('type');
 
     switch (exporterType) {
@@ -118,9 +161,13 @@ export class DefaultRootMetricsService implements RootMetricsService {
     }
   }
 
-  private static async getMetricViews(config: Config): Promise<Array<ViewOptions> | undefined> {
+  private static async getMetricViews(
+    config: Config,
+  ): Promise<Array<ViewOptions> | undefined> {
     const metricsConfig = config.getOptionalConfig('metrics');
-    return metricsConfig?.getOptionalConfigArray('views') as Array<ViewOptions> | undefined;
+    return metricsConfig?.getOptionalConfigArray('views') as
+      | Array<ViewOptions>
+      | undefined;
   }
 
   forPlugin(pluginId: string): MetricsService {
@@ -158,20 +205,29 @@ export class DefaultRootMetricsService implements RootMetricsService {
     name: string,
     options?: MetricOptions,
   ): ObservableCounter {
-    return this.meter.createObservableCounter(this.prefixMetricName(name), options);
+    return this.meter.createObservableCounter(
+      this.prefixMetricName(name),
+      options,
+    );
   }
 
   createObservableUpDownCounter(
     name: string,
     options?: MetricOptions,
   ): ObservableUpDownCounter {
-    return this.meter.createObservableUpDownCounter(this.prefixMetricName(name), options);
+    return this.meter.createObservableUpDownCounter(
+      this.prefixMetricName(name),
+      options,
+    );
   }
 
   createObservableGauge(
     name: string,
     options?: MetricOptions,
   ): ObservableGauge {
-    return this.meter.createObservableGauge(this.prefixMetricName(name), options);
+    return this.meter.createObservableGauge(
+      this.prefixMetricName(name),
+      options,
+    );
   }
 }

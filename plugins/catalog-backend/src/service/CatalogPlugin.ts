@@ -44,11 +44,15 @@ import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Permission } from '@backstage/plugin-permission-common';
 import { merge } from 'lodash';
 import { CatalogBuilder } from './CatalogBuilder';
-import { actionsRegistryServiceRef, metricsServiceRef } from '@backstage/backend-plugin-api/alpha';
+import {
+  actionsRegistryServiceRef,
+  metricsServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
 import { createGetCatalogEntityAction } from '../actions/createGetCatalogEntityAction';
 
 class CatalogLocationsExtensionPointImpl
-  implements CatalogLocationsExtensionPoint {
+  implements CatalogLocationsExtensionPoint
+{
   #locationTypes: string[] | undefined;
 
   setAllowedLocationTypes(locationTypes: Array<string>) {
@@ -61,7 +65,8 @@ class CatalogLocationsExtensionPointImpl
 }
 
 class CatalogProcessingExtensionPointImpl
-  implements CatalogProcessingExtensionPoint {
+  implements CatalogProcessingExtensionPoint
+{
   #processors = new Array<CatalogProcessor>();
   #entityProviders = new Array<EntityProvider>();
   #placeholderResolvers: Record<string, PlaceholderResolver> = {};
@@ -117,7 +122,8 @@ class CatalogProcessingExtensionPointImpl
 }
 
 class CatalogPermissionExtensionPointImpl
-  implements CatalogPermissionExtensionPoint {
+  implements CatalogPermissionExtensionPoint
+{
   #permissions = new Array<Permission>();
   #permissionRules = new Array<CatalogPermissionRuleInput>();
 
@@ -185,8 +191,8 @@ export const catalogPlugin = createBackendPlugin({
 
     let locationAnalyzerFactory:
       | ((options: {
-        scmLocationAnalyzers: ScmLocationAnalyzer[];
-      }) => Promise<{ locationAnalyzer: LocationAnalyzer }>)
+          scmLocationAnalyzers: ScmLocationAnalyzer[];
+        }) => Promise<{ locationAnalyzer: LocationAnalyzer }>)
       | undefined = undefined;
     const scmLocationAnalyzers = new Array<ScmLocationAnalyzer>();
     env.registerExtensionPoint(catalogAnalysisExtensionPoint, {

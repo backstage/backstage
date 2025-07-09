@@ -41,7 +41,6 @@ export interface ResourceConfig {
    */
   attributes?: OtelApi.Attributes;
 }
-
 export interface MetricsExporterConfig {
   type: 'console' | 'prometheus';
   enabled?: boolean;

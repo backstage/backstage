@@ -39,12 +39,12 @@ import { ForwardedError, ConflictError, assertError } from '@backstage/errors';
 import {
   instanceMetadataServiceRef,
   BackendFeatureMeta,
+  rootMetricsServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationLogger } from './createInitializationLogger';
 import { unwrapFeature } from './helpers';
-import { rootMetricsServiceFactory } from '@backstage/backend-defaults/alpha';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -164,7 +164,7 @@ export class BackendInitializer {
   #registeredFeatures = new Array<Promise<BackendFeature>>();
   #registeredFeatureLoaders = new Array<InternalBackendFeatureLoader>();
 
-  constructor (defaultApiFactories: ServiceFactory[]) {
+  constructor(defaultApiFactories: ServiceFactory[]) {
     this.#serviceRegistry = ServiceRegistry.create([...defaultApiFactories]);
   }
 
@@ -264,16 +264,8 @@ export class BackendInitializer {
       'root',
     );
 
-    const rootLogger = await this.#serviceRegistry.get(
-      coreServices.rootLogger,
-      'root',
-    );
-
     // Initialize root metrics to start the SDK before any other services are initialized
-    await this.#serviceRegistry.get(
-      rootMetricsServiceFactory.service,
-      'root',
-    );
+    await this.#serviceRegistry.get(rootMetricsServiceRef, 'root');
 
     // Initialize all remaining root scoped services
     await this.#serviceRegistry.initializeEagerServicesWithScope('root');
@@ -333,6 +325,11 @@ export class BackendInitializer {
     }
 
     const allPluginIds = [...pluginInits.keys()];
+
+    const rootLogger = await this.#serviceRegistry.get(
+      coreServices.rootLogger,
+      'root',
+    );
 
     const initLogger = createInitializationLogger(allPluginIds, rootLogger);
 

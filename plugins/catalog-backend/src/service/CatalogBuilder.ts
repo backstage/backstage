@@ -180,7 +180,7 @@ export class CatalogBuilder {
     return new CatalogBuilder(env);
   }
 
-  private constructor (env: CatalogEnvironment) {
+  private constructor(env: CatalogEnvironment) {
     this.env = env;
     this.entityPolicies = [];
     this.entityPoliciesReplace = false;
@@ -540,10 +540,10 @@ export class CatalogBuilder {
       permissionsService,
       permissionsRegistry
         ? createConditionTransformer(
-          permissionsRegistry.getPermissionRuleset(
-            catalogEntityPermissionResourceRef,
-          ),
-        )
+            permissionsRegistry.getPermissionRuleset(
+              catalogEntityPermissionResourceRef,
+            ),
+          )
         : createConditionTransformer(this.permissionRules),
     );
 
@@ -670,14 +670,14 @@ export class CatalogBuilder {
     const entityPolicies: EntityPolicy[] = this.entityPoliciesReplace
       ? [new SchemaValidEntityPolicy(), ...this.entityPolicies]
       : [
-        new SchemaValidEntityPolicy(),
-        new DefaultNamespaceEntityPolicy(),
-        new NoForeignRootFieldsEntityPolicy(),
-        new FieldFormatEntityPolicy(
-          makeValidator(this.fieldFormatValidators),
-        ),
-        ...this.entityPolicies,
-      ];
+          new SchemaValidEntityPolicy(),
+          new DefaultNamespaceEntityPolicy(),
+          new NoForeignRootFieldsEntityPolicy(),
+          new FieldFormatEntityPolicy(
+            makeValidator(this.fieldFormatValidators),
+          ),
+          ...this.entityPolicies,
+        ];
 
     return EntityPolicies.allOf(entityPolicies);
   }
