@@ -53,6 +53,7 @@ export * from './components/ScrollArea';
 export * from './components/SearchField';
 export * from './components/Link';
 export * from './components/Select';
+export * from './components/Skeleton';
 export * from './components/Switch';
 
 // Types

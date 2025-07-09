@@ -1517,6 +1517,19 @@ export interface SelectProps {
 }
 
 // @public (undocumented)
+export const Skeleton: (props: SkeletonProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface SkeletonProps extends ComponentProps<'div'> {
+  // (undocumented)
+  height?: number | string;
+  // (undocumented)
+  rounded?: boolean;
+  // (undocumented)
+  width?: number | string;
+}
+
+// @public (undocumented)
 export type Space =
   | '0.5'
   | '1'
