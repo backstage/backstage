@@ -19,6 +19,7 @@ import { Header } from './Header';
 import { HeaderBreadcrumb, HeaderOption, HeaderTab } from './types';
 import { Button } from '../Button';
 import { HeaderPage } from '../HeaderPage';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta = {
   title: 'Components/Header',
@@ -40,9 +41,11 @@ const tabs: HeaderTab[] = [
   },
   {
     label: 'Campaigns',
+    href: '/campaigns',
   },
   {
     label: 'Integrations',
+    href: '/integrations',
   },
 ];
 
@@ -204,5 +207,69 @@ export const WithLayoutAndHeaderPageNoTabs: Story = {
         options={args.menuItems}
       />
     </>
+  ),
+};
+
+export const WithMockedURLCampaigns: Story = {
+  args: {
+    tabs,
+  },
+  render: args => (
+    <MemoryRouter initialEntries={['/campaigns']}>
+      <Header {...args} />
+      <div style={{ padding: '20px' }}>
+        <p>
+          Current URL is mocked to be: <strong>/campaigns</strong>
+        </p>
+        <p>
+          Notice how the "Campaigns" tab is selected (highlighted) because it
+          matches the current path.
+        </p>
+      </div>
+    </MemoryRouter>
+  ),
+};
+
+export const WithMockedURLIntegrations: Story = {
+  args: {
+    tabs,
+  },
+  render: args => (
+    <MemoryRouter initialEntries={['/integrations']}>
+      <Header {...args} />
+      <div style={{ padding: '20px' }}>
+        <p>
+          Current URL is mocked to be: <strong>/integrations</strong>
+        </p>
+        <p>
+          Notice how the "Integrations" tab is selected (highlighted) because it
+          matches the current path.
+        </p>
+      </div>
+    </MemoryRouter>
+  ),
+};
+
+export const WithMockedURLNoMatch: Story = {
+  args: {
+    tabs,
+  },
+  render: args => (
+    <MemoryRouter initialEntries={['/some-other-page']}>
+      <Header {...args} />
+      <div style={{ padding: '20px' }}>
+        <p>
+          Current URL is mocked to be: <strong>/some-other-page</strong>
+        </p>
+        <p>
+          No tab is selected because the current path doesn't match any tab's
+          href.
+        </p>
+        <p>
+          Tabs without href (like "Overview", "Checks", "Tracks") fall back to
+          React Aria's internal state.
+        </p>
+      </div>
+    </MemoryRouter>
   ),
 };

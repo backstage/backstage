@@ -17,6 +17,7 @@
 import type { HeaderProps } from './types';
 import { HeaderToolbar } from './HeaderToolbar';
 import { HeaderTabs } from './HeaderTabs';
+import { Item } from 'react-stately';
 
 /**
  * A component that renders a toolbar.
@@ -38,7 +39,15 @@ export const Header = (props: HeaderProps) => {
         customActions={customActions}
         hasTabs={hasTabs}
       />
-      <HeaderTabs tabs={tabs} />
+      {tabs && (
+        <HeaderTabs keyboardActivation="manual">
+          {tabs.map(tab => (
+            <Item key={tab.label} title={tab.label} href={tab.href}>
+              {tab.label}
+            </Item>
+          ))}
+        </HeaderTabs>
+      )}
     </>
   );
 };

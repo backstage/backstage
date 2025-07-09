@@ -15,6 +15,8 @@
  */
 
 import { MutableRefObject } from 'react';
+import { TabListProps, TabListState } from '@react-stately/tabs';
+import { CollectionChildren, Node } from '@react-types/shared';
 
 /**
  * Props for the main Header component.
@@ -67,11 +69,13 @@ export interface HeaderBreadcrumb {
  * @public
  */
 export interface HeaderTabProps {
-  tab: HeaderTab;
+  item: Node<object>;
+  state: TabListState<object>;
   setTabRef: (key: string, element: HTMLDivElement | null) => void;
   setHoveredKey: (key: string | null) => void;
 }
 
+/** @internal */
 export interface HeaderToolbarProps {
   icon?: HeaderProps['icon'];
   title?: HeaderProps['title'];
@@ -81,9 +85,18 @@ export interface HeaderToolbarProps {
   hasTabs?: boolean;
 }
 
+/** @internal */
+export interface HeaderTabsProps
+  extends Omit<TabListProps<object>, 'children'> {
+  children?: CollectionChildren<object>;
+  keyboardActivation?: 'automatic' | 'manual';
+}
+
+/** @internal */
 export interface HeaderIndicatorsProps {
   tabRefs: MutableRefObject<Map<string, HTMLDivElement>>;
   tabsRef: MutableRefObject<HTMLDivElement | null>;
   hoveredKey: string | null;
   prevHoveredKey: MutableRefObject<string | null>;
+  state: TabListState<object>;
 }
