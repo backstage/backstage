@@ -444,13 +444,13 @@ const decoratedPluginTokenHandler = createServiceFactory({
 });
 ```
 
-### ExternalTokenHandler decoration
+### Custom ExternalTokenHandler
 
 The `externalTokenTypeHandlersRef` can be used to add custom external token handlers to the default implementation.
 
 The returned object from the factory function must have a `type` property which is used to identify the handler. The `factory` method is called with an array of `Config` objects, for the given type. The factory method can return a single handler or an array of handlers. The handlers are then used to handle the token for the given type.
 
-For example, if we whant to add a custom external token handler for the `custom` type:
+For example, if we want to add a custom external token handler for the `custom` type:
 
 our config would look like this:
 
