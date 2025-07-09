@@ -466,11 +466,8 @@ export class CatalogBuilder {
       metrics,
     } = this.env;
 
-    const testMetricCounter = metrics.createCounter('catalog.entities.total', {
-      description: 'Total number of entities in the catalog',
-    });
-
-    testMetricCounter.add(1);
+    // This is a test metric to check if the metrics are working
+    metrics.createCounter('kurt.test.total').add(1);
 
     const disableRelationsCompatibility = config.getOptionalBoolean(
       'catalog.disableRelationsCompatibility',
@@ -496,6 +493,7 @@ export class CatalogBuilder {
       logger,
       refreshInterval: this.processingInterval,
       eventBroker: this.eventBroker,
+      metrics,
     });
     const providerDatabase = new DefaultProviderDatabase({
       database: dbClient,
