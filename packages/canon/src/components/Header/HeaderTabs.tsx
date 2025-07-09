@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-import { useTabList, useTab } from 'react-aria';
-import { useTabListState } from 'react-stately';
-import { useLocation } from 'react-router-dom';
+import { Tabs, TabList, Tab as AriaTab } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
 import { useRef, useState } from 'react';
 import { HeaderTabsIndicators } from './HeaderTabsIndicators';
-import type { HeaderTabProps, HeaderTabsProps } from './types';
+import type { HeaderProps, HeaderTabProps } from './types';
+import { useLocation } from 'react-router-dom';
 
 /**
  * A component that renders header tabs.
  *
  * @internal
  */
-export const HeaderTabs = (props: HeaderTabsProps) => {
+export const HeaderTabs = (props: HeaderProps) => {
+  const { tabs } = props;
   const { classNames } = useStyles('Header');
   const tabsRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const prevHoveredKey = useRef<string | null>(null);
+  const location = useLocation();
 
-  let state = useTabListState(props);
-  let ref = useRef(null);
-  const { tabListProps } = useTabList({}, state, ref);
+  const selectedKey = tabs?.find(tab => tab.href === location.pathname)?.id;
 
   const setTabRef = (key: string, element: HTMLDivElement | null) => {
     if (element) {
@@ -46,27 +45,35 @@ export const HeaderTabs = (props: HeaderTabsProps) => {
     }
   };
 
+  if (!tabs) return null;
+
   return (
-    <div className={classNames.tabs} ref={tabsRef}>
-      <div className={classNames.tabList} {...tabListProps} ref={ref}>
-        {Array.from(state.collection).map(item => (
-          <Tab
-            key={item.key}
-            item={item}
-            state={state}
-            setTabRef={setTabRef}
-            setHoveredKey={setHoveredKey}
-          />
-        ))}
-      </div>
+    <Tabs
+      className={classNames.tabs}
+      ref={tabsRef}
+      keyboardActivation="manual"
+      selectedKey={selectedKey}
+    >
+      <TabList className={classNames.tabList} aria-label="Toolbar tabs">
+        {tabs.map((tab, index) => {
+          return (
+            <Tab
+              id={tab.id}
+              key={index}
+              tab={tab}
+              setTabRef={setTabRef}
+              setHoveredKey={setHoveredKey}
+            />
+          );
+        })}
+      </TabList>
       <HeaderTabsIndicators
         tabRefs={tabRefs}
         tabsRef={tabsRef}
         hoveredKey={hoveredKey}
         prevHoveredKey={prevHoveredKey}
-        state={state}
       />
-    </div>
+    </Tabs>
   );
 };
 
@@ -75,36 +82,20 @@ export const HeaderTabs = (props: HeaderTabsProps) => {
  *
  * @internal
  */
-function Tab({ item, state, setTabRef, setHoveredKey }: HeaderTabProps) {
-  let { key, rendered } = item;
+const Tab = (props: HeaderTabProps) => {
+  const { tab, setTabRef, setHoveredKey, id } = props;
   const { classNames } = useStyles('Header');
-  const location = useLocation();
-
-  let ref = useRef<HTMLDivElement>(null);
-  let { tabProps } = useTab({ key }, state, ref);
-
-  const setRef = (el: HTMLDivElement | null) => {
-    // Set the ref for React Aria - use more specific type assertion
-    (ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
-    // Set the ref for tracking tab elements
-    setTabRef(key.toString(), el);
-  };
-
-  // Check if the current path matches the tab's href
-  const isSelected = item.props?.href
-    ? location.pathname === item.props.href
-    : state.selectedKey === key;
 
   return (
-    <div
+    <AriaTab
+      id={id}
       className={classNames.tab}
-      ref={setRef}
-      data-selected={isSelected}
-      onMouseEnter={() => setHoveredKey(key.toString())}
-      onMouseLeave={() => setHoveredKey(null)}
-      {...tabProps}
+      ref={el => setTabRef(id, el as HTMLDivElement)}
+      onHoverStart={() => setHoveredKey(id)}
+      onHoverEnd={() => setHoveredKey(null)}
+      href={tab.href}
     >
-      {rendered}
-    </div>
+      {tab.label}
+    </AriaTab>
   );
-}
+};

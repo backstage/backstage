@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
+import { TabListStateContext } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
-import { useEffect, useCallback } from 'react';
+import { useContext, useEffect, useCallback, useRef } from 'react';
 import type { HeaderIndicatorsProps } from './types';
 
 /**
  * A component that renders the indicators for the toolbar.
- * Uses React Aria's TabListState passed as a prop.
  *
  * @internal
  */
 export const HeaderTabsIndicators = (props: HeaderIndicatorsProps) => {
-  const { tabRefs, tabsRef, hoveredKey, prevHoveredKey, state } = props;
+  const { tabRefs, tabsRef, hoveredKey, prevHoveredKey } = props;
   const { classNames } = useStyles('Header');
+  const state = useContext(TabListStateContext);
+  const prevSelectedKey = useRef<string | null>(null);
 
   const updateCSSVariables = useCallback(() => {
     if (!tabsRef.current) return;
 
     const tabsRect = tabsRef.current.getBoundingClientRect();
 
-    // Set active tab variables using React Aria's selectedKey from state
+    // Set active tab variables
     if (state?.selectedKey) {
       const activeTab = tabRefs.current.get(state.selectedKey.toString());
 
@@ -42,7 +44,35 @@ export const HeaderTabsIndicators = (props: HeaderIndicatorsProps) => {
         const relativeLeft = activeRect.left - tabsRect.left;
         const relativeTop = activeRect.top - tabsRect.top;
 
-        // Set CSS variables for the active tab indicator position
+        // Control transition timing based on whether this is the first time setting active tab
+        const isFirstActiveTab = prevSelectedKey.current === null;
+
+        if (isFirstActiveTab) {
+          // First time setting active tab: no transitions for position
+          tabsRef.current.style.setProperty(
+            '--active-transition-duration',
+            '0s',
+          );
+          // Enable transitions on next frame for future tab switches
+          requestAnimationFrame(() => {
+            if (tabsRef.current) {
+              tabsRef.current.style.setProperty(
+                '--active-transition-duration',
+                '0.25s',
+              );
+            }
+          });
+        } else {
+          // Switching between tabs: full transitions
+          tabsRef.current.style.setProperty(
+            '--active-transition-duration',
+            '0.25s',
+          );
+        }
+
+        // Update previous selected key for next time
+        prevSelectedKey.current = state.selectedKey.toString();
+
         tabsRef.current.style.setProperty(
           '--active-tab-left',
           `${relativeLeft}px`,
@@ -70,7 +100,7 @@ export const HeaderTabsIndicators = (props: HeaderIndicatorsProps) => {
       }
     }
 
-    // Set hovered tab variables (separate from React Aria state)
+    // Set hovered tab variables
     if (hoveredKey) {
       const hoveredTab = tabRefs.current.get(hoveredKey);
       if (hoveredTab) {
@@ -102,7 +132,6 @@ export const HeaderTabsIndicators = (props: HeaderIndicatorsProps) => {
           '--hovered-tab-height',
           `${hoveredRect.height}px`,
         );
-
         // Control transition timing based on whether this is a new hover session
         const isNewHoverSession = prevHoveredKey.current === null;
 
@@ -141,11 +170,11 @@ export const HeaderTabsIndicators = (props: HeaderIndicatorsProps) => {
       // Reset previous hover key so next hover is treated as new session
       prevHoveredKey.current = null;
     }
-  }, [state?.selectedKey, hoveredKey]); // React Aria's selectedKey drives active tab updates
+  }, [state?.selectedKey, hoveredKey, tabRefs.current]);
 
   useEffect(() => {
     updateCSSVariables();
-  }, [updateCSSVariables]);
+  }, [updateCSSVariables, tabRefs.current.size]);
 
   useEffect(() => {
     const handleResize = () => updateCSSVariables();

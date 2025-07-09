@@ -133,6 +133,7 @@
   --active-tab-bottom: 0px;
   --active-tab-width: 0px;
   --active-tab-height: 0px;
+  --active-transition-duration: 0s;
 
   --hovered-tab-left: 0px;
   --hovered-tab-right: 0px;
@@ -175,7 +176,8 @@
   height: 1px;
   background-color: var(--canon-fg-primary);
   border-radius: 4px;
-  transition: all 0.25s ease-out;
+  transition: left var(--active-transition-duration) ease-out,
+    opacity 0.15s ease-out;
   opacity: 1;
 }
 

@@ -17,7 +17,14 @@
 import type { HeaderProps } from './types';
 import { HeaderToolbar } from './HeaderToolbar';
 import { HeaderTabs } from './HeaderTabs';
-import { Item } from 'react-stately';
+import { RouterProvider } from 'react-aria-components';
+import { type NavigateOptions, useHref, useNavigate } from 'react-router-dom';
+
+declare module 'react-aria-components' {
+  interface RouterConfig {
+    routerOptions: NavigateOptions;
+  }
+}
 
 /**
  * A component that renders a toolbar.
@@ -26,11 +33,12 @@ import { Item } from 'react-stately';
  */
 export const Header = (props: HeaderProps) => {
   const { tabs, icon, title, menuItems, breadcrumbs, customActions } = props;
+  let navigate = useNavigate();
 
   const hasTabs = tabs && tabs.length > 0;
 
   return (
-    <>
+    <RouterProvider navigate={navigate} useHref={useHref}>
       <HeaderToolbar
         icon={icon}
         title={title}
@@ -39,15 +47,7 @@ export const Header = (props: HeaderProps) => {
         customActions={customActions}
         hasTabs={hasTabs}
       />
-      {tabs && (
-        <HeaderTabs keyboardActivation="manual">
-          {tabs.map(tab => (
-            <Item key={tab.label} title={tab.label} href={tab.href}>
-              {tab.label}
-            </Item>
-          ))}
-        </HeaderTabs>
-      )}
-    </>
+      <HeaderTabs tabs={tabs} />
+    </RouterProvider>
   );
 };

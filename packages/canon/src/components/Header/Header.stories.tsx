@@ -20,6 +20,8 @@ import { HeaderBreadcrumb, HeaderOption, HeaderTab } from './types';
 import { Button } from '../Button';
 import { HeaderPage } from '../HeaderPage';
 import { MemoryRouter } from 'react-router-dom';
+import { Container } from '../Container';
+import { Text } from '../Text';
 
 const meta = {
   title: 'Components/Header',
@@ -29,21 +31,32 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const withRouter = (Story: StoryFn) => (
+  <MemoryRouter>
+    <Story />
+  </MemoryRouter>
+);
+
 const tabs: HeaderTab[] = [
   {
+    id: 'overview',
     label: 'Overview',
   },
   {
+    id: 'checks',
     label: 'Checks',
   },
   {
+    id: 'tracks',
     label: 'Tracks',
   },
   {
+    id: 'campaigns',
     label: 'Campaigns',
     href: '/campaigns',
   },
   {
+    id: 'integrations',
     label: 'Integrations',
     href: '/integrations',
   },
@@ -117,34 +130,40 @@ const layoutDecorator = [
       />
     </>
   ),
+  withRouter,
 ];
 
 export const Default: Story = {
   args: {},
+  decorators: [withRouter],
 };
 
 export const WithTabs: Story = {
   args: {
     tabs,
   },
+  decorators: [withRouter],
 };
 
 export const WithOptions: Story = {
   args: {
     menuItems,
   },
+  decorators: [withRouter],
 };
 
 export const WithCustomActions: Story = {
   args: {
     customActions: <Button>Custom action</Button>,
   },
+  decorators: [withRouter],
 };
 
 export const WithBreadcrumbs: Story = {
   args: {
     breadcrumbs,
   },
+  decorators: [withRouter],
 };
 
 export const WithAllComponents: Story = {
@@ -153,6 +172,7 @@ export const WithAllComponents: Story = {
     tabs,
     breadcrumbs,
   },
+  decorators: [withRouter],
 };
 
 export const WithLayout: Story = {
@@ -217,15 +237,15 @@ export const WithMockedURLCampaigns: Story = {
   render: args => (
     <MemoryRouter initialEntries={['/campaigns']}>
       <Header {...args} />
-      <div style={{ padding: '20px' }}>
-        <p>
+      <Container>
+        <Text>
           Current URL is mocked to be: <strong>/campaigns</strong>
-        </p>
-        <p>
+        </Text>
+        <Text>
           Notice how the "Campaigns" tab is selected (highlighted) because it
           matches the current path.
-        </p>
-      </div>
+        </Text>
+      </Container>
     </MemoryRouter>
   ),
 };
