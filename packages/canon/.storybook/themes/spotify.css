@@ -123,71 +123,71 @@
   --bui-font-regular: CircularSp, CircularSp-Arab, CircularSp-Hebr,
     CircularSp-Cyrl, CircularSp-Grek, CircularSp-Deva;
 
-  .canon-Button {
+  .bui-Button {
     border-radius: var(--bui-radius-3);
     padding-inline: var(--bui-space-3);
   }
 
-  .canon-ButtonIcon {
+  .bui-ButtonIcon {
     padding: 0;
   }
 
-  .canon-MenuPopup {
+  .bui-MenuPopup {
     box-sizing: border-box;
     max-width: 21.25rem;
   }
 
-  .canon-MenuSubmenuTrigger,
-  .canon-MenuItem {
+  .bui-MenuSubmenuTrigger,
+  .bui-MenuItem {
     height: auto;
     min-height: 2rem;
   }
 
-  .canon-Text {
+  .bui-Text {
     font-family: var(--bui-font-text);
   }
 
-  .canon-Heading {
+  .bui-Heading {
     font-family: var(--bui-font-title);
   }
 
-  .canon-TableRow {
+  .bui-TableRow {
     border: none;
     border-radius: var(--bui-radius-4);
   }
 
-  .canon-TableRow:hover td:first-child {
+  .bui-TableRow:hover td:first-child {
     border-top-left-radius: var(--bui-radius-2);
     border-bottom-left-radius: var(--bui-radius-2);
   }
 
-  .canon-TableRow:hover td:last-child {
+  .bui-TableRow:hover td:last-child {
     border-top-right-radius: var(--bui-radius-2);
     border-bottom-right-radius: var(--bui-radius-2);
   }
 
-  .canon-TableBody:before,
-  .canon-TableBody:after {
+  .bui-TableBody:before,
+  .bui-TableBody:after {
     line-height: var(--bui-space-1);
     content: '\200C';
     display: block;
   }
 
-  .canon-TableHeader .canon-TableRow {
+  .bui-TableHeader .bui-TableRow {
     border-bottom: 1px solid var(--bui-border);
   }
 
-  .canon-TableHead {
+  .bui-TableHead {
     font-size: var(--bui-font-size-2);
     color: var(--bui-fg-secondary);
     font-weight: var(--bui-font-weight-regular);
   }
 
-  .canon-TabsIndicator {
+  .bui-TabsIndicator {
     background-color: var(--bui-bg-underline);
   }
 
-  .canon-TabsTab[data-selected] {
+  .bui-TabsTab[data-selected] {
     background: radial-gradient(
       ellipse at bottom,
       rgba(209, 110, 203, 0.25) 0%,
@@ -195,16 +195,16 @@
     );
   }
 
-  .canon-HeaderToolbar {
+  .bui-HeaderToolbar {
     padding-top: var(--bui-space-2);
   }
 
-  .canon-HeaderToolbarWrapper {
+  .bui-HeaderToolbarWrapper {
     border-radius: var(--bui-radius-3);
     border: none;
   }
 
-  .canon-HeaderTabs {
+  .bui-HeaderTabs {
     border-radius: var(--bui-radius-3);
     border: none;
     margin-top: var(--bui-space-2);
@@ -234,11 +234,11 @@
 
   --bui-ring: rgba(0, 0, 0, 0.2);
 
-  .canon-HeaderToolbarWrapper {
+  .bui-HeaderToolbarWrapper {
     border: 1px solid var(--bui-border);
   }
 
-  .canon-HeaderTabs {
+  .bui-HeaderTabs {
     border: 1px solid var(--bui-border);
   }
 }

@@ -16,7 +16,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { Avatar } from './index';
-import { Flex } from '@backstage/canon';
+import { Flex } from '../../';
 
 const meta = {
   title: 'Components/Avatar',

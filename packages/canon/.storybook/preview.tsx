@@ -138,11 +138,11 @@ const preview: Preview = {
   decorators: [
     withThemes,
     Story => {
-      document.body.style.backgroundColor = 'var(--canon-bg)';
+      document.body.style.backgroundColor = 'var(--bui-bg)';
 
       const docsStoryElements = document.getElementsByClassName('docs-story');
       Array.from(docsStoryElements).forEach(element => {
-        (element as HTMLElement).style.backgroundColor = 'var(--canon-bg)';
+        (element as HTMLElement).style.backgroundColor = 'var(--bui-bg)';
       });
 
       return <Story />;
