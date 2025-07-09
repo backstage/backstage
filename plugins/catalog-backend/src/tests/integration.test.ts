@@ -56,6 +56,7 @@ import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { entitiesResponseToObjects } from '../service/response';
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
 const voidLogger = mockServices.logger.mock();
 
@@ -245,6 +246,7 @@ class TestHarness {
       database: options.db,
       logger,
       refreshInterval: () => 0.05,
+      metrics: {} as MetricsService,
     });
 
     const integrations = ScmIntegrations.fromConfig(config);

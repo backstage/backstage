@@ -22,7 +22,7 @@ import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 export function initDatabaseMetrics(knex: Knex, metrics: MetricsService) {
   const seenProm = new Set<string>();
   const seen = new Set<string>();
-  // const meter = metrics.getMeter('default');
+
   return {
     entities_count_prom: createGaugeMetric({
       name: 'catalog_entities_count',
