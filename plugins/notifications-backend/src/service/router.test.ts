@@ -122,7 +122,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
         .post('/notifications')
         .send(data)
         .set('Content-Type', 'application/json')
-        .set('Accept', 'application/json');
+        .set('Accept', 'application/json')
+        .set('Authorization', mockCredentials.service.header());
 
     it('returns error on invalid link', async () => {
       const javascriptXSS = await sendNotification({
@@ -501,7 +502,9 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
         severity: 'normal',
       });
 
-      const response = await request(app).get('/');
+      const response = await request(app)
+        .get('/')
+        .set('Authorization', mockCredentials.user.header());
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         notifications: [
@@ -582,7 +585,9 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
         enabled: false,
       });
 
-      const response = await request(app).get('/settings');
+      const response = await request(app)
+        .get('/settings')
+        .set('Authorization', mockCredentials.user.header());
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         channels: [
@@ -634,7 +639,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
           ],
         })
         .set('Content-Type', 'application/json')
-        .set('Accept', 'application/json');
+        .set('Accept', 'application/json')
+        .set('Authorization', mockCredentials.user.header());
 
       const client = await database.getClient();
       const settings = await client('user_settings').select();
