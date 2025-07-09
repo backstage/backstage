@@ -42,6 +42,7 @@ describe('sentry:project:create action', () => {
     teamSlug: string;
     name: string;
     slug?: string;
+    platform?: string;
     authToken?: string;
   }> =>
     createMockActionContext({
@@ -101,6 +102,37 @@ describe('sentry:project:create action', () => {
           await expect(request.json()).resolves.toEqual({
             name: actionContext.input.name,
             slug: actionContext.input.slug,
+          });
+          return HttpResponse.json(
+            { detail: 'project creation mocked result' },
+            { status: 201 },
+          );
+        },
+      ),
+    );
+
+    await action.handler(actionContext);
+  });
+
+  it('should request sentry project create with added optional specified platform', async () => {
+    expect.assertions(3);
+
+    const action = createSentryCreateProjectAction(createScaffolderConfig());
+    const actionContext = getActionContext();
+    actionContext.input = { ...actionContext.input, platform: 'platform-slug' };
+
+    worker.use(
+      http.post(
+        `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
+            `Bearer ${actionContext.input.authToken}`,
+          );
+          expect(request.headers.get('Content-Type')).toBe(`application/json`);
+          await expect(request.json()).resolves.toEqual({
+            name: actionContext.input.name,
+            slug: actionContext.input.slug,
+            platform: actionContext.input.platform,
           });
           return HttpResponse.json(
             { detail: 'project creation mocked result' },
