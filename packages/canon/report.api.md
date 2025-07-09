@@ -219,6 +219,35 @@ export interface ButtonProps extends ButtonProps_2 {
     | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
 }
 
+// @public
+export const Card: ForwardRefExoticComponent<
+  CardProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
+// @public
+export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
+// @public
+export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
+// @public
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
 // @public (undocumented)
 export const Checkbox: ForwardRefExoticComponent<
   CheckboxProps & RefAttributes<HTMLButtonElement>
