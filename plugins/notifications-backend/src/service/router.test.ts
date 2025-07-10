@@ -28,7 +28,6 @@ import {
 import { NotificationSendOptions } from '@backstage/plugin-notifications-node';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { DatabaseService } from '@backstage/backend-plugin-api';
-import { v4 as uuid } from 'uuid';
 import { DatabaseNotificationsStore } from '../database';
 
 const databases = TestDatabases.create();
