@@ -388,13 +388,14 @@ export const componentDefinitions: {
       readonly breadcrumb: 'bui-HeaderBreadcrumb';
       readonly breadcrumbLink: 'bui-HeaderBreadcrumbLink';
       readonly breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator';
-      readonly tabs: 'bui-HeaderTabs';
       readonly tabsWrapper: 'bui-HeaderTabsWrapper';
-      readonly tabList: 'bui-HeaderTabList';
-      readonly tab: 'bui-HeaderTab';
-      readonly tabActive: 'bui-HeaderTabActive';
-      readonly tabHovered: 'bui-HeaderTabHovered';
-      readonly subNav: 'bui-HeaderSubNav';
+    };
+  };
+  readonly HeaderPage: {
+    readonly classNames: {
+      readonly root: 'bui-HeaderPage';
+      readonly content: 'bui-HeaderPageContent';
+      readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
     };
   };
   readonly Heading: {
