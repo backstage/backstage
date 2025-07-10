@@ -543,8 +543,4 @@ zod
 Zolotusky
 zoomable
 zsh
-scrollable
-severities
-intellij
-tsconfig
 OpenTelemetry
