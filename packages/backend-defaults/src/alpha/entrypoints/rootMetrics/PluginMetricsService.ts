@@ -93,8 +93,4 @@ export class PluginMetricsService implements MetricsService {
       options,
     );
   }
-
-  getMeter(): Meter {
-    return this.meter;
-  }
 }

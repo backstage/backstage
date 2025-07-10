@@ -979,10 +979,18 @@ export interface Config {
    *
    * @example
    * ```yaml
-   * metrics:
+   * instrumentation:
+   *   enabled: true
    *   resource:
    *     serviceName: backstage
-   *     serviceVersion: 0.1.0
+   *     serviceVersion: 1.40.2
+   *   metrics:
+   *     enabled: true
+   *     collection:
+   *       timeoutMillis: 1000
+   *     exporters:
+   *       - type: console
+   *       - type: prometheus
    * ```
    *
    * @alpha
