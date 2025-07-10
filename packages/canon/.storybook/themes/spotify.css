@@ -194,6 +194,10 @@
     border: none;
   }
 
+  .bui-HeaderToolbarControls {
+    right: calc(var(--bui-space-3) - 1px);
+  }
+
   .bui-HeaderTabsWrapper {
     margin-top: var(--bui-space-2);
     margin-inline: var(--bui-space-2);

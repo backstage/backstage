@@ -16,12 +16,11 @@
 
 import type { HeaderPageProps } from './types';
 import { Heading } from '../Heading';
-import { Text } from '../Text';
-import { Flex } from '../Flex';
 import { Menu } from '../Menu';
 import { ButtonIcon } from '../ButtonIcon';
 import { RiMore2Line } from '@remixicon/react';
 import { Tabs, TabList, Tab } from '../Tabs';
+import { useStyles } from '../../hooks/useStyles';
 
 /**
  * A component that renders a header page.
@@ -29,15 +28,13 @@ import { Tabs, TabList, Tab } from '../Tabs';
  * @public
  */
 export const HeaderPage = (props: HeaderPageProps) => {
-  const { title, description, options, tabs } = props;
+  const { title, options, tabs } = props;
+  const { classNames } = useStyles('HeaderPage');
 
   return (
-    <Flex pl="4" pr="2" direction="column" gap="4">
-      <Flex mt="6" justify="between">
-        <Flex direction="column" gap="2">
-          <Heading variant="title4">{title}</Heading>
-          <Text color="secondary">{description}</Text>
-        </Flex>
+    <div className={classNames.root}>
+      <div className={classNames.content}>
+        <Heading variant="title4">{title}</Heading>
         <div>
           {options && (
             <Menu.Root>
@@ -68,18 +65,20 @@ export const HeaderPage = (props: HeaderPageProps) => {
             </Menu.Root>
           )}
         </div>
-      </Flex>
+      </div>
       {tabs && (
-        <Tabs>
-          <TabList>
-            {tabs.map(tab => (
-              <Tab key={tab.id} id={tab.id} href={tab.href}>
-                {tab.label}
-              </Tab>
-            ))}
-          </TabList>
-        </Tabs>
+        <div className={classNames.tabsWrapper}>
+          <Tabs>
+            <TabList>
+              {tabs.map(tab => (
+                <Tab key={tab.id} id={tab.id} href={tab.href}>
+                  {tab.label}
+                </Tab>
+              ))}
+            </TabList>
+          </Tabs>
+        </div>
       )}
-    </Flex>
+    </div>
   );
 };

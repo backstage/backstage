@@ -9656,7 +9656,7 @@
 }
 
 .bui-HeaderToolbarControls {
-  right: var(--bui-space-3);
+  right: var(--bui-space-5);
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -9699,6 +9699,25 @@
   padding-inline: var(--bui-space-3);
   border-bottom: 1px solid var(--bui-border);
   background-color: var(--bui-bg-surface-1);
+}
+
+.bui-HeaderPage {
+  gap: var(--bui-space-1);
+  padding-inline: var(--bui-space-5);
+  margin-top: var(--bui-space-6);
+  margin-bottom: var(--bui-space-6);
+  flex-direction: column;
+  display: flex;
+}
+
+.bui-HeaderPageContent {
+  flex-direction: row;
+  justify-content: space-between;
+  display: flex;
+}
+
+.bui-HeaderPageTabsWrapper {
+  margin-left: -8px;
 }
 
 .bui-Heading {
@@ -10169,10 +10188,6 @@
   --hovered-tab-height: 0px;
   --hovered-tab-opacity: 0;
   --hovered-transition-duration: 0s;
-  flex-direction: row;
-  align-items: center;
-  display: flex;
-  position: relative;
 }
 
 .bui-TabList {
@@ -10180,8 +10195,14 @@
   display: flex;
 }
 
+.bui-TabListWrapper {
+  position: relative;
+}
+
 .bui-Tab {
   font-size: var(--bui-font-size-3);
+  font-family: var(--bui-font-regular);
+  font-weight: var(--bui-font-weight-regular);
   color: var(--bui-fg-secondary);
   cursor: pointer;
   z-index: 2;
@@ -10203,7 +10224,7 @@
   width: calc(var(--active-tab-width)  - var(--bui-space-4));
   background-color: var(--bui-fg-primary);
   height: 1px;
-  transition: left var(--active-transition-duration) ease-out, opacity .15s ease-out;
+  transition: left var(--active-transition-duration) ease-out, opacity .15s ease-out, width var(--active-transition-duration) ease-out;
   opacity: 1;
   border-radius: 4px;
   position: absolute;
@@ -10221,6 +10242,11 @@
   transition: left var(--hovered-transition-duration) ease-out, top var(--hovered-transition-duration) ease-out, width var(--hovered-transition-duration) ease-out, height var(--hovered-transition-duration) ease-out, opacity .15s ease-out;
   border-radius: 4px;
   position: absolute;
+}
+
+.bui-TabPanel {
+  padding-inline: var(--bui-space-2);
+  padding-top: var(--bui-space-4);
 }
 
 .bui-Text {

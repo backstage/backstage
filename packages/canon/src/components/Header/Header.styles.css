@@ -80,7 +80,7 @@
 
 .bui-HeaderToolbarControls {
   position: absolute;
-  right: var(--bui-space-3);
+  right: var(--bui-space-5);
   top: 50%;
   transform: translateY(-50%);
 }

@@ -65,6 +65,21 @@ const tabs: HeaderTab[] = [
   },
 ];
 
+const tabs2: HeaderTab[] = [
+  {
+    id: 'Banana',
+    label: 'Banana',
+  },
+  {
+    id: 'Apple',
+    label: 'Apple',
+  },
+  {
+    id: 'Orange',
+    label: 'Orange',
+  },
+];
+
 const breadcrumbs: HeaderBreadcrumb[] = [
   {
     label: 'Home',
@@ -116,6 +131,12 @@ const layoutDecorator = [
         }}
       >
         <Story />
+        <Container>
+          <Text>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+        </Container>
       </div>
       <div
         style={{
@@ -190,17 +211,17 @@ export const WithLayout: Story = {
 export const WithLayoutAndHeaderPage: Story = {
   args: {
     menuItems,
-    tabs,
     breadcrumbs,
   },
   decorators: layoutDecorator,
   render: args => (
     <>
-      <Header {...args} />
+      <Header {...args} tabs={tabs} />
       <HeaderPage
         title="Page title"
         description="Page description"
         options={args.menuItems}
+        tabs={tabs2}
       />
     </>
   ),
@@ -219,6 +240,7 @@ export const WithLayoutAndHeaderPageNoTabs: Story = {
         title="Page title"
         description="Page description"
         options={args.menuItems}
+        tabs={tabs2}
       />
     </>
   ),

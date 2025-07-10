@@ -116,13 +116,14 @@ export const componentDefinitions = {
       breadcrumb: 'bui-HeaderBreadcrumb',
       breadcrumbLink: 'bui-HeaderBreadcrumbLink',
       breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator',
-      tabs: 'bui-HeaderTabs',
       tabsWrapper: 'bui-HeaderTabsWrapper',
-      tabList: 'bui-HeaderTabList',
-      tab: 'bui-HeaderTab',
-      tabActive: 'bui-HeaderTabActive',
-      tabHovered: 'bui-HeaderTabHovered',
-      subNav: 'bui-HeaderSubNav',
+    },
+  },
+  HeaderPage: {
+    classNames: {
+      root: 'bui-HeaderPage',
+      content: 'bui-HeaderPageContent',
+      tabsWrapper: 'bui-HeaderPageTabsWrapper',
     },
   },
   Heading: {
