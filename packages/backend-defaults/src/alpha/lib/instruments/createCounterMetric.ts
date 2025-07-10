@@ -13,27 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Attributes, Meter, MetricOptions } from '@opentelemetry/api';
-import { GaugeMetric } from '@backstage/backend-plugin-api/alpha';
+import { Attributes } from '@opentelemetry/api';
+import {
+  CounterMetric,
+  CreateMetricOptions,
+} from '@backstage/backend-plugin-api/alpha';
 
 /**
- * Creates a gauge metric wrapper with consistent interface.
+ * Creates a counter metric wrapper with consistent interface.
  *
  * @param meter - The OpenTelemetry meter instance
- * @param name - The name of the gauge metric
+ * @param name - The name of the counter metric
  * @param opts - Optional metric options
- * @returns A GaugeMetric wrapper
+ * @returns A CounterMetric wrapper
  */
-export function createGaugeMetric(
-  meter: Meter,
-  name: string,
-  opts?: MetricOptions,
-): GaugeMetric {
-  const gauge = meter.createGauge(name, opts);
+export function createCounterMetric(opts: CreateMetricOptions): CounterMetric {
+  const { name, meter, opts: metricOpts } = opts;
+  const counter = meter.createCounter(name, metricOpts);
 
   return {
-    set: (value: number, attributes?: Attributes) => {
-      gauge.record(value, attributes);
+    add: (value: number, attributes?: Attributes) => {
+      counter.add(value, attributes);
+    },
+
+    increment: (attributes?: Attributes) => {
+      counter.add(1, attributes);
     },
   };
 }

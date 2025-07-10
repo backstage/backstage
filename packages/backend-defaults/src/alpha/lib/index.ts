@@ -13,13 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  createCounterMetric,
-  createUpDownCounterMetric,
-  createHistogramMetric,
-  createGaugeMetric,
-  createObservableInstrument,
-} from './instruments';
+export * from './instruments';
 
 export {
   createMetricName,

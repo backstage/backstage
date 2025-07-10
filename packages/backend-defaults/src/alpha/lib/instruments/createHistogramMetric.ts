@@ -13,4 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { createHistogramMetric } from './createHistogramMetric';
+import {
+  CreateMetricOptions,
+  HistogramMetric,
+} from '@backstage/backend-plugin-api/alpha';
+import { Attributes } from '@opentelemetry/api';
+
+export const createHistogramMetric = (
+  opts: CreateMetricOptions,
+): HistogramMetric => {
+  const { name, meter, opts: metricOpts } = opts;
+  const histogram = meter.createHistogram(name, metricOpts);
+
+  return {
+    record: (value: number, attributes?: Attributes) => {
+      histogram.record(value, attributes);
+    },
+  };
+};

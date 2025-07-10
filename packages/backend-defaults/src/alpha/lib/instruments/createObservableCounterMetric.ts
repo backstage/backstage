@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { HistogramMetric } from '@backstage/backend-plugin-api/alpha';
-import { Attributes, Meter, MetricOptions } from '@opentelemetry/api';
+import { CreateObservableMetricOptions } from '@backstage/backend-plugin-api/alpha';
+import { createObservableInstrument } from './createObservableInstrument';
 
-export const createHistogramMetric = (
-  meter: Meter,
-  name: string,
-  opts?: MetricOptions,
-): HistogramMetric => {
-  const histogram = meter.createHistogram(name, opts);
-
-  return {
-    record: (value: number, attributes?: Attributes) => {
-      histogram.record(value, attributes);
-    },
-  };
+export const createObservableCounterMetric = (
+  opts: CreateObservableMetricOptions,
+): void => {
+  createObservableInstrument({
+    ...opts,
+    type: 'counter',
+  });
 };

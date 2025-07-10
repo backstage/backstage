@@ -15,22 +15,18 @@
  */
 import {
   ObservableInstrumentType,
-  ObservableMetricOptions,
+  CreateObservableMetricOptions,
 } from '@backstage/backend-plugin-api/alpha';
 
 /**
- * Creates an observable counter metric wrapper with consistent interface.
+ * Creates an observable metric.
  *
- * @param meter - The OpenTelemetry meter instance
- * @param name - The name of the observable counter metric
- * @param opts - Optional metric options
- * @returns An ObservableCounterMetric wrapper
+ * @internal
  */
 export function createObservableInstrument(
-  type: ObservableInstrumentType,
-  options: ObservableMetricOptions,
+  options: CreateObservableMetricOptions & { type: ObservableInstrumentType },
 ): void {
-  const { name, meter, observer, opts } = options;
+  const { name, meter, observer, opts, type } = options;
 
   switch (type) {
     case 'counter':

@@ -28,6 +28,7 @@ export function initDatabaseMetrics(knex: Knex, metrics: MetricsService) {
     opts: {
       description: 'Total amount of entities in the catalog',
     },
+    meter: metrics.getMeter(),
     observer: async gauge => {
       const results = await knex<DbSearchRow>('search')
         .where('key', '=', 'kind')
@@ -47,6 +48,7 @@ export function initDatabaseMetrics(knex: Knex, metrics: MetricsService) {
     opts: {
       description: 'Total amount of registered locations in the catalog',
     },
+    meter: metrics.getMeter(),
     observer: async gauge => {
       if (knex.client.config.client === 'pg') {
         // https://stackoverflow.com/questions/7943233/fast-way-to-discover-the-row-count-of-a-table-in-postgresql
@@ -70,6 +72,7 @@ export function initDatabaseMetrics(knex: Knex, metrics: MetricsService) {
     opts: {
       description: 'Total amount of relations between entities',
     },
+    meter: metrics.getMeter(),
     observer: async gauge => {
       if (knex.client.config.client === 'pg') {
         // https://stackoverflow.com/questions/7943233/fast-way-to-discover-the-row-count-of-a-table-in-postgresql

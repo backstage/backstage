@@ -13,30 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Attributes, Meter, MetricOptions } from '@opentelemetry/api';
-import { CounterMetric } from '@backstage/backend-plugin-api/alpha';
+import { Attributes } from '@opentelemetry/api';
+import {
+  CreateMetricOptions,
+  UpDownCounterMetric,
+} from '@backstage/backend-plugin-api/alpha';
 
 /**
- * Creates a counter metric wrapper with consistent interface.
+ * Creates an up-down counter metric wrapper with consistent interface.
  *
  * @param meter - The OpenTelemetry meter instance
- * @param name - The name of the counter metric
+ * @param name - The name of the up-down counter metric
  * @param opts - Optional metric options
- * @returns A CounterMetric wrapper
+ * @returns An UpDownCounterMetric wrapper
  */
-export function createCounterMetric(
-  meter: Meter,
-  name: string,
-  opts?: MetricOptions,
-): CounterMetric {
-  const counter = meter.createCounter(name, opts);
+export function createUpDownCounterMetric(
+  opts: CreateMetricOptions,
+): UpDownCounterMetric {
+  const { name, meter, opts: metricOpts } = opts;
+  const counter = meter.createUpDownCounter(name, metricOpts);
 
   return {
     add: (value: number, attributes?: Attributes) => {
       counter.add(value, attributes);
     },
+    subtract: (value: number, attributes?: Attributes) => {
+      counter.add(-value, attributes);
+    },
     increment: (attributes?: Attributes) => {
       counter.add(1, attributes);
+    },
+    decrement: (attributes?: Attributes) => {
+      counter.add(-1, attributes);
     },
   };
 }

@@ -132,9 +132,12 @@ export interface GaugeMetric {
 
 export type ObservableInstrumentType = 'counter' | 'up-down-counter' | 'gauge';
 
-export type ObservableMetricOptions = {
+export type CreateMetricOptions = {
   name: string;
   meter: Meter;
-  observer: ObservableCallback<Attributes>;
   opts?: MetricOptions;
+};
+
+export type CreateObservableMetricOptions = CreateMetricOptions & {
+  observer: ObservableCallback<Attributes>;
 };

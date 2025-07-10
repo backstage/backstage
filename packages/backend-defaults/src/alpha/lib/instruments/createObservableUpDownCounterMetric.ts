@@ -13,4 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { createGaugeMetric } from './createGaugeMetric';
+import { createObservableInstrument } from './createObservableInstrument';
+import { CreateObservableMetricOptions } from '@backstage/backend-plugin-api/alpha';
+
+export const createObservableUpDownCounterMetric = (
+  opts: CreateObservableMetricOptions,
+): void => {
+  createObservableInstrument({
+    ...opts,
+    type: 'up-down-counter',
+  });
+};

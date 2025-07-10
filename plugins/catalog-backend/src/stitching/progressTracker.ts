@@ -47,6 +47,7 @@ export function progressTracker(
     opts: {
       description: 'Number of entities currently in the stitching queue',
     },
+    meter: metrics.getMeter(),
     observer: async gauge => {
       const total = await knex<DbRefreshStateRow>('refresh_state')
         .count({ count: '*' })
