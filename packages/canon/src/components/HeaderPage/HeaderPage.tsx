@@ -21,7 +21,7 @@ import { Flex } from '../Flex';
 import { Menu } from '../Menu';
 import { ButtonIcon } from '../ButtonIcon';
 import { RiMore2Line } from '@remixicon/react';
-import { Tabs, Tab } from '../Tabs';
+import { Tabs, TabList, Tab } from '../Tabs';
 
 /**
  * A component that renders a header page.
@@ -71,11 +71,13 @@ export const HeaderPage = (props: HeaderPageProps) => {
       </Flex>
       {tabs && (
         <Tabs>
-          {tabs.map(tab => (
-            <Tab key={tab.id} id={tab.id} href={tab.href}>
-              {tab.label}
-            </Tab>
-          ))}
+          <TabList>
+            {tabs.map(tab => (
+              <Tab key={tab.id} id={tab.id} href={tab.href}>
+                {tab.label}
+              </Tab>
+            ))}
+          </TabList>
         </Tabs>
       )}
     </Flex>

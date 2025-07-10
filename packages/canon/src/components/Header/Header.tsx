@@ -16,7 +16,7 @@
 
 import type { HeaderProps } from './types';
 import { HeaderToolbar } from './HeaderToolbar';
-import { Tabs, Tab } from '../Tabs';
+import { Tabs, TabList, Tab } from '../Tabs';
 import { useStyles } from '../../hooks/useStyles';
 import { type NavigateOptions } from 'react-router-dom';
 
@@ -51,11 +51,13 @@ export const Header = (props: HeaderProps) => {
       {tabs && (
         <div className={classNames.tabsWrapper}>
           <Tabs>
-            {tabs?.map(tab => (
-              <Tab key={tab.id} id={tab.id} href={tab.href}>
-                {tab.label}
-              </Tab>
-            ))}
+            <TabList>
+              {tabs?.map(tab => (
+                <Tab key={tab.id} id={tab.id} href={tab.href}>
+                  {tab.label}
+                </Tab>
+              ))}
+            </TabList>
           </Tabs>
         </div>
       )}
