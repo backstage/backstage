@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.canon-TableCell {
-  padding: var(--canon-space-3);
-  font-size: var(--canon-font-size-3);
+.bui-TableCell {
+  padding: var(--bui-space-3);
+  font-size: var(--bui-font-size-3);
 }

@@ -22,7 +22,7 @@ const displayValues = ['none', 'inline', 'inline-block', 'block'] as const;
 const displayPropDefs = {
   display: {
     type: 'enum',
-    className: 'cu-display',
+    className: 'bui-display',
     values: displayValues,
     responsive: true,
   },

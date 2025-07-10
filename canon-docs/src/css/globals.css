@@ -31,7 +31,6 @@ body {
   background-color: var(--bg);
   color: var(--primary);
   font-family: var(--font-regular);
-  transition: background-color 0.2s ease-in-out;
 }
 
 iframe {

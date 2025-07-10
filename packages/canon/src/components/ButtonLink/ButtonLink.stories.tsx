@@ -50,7 +50,7 @@ export const Variants: Story = {
       <ButtonLink
         iconStart={<Icon name="cloud" />}
         variant="primary"
-        href="https://canon.backstage.io"
+        href="https://ui.backstage.io"
         target="_blank"
       >
         Button
@@ -58,7 +58,15 @@ export const Variants: Story = {
       <ButtonLink
         iconStart={<Icon name="cloud" />}
         variant="secondary"
-        href="https://canon.backstage.io"
+        href="https://ui.backstage.io"
+        target="_blank"
+      >
+        Button
+      </ButtonLink>
+      <ButtonLink
+        iconStart={<Icon name="cloud" />}
+        variant="tertiary"
+        href="https://ui.backstage.io"
         target="_blank"
       >
         Button
@@ -125,6 +133,9 @@ export const Disabled: Story = {
       </ButtonLink>
       <ButtonLink variant="secondary" isDisabled>
         Secondary
+      </ButtonLink>
+      <ButtonLink variant="tertiary" isDisabled>
+        Tertiary
       </ButtonLink>
     </Flex>
   ),

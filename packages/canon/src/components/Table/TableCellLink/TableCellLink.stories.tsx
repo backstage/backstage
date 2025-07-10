@@ -28,7 +28,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     title: 'I am a link',
-    href: 'https://canon.backstage.io',
+    href: 'https://ui.backstage.io',
   },
 };
 

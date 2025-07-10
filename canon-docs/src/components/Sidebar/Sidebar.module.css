@@ -15,7 +15,6 @@
     color: var(--primary);
     background-color: var(--panel);
     border: 1px solid var(--border);
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
     overflow: hidden;
   }
 }
@@ -56,8 +55,8 @@
 }
 
 .sectionTitle {
-  font-size: var(--canon-font-size-3);
-  font-weight: var(--canon-font-weight-bold);
+  font-size: 0.875rem;
+  font-weight: 600;
   padding: 12px 0;
   color: var(--primary);
   margin-top: 24px;
@@ -74,10 +73,10 @@
   height: 26px;
   padding: 0 12px;
   border-radius: 4px;
-  transition: background-color 0.2s ease-in-out;
 
   &:hover {
     background-color: var(--surface-1);
+    transition: background-color 0.2s ease-in-out;
   }
 }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.canon-Flex {
+.bui-Flex {
   display: flex;
 
   /* This helps when using `truncate` on text inside a flex container */

@@ -5,6 +5,9 @@ import { useGlobals } from '@storybook/preview-api';
 // Default Backstage theme
 import '../src/css/styles.css';
 
+// Custom mocked styles
+import '../src/css/storybook.css';
+
 // Custom themes
 import './themes/spotify.css';
 
@@ -135,11 +138,11 @@ const preview: Preview = {
   decorators: [
     withThemes,
     Story => {
-      document.body.style.backgroundColor = 'var(--canon-bg)';
+      document.body.style.backgroundColor = 'var(--bui-bg)';
 
       const docsStoryElements = document.getElementsByClassName('docs-story');
       Array.from(docsStoryElements).forEach(element => {
-        (element as HTMLElement).style.backgroundColor = 'var(--canon-bg)';
+        (element as HTMLElement).style.backgroundColor = 'var(--bui-bg)';
       });
 
       return <Story />;

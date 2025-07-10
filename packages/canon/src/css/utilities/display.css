@@ -1,110 +1,110 @@
-.cu-display-none {
+.bui-display-none {
   display: none;
 }
 
-.cu-display-inline {
+.bui-display-inline {
   display: inline;
 }
 
-.cu-display-inline-block {
+.bui-display-inline-block {
   display: inline-block;
 }
 
-.cu-display-block {
+.bui-display-block {
   display: block;
 }
 
 /* Breakpoint xs */
 @media (min-width: 640px) {
-  .xs\:cu-display-none {
+  .xs\:bui-display-none {
     display: none;
   }
 
-  .xs\:cu-display-inline {
+  .xs\:bui-display-inline {
     display: inline;
   }
 
-  .xs\:cu-display-inline-block {
+  .xs\:bui-display-inline-block {
     display: inline-block;
   }
 
-  .xs\:cu-display-block {
+  .xs\:bui-display-block {
     display: block;
   }
 }
 
 /* Breakpoint sm */
 @media (min-width: 768px) {
-  .sm\:cu-display-none {
+  .sm\:bui-display-none {
     display: none;
   }
 
-  .sm\:cu-display-inline {
+  .sm\:bui-display-inline {
     display: inline;
   }
 
-  .sm\:cu-display-inline-block {
+  .sm\:bui-display-inline-block {
     display: inline-block;
   }
 
-  .sm\:cu-display-block {
+  .sm\:bui-display-block {
     display: block;
   }
 }
 
 /* Breakpoint md */
 @media (min-width: 1024px) {
-  .md\:cu-display-none {
+  .md\:bui-display-none {
     display: none;
   }
 
-  .md\:cu-display-inline {
+  .md\:bui-display-inline {
     display: inline;
   }
 
-  .md\:cu-display-inline-block {
+  .md\:bui-display-inline-block {
     display: inline-block;
   }
 
-  .md\:cu-display-block {
+  .md\:bui-display-block {
     display: block;
   }
 }
 
 /* Breakpoint lg */
 @media (min-width: 1280px) {
-  .lg\:cu-display-none {
+  .lg\:bui-display-none {
     display: none;
   }
 
-  .lg\:cu-display-inline {
+  .lg\:bui-display-inline {
     display: inline;
   }
 
-  .lg\:cu-display-inline-block {
+  .lg\:bui-display-inline-block {
     display: inline-block;
   }
 
-  .lg\:cu-display-block {
+  .lg\:bui-display-block {
     display: block;
   }
 }
 
 /* Breakpoint xl */
 @media (min-width: 1536px) {
-  .xl\:cu-display-none {
+  .xl\:bui-display-none {
     display: none;
   }
 
-  .xl\:cu-display-inline {
+  .xl\:bui-display-inline {
     display: inline;
   }
 
-  .xl\:cu-display-inline-block {
+  .xl\:bui-display-inline-block {
     display: inline-block;
   }
 
-  .xl\:cu-display-block {
+  .xl\:bui-display-block {
     display: block;
   }
 }

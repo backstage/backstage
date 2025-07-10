@@ -2,14 +2,12 @@
   border-radius: 0.375rem;
   width: 100%;
   background-color: var(--surface-1);
-  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
 .tabsTheme {
   width: 100px;
   border-radius: 0.375rem;
   background-color: var(--surface-1);
-  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
 .list {
@@ -77,7 +75,7 @@
   height: 1.5rem;
   border-radius: 0.25rem;
   background-color: var(--panel);
-  transition-property: translate, width, background-color;
+  transition-property: translate, width;
   transition-duration: 200ms;
   transition-timing-function: ease-in-out;
 }

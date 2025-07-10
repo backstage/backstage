@@ -1,5 +1,20 @@
 # @backstage/canon
 
+## 0.6.0-next.1
+
+### Minor Changes
+
+- 2e30459: We are moving our Tooltip component to use React Aria under the hood. In doing so, the structure of the component and its prop are changing to follow the new underlying structure.
+
+### Patch Changes
+
+- 76255b8: Add new Card component to Canon.
+- b0a6c8e: Add new Header component to Canon.
+- be76576: Improve Button, ButtonIcon and ButtonLink styling in Canon.
+- 17beb9b: Update return types for Heading & Text components for React 19.
+- eac4a4c: Add new tertiary variant to Button, ButtonIcon and ButtonLink in Canon.
+- 8f2e82d: Add new Skeleton component in Canon
+
 ## 0.6.0-next.0
 
 ### Minor Changes

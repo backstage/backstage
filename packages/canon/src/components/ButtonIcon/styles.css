@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-.canon-ButtonIcon {
+.bui-ButtonIcon {
   align-items: center;
   justify-content: center;
 }
 
-.canon-ButtonIcon[data-size='small'] {
+.bui-ButtonIcon[data-size='small'] {
   padding: 0;
   width: 2rem;
 }
 
-.canon-ButtonIcon[data-size='medium'] {
+.bui-ButtonIcon[data-size='medium'] {
   padding: 0;
   width: 2.5rem;
 }

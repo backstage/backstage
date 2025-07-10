@@ -34,9 +34,12 @@ export * from './components/Heading';
 // UI components
 export * from './components/Avatar';
 export * from './components/Button';
+export * from './components/Card';
 export * from './components/Collapsible';
 export * from './components/DataTable';
 export * from './components/FieldLabel';
+export * from './components/Header';
+export * from './components/HeaderPage';
 export * from './components/Icon';
 export * from './components/ButtonIcon';
 export * from './components/ButtonLink';
@@ -51,6 +54,7 @@ export * from './components/ScrollArea';
 export * from './components/SearchField';
 export * from './components/Link';
 export * from './components/Select';
+export * from './components/Skeleton';
 export * from './components/Switch';
 
 // Types

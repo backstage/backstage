@@ -27,7 +27,7 @@ import {
 } from 'react';
 import clsx from 'clsx';
 import { MenuComboboxOption, MenuComboboxProps } from './types';
-import { Icon } from '@backstage/canon';
+import { Icon } from '../../';
 
 const getListboxItemId = (listboxId: string, optionValue: string): string =>
   `${listboxId}-option-${optionValue}`;
@@ -66,7 +66,7 @@ function ComboboxItem({
   return (
     <div
       ref={itemRef}
-      className="canon-SubmenuComboboxItem"
+      className="bui-SubmenuComboboxItem"
       id={itemId}
       role="option"
       aria-selected={isSelected}
@@ -76,10 +76,10 @@ function ComboboxItem({
       onMouseOver={() => !option.disabled && onItemActive(optionIndex)}
       onClick={() => !option.disabled && onItemSelect(option.value)}
     >
-      <div className="canon-SubmenuComboboxItemCheckbox">
+      <div className="bui-SubmenuComboboxItemCheckbox">
         {isSelected && <Icon aria-hidden="true" name="check" size={12} />}
       </div>
-      <div className="canon-SubmenuComboboxItemLabel">{option.label}</div>
+      <div className="bui-SubmenuComboboxItemLabel">{option.label}</div>
     </div>
   );
 }
@@ -194,11 +194,11 @@ export const Combobox = forwardRef<HTMLDivElement, MenuComboboxProps>(
       <div
         ref={ref}
         role="combobox"
-        className={clsx('canon-MenuCombobox', className)}
+        className={clsx('bui-MenuCombobox', className)}
         {...rest}
       >
         <input
-          className="canon-SubmenuComboboxSearch"
+          className="bui-SubmenuComboboxSearch"
           type="text"
           role="combobox"
           placeholder="Filter..."
@@ -217,12 +217,10 @@ export const Combobox = forwardRef<HTMLDivElement, MenuComboboxProps>(
           id={listboxId}
           tabIndex={-1}
           aria-multiselectable={multiselect ? true : undefined}
-          className="canon-SubmenuComboboxItems"
+          className="bui-SubmenuComboboxItems"
         >
           {filteredOptions.length === 0 ? (
-            <div className="canon-SubmenuComboboxNoResults">
-              No results found
-            </div>
+            <div className="bui-SubmenuComboboxNoResults">No results found</div>
           ) : (
             filteredOptions.map((option, index) => (
               <ComboboxItem
