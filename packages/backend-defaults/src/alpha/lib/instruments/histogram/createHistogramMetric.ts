@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { HistogramMetric } from '@backstage/backend-plugin-api/alpha';
-import { Meter, MetricOptions } from '@opentelemetry/api';
+import { Attributes, Meter, MetricOptions } from '@opentelemetry/api';
 
 export const createHistogramMetric = (
   meter: Meter,
@@ -24,8 +24,8 @@ export const createHistogramMetric = (
   const histogram = meter.createHistogram(name, opts);
 
   return {
-    record: (value: number, labels?: Record<string, string>) => {
-      histogram.record(value, labels);
+    record: (value: number, attributes?: Attributes) => {
+      histogram.record(value, attributes);
     },
   };
 };

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meter, MetricOptions } from '@opentelemetry/api';
+import { Attributes, Meter, MetricOptions } from '@opentelemetry/api';
 import { UpDownCounterMetric } from '@backstage/backend-plugin-api/alpha';
 
 /**
@@ -32,17 +32,17 @@ export function createUpDownCounterMetric(
   const counter = meter.createUpDownCounter(name, opts);
 
   return {
-    add: (value: number, labels?: Record<string, string>) => {
-      counter.add(value, labels);
+    add: (value: number, attributes?: Attributes) => {
+      counter.add(value, attributes);
     },
-    subtract: (value: number, labels?: Record<string, string>) => {
-      counter.add(-value, labels);
+    subtract: (value: number, attributes?: Attributes) => {
+      counter.add(-value, attributes);
     },
-    increment: (labels?: Record<string, string>) => {
-      counter.add(1, labels);
+    increment: (attributes?: Attributes) => {
+      counter.add(1, attributes);
     },
-    decrement: (labels?: Record<string, string>) => {
-      counter.add(-1, labels);
+    decrement: (attributes?: Attributes) => {
+      counter.add(-1, attributes);
     },
   };
 }

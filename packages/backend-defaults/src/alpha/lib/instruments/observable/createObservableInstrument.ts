@@ -17,11 +17,6 @@ import {
   ObservableInstrumentType,
   ObservableMetricOptions,
 } from '@backstage/backend-plugin-api/alpha';
-import {
-  ObservableCounter,
-  ObservableGauge,
-  ObservableUpDownCounter,
-} from '@opentelemetry/api';
 
 /**
  * Creates an observable counter metric wrapper with consistent interface.
@@ -36,24 +31,18 @@ export function createObservableInstrument(
   options: ObservableMetricOptions,
 ): void {
   const { name, meter, observer, opts } = options;
-  let observableInstrument:
-    | ObservableCounter
-    | ObservableUpDownCounter
-    | ObservableGauge;
 
   switch (type) {
     case 'counter':
-      observableInstrument = meter.createObservableCounter(name, opts);
+      meter.createObservableCounter(name, opts).addCallback(observer);
       break;
     case 'up-down-counter':
-      observableInstrument = meter.createObservableUpDownCounter(name, opts);
+      meter.createObservableUpDownCounter(name, opts).addCallback(observer);
       break;
     case 'gauge':
-      observableInstrument = meter.createObservableGauge(name, opts);
+      meter.createObservableGauge(name, opts).addCallback(observer);
       break;
     default:
-      observableInstrument = meter.createObservableCounter(name, opts);
+      meter.createObservableCounter(name, opts).addCallback(observer);
   }
-
-  observableInstrument.addCallback(observer);
 }

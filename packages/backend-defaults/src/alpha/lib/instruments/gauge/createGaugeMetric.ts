@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meter, MetricOptions } from '@opentelemetry/api';
+import { Attributes, Meter, MetricOptions } from '@opentelemetry/api';
 import { GaugeMetric } from '@backstage/backend-plugin-api/alpha';
 
 /**
@@ -29,18 +29,11 @@ export function createGaugeMetric(
   name: string,
   opts?: MetricOptions,
 ): GaugeMetric {
-  // Note: OpenTelemetry doesn't have a synchronous gauge
-  // This is a placeholder that returns the observable gauge
-  // In practice, you might want to use an observable gauge with callbacks
-  const gauge = meter.createObservableGauge(name, opts);
+  const gauge = meter.createGauge(name, opts);
 
   return {
-    set: (value: number, labels?: Record<string, string>) => {
-      // This is a simplified implementation
-      // In practice, you'd want to manage callback registration properly
-      gauge.addCallback(result => {
-        result.observe(value, labels);
-      });
+    set: (value: number, attributes?: Attributes) => {
+      gauge.record(value, attributes);
     },
   };
 }

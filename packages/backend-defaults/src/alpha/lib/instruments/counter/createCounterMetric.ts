@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meter, MetricOptions } from '@opentelemetry/api';
+import { Attributes, Meter, MetricOptions } from '@opentelemetry/api';
 import { CounterMetric } from '@backstage/backend-plugin-api/alpha';
 
 /**
@@ -32,10 +32,10 @@ export function createCounterMetric(
   const counter = meter.createCounter(name, opts);
 
   return {
-    add: (value: number, attributes?: Record<string, string>) => {
+    add: (value: number, attributes?: Attributes) => {
       counter.add(value, attributes);
     },
-    increment: (attributes?: Record<string, string>) => {
+    increment: (attributes?: Attributes) => {
       counter.add(1, attributes);
     },
   };
