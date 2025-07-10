@@ -87,38 +87,7 @@ export const ExpandableNavigationAddon = () => {
   useEffect(() => {
     if (!checkboxToggles?.length) return;
     setHasNavSubLevels(true);
-    function createKeydownHandler(item: HTMLInputElement) {
-      return function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          item.checked = !item.checked;
-          item.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-      };
-    }
-    function createCleanup(
-      item: HTMLInputElement,
-      handler: (event: KeyboardEvent) => void,
-    ) {
-      return function cleanup() {
-        item.removeEventListener('keydown', handler);
-      };
-    }
-    const cleanupFunctions: Array<() => void> = [];
-    for (const item of checkboxToggles) {
-      item.tabIndex = 0;
-      const keydownHandler = createKeydownHandler(item);
-      item.addEventListener('keydown', keydownHandler);
-      cleanupFunctions.push(createCleanup(item, keydownHandler));
-    }
-    function cleanupAll() {
-      for (const cleanup of cleanupFunctions) {
-        cleanup();
-      }
-    }
-    // eslint-disable-next-line consistent-return
-    return cleanupAll;
-  }, [checkboxToggles, expanded]);
+  }, [checkboxToggles]);
 
   useEffect(() => {
     if (!checkboxToggles?.length) return;
