@@ -165,15 +165,14 @@ export class OidcRouter {
           redirectUri: session.redirectUri,
         });
       } catch (error) {
+        const description = isError(error) ? error.message : 'Unknown error';
         this.logger.error(
-          `Failed to get authorization session: ${
-            isError(error) ? error.message : 'Unknown error'
-          }`,
+          `Failed to get authorization session: ${description}`,
           error,
         );
         return res.status(404).json({
           error: 'not_found',
-          error_description: 'Authorization session not found or expired',
+          error_description: description,
         });
       }
     });
@@ -211,15 +210,14 @@ export class OidcRouter {
           redirectUrl: result.redirectUrl,
         });
       } catch (error) {
+        const description = isError(error) ? error.message : 'Unknown error';
         this.logger.error(
-          `Failed to approve authorization session: ${
-            isError(error) ? error.message : 'Unknown error'
-          }`,
+          `Failed to approve authorization session: ${description}`,
           error,
         );
         return res.status(400).json({
           error: 'invalid_request',
-          error_description: isError(error) ? error.message : 'Unknown error',
+          error_description: description,
         });
       }
     });

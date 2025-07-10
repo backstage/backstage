@@ -378,6 +378,59 @@ describe('OidcService', () => {
           }),
         ).rejects.toThrow('Invalid authorization session');
       });
+
+      it('should throw error when trying to approve an already approved session', async () => {
+        const { service } = await createOidcService(databaseId);
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+        });
+
+        await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        await expect(
+          service.approveAuthorizationSession({
+            sessionId: authSession.id,
+            userEntityRef: 'user:default/test',
+          }),
+        ).rejects.toThrow('Authorization session not found or expired');
+      });
+
+      it('should throw error when trying to approve an already rejected session', async () => {
+        const { service } = await createOidcService(databaseId);
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+        });
+
+        await service.rejectAuthorizationSession({
+          sessionId: authSession.id,
+        });
+
+        await expect(
+          service.approveAuthorizationSession({
+            sessionId: authSession.id,
+            userEntityRef: 'user:default/test',
+          }),
+        ).rejects.toThrow('Authorization session not found or expired');
+      });
     });
 
     describe('getAuthorizationSession', () => {
@@ -413,10 +466,34 @@ describe('OidcService', () => {
           }),
         );
       });
-    });
 
-    describe('rejectAuthorizationSession', () => {
-      it('should delete a authorization session', async () => {
+      it('should throw error when trying to get an already approved session', async () => {
+        const { service } = await createOidcService(databaseId);
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+        });
+
+        await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        await expect(
+          service.getAuthorizationSession({
+            sessionId: authSession.id,
+          }),
+        ).rejects.toThrow('Authorization session not found or expired');
+      });
+
+      it('should throw error when trying to get an already rejected session', async () => {
         const { service } = await createOidcService(databaseId);
 
         const client = await service.registerClient({
@@ -438,11 +515,34 @@ describe('OidcService', () => {
           service.getAuthorizationSession({
             sessionId: authSession.id,
           }),
-        ).resolves.toEqual(
-          expect.objectContaining({
-            status: 'rejected',
+        ).rejects.toThrow('Authorization session not found or expired');
+      });
+    });
+
+    describe('rejectAuthorizationSession', () => {
+      it('should reject a authorization session', async () => {
+        const { service } = await createOidcService(databaseId);
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+        });
+
+        await service.rejectAuthorizationSession({
+          sessionId: authSession.id,
+        });
+
+        await expect(
+          service.getAuthorizationSession({
+            sessionId: authSession.id,
           }),
-        );
+        ).rejects.toThrow('Authorization session not found or expired');
       });
 
       it('should throw error for invalid authorization session', async () => {
@@ -453,6 +553,57 @@ describe('OidcService', () => {
             sessionId: 'invalid-session',
           }),
         ).rejects.toThrow('Invalid authorization session');
+      });
+
+      it('should throw error when trying to reject an already approved session', async () => {
+        const { service } = await createOidcService(databaseId);
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+        });
+
+        await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        await expect(
+          service.rejectAuthorizationSession({
+            sessionId: authSession.id,
+          }),
+        ).rejects.toThrow('Authorization session not found or expired');
+      });
+
+      it('should throw error when trying to reject an already rejected session', async () => {
+        const { service } = await createOidcService(databaseId);
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+        });
+
+        await service.rejectAuthorizationSession({
+          sessionId: authSession.id,
+        });
+
+        await expect(
+          service.rejectAuthorizationSession({
+            sessionId: authSession.id,
+          }),
+        ).rejects.toThrow('Authorization session not found or expired');
       });
     });
 
