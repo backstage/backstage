@@ -124,6 +124,7 @@ export const componentDefinitions = {
       root: 'bui-HeaderPage',
       content: 'bui-HeaderPageContent',
       tabsWrapper: 'bui-HeaderPageTabsWrapper',
+      controls: 'bui-HeaderPageControls',
     },
   },
   Heading: {

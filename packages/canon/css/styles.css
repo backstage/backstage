@@ -9657,6 +9657,10 @@
 
 .bui-HeaderToolbarControls {
   right: var(--bui-space-5);
+  align-items: center;
+  gap: var(--bui-space-2);
+  flex-direction: row;
+  display: flex;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -9718,6 +9722,13 @@
 
 .bui-HeaderPageTabsWrapper {
   margin-left: -8px;
+}
+
+.bui-HeaderPageControls {
+  align-items: center;
+  gap: var(--bui-space-2);
+  flex-direction: row;
+  display: flex;
 }
 
 .bui-Heading {

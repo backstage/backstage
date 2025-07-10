@@ -396,6 +396,7 @@ export const componentDefinitions: {
       readonly root: 'bui-HeaderPage';
       readonly content: 'bui-HeaderPageContent';
       readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
+      readonly controls: 'bui-HeaderPageControls';
     };
   };
   readonly Heading: {
@@ -968,7 +969,7 @@ export interface HeaderBreadcrumb {
 }
 
 // @public
-export interface HeaderOption {
+export interface HeaderMenuItem {
   // (undocumented)
   label: string;
   // (undocumented)
@@ -981,35 +982,15 @@ export interface HeaderOption {
 export const HeaderPage: (props: HeaderPageProps) => JSX_2.Element;
 
 // @public
-export interface HeaderPageOption {
-  // (undocumented)
-  label: string;
-  // (undocumented)
-  onClick?: () => void;
-  // (undocumented)
-  value: string;
-}
-
-// @public
 export interface HeaderPageProps {
   // (undocumented)
-  description?: string;
+  customActions?: React.ReactNode;
   // (undocumented)
-  options?: HeaderPageOption[];
+  menuItems?: HeaderMenuItem[];
   // (undocumented)
-  tabs?: HeaderPageTab[];
+  tabs?: HeaderTab[];
   // (undocumented)
   title?: string;
-}
-
-// @public
-export interface HeaderPageTab {
-  // (undocumented)
-  href?: string;
-  // (undocumented)
-  id: string;
-  // (undocumented)
-  label: string;
 }
 
 // @public
@@ -1021,7 +1002,7 @@ export interface HeaderProps {
   // (undocumented)
   icon?: React.ReactNode;
   // (undocumented)
-  menuItems?: HeaderOption[];
+  menuItems?: HeaderMenuItem[];
   // (undocumented)
   tabs?: HeaderTab[];
   // (undocumented)

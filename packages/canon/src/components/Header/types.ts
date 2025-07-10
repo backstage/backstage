@@ -24,7 +24,7 @@ export interface HeaderProps {
   title?: string;
   breadcrumbs?: HeaderBreadcrumb[];
   customActions?: React.ReactNode;
-  menuItems?: HeaderOption[];
+  menuItems?: HeaderMenuItem[];
   tabs?: HeaderTab[];
 }
 
@@ -44,7 +44,7 @@ export interface HeaderTab {
  *
  * @public
  */
-export interface HeaderOption {
+export interface HeaderMenuItem {
   label: string;
   value: string;
   onClick?: () => void;

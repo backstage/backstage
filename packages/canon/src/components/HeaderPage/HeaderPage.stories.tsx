@@ -16,12 +16,16 @@
 
 import type { Meta, StoryObj, StoryFn } from '@storybook/react';
 import { HeaderPage } from './HeaderPage';
-import { HeaderPageOption, HeaderPageTab } from './types';
+import type { HeaderTab, HeaderMenuItem } from '../Header/types';
 import { MemoryRouter } from 'react-router-dom';
+import { Button } from '../Button';
 
 const meta = {
   title: 'Components/HeaderPage',
   component: HeaderPage,
+  parameters: {
+    layout: 'fullscreen',
+  },
   decorators: [
     (Story: StoryFn) => (
       <MemoryRouter>
@@ -34,7 +38,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const tabs: HeaderPageTab[] = [
+const tabs: HeaderTab[] = [
   {
     id: 'overview',
     label: 'Overview',
@@ -57,7 +61,7 @@ const tabs: HeaderPageTab[] = [
   },
 ];
 
-const options: HeaderPageOption[] = [
+const menuItems: HeaderMenuItem[] = [
   {
     label: 'Settings',
     value: 'settings',
@@ -88,7 +92,6 @@ const layoutDecorator = [
       <div
         style={{
           paddingInline: '266px',
-          minHeight: '200vh',
         }}
       >
         <Story />
@@ -116,13 +119,6 @@ export const Default: Story = {
   },
 };
 
-export const WithDescription: Story = {
-  args: {
-    ...Default.args,
-    description: 'Header Page Description',
-  },
-};
-
 export const WithTabs: Story = {
   args: {
     ...Default.args,
@@ -130,20 +126,32 @@ export const WithTabs: Story = {
   },
 };
 
-export const WithOptions: Story = {
+export const WithMenuItems: Story = {
   args: {
     ...Default.args,
-    options,
+    menuItems,
   },
 };
 
+export const WithCustomActions: Story = {
+  render: () => (
+    <HeaderPage
+      {...Default.args}
+      menuItems={menuItems}
+      customActions={<Button>Custom action</Button>}
+    />
+  ),
+};
+
 export const WithEverything: Story = {
-  args: {
-    ...Default.args,
-    description: 'Header Page Description',
-    tabs,
-    options,
-  },
+  render: () => (
+    <HeaderPage
+      {...Default.args}
+      menuItems={menuItems}
+      tabs={tabs}
+      customActions={<Button>Custom action</Button>}
+    />
+  ),
 };
 
 export const WithLayout: Story = {
@@ -151,7 +159,4 @@ export const WithLayout: Story = {
     ...WithEverything.args,
   },
   decorators: layoutDecorator,
-  parameters: {
-    layout: 'fullscreen',
-  },
 };

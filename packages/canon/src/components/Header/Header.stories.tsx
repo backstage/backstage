@@ -16,12 +16,18 @@
 
 import type { Meta, StoryObj, StoryFn } from '@storybook/react';
 import { Header } from './Header';
-import { HeaderBreadcrumb, HeaderOption, HeaderTab } from './types';
+import { HeaderBreadcrumb, HeaderMenuItem, HeaderTab } from './types';
 import { Button } from '../Button';
 import { HeaderPage } from '../HeaderPage';
 import { MemoryRouter } from 'react-router-dom';
 import { Container } from '../Container';
 import { Text } from '../Text';
+import { ButtonIcon } from '../ButtonIcon';
+import {
+  RiHeartLine,
+  RiEmotionHappyLine,
+  RiCloudy2Line,
+} from '@remixicon/react';
 
 const meta = {
   title: 'Components/Header',
@@ -95,7 +101,7 @@ const breadcrumbs: HeaderBreadcrumb[] = [
   },
 ];
 
-const menuItems: HeaderOption[] = [
+const menuItems: HeaderMenuItem[] = [
   {
     label: 'Settings',
     value: 'settings',
@@ -179,6 +185,7 @@ export const WithOptions: Story = {
 export const WithCustomActions: Story = {
   args: {
     customActions: <Button>Custom action</Button>,
+    menuItems,
   },
   decorators: [withRouter],
 };
@@ -202,15 +209,6 @@ export const WithAllComponents: Story = {
 export const WithLayout: Story = {
   args: {
     menuItems,
-    tabs,
-    breadcrumbs,
-  },
-  decorators: layoutDecorator,
-};
-
-export const WithLayoutAndHeaderPage: Story = {
-  args: {
-    menuItems,
     breadcrumbs,
   },
   decorators: layoutDecorator,
@@ -219,15 +217,15 @@ export const WithLayoutAndHeaderPage: Story = {
       <Header {...args} tabs={tabs} />
       <HeaderPage
         title="Page title"
-        description="Page description"
-        options={args.menuItems}
+        menuItems={args.menuItems}
         tabs={tabs2}
+        customActions={<Button>Custom action</Button>}
       />
     </>
   ),
 };
 
-export const WithLayoutAndHeaderPageNoTabs: Story = {
+export const WithLayoutNoTabs: Story = {
   args: {
     menuItems,
     breadcrumbs,
@@ -236,11 +234,40 @@ export const WithLayoutAndHeaderPageNoTabs: Story = {
   render: args => (
     <>
       <Header {...args} />
+      <HeaderPage title="Page title" menuItems={args.menuItems} tabs={tabs2} />
+    </>
+  ),
+};
+
+export const WithEverything: Story = {
+  args: {
+    menuItems,
+    breadcrumbs,
+    tabs,
+  },
+  decorators: layoutDecorator,
+  render: args => (
+    <>
+      <Header
+        {...args}
+        customActions={
+          <>
+            <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
+            <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
+            <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+          </>
+        }
+      />
       <HeaderPage
         title="Page title"
-        description="Page description"
-        options={args.menuItems}
+        menuItems={args.menuItems}
         tabs={tabs2}
+        customActions={
+          <>
+            <Button variant="secondary">Secondary</Button>
+            <Button variant="primary">Primary</Button>
+          </>
+        }
       />
     </>
   ),

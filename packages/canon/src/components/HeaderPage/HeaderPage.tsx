@@ -28,15 +28,16 @@ import { useStyles } from '../../hooks/useStyles';
  * @public
  */
 export const HeaderPage = (props: HeaderPageProps) => {
-  const { title, options, tabs } = props;
+  const { title, menuItems, tabs, customActions } = props;
   const { classNames } = useStyles('HeaderPage');
 
   return (
     <div className={classNames.root}>
       <div className={classNames.content}>
         <Heading variant="title4">{title}</Heading>
-        <div>
-          {options && (
+        <div className={classNames.controls}>
+          {customActions}
+          {menuItems && (
             <Menu.Root>
               <Menu.Trigger
                 render={props => (
@@ -51,12 +52,12 @@ export const HeaderPage = (props: HeaderPageProps) => {
               <Menu.Portal>
                 <Menu.Positioner sideOffset={4} align="end">
                   <Menu.Popup>
-                    {options.map(option => (
+                    {menuItems.map(menuItem => (
                       <Menu.Item
-                        key={option.value}
-                        onClick={() => option.onClick?.()}
+                        key={menuItem.value}
+                        onClick={() => menuItem.onClick?.()}
                       >
-                        {option.label}
+                        {menuItem.label}
                       </Menu.Item>
                     ))}
                   </Menu.Popup>
