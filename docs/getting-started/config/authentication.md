@@ -199,7 +199,7 @@ integrations:
 
 :::note Note
 
-If you've updated the configuration for your integration, it's likely that the backend will need a restart to apply these changes. To do this, stop the running instance in your terminal with `Control-C`, then start it again with `yarn start`. Once the backend has restarted, retry the operation.
+If you've updated the configuration for your integration, it's likely that the backend will need a restart to apply these changes. To do this, stop the running instance in your terminal with `Ctrl+C`, then start it again with `yarn start`. Once the backend has restarted, retry the operation.
 
 :::
 
