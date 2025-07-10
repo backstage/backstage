@@ -20,3 +20,9 @@ export {
   createGaugeMetric,
   createObservableInstrument,
 } from './instruments';
+
+export {
+  createMetricName,
+  createMetricNamePrefixer,
+  type MetricNameOptions,
+} from './metricNamePrefixer';

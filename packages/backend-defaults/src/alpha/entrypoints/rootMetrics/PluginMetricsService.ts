@@ -27,6 +27,7 @@ import {
   createGaugeMetric,
   createHistogramMetric,
   createUpDownCounterMetric,
+  createMetricNamePrefixer,
 } from '../../lib';
 import { createObservableInstrument } from '../../lib/instruments/observable';
 
@@ -40,15 +41,17 @@ export class PluginMetricsService implements MetricsService {
   private readonly meter: Meter;
   private readonly pluginId: string;
   private readonly serviceName: string;
+  private readonly prefixMetricName: (name: string) => string;
 
   constructor(options: PluginMetricsServiceOptions) {
     this.pluginId = options.pluginId;
     this.serviceName = options.serviceName;
     this.meter = metrics.getMeter(options.serviceName, options.serviceVersion);
-  }
-
-  private prefixMetricName(name: string): string {
-    return `${this.serviceName}.plugin.${this.pluginId}.${name}`;
+    this.prefixMetricName = createMetricNamePrefixer({
+      serviceName: this.serviceName,
+      scope: 'plugin',
+      pluginId: this.pluginId,
+    });
   }
 
   createCounter(name: string, options?: MetricOptions): CounterMetric {

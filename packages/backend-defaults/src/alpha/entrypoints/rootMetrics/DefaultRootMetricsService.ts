@@ -52,6 +52,7 @@ import {
   createHistogramMetric,
   createObservableInstrument,
   createUpDownCounterMetric,
+  createMetricNamePrefixer,
 } from '../../lib';
 
 export class DefaultRootMetricsService implements RootMetricsService {
@@ -59,6 +60,7 @@ export class DefaultRootMetricsService implements RootMetricsService {
   private readonly serviceName: string;
   private readonly serviceVersion?: string;
   private readonly logger: RootLoggerService;
+  private readonly prefixMetricName: (name: string) => string;
 
   private constructor({
     serviceName,
@@ -74,6 +76,10 @@ export class DefaultRootMetricsService implements RootMetricsService {
     this.logger = logger;
 
     this.meter = metrics.getMeter(this.serviceName, this.serviceVersion);
+    this.prefixMetricName = createMetricNamePrefixer({
+      serviceName: this.serviceName,
+      scope: 'core',
+    });
   }
 
   static async fromConfig({
@@ -179,11 +185,6 @@ export class DefaultRootMetricsService implements RootMetricsService {
       serviceName: this.serviceName,
       serviceVersion: this.serviceVersion,
     });
-  }
-
-  private prefixMetricName(name: string): string {
-    // todo: this is wrong - missing core service id
-    return `${this.serviceName}.core.${name}`;
   }
 
   createCounter(name: string, options?: MetricOptions): CounterMetric {
