@@ -24,9 +24,9 @@ import type { TabsIndicatorsProps } from './types';
  *
  * @internal
  */
-export const HeaderTabsIndicators = (props: TabsIndicatorsProps) => {
+export const TabsIndicators = (props: TabsIndicatorsProps) => {
   const { tabRefs, tabsRef, hoveredKey, prevHoveredKey } = props;
-  const { classNames } = useStyles('Header');
+  const { classNames } = useStyles('Tabs');
   const state = useContext(TabListStateContext);
   const prevSelectedKey = useRef<string | null>(null);
 

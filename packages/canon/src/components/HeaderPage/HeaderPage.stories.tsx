@@ -17,10 +17,18 @@
 import type { Meta, StoryObj, StoryFn } from '@storybook/react';
 import { HeaderPage } from './HeaderPage';
 import { HeaderPageOption, HeaderPageTab } from './types';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta = {
   title: 'Components/HeaderPage',
   component: HeaderPage,
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 } satisfies Meta<typeof HeaderPage>;
 
 export default meta;
@@ -28,18 +36,23 @@ type Story = StoryObj<typeof meta>;
 
 const tabs: HeaderPageTab[] = [
   {
+    id: 'overview',
     label: 'Overview',
   },
   {
+    id: 'checks',
     label: 'Checks',
   },
   {
+    id: 'tracks',
     label: 'Tracks',
   },
   {
+    id: 'campaigns',
     label: 'Campaigns',
   },
   {
+    id: 'integrations',
     label: 'Integrations',
   },
 ];

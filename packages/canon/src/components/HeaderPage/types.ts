@@ -32,6 +32,7 @@ export interface HeaderPageProps {
  * @public
  */
 export interface HeaderPageTab {
+  id: string;
   label: string;
   href?: string;
 }

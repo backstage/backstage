@@ -28,7 +28,10 @@ import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-are
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { Table as Table_2 } from '@tanstack/react-table';
-import { Tabs as Tabs_2 } from '@base-ui-components/react/tabs';
+import type { TabListProps as TabListProps_2 } from 'react-aria-components';
+import type { TabPanelProps as TabPanelProps_2 } from 'react-aria-components';
+import type { TabProps as TabProps_2 } from 'react-aria-components';
+import type { TabsProps as TabsProps_2 } from 'react-aria-components';
 import { TdHTMLAttributes } from 'react';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import { ThHTMLAttributes } from 'react';
@@ -373,6 +376,27 @@ export const componentDefinitions: {
       readonly item: 'bui-GridItem';
     };
   };
+  readonly Header: {
+    readonly classNames: {
+      readonly toolbar: 'bui-HeaderToolbar';
+      readonly toolbarWrapper: 'bui-HeaderToolbarWrapper';
+      readonly toolbarContent: 'bui-HeaderToolbarContent';
+      readonly toolbarControls: 'bui-HeaderToolbarControls';
+      readonly toolbarIcon: 'bui-HeaderToolbarIcon';
+      readonly toolbarName: 'bui-HeaderToolbarName';
+      readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
+      readonly breadcrumb: 'bui-HeaderBreadcrumb';
+      readonly breadcrumbLink: 'bui-HeaderBreadcrumbLink';
+      readonly breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator';
+      readonly tabs: 'bui-HeaderTabs';
+      readonly tabsWrapper: 'bui-HeaderTabsWrapper';
+      readonly tabList: 'bui-HeaderTabList';
+      readonly tab: 'bui-HeaderTab';
+      readonly tabActive: 'bui-HeaderTabActive';
+      readonly tabHovered: 'bui-HeaderTabHovered';
+      readonly subNav: 'bui-HeaderSubNav';
+    };
+  };
   readonly Heading: {
     readonly classNames: {
       readonly root: 'bui-Heading';
@@ -487,11 +511,13 @@ export const componentDefinitions: {
   };
   readonly Tabs: {
     readonly classNames: {
-      readonly root: 'bui-TabsRoot';
-      readonly list: 'bui-TabsList';
-      readonly indicator: 'bui-TabsIndicator';
-      readonly tab: 'bui-TabsTab';
-      readonly panel: 'bui-TabsPanel';
+      readonly tabs: 'bui-Tabs';
+      readonly tabList: 'bui-TabList';
+      readonly tabListWrapper: 'bui-TabListWrapper';
+      readonly tab: 'bui-Tab';
+      readonly tabActive: 'bui-TabActive';
+      readonly tabHovered: 'bui-TabHovered';
+      readonly panel: 'bui-TabPanel';
     };
   };
   readonly Text: {
@@ -521,26 +547,6 @@ export const componentDefinitions: {
     readonly dataAttributes: {
       readonly invalid: readonly [true, false];
       readonly disabled: readonly [true, false];
-    };
-  };
-  readonly Header: {
-    readonly classNames: {
-      readonly toolbar: 'bui-HeaderToolbar';
-      readonly toolbarWrapper: 'bui-HeaderToolbarWrapper';
-      readonly toolbarContent: 'bui-HeaderToolbarContent';
-      readonly toolbarControls: 'bui-HeaderToolbarControls';
-      readonly toolbarIcon: 'bui-HeaderToolbarIcon';
-      readonly toolbarName: 'bui-HeaderToolbarName';
-      readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
-      readonly breadcrumb: 'bui-HeaderBreadcrumb';
-      readonly breadcrumbLink: 'bui-HeaderBreadcrumbLink';
-      readonly breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator';
-      readonly tabs: 'bui-HeaderTabs';
-      readonly tabList: 'bui-HeaderTabList';
-      readonly tab: 'bui-HeaderTab';
-      readonly tabActive: 'bui-HeaderTabActive';
-      readonly tabHovered: 'bui-HeaderTabHovered';
-      readonly subNav: 'bui-HeaderSubNav';
     };
   };
   readonly Tooltip: {
@@ -1000,6 +1006,8 @@ export interface HeaderPageTab {
   // (undocumented)
   href?: string;
   // (undocumented)
+  id: string;
+  // (undocumented)
   label: string;
 }
 
@@ -1023,6 +1031,8 @@ export interface HeaderProps {
 export interface HeaderTab {
   // (undocumented)
   href?: string;
+  // (undocumented)
+  id: string;
   // (undocumented)
   label: string;
 }
@@ -1592,6 +1602,9 @@ export interface SwitchProps extends SwitchProps_2 {
 }
 
 // @public
+export const Tab: (props: TabProps) => JSX_2.Element;
+
+// @public
 export const Table: {
   Root: ForwardRefExoticComponent<
     HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>
@@ -1663,31 +1676,31 @@ export interface TableCellTextProps
   title: string;
 }
 
-// @public (undocumented)
-export const Tabs: {
-  Root: ForwardRefExoticComponent<
-    TabsRootWithoutOrientation & RefAttributes<HTMLDivElement>
-  >;
-  List: ForwardRefExoticComponent<
-    Omit<Tabs_2.List.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-  Tab: ForwardRefExoticComponent<
-    Omit<Tabs_2.Tab.Props & RefAttributes<Element>, 'ref'> &
-      RefAttributes<Element>
-  >;
-  Panel: ForwardRefExoticComponent<
-    Omit<Tabs_2.Panel.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-};
+// @public
+export const TabList: (props: TabListProps) => JSX_2.Element;
 
-// @public (undocumented)
-export interface TabsRootWithoutOrientation
-  extends Omit<
-    React.ComponentPropsWithoutRef<typeof Tabs_2.Root>,
-    'orientation'
-  > {}
+// @public
+export interface TabListProps extends Omit<TabListProps_2<object>, 'items'> {}
+
+// @public
+export const TabPanel: (props: TabPanelProps) => JSX_2.Element;
+
+// @public
+export interface TabPanelProps extends TabPanelProps_2 {}
+
+// @public
+export interface TabProps extends TabProps_2 {
+  // (undocumented)
+  onHover?: (key: string | null) => void;
+  // (undocumented)
+  onRegister?: (key: string, element: HTMLDivElement | null) => void;
+}
+
+// @public
+export const Tabs: (props: TabsProps) => JSX_2.Element | null;
+
+// @public
+export interface TabsProps extends TabsProps_2 {}
 
 // @public (undocumented)
 const Text_2: {

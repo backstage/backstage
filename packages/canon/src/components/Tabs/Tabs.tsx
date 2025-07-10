@@ -21,39 +21,52 @@ import {
   cloneElement,
   isValidElement,
   ReactNode,
+  createContext,
+  useContext,
 } from 'react';
-import type { TabsProps, TabProps } from './types';
+import type {
+  TabsProps,
+  TabListProps,
+  TabProps,
+  TabPanelProps,
+  TabsContextValue,
+} from './types';
 import { useLocation, useNavigate, useHref } from 'react-router-dom';
-import { HeaderTabsIndicators } from './HeaderTabsIndicators';
+import { TabsIndicators } from './TabsIndicators';
 import {
   Tabs as AriaTabs,
   TabList as AriaTabList,
   Tab as AriaTab,
+  TabPanel as AriaTabPanel,
   RouterProvider,
 } from 'react-aria-components';
 
 import { useStyles } from '../../hooks/useStyles';
 
+const TabsContext = createContext<TabsContextValue | undefined>(undefined);
+
+const useTabsContext = () => {
+  const context = useContext(TabsContext);
+  if (!context) {
+    throw new Error('Tab components must be used within a Tabs component');
+  }
+  return context;
+};
+
+/**
+ * A component that renders a list of tabs.
+ *
+ * @public
+ */
 export const Tabs = (props: TabsProps) => {
-  const { children } = props;
+  const { children, ...rest } = props;
   const { classNames } = useStyles('Tabs');
   const tabsRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const prevHoveredKey = useRef<string | null>(null);
-  const location = useLocation();
   let navigate = useNavigate();
-
-  // If selectedKey is not provided, try to determine it from the current route
-  const computedSelectedKey = (() => {
-    const childrenArray = Children.toArray(children as ReactNode);
-    for (const child of childrenArray) {
-      if (isValidElement(child) && child.props.href === location.pathname) {
-        return child.props.id;
-      }
-    }
-    return undefined;
-  })();
+  const location = useLocation();
 
   const setTabRef = (key: string, element: HTMLDivElement | null) => {
     if (element) {
@@ -62,6 +75,70 @@ export const Tabs = (props: TabsProps) => {
       tabRefs.current.delete(key);
     }
   };
+
+  // If selectedKey is not provided, try to determine it from the current route
+  const computedSelectedKey = (() => {
+    const childrenArray = Children.toArray(children as ReactNode);
+    for (const child of childrenArray) {
+      if (isValidElement(child) && child.type === TabList) {
+        const tabListChildren = Children.toArray(child.props.children);
+        for (const tabChild of tabListChildren) {
+          if (
+            isValidElement(tabChild) &&
+            tabChild.props.href === location.pathname
+          ) {
+            return tabChild.props.id;
+          }
+        }
+      }
+    }
+    return undefined;
+  })();
+
+  if (!children) return null;
+
+  const contextValue: TabsContextValue = {
+    tabsRef,
+    tabRefs,
+    hoveredKey,
+    prevHoveredKey,
+    setHoveredKey,
+    setTabRef,
+  };
+
+  return (
+    <TabsContext.Provider value={contextValue}>
+      <RouterProvider navigate={navigate} useHref={useHref}>
+        <AriaTabs
+          className={classNames.tabs}
+          keyboardActivation="manual"
+          selectedKey={computedSelectedKey}
+          ref={tabsRef}
+          {...rest}
+        >
+          {children as ReactNode}
+        </AriaTabs>
+      </RouterProvider>
+    </TabsContext.Provider>
+  );
+};
+
+/**
+ * A component that renders a list of tabs.
+ *
+ * @public
+ */
+export const TabList = (props: TabListProps) => {
+  const { children, ...rest } = props;
+  const { classNames } = useStyles('Tabs');
+  const {
+    setHoveredKey,
+    setTabRef,
+    tabRefs,
+    tabsRef,
+    hoveredKey,
+    prevHoveredKey,
+  } = useTabsContext();
 
   const handleHover = (key: string | null) => {
     setHoveredKey(key);
@@ -78,32 +155,32 @@ export const Tabs = (props: TabsProps) => {
     return child;
   });
 
-  if (!children) return null;
-
   return (
-    <RouterProvider navigate={navigate} useHref={useHref}>
-      <AriaTabs
-        className={classNames.tabs}
-        ref={tabsRef}
-        keyboardActivation="manual"
-        selectedKey={computedSelectedKey}
+    <div className={classNames.tabListWrapper}>
+      <AriaTabList
+        className={classNames.tabList}
+        aria-label="Toolbar tabs"
+        {...rest}
       >
-        <AriaTabList className={classNames.tabList} aria-label="Toolbar tabs">
-          {enhancedChildren}
-        </AriaTabList>
-        <HeaderTabsIndicators
-          tabRefs={tabRefs}
-          tabsRef={tabsRef}
-          hoveredKey={hoveredKey}
-          prevHoveredKey={prevHoveredKey}
-        />
-      </AriaTabs>
-    </RouterProvider>
+        {enhancedChildren}
+      </AriaTabList>
+      <TabsIndicators
+        tabRefs={tabRefs}
+        tabsRef={tabsRef}
+        hoveredKey={hoveredKey}
+        prevHoveredKey={prevHoveredKey}
+      />
+    </div>
   );
 };
 
+/**
+ * A component that renders a tab.
+ *
+ * @public
+ */
 export const Tab = (props: TabProps) => {
-  const { href, children, id, onHover, onRegister } = props;
+  const { href, children, id, onHover, onRegister, ...rest } = props;
   const { classNames } = useStyles('Tabs');
 
   return (
@@ -114,8 +191,25 @@ export const Tab = (props: TabProps) => {
       onHoverStart={() => onHover?.(id as string)}
       onHoverEnd={() => onHover?.(null)}
       href={href}
+      {...rest}
     >
       {children}
     </AriaTab>
+  );
+};
+
+/**
+ * A component that renders the content of a tab.
+ *
+ * @public
+ */
+export const TabPanel = (props: TabPanelProps) => {
+  const { children, ...rest } = props;
+  const { classNames } = useStyles('Tabs');
+
+  return (
+    <AriaTabPanel className={classNames.panel} {...rest}>
+      {children}
+    </AriaTabPanel>
   );
 };

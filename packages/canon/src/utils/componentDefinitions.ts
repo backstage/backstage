@@ -241,6 +241,7 @@ export const componentDefinitions = {
     classNames: {
       tabs: 'bui-Tabs',
       tabList: 'bui-TabList',
+      tabListWrapper: 'bui-TabListWrapper',
       tab: 'bui-Tab',
       tabActive: 'bui-TabActive',
       tabHovered: 'bui-TabHovered',

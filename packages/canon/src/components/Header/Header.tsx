@@ -48,15 +48,17 @@ export const Header = (props: HeaderProps) => {
         customActions={customActions}
         hasTabs={hasTabs}
       />
-      <div className={classNames.tabsWrapper}>
-        <Tabs>
-          {tabs?.map(tab => (
-            <Tab key={tab.id} id={tab.id} href={tab.href}>
-              {tab.label}
-            </Tab>
-          ))}
-        </Tabs>
-      </div>
+      {tabs && (
+        <div className={classNames.tabsWrapper}>
+          <Tabs>
+            {tabs?.map(tab => (
+              <Tab key={tab.id} id={tab.id} href={tab.href}>
+                {tab.label}
+              </Tab>
+            ))}
+          </Tabs>
+        </div>
+      )}
     </>
   );
 };

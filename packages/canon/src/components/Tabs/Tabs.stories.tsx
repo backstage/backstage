@@ -15,7 +15,7 @@
  */
 
 import type { Meta, StoryFn, StoryObj } from '@storybook/react';
-import { Tabs, Tab } from './Tabs';
+import { Tabs, TabList, Tab, TabPanel } from './Tabs';
 import { MemoryRouter } from 'react-router-dom';
 import { Box } from '../Box';
 import { Text } from '../Text';
@@ -41,9 +41,36 @@ export const Default: Story = {
   decorators: [withRouter],
   render: () => (
     <Tabs>
-      <Tab id="tab1">Tab 1</Tab>
-      <Tab id="tab2">Tab 2</Tab>
-      <Tab id="tab3">Tab 3 With long title</Tab>
+      <TabList>
+        <Tab id="tab1">Tab 1</Tab>
+        <Tab id="tab2">Tab 2</Tab>
+        <Tab id="tab3">Tab 3 With long title</Tab>
+      </TabList>
+    </Tabs>
+  ),
+};
+
+export const WithTabPanels: Story = {
+  args: {
+    children: '',
+  },
+  decorators: [withRouter],
+  render: () => (
+    <Tabs>
+      <TabList>
+        <Tab id="tab1">Settings</Tab>
+        <Tab id="tab2">Profile</Tab>
+        <Tab id="tab3">Preferences</Tab>
+      </TabList>
+      <TabPanel id="tab1">
+        <Text>Settings panel content goes here</Text>
+      </TabPanel>
+      <TabPanel id="tab2">
+        <Text>Profile panel content goes here</Text>
+      </TabPanel>
+      <TabPanel id="tab3">
+        <Text>Preferences panel content goes here</Text>
+      </TabPanel>
     </Tabs>
   ),
 };
@@ -55,15 +82,17 @@ export const WithMockedURLTab2: Story = {
   render: () => (
     <MemoryRouter initialEntries={['/tab2']}>
       <Tabs>
-        <Tab id="tab1" href="/tab1">
-          Tab 1
-        </Tab>
-        <Tab id="tab2" href="/tab2">
-          Tab 2
-        </Tab>
-        <Tab id="tab3" href="/tab3">
-          Tab 3 With long title
-        </Tab>
+        <TabList>
+          <Tab id="tab1" href="/tab1">
+            Tab 1
+          </Tab>
+          <Tab id="tab2" href="/tab2">
+            Tab 2
+          </Tab>
+          <Tab id="tab3" href="/tab3">
+            Tab 3 With long title
+          </Tab>
+        </TabList>
       </Tabs>
       <Box mt="6" pl="2">
         <Text>
@@ -85,15 +114,17 @@ export const WithMockedURLTab3: Story = {
   render: () => (
     <MemoryRouter initialEntries={['/tab3']}>
       <Tabs>
-        <Tab id="tab1" href="/tab1">
-          Tab 1
-        </Tab>
-        <Tab id="tab2" href="/tab2">
-          Tab 2
-        </Tab>
-        <Tab id="tab3" href="/tab3">
-          Tab 3 With long title
-        </Tab>
+        <TabList>
+          <Tab id="tab1" href="/tab1">
+            Tab 1
+          </Tab>
+          <Tab id="tab2" href="/tab2">
+            Tab 2
+          </Tab>
+          <Tab id="tab3" href="/tab3">
+            Tab 3 With long title
+          </Tab>
+        </TabList>
       </Tabs>
       <Box mt="6" pl="2">
         <Text>
@@ -115,15 +146,17 @@ export const WithMockedURLNoMatch: Story = {
   render: () => (
     <MemoryRouter initialEntries={['/some-other-page']}>
       <Tabs>
-        <Tab id="tab1" href="/tab1">
-          Tab 1
-        </Tab>
-        <Tab id="tab2" href="/tab2">
-          Tab 2
-        </Tab>
-        <Tab id="tab3" href="/tab3">
-          Tab 3 With long title
-        </Tab>
+        <TabList>
+          <Tab id="tab1" href="/tab1">
+            Tab 1
+          </Tab>
+          <Tab id="tab2" href="/tab2">
+            Tab 2
+          </Tab>
+          <Tab id="tab3" href="/tab3">
+            Tab 3 With long title
+          </Tab>
+        </TabList>
       </Tabs>
       <Box mt="6" pl="2">
         <Text>

@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { Tabs, Tab } from './Tabs';
-export type { TabsProps, TabProps } from './types';
+export { Tabs, TabList, Tab, TabPanel } from './Tabs';
+export type { TabsProps, TabListProps, TabProps, TabPanelProps } from './types';

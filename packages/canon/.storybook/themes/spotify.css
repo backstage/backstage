@@ -183,18 +183,6 @@
     font-weight: var(--bui-font-weight-regular);
   }
 
-  .bui-TabsIndicator {
-    background-color: var(--bui-bg-underline);
-  }
-
-  .bui-TabsTab[data-selected] {
-    background: radial-gradient(
-      ellipse at bottom,
-      rgba(209, 110, 203, 0.25) 0%,
-      transparent 95%
-    );
-  }
-
   .bui-HeaderToolbar {
     padding-top: var(--bui-space-2);
     padding-inline: var(--bui-space-2);
@@ -208,10 +196,7 @@
 
   .bui-HeaderTabsWrapper {
     margin-top: var(--bui-space-2);
-    padding-inline: var(--bui-space-2);
-  }
-
-  .bui-HeaderTabs {
+    margin-inline: var(--bui-space-2);
     border-radius: var(--bui-radius-3);
     padding-inline: var(--bui-space-1);
     border: none;
@@ -245,7 +230,7 @@
     border: 1px solid var(--bui-border);
   }
 
-  .bui-HeaderTabs {
+  .bui-HeaderTabsWrapper {
     border: 1px solid var(--bui-border);
   }
 }
@@ -265,7 +250,6 @@
   --bui-bg-danger: #3b1219;
   --bui-bg-warning: #302008;
   --bui-bg-success: #132d21;
-  --bui-bg-underline: #d16ecb;
 
   --bui-fg-primary: var(--bui-white);
   --bui-fg-secondary: var(--bui-gray-7);
