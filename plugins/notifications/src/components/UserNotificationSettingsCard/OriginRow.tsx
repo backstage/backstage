@@ -15,7 +15,6 @@
  */
 
 import {
-  ChannelSetting,
   isNotificationsEnabledFor,
   NotificationSettings,
   OriginSetting,
@@ -30,7 +29,6 @@ import { NoBorderTableCell } from './NoBorderTableCell';
 import { useNotificationFormat } from './UserNotificationSettingsCard';
 
 export const OriginRow = (props: {
-  channel: ChannelSetting;
   origin: OriginSetting;
   settings: NotificationSettings;
   handleChange: (
@@ -42,8 +40,7 @@ export const OriginRow = (props: {
   open: boolean;
   handleRowToggle: (originId: string) => void;
 }) => {
-  const { channel, origin, settings, handleChange, open, handleRowToggle } =
-    props;
+  const { origin, settings, handleChange, open, handleRowToggle } = props;
   const { formatOriginName } = useNotificationFormat();
   return (
     <TableRow>
@@ -67,7 +64,7 @@ export const OriginRow = (props: {
       {settings.channels.map(ch => (
         <NoBorderTableCell key={ch.id} align="center">
           <Tooltip
-            title={`Enable or disable ${channel.id.toLocaleLowerCase(
+            title={`Enable or disable ${ch.id.toLocaleLowerCase(
               'en-US',
             )} notifications from ${formatOriginName(origin.id)}`}
           >

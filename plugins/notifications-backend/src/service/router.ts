@@ -147,9 +147,6 @@ export async function createRouter(
     topics: { origin: string; topic: string }[],
   ) => {
     const existingChannel = settings.channels.find(c => c.id === channelId);
-    if (existingChannel) {
-      return existingChannel;
-    }
     return {
       id: channelId,
       origins: origins.map(originId =>
