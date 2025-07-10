@@ -16,7 +16,11 @@
 import { AuthService } from '@backstage/backend-plugin-api';
 import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
-import { InputError, AuthenticationError } from '@backstage/errors';
+import {
+  InputError,
+  AuthenticationError,
+  NotFoundError,
+} from '@backstage/errors';
 import { decodeJwt } from 'jose';
 import crypto from 'crypto';
 import { OidcDatabase } from '../database/OidcDatabase';
@@ -204,11 +208,15 @@ export class OidcService {
     });
 
     if (!session) {
-      throw new InputError('Invalid authorization session');
+      throw new NotFoundError('Invalid authorization session');
     }
 
     if (DateTime.fromISO(session.expiresAt) < DateTime.now()) {
       throw new InputError('Authorization session expired');
+    }
+
+    if (session.status !== 'pending') {
+      throw new NotFoundError('Authorization session not found or expired');
     }
 
     await this.oidc.updateAuthorizationSession({
@@ -244,11 +252,15 @@ export class OidcService {
     });
 
     if (!session) {
-      throw new InputError('Invalid authorization session');
+      throw new NotFoundError('Invalid authorization session');
     }
 
     if (DateTime.fromISO(session.expiresAt) < DateTime.now()) {
       throw new InputError('Authorization session expired');
+    }
+
+    if (session.status !== 'pending') {
+      throw new NotFoundError('Authorization session not found or expired');
     }
 
     const client = await this.oidc.getClient({ clientId: session.clientId });
@@ -278,11 +290,15 @@ export class OidcService {
     });
 
     if (!session) {
-      throw new InputError('Invalid authorization session');
+      throw new NotFoundError('Invalid authorization session');
     }
 
     if (DateTime.fromISO(session.expiresAt) < DateTime.now()) {
       throw new InputError('Authorization session expired');
+    }
+
+    if (session.status !== 'pending') {
+      throw new NotFoundError('Authorization session not found or expired');
     }
 
     await this.oidc.updateAuthorizationSession({
@@ -424,8 +440,9 @@ export class OidcService {
     const session = await this.oidc.getAuthorizationSession({
       id: authCode.sessionId,
     });
+
     if (!session) {
-      throw new AuthenticationError('Invalid authorization session');
+      throw new NotFoundError('Invalid authorization session');
     }
     if (session.clientId !== clientId) {
       throw new AuthenticationError('Client ID mismatch');
