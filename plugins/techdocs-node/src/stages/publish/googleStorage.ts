@@ -28,7 +28,7 @@ import path from 'path';
 import { Readable } from 'stream';
 import {
   getFileTreeRecursively,
-  getHeadersForFileExtension,
+  getHeadersForFilename,
   isValidContentPath,
   lowerCaseEntityTriplet,
   lowerCaseEntityTripletInStoragePath,
@@ -317,8 +317,7 @@ export class GoogleGCSPublish implements PublisherBase {
       }
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
-      const fileExtension = path.extname(filePath);
-      const responseHeaders = getHeadersForFileExtension(fileExtension);
+      const responseHeaders = getHeadersForFilename(filePath);
 
       // Pipe file chunks directly from storage to client.
       this.storageClient
