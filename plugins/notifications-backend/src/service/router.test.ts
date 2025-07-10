@@ -313,6 +313,14 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
     it('should not send to user entity if origin is disabled in settings', async () => {
       const client = await database.getClient();
+      await client('notification').insert({
+        id: '8f95b4eb-02f9-4de3-8d7b-627bfde90940',
+        user: 'user:default/mock',
+        title: 'Notification setup',
+        description: 'This is a test notification for setup purposes',
+        severity: 'critical',
+        origin: 'external:test-service',
+      });
       await client('user_settings').insert({
         settings_key_hash: 'hash',
         user: 'user:default/mock',
@@ -337,7 +345,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       const notifications = await client('notification')
         .where('user', 'user:default/mock')
         .select();
-      expect(notifications).toHaveLength(0);
+      expect(notifications).toHaveLength(1);
     });
 
     it('should not send to user entity if topic is disabled in settings', async () => {
