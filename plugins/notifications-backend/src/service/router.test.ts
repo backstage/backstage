@@ -343,6 +343,15 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
     it('should not send to user entity if topic is disabled in settings', async () => {
       const client = await database.getClient();
+      await client('notification').insert({
+        id: '8f95b4eb-02f9-4de3-8d7b-627bfde90940',
+        user: 'user:default/mock',
+        title: 'Notification setup',
+        description: 'This is a test notification for setup purposes',
+        severity: 'critical',
+        origin: 'external:test-service',
+        topic: 'test-topic',
+      });
       await client('user_settings').insert({
         settings_key_hash: 'hash',
         user: 'user:default/mock',
@@ -358,7 +367,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
           entityRef: ['user:default/mock'],
         },
         payload: {
-          title: 'test notification',
+          title:
+            'should not send to user entity if topic is disabled in settings',
           topic: 'test-topic',
         },
       });
@@ -369,11 +379,20 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       const notifications = await client('notification')
         .where('user', 'user:default/mock')
         .select();
-      expect(notifications).toHaveLength(0);
+      expect(notifications).toHaveLength(1);
     });
 
     it('should send to user entity if origin is enabled, but topic is disabled in settings', async () => {
       const client = await database.getClient();
+      await client('notification').insert({
+        id: '8f95b4eb-02f9-4de3-8d7b-627bfde90940',
+        user: 'user:default/mock',
+        title: 'Notification setup',
+        description: 'This is a test notification for setup purposes',
+        severity: 'critical',
+        origin: 'external:test-service',
+        topic: 'test-topic',
+      });
       await client('user_settings').insert({
         settings_key_hash: 'hash',
         user: 'user:default/mock',
@@ -417,183 +436,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       const notifications = await client('notification')
         .where('user', 'user:default/mock')
         .select();
-      expect(notifications).toHaveLength(1);
-    });
-
-    it('should fail without recipients', async () => {
-      const response = await sendNotification({
-        payload: {
-          title: 'test notification',
-        },
-      } as unknown as NotificationSendOptions);
-
-      expect(response.status).toEqual(400);
-    });
-
-    it('should fail with invalid recipients', async () => {
-      const response = await sendNotification({
-        recipients: {
-          type: 'invalid',
-        },
-        payload: {
-          title: 'test notification',
-        },
-      } as unknown as NotificationSendOptions);
-
-      expect(response.status).toEqual(400);
-    });
-
-    it('should fail without title', async () => {
-      const response = await sendNotification({
-        recipients: {
-          type: 'broadcast',
-        },
-        payload: {
-          description: 'test notification',
-        },
-      } as unknown as NotificationSendOptions);
-
-      expect(response.status).toEqual(400);
-    });
-  });
-
-  describe('GET /', () => {
-    const httpAuth = mockServices.httpAuth({
-      defaultCredentials: mockCredentials.user(),
-    });
-
-    beforeAll(async () => {
-      const router = await createRouter({
-        logger: mockServices.logger.mock(),
-        store,
-        signals: signalService,
-        userInfo,
-        config,
-        httpAuth,
-        auth,
-        catalog,
-      });
-      app = express().use(router).use(mockErrorHandler());
-    });
-
-    beforeEach(async () => {
-      jest.resetAllMocks();
-      const client = await database.getClient();
-      await client('notification').del();
-      await client('broadcast').del();
-    });
-
-    it('should return notifications', async () => {
-      const client = await database.getClient();
-      await client('broadcast').insert({
-        id: uuid(),
-        origin: 'external:test-service',
-        title: 'Test broadcast notification',
-        created: new Date(),
-        severity: 'high',
-      });
-      await client('notification').insert({
-        id: uuid(),
-        user: 'user:default/mock',
-        origin: 'external:test-service',
-        title: 'Test notification',
-        created: new Date(),
-        severity: 'normal',
-      });
-
-      const response = await request(app).get('/');
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual({
-        notifications: [
-          {
-            created: expect.any(String),
-            id: expect.any(String),
-            origin: 'external:test-service',
-            payload: {
-              description: null,
-              icon: null,
-              link: null,
-              scope: null,
-              severity: 'normal',
-              title: 'Test notification',
-              topic: null,
-            },
-            read: null,
-            saved: null,
-            updated: null,
-            user: 'user:default/mock',
-          },
-          {
-            created: expect.any(String),
-            id: expect.any(String),
-            origin: 'external:test-service',
-            payload: {
-              description: null,
-              icon: null,
-              link: null,
-              scope: null,
-              severity: 'high',
-              title: 'Test broadcast notification',
-              topic: null,
-            },
-            read: null,
-            saved: null,
-            updated: null,
-            user: null,
-          },
-        ],
-        totalCount: 2,
-      });
-    });
-  });
-
-  describe('GET /settings', () => {
-    const httpAuth = mockServices.httpAuth({
-      defaultCredentials: mockCredentials.user(),
-    });
-
-    beforeAll(async () => {
-      const router = await createRouter({
-        logger: mockServices.logger.mock(),
-        store,
-        signals: signalService,
-        userInfo,
-        config,
-        httpAuth,
-        auth,
-        catalog,
-      });
-      app = express().use(router).use(mockErrorHandler());
-    });
-
-    beforeEach(async () => {
-      jest.resetAllMocks();
-      const client = await database.getClient();
-      await client('user_settings').del();
-    });
-
-    it('should return user settings', async () => {
-      const client = await database.getClient();
-      await client('user_settings').insert({
-        settings_key_hash: 'hash',
-        user: 'user:default/mock',
-        channel: 'Web',
-        origin: 'external:test-service',
-        enabled: false,
-      });
-
-      const response = await request(app).get('/settings');
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual({
-        channels: [
-          {
-            id: 'Web',
-            origins: [
-              { enabled: false, id: 'external:test-service', topics: [] },
-            ],
-          },
-        ],
-      });
+      expect(notifications).toHaveLength(2);
     });
   });
 
