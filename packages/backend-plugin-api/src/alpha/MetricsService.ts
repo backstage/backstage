@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { MetricOptions } from '@opentelemetry/api';
 import {
-  Counter,
-  Gauge,
-  Histogram,
-  MetricOptions,
-  ObservableCounter,
-  ObservableGauge,
-  ObservableUpDownCounter,
-  UpDownCounter,
-} from '@opentelemetry/api';
+  CounterMetric,
+  UpDownCounterMetric,
+  HistogramMetric,
+  GaugeMetric,
+  ObservableMetricOptions,
+} from './instruments';
 
 /**
  * A service that provides a metrics facility aligned with OpenTelemetry Metrics Data Model.
@@ -34,19 +32,20 @@ import {
  */
 export interface MetricsService {
   // Synchronous Instruments
-  createCounter(name: string, options?: MetricOptions): Counter;
-  createUpDownCounter(name: string, options?: MetricOptions): UpDownCounter;
-  createHistogram(name: string, options?: MetricOptions): Histogram;
-  createGauge(name: string, options?: MetricOptions): Gauge;
+  createCounter(name: string, options?: MetricOptions): CounterMetric;
+  createUpDownCounter(
+    name: string,
+    options?: MetricOptions,
+  ): UpDownCounterMetric;
+  createHistogram(name: string, options?: MetricOptions): HistogramMetric;
+  createGauge(name: string, options?: MetricOptions): GaugeMetric;
 
   // Asynchronous Instruments
-  createObservableCounter(
-    name: string,
-    options?: MetricOptions,
-  ): ObservableCounter;
+  createObservableCounter(opts: Omit<ObservableMetricOptions, 'meter'>): void;
+
   createObservableUpDownCounter(
-    name: string,
-    options?: MetricOptions,
-  ): ObservableUpDownCounter;
-  createObservableGauge(name: string, options?: MetricOptions): ObservableGauge;
+    opts: Omit<ObservableMetricOptions, 'meter'>,
+  ): void;
+
+  createObservableGauge(opts: Omit<ObservableMetricOptions, 'meter'>): void;
 }

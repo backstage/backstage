@@ -13,21 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Meter, MetricOptions, metrics } from '@opentelemetry/api';
 import {
-  Counter,
-  Gauge,
-  Histogram,
-  Meter,
-  MetricOptions,
-  ObservableCounter,
-  ObservableGauge,
-  ObservableUpDownCounter,
-  UpDownCounter,
-  metrics,
-} from '@opentelemetry/api';
-import {
+  CounterMetric,
+  GaugeMetric,
+  HistogramMetric,
+  UpDownCounterMetric,
   MetricsService,
   RootMetricsService,
+  ObservableMetricOptions,
 } from '@backstage/backend-plugin-api/alpha';
 import { Config } from '@backstage/config';
 import { PluginMetricsService } from './PluginMetricsService';
@@ -52,6 +46,13 @@ import {
   RootConfigService,
   RootLoggerService,
 } from '@backstage/backend-plugin-api';
+import {
+  createCounterMetric,
+  createGaugeMetric,
+  createHistogramMetric,
+  createObservableInstrument,
+  createUpDownCounterMetric,
+} from '../../lib';
 
 export class DefaultRootMetricsService implements RootMetricsService {
   private readonly meter: Meter;
@@ -130,7 +131,7 @@ export class DefaultRootMetricsService implements RootMetricsService {
 
     sdk.start();
 
-    logger.info('Metrics initialized - sdk started');
+    logger.info('Metrics instrumentation initialized - OTEL Node SDK started');
 
     return new DefaultRootMetricsService({
       serviceName: resource.attributes[ATTR_SERVICE_NAME] as string,
@@ -185,49 +186,61 @@ export class DefaultRootMetricsService implements RootMetricsService {
     return `${this.serviceName}.core.${name}`;
   }
 
-  createCounter(name: string, options?: MetricOptions): Counter {
-    return this.meter.createCounter(this.prefixMetricName(name), options);
-  }
-
-  createUpDownCounter(name: string, options?: MetricOptions): UpDownCounter {
-    return this.meter.createUpDownCounter(this.prefixMetricName(name), options);
-  }
-
-  createHistogram(name: string, options?: MetricOptions): Histogram {
-    return this.meter.createHistogram(this.prefixMetricName(name), options);
-  }
-
-  createGauge(name: string, options?: MetricOptions): Gauge {
-    return this.meter.createGauge(this.prefixMetricName(name), options);
-  }
-
-  createObservableCounter(
-    name: string,
-    options?: MetricOptions,
-  ): ObservableCounter {
-    return this.meter.createObservableCounter(
+  createCounter(name: string, options?: MetricOptions): CounterMetric {
+    return createCounterMetric(
+      this.meter,
       this.prefixMetricName(name),
       options,
     );
   }
 
-  createObservableUpDownCounter(
+  createUpDownCounter(
     name: string,
     options?: MetricOptions,
-  ): ObservableUpDownCounter {
-    return this.meter.createObservableUpDownCounter(
+  ): UpDownCounterMetric {
+    return createUpDownCounterMetric(
+      this.meter,
       this.prefixMetricName(name),
       options,
     );
   }
 
-  createObservableGauge(
-    name: string,
-    options?: MetricOptions,
-  ): ObservableGauge {
-    return this.meter.createObservableGauge(
+  createHistogram(name: string, options?: MetricOptions): HistogramMetric {
+    return createHistogramMetric(
+      this.meter,
       this.prefixMetricName(name),
       options,
     );
+  }
+
+  createGauge(name: string, options?: MetricOptions): GaugeMetric {
+    return createGaugeMetric(this.meter, this.prefixMetricName(name), options);
+  }
+
+  createObservableCounter(opts: ObservableMetricOptions): void {
+    createObservableInstrument('counter', {
+      name: this.prefixMetricName(opts.name),
+      meter: this.meter,
+      observer: opts.observer,
+      opts: opts.opts,
+    });
+  }
+
+  createObservableUpDownCounter(opts: ObservableMetricOptions): void {
+    createObservableInstrument('up-down-counter', {
+      name: this.prefixMetricName(opts.name),
+      meter: this.meter,
+      observer: opts.observer,
+      opts: opts.opts,
+    });
+  }
+
+  createObservableGauge(opts: ObservableMetricOptions): void {
+    createObservableInstrument('gauge', {
+      name: this.prefixMetricName(opts.name),
+      meter: this.meter,
+      observer: opts.observer,
+      opts: opts.opts,
+    });
   }
 }

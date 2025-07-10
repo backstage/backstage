@@ -13,9 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { actionsRegistryServiceFactory } from './entrypoints/actionsRegistry';
-export { actionsServiceFactory } from './entrypoints/actions';
-export { metricsServiceFactory } from './entrypoints/metrics';
-export { rootMetricsServiceFactory } from './entrypoints/rootMetrics';
+import { HistogramMetric } from '@backstage/backend-plugin-api/alpha';
+import { Meter, MetricOptions } from '@opentelemetry/api';
 
-export * from './lib';
+export const createHistogramMetric = (
+  meter: Meter,
+  name: string,
+  opts?: MetricOptions,
+): HistogramMetric => {
+  const histogram = meter.createHistogram(name, opts);
+
+  return {
+    record: (value: number, labels?: Record<string, string>) => {
+      histogram.record(value, labels);
+    },
+  };
+};

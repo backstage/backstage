@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import {
-  Counter,
-  Gauge,
-  Histogram,
-  Meter,
-  MetricOptions,
-  metrics,
-  ObservableCounter,
-  ObservableGauge,
-  ObservableUpDownCounter,
-  UpDownCounter,
-} from '@opentelemetry/api';
+  CounterMetric,
+  GaugeMetric,
+  HistogramMetric,
+  MetricsService,
+  ObservableMetricOptions,
+  UpDownCounterMetric,
+} from '@backstage/backend-plugin-api/alpha';
+import { Meter, MetricOptions, metrics } from '@opentelemetry/api';
+import {
+  createCounterMetric,
+  createGaugeMetric,
+  createHistogramMetric,
+  createUpDownCounterMetric,
+} from '../../lib';
+import { createObservableInstrument } from '../../lib/instruments/observable';
 
 export type PluginMetricsServiceOptions = {
   pluginId: string;
@@ -48,49 +51,61 @@ export class PluginMetricsService implements MetricsService {
     return `${this.serviceName}.plugin.${this.pluginId}.${name}`;
   }
 
-  createCounter(name: string, options?: MetricOptions): Counter {
-    return this.meter.createCounter(this.prefixMetricName(name), options);
-  }
-
-  createUpDownCounter(name: string, options?: MetricOptions): UpDownCounter {
-    return this.meter.createUpDownCounter(this.prefixMetricName(name), options);
-  }
-
-  createHistogram(name: string, options?: MetricOptions): Histogram {
-    return this.meter.createHistogram(this.prefixMetricName(name), options);
-  }
-
-  createGauge(name: string, options?: MetricOptions): Gauge {
-    return this.meter.createGauge(this.prefixMetricName(name), options);
-  }
-
-  createObservableCounter(
-    name: string,
-    options?: MetricOptions,
-  ): ObservableCounter {
-    return this.meter.createObservableCounter(
+  createCounter(name: string, options?: MetricOptions): CounterMetric {
+    return createCounterMetric(
+      this.meter,
       this.prefixMetricName(name),
       options,
     );
   }
 
-  createObservableUpDownCounter(
+  createUpDownCounter(
     name: string,
     options?: MetricOptions,
-  ): ObservableUpDownCounter {
-    return this.meter.createObservableUpDownCounter(
+  ): UpDownCounterMetric {
+    return createUpDownCounterMetric(
+      this.meter,
       this.prefixMetricName(name),
       options,
     );
   }
 
-  createObservableGauge(
-    name: string,
-    options?: MetricOptions,
-  ): ObservableGauge {
-    return this.meter.createObservableGauge(
+  createHistogram(name: string, options?: MetricOptions): HistogramMetric {
+    return createHistogramMetric(
+      this.meter,
       this.prefixMetricName(name),
       options,
     );
+  }
+
+  createGauge(name: string, options?: MetricOptions): GaugeMetric {
+    return createGaugeMetric(this.meter, this.prefixMetricName(name), options);
+  }
+
+  createObservableCounter(opts: ObservableMetricOptions): void {
+    createObservableInstrument('counter', {
+      name: this.prefixMetricName(opts.name),
+      meter: this.meter,
+      observer: opts.observer,
+      opts: opts.opts,
+    });
+  }
+
+  createObservableUpDownCounter(opts: ObservableMetricOptions): void {
+    createObservableInstrument('up-down-counter', {
+      name: this.prefixMetricName(opts.name),
+      meter: this.meter,
+      observer: opts.observer,
+      opts: opts.opts,
+    });
+  }
+
+  createObservableGauge(opts: ObservableMetricOptions): void {
+    createObservableInstrument('gauge', {
+      name: this.prefixMetricName(opts.name),
+      meter: this.meter,
+      observer: opts.observer,
+      opts: opts.opts,
+    });
   }
 }

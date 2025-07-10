@@ -13,61 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { MetricOptions, metrics } from '@opentelemetry/api';
 import {
-  Counter,
-  Gauge,
-  Histogram,
-  MetricOptions,
-  ObservableCounter,
-  ObservableGauge,
-  ObservableUpDownCounter,
-  UpDownCounter,
-  metrics,
-} from '@opentelemetry/api';
-import {
+  CounterMetric,
+  GaugeMetric,
+  HistogramMetric,
+  UpDownCounterMetric,
   MetricsService,
   RootMetricsService,
+  ObservableMetricOptions,
 } from '@backstage/backend-plugin-api/alpha';
+import {
+  createCounterMetric,
+  createGaugeMetric,
+  createHistogramMetric,
+  createUpDownCounterMetric,
+} from '../../lib';
+import { createObservableInstrument } from '../../lib/instruments';
 
 export class NoopRootMetricsService implements RootMetricsService {
   forPlugin(_pluginId: string): MetricsService {
     return {} as MetricsService;
   }
 
-  createCounter(_name: string, _options?: MetricOptions): Counter {
-    return metrics.getMeter('noop').createCounter('noop');
+  createCounter(_name: string, _options?: MetricOptions): CounterMetric {
+    return createCounterMetric(metrics.getMeter('noop'), 'noop');
   }
 
-  createUpDownCounter(_name: string, _options?: MetricOptions): UpDownCounter {
-    return metrics.getMeter('noop').createUpDownCounter('noop');
-  }
-
-  createHistogram(_name: string, _options?: MetricOptions): Histogram {
-    return metrics.getMeter('noop').createHistogram('noop');
-  }
-
-  createGauge(_name: string, _options?: MetricOptions): Gauge {
-    return metrics.getMeter('noop').createGauge('noop');
-  }
-
-  createObservableCounter(
+  createUpDownCounter(
     _name: string,
     _options?: MetricOptions,
-  ): ObservableCounter {
-    return metrics.getMeter('noop').createObservableCounter('noop');
+  ): UpDownCounterMetric {
+    return createUpDownCounterMetric(metrics.getMeter('noop'), 'noop');
   }
 
-  createObservableUpDownCounter(
-    _name: string,
-    _options?: MetricOptions,
-  ): ObservableUpDownCounter {
-    return metrics.getMeter('noop').createObservableUpDownCounter('noop');
+  createHistogram(_name: string, _options?: MetricOptions): HistogramMetric {
+    return createHistogramMetric(metrics.getMeter('noop'), 'noop');
   }
 
-  createObservableGauge(
-    _name: string,
-    _options?: MetricOptions,
-  ): ObservableGauge {
-    return metrics.getMeter('noop').createObservableGauge('noop');
+  createGauge(_name: string, _options?: MetricOptions): GaugeMetric {
+    return createGaugeMetric(metrics.getMeter('noop'), 'noop');
+  }
+
+  createObservableCounter(_opts: ObservableMetricOptions): void {
+    return createObservableInstrument('counter', _opts);
+  }
+
+  createObservableUpDownCounter(_opts: ObservableMetricOptions): void {
+    return createObservableInstrument('up-down-counter', _opts);
+  }
+
+  createObservableGauge(_opts: ObservableMetricOptions): void {
+    return createObservableInstrument('gauge', _opts);
   }
 }

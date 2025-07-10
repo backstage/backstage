@@ -38,3 +38,5 @@ export {
   metricsServiceRef,
   rootMetricsServiceRef,
 } from './refs';
+
+export * from './instruments';

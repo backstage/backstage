@@ -33,30 +33,26 @@ export function progressTracker(
     help: 'Amount of entities stitched. DEPRECATED, use OpenTelemetry metrics instead',
   });
 
-  const stitchedEntities = metrics.createCounter(
-    'catalog.stitched.entities.count',
-    {
-      description: 'Amount of entities stitched',
-    },
-  );
+  const stitchedEntities = metrics.createCounter('stitched.entities.count', {
+    description: 'Amount of entities stitched',
+  });
 
-  const stitchingDuration = metrics.createHistogram(
-    'catalog.stitching.duration',
-    {
-      description: 'Time spent executing the full stitching flow',
-      unit: 'seconds',
-    },
-  );
+  const stitchingDuration = metrics.createHistogram('stitching.duration', {
+    description: 'Time spent executing the full stitching flow',
+    unit: 'seconds',
+  });
 
-  const stitchingQueueCount = metrics.createObservableGauge(
-    'catalog.stitching.queue.length',
-    { description: 'Number of entities currently in the stitching queue' },
-  );
-  stitchingQueueCount.addCallback(async result => {
-    const total = await knex<DbRefreshStateRow>('refresh_state')
-      .count({ count: '*' })
-      .whereNotNull('next_stitch_at');
-    result.observe(Number(total[0].count));
+  metrics.createObservableGauge({
+    name: 'stitching.queue.length',
+    opts: {
+      description: 'Number of entities currently in the stitching queue',
+    },
+    observer: async gauge => {
+      const total = await knex<DbRefreshStateRow>('refresh_state')
+        .count({ count: '*' })
+        .whereNotNull('next_stitch_at');
+      gauge.observe(Number(total[0].count));
+    },
   });
 
   const stitchingQueueDelay = metrics.createHistogram(

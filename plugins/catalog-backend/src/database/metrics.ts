@@ -23,6 +23,71 @@ export function initDatabaseMetrics(knex: Knex, metrics: MetricsService) {
   const seenProm = new Set<string>();
   const seen = new Set<string>();
 
+  metrics.createObservableGauge({
+    name: 'catalog_entities_count',
+    opts: {
+      description: 'Total amount of entities in the catalog',
+    },
+    observer: async gauge => {
+      const results = await knex<DbSearchRow>('search')
+        .where('key', '=', 'kind')
+        .whereNotNull('value')
+        .select({ kind: 'value', count: knex.raw('count(*)') })
+        .groupBy('value');
+
+      results.forEach(({ kind, count }) => {
+        seen.add(kind);
+        gauge.observe(Number(count), { kind });
+      });
+    },
+  });
+
+  metrics.createObservableGauge({
+    name: 'catalog_registered_locations_count',
+    opts: {
+      description: 'Total amount of registered locations in the catalog',
+    },
+    observer: async gauge => {
+      if (knex.client.config.client === 'pg') {
+        // https://stackoverflow.com/questions/7943233/fast-way-to-discover-the-row-count-of-a-table-in-postgresql
+        const total = await knex.raw(`
+            SELECT reltuples::bigint AS estimate
+            FROM   pg_class
+            WHERE  oid = 'locations'::regclass;
+          `);
+        gauge.observe(Number(total.rows[0].estimate));
+      } else {
+        const total = await knex<DbLocationsRow>('locations').count({
+          count: '*',
+        });
+        gauge.observe(Number(total[0].count));
+      }
+    },
+  });
+
+  metrics.createObservableGauge({
+    name: 'catalog_relations_count',
+    opts: {
+      description: 'Total amount of relations between entities',
+    },
+    observer: async gauge => {
+      if (knex.client.config.client === 'pg') {
+        // https://stackoverflow.com/questions/7943233/fast-way-to-discover-the-row-count-of-a-table-in-postgresql
+        const total = await knex.raw(`
+            SELECT reltuples::bigint AS estimate
+            FROM   pg_class
+            WHERE  oid = 'relations'::regclass;
+          `);
+        gauge.observe(Number(total.rows[0].estimate));
+      } else {
+        const total = await knex<DbRelationsRow>('relations').count({
+          count: '*',
+        });
+        gauge.observe(Number(total[0].count));
+      }
+    },
+  });
+
   return {
     entities_count_prom: createGaugeMetric({
       name: 'catalog_entities_count',
@@ -69,69 +134,5 @@ export function initDatabaseMetrics(knex: Knex, metrics: MetricsService) {
         this.set(Number(total[0].count));
       },
     }),
-    entities_count: metrics
-      .createObservableGauge('catalog_entities_count', {
-        description: 'Total amount of entities in the catalog',
-      })
-      .addCallback(async gauge => {
-        const results = await knex<DbSearchRow>('search')
-          .where('key', '=', 'kind')
-          .whereNotNull('value')
-          .select({ kind: 'value', count: knex.raw('count(*)') })
-          .groupBy('value');
-
-        results.forEach(({ kind, count }) => {
-          seen.add(kind);
-          gauge.observe(Number(count), { kind });
-        });
-
-        // Set all the entities that were not seen to 0 and delete them from the seen set.
-        seen.forEach(kind => {
-          if (!results.some(r => r.kind === kind)) {
-            gauge.observe(0, { kind });
-            seen.delete(kind);
-          }
-        });
-      }),
-    registered_locations: metrics
-      .createObservableGauge('catalog_registered_locations_count', {
-        description: 'Total amount of registered locations in the catalog',
-      })
-      .addCallback(async gauge => {
-        if (knex.client.config.client === 'pg') {
-          // https://stackoverflow.com/questions/7943233/fast-way-to-discover-the-row-count-of-a-table-in-postgresql
-          const total = await knex.raw(`
-            SELECT reltuples::bigint AS estimate
-            FROM   pg_class
-            WHERE  oid = 'locations'::regclass;
-          `);
-          gauge.observe(Number(total.rows[0].estimate));
-        } else {
-          const total = await knex<DbLocationsRow>('locations').count({
-            count: '*',
-          });
-          gauge.observe(Number(total[0].count));
-        }
-      }),
-    relations: metrics
-      .createObservableGauge('catalog_relations_count', {
-        description: 'Total amount of relations between entities',
-      })
-      .addCallback(async gauge => {
-        if (knex.client.config.client === 'pg') {
-          // https://stackoverflow.com/questions/7943233/fast-way-to-discover-the-row-count-of-a-table-in-postgresql
-          const total = await knex.raw(`
-            SELECT reltuples::bigint AS estimate
-            FROM   pg_class
-            WHERE  oid = 'relations'::regclass;
-          `);
-          gauge.observe(Number(total.rows[0].estimate));
-        } else {
-          const total = await knex<DbRelationsRow>('relations').count({
-            count: '*',
-          });
-          gauge.observe(Number(total[0].count));
-        }
-      }),
   };
 }
