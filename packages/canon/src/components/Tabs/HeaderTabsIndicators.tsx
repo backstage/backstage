@@ -17,14 +17,14 @@
 import { TabListStateContext } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
 import { useContext, useEffect, useCallback, useRef } from 'react';
-import type { HeaderIndicatorsProps } from './types';
+import type { TabsIndicatorsProps } from './types';
 
 /**
  * A component that renders the indicators for the toolbar.
  *
  * @internal
  */
-export const HeaderTabsIndicators = (props: HeaderIndicatorsProps) => {
+export const HeaderTabsIndicators = (props: TabsIndicatorsProps) => {
   const { tabRefs, tabsRef, hoveredKey, prevHoveredKey } = props;
   const { classNames } = useStyles('Header');
   const state = useContext(TabListStateContext);

@@ -16,9 +16,9 @@
 
 import type { HeaderProps } from './types';
 import { HeaderToolbar } from './HeaderToolbar';
-import { HeaderTabs } from './HeaderTabs';
-import { RouterProvider } from 'react-aria-components';
-import { type NavigateOptions, useHref, useNavigate } from 'react-router-dom';
+import { Tabs, Tab } from '../Tabs';
+import { useStyles } from '../../hooks/useStyles';
+import { type NavigateOptions } from 'react-router-dom';
 
 declare module 'react-aria-components' {
   interface RouterConfig {
@@ -33,12 +33,13 @@ declare module 'react-aria-components' {
  */
 export const Header = (props: HeaderProps) => {
   const { tabs, icon, title, menuItems, breadcrumbs, customActions } = props;
-  let navigate = useNavigate();
+
+  const { classNames } = useStyles('Header');
 
   const hasTabs = tabs && tabs.length > 0;
 
   return (
-    <RouterProvider navigate={navigate} useHref={useHref}>
+    <>
       <HeaderToolbar
         icon={icon}
         title={title}
@@ -47,7 +48,15 @@ export const Header = (props: HeaderProps) => {
         customActions={customActions}
         hasTabs={hasTabs}
       />
-      <HeaderTabs tabs={tabs} />
-    </RouterProvider>
+      <div className={classNames.tabsWrapper}>
+        <Tabs>
+          {tabs?.map(tab => (
+            <Tab key={tab.id} id={tab.id} href={tab.href}>
+              {tab.label}
+            </Tab>
+          ))}
+        </Tabs>
+      </div>
+    </>
   );
 };

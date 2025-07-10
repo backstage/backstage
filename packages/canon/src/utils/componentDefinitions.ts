@@ -239,11 +239,12 @@ export const componentDefinitions = {
   },
   Tabs: {
     classNames: {
-      root: 'bui-TabsRoot',
-      list: 'bui-TabsList',
-      indicator: 'bui-TabsIndicator',
-      tab: 'bui-TabsTab',
-      panel: 'bui-TabsPanel',
+      tabs: 'bui-Tabs',
+      tabList: 'bui-TabList',
+      tab: 'bui-Tab',
+      tabActive: 'bui-TabActive',
+      tabHovered: 'bui-TabHovered',
+      panel: 'bui-TabPanel',
     },
   },
   Text: {

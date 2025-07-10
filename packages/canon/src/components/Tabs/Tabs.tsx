@@ -14,83 +14,108 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
-import { Tabs as TabsPrimitive } from '@base-ui-components/react/tabs';
-import type { TabsRootWithoutOrientation } from './types';
-import clsx from 'clsx';
+import {
+  useRef,
+  useState,
+  Children,
+  cloneElement,
+  isValidElement,
+  ReactNode,
+} from 'react';
+import type { TabsProps, TabProps } from './types';
+import { useLocation, useNavigate, useHref } from 'react-router-dom';
+import { HeaderTabsIndicators } from './HeaderTabsIndicators';
+import {
+  Tabs as AriaTabs,
+  TabList as AriaTabList,
+  Tab as AriaTab,
+  RouterProvider,
+} from 'react-aria-components';
+
 import { useStyles } from '../../hooks/useStyles';
 
-const TabsRoot = forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Root>,
-  TabsRootWithoutOrientation
->(({ className, ...props }, ref) => {
+export const Tabs = (props: TabsProps) => {
+  const { children } = props;
   const { classNames } = useStyles('Tabs');
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+  const prevHoveredKey = useRef<string | null>(null);
+  const location = useLocation();
+  let navigate = useNavigate();
+
+  // If selectedKey is not provided, try to determine it from the current route
+  const computedSelectedKey = (() => {
+    const childrenArray = Children.toArray(children as ReactNode);
+    for (const child of childrenArray) {
+      if (isValidElement(child) && child.props.href === location.pathname) {
+        return child.props.id;
+      }
+    }
+    return undefined;
+  })();
+
+  const setTabRef = (key: string, element: HTMLDivElement | null) => {
+    if (element) {
+      tabRefs.current.set(key, element);
+    } else {
+      tabRefs.current.delete(key);
+    }
+  };
+
+  const handleHover = (key: string | null) => {
+    setHoveredKey(key);
+  };
+
+  // Clone children with additional props for hover and ref management
+  const enhancedChildren = Children.map(children as ReactNode, child => {
+    if (isValidElement(child)) {
+      return cloneElement(child, {
+        onHover: handleHover,
+        onRegister: setTabRef,
+      } as Partial<TabProps>);
+    }
+    return child;
+  });
+
+  if (!children) return null;
 
   return (
-    <TabsPrimitive.Root
-      ref={ref}
-      className={clsx(classNames.root, className)}
-      {...props}
-    />
+    <RouterProvider navigate={navigate} useHref={useHref}>
+      <AriaTabs
+        className={classNames.tabs}
+        ref={tabsRef}
+        keyboardActivation="manual"
+        selectedKey={computedSelectedKey}
+      >
+        <AriaTabList className={classNames.tabList} aria-label="Toolbar tabs">
+          {enhancedChildren}
+        </AriaTabList>
+        <HeaderTabsIndicators
+          tabRefs={tabRefs}
+          tabsRef={tabsRef}
+          hoveredKey={hoveredKey}
+          prevHoveredKey={prevHoveredKey}
+        />
+      </AriaTabs>
+    </RouterProvider>
   );
-});
-TabsRoot.displayName = TabsPrimitive.Root.displayName;
+};
 
-const TabsList = forwardRef<
-  React.ElementRef<typeof TabsPrimitive.List>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
->(({ className, children, ...props }, ref) => {
+export const Tab = (props: TabProps) => {
+  const { href, children, id, onHover, onRegister } = props;
   const { classNames } = useStyles('Tabs');
 
   return (
-    <TabsPrimitive.List
-      ref={ref}
-      className={clsx(classNames.list, className)}
-      {...props}
+    <AriaTab
+      id={id}
+      className={classNames.tab}
+      ref={el => onRegister?.(id as string, el as HTMLDivElement)}
+      onHoverStart={() => onHover?.(id as string)}
+      onHoverEnd={() => onHover?.(null)}
+      href={href}
     >
       {children}
-      <TabsPrimitive.Indicator className={classNames.indicator} />
-    </TabsPrimitive.List>
+    </AriaTab>
   );
-});
-TabsList.displayName = TabsPrimitive.List.displayName;
-
-const TabsTab = forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Tab>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Tab>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Tabs');
-
-  return (
-    <TabsPrimitive.Tab
-      ref={ref}
-      className={clsx(classNames.tab, className)}
-      {...props}
-    />
-  );
-});
-TabsTab.displayName = TabsPrimitive.Tab.displayName;
-
-const TabsPanel = forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Panel>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Panel>
->(({ className, ...props }, ref) => {
-  const { classNames } = useStyles('Tabs');
-
-  return (
-    <TabsPrimitive.Panel
-      ref={ref}
-      className={clsx(classNames.panel, className)}
-      {...props}
-    />
-  );
-});
-TabsPanel.displayName = TabsPrimitive.Panel.displayName;
-
-/** @public */
-export const Tabs = {
-  Root: TabsRoot,
-  List: TabsList,
-  Tab: TabsTab,
-  Panel: TabsPanel,
 };

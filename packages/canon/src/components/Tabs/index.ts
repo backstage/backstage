@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { Tabs } from './Tabs';
-export type { TabsRootWithoutOrientation } from './types';
+export { Tabs, Tab } from './Tabs';
+export type { TabsProps, TabProps } from './types';

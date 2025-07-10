@@ -13,13 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Tabs } from '@base-ui-components/react/tabs';
 
-// We are not supporting the orientation prop, so we need to omit it
+import type {
+  TabProps as AriaTabProps,
+  TabsProps as AriaTabsProps,
+} from 'react-aria-components';
+import { MutableRefObject } from 'react';
 
-/** @public */
-export interface TabsRootWithoutOrientation
-  extends Omit<
-    React.ComponentPropsWithoutRef<typeof Tabs.Root>,
-    'orientation'
-  > {}
+/**
+ * Props for the Tabs component.
+ *
+ * @public
+ */
+export interface TabsProps extends AriaTabsProps {}
+
+/**
+ * Props for the Tab component.
+ *
+ * @public
+ */
+export interface TabProps extends AriaTabProps {
+  onHover?: (key: string | null) => void;
+  onRegister?: (key: string, element: HTMLDivElement | null) => void;
+}
+
+/**
+ * Props for the TabsIndicators component.
+ *
+ * @internal
+ */
+export interface TabsIndicatorsProps {
+  tabRefs: MutableRefObject<Map<string, HTMLDivElement>>;
+  tabsRef: MutableRefObject<HTMLDivElement | null>;
+  hoveredKey: string | null;
+  prevHoveredKey: MutableRefObject<string | null>;
+}

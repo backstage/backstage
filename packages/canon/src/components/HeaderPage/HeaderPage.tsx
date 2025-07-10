@@ -21,6 +21,7 @@ import { Flex } from '../Flex';
 import { Menu } from '../Menu';
 import { ButtonIcon } from '../ButtonIcon';
 import { RiMore2Line } from '@remixicon/react';
+import { Tabs } from '../Tabs';
 
 /**
  * A component that renders a header page.
@@ -31,41 +32,50 @@ export const HeaderPage = (props: HeaderPageProps) => {
   const { title, description, options } = props;
 
   return (
-    <Flex pl="4" pr="2" mt="6" justify="between">
-      <Flex direction="column" gap="2">
-        <Heading variant="title4">{title}</Heading>
-        <Text color="secondary">{description}</Text>
+    <Flex pl="4" pr="2" direction="column" gap="4">
+      <Flex mt="6" justify="between">
+        <Flex direction="column" gap="2">
+          <Heading variant="title4">{title}</Heading>
+          <Text color="secondary">{description}</Text>
+        </Flex>
+        <div>
+          {options && (
+            <Menu.Root>
+              <Menu.Trigger
+                render={props => (
+                  <ButtonIcon
+                    {...props}
+                    size="small"
+                    icon={<RiMore2Line />}
+                    variant="tertiary"
+                  />
+                )}
+              />
+              <Menu.Portal>
+                <Menu.Positioner sideOffset={4} align="end">
+                  <Menu.Popup>
+                    {options.map(option => (
+                      <Menu.Item
+                        key={option.value}
+                        onClick={() => option.onClick?.()}
+                      >
+                        {option.label}
+                      </Menu.Item>
+                    ))}
+                  </Menu.Popup>
+                </Menu.Positioner>
+              </Menu.Portal>
+            </Menu.Root>
+          )}
+        </div>
       </Flex>
-      <div>
-        {options && (
-          <Menu.Root>
-            <Menu.Trigger
-              render={props => (
-                <ButtonIcon
-                  {...props}
-                  size="small"
-                  icon={<RiMore2Line />}
-                  variant="tertiary"
-                />
-              )}
-            />
-            <Menu.Portal>
-              <Menu.Positioner sideOffset={4} align="end">
-                <Menu.Popup>
-                  {options.map(option => (
-                    <Menu.Item
-                      key={option.value}
-                      onClick={() => option.onClick?.()}
-                    >
-                      {option.label}
-                    </Menu.Item>
-                  ))}
-                </Menu.Popup>
-              </Menu.Positioner>
-            </Menu.Portal>
-          </Menu.Root>
-        )}
-      </div>
+      <Tabs.Root>
+        <Tabs.List>
+          <Tabs.Tab>Tab 1</Tabs.Tab>
+          <Tabs.Tab>Tab 2</Tabs.Tab>
+          <Tabs.Tab>Tab 3 With long title</Tabs.Tab>
+        </Tabs.List>
+      </Tabs.Root>
     </Flex>
   );
 };
