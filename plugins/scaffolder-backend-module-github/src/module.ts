@@ -27,6 +27,7 @@ import {
   createGithubDeployKeyAction,
   createGithubEnvironmentAction,
   createGithubIssuesLabelAction,
+  createGithubIssuesCreateAction,
   createGithubRepoCreateAction,
   createGithubRepoPushAction,
   createGithubWebhookAction,
@@ -79,6 +80,10 @@ export const githubModule = createBackendModule({
             catalog,
           }),
           createGithubIssuesLabelAction({
+            integrations,
+            githubCredentialsProvider,
+          }),
+          createGithubIssuesCreateAction({
             integrations,
             githubCredentialsProvider,
           }),
