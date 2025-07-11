@@ -44,10 +44,10 @@ const DataTablePagination = forwardRef(
       <div
         ref={ref}
         style={{ minWidth: table?.getTotalSize() }}
-        className={clsx('canon-DataTablePagination', className)}
+        className={clsx('bui-DataTablePagination', className)}
         {...rest}
       >
-        <div className="canon-DataTablePagination--left">
+        <div className="bui-DataTablePagination--left">
           {!table.options.manualPagination && (
             <Select
               name="pageSize"
@@ -65,11 +65,11 @@ const DataTablePagination = forwardRef(
               onValueChange={value => {
                 table?.setPageSize(Number(value));
               }}
-              className="canon-DataTablePagination--select"
+              className="bui-DataTablePagination--select"
             />
           )}
         </div>
-        <div className="canon-DataTablePagination--right">
+        <div className="bui-DataTablePagination--right">
           <Text variant="body">{`${fromCount} - ${toCount} of ${rowCount}`}</Text>
           <ButtonIcon
             variant="secondary"

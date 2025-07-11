@@ -62,7 +62,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
     <div className={clsx(classNames.root, className)} style={style} ref={ref}>
       {label && (
         <label
-          className="canon-SelectLabel"
+          className="bui-SelectLabel"
           htmlFor={selectId}
           onClick={handleLabelClick}
           data-disabled={props.disabled ? true : undefined}

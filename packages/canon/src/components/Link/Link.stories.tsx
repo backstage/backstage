@@ -33,7 +33,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    to: 'https://canon.backstage.io',
+    to: 'https://ui.backstage.io',
     children: 'Sign up for Backstage',
   },
 };
@@ -44,10 +44,10 @@ export const AllVariants: Story = {
   },
   render: args => (
     <Flex gap="4" direction="column">
-      <Link href="https://canon.backstage.io" variant="subtitle" {...args} />
-      <Link href="https://canon.backstage.io" variant="body" {...args} />
-      <Link href="https://canon.backstage.io" variant="caption" {...args} />
-      <Link href="https://canon.backstage.io" variant="label" {...args} />
+      <Link href="https://ui.backstage.io" variant="subtitle" {...args} />
+      <Link href="https://ui.backstage.io" variant="body" {...args} />
+      <Link href="https://ui.backstage.io" variant="caption" {...args} />
+      <Link href="https://ui.backstage.io" variant="label" {...args} />
     </Flex>
   ),
 };

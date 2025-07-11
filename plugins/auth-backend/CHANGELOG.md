@@ -1,5 +1,12 @@
 # @backstage/plugin-auth-backend
 
+## 0.25.2-next.1
+
+### Patch Changes
+
+- e88cb70: Small internal refactor to move out the `userInfo` database from the `tokenIssuer`. Also removes `exp` from being stored in `UserInfo` and it's now replaced with `created_at` and `updated_at` in the database instead.
+- 207778c: Internal refactor of OIDC endpoints and `UserInfoDatabase`
+
 ## 0.25.2-next.0
 
 ### Patch Changes

@@ -1,25 +1,25 @@
-.canon-TableRoot {
+.bui-TableRoot {
   width: 100%;
   caption-side: bottom;
   border-collapse: collapse;
 }
 
-.canon-TableHead {
+.bui-TableHead {
   text-align: left;
-  padding: var(--canon-space-3);
-  font-size: var(--canon-font-size-3);
-  color: var(--canon-fg-primary);
+  padding: var(--bui-space-3);
+  font-size: var(--bui-font-size-3);
+  color: var(--bui-fg-primary);
 }
 
-.canon-TableBody {
-  color: var(--canon-fg-primary);
+.bui-TableBody {
+  color: var(--bui-fg-primary);
 }
 
-.canon-TableRow {
-  border-bottom: 1px solid var(--canon-border);
+.bui-TableRow {
+  border-bottom: 1px solid var(--bui-border);
   transition: color 0.2s ease-in-out;
 }
 
-.canon-TableBody .canon-TableRow:hover {
-  background-color: var(--canon-gray-2);
+.bui-TableBody .bui-TableRow:hover {
+  background-color: var(--bui-gray-2);
 }

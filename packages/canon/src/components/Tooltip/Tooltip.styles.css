@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-.canon-Tooltip {
+.bui-Tooltip {
   box-shadow: 0 8px 20px rgba(0 0 0 / 0.1);
   border-radius: 4px;
-  background: var(--canon-bg-surface-2);
+  background: var(--bui-bg-surface-2);
   forced-color-adjust: none;
   outline: none;
-  padding: var(--canon-space-2) var(--canon-space-3);
+  padding: var(--bui-space-2) var(--bui-space-3);
   max-width: 240px;
   /* fixes FF gap */
   transform: translate3d(0, 0, 0);
   transition: transform 200ms, opacity 200ms;
-  font-size: var(--canon-font-size-3);
-  font-family: var(--canon-font-regular);
-  color: var(--canon-fg-primary);
+  font-size: var(--bui-font-size-3);
+  font-family: var(--bui-font-regular);
+  color: var(--bui-fg-primary);
 
   &[data-entering],
   &[data-exiting] {
@@ -36,39 +36,39 @@
   }
 
   &[data-placement='top'] {
-    margin-bottom: var(--canon-space-2);
+    margin-bottom: var(--bui-space-2);
     --origin: translateY(4px);
   }
 
   &[data-placement='bottom'] {
-    margin-top: var(--canon-space-2);
+    margin-top: var(--bui-space-2);
     --origin: translateY(-4px);
 
-    & .canon-TooltipArrow svg {
+    & .bui-TooltipArrow svg {
       transform: rotate(180deg);
     }
   }
 
   &[data-placement='right'] {
-    margin-left: var(--canon-space-2);
+    margin-left: var(--bui-space-2);
     --origin: translateX(-4px);
 
-    & .canon-TooltipArrow svg {
+    & .bui-TooltipArrow svg {
       transform: rotate(90deg);
     }
   }
 
   &[data-placement='left'] {
-    margin-right: var(--canon-space-2);
+    margin-right: var(--bui-space-2);
     --origin: translateX(4px);
 
-    & .canon-TooltipArrow svg {
+    & .bui-TooltipArrow svg {
       transform: rotate(-90deg);
     }
   }
 }
 
-.canon-TooltipArrow svg {
+.bui-TooltipArrow svg {
   display: block;
-  fill: var(--canon-bg-surface-1);
+  fill: var(--bui-bg-surface-1);
 }

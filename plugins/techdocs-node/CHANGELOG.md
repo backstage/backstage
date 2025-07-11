@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs-node
 
+## 1.13.5-next.2
+
+### Patch Changes
+
+- 029526c: Updated the error message thrown by parseReferenceAnnotation to reflect the annotation value passed as an argument rather than in correctly assuming location.
+
 ## 1.13.5-next.1
 
 ### Patch Changes

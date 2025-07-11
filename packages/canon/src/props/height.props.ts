@@ -19,19 +19,19 @@ import type { PropDef, GetPropDefTypes } from './prop-def';
 const heightPropDefs = {
   height: {
     type: 'string',
-    className: 'cu-h',
+    className: 'bui-h',
     customProperties: ['--height'],
     responsive: true,
   },
   minHeight: {
     type: 'string',
-    className: 'cu-min-h',
+    className: 'bui-min-h',
     customProperties: ['--min-height'],
     responsive: true,
   },
   maxHeight: {
     type: 'string',
-    className: 'cu-max-h',
+    className: 'bui-max-h',
     customProperties: ['--max-height'],
     responsive: true,
   },

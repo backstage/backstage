@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.33.1-next.2
+
+### Patch Changes
+
+- 50f0ce6: Fixes a module not found error when running `backstage-cli info`.
+
 ## 0.33.1-next.1
 
 ### Patch Changes
