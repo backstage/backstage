@@ -15,14 +15,23 @@
  */
 
 import { Breakpoint } from '../../';
-import { ChangeEvent, FocusEvent } from 'react';
+import { ReactNode } from 'react';
+import type { SelectProps as AriaSelectProps } from 'react-aria-components';
+import type { FieldLabelProps } from '../FieldLabel/types';
+
+interface SelectOption {
+  name: string;
+  value: string;
+}
 
 /** @public */
-export interface SelectProps {
+export interface SelectProps
+  extends AriaSelectProps<SelectOption>,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
   /**
-   * The class name of the select field
+   * An icon to render before the input
    */
-  className?: string;
+  icon?: ReactNode;
 
   /**
    * The size of the select field
@@ -31,80 +40,7 @@ export interface SelectProps {
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 
   /**
-   * The label of the select field
-   */
-  label?: string;
-
-  /**
-   * The description of the select field
-   */
-  description?: string;
-
-  /**
-   * The name of the select field
-   */
-  name: string;
-
-  /**
-   * Whether the select field should ignore user input
-   * @defaultValue false
-   */
-  disabled?: boolean;
-
-  /**
-   * Whether the select field is required
-   * @defaultValue false
-   */
-  required?: boolean;
-
-  /**
    * The options of the select field
    */
   options?: Array<{ value: string; label: string; disabled?: boolean }>;
-
-  /**
-   * The current value of the select field
-   */
-  value?: string;
-
-  /**
-   * The default value of the select field, if nothing has been selected yet
-   */
-  defaultValue?: string;
-
-  /**
-   * A placeholder text to show if nothing has been selected and there's no default value
-   * @defaultValue 'Select an option'
-   */
-  placeholder?: string;
-
-  /**
-   * Callback that is called when the value of the select field changes
-   */
-  onValueChange?: (value: string) => void;
-
-  /**
-   * Callback that is called when the select field is opened or closed
-   */
-  onOpenChange?: (open: boolean) => void;
-
-  /**
-   * The style of the select field
-   */
-  style?: React.CSSProperties;
-
-  /**
-   * The error message of the select field
-   */
-  error?: string;
-
-  /**
-   * onChange handler for form integration
-   */
-  onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
-
-  /**
-   * onBlur handler for form integration
-   */
-  onBlur?: (event: FocusEvent<HTMLSelectElement>) => void;
 }

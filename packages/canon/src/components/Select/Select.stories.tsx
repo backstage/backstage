@@ -49,9 +49,16 @@ export const Preview: Story = {
   },
 };
 
+export const WithLabel: Story = {
+  args: {
+    ...Default.args,
+    label: 'Font Family',
+  },
+};
+
 export const WithDescription: Story = {
   args: {
-    ...Preview.args,
+    ...WithLabel.args,
     description: 'Choose a font family for your document',
   },
 };
@@ -71,14 +78,14 @@ export const Sizes: Story = {
 export const Required: Story = {
   args: {
     ...Preview.args,
-    required: true,
+    isRequired: true,
   },
 };
 
 export const Disabled: Story = {
   args: {
     ...Preview.args,
-    disabled: true,
+    isDisabled: true,
   },
 };
 
@@ -102,15 +109,15 @@ export const NoOptions: Story = {
 export const WithValue: Story = {
   args: {
     ...Preview.args,
-    value: 'mono',
-    defaultValue: 'serif',
+    selectedKey: 'mono',
+    defaultSelectedKey: 'serif',
   },
 };
 
 export const WithDefaultValue: Story = {
   args: {
     ...Preview.args,
-    defaultValue: 'serif',
+    defaultSelectedKey: 'serif',
     options: fontOptions,
     name: 'font',
   },
@@ -246,12 +253,12 @@ export const WithManyOptions: Story = {
   },
 };
 
-export const WithErrorAndDescription: Story = {
-  args: {
-    ...Preview.args,
-    error: 'Invalid font family',
-  },
-};
+// export const WithErrorAndDescription: Story = {
+//   args: {
+//     ...Preview.args,
+//     error: 'Invalid font family',
+//   },
+// };
 
 export const WithLongOptionNames: Story = {
   args: {
@@ -286,6 +293,6 @@ export const WithLongOptionNames: Story = {
     placeholder: 'Select a document template',
     name: 'template',
     style: { maxWidth: 400 },
-    value: 'annual-report-2024',
+    selectedKey: 'annual-report-2024',
   },
 };

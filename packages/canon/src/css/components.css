@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/* Generic component styles */
+@import './generic/popover.css';
+@import './generic/list.css';
+
+/* Component styles */
 @import '../components/Avatar/Avatar.styles.css';
 @import '../components/Box/styles.css';
 @import '../components/Button/styles.css';
