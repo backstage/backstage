@@ -7,3 +7,8 @@ backend:
 
 techdocs:
   builder: 'external'
+  sanitizer:
+    # Allow live reload locally
+    # XXX(GabDug): move out of this config, so we don't conflict with config in custom embedded apps
+    allowedCustomElementTagNameRegExp: 'live-reload'
+    allowedCustomElementAttributeNameRegExp: 'live-reload-epoch|live-reload-request-id'
