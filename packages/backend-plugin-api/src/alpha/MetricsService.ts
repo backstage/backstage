@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meter, MetricOptions } from '@opentelemetry/api';
+import {
+  Attributes,
+  Meter,
+  MetricOptions,
+  ObservableCallback,
+} from '@opentelemetry/api';
 import {
   CounterMetric,
   UpDownCounterMetric,
   HistogramMetric,
   GaugeMetric,
-  CreateObservableMetricOptions,
 } from './instruments';
 
 /**
@@ -41,11 +45,23 @@ export interface MetricsService {
   createGauge(name: string, options?: MetricOptions): GaugeMetric;
 
   // Asynchronous Instruments
-  createObservableCounter(opts: CreateObservableMetricOptions): void;
+  createObservableCounter(
+    name: string,
+    observer: ObservableCallback<Attributes>,
+    opts?: MetricOptions,
+  ): void;
 
-  createObservableUpDownCounter(opts: CreateObservableMetricOptions): void;
+  createObservableUpDownCounter(
+    name: string,
+    observer: ObservableCallback<Attributes>,
+    opts?: MetricOptions,
+  ): void;
 
-  createObservableGauge(opts: CreateObservableMetricOptions): void;
+  createObservableGauge(
+    name: string,
+    observer: ObservableCallback<Attributes>,
+    opts?: MetricOptions,
+  ): void;
 
   getMeter(): Meter;
 }

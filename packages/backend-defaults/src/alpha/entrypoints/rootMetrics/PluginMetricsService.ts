@@ -18,10 +18,16 @@ import {
   GaugeMetric,
   HistogramMetric,
   MetricsService,
-  CreateObservableMetricOptions,
   UpDownCounterMetric,
+  ObservableMetricOptions,
 } from '@backstage/backend-plugin-api/alpha';
-import { Meter, MetricOptions, metrics } from '@opentelemetry/api';
+import {
+  Attributes,
+  Meter,
+  MetricOptions,
+  metrics,
+  ObservableCallback,
+} from '@opentelemetry/api';
 import {
   createCounterMetric,
   createGaugeMetric,
@@ -92,24 +98,42 @@ export class PluginMetricsService implements MetricsService {
     });
   }
 
-  createObservableCounter(opts: CreateObservableMetricOptions): void {
+  createObservableCounter(
+    name: string,
+    observer: ObservableCallback<Attributes>,
+    opts?: MetricOptions,
+  ): void {
     createObservableCounterMetric({
-      ...opts,
-      name: this.prefixMetricName(opts.name),
+      name: this.prefixMetricName(name),
+      meter: this.meter,
+      observer,
+      opts,
     });
   }
 
-  createObservableUpDownCounter(opts: CreateObservableMetricOptions): void {
+  createObservableUpDownCounter(
+    name: string,
+    observer: ObservableCallback<Attributes>,
+    opts?: MetricOptions,
+  ): void {
     createObservableUpDownCounterMetric({
-      ...opts,
-      name: this.prefixMetricName(opts.name),
+      name: this.prefixMetricName(name),
+      meter: this.meter,
+      observer,
+      opts,
     });
   }
 
-  createObservableGauge(opts: CreateObservableMetricOptions): void {
+  createObservableGauge(
+    name: string,
+    observer: ObservableCallback<Attributes>,
+    opts?: MetricOptions,
+  ): void {
     createObservableGaugeMetric({
-      ...opts,
-      name: this.prefixMetricName(opts.name),
+      name: this.prefixMetricName(name),
+      meter: this.meter,
+      observer,
+      opts,
     });
   }
 }

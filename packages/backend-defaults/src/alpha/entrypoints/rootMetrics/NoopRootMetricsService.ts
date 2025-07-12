@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meter, MetricOptions, metrics } from '@opentelemetry/api';
+import {
+  Attributes,
+  Meter,
+  MetricOptions,
+  metrics,
+  ObservableCallback,
+} from '@opentelemetry/api';
 import {
   CounterMetric,
   GaugeMetric,
@@ -21,7 +27,6 @@ import {
   UpDownCounterMetric,
   MetricsService,
   RootMetricsService,
-  CreateObservableMetricOptions,
 } from '@backstage/backend-plugin-api/alpha';
 import {
   createCounterMetric,
@@ -83,15 +88,42 @@ export class NoopRootMetricsService implements RootMetricsService {
     });
   }
 
-  createObservableCounter(_opts: CreateObservableMetricOptions): void {
-    return createObservableCounterMetric(_opts);
+  createObservableCounter(
+    _name: string,
+    _observer: ObservableCallback<Attributes>,
+    _opts?: MetricOptions,
+  ): void {
+    return createObservableCounterMetric({
+      name: 'noop',
+      meter: this.meter,
+      observer: _observer,
+      opts: _opts,
+    });
   }
 
-  createObservableUpDownCounter(_opts: CreateObservableMetricOptions): void {
-    return createObservableUpDownCounterMetric(_opts);
+  createObservableUpDownCounter(
+    _name: string,
+    _observer: ObservableCallback<Attributes>,
+    _opts?: MetricOptions,
+  ): void {
+    return createObservableUpDownCounterMetric({
+      name: 'noop',
+      meter: this.meter,
+      observer: _observer,
+      opts: _opts,
+    });
   }
 
-  createObservableGauge(_opts: CreateObservableMetricOptions): void {
-    return createObservableGaugeMetric(_opts);
+  createObservableGauge(
+    _name: string,
+    _observer: ObservableCallback<Attributes>,
+    _opts?: MetricOptions,
+  ): void {
+    return createObservableGaugeMetric({
+      name: 'noop',
+      meter: this.meter,
+      observer: _observer,
+      opts: _opts,
+    });
   }
 }
