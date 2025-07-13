@@ -122,7 +122,8 @@ function useHomeStorage(
         };
       } catch {
         // Handle V1 → V2 migration
-        const gridV1 = CustomHomepageGridStateV1Schema.parse(parsed);
+        const gridV1: CustomHomepageGridStateV1 =
+          CustomHomepageGridStateV1Schema.parse(parsed);
         return {
           widgets: gridV1.pages.default,
           backup: gridV1.pages.default,
