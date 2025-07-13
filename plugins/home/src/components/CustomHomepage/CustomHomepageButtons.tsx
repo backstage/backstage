@@ -128,7 +128,7 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
             size="small"
             startIcon={<CancelIcon />}
           >
-            Cancel
+            {t('customHomepageButtons.cancel')}
           </Button>
         </>
       )}
