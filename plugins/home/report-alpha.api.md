@@ -74,8 +74,8 @@ export default _default;
 export const homeTranslationRef: TranslationRef<
   'home',
   {
-    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'addWidgetDialog.title': 'Add new widget to dashboard';
+    readonly 'customHomepageButtons.cancel': 'Cancel';
     readonly 'customHomepageButtons.clearAll': 'Clear all';
     readonly 'customHomepageButtons.edit': 'Edit';
     readonly 'customHomepageButtons.restoreDefaults': 'Restore defaults';
@@ -86,6 +86,10 @@ export const homeTranslationRef: TranslationRef<
     readonly 'widgetSettingsOverlay.editSettingsTooptip': 'Edit settings';
     readonly 'widgetSettingsOverlay.deleteWidgetTooltip': 'Delete widget';
     readonly 'widgetSettingsOverlay.submitButtonTitle': 'Submit';
+    readonly 'cancelConfirmDialog.cancelButtonTitle': 'Cancel';
+    readonly 'cancelConfirmDialog.dialogHeaderTitle': 'Discard Changes';
+    readonly 'cancelConfirmDialog.dialogContentText': 'Are you sure? Unsaved changes will be lost.';
+    readonly 'cancelConfirmDialog.discardButtonTitle': 'Discard Changes';
     readonly 'starredEntityListItem.removeFavoriteEntityTitle': 'Remove entity from favorites';
     readonly 'visitList.empty.title': 'There are no visits to show yet.';
     readonly 'visitList.empty.description': 'Once you start using Backstage, your visits will appear here as a quick link to carry on where you left off.';
@@ -93,6 +97,7 @@ export const homeTranslationRef: TranslationRef<
     readonly 'quickStart.title': 'Onboarding';
     readonly 'quickStart.description': 'Get started with Backstage';
     readonly 'quickStart.learnMoreLinkTitle': 'Learn more';
+    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'visitedByType.action.viewMore': 'View more';
     readonly 'visitedByType.action.viewLess': 'View less';
     readonly 'featuredDocsCard.empty.title': 'No documents to show';
