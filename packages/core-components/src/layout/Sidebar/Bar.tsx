@@ -1,25 +1,11 @@
-/*
- * Copyright 2020 The Backstage Authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import classnames from 'classnames';
-import { ReactNode, useContext, useRef, useState } from 'react';
+import React, { ReactNode, useContext, useRef, useState } from 'react';
 
 import {
   makeSidebarConfig,
@@ -36,6 +22,9 @@ import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { useSidebarPinState } from './SidebarPinStateContext';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { coreComponentsTranslationRef } from '../../translation';
+import { SidebarContext } from './SidebarContext';
+import { ThemeToggle } from './Controls/ThemeToggle';
+import { SidebarToggle } from './Controls/SidebarToggle';
 
 /** @public */
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
@@ -84,6 +73,44 @@ const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
         duration: theme.transitions.duration.shorter,
       }),
     }),
+    collapsed: {
+      '& .MuiTypography-root:not(.MuiListItemIcon-root *)': {
+        display: 'none',
+      },
+      '& .MuiListItemSecondaryAction-root': {
+        display: 'none',
+      },
+      '& .sidebar-expansion-icon': {
+        display: 'none',
+      },
+    },
+    header: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: theme.spacing(2),
+      justifyContent: 'space-between',
+      minHeight: '56px',
+      width: '100%',
+    },
+    content: {
+      flex: 1,
+      overflowY: 'auto',
+      overflowX: 'hidden',
+      msOverflowStyle: 'none',
+      scrollbarWidth: 'none',
+      width: '100%',
+      '&::-webkit-scrollbar': {
+        display: 'none',
+      },
+    },
+    footer: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: theme.spacing(1, 2),
+      borderTop: `1px solid ${theme.palette.navigation.navItem?.hoverBackground ?? '#404040'}`,
+      gap: theme.spacing(1),
+      width: '100%',
+    },
     visuallyHidden: {
       top: 0,
       position: 'absolute',
@@ -148,6 +175,20 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
   const hoverTimerRef = useRef<number>();
   const { isPinned, toggleSidebarPinState } = useSidebarPinState();
 
+  // New state for sidebar collapse and group expansion
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const stored = localStorage.getItem('backstage.sidebar.collapsed');
+    return stored === 'true';
+  });
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => {
+    try {
+      const stored = localStorage.getItem('backstage.sidebar.expanded');
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  });
+
   const handleOpen = () => {
     if (isPinned || disableExpandOnHover) {
       return;
@@ -199,26 +240,58 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
     }
   };
 
+  const handleToggleCollapse = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    localStorage.setItem('backstage.sidebar.collapsed', String(newState));
+  };
+
+  const handleGroupToggle = (groupId: string, expanded: boolean) => {
+    const newExpandedGroups = { ...expandedGroups, [groupId]: expanded };
+    setExpandedGroups(newExpandedGroups);
+    localStorage.setItem('backstage.sidebar.expanded', JSON.stringify(newExpandedGroups));
+  };
+
   return (
     <nav style={{}} aria-label="sidebar nav">
       <A11ySkipSidebar />
       <SidebarOpenStateProvider value={{ isOpen, setOpen }}>
-        <Box
-          className={classes.root}
-          data-testid="sidebar-root"
-          onMouseEnter={disableExpandOnHover ? () => {} : handleOpen}
-          onFocus={disableExpandOnHover ? () => {} : handleOpen}
-          onMouseLeave={disableExpandOnHover ? () => {} : handleClose}
-          onBlur={disableExpandOnHover ? () => {} : handleClose}
-        >
+        <SidebarContext.Provider value={{ 
+          isCollapsed, 
+          expandedGroups,
+          onGroupToggle: handleGroupToggle,
+        }}>
           <Box
-            className={classnames(classes.drawer, classes.drawerWidth, {
-              [classes.drawerOpen]: isOpen,
-            })}
+            className={classes.root}
+            data-testid="sidebar-root"
+            onMouseEnter={disableExpandOnHover ? () => {} : handleOpen}
+            onFocus={disableExpandOnHover ? () => {} : handleOpen}
+            onMouseLeave={disableExpandOnHover ? () => {} : handleClose}
+            onBlur={disableExpandOnHover ? () => {} : handleClose}
           >
-            {children}
+            <Box
+              className={classnames(classes.drawer, classes.drawerWidth, {
+                [classes.drawerOpen]: isOpen,
+                [classes.collapsed]: isCollapsed,
+              })}
+            >
+              <div className={classes.header}>
+                <SidebarToggle 
+                  isCollapsed={isCollapsed}
+                  onToggle={handleToggleCollapse}
+                />
+              </div>
+              
+              <div className={classes.content}>
+                {children}
+              </div>
+              
+              <div className={classes.footer}>
+                <ThemeToggle />
+              </div>
+            </Box>
           </Box>
-        </Box>
+        </SidebarContext.Provider>
       </SidebarOpenStateProvider>
     </nav>
   );
