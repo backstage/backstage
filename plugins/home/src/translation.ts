@@ -41,6 +41,12 @@ export const homeTranslationRef = createTranslationRef({
       submitButtonTitle: 'Submit',
       cancelButtonTitle: 'Cancel',
     },
+    cancelConfirmDialog: {
+      dialogHeaderTitle: 'Discard Changes',
+      dialogContentText: 'Are you sure? Unsaved changes will be lost.',
+      cancelButtonTitle: 'Cancel',
+      discardButtonTitle: 'Discard Changes',
+    },
     starredEntityListItem: {
       removeFavoriteEntityTitle: 'Remove entity from favorites',
     },

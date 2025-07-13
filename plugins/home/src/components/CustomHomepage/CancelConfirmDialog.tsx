@@ -20,6 +20,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homeTranslationRef } from '../../translation';
 
 interface CancelConfirmDialogProps {
   open: boolean;
@@ -32,20 +34,21 @@ export const CancelConfirmDialog = ({
   onClose,
   onConfirm,
 }: CancelConfirmDialogProps) => {
+  const { t } = useTranslationRef(homeTranslationRef);
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Discard Changes?</DialogTitle>
+      <DialogTitle>{t('cancelConfirmDialog.dialogHeaderTitle')}?</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Are you sure? Unsaved changes will be lost.
+          {t('cancelConfirmDialog.dialogContentText')}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
-          Cancel
+          {t('cancelConfirmDialog.cancelButtonTitle')}
         </Button>
         <Button onClick={onConfirm} color="secondary" variant="contained">
-          Discard Changes
+          {t('cancelConfirmDialog.discardButtonTitle')}
         </Button>
       </DialogActions>
     </Dialog>
