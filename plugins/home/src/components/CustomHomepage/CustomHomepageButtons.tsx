@@ -120,6 +120,7 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
             </Button>
           )}
           <Button
+            data-testid="edit-cancel-button"
             className={styles.contentHeaderBtn}
             variant="contained"
             color="secondary"

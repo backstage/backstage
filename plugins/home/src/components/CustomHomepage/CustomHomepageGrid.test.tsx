@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { fireEvent, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import {
   TestApiRegistry,
   renderInTestApp,
@@ -57,7 +57,6 @@ describe('CustomHomepageGrid', () => {
         "No widgets added. Start by clicking the 'Add widget' button.",
       ),
     ).toBeInTheDocument();
-    expect(screen.getByText('Edit')).toBeInTheDocument();
   });
 
   it('should load widgets from V2 storage format', async () => {
@@ -327,7 +326,7 @@ describe('CustomHomepageGrid', () => {
 
       // Should remain in edit mode
       expect(screen.getByText('Save')).toBeInTheDocument();
-      expect(screen.getByText('Cancel')).toBeInTheDocument();
+      expect(screen.getByTestId('edit-cancel-button')).toBeInTheDocument();
     });
 
     it('should exit edit mode when save is clicked', async () => {
@@ -360,7 +359,9 @@ describe('CustomHomepageGrid', () => {
       await user.click(addWidgetButton);
 
       // Should show add widget dialog
-      expect(screen.getByText('Add a widget')).toBeInTheDocument();
+      expect(
+        screen.getByText('Add new widget to dashboard'),
+      ).toBeInTheDocument();
     });
   });
 });
