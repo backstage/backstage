@@ -32,11 +32,7 @@ const TableCellLink = forwardRef<HTMLDivElement, TableCellLinkProps>(
         className={clsx(classNames.cellLink, className)}
         {...props}
       >
-        {title && (
-          <Link href={href} render={render}>
-            {title}
-          </Link>
-        )}
+        {title && <Link href={href}>{title}</Link>}
         {description && (
           <Text variant="body" color="secondary">
             {description}

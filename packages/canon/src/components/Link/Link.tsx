@@ -15,29 +15,38 @@
  */
 
 import { forwardRef } from 'react';
-import { Link as AriaLink } from 'react-aria-components';
+import { Link as AriaLink, RouterProvider } from 'react-aria-components';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import type { LinkProps } from './types';
+import { useNavigate, useHref } from 'react-router-dom';
 
 /** @public */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
+  const navigate = useNavigate();
   const {
     className,
     variant = 'body',
     weight = 'regular',
+    color = 'primary',
     ...restProps
   } = props;
 
-  const { classNames, dataAttributes } = useStyles('Link', { variant, weight });
+  const { classNames, dataAttributes } = useStyles('Link', {
+    variant,
+    weight,
+    color,
+  });
 
   return (
-    <AriaLink
-      ref={ref}
-      className={clsx(classNames.root, className)}
-      {...dataAttributes}
-      {...restProps}
-    />
+    <RouterProvider navigate={navigate} useHref={useHref}>
+      <AriaLink
+        ref={ref}
+        className={clsx(classNames.root, className)}
+        {...dataAttributes}
+        {...restProps}
+      />
+    </RouterProvider>
   );
 });
 

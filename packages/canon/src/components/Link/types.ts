@@ -42,4 +42,8 @@ export interface LinkProps extends AriaLinkProps {
         >
       >;
   weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
+  color?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
 }

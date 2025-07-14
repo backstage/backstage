@@ -16,14 +16,12 @@
 
 .bui-Link {
   font-family: var(--bui-font-regular);
-  color: var(--bui-fg-link);
   padding: 0;
   margin: 0;
   cursor: pointer;
   text-decoration-line: none;
 
   &:hover {
-    color: var(--bui-fg-link-hover);
     text-decoration-line: underline;
     text-decoration-style: solid;
     text-decoration-thickness: min(2px, max(1px, 0.05em));
@@ -82,4 +80,12 @@
 
 .bui-Link[data-weight='bold'] {
   font-weight: var(--bui-font-weight-bold);
+}
+
+.bui-Link[data-color='primary'] {
+  color: var(--bui-fg-primary);
+}
+
+.bui-Link[data-color='secondary'] {
+  color: var(--bui-fg-secondary);
 }

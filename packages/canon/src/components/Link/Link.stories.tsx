@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 import { Link } from './Link';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta = {
   title: 'Components/Link',
@@ -25,6 +26,13 @@ const meta = {
   args: {
     children: 'Link',
   },
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 } satisfies Meta<typeof Link>;
 
 export default meta;
@@ -32,7 +40,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    href: 'https://ui.backstage.io',
+    href: '#',
     children: 'Sign up for Backstage',
   },
 };
@@ -51,6 +59,28 @@ export const AllVariants: Story = {
       <Link href="https://ui.backstage.io" variant="body-medium" {...args} />
       <Link href="https://ui.backstage.io" variant="body-small" {...args} />
       <Link href="https://ui.backstage.io" variant="body-x-small" {...args} />
+    </Flex>
+  ),
+};
+
+export const AllColors: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: args => (
+    <Flex gap="4" direction="column">
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-small"
+        color="primary"
+        {...args}
+      />
+      <Link
+        href="https://ui.backstage.io"
+        variant="title-small"
+        color="secondary"
+        {...args}
+      />
     </Flex>
   ),
 };

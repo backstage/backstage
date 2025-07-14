@@ -52,7 +52,7 @@ const TableCellProfile = forwardRef<HTMLDivElement, TableCellProfileProps>(
           </Avatar.Root>
         )}
         {name && to ? (
-          <Link to={to}>{name}</Link>
+          <Link href={to}>{name}</Link>
         ) : (
           <Text variant="body">{name}</Text>
         )}
