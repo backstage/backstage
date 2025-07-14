@@ -151,6 +151,13 @@ export const componentDefinitions = {
       weight: ['regular', 'bold'] as const,
     },
   },
+  List: {
+    classNames: {
+      root: 'bui-List',
+      row: 'bui-ListRow',
+      label: 'bui-ListLabel',
+    },
+  },
   Menu: {
     classNames: {
       trigger: 'bui-MenuTrigger',
@@ -168,6 +175,11 @@ export const componentDefinitions = {
       checkboxItemIndicator: 'bui-MenuCheckboxItemIndicator',
       submenuTrigger: 'bui-MenuSubmenuTrigger',
       separator: 'bui-MenuSeparator',
+    },
+  },
+  Popover: {
+    classNames: {
+      root: 'bui-Popover',
     },
   },
   RadioGroup: {
@@ -194,16 +206,13 @@ export const componentDefinitions = {
   Select: {
     classNames: {
       root: 'bui-Select',
-      required: 'bui-SelectRequired',
       trigger: 'bui-SelectTrigger',
       value: 'bui-SelectValue',
       icon: 'bui-SelectIcon',
-      popup: 'bui-SelectPopup',
+      list: 'bui-SelectList',
       item: 'bui-SelectItem',
       itemIndicator: 'bui-SelectItemIndicator',
-      itemText: 'bui-SelectItemText',
-      description: 'bui-SelectDescription',
-      error: 'bui-SelectError',
+      itemLabel: 'bui-SelectItemLabel',
     },
     dataAttributes: {
       size: ['small', 'medium'] as const,

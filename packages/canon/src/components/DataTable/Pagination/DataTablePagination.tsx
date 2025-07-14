@@ -61,8 +61,8 @@ const DataTablePagination = forwardRef(
                 { label: 'Show 40 results', value: '40' },
                 { label: 'Show 50 results', value: '50' },
               ]}
-              value={pageSize?.toString()}
-              onValueChange={value => {
+              selectedKey={pageSize?.toString()}
+              onSelectionChange={value => {
                 table?.setPageSize(Number(value));
               }}
               className="bui-DataTablePagination--select"

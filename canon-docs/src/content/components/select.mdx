@@ -10,6 +10,7 @@ import {
   selectSizesSnippet,
   selectDisabledSnippet,
   selectResponsiveSnippet,
+  selectIconSnippet,
 } from './select.props';
 import { ComponentInfos } from '@/components/ComponentInfos';
 
@@ -26,7 +27,16 @@ A common form component for choosing a predefined value in a dropdown menu.
 
 <ComponentInfos
   component="select"
-  classNames={['canon-SelectFieldRoot']}
+  classNames={[
+    'bui-Select',
+    'bui-SelectTrigger',
+    'bui-SelectValue',
+    'bui-SelectIcon',
+    'bui-SelectList',
+    'bui-SelectItem',
+    'bui-SelectItemIndicator',
+    'bui-SelectItemLabel',
+  ]}
   usageCode={selectUsageSnippet}
 />
 
@@ -44,7 +54,7 @@ Select component with label and description.
   align="center"
   py={4}
   open
-  preview={<SelectSnippet story="WithDescription" />}
+  preview={<SelectSnippet story="WithLabelAndDescription" />}
   code={selectDescriptionSnippet}
 />
 
@@ -58,6 +68,19 @@ Here's a view when the selects have different sizes.
   open
   preview={<SelectSnippet story="Sizes" />}
   code={selectSizesSnippet}
+/>
+
+### With Icon
+
+Here's a view when the select has an icon.
+
+<Snippet
+
+align="center"
+py={4}
+open
+preview={<SelectSnippet story="WithIcon" />}
+code={selectIconSnippet}
 />
 
 ### Disabled

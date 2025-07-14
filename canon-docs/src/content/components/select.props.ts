@@ -7,7 +7,6 @@ import {
 export const selectPropDefs: Record<string, PropDef> = {
   label: {
     type: 'string',
-    default: 'Select an option',
     responsive: false,
   },
   description: {
@@ -24,15 +23,21 @@ export const selectPropDefs: Record<string, PropDef> = {
     values: ['Array<{ value: string, label: string }>'],
     required: true,
   },
+  placeholder: {
+    type: 'string',
+    default: 'Select an item',
+    responsive: false,
+  },
+  icon: {
+    type: 'enum',
+    values: ['ReactNode'],
+    responsive: false,
+  },
   value: {
     type: 'string',
     responsive: false,
   },
   defaultValue: {
-    type: 'string',
-    responsive: false,
-  },
-  placeholder: {
     type: 'string',
     responsive: false,
   },
@@ -42,14 +47,47 @@ export const selectPropDefs: Record<string, PropDef> = {
     default: 'medium',
     responsive: true,
   },
-  onValueChange: {
+  isOpen: {
+    type: 'boolean',
+    responsive: false,
+  },
+  defaultOpen: {
+    type: 'boolean',
+    responsive: false,
+  },
+  disabledKeys: {
     type: 'enum',
-    values: ['(value: string) => void'],
+    values: ['string[]'],
+    responsive: false,
+  },
+  isDisabled: {
+    type: 'boolean',
+    responsive: false,
+  },
+  isRequired: {
+    type: 'boolean',
+    responsive: false,
+  },
+  isInvalid: {
+    type: 'boolean',
+    responsive: false,
+  },
+  selectedKey: {
+    type: 'string',
+    responsive: false,
+  },
+  defaultSelectedKey: {
+    type: 'string',
     responsive: false,
   },
   onOpenChange: {
     type: 'enum',
-    values: ['(open: boolean) => void'],
+    values: ['(isOpen: boolean) => void'],
+    responsive: false,
+  },
+  onSelectionChange: {
+    type: 'enum',
+    values: ['(key: Key | null) => void'],
     responsive: false,
   },
   ...classNamePropDefs,
@@ -79,6 +117,13 @@ export const selectDescriptionSnippet = `<Select
   name="font"
   label="Font Family"
   description="Choose a font family for your document"
+  options={[ ... ]}
+/>`;
+
+export const selectIconSnippet = `<Select
+  name="font"
+  label="Font Family"
+  icon={<RiCloudLine />}
   options={[ ... ]}
 />`;
 

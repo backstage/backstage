@@ -9552,6 +9552,7 @@
   font-size: var(--bui-font-size-2);
   font-weight: var(--bui-font-weight-regular);
   margin-top: var(--bui-space-2);
+  display: inline-block;
 }
 
 .bui-FieldLabelWrapper {
@@ -10038,6 +10039,16 @@
   white-space: nowrap;
   flex: 1;
   overflow: hidden;
+}
+
+.bui-Popover {
+  background-color: var(--bui-bg-surface-1);
+  border: 1px solid var(--bui-border);
+  border-radius: var(--bui-radius-3);
+  padding-block: var(--bui-space-1);
+  margin-right: 12px;
+  overflow: scroll;
+  box-shadow: 0 4px 12px #0000001a;
 }
 
 .bui-RadioGroup {
@@ -10598,122 +10609,102 @@
   width: 100%;
 }
 
-.bui-Select {
-  font-family: var(--bui-font-regular);
-  flex-direction: column;
-  width: 100%;
-  display: flex;
-}
-
-.bui-SelectLabel {
-  font-size: var(--bui-font-size-2);
-  font-weight: var(--bui-font-weight-regular);
-  color: var(--bui-fg-primary);
-  margin-bottom: var(--bui-space-1_5);
-  cursor: pointer;
-}
-
-.bui-SelectLabel[data-disabled] {
-  cursor: default;
-}
-
-.bui-SelectDescription {
-  font-size: var(--bui-font-size-2);
-  font-weight: var(--bui-font-weight-regular);
-  color: var(--bui-fg-secondary);
-  padding-top: var(--bui-space-1_5);
-  margin: 0;
-}
-
-.bui-SelectError {
-  font-size: var(--bui-font-size-2);
-  font-weight: var(--bui-font-weight-regular);
-  color: var(--bui-fg-danger);
-  padding-top: var(--bui-space-1_5);
-  margin: 0;
+.bui-Select[data-invalid] {
+  & .bui-SelectTrigger {
+    border-color: var(--bui-fg-danger);
+  }
 }
 
 .bui-SelectTrigger {
   box-sizing: border-box;
   border-radius: var(--bui-radius-3);
   border: 1px solid var(--bui-border);
-  padding: 0 var(--bui-space-4);
   background-color: var(--bui-bg-surface-1);
-  font-size: var(--bui-font-size-3);
-  font-family: var(--bui-font-regular);
-  font-weight: var(--bui-font-weight-regular);
-  color: var(--bui-fg-primary);
   cursor: pointer;
   justify-content: space-between;
   align-items: center;
   gap: var(--bui-space-2);
-  width: 100%;
+  max-width: 100%;
   transition: border-color .2s ease-in-out, outline-color .2s ease-in-out;
   display: flex;
+
+  & svg {
+    flex-shrink: 0;
+  }
+
+  &[data-size="small"] {
+    height: 2rem;
+    padding-inline: var(--bui-space-3);
+  }
+
+  &[data-size="medium"] {
+    height: 3rem;
+    padding-inline: var(--bui-space-4);
+  }
+
+  &[data-size="small"] svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &[data-size="medium"] svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  &::placeholder {
+    color: var(--bui-fg-secondary);
+  }
+
+  &:hover {
+    border-color: var(--bui-border-hover);
+  }
+
+  &:focus-visible {
+    border-color: var(--bui-border-pressed);
+    outline: 0;
+  }
+
+  &[data-invalid] {
+    border-color: var(--bui-fg-danger);
+  }
+
+  &[data-invalid]:hover, &[data-invalid]:focus-visible {
+    border-width: 2px;
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
+    border-color: var(--bui-border-disabled);
+    color: var(--bui-fg-disabled);
+  }
+
+  &[disabled] .bui-SelectValue {
+    color: var(--bui-fg-disabled);
+  }
+
+  &[data-popup-open] .bui-SelectIcon {
+    transform: rotate(180deg);
+  }
 }
 
-.bui-SelectTrigger::placeholder {
-  color: var(--bui-fg-secondary);
-}
+.bui-SelectValue {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  font-size: var(--bui-font-size-3);
+  font-family: var(--bui-font-regular);
+  font-weight: var(--bui-font-weight-regular);
+  color: var(--bui-fg-primary);
+  overflow: hidden;
 
-.bui-SelectTrigger:hover {
-  border-color: var(--bui-border-hover);
-}
+  & .bui-SelectItemIndicator {
+    display: none;
+  }
 
-.bui-SelectTrigger:focus-visible {
-  border-color: var(--bui-border-pressed);
-  outline: 0;
-}
-
-.bui-SelectTrigger[data-invalid] {
-  border-color: var(--bui-fg-danger);
-}
-
-.bui-SelectTrigger[data-invalid]:hover, .bui-SelectTrigger[data-invalid]:focus-visible {
-  border-width: 2px;
-}
-
-.bui-SelectTrigger[data-disabled] {
-  cursor: not-allowed;
-  border-color: var(--bui-border-disabled);
-  color: var(--bui-fg-disabled);
-}
-
-.bui-SelectTrigger[data-size="small"] {
-  height: 2rem;
-}
-
-.bui-SelectTrigger[data-size="medium"] {
-  height: 3rem;
-}
-
-.bui-SelectIcon {
-  margin-left: var(--bui-space-5);
-  transition: transform .2s;
-}
-
-.bui-SelectTrigger[data-popup-open] .bui-SelectIcon {
-  transform: rotate(180deg);
-}
-
-.bui-SelectPopup {
-  box-sizing: border-box;
-  max-height: var(--available-height);
-  background-color: var(--bui-bg-surface-1);
-  border: 1px solid var(--bui-border);
-  border-radius: var(--bui-radius-3);
-  padding-block: var(--bui-space-1);
-  z-index: 1;
-  transform-origin: var(--transform-origin);
-  outline: 0;
-  transition: transform .15s, opacity .15s;
-  overflow-y: auto;
-  box-shadow: 0 4px 12px #0003;
-}
-
-.bui-SelectPopup[data-starting-style], .bui-SelectPopup[data-ending-style] {
-  opacity: 0;
-  transform: scale(.9);
+  &[disabled] {
+    color: var(--bui-fg-disabled);
+  }
 }
 
 .bui-SelectItem {
@@ -10732,59 +10723,45 @@
   grid-template-areas: "icon text";
   display: grid;
   position: relative;
-}
 
-.bui-SelectItem[data-highlighted] {
-  z-index: 0;
-  color: var(--bui-fg-primary);
-  position: relative;
-}
+  &[data-focused] {
+    z-index: 0;
+    color: var(--bui-fg-primary);
+    position: relative;
+  }
 
-.bui-SelectItem[data-highlighted]:before {
-  content: "";
-  z-index: -1;
-  background-color: var(--bui-bg-tint-hover);
-  border-radius: .25rem;
-  position: absolute;
-  inset-block: 0;
-  inset-inline: .25rem;
-}
+  &[data-focused]:before {
+    content: "";
+    z-index: -1;
+    background-color: var(--bui-bg-tint-hover);
+    border-radius: .25rem;
+    position: absolute;
+    inset-block: 0;
+    inset-inline: .25rem;
+  }
 
-.bui-SelectItem[data-disabled] {
-  cursor: not-allowed;
-  color: var(--bui-fg-disabled);
+  &[data-disabled] {
+    cursor: not-allowed;
+    color: var(--bui-fg-disabled);
+  }
+
+  &[data-selected] .bui-SelectItemIndicator {
+    opacity: 1;
+  }
 }
 
 .bui-SelectItemIndicator {
+  opacity: 0;
   grid-area: icon;
   justify-content: center;
   align-items: center;
+  transition: opacity .2s ease-in-out;
   display: flex;
 }
 
-.bui-SelectItemText {
+.bui-SelectItemLabel {
   flex: 1;
   grid-area: text;
-}
-
-.bui-SelectRequired {
-  color: var(--bui-fg-secondary);
-  font-size: var(--bui-font-size-2);
-  font-weight: var(--bui-font-weight-regular);
-  margin-left: var(--bui-space-1);
-}
-
-.bui-SelectIcon {
-  justify-content: center;
-  align-items: center;
-  display: flex;
-}
-
-.bui-SelectValue {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 100%;
-  overflow: hidden;
 }
 
 .bui-Switch {

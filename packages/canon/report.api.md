@@ -5,13 +5,11 @@
 ```ts
 import { Avatar as Avatar_2 } from '@base-ui-components/react/avatar';
 import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
-import { ChangeEvent } from 'react';
 import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsible';
 import { ComponentProps } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
 import type { ElementType } from 'react';
-import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
@@ -25,6 +23,7 @@ import { RefAttributes } from 'react';
 import type { RemixiconComponentType } from '@remixicon/react';
 import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-area';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
+import type { SelectProps as SelectProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { Table as Table_2 } from '@tanstack/react-table';
 import type { TabListProps as TabListProps_2 } from 'react-aria-components';
@@ -451,6 +450,13 @@ export const componentDefinitions: {
       readonly weight: readonly ['regular', 'bold'];
     };
   };
+  readonly List: {
+    readonly classNames: {
+      readonly root: 'bui-List';
+      readonly row: 'bui-ListRow';
+      readonly label: 'bui-ListLabel';
+    };
+  };
   readonly Menu: {
     readonly classNames: {
       readonly trigger: 'bui-MenuTrigger';
@@ -468,6 +474,11 @@ export const componentDefinitions: {
       readonly checkboxItemIndicator: 'bui-MenuCheckboxItemIndicator';
       readonly submenuTrigger: 'bui-MenuSubmenuTrigger';
       readonly separator: 'bui-MenuSeparator';
+    };
+  };
+  readonly Popover: {
+    readonly classNames: {
+      readonly root: 'bui-Popover';
     };
   };
   readonly RadioGroup: {
@@ -494,16 +505,13 @@ export const componentDefinitions: {
   readonly Select: {
     readonly classNames: {
       readonly root: 'bui-Select';
-      readonly required: 'bui-SelectRequired';
       readonly trigger: 'bui-SelectTrigger';
       readonly value: 'bui-SelectValue';
       readonly icon: 'bui-SelectIcon';
-      readonly popup: 'bui-SelectPopup';
+      readonly list: 'bui-SelectList';
       readonly item: 'bui-SelectItem';
       readonly itemIndicator: 'bui-SelectItemIndicator';
-      readonly itemText: 'bui-SelectItemText';
-      readonly description: 'bui-SelectDescription';
-      readonly error: 'bui-SelectError';
+      readonly itemLabel: 'bui-SelectItemLabel';
     };
     readonly dataAttributes: {
       readonly size: readonly ['small', 'medium'];
@@ -1525,28 +1533,19 @@ export const Select: ForwardRefExoticComponent<
 >;
 
 // @public (undocumented)
-export interface SelectProps {
-  className?: string;
-  defaultValue?: string;
-  description?: string;
-  disabled?: boolean;
-  error?: string;
-  label?: string;
-  name: string;
-  onBlur?: (event: FocusEvent_2<HTMLSelectElement>) => void;
-  onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
-  onOpenChange?: (open: boolean) => void;
-  onValueChange?: (value: string) => void;
+export interface SelectProps
+  extends SelectProps_2<{
+      name: string;
+      value: string;
+    }>,
+    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+  icon?: ReactNode;
   options?: Array<{
     value: string;
     label: string;
     disabled?: boolean;
   }>;
-  placeholder?: string;
-  required?: boolean;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-  style?: React.CSSProperties;
-  value?: string;
 }
 
 // @public (undocumented)
