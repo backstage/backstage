@@ -16,9 +16,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Select } from './Select';
 import { Flex } from '../Flex';
+import { Form } from 'react-aria-components';
 
 const meta = {
-  title: 'Components/Select',
+  title: 'Forms/Select',
   component: Select,
 } satisfies Meta<typeof Select>;
 
@@ -56,7 +57,7 @@ export const WithLabel: Story = {
   },
 };
 
-export const WithDescription: Story = {
+export const WithLabelAndDescription: Story = {
   args: {
     ...WithLabel.args,
     description: 'Choose a font family for your document',
@@ -92,10 +93,7 @@ export const Disabled: Story = {
 export const DisabledOption: Story = {
   args: {
     ...Preview.args,
-    options: [
-      ...fontOptions,
-      { value: 'comic-sans', label: 'Comic sans', disabled: true },
-    ],
+    disabledKeys: ['cursive', 'serif'],
   },
 };
 
@@ -253,14 +251,19 @@ export const WithManyOptions: Story = {
   },
 };
 
-// export const WithErrorAndDescription: Story = {
-//   args: {
-//     ...Preview.args,
-//     error: 'Invalid font family',
-//   },
-// };
+export const WithError: Story = {
+  args: {
+    ...WithLabel.args,
+    name: 'font',
+  },
+  render: args => (
+    <Form validationErrors={{ font: 'Invalid font family' }}>
+      <Select {...args} />
+    </Form>
+  ),
+};
 
-export const WithLongOptionNames: Story = {
+export const WithLongNames: Story = {
   args: {
     label: 'Document Template',
     options: [
@@ -293,6 +296,19 @@ export const WithLongOptionNames: Story = {
     placeholder: 'Select a document template',
     name: 'template',
     style: { maxWidth: 400 },
-    selectedKey: 'annual-report-2024',
+    defaultSelectedKey: 'annual-report-2024',
   },
+};
+
+export const WithLongNamesAndPadding: Story = {
+  args: {
+    ...WithLongNames.args,
+  },
+  decorators: [
+    (Story, { args }) => (
+      <div style={{ padding: 128 }}>
+        <Story {...args} />
+      </div>
+    ),
+  ],
 };

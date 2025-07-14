@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-/* Generic component styles */
-@import './generic/popover.css';
-@import './generic/list.css';
-
-/* Component styles */
 @import '../components/Avatar/Avatar.styles.css';
 @import '../components/Box/styles.css';
 @import '../components/Button/styles.css';
@@ -39,6 +34,7 @@
 @import '../components/Icon/styles.css';
 @import '../components/Link/styles.css';
 @import '../components/Menu/Menu.styles.css';
+@import '../components/Popover/Popover.styles.css';
 @import '../components/RadioGroup/RadioGroup.styles.css';
 @import '../components/Table/styles.css';
 @import '../components/Table/TableCell/TableCell.styles.css';

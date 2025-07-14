@@ -132,6 +132,7 @@ export const componentDefinitions = {
     classNames: {
       root: 'bui-List',
       row: 'bui-ListRow',
+      label: 'bui-ListLabel',
     },
   },
   Menu: {
@@ -185,11 +186,10 @@ export const componentDefinitions = {
       trigger: 'bui-SelectTrigger',
       value: 'bui-SelectValue',
       icon: 'bui-SelectIcon',
-      popup: 'bui-SelectPopup',
+      list: 'bui-SelectList',
       item: 'bui-SelectItem',
       itemIndicator: 'bui-SelectItemIndicator',
-      itemText: 'bui-SelectItemText',
-      description: 'bui-SelectDescription',
+      itemLabel: 'bui-SelectItemLabel',
       error: 'bui-SelectError',
     },
     dataAttributes: {

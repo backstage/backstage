@@ -22,12 +22,15 @@ import {
   Popover,
   ListBox,
   ListBoxItem,
+  Text,
 } from 'react-aria-components';
 import clsx from 'clsx';
 import './Select.styles.css';
 import { SelectProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { FieldLabel } from '../FieldLabel';
+import { Icon } from '../Icon';
+import { FieldError } from '../FieldError';
 
 /** @public */
 export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
@@ -37,7 +40,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
     description,
     options,
     placeholder = 'Select an option',
-    size = 'medium',
+    size = 'small',
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
     isRequired,
@@ -47,7 +50,6 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
   } = props;
 
   const { classNames: popoverClassNames } = useStyles('Popover');
-  const { classNames: listClassNames } = useStyles('List');
   const { classNames, dataAttributes } = useStyles('Select', {
     size,
   });
@@ -75,15 +77,28 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
         secondaryLabel={secondaryLabelText}
         description={description}
       />
-      <Button data-size={dataAttributes['data-size']}>
-        <SelectValue />
-        <span aria-hidden="true">▼</span>
+      <Button
+        className={classNames.trigger}
+        data-size={dataAttributes['data-size']}
+      >
+        <SelectValue className={classNames.value} />
+        <Icon aria-hidden="true" name="chevron-down" />
       </Button>
+      <FieldError />
       <Popover className={popoverClassNames.root}>
-        <ListBox className={listClassNames.root}>
+        <ListBox className={classNames.list}>
           {options?.map(option => (
-            <ListBoxItem key={option.value} className={listClassNames.row}>
-              {option.label}
+            <ListBoxItem
+              key={option.value}
+              id={option.value}
+              className={classNames.item}
+            >
+              <div className={classNames.itemIndicator}>
+                <Icon name="check" />
+              </div>
+              <Text slot="label" className={classNames.itemLabel}>
+                {option.label}
+              </Text>
             </ListBoxItem>
           ))}
         </ListBox>

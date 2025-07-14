@@ -15,8 +15,11 @@
  */
 
 .bui-Popover {
+  margin-right: 12px;
+  overflow: scroll;
   background-color: var(--bui-bg-surface-1);
-  padding: var(--bui-space-2);
-  border-radius: var(--bui-radius-2);
   border: 1px solid var(--bui-border);
+  border-radius: var(--bui-radius-3);
+  padding-block: var(--bui-space-1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
