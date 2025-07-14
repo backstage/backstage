@@ -10,7 +10,6 @@ import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsi
 import { ComponentProps } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
-import type { CSSProperties } from 'react';
 import type { ElementType } from 'react';
 import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
@@ -1219,26 +1218,39 @@ export type JustifyContent =
 
 // @public (undocumented)
 export const Link: ForwardRefExoticComponent<
-  Omit<LinkProps, 'ref'> & RefAttributes<HTMLElement>
+  LinkProps & RefAttributes<HTMLAnchorElement>
 >;
 
 // @public (undocumented)
-export interface LinkProps extends useRender.ComponentProps<'a'> {
+export interface LinkProps extends LinkProps_2 {
   // (undocumented)
-  children: ReactNode;
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  style?: CSSProperties;
-  // (undocumented)
-  to?: string;
+  color?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
   // (undocumented)
   variant?:
-    | 'subtitle'
-    | 'body'
-    | 'caption'
-    | 'label'
-    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
+    | 'title-large'
+    | 'title-medium'
+    | 'title-small'
+    | 'title-x-small'
+    | 'body-large'
+    | 'body-medium'
+    | 'body-small'
+    | 'body-x-small'
+    | Partial<
+        Record<
+          Breakpoint,
+          | 'title-large'
+          | 'title-medium'
+          | 'title-small'
+          | 'title-x-small'
+          | 'body-large'
+          | 'body-medium'
+          | 'body-small'
+          | 'body-x-small'
+        >
+      >;
   // (undocumented)
   weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
 }
