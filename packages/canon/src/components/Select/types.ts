@@ -19,14 +19,12 @@ import { ReactNode } from 'react';
 import type { SelectProps as AriaSelectProps } from 'react-aria-components';
 import type { FieldLabelProps } from '../FieldLabel/types';
 
-interface SelectOption {
-  name: string;
-  value: string;
-}
-
 /** @public */
 export interface SelectProps
-  extends AriaSelectProps<SelectOption>,
+  extends AriaSelectProps<{
+      name: string;
+      value: string;
+    }>,
     Omit<FieldLabelProps, 'htmlFor' | 'id'> {
   /**
    * An icon to render before the input

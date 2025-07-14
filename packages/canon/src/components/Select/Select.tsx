@@ -41,6 +41,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
     options,
     placeholder = 'Select an option',
     size = 'small',
+    icon,
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
     isRequired,
@@ -81,6 +82,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>((props, ref) => {
         className={classNames.trigger}
         data-size={dataAttributes['data-size']}
       >
+        {icon}
         <SelectValue className={classNames.value} />
         <Icon aria-hidden="true" name="chevron-down" />
       </Button>

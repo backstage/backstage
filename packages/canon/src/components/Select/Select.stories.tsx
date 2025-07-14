@@ -17,6 +17,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Select } from './Select';
 import { Flex } from '../Flex';
 import { Form } from 'react-aria-components';
+import { RiCloudLine } from '@remixicon/react';
 
 const meta = {
   title: 'Forms/Select',
@@ -62,6 +63,13 @@ export const WithLabelAndDescription: Story = {
     ...WithLabel.args,
     description: 'Choose a font family for your document',
   },
+};
+
+export const WithIcon: Story = {
+  args: {
+    ...WithLabel.args,
+  },
+  render: args => <Select {...args} icon={<RiCloudLine />} />,
 };
 
 export const Sizes: Story = {

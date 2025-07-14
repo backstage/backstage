@@ -33,6 +33,10 @@
   gap: var(--bui-space-2);
   max-width: 100%;
 
+  & svg {
+    flex-shrink: 0;
+  }
+
   &[data-size='small'] {
     height: 2rem;
     padding-inline: var(--bui-space-3);
@@ -103,11 +107,6 @@
   }
 }
 
-.bui-SelectIcon {
-  margin-left: var(--bui-space-5);
-  transition: transform 0.2s ease;
-}
-
 .bui-SelectItem {
   position: relative;
   width: var(--anchor-width);
@@ -163,17 +162,4 @@
 .bui-SelectItemLabel {
   flex: 1;
   grid-area: text;
-}
-
-.bui-SelectRequired {
-  color: var(--bui-fg-secondary);
-  font-size: var(--bui-font-size-2);
-  font-weight: var(--bui-font-weight-regular);
-  margin-left: var(--bui-space-1);
-}
-
-.bui-SelectIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }

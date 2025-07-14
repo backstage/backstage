@@ -190,7 +190,6 @@ export const componentDefinitions = {
       item: 'bui-SelectItem',
       itemIndicator: 'bui-SelectItemIndicator',
       itemLabel: 'bui-SelectItemLabel',
-      error: 'bui-SelectError',
     },
     dataAttributes: {
       size: ['small', 'medium'] as const,
