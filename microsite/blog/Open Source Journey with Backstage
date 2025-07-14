@@ -1,0 +1,127 @@
+## My Open Source Journey with Backstage: A Developer’s Perspective
+
+Open source has always fascinated me. The idea of collaborating with developers worldwide to build something impactful is truly exciting. Like many software engineers, I wanted to contribute to open source, but I wasn’t sure where to start. That changed when I discovered Backstage, an open-source platform for building developer portals, originally created by Spotify and now a part of the CNCF (Cloud Native Computing Foundation).
+
+In this blog, I will walk you through how I started contributing to the Backstage community, my experience so far, and my future roadmap. If you are considering getting into open source, I hope this post inspires you to take the first step!
+
+## Starting My Open Source Journey with Backstage
+
+Like many developers, my open-source journey started with curiosity. I was looking for projects that aligned with my interest, developer productivity, platform engineering, and improving internal tooling. That’s when I came across Backstage.
+
+Why Backstage?
+
+1. Strong Community Support: The Backstage community is welcoming, responsive, and always ready to help new contributors.
+
+2. Well-Defined Contribution Guidelines: Backstage has great documentation, making it easier to understand how to contribute.
+
+3. Real-World Impact: It’s used by many organizations to streamline their internal developer experience, so my contributions could make a tangible difference.
+
+## First Steps
+
+I started by exploring the Backstage GitHub repository and the official documentation. The first goal was simple: understand the project’s structure, find an area I was comfortable with, and make my first contribution.
+
+To ease into the community, I joined the Backstage Discord server, introduced myself, and started engaging in discussions. The maintainers and community members were incredibly helpful in guiding me towards good first issues.
+
+## First Contribution
+
+My first contribution was a small documentation update - fixing a typo and improving clarity. It may sound minor, but it was an important first step. Submitting my first pull request (PR) gave me the confidence to take on more challenging tasks.
+
+After that, I moved on to resolving small bugs, improving test coverage, and eventually contributing to features and plugins.
+
+## Code Contributions
+
+### Core Plugin:
+
+Backstage Catalog: Alert popup, icons enhancements.
+
+Added an alert popup feature to notify users when they try to link or unlink an entity.
+
+Changed the delete button color for unregistering an entity to red for better visibility and user experience
+
+### Custom Plugins:
+
+### Playlist Plugin:
+
+Developed a feature to limit the use of the same playlist name when adding a new playlist.
+
+Worked on enhancing the playlist card functionality.
+
+### Shortcuts Plugin:
+
+Contributed to the feature that limits the use of the same shortcut name when adding a new shortcut.
+
+Improved the shortcut form submission process.
+
+Bazaar Plugin: Built and improved plugin forms. Added a descending sort (Z-A) feature for better sorting options.
+
+### Profile Settings Plugin Page:
+
+Added tooltips to the navigation tabs in the settings page to enhance user guidance and experience.
+
+Bug Fixes and Migration changes to below plugin were also achieved:
+
+Gocd Plugin
+
+Github Deployment Plugin
+
+GCP Project Plugin
+
+Github Issues Plugin
+
+Tech Radar Plugin
+
+Allure Plugin
+
+App Visualizer Plugin
+
+Entity Feedback Plugin
+
+Entity Validation Plugin
+
+GitOps Profile Plugin
+
+GraphQL Voyager Plugin
+
+## Initial Roadblocks:
+
+Like always it is never easy to start something new, during this journey of working with backstage community initial hurdles were there:
+
+Local Setup: Setting up the Backstage project locally required significant effort to configure the development environment.
+
+Package Issues: Faced difficulties resolving package dependencies and compatibility issues.
+
+Version Issues: Managed version mismatches for various software dependencies to ensure smooth project setup and operation.
+
+But with more experience and going through documentation and community connects all these hurdles were overcome.
+
+## How It Feels to Work with the Backstage Community
+
+Contributing to Backstage has been an amazing experience. Here’s why:
+
+- Collaborative Environment – Every PR gets constructive feedback from maintainers, helping me grow as a developer.
+
+- Learning from the Best – I get to interact with talented engineers from companies using Backstage in production.
+
+- Sense of Ownership – Seeing my code get merged and used by real-world teams is incredibly rewarding.
+
+## My Future Roadmap in Backstage
+
+As I continue my journey, here are some areas I’m focusing on:
+
+1. Developing New Plugins: I want to build useful plugins that extend Backstage’s functionality.
+
+2. Improving Core Features: Contributing to the core repository to enhance Backstage’s scalability and usability.
+
+3. Mentoring New Contributors: Helping others get started, just like I was helped when I joined.
+
+## Why You Should Contribute to Backstage
+
+If you are a developer looking to contribute to open source, Backstage is a great place to start.
+
+Here’s why:
+
+Beginner-Friendly Issues: The repo has good first issues to help new contributors get started.
+
+Active Community: Maintainers and contributors are always there to guide you.
+
+Real-World Impact: Your contributions can improve developer productivity at scale.
