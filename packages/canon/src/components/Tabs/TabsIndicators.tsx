@@ -16,18 +16,19 @@
 
 import { TabListStateContext } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
-import { useContext, useEffect, useCallback } from 'react';
-import type { HeaderIndicatorsProps } from './types';
+import { useContext, useEffect, useCallback, useRef } from 'react';
+import type { TabsIndicatorsProps } from './types';
 
 /**
  * A component that renders the indicators for the toolbar.
  *
  * @internal
  */
-export const HeaderTabsIndicators = (props: HeaderIndicatorsProps) => {
+export const TabsIndicators = (props: TabsIndicatorsProps) => {
   const { tabRefs, tabsRef, hoveredKey, prevHoveredKey } = props;
-  const { classNames } = useStyles('Header');
+  const { classNames } = useStyles('Tabs');
   const state = useContext(TabListStateContext);
+  const prevSelectedKey = useRef<string | null>(null);
 
   const updateCSSVariables = useCallback(() => {
     if (!tabsRef.current) return;
@@ -42,6 +43,35 @@ export const HeaderTabsIndicators = (props: HeaderIndicatorsProps) => {
         const activeRect = activeTab.getBoundingClientRect();
         const relativeLeft = activeRect.left - tabsRect.left;
         const relativeTop = activeRect.top - tabsRect.top;
+
+        // Control transition timing based on whether this is the first time setting active tab
+        const isFirstActiveTab = prevSelectedKey.current === null;
+
+        if (isFirstActiveTab) {
+          // First time setting active tab: no transitions for position
+          tabsRef.current.style.setProperty(
+            '--active-transition-duration',
+            '0s',
+          );
+          // Enable transitions on next frame for future tab switches
+          requestAnimationFrame(() => {
+            if (tabsRef.current) {
+              tabsRef.current.style.setProperty(
+                '--active-transition-duration',
+                '0.25s',
+              );
+            }
+          });
+        } else {
+          // Switching between tabs: full transitions
+          tabsRef.current.style.setProperty(
+            '--active-transition-duration',
+            '0.25s',
+          );
+        }
+
+        // Update previous selected key for next time
+        prevSelectedKey.current = state.selectedKey.toString();
 
         tabsRef.current.style.setProperty(
           '--active-tab-left',
@@ -140,11 +170,11 @@ export const HeaderTabsIndicators = (props: HeaderIndicatorsProps) => {
       // Reset previous hover key so next hover is treated as new session
       prevHoveredKey.current = null;
     }
-  }, [state?.selectedKey, hoveredKey]);
+  }, [state?.selectedKey, hoveredKey, tabRefs.current]);
 
   useEffect(() => {
     updateCSSVariables();
-  }, [updateCSSVariables]);
+  }, [updateCSSVariables, tabRefs.current.size]);
 
   useEffect(() => {
     const handleResize = () => updateCSSVariables();

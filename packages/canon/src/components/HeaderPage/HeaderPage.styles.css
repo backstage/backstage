@@ -13,3 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+.bui-HeaderPage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bui-space-1);
+  padding-inline: var(--bui-space-5);
+  margin-top: var(--bui-space-6);
+  margin-bottom: var(--bui-space-6);
+}
+
+.bui-HeaderPageContent {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.bui-HeaderPageTabsWrapper {
+  margin-left: -8px;
+}
+
+.bui-HeaderPageControls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--bui-space-2);
+}

@@ -16,11 +16,11 @@
 
 import type { HeaderPageProps } from './types';
 import { Heading } from '../Heading';
-import { Text } from '../Text';
-import { Flex } from '../Flex';
 import { Menu } from '../Menu';
 import { ButtonIcon } from '../ButtonIcon';
 import { RiMore2Line } from '@remixicon/react';
+import { Tabs, TabList, Tab } from '../Tabs';
+import { useStyles } from '../../hooks/useStyles';
 
 /**
  * A component that renders a header page.
@@ -28,44 +28,58 @@ import { RiMore2Line } from '@remixicon/react';
  * @public
  */
 export const HeaderPage = (props: HeaderPageProps) => {
-  const { title, description, options } = props;
+  const { title, menuItems, tabs, customActions } = props;
+  const { classNames } = useStyles('HeaderPage');
 
   return (
-    <Flex pl="4" pr="2" mt="6" justify="between">
-      <Flex direction="column" gap="2">
+    <div className={classNames.root}>
+      <div className={classNames.content}>
         <Heading variant="title4">{title}</Heading>
-        <Text color="secondary">{description}</Text>
-      </Flex>
-      <div>
-        {options && (
-          <Menu.Root>
-            <Menu.Trigger
-              render={props => (
-                <ButtonIcon
-                  {...props}
-                  size="small"
-                  icon={<RiMore2Line />}
-                  variant="tertiary"
-                />
-              )}
-            />
-            <Menu.Portal>
-              <Menu.Positioner sideOffset={4} align="end">
-                <Menu.Popup>
-                  {options.map(option => (
-                    <Menu.Item
-                      key={option.value}
-                      onClick={() => option.onClick?.()}
-                    >
-                      {option.label}
-                    </Menu.Item>
-                  ))}
-                </Menu.Popup>
-              </Menu.Positioner>
-            </Menu.Portal>
-          </Menu.Root>
-        )}
+        <div className={classNames.controls}>
+          {customActions}
+          {menuItems && (
+            <Menu.Root>
+              <Menu.Trigger
+                render={props => (
+                  <ButtonIcon
+                    {...props}
+                    size="small"
+                    icon={<RiMore2Line />}
+                    variant="tertiary"
+                  />
+                )}
+              />
+              <Menu.Portal>
+                <Menu.Positioner sideOffset={4} align="end">
+                  <Menu.Popup>
+                    {menuItems.map(menuItem => (
+                      <Menu.Item
+                        key={menuItem.value}
+                        onClick={() => menuItem.onClick?.()}
+                      >
+                        {menuItem.label}
+                      </Menu.Item>
+                    ))}
+                  </Menu.Popup>
+                </Menu.Positioner>
+              </Menu.Portal>
+            </Menu.Root>
+          )}
+        </div>
       </div>
-    </Flex>
+      {tabs && (
+        <div className={classNames.tabsWrapper}>
+          <Tabs>
+            <TabList>
+              {tabs.map(tab => (
+                <Tab key={tab.id} id={tab.id} href={tab.href}>
+                  {tab.label}
+                </Tab>
+              ))}
+            </TabList>
+          </Tabs>
+        </div>
+      )}
+    </div>
   );
 };

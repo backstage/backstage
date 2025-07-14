@@ -18,6 +18,6 @@ export { Header } from './Header';
 export type {
   HeaderProps,
   HeaderTab,
-  HeaderOption,
+  HeaderMenuItem,
   HeaderBreadcrumb,
 } from './types';
