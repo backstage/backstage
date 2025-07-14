@@ -1,8 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage-ui
-  title: '@backstage/ui'
+  name: backstage-canon
+  title: '@backstage/canon'
 spec:
   lifecycle: experimental
   type: backstage-web-library

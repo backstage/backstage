@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import '@backstage/cli/asset-types';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import '@backstage/ui/css/styles.css';
+/**
+ * Components used by Backstage plugins and apps
+ *
+ * @packageDocumentation
+ */
 
-ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
+export * from '@backstage/ui';

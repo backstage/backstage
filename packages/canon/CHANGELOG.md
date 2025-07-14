@@ -1,4 +1,4 @@
-# @backstage/ui
+# @backstage/canon
 
 ## 0.6.0-next.1
 
