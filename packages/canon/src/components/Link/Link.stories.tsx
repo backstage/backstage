@@ -45,6 +45,14 @@ export const Default: Story = {
   },
 };
 
+export const ExternalLink: Story = {
+  args: {
+    href: 'https://backstage.io',
+    children: 'Sign up for Backstage',
+    target: '_blank',
+  },
+};
+
 export const AllVariants: Story = {
   args: {
     ...Default.args,
