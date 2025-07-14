@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { HeaderTab, HeaderMenuItem } from '../Header/types';
+
 /**
  * Props for the main HeaderPage component.
  *
@@ -21,28 +23,7 @@
  */
 export interface HeaderPageProps {
   title?: string;
-  description?: string;
-  tabs?: HeaderPageTab[];
-  options?: HeaderPageOption[];
-}
-
-/**
- * Represents a tab item in the header page.
- *
- * @public
- */
-export interface HeaderPageTab {
-  label: string;
-  href?: string;
-}
-
-/**
- * Represents an option item in the header page.
- *
- * @public
- */
-export interface HeaderPageOption {
-  label: string;
-  value: string;
-  onClick?: () => void;
+  customActions?: React.ReactNode;
+  menuItems?: HeaderMenuItem[];
+  tabs?: HeaderTab[];
 }

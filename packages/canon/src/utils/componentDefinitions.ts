@@ -104,6 +104,29 @@ export const componentDefinitions = {
       item: 'bui-GridItem',
     },
   },
+  Header: {
+    classNames: {
+      toolbar: 'bui-HeaderToolbar',
+      toolbarWrapper: 'bui-HeaderToolbarWrapper',
+      toolbarContent: 'bui-HeaderToolbarContent',
+      toolbarControls: 'bui-HeaderToolbarControls',
+      toolbarIcon: 'bui-HeaderToolbarIcon',
+      toolbarName: 'bui-HeaderToolbarName',
+      breadcrumbs: 'bui-HeaderBreadcrumbs',
+      breadcrumb: 'bui-HeaderBreadcrumb',
+      breadcrumbLink: 'bui-HeaderBreadcrumbLink',
+      breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator',
+      tabsWrapper: 'bui-HeaderTabsWrapper',
+    },
+  },
+  HeaderPage: {
+    classNames: {
+      root: 'bui-HeaderPage',
+      content: 'bui-HeaderPageContent',
+      tabsWrapper: 'bui-HeaderPageTabsWrapper',
+      controls: 'bui-HeaderPageControls',
+    },
+  },
   Heading: {
     classNames: {
       root: 'bui-Heading',
@@ -227,11 +250,13 @@ export const componentDefinitions = {
   },
   Tabs: {
     classNames: {
-      root: 'bui-TabsRoot',
-      list: 'bui-TabsList',
-      indicator: 'bui-TabsIndicator',
-      tab: 'bui-TabsTab',
-      panel: 'bui-TabsPanel',
+      tabs: 'bui-Tabs',
+      tabList: 'bui-TabList',
+      tabListWrapper: 'bui-TabListWrapper',
+      tab: 'bui-Tab',
+      tabActive: 'bui-TabActive',
+      tabHovered: 'bui-TabHovered',
+      panel: 'bui-TabPanel',
     },
   },
   Text: {
@@ -255,26 +280,6 @@ export const componentDefinitions = {
     dataAttributes: {
       invalid: [true, false] as const,
       disabled: [true, false] as const,
-    },
-  },
-  Header: {
-    classNames: {
-      toolbar: 'bui-HeaderToolbar',
-      toolbarWrapper: 'bui-HeaderToolbarWrapper',
-      toolbarContent: 'bui-HeaderToolbarContent',
-      toolbarControls: 'bui-HeaderToolbarControls',
-      toolbarIcon: 'bui-HeaderToolbarIcon',
-      toolbarName: 'bui-HeaderToolbarName',
-      breadcrumbs: 'bui-HeaderBreadcrumbs',
-      breadcrumb: 'bui-HeaderBreadcrumb',
-      breadcrumbLink: 'bui-HeaderBreadcrumbLink',
-      breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator',
-      tabs: 'bui-HeaderTabs',
-      tabList: 'bui-HeaderTabList',
-      tab: 'bui-HeaderTab',
-      tabActive: 'bui-HeaderTabActive',
-      tabHovered: 'bui-HeaderTabHovered',
-      subNav: 'bui-HeaderSubNav',
     },
   },
   Tooltip: {
