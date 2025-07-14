@@ -10682,9 +10682,13 @@
     border-width: 2px;
   }
 
-  &[data-disabled] {
+  &[disabled] {
     cursor: not-allowed;
     border-color: var(--bui-border-disabled);
+    color: var(--bui-fg-disabled);
+  }
+
+  &[disabled] .bui-SelectValue {
     color: var(--bui-fg-disabled);
   }
 
@@ -10705,6 +10709,10 @@
 
   & .bui-SelectItemIndicator {
     display: none;
+  }
+
+  &[disabled] {
+    color: var(--bui-fg-disabled);
   }
 }
 

@@ -77,9 +77,9 @@ export const Sizes: Story = {
     ...Preview.args,
   },
   render: args => (
-    <Flex direction="row" gap="2" style={{ width: '100%', maxWidth: 540 }}>
-      <Select {...args} size="small" />
-      <Select {...args} size="medium" />
+    <Flex direction="row" gap="2">
+      <Select {...args} size="small" icon={<RiCloudLine />} />
+      <Select {...args} size="medium" icon={<RiCloudLine />} />
     </Flex>
   ),
 };
