@@ -40,7 +40,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    href: '#',
+    href: '/home',
     children: 'Sign up for Backstage',
   },
 };
