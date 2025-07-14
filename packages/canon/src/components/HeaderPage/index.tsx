@@ -15,4 +15,4 @@
  */
 
 export { HeaderPage } from './HeaderPage';
-export type { HeaderPageProps, HeaderPageTab, HeaderPageOption } from './types';
+export type { HeaderPageProps } from './types';

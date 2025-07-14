@@ -10,7 +10,6 @@ import { Collapsible as Collapsible_2 } from '@base-ui-components/react/collapsi
 import { ComponentProps } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import { Context } from 'react';
-import type { CSSProperties } from 'react';
 import type { ElementType } from 'react';
 import { FocusEvent as FocusEvent_2 } from 'react';
 import { ForwardRefExoticComponent } from 'react';
@@ -28,7 +27,10 @@ import { ScrollArea as ScrollArea_2 } from '@base-ui-components/react/scroll-are
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { Table as Table_2 } from '@tanstack/react-table';
-import { Tabs as Tabs_2 } from '@base-ui-components/react/tabs';
+import type { TabListProps as TabListProps_2 } from 'react-aria-components';
+import type { TabPanelProps as TabPanelProps_2 } from 'react-aria-components';
+import { TabProps } from 'react-aria-components';
+import type { TabsProps as TabsProps_2 } from 'react-aria-components';
 import { TdHTMLAttributes } from 'react';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import { ThHTMLAttributes } from 'react';
@@ -219,6 +221,35 @@ export interface ButtonProps extends ButtonProps_2 {
     | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
 }
 
+// @public
+export const Card: ForwardRefExoticComponent<
+  CardProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
+// @public
+export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
+// @public
+export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
+// @public
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  // (undocumented)
+  children?: React.ReactNode;
+}
+
 // @public (undocumented)
 export const Checkbox: ForwardRefExoticComponent<
   CheckboxProps & RefAttributes<HTMLButtonElement>
@@ -373,6 +404,29 @@ export const componentDefinitions: {
       readonly item: 'bui-GridItem';
     };
   };
+  readonly Header: {
+    readonly classNames: {
+      readonly toolbar: 'bui-HeaderToolbar';
+      readonly toolbarWrapper: 'bui-HeaderToolbarWrapper';
+      readonly toolbarContent: 'bui-HeaderToolbarContent';
+      readonly toolbarControls: 'bui-HeaderToolbarControls';
+      readonly toolbarIcon: 'bui-HeaderToolbarIcon';
+      readonly toolbarName: 'bui-HeaderToolbarName';
+      readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
+      readonly breadcrumb: 'bui-HeaderBreadcrumb';
+      readonly breadcrumbLink: 'bui-HeaderBreadcrumbLink';
+      readonly breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator';
+      readonly tabsWrapper: 'bui-HeaderTabsWrapper';
+    };
+  };
+  readonly HeaderPage: {
+    readonly classNames: {
+      readonly root: 'bui-HeaderPage';
+      readonly content: 'bui-HeaderPageContent';
+      readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
+      readonly controls: 'bui-HeaderPageControls';
+    };
+  };
   readonly Heading: {
     readonly classNames: {
       readonly root: 'bui-Heading';
@@ -487,11 +541,13 @@ export const componentDefinitions: {
   };
   readonly Tabs: {
     readonly classNames: {
-      readonly root: 'bui-TabsRoot';
-      readonly list: 'bui-TabsList';
-      readonly indicator: 'bui-TabsIndicator';
-      readonly tab: 'bui-TabsTab';
-      readonly panel: 'bui-TabsPanel';
+      readonly tabs: 'bui-Tabs';
+      readonly tabList: 'bui-TabList';
+      readonly tabListWrapper: 'bui-TabListWrapper';
+      readonly tab: 'bui-Tab';
+      readonly tabActive: 'bui-TabActive';
+      readonly tabHovered: 'bui-TabHovered';
+      readonly panel: 'bui-TabPanel';
     };
   };
   readonly Text: {
@@ -521,26 +577,6 @@ export const componentDefinitions: {
     readonly dataAttributes: {
       readonly invalid: readonly [true, false];
       readonly disabled: readonly [true, false];
-    };
-  };
-  readonly Header: {
-    readonly classNames: {
-      readonly toolbar: 'bui-HeaderToolbar';
-      readonly toolbarWrapper: 'bui-HeaderToolbarWrapper';
-      readonly toolbarContent: 'bui-HeaderToolbarContent';
-      readonly toolbarControls: 'bui-HeaderToolbarControls';
-      readonly toolbarIcon: 'bui-HeaderToolbarIcon';
-      readonly toolbarName: 'bui-HeaderToolbarName';
-      readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
-      readonly breadcrumb: 'bui-HeaderBreadcrumb';
-      readonly breadcrumbLink: 'bui-HeaderBreadcrumbLink';
-      readonly breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator';
-      readonly tabs: 'bui-HeaderTabs';
-      readonly tabList: 'bui-HeaderTabList';
-      readonly tab: 'bui-HeaderTab';
-      readonly tabActive: 'bui-HeaderTabActive';
-      readonly tabHovered: 'bui-HeaderTabHovered';
-      readonly subNav: 'bui-HeaderSubNav';
     };
   };
   readonly Tooltip: {
@@ -961,7 +997,7 @@ export interface HeaderBreadcrumb {
 }
 
 // @public
-export interface HeaderOption {
+export interface HeaderMenuItem {
   // (undocumented)
   label: string;
   // (undocumented)
@@ -974,33 +1010,15 @@ export interface HeaderOption {
 export const HeaderPage: (props: HeaderPageProps) => JSX_2.Element;
 
 // @public
-export interface HeaderPageOption {
-  // (undocumented)
-  label: string;
-  // (undocumented)
-  onClick?: () => void;
-  // (undocumented)
-  value: string;
-}
-
-// @public
 export interface HeaderPageProps {
   // (undocumented)
-  description?: string;
+  customActions?: React.ReactNode;
   // (undocumented)
-  options?: HeaderPageOption[];
+  menuItems?: HeaderMenuItem[];
   // (undocumented)
-  tabs?: HeaderPageTab[];
+  tabs?: HeaderTab[];
   // (undocumented)
   title?: string;
-}
-
-// @public
-export interface HeaderPageTab {
-  // (undocumented)
-  href?: string;
-  // (undocumented)
-  label: string;
 }
 
 // @public
@@ -1012,7 +1030,7 @@ export interface HeaderProps {
   // (undocumented)
   icon?: React.ReactNode;
   // (undocumented)
-  menuItems?: HeaderOption[];
+  menuItems?: HeaderMenuItem[];
   // (undocumented)
   tabs?: HeaderTab[];
   // (undocumented)
@@ -1023,6 +1041,8 @@ export interface HeaderProps {
 export interface HeaderTab {
   // (undocumented)
   href?: string;
+  // (undocumented)
+  id: string;
   // (undocumented)
   label: string;
 }
@@ -1198,26 +1218,39 @@ export type JustifyContent =
 
 // @public (undocumented)
 export const Link: ForwardRefExoticComponent<
-  Omit<LinkProps, 'ref'> & RefAttributes<HTMLElement>
+  LinkProps & RefAttributes<HTMLAnchorElement>
 >;
 
 // @public (undocumented)
-export interface LinkProps extends useRender.ComponentProps<'a'> {
+export interface LinkProps extends LinkProps_2 {
   // (undocumented)
-  children: ReactNode;
-  // (undocumented)
-  className?: string;
-  // (undocumented)
-  style?: CSSProperties;
-  // (undocumented)
-  to?: string;
+  color?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
   // (undocumented)
   variant?:
-    | 'subtitle'
-    | 'body'
-    | 'caption'
-    | 'label'
-    | Partial<Record<Breakpoint, 'subtitle' | 'body' | 'caption' | 'label'>>;
+    | 'title-large'
+    | 'title-medium'
+    | 'title-small'
+    | 'title-x-small'
+    | 'body-large'
+    | 'body-medium'
+    | 'body-small'
+    | 'body-x-small'
+    | Partial<
+        Record<
+          Breakpoint,
+          | 'title-large'
+          | 'title-medium'
+          | 'title-small'
+          | 'title-x-small'
+          | 'body-large'
+          | 'body-medium'
+          | 'body-small'
+          | 'body-x-small'
+        >
+      >;
   // (undocumented)
   weight?: 'regular' | 'bold' | Partial<Record<Breakpoint, 'regular' | 'bold'>>;
 }
@@ -1517,6 +1550,19 @@ export interface SelectProps {
 }
 
 // @public (undocumented)
+export const Skeleton: (props: SkeletonProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface SkeletonProps extends ComponentProps<'div'> {
+  // (undocumented)
+  height?: number | string;
+  // (undocumented)
+  rounded?: boolean;
+  // (undocumented)
+  width?: number | string;
+}
+
+// @public (undocumented)
 export type Space =
   | '0.5'
   | '1'
@@ -1592,6 +1638,9 @@ export interface SwitchProps extends SwitchProps_2 {
 }
 
 // @public
+export const Tab: (props: TabProps) => JSX_2.Element;
+
+// @public
 export const Table: {
   Root: ForwardRefExoticComponent<
     HTMLAttributes<HTMLTableElement> & RefAttributes<HTMLTableElement>
@@ -1663,31 +1712,23 @@ export interface TableCellTextProps
   title: string;
 }
 
-// @public (undocumented)
-export const Tabs: {
-  Root: ForwardRefExoticComponent<
-    TabsRootWithoutOrientation & RefAttributes<HTMLDivElement>
-  >;
-  List: ForwardRefExoticComponent<
-    Omit<Tabs_2.List.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-  Tab: ForwardRefExoticComponent<
-    Omit<Tabs_2.Tab.Props & RefAttributes<Element>, 'ref'> &
-      RefAttributes<Element>
-  >;
-  Panel: ForwardRefExoticComponent<
-    Omit<Tabs_2.Panel.Props & RefAttributes<HTMLDivElement>, 'ref'> &
-      RefAttributes<HTMLDivElement>
-  >;
-};
+// @public
+export const TabList: (props: TabListProps) => JSX_2.Element;
 
-// @public (undocumented)
-export interface TabsRootWithoutOrientation
-  extends Omit<
-    React.ComponentPropsWithoutRef<typeof Tabs_2.Root>,
-    'orientation'
-  > {}
+// @public
+export interface TabListProps extends Omit<TabListProps_2<object>, 'items'> {}
+
+// @public
+export const TabPanel: (props: TabPanelProps) => JSX_2.Element;
+
+// @public
+export interface TabPanelProps extends TabPanelProps_2 {}
+
+// @public
+export const Tabs: (props: TabsProps) => JSX_2.Element | null;
+
+// @public
+export interface TabsProps extends TabsProps_2 {}
 
 // @public (undocumented)
 const Text_2: {

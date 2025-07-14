@@ -21,6 +21,7 @@ import { RiArrowRightSLine, RiMore2Line, RiShapesLine } from '@remixicon/react';
 import type { HeaderToolbarProps } from './types';
 import { ButtonIcon } from '../ButtonIcon';
 import { Menu } from '../Menu';
+import { Text } from '../Text';
 import { motion, useScroll, useTransform } from 'motion/react';
 
 /**
@@ -94,7 +95,7 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
             <div className={classNames.toolbarIcon}>
               {icon || <RiShapesLine />}
             </div>
-            {title || 'Your plugin'}
+            <Text variant="body">{title || 'Your plugin'}</Text>
           </div>
           {breadcrumbs && (
             <motion.div
