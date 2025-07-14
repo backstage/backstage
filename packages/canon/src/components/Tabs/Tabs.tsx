@@ -27,7 +27,6 @@ import {
 import type {
   TabsProps,
   TabListProps,
-  TabProps,
   TabPanelProps,
   TabsContextValue,
 } from './types';
@@ -39,6 +38,7 @@ import {
   Tab as AriaTab,
   TabPanel as AriaTabPanel,
   RouterProvider,
+  TabProps as AriaTabProps,
 } from 'react-aria-components';
 
 import { useStyles } from '../../hooks/useStyles';
@@ -131,14 +131,8 @@ export const Tabs = (props: TabsProps) => {
 export const TabList = (props: TabListProps) => {
   const { children, ...rest } = props;
   const { classNames } = useStyles('Tabs');
-  const {
-    setHoveredKey,
-    setTabRef,
-    tabRefs,
-    tabsRef,
-    hoveredKey,
-    prevHoveredKey,
-  } = useTabsContext();
+  const { setHoveredKey, tabRefs, tabsRef, hoveredKey, prevHoveredKey } =
+    useTabsContext();
 
   const handleHover = (key: string | null) => {
     setHoveredKey(key);
@@ -148,9 +142,9 @@ export const TabList = (props: TabListProps) => {
   const enhancedChildren = Children.map(children as ReactNode, child => {
     if (isValidElement(child)) {
       return cloneElement(child, {
-        onHover: handleHover,
-        onRegister: setTabRef,
-      } as Partial<TabProps>);
+        onHoverStart: () => handleHover(child.props.id as string),
+        onHoverEnd: () => handleHover(null),
+      } as Partial<AriaTabProps>);
     }
     return child;
   });
@@ -179,17 +173,16 @@ export const TabList = (props: TabListProps) => {
  *
  * @public
  */
-export const Tab = (props: TabProps) => {
-  const { href, children, id, onHover, onRegister, ...rest } = props;
+export const Tab = (props: AriaTabProps) => {
+  const { href, children, id, ...rest } = props;
   const { classNames } = useStyles('Tabs');
+  const { setTabRef } = useTabsContext();
 
   return (
     <AriaTab
       id={id}
       className={classNames.tab}
-      ref={el => onRegister?.(id as string, el as HTMLDivElement)}
-      onHoverStart={() => onHover?.(id as string)}
-      onHoverEnd={() => onHover?.(null)}
+      ref={el => setTabRef(id as string, el as HTMLDivElement)}
       href={href}
       {...rest}
     >

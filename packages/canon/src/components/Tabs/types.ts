@@ -15,7 +15,6 @@
  */
 
 import type {
-  TabProps as AriaTabProps,
   TabsProps as AriaTabsProps,
   TabListProps as AriaTabListProps,
   TabPanelProps as AriaTabPanelProps,
@@ -47,16 +46,6 @@ export interface TabsContextValue {
   prevHoveredKey: React.MutableRefObject<string | null>;
   setHoveredKey: (key: string | null) => void;
   setTabRef: (key: string, element: HTMLDivElement | null) => void;
-}
-
-/**
- * Props for the Tab component.
- *
- * @public
- */
-export interface TabProps extends AriaTabProps {
-  onHover?: (key: string | null) => void;
-  onRegister?: (key: string, element: HTMLDivElement | null) => void;
 }
 
 /**

@@ -46,8 +46,7 @@
     "@tanstack/react-table": "^8.21.3",
     "clsx": "^2.1.1",
     "motion": "^12.20.1",
-    "react-aria-components": "^1.10.1",
-    "react-stately": "^3.39.0"
+    "react-aria-components": "^1.10.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
