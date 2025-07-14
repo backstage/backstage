@@ -14,37 +14,31 @@
  * limitations under the License.
  */
 
-import { useRef, forwardRef } from 'react';
-import { useRender } from '@base-ui-components/react/use-render';
+import { forwardRef } from 'react';
+import { Link as AriaLink } from 'react-aria-components';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
-
 import type { LinkProps } from './types';
 
 /** @public */
-export const Link = forwardRef<HTMLElement, LinkProps>((props, ref) => {
+export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   const {
     className,
     variant = 'body',
     weight = 'regular',
-    render = <a />,
     ...restProps
   } = props;
 
   const { classNames, dataAttributes } = useStyles('Link', { variant, weight });
-  const internalRef = useRef<HTMLElement | null>(null);
 
-  const { renderElement } = useRender({
-    render,
-    props: {
-      className: clsx(classNames.root, className),
-      ...dataAttributes,
-      ...restProps,
-    },
-    refs: [ref, internalRef],
-  });
-
-  return renderElement();
+  return (
+    <AriaLink
+      ref={ref}
+      className={clsx(classNames.root, className)}
+      {...dataAttributes}
+      {...restProps}
+    />
+  );
 });
 
 Link.displayName = 'Link';
