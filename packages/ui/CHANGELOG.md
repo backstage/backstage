@@ -1,5 +1,11 @@
 # @backstage/ui
 
+## 0.6.0
+
+### Minor Changes
+
+- e92bb9b: Canon has been renamed to Backstage UI. This means that `@backstage/canon` has been deprecated and replaced by `@backstage/ui`.
+
 ## 0.6.0-next.1
 
 ### Minor Changes

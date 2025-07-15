@@ -1,5 +1,13 @@
 # @backstage/catalog-client
 
+## 1.10.2
+
+### Patch Changes
+
+- 6fb4143: allow arrays in the InMemoryCatalogClient to filter entities
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5
+
 ## 1.10.2-next.0
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @internal/frontend
 
+## 0.0.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.4
+
 ## 0.0.11-next.0
 
 ### Patch Changes
